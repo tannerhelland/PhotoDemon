@@ -3,8 +3,10 @@ Attribute VB_Name = "Plugin_CharLS"
 'CharLS (lossless JPEG) Library Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 12/September/21
-'Last updated: 12/September/21
-'Last update: initial build
+'Last updated: 15/September/21
+'Last update: wrap up initial build; only import is available right now.  Export could easily be added,
+'             but I'm not super interested in that aspect of this project.  Will revisit pending feedback
+'             from users.
 '
 'Per its documentation (available at https://github.com/team-charls/charls), char-ls is...
 '
@@ -164,8 +166,8 @@ End Type
 Private Type CharLSSpiffHeader
     profile_id As Long               '// P: Application profile, type I.8
     component_count As Long          '// NC: Number of color components, range [1, 255], type I.8
-    height As Long                   '// HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
-    width As Long                    '// WIDTH: Number of samples per line, range [1, 4294967295], type I.32
+    img_height As Long                   '// HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
+    img_width As Long                    '// WIDTH: Number of samples per line, range [1, 4294967295], type I.32
     color_space As CharLS_ColorSpace '// S: Color space used by image data, type is I.8
     bits_per_sample As Long          '// BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
     compression_type As Long         '// C: Type of data compression used, type is I.8
@@ -194,9 +196,9 @@ Private Declare Function charls_get_version_string Lib "charls-2-x86" Alias "_ch
 Private Declare Function charls_jpegls_decoder_create Lib "charls-2-x86" Alias "_charls_jpegls_decoder_create@0" () As Long
 Private Declare Sub charls_jpegls_decoder_destroy Lib "charls-2-x86" Alias "_charls_jpegls_decoder_destroy@4" (ByVal srcDecoder As Long)
 
-Private Declare Function charls_jpegls_decoder_decode_to_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_decode_to_buffer@16" (ByVal srcDecoder As Long, ByVal ptrToDstBytes As Long, ByVal sizeOfDstArray As Long, Optional ByVal dstStride As Long = 0) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_decode_to_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_decode_to_buffer@16" (ByVal srcDecoder As Long, ByVal ptrToDstBytes As Long, ByVal sizeOfDstArray As Long, ByVal dstStride As Long) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_color_transformation Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_color_transformation@8" (ByVal srcDecoder As Long, ByRef dstColorTransform As CharLS_ColorTransformation) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_destination_size Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_destination_size@12" (ByVal srcDecoder As Long, ByRef dstStride As Long, ByRef dstSizeBytes As Long) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_get_destination_size Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_destination_size@12" (ByVal srcDecoder As Long, ByVal dstStride As Long, ByRef dstSizeBytes As Long) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_frame_info Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_frame_info@8" (ByVal srcDecoder As Long, ByRef dstFrameInfo As CharLSFrameInfo) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_interleave_mode Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_interleave_mode@8" (ByVal srcDecoder As Long, ByRef dstInterleaveMode As CharLS_InterleaveMode) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_near_lossless Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_near_lossless@12" (ByVal srcDecoder As Long, ByVal idxComponent As Long, ByRef dstNearLosslessValue As Long) As CharLS_Return
@@ -262,5 +264,242 @@ Public Sub ReleaseEngine()
     If (m_LibHandle <> 0) Then
         VBHacks.FreeLib m_LibHandle
         m_LibHandle = 0
+    End If
+End Sub
+
+'Import/Export functions follow
+Public Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJLS = False
+    
+    'Failsafe check
+    If (Not Plugin_CharLS.IsCharLSEnabled()) Then Exit Function
+    
+    'CharLS provides no file-specific functions (in its C interface, anyway).  It only accepts pointers,
+    ' so we need to load the source file into memory.
+    Dim srcBytes() As Byte
+    If (Not Files.FileLoadAsByteArray(srcFile, srcBytes)) Then
+        InternalError "couldn't load file into memory"
+        Exit Function
+    End If
+    
+    'Start by creating a decoder object
+    Dim cDecoder As Long
+    cDecoder = charls_jpegls_decoder_create()
+    If (cDecoder = 0) Then
+        InternalError "couldn't create decoder!"
+        Exit Function
+    End If
+    
+    'CharLS provides detailed result states on each call
+    Dim charlsReturn As CharLS_Return
+    
+    'Start by setting the source buffer to the in-memory copy of the file
+    charlsReturn = charls_jpegls_decoder_set_source_buffer(cDecoder, VarPtr(srcBytes(0)), UBound(srcBytes) + 1)
+    If (charlsReturn <> cls_SUCCESS) Then
+        FreeDecoder cDecoder
+        InternalError libReturn:=charlsReturn
+        Exit Function
+    End If
+    
+    'Read the SPIFF header, which is optional but potentially contains useful details about the underlying
+    ' file size and color format.  (Reading without this is possible, but we have to make assumptions about
+    ' e.g. color-space.)
+    Dim fHeader As CharLSSpiffHeader, headerExists As Long
+    charlsReturn = charls_jpegls_decoder_read_spiff_header(cDecoder, VarPtr(fHeader), headerExists)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError libReturn:=charlsReturn
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    If (headerExists = 0) Then InternalError "warning - no SPIFF header, so PD will have to guess at color space"
+    
+    'Still here?  Perform basic validation if the SPIFF header exists.
+    If (headerExists <> 0) Then
+        With fHeader
+        
+            'Keep sizes reasonable
+            If ((.img_width > 32000) Or (.img_height > 32000)) Then
+                FreeDecoder cDecoder
+                InternalError "file too big"
+                Exit Function
+            End If
+            
+            'Weird component counts are probably a custom implementation; skip 'em
+            If (.component_count > 4) Then
+                FreeDecoder cDecoder
+                InternalError "unknown component count"
+                Exit Function
+            End If
+            
+        End With
+    End If
+    
+    'Still here?  Cool, we can probably read this file.
+    
+    'Two steps follow: reading the header (which returns nothing; it just triggers an internal
+    ' library state change), then retrieve a frame_info struct which is the final word on the size
+    ' of the frame that follows.
+    charlsReturn = charls_jpegls_decoder_read_header(cDecoder)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError libReturn:=charlsReturn
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    Dim frameInfo As CharLSFrameInfo
+    charlsReturn = charls_jpegls_decoder_get_frame_info(cDecoder, frameInfo)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError libReturn:=charlsReturn
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    'Validate frame info before prepping a decode buffer
+    If (frameInfo.component_count < 0) Or (frameInfo.component_count > 4) Then
+        InternalError "bad component count: " & frameInfo.component_count
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    Dim dstSize As Long
+    charlsReturn = charls_jpegls_decoder_get_destination_size(cDecoder, 0, dstSize)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError libReturn:=charlsReturn
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    'Prep the destination buffer
+    Dim dstBytes() As Byte
+    ReDim dstBytes(0 To dstSize - 1) As Byte
+    
+    'Perform the decode
+    charlsReturn = charls_jpegls_decoder_decode_to_buffer(cDecoder, VarPtr(dstBytes(0)), dstSize, 0)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError libReturn:=charlsReturn
+        FreeDecoder cDecoder
+        Exit Function
+    End If
+    
+    'Still here?  Cool, the image was decoded!
+    
+    'We are done with the decoder and the source file bytes.  Free both.
+    FreeDecoder cDecoder
+    Erase srcBytes
+    
+    'We now need to translate the destination bytes into standard PD 32-bpp BGRA format.
+    ' We'll use a separate function for this.
+    LoadJLS = DecodeToPDDIB(dstImage, dstDIB, dstBytes, frameInfo)
+    
+End Function
+
+Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef srcBytes() As Byte, ByRef srcFrameInfo As CharLSFrameInfo) As Boolean
+    
+    PDDebug.LogAction "JLS file decoded; translating pixel data in to BGRA format..."
+    
+    'Cache key values from the frame info struct
+    Dim imgWidth As Long, imgHeight As Long, BitDepth As Long, numComponents As Long
+    imgWidth = srcFrameInfo.frame_width
+    imgHeight = srcFrameInfo.frame_height
+    BitDepth = srcFrameInfo.bits_per_sample
+    numComponents = srcFrameInfo.component_count
+    
+    'Curious about the image?  Here's the basics:
+    'Debug.Print imgWidth, imgHeight, bitDepth, numComponents
+    
+    'Because I'm lazy, I'm only dealing with 8-bpc for now.  I will extend this if users need it.
+    If (BitDepth <> 8) Then
+        InternalError "bit-depth currently unsupported: " & BitDepth
+        DecodeToPDDIB = False
+        Exit Function
+    End If
+    
+    'Prepare the destination DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank imgWidth, imgHeight, 32, initialAlpha:=255
+    dstDIB.SetInitialAlphaPremultiplicationState True
+    
+    Dim x As Long, y As Long, dstSA1D As SafeArray1D
+    
+    'Handle grayscale images first
+    If (numComponents = 1) Then
+        
+        'Pre-construct a grayscale, opaque, BGRA palette
+        Dim grayLUT(0 To 255) As Long, tmpQuad As RGBQuad
+        For x = 0 To 255
+            With tmpQuad
+                .Blue = x
+                .Green = x
+                .Red = x
+                .Alpha = 255
+            End With
+            GetMem4 VarPtr(tmpQuad), grayLUT(x)
+        Next x
+        
+        'Use the preconstructed palette to translate source bytes
+        Dim dstPixels() As Long
+        For y = 0 To imgHeight - 1
+            dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
+        For x = 0 To imgWidth - 1
+            dstPixels(x) = grayLUT(srcBytes(y * imgWidth + x))
+        Next x
+        Next y
+        
+        dstDIB.UnwrapLongArrayFromDIB dstPixels
+        DecodeToPDDIB = True
+        
+        'Fill in a few image-level objects before exiting
+        dstImage.SetOriginalColorDepth 8
+        dstImage.SetOriginalGrayscale True
+        dstImage.SetOriginalAlpha False
+        
+    'RGB/RGBA
+    ElseIf (numComponents = 3) Or (numComponents = 4) Then
+        
+        Dim dstPixels4() As RGBQuad
+        For y = 0 To imgHeight - 1
+            dstDIB.WrapRGBQuadArrayAroundScanline dstPixels4, dstSA1D, y
+        For x = 0 To imgWidth - 1
+            dstPixels4(x).Red = srcBytes(y * imgWidth * numComponents + x * numComponents)
+            dstPixels4(x).Green = srcBytes(y * imgWidth * numComponents + x * numComponents + 1)
+            dstPixels4(x).Blue = srcBytes(y * imgWidth * numComponents + x * numComponents + 2)
+            If (numComponents = 4) Then dstPixels4(x).Alpha = srcBytes(y * imgWidth * numComponents + x * numComponents + 3)
+        Next x
+        Next y
+        
+        dstDIB.UnwrapRGBQuadArrayFromDIB dstPixels4
+        DecodeToPDDIB = True
+        
+        'Set additional image properties
+        dstImage.SetOriginalColorDepth numComponents * 4
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha (numComponents = 4)
+        
+    Else
+        InternalError "bad component count: " & numComponents
+        DecodeToPDDIB = False
+        Exit Function
+    End If
+    
+End Function
+
+'Please ensure any created decoder objects are properly freed (even after errors)
+Private Sub FreeDecoder(ByRef srcDecoder As Long)
+    If (srcDecoder <> 0) Then
+        charls_jpegls_decoder_destroy srcDecoder
+        srcDecoder = 0
+    End If
+End Sub
+
+Private Sub InternalError(Optional ByRef errString As String = vbNullString, Optional ByVal libReturn As CharLS_Return = cls_SUCCESS)
+    If (libReturn <> cls_SUCCESS) Then
+        Dim pErrExplanation As Long
+        pErrExplanation = charls_get_error_message(libReturn)
+        errString = Strings.StringFromCharPtr(pErrExplanation, False)
+        PDDebug.LogAction "CharLS returned error (" & libReturn & "): " & errString, PDM_External_Lib
+    Else
+        PDDebug.LogAction "CharLS error:" & errString, PDM_External_Lib
     End If
 End Sub

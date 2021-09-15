@@ -1057,6 +1057,15 @@ LibAVIFDidntWork:
         End If
     End If
     
+    'JPEG-LS (via the CharLS library) support was added in v9.0
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadJLS(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_CharLS
+            dstImage.SetOriginalFileFormat PDIF_JLS
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1242,6 +1251,32 @@ Private Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstDIB.CreateBlank 16, 16, 32, 0
         dstDIB.SetColorManagementState cms_ProfileConverted
         
+    End If
+    
+End Function
+
+Private Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJLS = False
+    
+    'Ensure the CharLS library is available
+    If (Not Plugin_CharLS.IsCharLSEnabled()) Then Exit Function
+    
+    'For now, we perform basic validation against the file extension; this is primarily for performance
+    ' reasons, as CharLS does not provide a "validation" function so we'd need to load the full source
+    ' file into memory and we want to avoid that unless absolutely necessary.
+    If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "jls", True) Then Exit Function
+    
+    'CharLS handles everything for us
+    LoadJLS = Plugin_CharLS.LoadJLS(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadJLS Then
+        dstImage.SetOriginalFileFormat PDIF_JLS
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
+        dstImage.SetOriginalGrayscale False     'Same here?
+        dstImage.SetOriginalAlpha True          'Same here?
     End If
     
 End Function

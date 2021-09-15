@@ -80,7 +80,7 @@ Public Function GetInputPDIF(ByVal dIndex As Long) As Long
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputPDIF = inputPDIFs(dIndex)
     Else
-        GetInputPDIF = FIF_UNKNOWN
+        GetInputPDIF = PDIF_UNKNOWN
     End If
 End Function
 
@@ -146,7 +146,7 @@ Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
-        GetOutputPDIF = FIF_UNKNOWN
+        GetOutputPDIF = PDIF_UNKNOWN
     End If
 End Function
 
@@ -257,8 +257,11 @@ Public Sub GenerateInputFormats()
     
     AddInputFormat "ICO - Windows Icon", "*.ico", PDIF_ICO
     
+    If m_FreeImageEnabled Then AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
+    
+    AddInputFormat "JLS - JPEG-LS", "*.jls", PDIF_JLS
+    
     If m_FreeImageEnabled Then
-        AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
         AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
         AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", PDIF_JP2
     End If
@@ -445,7 +448,6 @@ End Sub
 'Add support for another output format.  A descriptive string and extension list are required.
 Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PD_IMAGE_FORMAT)
     
-    'Increment the counter
     m_curFormatIndex = m_curFormatIndex + 1
     
     'Add the descriptive text to our collection
@@ -492,6 +494,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "iff"
         Case PDIF_J2K
             GetExtensionFromPDIF = "j2k"
+        Case PDIF_JLS
+            GetExtensionFromPDIF = "jls"
         Case PDIF_JNG
             GetExtensionFromPDIF = "jng"
         Case PDIF_JP2
@@ -613,6 +617,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_IFF
         Case "j2k"
             GetPDIFFromExtension = PDIF_J2K
+        Case "jls"
+            GetPDIFFromExtension = PDIF_JLS
         Case "jng"
             GetPDIFFromExtension = PDIF_JNG
         Case "jp2"
@@ -675,68 +681,46 @@ End Function
 
 'Given an output PDIF, return the ideal metadata format for that image format.
 Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
-
     Select Case outputPDIF
-        
         Case PDIF_HEIF
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_BMP
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_GIF
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
-        
         Case PDIF_HDR
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_HEIF
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-            
         Case PDIF_ICO
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_JP2
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
-        
         Case PDIF_JPEG
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
-        
         Case PDIF_JXR
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
-        
         Case PDIF_MBM
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_PDI
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
-        
         Case PDIF_PNG
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
-        
         Case PDIF_PNM
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-            
         Case PDIF_PSD
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
-        
         Case PDIF_PSP
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
-        
         Case PDIF_TARGA
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
         Case PDIF_TIFF
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
-        
         Case PDIF_WEBP
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
-        
         Case Else
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
-        
     End Select
-    
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether the export format supports animation.
@@ -755,121 +739,83 @@ End Function
 
 'If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
 Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
-
     Select Case outputPDIF
-        
         Case PDIF_JPEG
             IsExifAllowedForPDIF = True
-        
         Case PDIF_JXR
             IsExifAllowedForPDIF = True
-            
         Case PDIF_PDI
             IsExifAllowedForPDIF = True
-        
         Case PDIF_PSD
             IsExifAllowedForPDIF = True
-        
         Case PDIF_PSP
             IsExifAllowedForPDIF = True
-        
         Case PDIF_TIFF
             IsExifAllowedForPDIF = True
-        
         Case Else
             IsExifAllowedForPDIF = False
-        
     End Select
-    
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether PD has implemented an export dialog for that image format.
 Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
-
     Select Case outputPDIF
-        
         Case PDIF_AVIF
             IsExportDialogSupported = True
-        
         Case PDIF_BMP
             IsExportDialogSupported = True
-            
         Case PDIF_CBZ
             IsExportDialogSupported = False
-        
         Case PDIF_GIF
             IsExportDialogSupported = True
-        
         Case PDIF_HDR
             IsExportDialogSupported = False
-        
         Case PDIF_ICO
             IsExportDialogSupported = True
-        
+        Case PDIF_JLS
+            IsExportDialogSupported = False
         Case PDIF_JP2
             IsExportDialogSupported = True
-        
         Case PDIF_JPEG
             IsExportDialogSupported = True
-        
         Case PDIF_JXR
             IsExportDialogSupported = True
-        
         Case PDIF_ORA
             IsExportDialogSupported = False
-        
         Case PDIF_PDI
             IsExportDialogSupported = False
-        
         Case PDIF_PNG
             IsExportDialogSupported = True
-        
         Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
             IsExportDialogSupported = True
-        
         Case PDIF_PSD
             IsExportDialogSupported = True
-        
         Case PDIF_PSP
             IsExportDialogSupported = True
-        
         Case PDIF_TARGA
             IsExportDialogSupported = False
-        
         Case PDIF_TIFF
             IsExportDialogSupported = True
-        
         Case PDIF_WEBP
             IsExportDialogSupported = True
-        
         Case Else
             IsExportDialogSupported = False
-        
     End Select
-    
 End Function
 
 Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolean
-
     Select Case srcFormat
-        
         Case PDIF_CBZ
             IsExifToolRelevant = False
-        
         Case PDIF_ICO
             IsExifToolRelevant = False
-            
         Case PDIF_ORA
             IsExifToolRelevant = False
-        
         Case PDIF_PDI
             IsExifToolRelevant = False
-            
         Case Else
             IsExifToolRelevant = True
-    
     End Select
-
 End Function
 
 Public Function IsFreeImageEnabled() As Boolean
