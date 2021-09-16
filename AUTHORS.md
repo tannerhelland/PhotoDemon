@@ -22,14 +22,17 @@ Patrons:
 
 The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these developers for freely sharing their work.  
 
+* [CharLS](https://github.com/team-charls/charls)
 * [ExifTool](https://exiftool.org/)
 * [EZTwain](http://eztwain.com/eztwain1.htm)
 * [FreeImage](https://freeimage.sourceforge.io/)
+* [libavif](https://github.com/AOMediaCodec/libavif)
 * [libdeflate](https://github.com/ebiggers/libdeflate)
 * [LittleCMS](http://www.littlecms.com)
 * [LZ4](https://lz4.github.io/lz4/)
 * [OptiPNG](http://optipng.sourceforge.net/)
 * [Pngquant](https://pngquant.org/)
+* [Photoshop-Plugin-Host](https://github.com/spetric/Photoshop-Plugin-Host)
 * [ZStandard](https://github.com/facebook/zstd)
 
 ### Direct contributors

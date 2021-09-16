@@ -155,7 +155,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     
     PDDebug.LogAction "Determining filetype..."
-    targetImage.SetOriginalFileFormat FIF_UNKNOWN
+    targetImage.SetOriginalFileFormat PDIF_UNKNOWN
     
     Dim srcFileExtension As String
     srcFileExtension = UCase$(Files.FileGetExtension(srcFile))
@@ -177,7 +177,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     Dim freeImage_Return As PD_OPERATION_OUTCOME
     
-    If (internalFormatID = FIF_UNKNOWN) Then
+    If (internalFormatID = PDIF_UNKNOWN) Then
     
         'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
         ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
@@ -235,7 +235,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
             '*************************************************************************************************************************************
             
-            'If the source file was already designed as a multi-layer format (e.g. OpenRaster, PSD), this step is unnecessary.
+            'If the source file was already designed as a multi-layer format (e.g. PSD, OpenRaster, etc),
+            ' this step is unnecessary.
             Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_CBZ)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
@@ -626,6 +627,9 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cCBZ.IsFileCBZ(imagePath) Then loadSuccessful = cCBZ.LoadCBZ(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
+        Case "JLS"
+            loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
+        
         Case "MBM", "MBW", "MCL", "AIF", "ABW", "ACL"
             Dim cMBM As pdMBM
             Set cMBM = New pdMBM
@@ -771,7 +775,7 @@ End Function
 ' This lets us quickly redirect PD-specific files to our own internal functions.
 Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PD_IMAGE_FORMAT
     
-    CheckForInternalFiles = FIF_UNKNOWN
+    CheckForInternalFiles = PDIF_UNKNOWN
     
     Select Case srcFileExtension
     

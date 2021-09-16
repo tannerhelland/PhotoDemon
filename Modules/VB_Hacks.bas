@@ -407,7 +407,7 @@ Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
     
 End Sub
 
-Public Function FreeLib(ByVal hLib As Long) As Boolean
+Public Function FreeLib(ByRef hLib As Long) As Boolean
     If (hLib = 0) Then
         FreeLib = True
     Else
