@@ -3,10 +3,8 @@ Attribute VB_Name = "Plugin_CharLS"
 'CharLS (lossless JPEG) Library Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 12/September/21
-'Last updated: 15/September/21
-'Last update: wrap up initial build; only import is available right now.  Export could easily be added,
-'             but I'm not super interested in that aspect of this project.  Will revisit pending feedback
-'             from users.
+'Last updated: 16/September/21
+'Last update: import support for additional color-depths
 '
 'Per its documentation (available at https://github.com/team-charls/charls), CharLS is...
 '
@@ -381,37 +379,55 @@ Public Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Still here?  Cool, the image was decoded!
     
+    'Before exiting, note the interleave mode (which we may need to do additional swizzling post-decode).
+    Dim imgInterleave As CharLS_InterleaveMode
+    charlsReturn = charls_jpegls_decoder_get_interleave_mode(cDecoder, imgInterleave)
+    If (charlsReturn <> cls_SUCCESS) Then
+        InternalError "interleave indeterminate; assuming sample mode"
+    End If
+    
     'We are done with the decoder and the source file bytes.  Free both.
     FreeDecoder cDecoder
     Erase srcBytes
     
     'We now need to translate the destination bytes into standard PD 32-bpp BGRA format.
     ' We'll use a separate function for this.
-    LoadJLS = DecodeToPDDIB(dstImage, dstDIB, dstBytes, frameInfo)
+    LoadJLS = DecodeToPDDIB(dstImage, dstDIB, dstBytes, frameInfo, imgInterleave)
     
 End Function
 
 'Once a JLS stream is decoded, we need to translate it into standard 32-bpp BGRA format;
 ' that's what this function handles.
-Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef srcBytes() As Byte, ByRef srcFrameInfo As CharLSFrameInfo) As Boolean
+Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef srcBytes() As Byte, ByRef srcFrameInfo As CharLSFrameInfo, ByVal imgInterleave As CharLS_InterleaveMode) As Boolean
     
     PDDebug.LogAction "JLS file decoded; translating pixel data in to BGRA format..."
     
     'Cache key values from the frame info struct
-    Dim imgWidth As Long, imgHeight As Long, BitDepth As Long, numComponents As Long
+    Dim imgWidth As Long, imgHeight As Long, imgBitDepth As Long, numComponents As Long
     imgWidth = srcFrameInfo.frame_width
     imgHeight = srcFrameInfo.frame_height
-    BitDepth = srcFrameInfo.bits_per_sample
+    imgBitDepth = srcFrameInfo.bits_per_sample
     numComponents = srcFrameInfo.component_count
     
+    Dim srcWidthBytes As Long
+    srcWidthBytes = (UBound(srcBytes) + 1) \ imgHeight
+    
     'Curious about the image?  Here's the basics:
-    'Debug.Print imgWidth, imgHeight, bitDepth, numComponents
+    'Debug.Print imgWidth, imgHeight, imgBitDepth, numComponents, srcWidthBytes
     
     'Because I'm lazy, I'm only dealing with 8-bpc for now.  I will extend this if users need it.
-    If (BitDepth <> 8) Then
-        InternalError "bit-depth currently unsupported: " & BitDepth
-        DecodeToPDDIB = False
-        Exit Function
+    If (numComponents = 1) Then
+        If (imgBitDepth <> 4) And (imgBitDepth <> 8) And (imgBitDepth <> 12) And (imgBitDepth <> 16) Then
+            InternalError "gray bit-depth currently unsupported: " & imgBitDepth
+            DecodeToPDDIB = False
+            Exit Function
+        End If
+    Else
+        If (imgBitDepth <> 8) Then
+            InternalError "color bit-depth currently unsupported: " & imgBitDepth
+            DecodeToPDDIB = False
+            Exit Function
+        End If
     End If
     
     'Prepare the destination DIB
@@ -420,6 +436,7 @@ Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB,
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     Dim x As Long, y As Long, dstSA1D As SafeArray1D
+    Dim dstPixels() As Long
     
     'Handle grayscale images first
     If (numComponents = 1) Then
@@ -436,15 +453,58 @@ Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB,
             GetMem4 VarPtr(tmpQuad), grayLUT(x)
         Next x
         
-        'Use the preconstructed palette to translate source bytes
-        Dim dstPixels() As Long
-        For y = 0 To imgHeight - 1
-            dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
-        For x = 0 To imgWidth - 1
-            dstPixels(x) = grayLUT(srcBytes(y * imgWidth + x))
-        Next x
-        Next y
+        If (imgBitDepth = 4) Then
         
+            'Use the preconstructed palette to translate source bytes
+            For y = 0 To imgHeight - 1
+                dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
+            For x = 0 To imgWidth - 1
+                dstPixels(x) = grayLUT(srcBytes(y * imgWidth + x) * 17)
+            Next x
+            Next y
+            
+        ElseIf (imgBitDepth = 8) Then
+            
+            'Use the preconstructed palette to translate source bytes
+            For y = 0 To imgHeight - 1
+                dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
+            For x = 0 To imgWidth - 1
+                dstPixels(x) = grayLUT(srcBytes(y * imgWidth + x))
+            Next x
+            Next y
+            
+        ElseIf (imgBitDepth = 12) Then
+            
+            '12-bpp JLS files are actually encoded as 16-bpp, but only 12-bits are relevant.
+            ' This simplifies processing considerably.
+            Dim tmpLong As Long
+            
+            'Use the preconstructed palette to translate source bytes
+            For y = 0 To imgHeight - 1
+                dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
+            For x = 0 To imgWidth - 1
+                
+                'Retrieve the source value
+                GetMem2_Ptr VarPtr(srcBytes(y * srcWidthBytes + x * 2)), VarPtr(tmpLong)
+                
+                'Scale down from 12-bits to 8-bits
+                tmpLong = tmpLong \ 16
+                dstPixels(x) = grayLUT(tmpLong)
+                
+            Next x
+            Next y
+            
+        ElseIf (imgBitDepth = 16) Then
+        
+            For y = 0 To imgHeight - 1
+                dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA1D, y
+            For x = 0 To imgWidth - 1
+                dstPixels(x) = grayLUT(srcBytes(y * srcWidthBytes + x * 2))
+            Next x
+            Next y
+            
+        End If
+            
         dstDIB.UnwrapLongArrayFromDIB dstPixels
         DecodeToPDDIB = True
         
@@ -457,13 +517,33 @@ Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB,
     ElseIf (numComponents = 3) Or (numComponents = 4) Then
         
         Dim dstPixels4() As RGBQuad
+        Dim r As Long, g As Long, b As Long, a As Long
+        
+        Dim numPixels As Long
+        numPixels = imgWidth * imgHeight
+        
         For y = 0 To imgHeight - 1
             dstDIB.WrapRGBQuadArrayAroundScanline dstPixels4, dstSA1D, y
         For x = 0 To imgWidth - 1
-            dstPixels4(x).Red = srcBytes(y * imgWidth * numComponents + x * numComponents)
-            dstPixels4(x).Green = srcBytes(y * imgWidth * numComponents + x * numComponents + 1)
-            dstPixels4(x).Blue = srcBytes(y * imgWidth * numComponents + x * numComponents + 2)
-            If (numComponents = 4) Then dstPixels4(x).Alpha = srcBytes(y * imgWidth * numComponents + x * numComponents + 3)
+            
+            'Source pixels are in different locations depending on interleave mode
+            If (imgInterleave = CHARLS_INTERLEAVE_MODE_NONE) Then
+                r = srcBytes(x + y * imgWidth)
+                g = srcBytes(numPixels + x + y * imgWidth)
+                b = srcBytes(numPixels * 2 + x + y * imgWidth)
+                If (numComponents = 4) Then a = srcBytes(numPixels * 3 + x) Else a = 255
+            Else
+                r = srcBytes(y * imgWidth * numComponents + x * numComponents)
+                g = srcBytes(y * imgWidth * numComponents + x * numComponents + 1)
+                b = srcBytes(y * imgWidth * numComponents + x * numComponents + 2)
+                If (numComponents = 4) Then a = srcBytes(y * imgWidth * numComponents + x * numComponents + 3) Else a = 255
+            End If
+            
+            dstPixels4(x).Red = r
+            dstPixels4(x).Green = g
+            dstPixels4(x).Blue = b
+            dstPixels4(x).Alpha = a
+            
         Next x
         Next y
         

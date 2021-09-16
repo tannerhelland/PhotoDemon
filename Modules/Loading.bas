@@ -280,6 +280,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "GDI+"
             Case id_CBZParser
                 decoderName = "Internal CBZ parser"
+            Case id_CharLS
+                decoderName = "CharLS plugin"
             Case id_ICOParser
                 decoderName = "Internal ICO parser"
             Case id_libAVIF
