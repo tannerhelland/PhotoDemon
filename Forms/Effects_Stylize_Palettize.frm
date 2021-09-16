@@ -548,7 +548,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
                 Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             End If
         End If
-    
+        
     Else
         
         If (Not toPreview) Then

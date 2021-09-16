@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Median-Cut Color Quantization Class
 'Copyright 2017-2021 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 25/March/19
-'Last update: new support for full RGBA modes, which also attempt to quantize alpha as part of the process
+'Last updated: 16/September/21
+'Last update: performance improvements
 '
 'This class provides a highly optimized Median Cut Quantization implementation.
 ' For a nice overview of how the median cut algorithm works, see
@@ -76,9 +76,9 @@ Private Const CUSTOM_WEIGHT_BLUE As Single = 0.25!    '0.114
 Private Const CUSTOM_WEIGHT_ALPHA As Single = 0.75!   '0.5
 
 Private Type RGBStackItem
-    Red As Byte
+    Blue As Byte    'BGRA order is important because we do cheap copies against RGBQuad structs
     Green As Byte
-    Blue As Byte
+    Red As Byte
     Alpha As Byte   'Alpha is not used in all modes; watch function signatures for details
     Flag As Long
     Count As Long
@@ -378,7 +378,7 @@ Friend Sub Split(ByRef dstStack As pdMedianCut)
     'Find the channel with maximum variance
     Dim rDiff As Single, gDiff As Single, bDiff As Single
     Me.GetVariance rDiff, gDiff, bDiff
-        
+    
     If (m_QuantizeMode = pdqs_MinMax) Then
         
         'Apply the split.  Note that all split functions set the flag of removed items to (1) to note that
@@ -440,7 +440,7 @@ Friend Sub SplitIncludingAlpha(ByRef dstStack As pdMedianCut)
         ElseIf (maxDiff = bDiff) Then
             SplitB dstStack, (m_BMax + m_BMin) \ 2, True
         Else
-            SplitA dstStack, (m_AMax + m_AMin) \ 2, True
+            SplitA dstStack, (m_AMax + m_AMin) \ 2
         End If
         
     ElseIf (m_QuantizeMode = pdqs_Variance) Or (m_QuantizeMode = pdqs_VarPlusVolume) Then
@@ -452,7 +452,7 @@ Friend Sub SplitIncludingAlpha(ByRef dstStack As pdMedianCut)
         ElseIf (maxDiff = bDiff) Then
             SplitB dstStack, Int(m_MeanB), True
         Else
-            SplitA dstStack, Int(m_MeanA), True
+            SplitA dstStack, Int(m_MeanA)
         End If
         
     ElseIf (m_QuantizeMode = pdqs_VarPlusMedian) Then
@@ -464,7 +464,7 @@ Friend Sub SplitIncludingAlpha(ByRef dstStack As pdMedianCut)
         ElseIf (maxDiff = bDiff) Then
             SplitB dstStack, m_MedianB, True
         Else
-            SplitA dstStack, m_MedianA, True
+            SplitA dstStack, m_MedianA
         End If
         
     End If
@@ -477,64 +477,67 @@ End Sub
 'Generic split options, separated by channel.  The caller is responsible for determining a midpoint.
 Private Sub SplitR(ByRef dstStack As pdMedianCut, ByVal rMidpoint As Long, Optional ByVal includeAlpha As Boolean = False)
     Dim i As Long
-    For i = 0 To m_NumOfColors - 1
-        If (m_Colors(i).Red > rMidpoint) Then
-            With m_Colors(i)
-                If includeAlpha Then
-                    dstStack.AddColor_RGBA .Red, .Green, .Blue, .Alpha, .Count
-                Else
-                    dstStack.AddColor_RGB .Red, .Green, .Blue, .Count
-                End If
-                .Flag = 1
-            End With
-        End If
-    Next i
+    If includeAlpha Then
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Red > rMidpoint) Then
+                dstStack.AddColor_RGBA m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Alpha, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    Else
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Red > rMidpoint) Then
+                dstStack.AddColor_RGB m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    End If
 End Sub
 
 Private Sub SplitG(ByRef dstStack As pdMedianCut, ByVal gMidpoint As Long, Optional ByVal includeAlpha As Boolean = False)
     Dim i As Long
-    For i = 0 To m_NumOfColors - 1
-        If (m_Colors(i).Green > gMidpoint) Then
-            With m_Colors(i)
-                If includeAlpha Then
-                    dstStack.AddColor_RGBA .Red, .Green, .Blue, .Alpha, .Count
-                Else
-                    dstStack.AddColor_RGB .Red, .Green, .Blue, .Count
-                End If
-                .Flag = 1
-            End With
-        End If
-    Next i
+    If includeAlpha Then
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Green > gMidpoint) Then
+                dstStack.AddColor_RGBA m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Alpha, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    Else
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Green > gMidpoint) Then
+                dstStack.AddColor_RGB m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    End If
 End Sub
 
 Private Sub SplitB(ByRef dstStack As pdMedianCut, ByVal bMidpoint As Long, Optional ByVal includeAlpha As Boolean = False)
     Dim i As Long
-    For i = 0 To m_NumOfColors - 1
-        If (m_Colors(i).Blue > bMidpoint) Then
-            With m_Colors(i)
-                If includeAlpha Then
-                    dstStack.AddColor_RGBA .Red, .Green, .Blue, .Alpha, .Count
-                Else
-                    dstStack.AddColor_RGB .Red, .Green, .Blue, .Count
-                End If
-                .Flag = 1
-            End With
-        End If
-    Next i
+    If includeAlpha Then
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Blue > bMidpoint) Then
+                dstStack.AddColor_RGBA m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Alpha, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    Else
+        For i = 0 To m_NumOfColors - 1
+            If (m_Colors(i).Blue > bMidpoint) Then
+                dstStack.AddColor_RGB m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Count
+                m_Colors(i).Flag = 1
+            End If
+        Next i
+    End If
 End Sub
 
-Private Sub SplitA(ByRef dstStack As pdMedianCut, ByVal aMidpoint As Long, Optional ByVal includeAlpha As Boolean = False)
+Private Sub SplitA(ByRef dstStack As pdMedianCut, ByVal aMidpoint As Long)
     Dim i As Long
     For i = 0 To m_NumOfColors - 1
         If (m_Colors(i).Alpha > aMidpoint) Then
-            With m_Colors(i)
-                If includeAlpha Then
-                    dstStack.AddColor_RGBA .Red, .Green, .Blue, .Alpha, .Count
-                Else
-                    dstStack.AddColor_RGB .Red, .Green, .Blue, .Count
-                End If
-                .Flag = 1
-            End With
+            dstStack.AddColor_RGBA m_Colors(i).Red, m_Colors(i).Green, m_Colors(i).Blue, m_Colors(i).Alpha, m_Colors(i).Count
+            m_Colors(i).Flag = 1
         End If
     Next i
 End Sub
@@ -644,9 +647,7 @@ Private Sub UpdateVarianceTrackers(Optional ByVal includeAlpha As Boolean = Fals
     
     'Histogram code is optional, but it yields better split points
     If (m_QuantizeMode = pdqs_VarPlusMedian) Then
-        Dim rHist() As Long, gHist() As Long, bHist() As Long, aHist() As Long
-        ReDim rHist(0 To 255) As Long: ReDim gHist(0 To 255) As Long: ReDim bHist(0 To 255) As Long
-        If includeAlpha Then ReDim aHist(0 To 255) As Long
+        Dim rHist(0 To 255) As Long: Dim gHist(0 To 255) As Long: Dim bHist(0 To 255) As Long: Dim aHist(0 To 255) As Long
     End If
     
     If (m_NumOfColors > 0) Then

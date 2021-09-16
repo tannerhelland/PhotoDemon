@@ -3,8 +3,8 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Master Palette Interface
 'Copyright 2017-2021 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 24/April/19
-'Last update: finalize expansion of alpha-capable (RGBA) palette generators
+'Last updated: 16/September/21
+'Last update: performance improvements
 '
 'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary
 ' source images, and also applying arbitrary palettes to images.
@@ -298,16 +298,13 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
     
-    Dim srcPixels() As Byte, tmpSA As SafeArray2D
-    srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
-    
     Dim pxSize As Long
     pxSize = srcDIB.GetDIBColorDepth \ 8
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.GetDIBStride - 1
+    finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
@@ -327,9 +324,13 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ' that's a good compromise between performance and quality.
     pxStack(0).SetQuantizeMode quantMode
     
+    Dim srcPixels() As RGBQuad, tmpSA As SafeArray1D, tmpQuad As RGBQuad
+    
     For y = 0 To finalY
-    For x = 0 To finalX Step pxSize
-        pxStack(0).AddColor_RGB srcPixels(x + 2, y), srcPixels(x + 1, y), srcPixels(x, y)
+        srcDIB.WrapRGBQuadArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX
+        tmpQuad = srcPixels(x)
+        pxStack(0).AddColor_RGB tmpQuad.Red, tmpQuad.Green, tmpQuad.Blue
     Next x
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
@@ -339,7 +340,7 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         End If
     Next y
     
-    srcDIB.UnwrapArrayFromDIB srcPixels
+    srcDIB.UnwrapRGBQuadArrayFromDIB srcPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
     If (pxStack(0).GetNumOfColors > numOfColors) Then
