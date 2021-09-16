@@ -776,7 +776,7 @@ End Function
 'Apply an already-created transform to a pdDIB object.
 Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform As Long) As Boolean
     
-    If (Not (srcDIB Is Nothing)) And (hTransform <> 0) Then
+    If (Not srcDIB Is Nothing) And (hTransform <> 0) Then
         
         '32-bpp DIBs can be applied in one fell swoop, since there are no scanline padding issues
         If (srcDIB.GetDIBColorDepth = 32) Then

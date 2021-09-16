@@ -790,7 +790,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 weCanHandleCM = True
                 ColorManagement.ApplyDisplayColorManagement workingDIB
-                workingDIB.SetAlphaPremultiplication True
+                If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.SetInitialAlphaPremultiplicationState True
             End If
