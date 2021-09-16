@@ -8,7 +8,7 @@ Attribute VB_Name = "Plugin_CharLS"
 '             but I'm not super interested in that aspect of this project.  Will revisit pending feedback
 '             from users.
 '
-'Per its documentation (available at https://github.com/team-charls/charls), char-ls is...
+'Per its documentation (available at https://github.com/team-charls/charls), CharLS is...
 '
 ' "...a C++ implementation of the JPEG-LS standard for lossless and near-lossless image compression
 ' and decompression. JPEG-LS is a low-complexity image compression standard that matches JPEG 2000
@@ -117,8 +117,8 @@ Private Enum CharLS_ColorTransformation
 End Enum
 
 Private Enum CharLS_InterleaveMode
-    CHARLS_INTERLEAVE_MODE_NONE 'The data is encoded and stored as component for component: RRRGGGBBB.
-    CHARLS_INTERLEAVE_MODE_LINE 'The interleave mode is by line. A full line of each component is encoded before moving to the next line.
+    CHARLS_INTERLEAVE_MODE_NONE     'The data is encoded and stored as component for component: RRRGGGBBB.
+    CHARLS_INTERLEAVE_MODE_LINE     'The interleave mode is by line. A full line of each component is encoded before moving to the next line.
     CHARLS_INTERLEAVE_MODE_SAMPLE   'The data is encoded and stored by sample. For RGB color images this is the format like RGBRGBRGB.
 End Enum
 
@@ -166,8 +166,8 @@ End Type
 Private Type CharLSSpiffHeader
     profile_id As Long               '// P: Application profile, type I.8
     component_count As Long          '// NC: Number of color components, range [1, 255], type I.8
-    img_height As Long                   '// HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
-    img_width As Long                    '// WIDTH: Number of samples per line, range [1, 4294967295], type I.32
+    img_height As Long               '// HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
+    img_width As Long                '// WIDTH: Number of samples per line, range [1, 4294967295], type I.32
     color_space As CharLS_ColorSpace '// S: Color space used by image data, type is I.8
     bits_per_sample As Long          '// BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
     compression_type As Long         '// C: Type of data compression used, type is I.8
@@ -188,9 +188,7 @@ End Type
 Private Declare Function charls_get_error_message Lib "charls-2-x86" Alias "_charls_get_error_message@4" (ByVal charLSErrorNumber As CharLS_Return) As Long
 Private Declare Function charls_get_jpegls_category Lib "charls-2-x86" Alias "_charls_get_jpegls_category@0" () As Long
 
-'void charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor, OUT_OPT_ int32_t* patch)
 Private Declare Sub charls_get_version_number Lib "charls-2-x86" Alias "_charls_get_version_number@12" (ByRef vMajor As Long, ByRef vMinor As Long, ByRef vPatch As Long)
-'const char* charls_get_version_string()
 Private Declare Function charls_get_version_string Lib "charls-2-x86" Alias "_charls_get_version_string@0" () As Long
 
 Private Declare Function charls_jpegls_decoder_create Lib "charls-2-x86" Alias "_charls_jpegls_decoder_create@0" () As Long
@@ -208,7 +206,7 @@ Private Declare Function charls_jpegls_decoder_read_spiff_header Lib "charls-2-x
 Private Declare Function charls_jpegls_decoder_set_source_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_set_source_buffer@12" (ByVal srcDecoder As Long, ByVal ptrToBytes As Long, ByVal srcNumBytes As Long) As CharLS_Return
 
 'I have *NOT* added params for these declares, because PD currently only supports .jls reading (by design).
-' If you need support for .jls writing, please file an issue on GitHub.
+' If you need support for .jls writing, please file an issue on GitHub and I will translate these accordingly.
 'Private Declare Function charls_jpegls_encoder_create Lib "charls-2-x86" Alias "_charls_jpegls_encoder_create@0" () As Long
 'Private Declare Function charls_jpegls_encoder_destroy Lib "charls-2-x86" Alias "_charls_jpegls_encoder_destroy@4" () As Long
 'Private Declare Function charls_jpegls_encoder_encode_from_buffer Lib "charls-2-x86" Alias "_charls_jpegls_encoder_encode_from_buffer@16" () As Long
@@ -250,9 +248,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     m_LibAvailable = (m_LibHandle <> 0)
     InitializeEngine = m_LibAvailable
     
-    If (Not InitializeEngine) Then
-        PDDebug.LogAction "WARNING!  LoadLibraryW failed to load CharLS.  Last DLL error: " & Err.LastDllError
-    End If
+    If (Not InitializeEngine) Then PDDebug.LogAction "WARNING!  LoadLibraryW failed to load CharLS.  Last DLL error: " & Err.LastDllError
     
 End Function
 
@@ -395,6 +391,8 @@ Public Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
 End Function
 
+'Once a JLS stream is decoded, we need to translate it into standard 32-bpp BGRA format;
+' that's what this function handles.
 Private Function DecodeToPDDIB(ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef srcBytes() As Byte, ByRef srcFrameInfo As CharLSFrameInfo) As Boolean
     
     PDDebug.LogAction "JLS file decoded; translating pixel data in to BGRA format..."
