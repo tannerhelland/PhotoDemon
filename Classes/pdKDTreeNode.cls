@@ -38,6 +38,13 @@ Private m_Red As Long, m_Green As Long, m_Blue As Long, m_Alpha As Long
 ' to retrieve color data as palette indices instead of just raw RGBQuads.
 Private m_OriginalIndex As Long
 
+'Lookups into tree nodes requires recursion (not within the same instance, but within parent/child
+' nodes of this class).  Because we have to perform millions of lookups when applying a palette to
+' an image, and each lookup requires a number of local variables, it's faster to declare those
+' variables once - here - than within each lookup function.  This gives them a fixed initialization
+' cost.
+Private m_testDistance As Long, m_testR As Long, m_testG As Long, m_testB As Long, m_testA As Long
+
 'The depth of this node determines how we split it when assigning children (as we must rotate
 ' between x/y/z axes, per the KD-tree definition).
 Private m_Depth As Long
@@ -335,15 +342,14 @@ End Sub
 Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad, ByRef curBestDistance As Long)
     
     'Before checking child nodes, compare the target color against this node's color.
-    Dim r As Long, g As Long, b As Long, testDistance As Long
-    r = m_Red - srcColor.Red
-    g = m_Green - srcColor.Green
-    b = m_Blue - srcColor.Blue
-    testDistance = (r * r + g * g + b * b)
+    m_testR = m_Red - srcColor.Red
+    m_testG = m_Green - srcColor.Green
+    m_testB = m_Blue - srcColor.Blue
+    m_testDistance = m_testR * m_testR + m_testG * m_testG + m_testB * m_testB
     
     'Store the best (closest) result so far
-    If (testDistance < curBestDistance) Then
-        curBestDistance = testDistance
+    If (m_testDistance < curBestDistance) Then
+        curBestDistance = m_testDistance
         curBestColor = m_Color
     End If
     
@@ -358,20 +364,20 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
     ' "module" level values, e.g. at m_Depth = 0, r = srcColor.Red and g = m_Red.
     Select Case m_Depth
         Case 0
-            r = srcColor.Red
-            g = m_Red
+            m_testR = srcColor.Red
+            m_testG = m_Red
         Case 1
-            r = srcColor.Green
-            g = m_Green
+            m_testR = srcColor.Green
+            m_testG = m_Green
         Case 2
-            r = srcColor.Blue
-            g = m_Blue
+            m_testR = srcColor.Blue
+            m_testG = m_Blue
     End Select
     
     'If the target color is *less than* this node's color, better matches will be found in
     ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
     ' search the right tree first.)
-    If (r < g) Then
+    If (m_testR < m_testG) Then
         If (Not m_Left Is Nothing) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
         
         'Now we need to repeat some ugly steps (but writing it this way avoids unnecessary branching,
@@ -388,11 +394,11 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             ' determination, the lowest possible value in right branches is an r-value equal to the target
             ' color's.  (We ignore green and blue because they could potentially be *equal* to the target
             ' color, but we have no way of knowing that as this node only branches on red!)
-            testDistance = r - g
+            m_testDistance = m_testR - m_testG
         
             'If the closest "theoretical" point in the right branch is closer than the current best match,
             ' let's query that child for a best match.
-            If ((testDistance * testDistance) < curBestDistance) Then m_Right.NearestColor srcColor, curBestColor, curBestDistance
+            If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestColor srcColor, curBestColor, curBestDistance
             
         End If
         
@@ -404,9 +410,9 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             ' one less than this node's color.  As such, if this node has a value of 0, there is no
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
-            If (r > 0) Then
-                testDistance = (r - 1) - g
-                If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
+            If (m_testR > 0) Then
+                m_testDistance = m_testR - 1 - m_testG
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
             End If
         End If
     End If
@@ -417,15 +423,14 @@ End Sub
 Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad, ByRef curBestDistance As Long)
     
     'Before checking child nodes, compare the target color against this node's color.
-    Dim r As Long, g As Long, b As Long, a As Long, testDistance As Long
-    r = m_Red - srcColor.Red
-    g = m_Green - srcColor.Green
-    b = m_Blue - srcColor.Blue
-    a = m_Alpha - srcColor.Alpha
-    testDistance = (r * r + g * g + b * b + a * a)
+    m_testR = m_Red - srcColor.Red
+    m_testG = m_Green - srcColor.Green
+    m_testB = m_Blue - srcColor.Blue
+    m_testA = m_Alpha - srcColor.Alpha
+    m_testDistance = m_testR * m_testR + m_testG * m_testG + m_testB * m_testB + m_testA * m_testA
     
-    If (testDistance < curBestDistance) Then
-        curBestDistance = testDistance
+    If (m_testDistance < curBestDistance) Then
+        curBestDistance = m_testDistance
         curBestColor = m_Color
     End If
     
@@ -440,23 +445,23 @@ Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As
     ' "module" level values, e.g. at m_Depth = 0, r = srcColor.Red and g = m_Red.
     Select Case m_Depth
         Case 0
-            r = srcColor.Red
-            g = m_Red
+            m_testR = srcColor.Red
+            m_testG = m_Red
         Case 1
-            r = srcColor.Green
-            g = m_Green
+            m_testR = srcColor.Green
+            m_testG = m_Green
         Case 2
-            r = srcColor.Blue
-            g = m_Blue
+            m_testR = srcColor.Blue
+            m_testG = m_Blue
         Case 3
-            r = srcColor.Alpha
-            g = m_Alpha
+            m_testR = srcColor.Alpha
+            m_testG = m_Alpha
     End Select
     
     'If the target color is *less than* this node's color, better matches will be found in
     ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
     ' search the right tree first.)
-    If (r < g) Then
+    If (m_testR < m_testG) Then
         If (Not m_Left Is Nothing) Then m_Left.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
         
         'Now we need to repeat some ugly steps (but writing it this way avoids unnecessary branching,
@@ -473,11 +478,11 @@ Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As
             ' determination, the lowest possible value in right branches is an r-value equal to the target
             ' color's.  (We ignore green and blue because they could potentially be *equal* to the target
             ' color, but we have no way of knowing that as this node only branches on red!)
-            testDistance = r - g
+            m_testDistance = m_testR - m_testG
         
             'If the closest "theoretical" point in the right branch is closer than the current best match,
             ' let's query that child for a best match.
-            If ((testDistance * testDistance) < curBestDistance) Then m_Right.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
+            If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
             
         End If
         
@@ -489,9 +494,9 @@ Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As
             ' one less than this node's color.  As such, if this node has a value of 0, there is no
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
-            If (r > 0) Then
-                testDistance = (r - 1) - g
-                If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
+            If (m_testR > 0) Then
+                m_testDistance = m_testR - 1 - m_testG
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
             End If
         End If
     End If
@@ -505,14 +510,13 @@ End Sub
 Friend Sub NearestPaletteIndex(ByRef srcColor As RGBQuad, ByRef curBestColor As PDPaletteCache, ByRef curBestDistance As Long)
     
     'Before checking child nodes, compare the target color against this node's color.
-    Dim r As Long, g As Long, b As Long, testDistance As Long
-    r = m_Red - srcColor.Red
-    g = m_Green - srcColor.Green
-    b = m_Blue - srcColor.Blue
-    testDistance = (r * r + g * g + b * b)
+    m_testR = m_Red - srcColor.Red
+    m_testG = m_Green - srcColor.Green
+    m_testB = m_Blue - srcColor.Blue
+    m_testDistance = m_testR * m_testR + m_testG * m_testG + m_testB * m_testB
     
-    If (testDistance < curBestDistance) Then
-        curBestDistance = testDistance
+    If (m_testDistance < curBestDistance) Then
+        curBestDistance = m_testDistance
         curBestColor.ColorValue = m_Color
         curBestColor.OrigIndex = m_OriginalIndex
     End If
@@ -528,23 +532,23 @@ Friend Sub NearestPaletteIndex(ByRef srcColor As RGBQuad, ByRef curBestColor As 
     ' "module" level values, e.g. at m_Depth = 0, r = srcColor.Red and g = m_Red.
     Select Case m_Depth
         Case 0
-            r = srcColor.Red
-            g = m_Red
+            m_testR = srcColor.Red
+            m_testG = m_Red
         Case 1
-            r = srcColor.Green
-            g = m_Green
+            m_testR = srcColor.Green
+            m_testG = m_Green
         Case 2
-            r = srcColor.Blue
-            g = m_Blue
+            m_testR = srcColor.Blue
+            m_testG = m_Blue
         Case 3
-            r = srcColor.Alpha
-            g = m_Alpha
+            m_testR = srcColor.Alpha
+            m_testG = m_Alpha
     End Select
         
     'If the target color is *less than* this node's color, better matches will be found in
     ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
     ' search the right tree first.)
-    If (r < g) Then
+    If (m_testR < m_testG) Then
         If (Not m_Left Is Nothing) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
         
         'Now we need to repeat some ugly steps (but writing it this way avoids unnecessary branching,
@@ -559,11 +563,11 @@ Friend Sub NearestPaletteIndex(ByRef srcColor As RGBQuad, ByRef curBestColor As 
             ' with an r value as low as possible.  Because our KD-tree implementation uses
             ' "greater-than-or-equal-to" for right branch determination, the lowest possible value in
             ' the branch is an r-value equal to the target color's.
-            testDistance = r - g
+            m_testDistance = m_testR - m_testG
         
             'If the closest "theoretical" point in the right branch is closer than the current best match,
             ' let's query that child for a best match.
-            If ((testDistance * testDistance) < curBestDistance) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
             
         End If
         
@@ -575,9 +579,9 @@ Friend Sub NearestPaletteIndex(ByRef srcColor As RGBQuad, ByRef curBestColor As 
             ' one less than this node's color.  As such, if this node has a value of 0, there is no
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
-            If (r > 0) Then
-                testDistance = r - 1 - g
-                If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (m_testR > 0) Then
+                m_testDistance = m_testR - 1 - m_testG
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
             End If
         End If
     End If
@@ -588,15 +592,14 @@ End Sub
 Friend Sub NearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As PDPaletteCache, ByRef curBestDistance As Long)
     
     'Before checking child nodes, compare the target color against this node's color.
-    Dim r As Long, g As Long, b As Long, a As Long, testDistance As Long
-    r = m_Red - srcColor.Red
-    g = m_Green - srcColor.Green
-    b = m_Blue - srcColor.Blue
-    a = m_Alpha - srcColor.Alpha
-    testDistance = (r * r + g * g + b * b + a * a)
+    m_testR = m_Red - srcColor.Red
+    m_testG = m_Green - srcColor.Green
+    m_testB = m_Blue - srcColor.Blue
+    m_testA = m_Alpha - srcColor.Alpha
+    m_testDistance = m_testR * m_testR + m_testG * m_testG + m_testB * m_testB + m_testA * m_testA
     
-    If (testDistance < curBestDistance) Then
-        curBestDistance = testDistance
+    If (m_testDistance < curBestDistance) Then
+        curBestDistance = m_testDistance
         curBestColor.ColorValue = m_Color
         curBestColor.OrigIndex = m_OriginalIndex
     End If
@@ -612,23 +615,23 @@ Friend Sub NearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestC
     ' "module" level values, e.g. at m_Depth = 0, r = srcColor.Red and g = m_Red.
     Select Case m_Depth
         Case 0
-            r = srcColor.Red
-            g = m_Red
+            m_testR = srcColor.Red
+            m_testG = m_Red
         Case 1
-            r = srcColor.Green
-            g = m_Green
+            m_testR = srcColor.Green
+            m_testG = m_Green
         Case 2
-            r = srcColor.Blue
-            g = m_Blue
+            m_testR = srcColor.Blue
+            m_testG = m_Blue
         Case 3
-            r = srcColor.Alpha
-            g = m_Alpha
+            m_testR = srcColor.Alpha
+            m_testG = m_Alpha
     End Select
         
     'If the target color is *less than* this node's color, better matches will be found in
     ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
     ' search the right tree first.)
-    If (r < g) Then
+    If (m_testR < m_testG) Then
         If (Not m_Left Is Nothing) Then m_Left.NearestPaletteIndexIncAlpha srcColor, curBestColor, curBestDistance
         
         'Now we need to repeat some ugly steps (but writing it this way avoids unnecessary branching,
@@ -643,11 +646,11 @@ Friend Sub NearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestC
             ' with an r value as low as possible.  Because our KD-tree implementation uses
             ' "greater-than-or-equal-to" for right branch determination, the lowest possible value in
             ' the branch is an r-value equal to the target color's.
-            testDistance = r - g
+            m_testDistance = m_testR - m_testG
         
             'If the closest "theoretical" point in the right branch is closer than the current best match,
             ' let's query that child for a best match.
-            If ((testDistance * testDistance) < curBestDistance) Then m_Right.NearestPaletteIndexIncAlpha srcColor, curBestColor, curBestDistance
+            If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestPaletteIndexIncAlpha srcColor, curBestColor, curBestDistance
             
         End If
         
@@ -659,9 +662,9 @@ Friend Sub NearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestC
             ' one less than this node's color.  As such, if this node has a value of 0, there is no
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
-            If (r > 0) Then
-                testDistance = r - 1 - g
-                If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestPaletteIndexIncAlpha srcColor, curBestColor, curBestDistance
+            If (m_testR > 0) Then
+                m_testDistance = m_testR - 1 - m_testG
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestPaletteIndexIncAlpha srcColor, curBestColor, curBestDistance
             End If
         End If
     End If
