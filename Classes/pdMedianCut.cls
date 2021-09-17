@@ -685,32 +685,29 @@ Private Sub UpdateVarianceTrackers(Optional ByVal includeAlpha As Boolean = Fals
                 
                 With m_Colors(i)
                 
-                    tmpRed = CDbl(.Red)
-                    tmpGreen = CDbl(.Green)
-                    tmpBlue = CDbl(.Blue)
-                    
-                    'Calculate deltas
-                    dDeltaR = tmpRed - m_MeanR
-                    dDeltaG = tmpGreen - m_MeanG
-                    dDeltaB = tmpBlue - m_MeanB
-                    dDeltaR = dDeltaR * dDeltaR
-                    dDeltaG = dDeltaG * dDeltaG
-                    dDeltaB = dDeltaB * dDeltaB
+                    tmpRed = .Red
+                    tmpGreen = .Green
+                    tmpBlue = .Blue
                     
                     'Combined count is only ever used as a divisor
                     myCount = .Count
                     dPxCount = m_pxVarCount
                     combinedCount = 1# / (dPxCount + myCount)
                     
-                    'Calculate new means (by basically weighting this entry against its pixel count)
-                    m_MeanR = ((m_OldMeanR * dPxCount) + (tmpRed * myCount)) * combinedCount
-                    m_MeanG = ((m_OldMeanG * dPxCount) + (tmpGreen * myCount)) * combinedCount
-                    m_MeanB = ((m_OldMeanB * dPxCount) + (tmpBlue * myCount)) * combinedCount
+                    'Calculate deltas
+                    dDeltaR = tmpRed - m_MeanR
+                    dDeltaG = tmpGreen - m_MeanG
+                    dDeltaB = tmpBlue - m_MeanB
                     
                     'Calculate new variances (and again, weight them by the pixel count of this color)
-                    m_VarianceR = m_VarianceR + (dDeltaR * dPxCount * myCount) * combinedCount
-                    m_VarianceG = m_VarianceG + (dDeltaG * dPxCount * myCount) * combinedCount
-                    m_VarianceB = m_VarianceB + (dDeltaB * dPxCount * myCount) * combinedCount
+                    m_VarianceR = m_VarianceR + dDeltaR * dDeltaR * dPxCount * myCount * combinedCount
+                    m_VarianceG = m_VarianceG + dDeltaG * dDeltaG * dPxCount * myCount * combinedCount
+                    m_VarianceB = m_VarianceB + dDeltaB * dDeltaB * dPxCount * myCount * combinedCount
+                    
+                    'Calculate new means (by basically weighting this entry against its pixel count)
+                    m_MeanR = (m_OldMeanR * dPxCount + tmpRed * myCount) * combinedCount
+                    m_MeanG = (m_OldMeanG * dPxCount + tmpGreen * myCount) * combinedCount
+                    m_MeanB = (m_OldMeanB * dPxCount + tmpBlue * myCount) * combinedCount
                     
                     'Update the running pixel count and averages
                     m_OldMeanR = m_MeanR
@@ -727,11 +724,10 @@ Private Sub UpdateVarianceTrackers(Optional ByVal includeAlpha As Boolean = Fals
                     
                     'If processing alpha, repeat all the above steps for alpha too
                     If includeAlpha Then
-                        tmpAlpha = CDbl(.Alpha)
+                        tmpAlpha = .Alpha
                         dDeltaA = tmpAlpha - m_MeanA
-                        dDeltaA = dDeltaA * dDeltaA
+                        m_VarianceA = m_VarianceA + dDeltaA * dDeltaA * dPxCount * myCount * combinedCount
                         m_MeanA = ((m_OldMeanA * dPxCount) + (tmpAlpha * myCount)) * combinedCount
-                        m_VarianceA = m_VarianceA + (dDeltaA * dPxCount * myCount) * combinedCount
                         m_OldMeanA = m_MeanA
                         If (m_QuantizeMode = pdqs_VarPlusMedian) Then aHist(.Alpha) = aHist(.Alpha) + myCount
                     End If
