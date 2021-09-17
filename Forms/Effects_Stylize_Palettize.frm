@@ -511,8 +511,9 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
             'If useLAB Then
             '    Palettes.GetOptimizedPaletteIncAlpha_LAB workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
             'Else
-                Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
+                'Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
             'End If
+            Palettes.GetNeuquantPalette_RGBA workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
             
         Else
             Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0

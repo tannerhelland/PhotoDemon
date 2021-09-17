@@ -293,6 +293,41 @@ End Function
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.
+'
+'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
+' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
+' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~500,000 pixels.
+Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Do not request less than two colors in the final palette!
+    If (numOfColors < 2) Then numOfColors = 2
+    
+    Dim cNeuquant As pdNeuquant
+    Set cNeuquant = New pdNeuquant
+    
+    cNeuquant.SetColorCount numOfColors
+    cNeuquant.initnet srcDIB, 1
+    cNeuquant.learn
+    cNeuquant.unbiasnet
+    cNeuquant.writecolourmap dstPalette
+    
+    GetNeuquantPalette_RGBA = True
+    
+    'If the palette retrieval process was successful, sort the palette from "least alpha" to "most alpha";
+    ' this typically produces a slightly smaller final file size (as PNG, for example, only requires you to
+    ' write non-255 values to its transparency segment; any unspecified values are assumed to be opaque).
+    ' (Note that this step is not required; a "default order" palette is perfectly valid.)
+    Dim cPaletteSorter As pdPaletteChild
+    Set cPaletteSorter = New pdPaletteChild
+    cPaletteSorter.CreateFromRGBQuads dstPalette
+    cPaletteSorter.SortByChannel 3                  '0 = red, 1 = green, 2 = blue, 3 = alpha
+    cPaletteSorter.CopyRGBQuadsToArray dstPalette
+    
+End Function
+
+'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
+' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
+' combination of performance, low memory usage, and high-quality output.
 Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Do not request less than two colors in the final palette!
