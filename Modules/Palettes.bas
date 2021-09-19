@@ -306,9 +306,8 @@ Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette(
     Set cNeuquant = New pdNeuquant
     
     cNeuquant.SetColorCount numOfColors
-    cNeuquant.initnet srcDIB, 1
+    cNeuquant.initnet srcDIB, 2
     cNeuquant.learn
-    cNeuquant.unbiasnet
     cNeuquant.writecolourmap dstPalette
     
     GetNeuquantPalette_RGBA = True

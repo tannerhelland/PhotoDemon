@@ -405,7 +405,7 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
             If (r > 0) Then
-                testDistance = (r - 1) - g
+                testDistance = r - 1 - g
                 If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
             End If
         End If
@@ -490,7 +490,7 @@ Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As
             ' possible way that the left node could contain a closer color (as it can't contain
             ' *any* colors less than zero!)
             If (r > 0) Then
-                testDistance = (r - 1) - g
+                testDistance = r - 1 - g
                 If ((testDistance * testDistance) < curBestDistance) Then m_Left.NearestColorIncAlpha srcColor, curBestColor, curBestDistance
             End If
         End If
