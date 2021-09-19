@@ -862,6 +862,9 @@ Public Sub TerminateAllPlugins()
     Plugin_EZTwain.ReleaseEZTwain
     PDDebug.LogAction "EZTwain released"
     
+    Plugin_CharLS.ReleaseEngine
+    PDDebug.LogAction "CharLS released"
+    
     Plugin_8bf.ReleaseEngine
     PDDebug.LogAction "pspiHost released"
     
