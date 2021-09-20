@@ -88,7 +88,11 @@ Private Const minpicturebytes As Long = 4 * 251     '/* minimum size for input i
 
 '/* Network Definitions
 Private maxnetpos As Long                   '(netsize-1)
-Private Const ncycles As Long = 100         '/* no. of learning cycles */
+
+'Number of learning cycles.  On each cycle, the current network training radius (e.g. how many neighboring
+' neurons are affected by each added color) decreases until we're simply modifying single neurons on each
+' encountered color.
+Private Const m_numTrainingCycles As Long = 100
 
 Private Const gamma As Double = 1024#
 Private Const beta As Double = 1# / 1024#
@@ -105,18 +109,18 @@ Private Const initalpha As Long = 2 ^ 10    '(((int) 1)<<alphabiasshift)
 Private alphadec As Long                    '/* biased by 10 bits */
 
 '/* Types and Global Variables
-Private lengthcount As Long '/* lengthcount = H*W*numChannels */
+Private m_totalPixels As Long '/* m_totalPixels = H*W*numChannels */
 
-Private samplefac As Long   '/* sampling factor 1..30 */
+Private m_samplingFactor As Long   '/* sampling factor 1..30 */
 Private Type nnPixel          '/* BGRA but floats; note that any three-component+alpha color space works, e.g. LABa */
     b As Single
     g As Single
     r As Single
     a As Single
 End Type
-Private network() As nnPixel    '/* the network itself */, size netsize
-Private bias() As Single          '/* bias and freq arrays for learning */
-Private freq() As Single
+Private m_network() As nnPixel    '/* the network itself */, size netsize
+Private m_bias() As Single          '/* bias and freq arrays for learning */
+Private m_frequency() As Single
 
 'Call this function first; the number of colors determines the size of the neural network,
 ' which in turn controls a huge list of run-time "constants".
@@ -134,69 +138,49 @@ Friend Sub SetColorCount(ByVal numColors As Long)
     
     'Initialize a bunch of other settings contingent on the netsize
     maxnetpos = netsize - 1
-    ReDim network(0 To maxnetpos) As nnPixel
-    ReDim bias(0 To maxnetpos) As Single
-    ReDim freq(0 To maxnetpos) As Single
+    ReDim m_network(0 To maxnetpos) As nnPixel
+    ReDim m_bias(0 To maxnetpos) As Single
+    ReDim m_frequency(0 To maxnetpos) As Single
     
     initrad = netsize \ 8
     initradius = initrad * radiusbias
     
 End Sub
 
-'/* Initialise network in range (0,0,0) to (255,255,255) and set parameters
-' (sample is "quality" on the range [0, 30]
-Friend Sub initnet(ByRef srcDIB As pdDIB, ByVal sample As Long)
+'Initialise the neural network along the gray axis (diagonal); this is the initial set of neurons that will
+' be "pushed" and "pulled" as colors are added to the network.
+'INPUTS:
+' - source DIB, must be 32-bpp
+' - sampleQuality, which represents "quality" on the range [1, 30]; this affects sampling density of the
+'   underlying image, with 1 meaning "sample every pixel"
+Friend Function InitializeNeuralNetwork(ByRef srcDIB As pdDIB, Optional ByVal sampleQuality As Long = 1) As Long
     
+    'Cache network parameters, including a reference to the source image
     Set m_srcDIB = srcDIB
-    lengthcount = m_srcDIB.GetDIBStride * m_srcDIB.GetDIBHeight
-    samplefac = sample
+    m_totalPixels = m_srcDIB.GetDIBStride * m_srcDIB.GetDIBHeight
+    m_samplingFactor = sampleQuality
     
+    'Initialize the network with [numPaletteColors] neurons evenly spaced along the gray axis
     Dim i As Long
     For i = 0 To netsize - 1
-        With network(i)
-            .b = (255 * i) / netsize
+        With m_network(i)
+            .b = (255! * i) / netsize
             .g = .b
             .r = .b
             .a = .b
         End With
-        freq(i) = 1! / netsize
-        bias(i) = 0!
-    Next i
-
-End Sub
-
-'/* Output colour map
-Friend Sub writecolourmap(ByRef dstPalette() As RGBQuad)
-    
-    ReDim dstPalette(0 To netsize - 1) As RGBQuad
-    Dim b As Long, g As Long, r As Long, a As Long
-    
-    Dim i As Long
-    For i = 0 To netsize - 1
-        With dstPalette(i)
-            b = Int(network(i).b + 0.5)
-            If (b > 255) Then b = 255
-            If (b < 0) Then b = 0
-            g = Int(network(i).g + 0.5)
-            If (g > 255) Then g = 255
-            If (g < 0) Then g = 0
-            r = Int(network(i).r + 0.5)
-            If (r > 255) Then r = 255
-            If (r < 0) Then r = 0
-            a = Int(network(i).a + 0.5)
-            If (a > 255) Then a = 255
-            If (a < 0) Then a = 0
-            .Blue = b
-            .Green = g
-            .Red = r
-            .Alpha = a
-        End With
+        m_frequency(i) = 1! / netsize
+        m_bias(i) = 0!
     Next i
     
-End Sub
+    'Return the number of pixels we intend to sample; the caller can use this for tracking progress
+    InitializeNeuralNetwork = m_totalPixels \ (4 * m_samplingFactor)
 
-'/* Main Learning Loop
-Friend Sub learn()
+End Function
+
+'Main learning loop; basically, iterate sampled pixels and alter the network accordingly, starting with
+' a large bias radius and shrinking it as we process more and more pixels
+Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
     
     Dim i As Long, j As Long, b As Single, g As Single, r As Single, a As Single, a2 As Single
     Dim radius As Long, rad As Long, Alpha As Single, step As Long, delta As Long, samplepixels As Long
@@ -210,17 +194,17 @@ Friend Sub learn()
     'p = thepicture;
     Dim p As Long
     
-    'lim becomes unnecessary, since we can use lengthcount automatically
+    'lim becomes unnecessary, since we can use m_totalPixels automatically
     'unsigned char *lim;
-    'lim = thepicture + lengthcount;
+    'lim = thepicture + m_totalPixels;
     
     Dim biasradius As Long
     biasradius = initrad * radiusbias
     
-    alphadec = 30 + ((samplefac - 1) / 3)
+    alphadec = 30 + ((m_samplingFactor - 1) / 3)
     
-    samplepixels = lengthcount \ (4 * samplefac)
-    delta = samplepixels \ ncycles
+    samplepixels = m_totalPixels \ (4 * m_samplingFactor)
+    delta = samplepixels \ m_numTrainingCycles
     If (delta < 1) Then delta = 1
     Alpha = initalpha
     radius = initradius
@@ -232,13 +216,13 @@ Friend Sub learn()
     
     PDDebug.LogAction "beginning 1D learning: initial radius=" & rad
     
-    If ((lengthcount Mod prime1) <> 0) Then
+    If ((m_totalPixels Mod prime1) <> 0) Then
         step = prime1 * 4
     Else
-        If ((lengthcount Mod prime2) <> 0) Then
+        If ((m_totalPixels Mod prime2) <> 0) Then
             step = prime2 * 4
         Else
-            If ((lengthcount Mod prime3) <> 0) Then
+            If ((m_totalPixels Mod prime3) <> 0) Then
                 step = prime3 * 4
             Else
                 step = prime4 * 4
@@ -247,6 +231,7 @@ Friend Sub learn()
     End If
     
     Dim numPixelsPreviousLoops As Long
+    Dim currentCycle As Long
     
     i = 0
     Do While (i + numPixelsPreviousLoops < samplepixels)
@@ -259,19 +244,21 @@ Friend Sub learn()
         
         a2 = Alpha * DIV_INIT_ALPHA '/ initalpha
         
-        'altersingle a2, j, b, g, r, a '/* alter best-fit color */
-        'in-line for performance:
-        With network(j)
-            .b = .b - (a2 * (.b - b)) '/* alter hit neuron */
+        'Originally this is a function call:
+        ' AlterSingle a2, j, b, g, r, a '/* alter best-fit color */
+        '...but I've manually in-lined it for better performance:
+        With m_network(j)
+            .b = .b - (a2 * (.b - b))
             .g = .g - (a2 * (.g - g))
             .r = .r - (a2 * (.r - r))
             .a = .a - (a2 * (.a - a))
         End With
         
-        If (rad <> 0) Then alterneigh a2, rad, j, b, g, r, a '/* alter neighbours */
+        'If this loop is using a non-zero radius, alter neighboring neurons next
+        If (rad <> 0) Then AlterNeighbors a2, rad, j, b, g, r, a
         
         p = p + step
-        If (p >= lengthcount) Then p = p - lengthcount
+        If (p >= m_totalPixels) Then p = p - m_totalPixels
         
         i = i + 1
         
@@ -283,6 +270,24 @@ Friend Sub learn()
             biasradius = biasradius - biasradius / radiusdec
             rad = biasradius \ 64
             If (rad <= 1) Then rad = 0
+            
+            currentCycle = currentCycle + 1
+            
+            'Also report any progress updates here; note that we only do this every 8 cycles to improve performance
+            If (Not suppressMessages) And ((currentCycle And &H7&) = 0) Then
+                
+                'If the caller specified their own progress bar values, scale progress by the image's height
+                ' (which is PD's standard progress bar interval).
+                If (modifyProgBarMax > 0) Then
+                    ProgressBars.SetProgBarVal modifyProgBarOffset + (numPixelsPreviousLoops / samplepixels) * m_srcDIB.GetDIBHeight
+                
+                'Otherwise report progress based on the number of pixels sampled so far
+                Else
+                    ProgressBars.SetProgBarVal modifyProgBarOffset + numPixelsPreviousLoops
+                End If
+                
+            End If
+            
         End If
         
     Loop
@@ -318,44 +323,45 @@ Private Function contest(ByVal b As Single, ByVal g As Single, ByVal r As Single
         ' different in the early 90's, so maybe it made sense then.  (The paper vaguely alludes
         ' to this: https://web.archive.org/web/20030503154334/http://members.ozemail.com.au/~dekker/NeuQuant.pdf)
         ' Anyway, I've switched to Euclidean here because it's faster and the resulting palette is better.
-        dist = (network(i).b - b)
-        a2 = network(i).g - g
+        dist = (m_network(i).b - b)
+        a2 = m_network(i).g - g
         dist = dist * dist + a2 * a2
-        a2 = network(i).r - r
+        a2 = m_network(i).r - r
         dist = dist + a2 * a2
-        a2 = network(i).a - a
+        a2 = m_network(i).a - a
         dist = dist + a2 * a2
         If (dist < bestd) Then
             bestd = dist
             bestpos = i
         End If
-        biasdist = dist - bias(i)
+        biasdist = dist - m_bias(i)
         If (biasdist < bestbiasd) Then
             bestbiasd = biasdist
             bestbiaspos = i
         End If
-        freq(i) = freq(i) - beta * freq(i)
-        bias(i) = bias(i) + betagamma * freq(i)
+        m_frequency(i) = m_frequency(i) - beta * m_frequency(i)
+        m_bias(i) = m_bias(i) + betagamma * m_frequency(i)
     Next i
     
-    freq(bestpos) = freq(bestpos) + beta
-    bias(bestpos) = bias(bestpos) - betagamma
+    m_frequency(bestpos) = m_frequency(bestpos) + beta
+    m_bias(bestpos) = m_bias(bestpos) - betagamma
     contest = bestbiaspos
 
 End Function
 
-'/* Move neuron i towards biased (b, g, r) by factor alpha
-Private Sub altersingle(ByVal Alpha As Single, ByVal i As Long, ByVal b As Single, ByVal g As Single, ByVal r As Single, ByVal a As Single)
-    With network(i)
-        .b = .b - (Alpha * (.b - b)) '/* alter hit neuron */
-        .g = .g - (Alpha * (.g - g))
-        .r = .r - (Alpha * (.r - r))
-        .a = .a - (Alpha * (.a - a))
+'Bias a single neuron (i) toward the passed BGRA quad using biasFactor as weight
+Private Sub AlterSingle(ByVal biasFactor As Single, ByVal i As Long, ByVal b As Single, ByVal g As Single, ByVal r As Single, ByVal a As Single)
+    With m_network(i)
+        .b = .b - (biasFactor * (.b - b))
+        .g = .g - (biasFactor * (.g - g))
+        .r = .r - (biasFactor * (.r - r))
+        .a = .a - (biasFactor * (.a - a))
     End With
 End Sub
 
-'/* Move adjacent neurons
-Private Sub alterneigh(ByVal Alpha As Single, ByVal rad As Long, ByVal i As Long, ByVal b As Single, ByVal g As Single, ByVal r As Single, ByVal a As Single)
+'Bias adjacent neurons toward the passed BGRA quad using biasFactor as weight,
+' and scaling according to the current radius
+Private Sub AlterNeighbors(ByVal biasFactor As Single, ByVal rad As Long, ByVal i As Long, ByVal b As Single, ByVal g As Single, ByVal r As Single, ByVal a As Single)
     
     Dim j As Long, k As Long, lo As Long, hI As Long, a2 As Double, q As Long
     lo = i - rad
@@ -371,11 +377,11 @@ Private Sub alterneigh(ByVal Alpha As Single, ByVal rad As Long, ByVal i As Long
     raddiv = 1# / (rad * rad)
     
     Do While ((j < hI) Or (k > lo))
-        a2 = (Alpha * (rad * rad - q * q)) * raddiv
+        a2 = (biasFactor * (rad * rad - q * q)) * raddiv
         q = q + 1
         
         If (j < hI) Then
-            With network(j)
+            With m_network(j)
                 .b = .b - (a2 * (.b - b))
                 .g = .g - (a2 * (.g - g))
                 .r = .r - (a2 * (.r - r))
@@ -385,7 +391,7 @@ Private Sub alterneigh(ByVal Alpha As Single, ByVal rad As Long, ByVal i As Long
         End If
         
         If (k > lo) Then
-            With network(k)
+            With m_network(k)
                 .b = .b - (a2 * (.b - b))
                 .g = .g - (a2 * (.g - g))
                 .r = .r - (a2 * (.r - r))
@@ -396,4 +402,43 @@ Private Sub alterneigh(ByVal Alpha As Single, ByVal rad As Long, ByVal i As Long
         
     Loop
 
+End Sub
+
+'When processing is finished, call this to output the finished palette
+Friend Sub GetFinalPalette(ByRef dstPalette() As RGBQuad)
+    
+    ReDim dstPalette(0 To netsize - 1) As RGBQuad
+    Dim b As Long, g As Long, r As Long, a As Long
+    
+    Dim i As Long
+    For i = 0 To netsize - 1
+        
+        With dstPalette(i)
+            
+            'Extract each color (and alpha, optionally) and round it to the nearest int
+            b = Int(m_network(i).b + 0.5)
+            If (b > 255) Then b = 255
+            If (b < 0) Then b = 0
+            
+            g = Int(m_network(i).g + 0.5)
+            If (g > 255) Then g = 255
+            If (g < 0) Then g = 0
+            
+            r = Int(m_network(i).r + 0.5)
+            If (r > 255) Then r = 255
+            If (r < 0) Then r = 0
+            
+            a = Int(m_network(i).a + 0.5)
+            If (a > 255) Then a = 255
+            If (a < 0) Then a = 0
+            
+            .Blue = b
+            .Green = g
+            .Red = r
+            .Alpha = a
+            
+        End With
+        
+    Next i
+    
 End Sub

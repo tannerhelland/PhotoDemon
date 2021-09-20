@@ -297,19 +297,35 @@ End Function
 'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
 ' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
 ' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~500,000 pixels.
-Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
     
+    'Instantiate a neural network class and notify it of the desired color count.
     Dim cNeuquant As pdNeuquant
     Set cNeuquant = New pdNeuquant
-    
     cNeuquant.SetColorCount numOfColors
-    cNeuquant.initnet srcDIB, 2
-    cNeuquant.learn
-    cNeuquant.writecolourmap dstPalette
     
+    'Initialize the network against the source image, and pass the sampling quality factor
+    ' (1 = perfect sampling, 30 = 1/30th of pixels in image sampled).  The initialization function
+    ' will return the net number of pixels the function expects to sample based on the input settings.
+    Dim maxProgress As Long
+    maxProgress = cNeuquant.InitializeNeuralNetwork(srcDIB, 3)
+    
+    'Determine progress bar increments (and note that these can be modified by the caller, if this function
+    ' is called as part of a broader operation)
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax < 0) Then ProgressBars.SetProgBarMax maxProgress Else ProgressBars.SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'Train the network against the image
+    cNeuquant.TrainNeuralNetwork suppressMessages, modifyProgBarMax, modifyProgBarOffset
+    
+    'Retrieve the final palette
+    cNeuquant.GetFinalPalette dstPalette
     GetNeuquantPalette_RGBA = True
     
     'If the palette retrieval process was successful, sort the palette from "least alpha" to "most alpha";
