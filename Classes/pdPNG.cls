@@ -3759,7 +3759,7 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
                     outColorType = png_Indexed
                     outBitsPerChannel = 8
                     m_ImgPaletteSafe = True
-                    If (Not useOrigMode) Then Palettes.GetOptimizedPalette srcImage, m_ImgPalette, outputPaletteSize
+                    If (Not useOrigMode) Then Palettes.GetNeuquantPalette_RGBA srcImage, m_ImgPalette, outputPaletteSize
                     Palettes.ApplyPaletteToImage_KDTree srcImage, m_ImgPalette, True
                 End If
                 

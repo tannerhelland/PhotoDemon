@@ -89,30 +89,31 @@ Private Enum CharLS_ColorSpace
     CHARLS_SPIFF_COLOR_SPACE_BI_LEVEL_WHITE             'Bi-level image. Each image sample is one bit: 1 = white and 0 = black.
 End Enum
 
-Private Enum CharLS_ColorTransformation
-    
-    'No color space transformation has been applied.
-    CHARLS_COLOR_TRANSFORMATION_NONE
-
-    'Defines the reversible lossless color transformation:
-    ' G = G
-    ' R = R - G
-    ' B = B - G
-    CHARLS_COLOR_TRANSFORMATION_HP1
-
-    'Defines the reversible lossless color transformation:
-    ' G = G
-    ' B = B - (R + G) / 2
-    ' R = R - G
-    CHARLS_COLOR_TRANSFORMATION_HP2
-
-    'Defines the reversible lossless color transformation of Y-Cb-Cr:
-    ' R = R - G
-    ' B = B - G
-    ' G = G + (R + B) / 4
-    CHARLS_COLOR_TRANSFORMATION_HP3
-    
-End Enum
+'This enum is not required for .jls import, but I've left it here for the curious
+'Private Enum CharLS_ColorTransformation
+'
+'    'No color space transformation has been applied.
+'    CHARLS_COLOR_TRANSFORMATION_NONE
+'
+'    'Defines the reversible lossless color transformation:
+'    ' G = G
+'    ' R = R - G
+'    ' B = B - G
+'    CHARLS_COLOR_TRANSFORMATION_HP1
+'
+'    'Defines the reversible lossless color transformation:
+'    ' G = G
+'    ' B = B - (R + G) / 2
+'    ' R = R - G
+'    CHARLS_COLOR_TRANSFORMATION_HP2
+'
+'    'Defines the reversible lossless color transformation of Y-Cb-Cr:
+'    ' R = R - G
+'    ' B = B - G
+'    ' G = G + (R + B) / 4
+'    CHARLS_COLOR_TRANSFORMATION_HP3
+'
+'End Enum
 
 Private Enum CharLS_InterleaveMode
     CHARLS_INTERLEAVE_MODE_NONE     'The data is encoded and stored as component for component: RRRGGGBBB.
@@ -141,25 +142,26 @@ Private Type CharLSFrameInfo
     component_count As Long 'Number of components contained in the frame, range [1, 255]
 End Type
 
-Private Type CharLSCodingParameters
-
-    'Maximum possible value for any image sample in a scan.
-    ' This must be greater than or equal to the actual maximum value for the components in a scan.
-    maximum_sample_value As Long
-    
-    'First quantization threshold value for the local gradients.
-    threshold1 As Long
-    
-    'Second quantization threshold value for the local gradients.
-    threshold2 As Long
-    
-    'Third quantization threshold value for the local gradients.
-    threshold3 As Long
-    
-    'Value at which the counters A, B, and N are halved.
-    reset_value As Long
-    
-End Type
+'This struct is not required for .jls import, but I've left it here for the curious
+'Private Type CharLSCodingParameters
+'
+'    'Maximum possible value for any image sample in a scan.
+'    ' This must be greater than or equal to the actual maximum value for the components in a scan.
+'    maximum_sample_value As Long
+'
+'    'First quantization threshold value for the local gradients.
+'    threshold1 As Long
+'
+'    'Second quantization threshold value for the local gradients.
+'    threshold2 As Long
+'
+'    'Third quantization threshold value for the local gradients.
+'    threshold3 As Long
+'
+'    'Value at which the counters A, B, and N are halved.
+'    reset_value As Long
+'
+'End Type
 
 Private Type CharLSSpiffHeader
     profile_id As Long               '// P: Application profile, type I.8

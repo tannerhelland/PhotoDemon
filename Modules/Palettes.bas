@@ -3,8 +3,8 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Master Palette Interface
 'Copyright 2017-2021 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 16/September/21
-'Last update: performance improvements
+'Last updated: 21/September/21
+'Last update: wrap up work on new neural-network quantizer
 '
 'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary
 ' source images, and also applying arbitrary palettes to images.
@@ -302,6 +302,43 @@ Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette(
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
     
+    'Neuquant has some quirks compared to other palette-generation algorithms.  One quirk is that it
+    ' works very very well on smaller pixel counts, because too many pixels counts just contribute
+    ' noise (which the algorithm will successfully filter out... albeit very slowly).
+    '
+    'As such, image sizes above like a megapixel do not produce better results.  If the source image
+    ' is very large, downsample it.
+    Const ARBITRARY_MAX_PIXELS As Long = 1500000
+    Const ARBITRARY_MIN_PIXELS As Long = 10000
+    
+    Dim numPixelsSrc As Long
+    numPixelsSrc = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
+    
+    Dim actualDIBToSample As pdDIB, samplingQuality As Long
+    If (numPixelsSrc > ARBITRARY_MAX_PIXELS) Then
+        
+        'Downsample the image, and instruct neuquant to only sample half the image (as noise may still
+        ' be present)
+        DIBs.ResizeDIBByPixelCount srcDIB, actualDIBToSample, ARBITRARY_MAX_PIXELS, GP_IM_HighQualityBilinear
+        samplingQuality = 1
+        
+    'Similarly, if the image is tiny, neuquant won't have enough time+data to converge on a great palette.
+    ElseIf (numPixelsSrc < ARBITRARY_MIN_PIXELS) Then
+        
+        'Upsample the image, and instruct neuquant to sample every pixel (to avoid unwanted weighting
+        ' against a particular region of the upsampled image)
+        DIBs.ResizeDIBByPixelCount srcDIB, actualDIBToSample, ARBITRARY_MIN_PIXELS, GP_IM_NearestNeighbor, True
+        samplingQuality = 1
+    
+    'For other sizes, we can simple sample the source image as-is
+    Else
+        Set actualDIBToSample = srcDIB
+        samplingQuality = 1
+    End If
+    
+    'On previews, cut sampling quality further to improve responsiveness
+    If suppressMessages Then samplingQuality = samplingQuality + 2
+    
     'Instantiate a neural network class and notify it of the desired color count.
     Dim cNeuquant As pdNeuquant
     Set cNeuquant = New pdNeuquant
@@ -311,7 +348,7 @@ Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette(
     ' (1 = perfect sampling, 30 = 1/30th of pixels in image sampled).  The initialization function
     ' will return the net number of pixels the function expects to sample based on the input settings.
     Dim maxProgress As Long
-    maxProgress = cNeuquant.InitializeNeuralNetwork(srcDIB, 3)
+    maxProgress = cNeuquant.InitializeNeuralNetwork(actualDIBToSample, samplingQuality)
     
     'Determine progress bar increments (and note that these can be modified by the caller, if this function
     ' is called as part of a broader operation)
@@ -323,6 +360,9 @@ Public Function GetNeuquantPalette_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette(
     
     'Train the network against the image
     cNeuquant.TrainNeuralNetwork suppressMessages, modifyProgBarMax, modifyProgBarOffset
+    
+    'Temporary image is no longer required; free it immediately
+    Set actualDIBToSample = Nothing
     
     'Retrieve the final palette
     cNeuquant.GetFinalPalette dstPalette

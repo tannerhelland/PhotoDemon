@@ -376,7 +376,7 @@ End Sub
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
     
-    If (Not (m_CompositedImage Is Nothing)) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.

@@ -84,7 +84,6 @@ Private Const prime1 As Long = 241
 Private Const prime2 As Long = 239
 Private Const prime3 As Long = 233
 Private Const prime4 As Long = 251
-Private Const minpicturebytes As Long = 4 * 251     '/* minimum size for input image, channelsize * prime4 */
 
 'Number of learning cycles.  On each cycle, the current network training radius (e.g. how many neighboring
 ' neurons are affected by each added color) decreases until we're simply modifying single neurons on each

@@ -3,7 +3,7 @@ Begin VB.Form FormPalettize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    Caption         =   " Palettize"
-   ClientHeight    =   7710
+   ClientHeight    =   7395
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   12315
@@ -21,7 +21,7 @@ Begin VB.Form FormPalettize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   514
+   ScaleHeight     =   493
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
    Begin PhotoDemon.pdButtonStrip btsOptions 
@@ -37,28 +37,28 @@ Begin VB.Form FormPalettize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6960
+      Top             =   6645
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6705
+      Height          =   6360
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   11827
+      _ExtentY        =   11218
    End
    Begin PhotoDemon.pdContainer pnlQuantize 
-      Height          =   6000
+      Height          =   5640
       Index           =   0
       Left            =   5880
       Top             =   960
       Width           =   6375
       _ExtentX        =   11245
-      _ExtentY        =   10583
+      _ExtentY        =   9948
       Begin PhotoDemon.pdCheckBox chkLab 
          Height          =   375
          Left            =   240
@@ -83,11 +83,11 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdSlider sldDitherAmount 
          Height          =   735
          Index           =   0
-         Left            =   120
+         Left            =   3180
          TabIndex        =   12
-         Top             =   5160
-         Width           =   6015
-         _ExtentX        =   10610
+         Top             =   4320
+         Width           =   2955
+         _ExtentX        =   5212
          _ExtentY        =   1296
          Caption         =   "dithering amount"
          FontSizeCaption =   11
@@ -102,8 +102,8 @@ Begin VB.Form FormPalettize
          Left            =   120
          TabIndex        =   13
          Top             =   4320
-         Width           =   6015
-         _ExtentX        =   10610
+         Width           =   2955
+         _ExtentX        =   5212
          _ExtentY        =   1296
          Caption         =   "dithering"
          FontSizeCaption =   11
@@ -159,20 +159,20 @@ Begin VB.Form FormPalettize
       End
    End
    Begin PhotoDemon.pdContainer pnlQuantize 
-      Height          =   5175
+      Height          =   5640
       Index           =   1
       Left            =   5880
       Top             =   960
       Width           =   6375
       _ExtentX        =   11245
-      _ExtentY        =   9128
+      _ExtentY        =   9948
       Begin PhotoDemon.pdCheckBox chkMatchAlpha 
          Height          =   375
          Left            =   210
          TabIndex        =   10
          Top             =   3090
-         Width           =   5895
-         _ExtentX        =   10398
+         Width           =   6015
+         _ExtentX        =   10610
          _ExtentY        =   661
          Caption         =   "use palette's alpha values"
       End
@@ -199,11 +199,11 @@ Begin VB.Form FormPalettize
       End
       Begin PhotoDemon.pdTextBox txtPalette 
          Height          =   375
-         Left            =   360
+         Left            =   240
          TabIndex        =   5
          Top             =   390
-         Width           =   4815
-         _ExtentX        =   8493
+         Width           =   4935
+         _ExtentX        =   8705
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -217,25 +217,25 @@ Begin VB.Form FormPalettize
          FontSize        =   11
       End
       Begin PhotoDemon.pdDropDown cboDither 
-         Height          =   700
+         Height          =   705
          Index           =   1
          Left            =   120
          TabIndex        =   7
          Top             =   3480
-         Width           =   6015
-         _ExtentX        =   10610
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1244
          Caption         =   "dithering"
          FontSizeCaption =   11
       End
       Begin PhotoDemon.pdSlider sldDitherAmount 
-         Height          =   700
+         Height          =   705
          Index           =   1
-         Left            =   120
+         Left            =   3240
          TabIndex        =   9
-         Top             =   4380
-         Width           =   6015
-         _ExtentX        =   10610
+         Top             =   3480
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1244
          Caption         =   "dithering amount"
          FontSizeCaption =   11
@@ -255,12 +255,11 @@ Attribute VB_Exposed = False
 '"Palettize" (e.g. reduce image color count) Dialog
 'Copyright 2000-2021 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 01/February/18
-'Last update: improve progress bar reporting
+'Last updated: 21/September/21
+'Last update: overhaul UI to support new neural-network quantization features
 '
-'This dialog allows the user to reduce the number of colors in the current image.  In the future, it would be nice
-' to allow palettes loaded from file or selected from an internal swatch manager (and in fact, the code is already
-' set up to handle this) but at present, only optimized palettes are supported.
+'This dialog allows the user to reduce the number of unique colors in the current image,
+' either by automatic palette generation or by applying an external palette.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -282,9 +281,8 @@ End Sub
 
 Private Sub ReflowFirstPanel()
     
-    'PD currently supports two palette types: RGB and RGBA.  RGBA doesn't require some settings
-    ' (like quantizer - as only one is supported - or background color), so we need to reflow the
-    ' interface depending on the current palette type.
+    'PD can generate palettes with or without alpha.  Some settings (like background color) are only
+    ' relevant in one mode, so we need to reflow some UI elements accordingly.
     Dim rgbPaletteMode As Boolean
     rgbPaletteMode = (btsAlpha.ListIndex = 0)
     
@@ -292,17 +290,11 @@ Private Sub ReflowFirstPanel()
     yPadding = Interface.FixDPI(6)
     yOffset = btsAlpha.GetTop + btsAlpha.GetHeight + yPadding
     
-    'Only expose quantization method in RGB mode, and only expose Lab color space matching
-    ' in RGBA mode.
-    btsMethod.Visible = rgbPaletteMode
-    chkLab.Visible = (Not rgbPaletteMode)
-    If rgbPaletteMode Then
-        btsMethod.SetTop yOffset
-        yOffset = yOffset + btsMethod.GetHeight + yPadding
-    Else
-        chkLab.SetTop yOffset
-        yOffset = yOffset + chkLab.GetHeight + yPadding * 2
-    End If
+    'Quantization method and Lab color space matching are always available.
+    btsMethod.SetTop yOffset
+    yOffset = yOffset + btsMethod.GetHeight + yPadding
+    chkLab.SetTop yOffset
+    yOffset = yOffset + chkLab.GetHeight + yPadding * 2
     
     'Palette size and "preserve black and white" are always available
     sldPalette.SetTop yOffset
@@ -312,12 +304,8 @@ Private Sub ReflowFirstPanel()
     
     'Dithering mode and strength are always available
     cboDither(0).SetTop yOffset
+    sldDitherAmount(0).SetTop yOffset
     yOffset = yOffset + cboDither(0).GetHeight + yPadding
-    
-    If sldDitherAmount(0).Visible Then
-        sldDitherAmount(0).SetTop yOffset
-        yOffset = yOffset + sldDitherAmount(0).GetHeight + yPadding
-    End If
     
     'Finally, only expose background color in RGB mode
     clsBackground.Visible = rgbPaletteMode
@@ -383,6 +371,7 @@ Private Sub cmdBar_ResetClick()
     btsMethod.ListIndex = 0
     clsBackground.Color = vbWhite
     btsAlpha.ListIndex = 0
+    txtPalette.Text = vbNullString
     UpdatePreview
 End Sub
 
@@ -402,8 +391,7 @@ Private Sub Form_Load()
     UpdateVisiblePanel
     
     btsMethod.AddItem "median cut", 0
-    btsMethod.AddItem "Xiaolin Wu", 1
-    btsMethod.AddItem "NeuQuant", 2
+    btsMethod.AddItem "neural network", 1
     btsMethod.ListIndex = 0
     
     Dim i As Long
@@ -429,7 +417,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Automatic 8-bit color reduction.  Some option combinations require the FreeImage plugin.
+'Generate a palette from the colors in the active image.  As of v9.0, all quantization methods
+' are custom-built for PD (no 3rd-party libraries required or used).
 Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse the parameter string and determine concrete values for our color conversion
@@ -437,48 +426,44 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     Set cParams = New pdSerialize
     cParams.SetParamString toolParams
     
+    'All quantizers can operate in RGB or RGBA modes
     Dim useRGBAQuantizer As Boolean
-    useRGBAQuantizer = cParams.GetBool("useAlpha", False)
+    useRGBAQuantizer = cParams.GetBool("use-alpha", False)
     
-    'The only quantizer that (currently) supports RGBA output is our homebrew median cut quantizer
+    'Retrieve quantize algorithm
     Dim quantMethod As PD_COLOR_QUANTIZE
-    If useRGBAQuantizer Then
-        quantMethod = PDCQ_MedianCut
+    If Strings.StringsEqual(cParams.GetString("quantizer", "median-cut"), "neuquant", True) Then
+        quantMethod = PDCQ_Neuquant
     Else
-        If Strings.StringsEqual(cParams.GetString("quantizer", "mediancut"), "neuquant", True) Then
-            quantMethod = PDCQ_Neuquant
-        ElseIf Strings.StringsEqual(cParams.GetString("quantizer", "mediancut"), "wu", True) Then
-            quantMethod = PDCQ_Wu
-        Else
-            quantMethod = PDCQ_MedianCut
-        End If
+        quantMethod = PDCQ_MedianCut
     End If
     
-    'Only our internal RGBA quantizer supports Lab color matching
+    'PD's quantizers can match in BGRA or LABa spaces
     Dim useLab As Boolean
     useLab = cParams.GetBool("use-lab-color", False)
     
     Dim paletteSize As Long
-    paletteSize = cParams.GetLong("palettesize", 256)
+    paletteSize = cParams.GetLong("palette-size", 256)
     
     Dim preserveWhiteBlack As Boolean
-    preserveWhiteBlack = cParams.GetBool("preservewhiteblack", False)
+    preserveWhiteBlack = cParams.GetBool("preserve-white-black", False)
     
     Dim ditherMethod As PD_DITHER_METHOD
     ditherMethod = cParams.GetLong("dithering", 0)
     
     Dim ditherAmount As Single
-    ditherAmount = cParams.GetDouble("ditheramount", 100#) * 0.01
+    ditherAmount = cParams.GetDouble("dither-amount", 100#) * 0.01
     
     'This is a weird adjustment, but... Lab color-matching is way more sensitive
     ' to the broad-spectrum dithering caused by ordered dithers.  As such, we need
     ' to ramp the strength waaaay down.
-    If (useLab And useRGBAQuantizer And ((ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8))) Then
+    If (useLab And ((ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8))) Then
         ditherAmount = ditherAmount * 0.5
     End If
     
+    'If alpha is *not* being quantized, the user can composite against a fixed backcolor
     Dim finalBackColor As Long
-    finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
+    finalBackColor = cParams.GetLong("background-color", vbWhite)
     
     Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , useRGBAQuantizer
@@ -489,120 +474,66 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         Message "Generating optimal palette..."
     End If
     
-    'Some quantization methods require FreeImage.  If FreeImage doesn't exist, fall back to internal PD methods.
-    If (quantMethod <> PDCQ_MedianCut) Then
-        If (Not ImageFormats.IsFreeImageEnabled()) Then quantMethod = PDCQ_MedianCut
-    End If
-    
     'If the caller doesn't want transparency, composite the image against the specified backcolor *in advance*.
     If (Not useRGBAQuantizer) Then workingDIB.CompositeBackgroundColor Colors.ExtractRed(finalBackColor), Colors.ExtractGreen(finalBackColor), Colors.ExtractBlue(finalBackColor)
     
-    'Branch according to internal or plugin-based quantization methods.  Note that if the user does *NOT* want
-    ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
-    Dim finalPalette() As RGBQuad, finalPaletteCount As Long
-    
+    'Branch according to quantization method.
+    Dim finalPalette() As RGBQuad
     If (quantMethod = PDCQ_MedianCut) Then
     
         'Generate an optimal palette, and if alpha is involved, use it as part of the calculation.
         If useRGBAQuantizer Then
             
             'I'm not super-pleased with the output of the Lab palette generator at present;
-            ' only RGBA is currently used for palette generation
+            ' only RGBA is currently used for palette generation (but if the LAB flag is set,
+            ' we will use LAB for color-matching the palette to the image).
             'If useLAB Then
             '    Palettes.GetOptimizedPaletteIncAlpha_LAB workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
             'Else
-                'Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
+                Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, pdqs_Variance, toPreview, workingDIB.GetDIBHeight * 2, 0
             'End If
-            Palettes.GetNeuquantPalette_RGBA workingDIB, finalPalette, paletteSize, toPreview, workingDIB.GetDIBHeight * 2, 0
             
         Else
             Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize, pdqs_Variance, toPreview, workingDIB.GetDIBHeight * 2, 0
         End If
         
-        'Preserve black and white, as necessary
-        If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
-        
-        If (Not toPreview) Then
-            SetProgBarVal workingDIB.GetDIBHeight
-            Message "Applying new palette to image..."
-        End If
-        
-        'Apply said palette to the image
-        If (ditherMethod = PDDM_None) Then
-            If useRGBAQuantizer Then
-                If useLab Then
-                    Palettes.ApplyPaletteToImage_IncAlpha_KDTree_Lab workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                Else
-                    Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                End If
-            Else
-                Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-            End If
-        Else
-            If useRGBAQuantizer Then
-                If useLab Then
-                    Palettes.ApplyPaletteToImage_Dithered_IncAlpha_Lab workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                Else
-                    Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                End If
-            Else
-                Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-            End If
-        End If
-        
+    'Modified neuquant uses the same function for RGB and RGBA palettes
     Else
-        
-        If (Not toPreview) Then
-            SetProgBarVal workingDIB.GetDIBHeight
-            Message "Applying new palette to image..."
-        End If
-        
-        'Apply all color and transparency changes simultaneously
-        Dim fiQuantMode As FREE_IMAGE_QUANTIZE
-        If (quantMethod = PDCQ_Wu) Then fiQuantMode = FIQ_WUQUANT Else fiQuantMode = FIQ_NNQUANT
-        
-        Dim fi_DIB8 As Long
-        fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, PDAS_NoAlpha, PDAS_ComplicatedAlpha, , finalBackColor, , paletteSize, , , fiQuantMode)
-        FreeImage_FlipVertically fi_DIB8
-        
-        'If the caller does *not* want dithering, copy the (already palettized) FreeImage DIB over our
-        ' original DIB.
-        If (ditherMethod = PDDM_None) And (Not preserveWhiteBlack) Then
-        
-            'Convert that DIB to 32-bpp
-            Dim fi_DIB As Long
-            fi_DIB = FreeImage_ConvertTo32Bits(fi_DIB8)
-            FreeImage_Unload fi_DIB8
-            
-            'Paint the result to workingDIB
-            workingDIB.ResetDIB 0
-            Plugin_FreeImage.PaintFIDibToPDDib workingDIB, fi_DIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-            FreeImage_Unload fi_DIB
-        
-        'If the caller wants dithering, we must apply the palette manually
-        Else
-        
-            'Retrieve the generated palette, then free the FreeImage source
-            finalPaletteCount = Plugin_FreeImage.GetFreeImagePalette(fi_DIB8, finalPalette)
-            ReDim Preserve finalPalette(0 To paletteSize - 1) As RGBQuad
-            FreeImage_Unload fi_DIB8
-            
-            'Preserve black and white, as necessary
-            If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
-            
-            'Apply the generated palette to our target image, using the method requested
-            If (finalPaletteCount <> 0) Then
-                If (ditherMethod = PDDM_None) Then
-                    Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                Else
-                    Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
-                End If
-            End If
-            
-        End If
-        
+        Palettes.GetNeuquantPalette_RGBA workingDIB, finalPalette, paletteSize, toPreview, workingDIB.GetDIBHeight * 2, 0
     End If
     
+    'Preserve black and white, as necessary
+    If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
+    
+    If (Not toPreview) Then
+        SetProgBarVal workingDIB.GetDIBHeight
+        Message "Applying new palette to image..."
+    End If
+    
+    'Apply said palette to the image using RGB or LAB (if requested) and the specified dither settings
+    If (ditherMethod = PDDM_None) Then
+        If useRGBAQuantizer Then
+            If useLab Then
+                Palettes.ApplyPaletteToImage_IncAlpha_KDTree_Lab workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            End If
+        Else
+            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+        End If
+    Else
+        If useRGBAQuantizer Then
+            If useLab Then
+                Palettes.ApplyPaletteToImage_Dithered_IncAlpha_Lab workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            End If
+        Else
+            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+        End If
+    End If
+    
+    'Hand the finished image off to the effect finalizer
     EffectPrep.FinalizeImageData toPreview, dstPic, useRGBAQuantizer
     
 End Sub
@@ -616,7 +547,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     cParams.SetParamString toolParams
     
     Dim srcPaletteFile As String
-    srcPaletteFile = cParams.GetString("palettefile")
+    srcPaletteFile = cParams.GetString("palette-file")
     
     Dim mustLoadPalette As Boolean: mustLoadPalette = True
     If (Not m_Palette Is Nothing) Then mustLoadPalette = Strings.StringsNotEqual(srcPaletteFile, m_Palette.GetPaletteFilename())
@@ -628,7 +559,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     'Make sure the passed palette group ID is valid.  (Some palette file formats support multiple palettes
     ' within a single file; as such, filename alone may not be enough to identify the palette we need.)
     Dim srcPaletteIndex As Long
-    srcPaletteIndex = cParams.GetLong("palettefileindex", 0)
+    srcPaletteIndex = cParams.GetLong("palette-file-index", 0)
     If (srcPaletteIndex < 0) Then srcPaletteIndex = 0
     If (srcPaletteIndex > m_Palette.GetPaletteGroupCount - 1) Then srcPaletteIndex = m_Palette.GetPaletteGroupCount - 1
     
@@ -636,10 +567,10 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     ditherMethod = cParams.GetLong("dithering", 0)
     
     Dim ditherAmount As Double
-    ditherAmount = cParams.GetDouble("ditheramount", 100#) / 100#
+    ditherAmount = cParams.GetDouble("dither-amount", 100#) / 100#
     
     Dim matchAlpha As Boolean
-    matchAlpha = cParams.GetBool("palettefilematchalpha", False)
+    matchAlpha = cParams.GetBool("palette-file-match-alpha", False)
     
     Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , matchAlpha
@@ -775,34 +706,32 @@ Private Function GetToolParamString() As String
         .AddParam "mode", btsOptions.ListIndex
         
         'RGB vs RGBA palette
-        .AddParam "useAlpha", CBool(btsAlpha.ListIndex = 1)
+        .AddParam "use-alpha", CBool(btsAlpha.ListIndex = 1)
         
         'Quantizer only matters for RGB palettes but we write it regardless.  (Perhaps in the future
         ' we can support different quantizers for RGBA palettes.)
         Select Case btsMethod.ListIndex
             Case 0
-                .AddParam "quantizer", "MedianCut"
+                .AddParam "quantizer", "median-cut"
             Case 1
-                .AddParam "quantizer", "Wu"
-            Case 2
-                .AddParam "quantizer", "NeuQuant"
+                .AddParam "quantizer", "neuquant"
         End Select
         
         'Similarly, Lab color space matching only works for RGBA palettes
         .AddParam "use-lab-color", chkLab.Value
         
-        .AddParam "palettesize", sldPalette.Value
-        .AddParam "preservewhiteblack", chkPreserveWB.Value
-        .AddParam "backgroundcolor", clsBackground.Color
+        .AddParam "palette-size", sldPalette.Value
+        .AddParam "preserve-white-black", chkPreserveWB.Value
+        .AddParam "background-color", clsBackground.Color
         
         '"From file" data comes next
-        .AddParam "palettefile", txtPalette.Text
-        .AddParam "palettefileindex", lstPalettes.ListIndex
-        .AddParam "palettefilematchalpha", chkMatchAlpha.Value
+        .AddParam "palette-file", txtPalette.Text
+        .AddParam "palette-file-index", lstPalettes.ListIndex
+        .AddParam "palette-file-match-alpha", chkMatchAlpha.Value
         
         'Some options are shared between the two methods
         .AddParam "dithering", cboDither(btsOptions.ListIndex).ListIndex
-        .AddParam "ditheramount", sldDitherAmount(btsOptions.ListIndex).Value
+        .AddParam "dither-amount", sldDitherAmount(btsOptions.ListIndex).Value
         
     End With
     

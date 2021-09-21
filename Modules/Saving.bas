@@ -805,12 +805,12 @@ Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As p
     Dim compressLevel As Long
     If dontCompress Then compressLevel = 0 Else compressLevel = 3
     
-    Dim colorType As PD_PNGColorType
-    If forceTo24bppRGB Then colorType = png_Truecolor Else colorType = png_TruecolorAlpha
+    Dim outColorType As PD_PNGColorType
+    If forceTo24bppRGB Then outColorType = png_Truecolor Else outColorType = png_TruecolorAlpha
     
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
-    QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, colorType, 8, compressLevel) < png_Failure)
+    QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, outColorType, 8, compressLevel) < png_Failure)
     
     If (Not QuickSaveDIBAsPNG) Then PDDebug.LogAction "Saving.QuickSaveDIBAsPNG failed (pdPNG couldn't write the file?)."
     
