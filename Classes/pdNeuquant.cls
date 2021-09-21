@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Neuquant-inspired Neural Network Color Quantization Class
 'Copyright 2021-2021 by Tanner Helland
 'Created: 16/September/21
-'Last updated: 20/September/21
-'Last update: finish optimizing against VB6 quirks
+'Last updated: 21/September/21
+'Last update: myriad optimizations against VB6 quirks
 '
 'This class provides a highly optimized (for VB6) Neuquant-inspired neural network
 ' color quantization implementation.  Neuquant was originally published by Anthony Decker,
@@ -96,25 +96,32 @@ Private Const m_numTrainingCycles As Long = 100
 ' OK but have not been tested.
 Private m_samplingFactor As Long
 
-'Each neuron stores a BGRA value in floating-point; note that the actual components used do *not* matter,
-' so you can freely plug-in e.g. LABa values instead and the algorithm works the same way.  The only
-' component whose behavior must be consistent is a/alpha, because it is initialized to all 255 to better
-' match the average input to this class.
-Private Type PD_NNPixel
-    b As Single
-    g As Single
-    r As Single
-    a As Single
-    
-    'Frequency and bias arrays are used by the core training function.  See FindBestNeuron() for details.
-    ' (Originally these were declared as two separate arrays, but we get way better locality by declaring
-    ' them alongside color components because the same indices in either array are always accessed together.)
-    frequency As Single
-    bias As Single
-End Type
+'NOTE: in previous builds, each neuron was stored as the custom type described below.  While this
+' produced very pretty, readable code, it's slower to access UDT members in VB6 (with or without a
+' With statement) than it is to access a bare primitive array.  As such, the type below has been
+' replaced by a bare float array, and we simply access members manually (e.g. BGRA as idx * 6 + 0
+' for blue, idx * 6 + 1 for green, etc).
+
+''Original type definition follows:
+''Each neuron stores a BGRA value in floating-point; note that the actual components used do *not* matter,
+'' so you can freely plug-in e.g. LABa values instead and the algorithm works the same way.  The only
+'' component whose behavior must be consistent is a/alpha, because it is initialized to all 255 to better
+'' match the average input to this class.
+'Private Type PD_NNPixel
+'    b As Single
+'    g As Single
+'    r As Single
+'    a As Single
+'
+'    'Frequency and bias arrays are used by the core training function.  See FindBestNeuron() for details.
+'    ' (Originally these were declared as two separate arrays, but we get way better locality by declaring
+'    ' them alongside color components because the same indices in either array are always accessed together.)
+'    frequency As Single
+'    bias As Single
+'End Type
 
 'The neuron network itself, one neuron for every color in the output palette
-Private m_network() As PD_NNPixel
+Private m_network() As Single
 
 'Call this function first; the number of colors determines the size of the neural network,
 ' which in turn controls a huge list of run-time "constants".
@@ -129,7 +136,9 @@ Friend Sub SetColorCount(ByVal numColors As Long)
     m_neuronCount = numColors
     
     'Initialize a bunch of other settings contingent on the m_neuronCount
-    ReDim m_network(0 To m_neuronCount - 1) As PD_NNPixel
+    
+    'Create the base underlying array, with 6 floats per neuron (BGRA, frequency, bias)
+    ReDim m_network(0 To m_neuronCount * 6 - 1) As Single
     
 End Sub
 
@@ -146,16 +155,24 @@ Friend Function InitializeNeuralNetwork(ByRef srcDIB As pdDIB, Optional ByVal sa
     m_samplingFactor = samplingQuality
     
     'Initialize the network with [numPaletteColors] neurons evenly spaced along the gray axis
-    Dim i As Long
+    Dim i As Long, idx As Long
     For i = 0 To m_neuronCount - 1
-        With m_network(i)
-            .b = (255! * i) / m_neuronCount
-            .g = .b
-            .r = .b
-            .a = 255!       'Note that we initialize the network with assumed full opacity, by design
-            .frequency = 1! / m_neuronCount
-            .bias = 0!
-        End With
+        
+        '6 floats are used for each network (BGRA, frequency, and bias).  We store them inside
+        ' a naked float array of size colorCount * 6 because using a custom UDT is slower
+        ' in VB6 than accessing a primitive (even though we have to manually calculate offsets).
+        idx = i * 6
+        
+        'BGRA
+        m_network(idx) = (255! * i) / m_neuronCount
+        m_network(idx + 1) = m_network(idx)
+        m_network(idx + 2) = m_network(idx)
+        m_network(idx + 3) = 255!     'Note that we initialize the network with assumed full opacity, by design
+        
+        'Frequency and bias
+        m_network(idx + 4) = 1! / m_neuronCount
+        m_network(idx + 5) = 0!
+        
     Next i
     
     'Return the number of pixels we intend to sample; the caller can use this for tracking progress
@@ -246,8 +263,8 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
     Dim firstTime As Currency, startTime As Currency, endTime As Currency, netTimeContest As Currency, netTimeAlter As Currency
     VBHacks.GetHighResTime firstTime
     
-    'Index into the array wrapped around the source image
-    Dim idxPixel As Long
+    'Index into the network array, and the array wrapped around the source image
+    Dim idx As Long, idxPixel As Long
     
     Dim i As Long, j As Long
     i = 0
@@ -270,12 +287,11 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
         
         'Originally this was a function call (AlterSingleNeuron), but I've manually in-lined it
         ' for better performance:
-        With m_network(j)
-            .b = .b - weight * (.b - b)
-            .g = .g - weight * (.g - g)
-            .r = .r - weight * (.r - r)
-            .a = .a - weight * (.a - a)
-        End With
+        idx = j * 6
+        m_network(idx) = m_network(idx) - weight * (m_network(idx) - b)
+        m_network(idx + 1) = m_network(idx + 1) - weight * (m_network(idx + 1) - g)
+        m_network(idx + 2) = m_network(idx + 2) - weight * (m_network(idx + 2) - r)
+        m_network(idx + 3) = m_network(idx + 3) - weight * (m_network(idx + 3) - a)
         
         VBHacks.GetHighResTime startTime
         'If this loop has a non-zero radius, alter neighboring neurons next
@@ -331,7 +347,7 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
     PDDebug.LogAction "Time taken (contest): " & VBHacks.GetTotalTimeAsString(netTimeContest)
     PDDebug.LogAction "Time taken (alter): " & VBHacks.GetTotalTimeAsString(netTimeAlter)
     
-    'Free unsafe array ref
+    'Free unsafe array references
     m_srcDIB.UnwrapArrayFromDIB imgPixels
     
 End Sub
@@ -347,13 +363,14 @@ Private Function FindBestNeuron(ByVal b As Single, ByVal g As Single, ByVal r As
     '    bias will be NEGATIVE; this discourages the algorithm from selecting the same few neurons over-and-over,
     '    which is essential for distributing the original set of gray-axis neurons into a meaningful new
     '    assortment of colors.
-    Dim colorDistance As Single, tmpCalc As Single
+    Dim colorDistance As Single
+    Dim tmpR As Single, tmpG As Single, tmpB As Single, tmpA As Single
     
     'Ensure best distances start at maximum values
     Dim bestDistance As Single, bestBiasDistance As Single
     bestDistance = SINGLE_MAX: bestBiasDistance = SINGLE_MAX
     
-    Dim idxBestDistance As Long
+    Dim idx As Long, idxBestDistance As Long
     
     'beta and gamma are used to increment/decrement the frequency and bias calculations for
     ' each compared neuron
@@ -367,44 +384,41 @@ Private Function FindBestNeuron(ByVal b As Single, ByVal g As Single, ByVal r As
         ' different in the early 90's, so maybe it made sense then.  (The paper vaguely alludes
         ' to this: https://web.archive.org/web/20030503154334/http://members.ozemail.com.au/~dekker/NeuQuant.pdf)
         ' Anyway, I've switched to Euclidean here because it's faster.
-        With m_network(i)
-            
-            'Calculate color distance
-            colorDistance = .b - b
-            tmpCalc = .g - g
-            colorDistance = colorDistance * colorDistance + tmpCalc * tmpCalc
-            tmpCalc = .r - r
-            colorDistance = colorDistance + tmpCalc * tmpCalc
-            tmpCalc = .a - a
-            colorDistance = colorDistance + tmpCalc * tmpCalc
-            
-            'Is this the closest neuron?  If so, mark it.
-            If (colorDistance < bestDistance) Then
-                bestDistance = colorDistance
-                idxBestDistance = i
-            End If
-            
-            'Add bias into our calculation and see if this neuron is *now* the best match
-            colorDistance = colorDistance - .bias
-            If (colorDistance < bestBiasDistance) Then
-                bestBiasDistance = colorDistance
-                FindBestNeuron = i
-            End If
         
-            'Update frequency and bias trackers for this neuron
-            .frequency = .frequency - .frequency * NEURON_BETA
-            .bias = .bias + .frequency
-            
-        End With
+        '(Note also that the use of temporary variables here provides a little speedup,
+        ' presumably because modern CPUs can reliably pipeline them.)
+        idx = i * 6
+        tmpB = m_network(idx) - b
+        tmpG = m_network(idx + 1) - g
+        tmpR = m_network(idx + 2) - r
+        tmpA = m_network(idx + 3) - a
+        colorDistance = tmpB * tmpB + tmpG * tmpG + tmpR * tmpR + tmpA * tmpA
+        
+        'Is this the closest neuron?  If so, mark it.
+        If (colorDistance < bestDistance) Then
+            bestDistance = colorDistance
+            idxBestDistance = i
+        End If
+        
+        'Add bias into our calculation and see if this neuron is *now* the best match
+        colorDistance = colorDistance - m_network(idx + 5)
+        If (colorDistance < bestBiasDistance) Then
+            bestBiasDistance = colorDistance
+            FindBestNeuron = i
+        End If
+    
+        'Update frequency and bias trackers for this neuron
+        idx = idx + 4
+        m_network(idx) = m_network(idx) - m_network(idx) * NEURON_BETA
+        m_network(idx + 1) = m_network(idx + 1) + m_network(idx)
         
     Next i
     
     'Before exiting, perform a final frequency and bias update.  (Note that the return was already
     ' calculated above - VB6 uses a different mechanism than standard "return x" syntax.)
-    With m_network(idxBestDistance)
-        .frequency = .frequency + NEURON_BETA
-        .bias = .bias - 1
-    End With
+    idx = idxBestDistance * 6 + 4
+    m_network(idx) = m_network(idx) + NEURON_BETA
+    m_network(idx + 1) = m_network(idx + 1) - 1
     
 End Function
 
@@ -423,7 +437,7 @@ Private Sub AlterNeighbors(ByVal biasFactor As Single, ByVal radius As Long, ByV
     If (idxHigh > m_neuronCount) Then idxHigh = m_neuronCount
     
     'Setup initial indices (on either side of the target neuron)
-    Dim j As Long, k As Long
+    Dim j As Long, k As Long, idx As Long
     j = i + 1
     k = i - 1
     
@@ -455,23 +469,21 @@ Private Sub AlterNeighbors(ByVal biasFactor As Single, ByVal radius As Long, ByV
         
         'Apply to the next neuron below (if it's within bounds)
         If (k > idxLow) Then
-            With m_network(k)
-                .b = .b - weight * (.b - b)
-                .g = .g - weight * (.g - g)
-                .r = .r - weight * (.r - r)
-                .a = .a - weight * (.a - a)
-            End With
+            idx = k * 6
+            m_network(idx) = m_network(idx) - weight * (m_network(idx) - b)
+            m_network(idx + 1) = m_network(idx + 1) - weight * (m_network(idx + 1) - g)
+            m_network(idx + 2) = m_network(idx + 2) - weight * (m_network(idx + 2) - r)
+            m_network(idx + 3) = m_network(idx + 3) - weight * (m_network(idx + 3) - a)
             k = k - 1
         End If
         
         'Apply to the next neuron above (if it's within bounds)
         If (j < idxHigh) Then
-            With m_network(j)
-                .b = .b - weight * (.b - b)
-                .g = .g - weight * (.g - g)
-                .r = .r - weight * (.r - r)
-                .a = .a - weight * (.a - a)
-            End With
+            idx = j * 6
+            m_network(idx) = m_network(idx) - weight * (m_network(idx) - b)
+            m_network(idx + 1) = m_network(idx + 1) - weight * (m_network(idx + 1) - g)
+            m_network(idx + 2) = m_network(idx + 2) - weight * (m_network(idx + 2) - r)
+            m_network(idx + 3) = m_network(idx + 3) - weight * (m_network(idx + 3) - a)
             j = j + 1
         End If
         
@@ -483,27 +495,29 @@ End Sub
 Friend Sub GetFinalPalette(ByRef dstPalette() As RGBQuad)
     
     ReDim dstPalette(0 To m_neuronCount - 1) As RGBQuad
-    Dim b As Long, g As Long, r As Long, a As Long
+    Dim b As Long, g As Long, r As Long, a As Long, idx As Long
     
     Dim i As Long
     For i = 0 To m_neuronCount - 1
         
+        idx = i * 6
+        
         With dstPalette(i)
             
             'Extract each color (and alpha, optionally) and round it to the nearest int
-            b = Int(m_network(i).b + 0.5)
+            b = Int(m_network(idx) + 0.5)
             If (b > 255) Then b = 255
             If (b < 0) Then b = 0
             
-            g = Int(m_network(i).g + 0.5)
+            g = Int(m_network(idx + 1) + 0.5)
             If (g > 255) Then g = 255
             If (g < 0) Then g = 0
             
-            r = Int(m_network(i).r + 0.5)
+            r = Int(m_network(idx + 2) + 0.5)
             If (r > 255) Then r = 255
             If (r < 0) Then r = 0
             
-            a = Int(m_network(i).a + 0.5)
+            a = Int(m_network(idx + 3) + 0.5)
             If (a > 255) Then a = 255
             If (a < 0) Then a = 0
             
