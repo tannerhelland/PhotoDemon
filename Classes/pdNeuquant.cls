@@ -259,9 +259,6 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
     'We track processed pixels and current cycle in order to report progress back to the caller
     Dim currentCycle As Long, numPixelsPreviousLoops As Long
     
-    Dim firstTime As Currency, startTime As Currency, endTime As Currency, netTimeContest As Currency, netTimeAlter As Currency
-    VBHacks.GetHighResTime firstTime
-    
     'Index into the network array, and the array wrapped around the source image
     Dim idx As Long, idxPixel As Long
     
@@ -275,14 +272,11 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
         r = imgPixels(idxPixel + 2)
         a = imgPixels(idxPixel + 3)
         
-        VBHacks.GetHighResTime startTime
         'Find the best neuron match for this color.  Note that we *cannot* accelerate this using
         ' something like RLE, because neurons are biased as we select them more frequently (which prevents
         ' distortion for a few single best-match values).  The original paper describes the importance
         ' of biasing hits in more detail.
         j = FindBestNeuron(b, g, r, a)
-        VBHacks.GetHighResTime endTime
-        netTimeContest = netTimeContest + (endTime - startTime)
         
         'Originally this was a function call (AlterSingleNeuron), but I've manually in-lined it
         ' for better performance:
@@ -292,11 +286,8 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
         m_network(idx + 2) = m_network(idx + 2) - weight * (m_network(idx + 2) - r)
         m_network(idx + 3) = m_network(idx + 3) - weight * (m_network(idx + 3) - a)
         
-        VBHacks.GetHighResTime startTime
         'If this loop has a non-zero radius, alter neighboring neurons next
         If (radius > 0) Then AlterNeighbors weight, radius, j, b, g, r, a
-        VBHacks.GetHighResTime endTime
-        netTimeAlter = netTimeAlter + (endTime - startTime)
         
         'Move the pixel pointer to a new location (remember - step is a prime number).
         ' Obviously, we need to wrap if we move beyond the end of the image.
@@ -341,10 +332,7 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
         
     Loop
     
-    PDDebug.LogAction "Neural network complete.  Final alpha = " & CStr(weight)
-    PDDebug.LogAction "Time taken (total): " & VBHacks.GetTimeDiffNowAsString(firstTime)
-    PDDebug.LogAction "Time taken (contest): " & VBHacks.GetTotalTimeAsString(netTimeContest)
-    PDDebug.LogAction "Time taken (alter): " & VBHacks.GetTotalTimeAsString(netTimeAlter)
+    PDDebug.LogAction "Neural network training complete!"
     
     'Free unsafe array references
     m_srcDIB.UnwrapArrayFromDIB imgPixels
