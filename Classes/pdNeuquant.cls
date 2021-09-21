@@ -243,6 +243,9 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
     'We track processed pixels and current cycle in order to report progress back to the caller
     Dim currentCycle As Long, numPixelsPreviousLoops As Long
     
+    Dim firstTime As Currency, startTime As Currency, endTime As Currency, netTimeContest As Currency, netTimeAlter As Currency
+    VBHacks.GetHighResTime firstTime
+    
     'Index into the array wrapped around the source image
     Dim idxPixel As Long
     
@@ -256,11 +259,14 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
         r = imgPixels(idxPixel + 2)
         a = imgPixels(idxPixel + 3)
         
+        VBHacks.GetHighResTime startTime
         'Find the best neuron match for this color.  Note that we *cannot* accelerate this using
         ' something like RLE, because neurons are biased as we select them more frequently (which prevents
         ' distortion for a few single best-match values).  The original paper describes the importance
         ' of biasing hits in more detail.
         j = FindBestNeuron(b, g, r, a)
+        VBHacks.GetHighResTime endTime
+        netTimeContest = netTimeContest + (endTime - startTime)
         
         'Originally this was a function call (AlterSingleNeuron), but I've manually in-lined it
         ' for better performance:
@@ -271,8 +277,11 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
             .a = .a - weight * (.a - a)
         End With
         
+        VBHacks.GetHighResTime startTime
         'If this loop has a non-zero radius, alter neighboring neurons next
         If (radius > 0) Then AlterNeighbors weight, radius, j, b, g, r, a
+        VBHacks.GetHighResTime endTime
+        netTimeAlter = netTimeAlter + (endTime - startTime)
         
         'Move the pixel pointer to a new location (remember - step is a prime number).
         ' Obviously, we need to wrap if we move beyond the end of the image.
@@ -318,6 +327,9 @@ Friend Sub TrainNeuralNetwork(Optional ByVal suppressMessages As Boolean = True,
     Loop
     
     PDDebug.LogAction "Neural network complete.  Final alpha = " & CStr(weight)
+    PDDebug.LogAction "Time taken (total): " & VBHacks.GetTimeDiffNowAsString(firstTime)
+    PDDebug.LogAction "Time taken (contest): " & VBHacks.GetTotalTimeAsString(netTimeContest)
+    PDDebug.LogAction "Time taken (alter): " & VBHacks.GetTotalTimeAsString(netTimeAlter)
     
     'Free unsafe array ref
     m_srcDIB.UnwrapArrayFromDIB imgPixels
@@ -384,7 +396,7 @@ Private Function FindBestNeuron(ByVal b As Single, ByVal g As Single, ByVal r As
             .bias = .bias + .frequency
             
         End With
-            
+        
     Next i
     
     'Before exiting, perform a final frequency and bias update.  (Note that the return was already
