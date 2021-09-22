@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.502</langversion>
+<langversion>6.6.503</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2705,7 +2705,7 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 <translation>lesen zlib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 18 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -6253,6 +6253,23 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
+<original>foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gamma</original>
+<translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>Removing haze from image</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
 <original>exposure compensation (stops)</original>
 <translation>pampasan pendedahan (berhenti)</translation>
 </phrase>
@@ -6260,11 +6277,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <phrase>
 <original>offset</original>
 <translation>mengimbangi</translation>
-</phrase>
-
-<phrase>
-<original>gamma</original>
-<translation>gamma</translation>
 </phrase>
 
 <phrase>
@@ -6277,7 +6289,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Melaraskan pendedahan imej</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>keep all colors in sync</original>
@@ -8943,13 +8955,8 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>Xiaolin Wu</original>
-<translation>Xiaolin Wu</translation>
-</phrase>
-
-<phrase>
-<original>NeuQuant</original>
-<translation>NeuQuant</translation>
+<original>neural network</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8982,7 +8989,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 33 phrases. 15 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>glow radius</original>
@@ -13641,24 +13648,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>foreground</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Removing haze from image</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2583</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5324 phrases. -->
-<!-- 2740 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 11871 total words. -->
+<!-- 2741 are duplicates, so only 2583 unique phrases have been written to file. -->
+<!-- These 2583 phrases contain approximately 11870 total words. -->
 
 </pdData>

@@ -923,7 +923,7 @@ Private Sub UpdatePreview()
                 DIBs.MakeDIBGrayscale workingDIB, newPaletteSize
                 
             ElseIf forceIndexed Then
-                If (Not useOrigMode) Then Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
+                If (Not useOrigMode) Then Palettes.GetNeuquantPalette_RGBA workingDIB, newPalette, newPaletteSize
                 Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, newPalette, True
             End If
             

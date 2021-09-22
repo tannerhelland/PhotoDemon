@@ -1796,7 +1796,7 @@ Public Function GetDIBAs8bpp_RGBA_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPalet
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
         
         'Start by retrieving an optimized RGBA palette for the image in question
-        If Palettes.GetOptimizedPaletteIncAlpha(srcDIB, dstPalette, maxSizeOfPalette) Then
+        If Palettes.GetNeuquantPalette_RGBA(srcDIB, dstPalette, maxSizeOfPalette) Then
         
             'A palette was successfully generated.  We now want to match each pixel in the original image
             ' to the palette we've generated, and return the result.
@@ -2009,8 +2009,9 @@ End Function
 ' where a full-sized image copy doesn't meaningfully improve heuristics (but requires a hell of a lot longer to analyze).
 '
 'This function always preserves aspect ratio, and it will return the original image if the image is smaller than the number of
-' pixels requested.  This simplifies outside functions, as you can always call this function prior to running heuristics.
-Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal numOfPixels As Long, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
+' pixels requested (unless overridden by the optional allowUpsampling parameter).  This simplifies outside functions,
+' as you can always call this function prior to running heuristics.
+Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal numOfPixels As Long, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal allowUpsampling As Boolean = False) As Boolean
 
     If (Not srcDIB Is Nothing) Then
         
@@ -2022,7 +2023,7 @@ Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdD
         srcHeight = srcDIB.GetDIBHeight
         
         'If the source image has less megapixels than the requested amount, just return it as-is
-        If (srcWidth * srcHeight < numOfPixels) Then
+        If (srcWidth * srcHeight < numOfPixels) And (Not allowUpsampling) Then
             dstDIB.CreateFromExistingDIB srcDIB
             ResizeDIBByPixelCount = True
         

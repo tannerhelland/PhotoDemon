@@ -84,7 +84,9 @@ Private Declare Function pspiSetPath Lib "pspiHost.dll" Alias "_pspiSetPath@4" (
 'Callbacks
 Private Declare Function pspiPlugInEnumerate Lib "pspiHost.dll" Alias "_pspiPlugInEnumerate@8" (ByVal addressOfCallback As Long, Optional ByVal bRecurseSubFolders As Long = 1) As PSPI_Result
 Private Declare Function pspiSetProgressCallBack Lib "pspiHost.dll" Alias "_pspiSetProgressCallBack@4" (ByVal addressOfCallback As Long) As PSPI_Result
-Private Declare Function pspiSetColorPickerCallBack Lib "pspiHost.dll" Alias "_pspiSetcolorPickerCallBack@4" (ByVal addressOfCallback As Long) As PSPI_Result
+
+'TODO:
+'Private Declare Function pspiSetColorPickerCallBack Lib "pspiHost.dll" Alias "_pspiSetcolorPickerCallBack@4" (ByVal addressOfCallback As Long) As PSPI_Result
 
 'Execute various plugin functions
 Private Declare Function pspiPlugInLoad Lib "pspiHost.dll" Alias "_pspiPlugInLoad@4" (ByVal ptrStrFilterPath As Long) As PSPI_Result
@@ -95,7 +97,7 @@ Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugIn
 'Plugins support a "region of interest" in the source image
 Private Declare Function pspiSetRoi Lib "pspiHost.dll" Alias "_pspiSetRoi@16" (Optional ByVal roiTop As Long = 0, Optional ByVal roiLeft As Long = 0, Optional ByVal roiBottom As Long = 0, Optional ByVal roiRight As Long = 0) As PSPI_Result
 '// set image orientation
-Private Declare Function pspiSetImageOrientation Lib "pspiHost.dll" Alias "_pspiSetImageOrientation@4" (ByVal newOrientation As PSPI_ImgOrientation) As PSPI_Result
+'Private Declare Function pspiSetImageOrientation Lib "pspiHost.dll" Alias "_pspiSetImageOrientation@4" (ByVal newOrientation As PSPI_ImgOrientation) As PSPI_Result
 '// set image using contiguous memory buffer pointer
 '// note: source image is shared - do not destroy source image in your host program before plug-in is executed
 Private Declare Function pspiSetImage Lib "pspiHost.dll" Alias "_pspiSetImage@28" (ByVal tImgType As PSPI_ImgType, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal ptrImageBuffer As Long, ByVal imgStride As Long, Optional ByVal ptrAlphaBuffer As Long = 0, Optional ByVal ptrAlphaStride As Long = 0) As PSPI_Result

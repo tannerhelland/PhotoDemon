@@ -302,7 +302,7 @@ End Sub
 ' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.

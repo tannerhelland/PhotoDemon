@@ -89,30 +89,31 @@ Private Enum CharLS_ColorSpace
     CHARLS_SPIFF_COLOR_SPACE_BI_LEVEL_WHITE             'Bi-level image. Each image sample is one bit: 1 = white and 0 = black.
 End Enum
 
-Private Enum CharLS_ColorTransformation
-    
-    'No color space transformation has been applied.
-    CHARLS_COLOR_TRANSFORMATION_NONE
-
-    'Defines the reversible lossless color transformation:
-    ' G = G
-    ' R = R - G
-    ' B = B - G
-    CHARLS_COLOR_TRANSFORMATION_HP1
-
-    'Defines the reversible lossless color transformation:
-    ' G = G
-    ' B = B - (R + G) / 2
-    ' R = R - G
-    CHARLS_COLOR_TRANSFORMATION_HP2
-
-    'Defines the reversible lossless color transformation of Y-Cb-Cr:
-    ' R = R - G
-    ' B = B - G
-    ' G = G + (R + B) / 4
-    CHARLS_COLOR_TRANSFORMATION_HP3
-    
-End Enum
+'This enum is not required for .jls import, but I've left it here for the curious
+'Private Enum CharLS_ColorTransformation
+'
+'    'No color space transformation has been applied.
+'    CHARLS_COLOR_TRANSFORMATION_NONE
+'
+'    'Defines the reversible lossless color transformation:
+'    ' G = G
+'    ' R = R - G
+'    ' B = B - G
+'    CHARLS_COLOR_TRANSFORMATION_HP1
+'
+'    'Defines the reversible lossless color transformation:
+'    ' G = G
+'    ' B = B - (R + G) / 2
+'    ' R = R - G
+'    CHARLS_COLOR_TRANSFORMATION_HP2
+'
+'    'Defines the reversible lossless color transformation of Y-Cb-Cr:
+'    ' R = R - G
+'    ' B = B - G
+'    ' G = G + (R + B) / 4
+'    CHARLS_COLOR_TRANSFORMATION_HP3
+'
+'End Enum
 
 Private Enum CharLS_InterleaveMode
     CHARLS_INTERLEAVE_MODE_NONE     'The data is encoded and stored as component for component: RRRGGGBBB.
@@ -141,25 +142,26 @@ Private Type CharLSFrameInfo
     component_count As Long 'Number of components contained in the frame, range [1, 255]
 End Type
 
-Private Type CharLSCodingParameters
-
-    'Maximum possible value for any image sample in a scan.
-    ' This must be greater than or equal to the actual maximum value for the components in a scan.
-    maximum_sample_value As Long
-    
-    'First quantization threshold value for the local gradients.
-    threshold1 As Long
-    
-    'Second quantization threshold value for the local gradients.
-    threshold2 As Long
-    
-    'Third quantization threshold value for the local gradients.
-    threshold3 As Long
-    
-    'Value at which the counters A, B, and N are halved.
-    reset_value As Long
-    
-End Type
+'This struct is not required for .jls import, but I've left it here for the curious
+'Private Type CharLSCodingParameters
+'
+'    'Maximum possible value for any image sample in a scan.
+'    ' This must be greater than or equal to the actual maximum value for the components in a scan.
+'    maximum_sample_value As Long
+'
+'    'First quantization threshold value for the local gradients.
+'    threshold1 As Long
+'
+'    'Second quantization threshold value for the local gradients.
+'    threshold2 As Long
+'
+'    'Third quantization threshold value for the local gradients.
+'    threshold3 As Long
+'
+'    'Value at which the counters A, B, and N are halved.
+'    reset_value As Long
+'
+'End Type
 
 Private Type CharLSSpiffHeader
     profile_id As Long               '// P: Application profile, type I.8
@@ -184,21 +186,20 @@ End Type
 'Modern, non-deprecated APIs use decorated names.  (Aliasing them here makes it much easier to sync
 ' against upstream vs rebasing a modified .def on each new release.)
 Private Declare Function charls_get_error_message Lib "charls-2-x86" Alias "_charls_get_error_message@4" (ByVal charLSErrorNumber As CharLS_Return) As Long
-Private Declare Function charls_get_jpegls_category Lib "charls-2-x86" Alias "_charls_get_jpegls_category@0" () As Long
-
+'Private Declare Function charls_get_jpegls_category Lib "charls-2-x86" Alias "_charls_get_jpegls_category@0" () As Long
 Private Declare Sub charls_get_version_number Lib "charls-2-x86" Alias "_charls_get_version_number@12" (ByRef vMajor As Long, ByRef vMinor As Long, ByRef vPatch As Long)
-Private Declare Function charls_get_version_string Lib "charls-2-x86" Alias "_charls_get_version_string@0" () As Long
+'Private Declare Function charls_get_version_string Lib "charls-2-x86" Alias "_charls_get_version_string@0" () As Long
 
 Private Declare Function charls_jpegls_decoder_create Lib "charls-2-x86" Alias "_charls_jpegls_decoder_create@0" () As Long
 Private Declare Sub charls_jpegls_decoder_destroy Lib "charls-2-x86" Alias "_charls_jpegls_decoder_destroy@4" (ByVal srcDecoder As Long)
 
 Private Declare Function charls_jpegls_decoder_decode_to_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_decode_to_buffer@16" (ByVal srcDecoder As Long, ByVal ptrToDstBytes As Long, ByVal sizeOfDstArray As Long, ByVal dstStride As Long) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_color_transformation Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_color_transformation@8" (ByVal srcDecoder As Long, ByRef dstColorTransform As CharLS_ColorTransformation) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_color_transformation Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_color_transformation@8" (ByVal srcDecoder As Long, ByRef dstColorTransform As CharLS_ColorTransformation) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_destination_size Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_destination_size@12" (ByVal srcDecoder As Long, ByVal dstStride As Long, ByRef dstSizeBytes As Long) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_frame_info Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_frame_info@8" (ByVal srcDecoder As Long, ByRef dstFrameInfo As CharLSFrameInfo) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_get_interleave_mode Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_interleave_mode@8" (ByVal srcDecoder As Long, ByRef dstInterleaveMode As CharLS_InterleaveMode) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_near_lossless Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_near_lossless@12" (ByVal srcDecoder As Long, ByVal idxComponent As Long, ByRef dstNearLosslessValue As Long) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_preset_coding_parameters Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_preset_coding_parameters@12" (ByVal srcDecoder As Long, ByVal intReserved As Long, ByVal dstCodingParameters As CharLSCodingParameters) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_near_lossless Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_near_lossless@12" (ByVal srcDecoder As Long, ByVal idxComponent As Long, ByRef dstNearLosslessValue As Long) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_preset_coding_parameters Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_preset_coding_parameters@12" (ByVal srcDecoder As Long, ByVal intReserved As Long, ByVal dstCodingParameters As CharLSCodingParameters) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_read_header Lib "charls-2-x86" Alias "_charls_jpegls_decoder_read_header@4" (ByVal srcDecoder As Long) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_read_spiff_header Lib "charls-2-x86" Alias "_charls_jpegls_decoder_read_spiff_header@12" (ByVal srcDecoder As Long, ByVal ptrDstSpiffHeader As Long, ByRef dstHeaderFound As Long) As CharLS_Return
 Private Declare Function charls_jpegls_decoder_set_source_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_set_source_buffer@12" (ByVal srcDecoder As Long, ByVal ptrToBytes As Long, ByVal srcNumBytes As Long) As CharLS_Return
