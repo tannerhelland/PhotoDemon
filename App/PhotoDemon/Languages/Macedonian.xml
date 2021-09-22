@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.356</langversion>
+<langversion>1.0.357</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2699,7 +2699,7 @@ To овозможи поддршка скенер, молам копирајте
 <translation>лиценца zlib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 18 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -6247,6 +6247,23 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
+<original>foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gamma</original>
+<translation>гама</translation>
+</phrase>
+
+<phrase>
+<original>Removing haze from image</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
 <original>exposure compensation (stops)</original>
 <translation>компензација на експозицијата (постојки)</translation>
 </phrase>
@@ -6254,11 +6271,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>offset</original>
 <translation>офсет</translation>
-</phrase>
-
-<phrase>
-<original>gamma</original>
-<translation>гама</translation>
 </phrase>
 
 <phrase>
@@ -6271,7 +6283,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Прилагодување на експозицијата слика</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>keep all colors in sync</original>
@@ -8937,13 +8949,8 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>Xiaolin Wu</original>
-<translation>Xiaolin Ву</translation>
-</phrase>
-
-<phrase>
-<original>NeuQuant</original>
-<translation>NeuQuant</translation>
+<original>neural network</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8976,7 +8983,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 33 phrases. 15 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>glow radius</original>
@@ -13635,24 +13642,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>foreground</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Removing haze from image</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2583</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5324 phrases. -->
-<!-- 2740 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 11871 total words. -->
+<!-- 2741 are duplicates, so only 2583 unique phrases have been written to file. -->
+<!-- These 2583 phrases contain approximately 11870 total words. -->
 
 </pdData>
