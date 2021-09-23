@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2021 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 08/February/21
-'Last update: integrate pspiHost as a permanent plugin
+'Last updated: 22/September/21
+'Last update: integrate libwebp as a permanent plugin
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' A number of third-party libraries are required for correct program operation.
@@ -13,7 +13,7 @@ Attribute VB_Name = "PluginManager"
 ' to make third-party library deployment and maintainence easier in a "portable" application context.
 '
 'When adding a new required library, please make sure to read the module-level declarations,
-' particularly the CORE_PLUGINS enum and associated CORE_PLUGIN_COUNT constant.
+' particularly the CORE_PLUGINS enum and the CORE_PLUGIN_COUNT constant at the top of this page.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -23,7 +23,9 @@ Attribute VB_Name = "PluginManager"
 Option Explicit
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum),
-' so if you add or remove a plugin, YOU MUST update this.
+' so if you add or remove a plugin, YOU MUST update this.  PD iterates plugins in order, so if
+' you do not update this, the plugin at the end of the chain (probably zstd) won't get
+' initialized and PD will crash.
 Private Const CORE_PLUGIN_COUNT As Long = 14
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST

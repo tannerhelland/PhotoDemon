@@ -244,6 +244,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
+            layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_WEBP) And (decoderUsed = id_libwebp))
             
             If (Not layersAlreadyLoaded) Then
                 
@@ -272,39 +273,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction "~ Summary of image """ & Files.FileGetName(srcFile) & """ follows ~", , True
         PDDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
         
-        Dim decoderName As String
-        Select Case decoderUsed
-            Case id_FreeImage
-                decoderName = "FreeImage plugin"
-            Case id_GDIPlus
-                decoderName = "GDI+"
-            Case id_CBZParser
-                decoderName = "Internal CBZ parser"
-            Case id_CharLS
-                decoderName = "CharLS plugin"
-            Case id_ICOParser
-                decoderName = "Internal ICO parser"
-            Case id_libAVIF
-                decoderName = "libavif plugin"
-            Case id_PDIParser
-                decoderName = "Internal PDI parser"
-            Case id_MBMParser
-                decoderName = "Internal MBM parser"
-            Case id_ORAParser
-                decoderName = "Internal OpenRaster parser"
-            Case id_PNGParser
-                decoderName = "Internal PNG parser"
-            Case id_PSDParser
-                decoderName = "Internal PSD parser"
-            Case id_PSPParser
-                decoderName = "Internal PaintShop Pro parser"
-            Case id_WIC
-                decoderName = "Windows Imaging Component"
-            Case Else
-                decoderName = "unknown?!"
-        End Select
-        
-        PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True
+        PDDebug.LogAction vbTab & "Load engine: " & GetDecoderName(decoderUsed), , True
         PDDebug.LogAction vbTab & "Detected format: " & ImageFormats.GetInputFormatDescription(ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
         PDDebug.LogAction vbTab & "Image size (original file): " & Format$(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize"), "#,#") & " Bytes", , True
@@ -801,6 +770,41 @@ Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PD_I
     
     'Any other formats will be dealt with by PD's standard cascade of load functions.
 
+End Function
+
+Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
+    Select Case srcDecoder
+        Case id_GDIPlus
+            GetDecoderName = "GDI+"
+        Case id_FreeImage
+            GetDecoderName = "FreeImage plugin"
+        Case id_CBZParser
+            GetDecoderName = "Internal CBZ parser"
+        Case id_ICOParser
+            GetDecoderName = "Internal ICO parser"
+        Case id_PDIParser
+            GetDecoderName = "Internal PDI parser"
+        Case id_MBMParser
+            GetDecoderName = "Internal MBM parser"
+        Case id_ORAParser
+            GetDecoderName = "Internal OpenRaster parser"
+        Case id_PNGParser
+            GetDecoderName = "Internal PNG parser"
+        Case id_PSDParser
+            GetDecoderName = "Internal PSD parser"
+        Case id_PSPParser
+            GetDecoderName = "Internal PaintShop Pro parser"
+        Case id_WIC
+            GetDecoderName = "Windows Imaging Component"
+        Case id_CharLS
+            GetDecoderName = "CharLS plugin"
+        Case id_libavif
+            GetDecoderName = "libavif plugin"
+        Case id_libwebp
+            GetDecoderName = "libwebp plugin"
+        Case Else
+            GetDecoderName = "unknown?!"
+    End Select
 End Function
 
 'Want to load a whole bunch of image sources at once?  Use this function to do so.  While helpful, note that it comes with some caveats:

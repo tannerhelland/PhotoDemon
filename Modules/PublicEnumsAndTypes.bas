@@ -291,26 +291,28 @@ End Enum
 'PhotoDemon supports multiple image encoders and decoders.
 Public Enum PD_ImageDecoder
     id_Failure = -1
-    id_FreeImage = 0
-    id_GDIPlus = 1
-    id_CBZParser = 2
-    id_ICOParser = 3
-    id_MBMParser = 4
-    id_ORAParser = 5
-    id_PDIParser = 6
-    id_PNGParser = 7
-    id_PSDParser = 8
-    id_PSPParser = 9
-    id_SVGParser = 10
-    id_WIC = 11
-    id_libAVIF = 12
-    id_CharLS = 13
+    id_GDIPlus = 0
+    id_FreeImage
+    id_CBZParser
+    id_ICOParser
+    id_MBMParser
+    id_ORAParser
+    id_PDIParser
+    id_PNGParser
+    id_PSDParser
+    id_PSPParser
+    id_SVGParser
+    id_WIC
+    id_CharLS
+    id_libavif
+    id_libwebp
 End Enum
 
 #If False Then
-    Private Const id_Failure = -1, id_FreeImage = 0, id_GDIPlus = 1
-    Private Const id_CBZParser = 2, id_ICOParser = 3, id_MBMParser = 4, id_ORAParser = 5, id_PDIParser = 6, id_PNGParser = 7
-    Private Const id_PSDParser = 8, id_PSPParser = 9, id_SVGParser = 10, id_WIC = 11, id_libAVIF = 12, id_CharLS = 13
+    Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
+    Private Const id_CBZParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0, id_PNGParser = 0
+    Private Const id_PSDParser = 0, id_PSPParser = 0, id_SVGParser = 0, id_WIC = 0, id_libavif = 0, id_CharLS = 0
+    Private Const id_libwebp = 0
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.

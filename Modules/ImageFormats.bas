@@ -259,7 +259,7 @@ Public Sub GenerateInputFormats()
     
     If m_FreeImageEnabled Then AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
     
-    AddInputFormat "JLS - JPEG-LS", "*.jls", PDIF_JLS
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_CharLS) Then AddInputFormat "JLS - JPEG-LS", "*.jls", PDIF_JLS
     
     If m_FreeImageEnabled Then
         AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
@@ -316,8 +316,10 @@ Public Sub GenerateInputFormats()
     'FreeImage or GDI+ works for loading TIFFs
     AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
         
-    If m_FreeImageEnabled Then
-        AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
+    If m_FreeImageEnabled Then AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
+        
+    'libwebp is our preferred handler for WebP files, but if it goes missing, we can fall back to FreeImage
+    If (PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled) Then
         AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     End If
     
@@ -416,7 +418,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
-    If m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = m_curFormatIndex
