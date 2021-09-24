@@ -499,7 +499,7 @@ End Function
 '
 'RETURNS: number of bytes read if successful; zero otherwise.
 '
-'NOTE: if the optional trimDestinationArray parameter is specified, the destination array will be exactly sized to
+'NOTE: if the optional trimDestinationArray parameter is TRUE, the destination array will be exactly sized to
 '      match the outgoing data.  If trimDestinationArray is FALSE, the destination array will only be resized if
 '      necessary to fit the data.  This can be very helpful for performance, as you can reuse the same destination
 '      array for reading data from the stream, saving expensive allocations.

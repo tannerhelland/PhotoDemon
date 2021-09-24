@@ -1986,9 +1986,10 @@ Private Function AutoCorrectImageOrientation(ByVal hImage As Long) As Boolean
         
 End Function
 
-'After calling GDIPlusLoadPicture and discovering that your file is a multi-page TIFF, you can call this function to
-' continue loading subsequent pages into the active image.  If you do *not* do this, please call MultiPageDataNotWanted,
-' below, to free the handle that GDIPlusLoadPicture helpfully cached for you.
+'After calling GDIPlusLoadPicture and discovering that your file is multi-page (or multi-frame,
+' in the case of GIFs), you can call this function to continue loading subsequent pages into the
+' active image.  If you do *not* do this, you must call MultiPageDataNotWanted(), below, to free
+' the image handle that GDIPlusLoadPicture cached (in expectation of additional loading).
 Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As Boolean
     
     ContinueLoadingMultipageImage = False

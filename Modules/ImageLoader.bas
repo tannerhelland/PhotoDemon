@@ -1010,7 +1010,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             
             'If succcessful, flag the image format and return
             If CascadeLoadGenericImage Then
-                decoderUsed = id_libAVIF
+                decoderUsed = id_libavif
                 dstImage.SetOriginalFileFormat PDIF_AVIF
             End If
             
@@ -1063,6 +1063,17 @@ LibAVIFDidntWork:
         If CascadeLoadGenericImage Then
             decoderUsed = id_CharLS
             dstImage.SetOriginalFileFormat PDIF_JLS
+        End If
+    End If
+    
+    'WebP was originally handled by FreeImage, but in v9.0 we switched to using libwebp directly
+    If (Not CascadeLoadGenericImage) And Plugin_WebP.IsWebPEnabled() Then
+        If Plugin_WebP.IsWebP(srcFile) Then
+            CascadeLoadGenericImage = LoadWebP(srcFile, dstImage, dstDIB)
+            If CascadeLoadGenericImage Then
+                decoderUsed = id_libwebp
+                dstImage.SetOriginalFileFormat PDIF_WEBP
+            End If
         End If
     End If
     
@@ -1527,6 +1538,72 @@ Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
     End If
 
+End Function
+
+'Use libwebp to parse a WebP file
+Private Function LoadWebP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadWebP = False
+    
+    'Perform a failsafe format check before continuing.  (In PD, this check is always performed
+    ' by the calling function, but in case of code refactoring in the future, we maintain a check
+    ' here too.)
+    If (Not Plugin_WebP.IsWebP(srcFile)) Then Exit Function
+    
+    'libwebp provides no direct file-reading possibilities, so we need to pre-load the file into memory.
+    ' This is generally not a problem as WebP files tend to be (per the name?) web-oriented sizes.
+    ' Also - note that libwebp *does* provide an incremental parser for reading pixel data, but it's not
+    ' helpful for determining things like file properties (e.g. isAnimated), so if we have to pre-load
+    ' the file for one thing, we may as well pre-load it for everything.
+    Dim fullFile() As Byte
+    If Files.FileLoadAsByteArray(srcFile, fullFile) Then
+        
+        'libwebp handles all subsequent parsing duties for us.
+        PDDebug.LogAction "WebP file found.  Handing parsing duties over to pdWebP..."
+        
+        Dim cWebP As pdWebP
+        Set cWebP = New pdWebP
+        LoadWebP = cWebP.LoadWebP_FromMemory(srcFile, VarPtr(fullFile(0)), UBound(fullFile) + 1, dstImage, dstDIB)
+        
+        'Perform some PD-specific object initialization before exiting
+        If LoadWebP And (Not dstImage Is Nothing) Then
+            
+            dstImage.SetOriginalFileFormat PDIF_WEBP
+            dstImage.NotifyImageChanged UNDO_Everything
+            
+            dstImage.SetOriginalColorDepth 32
+            dstImage.SetOriginalGrayscale False
+            dstImage.SetOriginalAlpha cWebP.HasAlpha()
+            dstImage.SetAnimated cWebP.IsAnimated()
+            
+            'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+            ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+            Set dstDIB = New pdDIB
+            dstDIB.CreateBlank 16, 16, 32, 0
+            dstDIB.SetColorManagementState cms_ProfileConverted
+    
+    '        'Before exiting, ensure all color management data has been added to PD's central cache
+    '        Dim profHash As String
+    '        If cPSP.HasICCProfile() Then
+    '            profHash = ColorManagement.AddProfileToCache(cPSP.GetICCProfile(), True, False, False)
+    '            dstImage.SetColorProfile_Original profHash
+    '
+    '            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it -
+    '            ' will have been hard-converted to sRGB, so we don't want to associate the destination
+    '            ' DIB with its source profile. Instead, note that it is currently sRGB to prevent the
+    '            ' central color-manager from attempting to correct it on its own.
+    '            profHash = ColorManagement.GetSRGBProfileHash()
+    '            dstDIB.SetColorProfileHash profHash
+    '            dstDIB.SetColorManagementState cms_ProfileConverted
+    '
+    '        End If
+        
+        End If
+
+    Else
+        PDDebug.LogAction "WARNING! LoadWebP() couldn't load source file."
+    End If
+    
 End Function
 
 'Most portions of PD operate exclusively in 32-bpp mode.  (This greatly simplifies the compositing pipeline.)
