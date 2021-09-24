@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.725</langversion>
+<langversion>9.0.781</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -8958,7 +8958,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>neural network</original>
-<translation></translation>
+<translation>Neurales Netzwerk</translation>
 </phrase>
 
 <phrase>
