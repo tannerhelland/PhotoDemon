@@ -1574,6 +1574,7 @@ Private Function LoadWebP(ByRef srcFile As String, ByRef dstImage As pdImage, By
             dstImage.SetOriginalColorDepth 32
             dstImage.SetOriginalGrayscale False
             dstImage.SetOriginalAlpha cWebP.HasAlpha()
+            dstImage.SetAnimated cWebP.IsAnimated()
             
             'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
             ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.

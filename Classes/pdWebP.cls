@@ -15,25 +15,26 @@ Attribute VB_Exposed = False
 'WebP Image Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 22/September/21
-'Last updated: 22/September/21
-'Last update: initial build
+'Last updated: 24/September/21
+'Last update: animated WebP now supported (import only)
 '
-'Per its documentation (available at https://github.com/webmproject/libwebp/), libewebp is...
-'
-'"WebP codec: library to encode and decode images in WebP format. This package contains the library
-' that can be used in other programs to add WebP support..."
-'
-'LibWebP is BSD-licensed and actively maintained by Google.  Fortunately for PhotoDemon, the developers
-' also provide a robust C interface and legacy compilation options, enabling support all the way back
-' to Windows XP (hypothetically - testing XP is still TODO).
+'LibWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
+' Fortunately for PhotoDemon, it comes with a robust C interface and legacy compilation options, enabling
+' support all the way back to Windows XP (hypothetically - testing on XP is still TODO).
 '
 'PhotoDemon historically used FreeImage to manage WebP files, but using libwebp directly allows for
-' better performance and feature support, including animated WebP files (which do not work via FreeImage).
+' significantly better performance and feature support, including animated WebP files (which FreeImage
+' does not support).
 '
 'Note that all features in this module rely on the libwebp binaries that ship with PhotoDemon.
 ' These features will not work if libwebp cannot be located.
 '
-'Please refer to Plugin_WebP for additional details on how this class works.
+'You can freely plug-in your own builds of libwebp and libwebpde/mux, but note that they must be built
+' using cdecl exports and x86 only (obviously).  Note also that many exported APIs require us to pass an
+' ABI identifier which may need to be updated against future library versions (to enable new library
+' features, at least).
+'
+'Please refer to Plugin_WebP for details on initializing the various libraries; that is not handled here.
 '
 'This wrapper class uses a shorthand implementation of DispCallFunc originally written by Olaf Schmidt.
 ' Many thanks to Olaf, whose original version can be found here (link good as of Feb 2019):
@@ -50,8 +51,10 @@ Option Explicit
 ' to the debug log.
 Private Const WEBP_DEBUG_VERBOSE As Boolean = True
 
-'Some exported APIs require passing version-checks (?!)
-Private Const WEBP_DECODER_ABI_VERSION As Long = &H209&
+'Some exported APIs require passing ABI version numbers; confusingly, these exports are usually
+' suffixed with "Internal"; see the class initialization function for details.
+Private Const WEBP_DECODER_ABI_VERSION As Long = &H209& 'From decode.h
+Private Const WEBP_DEMUX_ABI_VERSION As Long = &H107&   'From demux.h
 
 Private Enum PD_VP8StatusCode
     VP8_STATUS_OK = 0
@@ -118,6 +121,32 @@ End Enum
     Private Const WEBP_MUX_BLEND = 0, WEBP_MUX_NO_BLEND = 1
 #End If
 
+Private Enum PD_WEBP_CSP_MODE
+    MODE_RGB = 0
+    MODE_RGBA = 1
+    MODE_BGR = 2
+    MODE_BGRA = 3
+    MODE_ARGB = 4
+    MODE_RGBA_4444 = 5
+    MODE_RGB_565 = 6
+    'RGB-premultiplied transparent modes (alpha value is preserved)
+    ' (names changed to work in VB)
+    MODE_rgbAp = 7
+    MODE_bgrAp = 8
+    MODE_Argbp = 9
+    MODE_rgbAp_4444 = 10
+    'YUV modes must come after RGB ones.
+    MODE_YUV = 11
+    MODE_YUVA = 12  '// yuv 4:2:0
+    MODE_LAST = 13
+End Enum
+
+#If False Then
+    Private Const MODE_RGB = 0, MODE_RGBA = 1, MODE_BGR = 2, MODE_BGRA = 3, MODE_ARGB = 4, MODE_RGBA_4444 = 5, MODE_RGB_565 = 6
+    Private Const MODE_rgbAp = 7, MODE_bgrAp = 8, MODE_Argbp = 9, MODE_rgbAp_4444 = 10
+    Private Const MODE_YUV = 11, MODE_YUVA = 12, MODE_LAST = 13
+#End If
+
 'Various structs follow.  These all require use of the advanced decoding interface; the "quick" one
 ' can't supply these
 Private Type PD_WebPBitstreamFeatures
@@ -129,23 +158,42 @@ Private Type PD_WebPBitstreamFeatures
     webpPadding(5) As Long  'padding for later use
 End Type
 
+'Animation options
+Private Type PD_WebPAnimDecoderOptions
+    'Output colorspace. Only the following modes are supported:
+    '  MODE_RGBA, MODE_BGRA, MODE_rgbA and MODE_bgrA.
+    color_mode As PD_WEBP_CSP_MODE
+    use_threads As Long         'If true, use multi-threaded decoding.
+    padding(7) As Long          '// Padding for later use.
+End Type
+
+'Global information about the animation
+Private Type PD_WebPAnimInfo
+    canvas_width As Long
+    canvas_height As Long
+    loop_count As Long
+    bgcolor As Long
+    frame_count As Long
+    padding(4) As Long          '// padding for later use
+End Type
+
 'Note that regular WebP features reside in libwebp; animation features are in libwebpde/mux.
 
-'The following functions are used in this module, but instead of being called directly, calls are routed
-' through DispCallFunc (which allows us to use the prebuilt release DLLs provided by the library authors):
-'Private Declare Function WebPDecodeBGRAInto Lib "libwebp" (ByVal ptrToSrcData As Long, ByVal srcDataSizeInBytes As Long, ByVal ptrToDstData As Long, ByVal dstDataSizeInBytes As Long, ByVal dstStride As Long) As Long
-'Private Declare Function WebPGetDecoderVersion Lib "libwebp" () As Long
-'Private Declare Function WebPGetFeatures Lib "libwebp" (ByVal ptrToData As Long, ByVal dataSizeInBytes As Long, ByVal ptrToWebPBitstreamFeatures As Long) As PD_VP8StatusCode
-'Private Declare Function WebPGetInfo Lib "libwebp" (ByVal ptrToData As Long, ByVal dataSizeInBytes As Long, ByRef dstWidth As Long, ByRef dstHeight As Long) As Long
-
 'libwebp uses a Google-specific toolchain for compilation, so we lean on their supplied makefile for building.
-' This produces cdecl DLLs which we wrap using DispCallFunc
+' This produces cdecl DLLs which we must wrap using DispCallFunc.
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
 'At load-time, we cache a number of proc addresses (required for passing through DispCallFunc).
 ' This saves us a little time vs calling GetProcAddress on each call.
 Private Enum WebP_ProcAddress
+    WebPAnimDecoderDelete
+    WebPAnimDecoderGetInfo
+    WebPAnimDecoderGetNext
+    WebPAnimDecoderHasMoreFrames
+    WebPAnimDecoderNew
+    WebPAnimDecoderOptionsInit
+    WebPAnimDecoderReset
     WebPDecodeBGRAInto
     WebPDemux
     WebPDemuxDelete
@@ -170,6 +218,9 @@ Private m_imgWidth As Long, m_imgHeight As Long
 'Many WebP features require a specialized demuxer object to retrieve.  If this handle is non-zero,
 ' a demuxer has been allocated.  You *MUST* free this with a call to WebPDemuxDelete().
 Private m_hDemuxer As Long
+
+'Animated files will fill this struct.  (Non-animated files WILL NOT.)
+Private m_AnimationInfo As PD_WebPAnimInfo
 
 Friend Function GetLibraryVersion() As Long
     GetLibraryVersion = CallCDeclW(WebPGetDecoderVersion, vbLong)
@@ -215,17 +266,143 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
         Exit Function
     End If
     
-    Dim newLayerID As Long, tmpLayer As pdLayer
+    Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer
     
     'If we're still here, the file looks readable.  How we proceed depends on whether the image is
     ' animated or not.  (Animated images produce multiple layers.)
-    If (m_fileFeatures.webpHasAnimation = 0) Then
+    
+    'Attempt animated image import first, so that if something goes wrong we can fall back to single-frame retrieval
+    Dim animDecoder As Long
+    Dim animationLoaded As Boolean: animationLoaded = False
+    If (m_fileFeatures.webpHasAnimation <> 0) Then
+    
+        'The underlying image is animated.  This necessitates a different loading approach.
         
+        'If a demuxer hasn't been allocated, allocate one now.
+        If (Not InitializeDemuxer(pData, sizeOfDataInBytes)) Then
+            InternalError FUNC_NAME, "couldn't allocate demuxer"
+            LoadWebP_FromMemory = False
+            Exit Function
+        End If
+        
+        'We now have a valid demuxer in m_hDemuxer.
+        
+        'Retrieve the number of frames and perform basic sanity checks.
+        Dim numFrames As Long
+        numFrames = CallCDeclW(WebPDemuxGetI, vbLong, m_hDemuxer, WEBP_FF_FRAME_COUNT)
+        If (numFrames > 1) Then
+        
+            'Next, we need to initialize an animation decoder options struct.  The library suggests
+            ' allowing the library to initialize the object for you, which... whatever, I guess?
+            Dim animDecodeOptions As PD_WebPAnimDecoderOptions
+            If (CallCDeclW(WebPAnimDecoderOptionsInit, vbLong, VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION) = 0) Then
+                InternalError FUNC_NAME, "WebPAnimDecoderOptionsInit"
+                animationLoaded = False
+                GoTo AnimationBroken
+            End If
+            
+            'Set the animation decoder options to decode directly to premultiplied BGRA...
+            animDecodeOptions.color_mode = MODE_bgrAp
+            
+            '...then use the options struct to initialize an actual decoder
+            Dim unionPtrAndLen(0 To 1) As Long
+            unionPtrAndLen(0) = pData
+            unionPtrAndLen(1) = sizeOfDataInBytes
+            animDecoder = CallCDeclW(WebPAnimDecoderNew, vbLong, VarPtr(unionPtrAndLen(0)), VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION)
+            If (animDecoder = 0) Then
+                InternalError FUNC_NAME, "WebPAnimDecoderNew"
+                animationLoaded = False
+                GoTo AnimationBroken
+            End If
+            
+            'Retrieve animation info, like final canvas size and loop count
+            If (CallCDeclW(WebPAnimDecoderGetInfo, vbLong, animDecoder, VarPtr(m_AnimationInfo)) = 0) Then
+                InternalError FUNC_NAME, "WebPAnimDecoderGetInfo"
+                animationLoaded = False
+                GoTo AnimationBroken
+            End If
+            
+            If WEBP_DEBUG_VERBOSE Then PDDebug.LogAction "animation frame count: " & m_AnimationInfo.frame_count & ", loop count: " & m_AnimationInfo.loop_count & ", bgcolor: " & Hex$(m_AnimationInfo.bgcolor)
+            
+            'Mark key settings in the destination image object
+            dstImage.Width = m_AnimationInfo.canvas_width
+            dstImage.Height = m_AnimationInfo.canvas_height
+            dstImage.SetDPI 72, 72      'WebP files do not provide a direct way to store DPI
+            dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(m_AnimationInfo.loop_count))
+            
+            'With all global options prepped, we can finally proceed with iterating each frame.
+            Dim idxFrame As Long, numFramesOK As Long
+            For idxFrame = 0 To m_AnimationInfo.frame_count - 1
+                
+                'Failsafe check
+                If (CallCDeclW(WebPAnimDecoderHasMoreFrames, vbLong, animDecoder) <> 0) Then
+                    
+                    'Get the next frame.  Two values are returned: a pointer to a constructed 32-bpp buffer
+                    ' of size canvaswidth * canvasheight, and a timestamp for this frame (in ms)
+                    Dim ptrPixels As Long, frameTimestamp As Long, lastFrameTimestamp As Long, frameTimeInMS
+                    If (CallCDeclW(WebPAnimDecoderGetNext, vbLong, animDecoder, VarPtr(ptrPixels), VarPtr(frameTimestamp)) <> 0) Then
+                        
+                        'Success!  Create a new layer in the destination image, then copy the pixel data and timestamp
+                        ' into it.
+                        newLayerID = dstImage.CreateBlankLayer()
+                        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                        newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
+                        tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
+                        tmpLayer.SetLayerVisibility (idxFrame = 0)
+                        
+                        If (tmpLayer.layerDIB Is Nothing) Then Set tmpLayer.layerDIB = New pdDIB
+                        tmpLayer.layerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
+                        CopyMemoryStrict tmpLayer.layerDIB.GetDIBPointer, ptrPixels, tmpLayer.layerDIB.GetDIBStride * tmpLayer.layerDIB.GetDIBHeight
+                        tmpLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+                        
+                        frameTimeInMS = frameTimestamp - lastFrameTimestamp
+                        tmpLayer.SetLayerFrameTimeInMS frameTimeInMS
+                        tmpLayer.SetLayerName tmpLayer.GetLayerName & " (" & CStr(frameTimeInMS) & "ms)"
+                        lastFrameTimestamp = frameTimestamp
+                        tmpLayer.NotifyOfDestructiveChanges
+                        
+                        'Track how many frames we've successfully loaded
+                        numFramesOK = numFramesOK + 1
+                        
+                    Else
+                        InternalError FUNC_NAME, "WebPAnimDecoderGetNext: unexpected fail"
+                    End If
+                    
+                Else
+                    InternalError FUNC_NAME, "WebPAnimDecoderHasMoreFrames: unexpected fail"
+                End If
+                    
+            Next idxFrame
+            
+            'Reset the underlying iterator before continuing
+            CallCDeclW WebPAnimDecoderReset, vbLong, animDecoder
+            
+            'Report success if at least one frame was retrieved correctly
+            animationLoaded = (numFramesOK > 0)
+            LoadWebP_FromMemory = animationLoaded
+            If animationLoaded Then dstImage.NotifyImageChanged UNDO_Everything
+                
+        Else
+            InternalError FUNC_NAME, "only one animation frame found; reverting to normal WebP load process"
+        End If
+        
+    End If
+    
+'Animated files can break in a lot (seriously, a LOT) of ways.  Because VB doesn't have normal try/catch syntax,
+' we're stuck with GOTOs.  Broken animation files will divert here, which allows us to continue loading the
+' file as a non-animated image.
+AnimationBroken:
+    If (animDecoder <> 0) Then
+        CallCDeclW WebPAnimDecoderDelete, vbEmpty, animDecoder
+        animDecoder = 0
+    End If
+    If (Not animationLoaded) Then FreeDemuxer
+    
+    'If the underlying image is *not* animated (or if animation import failed), load the file as
+    ' a single-frame instance.
+    If (Not animationLoaded) Then
+    
         'This file is not animated.  Load it normally.
-        
-        'Start by creating a blank layer in the destination image
-        newLayerID = dstImage.CreateBlankLayer()
-        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
         
         'Create the destination surface.  (We can decode the WebP directly into this buffer, yay!)
         Set dstDIB = New pdDIB
@@ -240,12 +417,17 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
         'Ensure success (this particular function returns 0 when unsuccessful, per the docs)
         If (Not decodeOK) Then
             InternalError FUNC_NAME, "bad WebPDecodeBGRAInto"
+            Set dstDIB = Nothing
             LoadWebP_FromMemory = False
             Exit Function
         End If
         
-        'Finish initializing the target layer
+        'TODO: get libwebp to paint in premultiplied mode
         dstDIB.SetAlphaPremultiplication True
+        
+        'Initialize the target layer
+        newLayerID = dstImage.CreateBlankLayer()
+        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
         tmpLayer.InitializeNewLayer PDL_Image, Files.FileGetName(srcFile, True), dstDIB, False
         tmpLayer.SetLayerVisibility True
         
@@ -259,26 +441,9 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
         dstImage.NotifyImageChanged UNDO_Everything
         LoadWebP_FromMemory = True
     
-    'The underlying image is animated.  This necessitates a different loading approach.
-    Else
-        
-        'If a demuxer hasn't been allocated, allocate one now.
-        If (Not InitializeDemuxer(pData, sizeOfDataInBytes)) Then
-            InternalError FUNC_NAME, "couldn't allocate demuxer"
-            LoadWebP_FromMemory = False
-            Exit Function
-        End If
-        
-        'We now have a valid demuxer in m_hDemuxer.
-        
-        'Retrieve the number of frames.
-        Dim numFrames As Long
-        numFrames = CallCDeclW(WebPDemuxGetI, vbLong, m_hDemuxer, WEBP_FF_FRAME_COUNT)
-        Debug.Print "numFrames", numFrames
-        
     End If
     
-    'Before exiting, free the associated demuxer (if one exists)
+    'Before exiting, free any allocated demuxer(s)
     FreeDemuxer
     
 End Function
@@ -296,9 +461,6 @@ Private Function InitializeDemuxer(ByVal pWebPData As Long, ByVal pWebPDataLenB 
     If (m_hDemuxer <> 0) Then
         InitializeDemuxer = True
     Else
-        
-        'From demux.h
-        Const WEBP_DEMUX_ABI_VERSION As Long = &H107&
         
         'The demux API takes a *WebPData as input; this is a simple union of data pointer and size
         Dim webpDataStruct(0 To 1) As Long
@@ -352,6 +514,13 @@ Private Sub Class_Initialize()
 
     'Pre-load all relevant proc addresses
     ReDim m_ProcAddresses(0 To [last_address] - 1) As Long
+    m_ProcAddresses(WebPAnimDecoderDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderDelete")
+    m_ProcAddresses(WebPAnimDecoderGetInfo) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderGetInfo")
+    m_ProcAddresses(WebPAnimDecoderGetNext) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderGetNext")
+    m_ProcAddresses(WebPAnimDecoderHasMoreFrames) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderHasMoreFrames")
+    m_ProcAddresses(WebPAnimDecoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderNewInternal")
+    m_ProcAddresses(WebPAnimDecoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderOptionsInitInternal")
+    m_ProcAddresses(WebPAnimDecoderReset) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderReset")
     m_ProcAddresses(WebPDecodeBGRAInto) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPDecodeBGRAInto")
     m_ProcAddresses(WebPDemux) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxInternal")
     m_ProcAddresses(WebPDemuxDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxDelete")

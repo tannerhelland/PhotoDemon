@@ -2065,7 +2065,7 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
         Select Case srcImage.GetOriginalFileFormat
         
             'GIFs and PNGs are called "frames" instead of pages
-            Case PDIF_GIF, PDIF_PNG
+            Case PDIF_GIF, PDIF_PNG, PDIF_WEBP
                 GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex + 1))
                 
             'Any other format is treated as "pages" (0-based index)
