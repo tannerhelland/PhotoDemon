@@ -266,6 +266,28 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
         Exit Function
     End If
     
+    'Unfortunately for us, libwebp has a complex and poorly conceived API design.  You'd think that our
+    ' previous call to WebPGetFeatures would tell us all the critical features of the file, but no,
+    ' it doesn't.  Instead, we now need to create a demuxer object, which reports its own feature
+    ' collection (that overlaps the other feature set in some ways but not all ways, sigh).
+    '
+    'Note that failure to create a demuxer isn't necessarily a deal-breaker - but it does mean
+    ' that we can't query important features like ICC profiles.
+    If (Not InitializeDemuxer(pData, sizeOfDataInBytes)) Then InternalError FUNC_NAME, "couldn't allocate demuxer; attempting to load anyway"
+    
+    'If a demuxer *was* created successfully, use feature flags to look for an ICC profile
+    Dim imgHasColorProfile As Boolean
+    If (m_hDemuxer <> 0) Then
+        
+        Dim curImageFeatureFlags As PD_WebPFeatureFlags
+        curImageFeatureFlags = CallCDeclW(WebPDemuxGetI, vbLong, m_hDemuxer, WEBP_FF_FORMAT_FLAGS)
+        imgHasColorProfile = (curImageFeatureFlags And ICCP_FLAG)
+        If WEBP_DEBUG_VERBOSE Then PDDebug.LogAction "WebP features; ICC: " & CBool(curImageFeatureFlags And ICCP_FLAG) & ", EXIF: " & CBool(curImageFeatureFlags And EXIF_FLAG) & ", XMP: " & CBool(curImageFeatureFlags And XMP_FLAG)
+        
+        'TODO: find WebP images "in the wild" with embedded ICC profiles so I can test retrieval
+        
+    End If
+    
     Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer
     
     'If we're still here, the file looks readable.  How we proceed depends on whether the image is
