@@ -288,141 +288,22 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
         
     End If
     
-    Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer
-    
     'If we're still here, the file looks readable.  How we proceed depends on whether the image is
     ' animated or not.  (Animated images produce multiple layers.)
     
     'Attempt animated image import first, so that if something goes wrong we can fall back to single-frame retrieval
-    Dim animDecoder As Long
     Dim animationLoaded As Boolean: animationLoaded = False
-    If (m_fileFeatures.webpHasAnimation <> 0) Then
+    If (m_fileFeatures.webpHasAnimation <> 0) Then animationLoaded = LoadAnimatedWebP(srcFile, pData, sizeOfDataInBytes, dstImage, dstDIB)
     
-        'The underlying image is animated.  This necessitates a different loading approach.
-        
-        'If a demuxer hasn't been allocated, allocate one now.
-        If (Not InitializeDemuxer(pData, sizeOfDataInBytes)) Then
-            InternalError FUNC_NAME, "couldn't allocate demuxer"
-            LoadWebP_FromMemory = False
-            Exit Function
-        End If
-        
-        'We now have a valid demuxer in m_hDemuxer.
-        
-        'Retrieve the number of frames and perform basic sanity checks.
-        Dim numFrames As Long
-        numFrames = CallCDeclW(WebPDemuxGetI, vbLong, m_hDemuxer, WEBP_FF_FRAME_COUNT)
-        If (numFrames > 1) Then
-        
-            'Next, we need to initialize an animation decoder options struct.  The library suggests
-            ' allowing the library to initialize the object for you, which... whatever, I guess?
-            Dim animDecodeOptions As PD_WebPAnimDecoderOptions
-            If (CallCDeclW(WebPAnimDecoderOptionsInit, vbLong, VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION) = 0) Then
-                InternalError FUNC_NAME, "WebPAnimDecoderOptionsInit"
-                animationLoaded = False
-                GoTo AnimationBroken
-            End If
-            
-            'Set the animation decoder options to decode directly to premultiplied BGRA...
-            animDecodeOptions.color_mode = MODE_bgrAp
-            
-            '...then use the options struct to initialize an actual decoder
-            Dim unionPtrAndLen(0 To 1) As Long
-            unionPtrAndLen(0) = pData
-            unionPtrAndLen(1) = sizeOfDataInBytes
-            animDecoder = CallCDeclW(WebPAnimDecoderNew, vbLong, VarPtr(unionPtrAndLen(0)), VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION)
-            If (animDecoder = 0) Then
-                InternalError FUNC_NAME, "WebPAnimDecoderNew"
-                animationLoaded = False
-                GoTo AnimationBroken
-            End If
-            
-            'Retrieve animation info, like final canvas size and loop count
-            If (CallCDeclW(WebPAnimDecoderGetInfo, vbLong, animDecoder, VarPtr(m_AnimationInfo)) = 0) Then
-                InternalError FUNC_NAME, "WebPAnimDecoderGetInfo"
-                animationLoaded = False
-                GoTo AnimationBroken
-            End If
-            
-            If WEBP_DEBUG_VERBOSE Then PDDebug.LogAction "animation frame count: " & m_AnimationInfo.frame_count & ", loop count: " & m_AnimationInfo.loop_count & ", bgcolor: " & Hex$(m_AnimationInfo.bgcolor)
-            
-            'Mark key settings in the destination image object
-            dstImage.Width = m_AnimationInfo.canvas_width
-            dstImage.Height = m_AnimationInfo.canvas_height
-            dstImage.SetDPI 72, 72      'WebP files do not provide a direct way to store DPI
-            dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(m_AnimationInfo.loop_count))
-            
-            'With all global options prepped, we can finally proceed with iterating each frame.
-            Dim idxFrame As Long, numFramesOK As Long
-            For idxFrame = 0 To m_AnimationInfo.frame_count - 1
-                
-                'Failsafe check
-                If (CallCDeclW(WebPAnimDecoderHasMoreFrames, vbLong, animDecoder) <> 0) Then
-                    
-                    'Get the next frame.  Two values are returned: a pointer to a constructed 32-bpp buffer
-                    ' of size canvaswidth * canvasheight, and a timestamp for this frame (in ms)
-                    Dim ptrPixels As Long, frameTimestamp As Long, lastFrameTimestamp As Long, frameTimeInMS
-                    If (CallCDeclW(WebPAnimDecoderGetNext, vbLong, animDecoder, VarPtr(ptrPixels), VarPtr(frameTimestamp)) <> 0) Then
-                        
-                        'Success!  Create a new layer in the destination image, then copy the pixel data and timestamp
-                        ' into it.
-                        newLayerID = dstImage.CreateBlankLayer()
-                        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                        newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
-                        tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
-                        tmpLayer.SetLayerVisibility (idxFrame = 0)
-                        
-                        If (tmpLayer.layerDIB Is Nothing) Then Set tmpLayer.layerDIB = New pdDIB
-                        tmpLayer.layerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
-                        CopyMemoryStrict tmpLayer.layerDIB.GetDIBPointer, ptrPixels, tmpLayer.layerDIB.GetDIBStride * tmpLayer.layerDIB.GetDIBHeight
-                        tmpLayer.layerDIB.SetInitialAlphaPremultiplicationState True
-                        
-                        frameTimeInMS = frameTimestamp - lastFrameTimestamp
-                        tmpLayer.SetLayerFrameTimeInMS frameTimeInMS
-                        tmpLayer.SetLayerName tmpLayer.GetLayerName & " (" & CStr(frameTimeInMS) & "ms)"
-                        lastFrameTimestamp = frameTimestamp
-                        tmpLayer.NotifyOfDestructiveChanges
-                        
-                        'Track how many frames we've successfully loaded
-                        numFramesOK = numFramesOK + 1
-                        
-                    Else
-                        InternalError FUNC_NAME, "WebPAnimDecoderGetNext: unexpected fail"
-                    End If
-                    
-                Else
-                    InternalError FUNC_NAME, "WebPAnimDecoderHasMoreFrames: unexpected fail"
-                End If
-                    
-            Next idxFrame
-            
-            'Reset the underlying iterator before continuing
-            CallCDeclW WebPAnimDecoderReset, vbLong, animDecoder
-            
-            'Report success if at least one frame was retrieved correctly
-            animationLoaded = (numFramesOK > 0)
-            LoadWebP_FromMemory = animationLoaded
-            If animationLoaded Then dstImage.NotifyImageChanged UNDO_Everything
-                
-        Else
-            InternalError FUNC_NAME, "only one animation frame found; reverting to normal WebP load process"
-        End If
-        
-    End If
+    If animationLoaded Then
     
-'Animated files can break in a lot (seriously, a LOT) of ways.  Because VB doesn't have normal try/catch syntax,
-' we're stuck with GOTOs.  Broken animation files will divert here, which allows us to continue loading the
-' file as a non-animated image.
-AnimationBroken:
-    If (animDecoder <> 0) Then
-        CallCDeclW WebPAnimDecoderDelete, vbEmpty, animDecoder
-        animDecoder = 0
-    End If
-    If (Not animationLoaded) Then FreeDemuxer
+        'Our work here is done!  Note that we don't exit immediately, as the end of the function may
+        ' need to clean-up some libwebp objects before exiting
+        LoadWebP_FromMemory = True
     
     'If the underlying image is *not* animated (or if animation import failed), load the file as
     ' a single-frame instance.
-    If (Not animationLoaded) Then
+    Else
     
         'This file is not animated.  Load it normally.
         
@@ -437,35 +318,205 @@ AnimationBroken:
         End With
         
         'Ensure success (this particular function returns 0 when unsuccessful, per the docs)
-        If (Not decodeOK) Then
+        If decodeOK Then
+            
+            'TODO: get libwebp to paint in premultiplied mode
+            dstDIB.SetAlphaPremultiplication True
+            
+            'Initialize the target layer
+            Dim newLayerID As Long
+            newLayerID = dstImage.CreateBlankLayer()
+            
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            tmpLayer.InitializeNewLayer PDL_Image, Files.FileGetName(srcFile, True), dstDIB, False
+            tmpLayer.SetLayerVisibility True
+            
+            'Finish initializing the target image
+            dstImage.Width = m_imgWidth
+            dstImage.Height = m_imgHeight
+            
+            'WebP files do not provide a direct way to set DPI
+            dstImage.SetDPI 72, 72
+            
+            dstImage.NotifyImageChanged UNDO_Everything
+            LoadWebP_FromMemory = True
+            
+        'decoding pixel data failed - not much we can do but abort completely
+        Else
             InternalError FUNC_NAME, "bad WebPDecodeBGRAInto"
             Set dstDIB = Nothing
             LoadWebP_FromMemory = False
-            Exit Function
         End If
-        
-        'TODO: get libwebp to paint in premultiplied mode
-        dstDIB.SetAlphaPremultiplication True
-        
-        'Initialize the target layer
-        newLayerID = dstImage.CreateBlankLayer()
-        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-        tmpLayer.InitializeNewLayer PDL_Image, Files.FileGetName(srcFile, True), dstDIB, False
-        tmpLayer.SetLayerVisibility True
-        
-        'Finish initializing the target image
-        dstImage.Width = m_imgWidth
-        dstImage.Height = m_imgHeight
-        
-        'WebP files do not provide a direct way to set DPI
-        dstImage.SetDPI 72, 72
-        
-        dstImage.NotifyImageChanged UNDO_Everything
-        LoadWebP_FromMemory = True
     
+    '/end single-frame load process
     End If
     
     'Before exiting, free any allocated demuxer(s)
+    FreeDemuxer
+    
+End Function
+
+'Parse and import all frames from an animated WebP image.  Do *not* call without verifying that the
+' passed image is, actually, an animated WebP.
+Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, ByVal sizeOfDataInBytes As Long, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+    
+    LoadAnimatedWebP = False
+    
+    'Due to the design of libwebp (and animation functions being shunted into an entirely different
+    ' library, libwebpdemuxer), animated images require a unique import process.
+    Const FUNC_NAME As String = "LoadAnimatedWebP"
+    
+    'If a demuxer hasn't been allocated, allocate one now.  (Note that there is no harm in calling
+    ' this if a demuxer already exists - we'll simply reuse the current class-level one.)
+    If (Not InitializeDemuxer(pData, sizeOfDataInBytes)) Then
+        InternalError FUNC_NAME, "couldn't allocate demuxer; abandoning animation import"
+        LoadAnimatedWebP = False
+        Exit Function
+    End If
+    
+    'We are now guaranteed a valid demuxer in m_hDemuxer.
+    
+    'Retrieve the number of frames and perform basic sanity checks.
+    Dim numFrames As Long
+    numFrames = CallCDeclW(WebPDemuxGetI, vbLong, m_hDemuxer, WEBP_FF_FRAME_COUNT)
+    If (numFrames > 1) Then
+    
+        'Next, we need to initialize an animation decoder options struct.  The library suggests
+        ' allowing the library to initialize the struct for us, which... whatever, I guess?
+        Dim animDecodeOptions As PD_WebPAnimDecoderOptions
+        If (CallCDeclW(WebPAnimDecoderOptionsInit, vbLong, VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION) = 0) Then
+            InternalError FUNC_NAME, "WebPAnimDecoderOptionsInit"
+            GoTo AnimationBroken
+        End If
+        
+        'Set the animation decoder options to decode directly to premultiplied BGRA...
+        animDecodeOptions.color_mode = MODE_bgrAp
+        
+        '...and explicitly allow multi-thread decoding on relevant systems
+        Debug.Print animDecodeOptions.use_threads, "use threads?"
+        If (OS.LogicalCoreCount > 1) Then animDecodeOptions.use_threads = 1 Else animDecodeOptions.use_threads = 0
+        
+        '...and finally, use the options struct to initialize an actual decoder object
+        Dim unionPtrAndLen(0 To 1) As Long
+        unionPtrAndLen(0) = pData
+        unionPtrAndLen(1) = sizeOfDataInBytes
+        
+        Dim animDecoder As Long
+        animDecoder = CallCDeclW(WebPAnimDecoderNew, vbLong, VarPtr(unionPtrAndLen(0)), VarPtr(animDecodeOptions), WEBP_DEMUX_ABI_VERSION)
+        
+        'Further animation decoding requires a valid decoder; without one, we have to abandon ship
+        If (animDecoder = 0) Then
+            InternalError FUNC_NAME, "WebPAnimDecoderNew"
+            GoTo AnimationBroken
+        End If
+        
+        'Retrieve global animation info, like final canvas size and loop count
+        If (CallCDeclW(WebPAnimDecoderGetInfo, vbLong, animDecoder, VarPtr(m_AnimationInfo)) = 0) Then
+            InternalError FUNC_NAME, "WebPAnimDecoderGetInfo"
+            GoTo AnimationBroken
+        End If
+        
+        If WEBP_DEBUG_VERBOSE Then PDDebug.LogAction "animation frame count: " & m_AnimationInfo.frame_count & ", loop count: " & m_AnimationInfo.loop_count & ", bgcolor: " & Hex$(m_AnimationInfo.bgcolor)
+        
+        'The animation canvas size should match the original size retrieve in our parent function,
+        ' but if (for some reason?) they don't, we'll defer to the animation canvas settings.
+        dstImage.Width = m_AnimationInfo.canvas_width
+        dstImage.Height = m_AnimationInfo.canvas_height
+        
+        'WebP files do not provide a direct way to store DPI (although you could hide DPI settings in
+        ' EXIF or XMP metadata, if you really wanted to), but PD expects DPI values on all incoming
+        ' pdImage objects - so set arbitrary defaults now.
+        dstImage.SetDPI 72, 72
+        
+        'We also need to flag the underlying format in advance, since it changes the way layer
+        ' names are assigned (animation layers are called "frames" instead of "pages"
+        dstImage.SetOriginalFileFormat PDIF_WEBP
+        
+        'We also need to store the animation loop count inside the parent object
+        dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(m_AnimationInfo.loop_count))
+        
+        'With all global options stored, we can now start iterating frames.  (Individual frame times
+        ' will be retrieved as part of this process.)
+        Dim idxFrame As Long, numFramesOK As Long
+        For idxFrame = 0 To m_AnimationInfo.frame_count - 1
+            
+            'Yes, this text uses "page" instead of "frame" - this is purely to reduce localization burdens
+            Message "Loading page %1 of %2...", CStr(idxFrame + 1), m_AnimationInfo.frame_count, "DONOTLOG"
+            
+            'Failsafe check to ensure the decoder has more frames for us
+            If (CallCDeclW(WebPAnimDecoderHasMoreFrames, vbLong, animDecoder) <> 0) Then
+                
+                'Get the next frame.  Two values are returned: a pointer to a constructed 32-bpp buffer
+                ' of size canvaswidth * canvasheight (managed by libwebpdemux), and a timestamp for this
+                ' frame (in ms, like APNG, not cs like GIF)
+                Dim ptrPixels As Long, frameTimestamp As Long, lastFrameTimestamp As Long, frameTimeInMS As Long
+                ptrPixels = 0: frameTimestamp = lastFrameTimestamp
+                
+                If (CallCDeclW(WebPAnimDecoderGetNext, vbLong, animDecoder, VarPtr(ptrPixels), VarPtr(frameTimestamp)) <> 0) Then
+                    
+                    'Success!  Create a new layer in the destination image, then copy the pixel data and
+                    ' timestamp into it.
+                    Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer
+                    newLayerID = dstImage.CreateBlankLayer()
+                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                    newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
+                    tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
+                    tmpLayer.SetLayerVisibility (idxFrame = 0)
+                    
+                    If (tmpLayer.layerDIB Is Nothing) Then Set tmpLayer.layerDIB = New pdDIB
+                    tmpLayer.layerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
+                    CopyMemoryStrict tmpLayer.layerDIB.GetDIBPointer, ptrPixels, tmpLayer.layerDIB.GetDIBStride * tmpLayer.layerDIB.GetDIBHeight
+                    
+                    'We explicitly request premultiplied data, so we don't need to manually premultiply now
+                    tmpLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    'As part of storing frametime, update the layer's name with ([time] ms) at the end
+                    frameTimeInMS = frameTimestamp - lastFrameTimestamp
+                    tmpLayer.SetLayerFrameTimeInMS frameTimeInMS
+                    tmpLayer.SetLayerName tmpLayer.GetLayerName & " (" & CStr(frameTimeInMS) & "ms)"
+                    lastFrameTimestamp = frameTimestamp
+                    tmpLayer.NotifyOfDestructiveChanges
+                    
+                    'Track how many frames we've successfully loaded
+                    numFramesOK = numFramesOK + 1
+                
+                'Couldn't get next frame
+                Else
+                    InternalError FUNC_NAME, "WebPAnimDecoderGetNext: unexpected fail"
+                End If
+            
+            '/decoder doesn't have more frames, despite all frames not being read
+            Else
+                InternalError FUNC_NAME, "WebPAnimDecoderHasMoreFrames: unexpected fail"
+            End If
+                
+        Next idxFrame
+        
+        'Reset the underlying iterator before continuing
+        CallCDeclW WebPAnimDecoderReset, vbLong, animDecoder
+        
+        'Report success if at least one frame was retrieved correctly
+        LoadAnimatedWebP = (numFramesOK > 0)
+        If LoadAnimatedWebP Then dstImage.NotifyImageChanged UNDO_Everything
+           
+    '/animation frames <= 1
+    Else
+        InternalError FUNC_NAME, "only one animation frame found; reverting to static load process"
+    End If
+    
+'Animated files can break in a lot (seriously, a LOT) of ways.  Because VB doesn't have normal try/catch syntax,
+' we're stuck with GOTOs.  Broken animation files will divert here, which allows us to continue loading the
+' file as a non-animated image while also freeing any animation objects we created along the way.
+AnimationBroken:
+
+    'Free a decoder object, if any
+    If (animDecoder <> 0) Then
+        CallCDeclW WebPAnimDecoderDelete, vbEmpty, animDecoder
+        animDecoder = 0
+    End If
+    
+    'Free the underlying demuxer (it isn't required by the single-frame loader)
     FreeDemuxer
     
 End Function
