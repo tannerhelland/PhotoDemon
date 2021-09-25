@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.55</langversion>
+<langversion>8.0.56</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -2702,7 +2702,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <translation>licenza di zLib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 24 phrases. 18 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13655,12 +13655,14 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<!-- pdWebP.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2583</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5324 phrases. -->
-<!-- 2741 are duplicates, so only 2583 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5327 phrases. -->
+<!-- 2744 are duplicates, so only 2583 unique phrases have been written to file. -->
 <!-- These 2583 phrases contain approximately 11870 total words. -->
 
 </pdData>

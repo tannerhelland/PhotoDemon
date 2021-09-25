@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.545</langversion>
+<langversion>6.7.546</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2703,7 +2703,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <translation>license zLib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 24 phrases. 18 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13663,12 +13663,14 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<!-- pdWebP.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2583</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5324 phrases. -->
-<!-- 2741 are duplicates, so only 2583 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5327 phrases. -->
+<!-- 2744 are duplicates, so only 2583 unique phrases have been written to file. -->
 <!-- These 2583 phrases contain approximately 11870 total words. -->
 
 </pdData>

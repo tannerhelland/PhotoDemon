@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.62</langversion>
+<langversion>8.0.63</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -2698,7 +2698,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <translation>licencia zLib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 24 phrases. 18 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13642,12 +13642,14 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<!-- pdWebP.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2583</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5324 phrases. -->
-<!-- 2741 are duplicates, so only 2583 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5327 phrases. -->
+<!-- 2744 are duplicates, so only 2583 unique phrases have been written to file. -->
 <!-- These 2583 phrases contain approximately 11870 total words. -->
 
 </pdData>
