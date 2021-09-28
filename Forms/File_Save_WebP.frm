@@ -25,6 +25,16 @@ Begin VB.Form dialog_ExportWebP
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsCompression 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2160
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "compression"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -45,34 +55,26 @@ Begin VB.Form dialog_ExportWebP
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.pdDropDown cboSaveQuality 
-      Height          =   735
-      Left            =   6120
+   Begin PhotoDemon.pdSlider sldQuality 
+      Height          =   765
+      Left            =   6000
       TabIndex        =   2
-      Top             =   2040
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1296
-      Caption         =   "image compression ratio"
-   End
-   Begin PhotoDemon.pdSlider sltQuality 
-      Height          =   405
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   3000
-      Width           =   5775
-      _ExtentX        =   15055
-      _ExtentY        =   873
+      Top             =   600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1349
+      Caption         =   "quality"
       Min             =   1
       Max             =   100
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.pdLabel lblBefore 
+   Begin PhotoDemon.pdLabel lblInfo 
       Height          =   435
+      Index           =   0
       Left            =   6240
-      Top             =   3480
+      Top             =   1440
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   767
@@ -82,10 +84,11 @@ Begin VB.Form dialog_ExportWebP
       ForeColor       =   4210752
       Layout          =   1
    End
-   Begin PhotoDemon.pdLabel lblAfter 
+   Begin PhotoDemon.pdLabel lblInfo 
       Height          =   435
+      Index           =   1
       Left            =   8520
-      Top             =   3480
+      Top             =   1440
       Width           =   2190
       _ExtentX        =   3863
       _ExtentY        =   767
@@ -106,11 +109,14 @@ Attribute VB_Exposed = False
 'Google WebP Export Dialog
 'Copyright 2014-2021 by Tanner Helland
 'Created: 14/February/14
-'Last updated: 09/May/16
-'Last update: convert dialog to new export engine
+'Last updated: 25/September/21
+'Last update: overhaul UI to match new approach using libwebp directly (instead of FreeImage)
 '
-'Dialog for presenting the user a number of options related to WebP exporting.  Obviously this feature
-' relies on FreeImage, and WebP support will be disabled if FreeImage cannot be found.
+'Dialog for presenting the user a number of options related to WebP exporting.
+'
+'Google's official WebP library (libwebp) handles actual encoding duties, so this dialog will not
+' function without that library being present.  See the pdWebP class for encoding details;
+' there's a lot of work involved in encoding WebP files, and that class handles it all for us.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -126,9 +132,11 @@ Private m_SrcImage As pdImage
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
 
-'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
-' but note that it must be regenerated whenever the preview source is regenerated.
-Private m_FIHandle As Long
+'A copy of the untouched preview DIB *BEFORE* saving to the target format.
+Private m_ImageBeforeSaving As pdDIB
+
+'pdWebP handles all compression duties (through libwebp)
+Private m_WebP As pdWebP
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -152,28 +160,8 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
-'QUALITY combo box - when adjusted, change the scroll bar to match
-Private Sub cboSaveQuality_Click()
-    
-    Select Case cboSaveQuality.ListIndex
-        
-        Case 0
-            sltQuality = 100
-                
-        Case 1
-            sltQuality = 80
-                
-        Case 2
-            sltQuality = 60
-                
-        Case 3
-            sltQuality = 40
-                
-        Case 4
-            sltQuality = 20
-                
-    End Select
-    
+Private Sub btsCompression_Click(ByVal buttonIndex As Long)
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_CancelClick()
@@ -184,13 +172,9 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Determine the compression ratio for the WebP transform
-    If (Not sltQuality.IsValid) Then Exit Sub
+    If (Not sldQuality.IsValid) Then Exit Sub
     
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.AddParam "webp-quality", sltQuality.Value
-    
-    m_FormatParamString = cParams.GetParamString
+    m_FormatParamString = GetSaveParameters()
     
     'If ExifTool someday supports WebP metadata embedding, you can add a metadata manager here
     m_MetadataParamString = vbNullString
@@ -205,17 +189,37 @@ Private Sub cmdBar_OKClick()
     
 End Sub
 
+Private Function GetSaveParameters() As String
+
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    With cParams
+        If sldQuality.IsValid Then .AddParam "webp-quality", sldQuality.Value Else .AddParam "webp-quality", 100
+        Select Case btsCompression.ListIndex
+            Case 0
+                .AddParam "webp-compression", "fast"
+            Case 1
+                .AddParam "webp-compression", "default"
+            Case 2
+                .AddParam "webp-compression", "slow"
+        End Select
+    End With
+    
+    GetSaveParameters = cParams.GetParamString()
+    
+End Function
+
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboSaveQuality.ListIndex = 0
+    btsCompression.ListIndex = 1
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
+    Set workingDIB = Nothing
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -223,36 +227,8 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub sltQuality_Change()
-    UpdateDropDown
+Private Sub sldQuality_Change()
     UpdatePreview
-End Sub
-
-'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub UpdateDropDown()
-    
-    Select Case sltQuality.Value
-        
-        Case 100
-            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
-                
-        Case 80
-            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
-                
-        Case 60
-            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
-                
-        Case 40
-            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
-                
-        Case 20
-            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
-                
-        Case Else
-            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
-                
-    End Select
-    
 End Sub
 
 'The ShowDialog routine presents the user with this form.
@@ -265,15 +241,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Screen.MousePointer = 0
     Message "Waiting for user to specify export options... "
     
-    'Populate the quality drop-down box with presets corresponding to the WebP file format
-    cboSaveQuality.Clear
-    cboSaveQuality.AddItem "Lossless (100)", 0
-    cboSaveQuality.AddItem "Low compression, good image quality (80)", 1
-    cboSaveQuality.AddItem "Moderate compression, medium image quality (60)", 2
-    cboSaveQuality.AddItem "High compression, poor image quality (40)", 3
-    cboSaveQuality.AddItem "Super compression, very poor image quality (20)", 4
-    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
-    cboSaveQuality.ListIndex = 0
+    'Populate any UI elements
+    btsCompression.AddItem "fastest", 0
+    btsCompression.AddItem "default", 1
+    btsCompression.AddItem "slowest", 2
+    btsCompression.ListIndex = 1
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
@@ -309,11 +281,9 @@ Private Sub UpdatePreviewSource()
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'Finally, convert that preview copy to a FreeImage-compatible handle.
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        
-        'During previews, we can always use 32-bpp mode
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
+        'Make a local copy of workingDIB
+        If (m_ImageBeforeSaving Is Nothing) Then Set m_ImageBeforeSaving = New pdDIB
+        m_ImageBeforeSaving.CreateFromExistingDIB workingDIB
         
     End If
 End Sub
@@ -323,19 +293,18 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
     If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
-        If (m_FIHandle = 0) Then UpdatePreviewSource
+        If (workingDIB Is Nothing) Then UpdatePreviewSource
         
-        'Prep all relevant FreeImage flags
-        Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
-        If sltQuality.IsValid Then fi_Flags = sltQuality.Value Else fi_Flags = 100&
-        
-        'Retrieve a WebP-saved version of the current preview image
-        If Not (workingDIB Is Nothing) Then workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_WEBP, fi_Flags) Then
-            workingDIB.SetAlphaPremultiplication True, True
+        'Use pdWebP to preview the compression
+        If (m_WebP Is Nothing) Then Set m_WebP = New pdWebP
+        If m_WebP.SaveWebP_PreviewOnly(m_ImageBeforeSaving, GetSaveParameters, workingDIB) Then
+            
+            'Ensure premultiplication
+            If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
             FinalizeNonstandardPreview pdFxPreview, True
+            
         Else
-            Debug.Print "WARNING: WEBP EXPORT PREVIEW IS HORRIBLY BROKEN!"
+            Debug.Print "problem?"
         End If
         
     End If

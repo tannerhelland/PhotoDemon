@@ -55,6 +55,7 @@ Private Const WEBP_DEBUG_VERBOSE As Boolean = True
 ' suffixed with "Internal"; see the class initialization function for details.
 Private Const WEBP_DECODER_ABI_VERSION As Long = &H209& 'From decode.h
 Private Const WEBP_DEMUX_ABI_VERSION As Long = &H107&   'From demux.h
+Private Const WEBP_ENCODER_ABI_VERSION As Long = &H20F& 'From encode.h
 
 Private Enum PD_VP8StatusCode
     VP8_STATUS_OK = 0
@@ -69,6 +70,26 @@ End Enum
 
 #If False Then
     Private Const VP8_STATUS_OK = 0, VP8_STATUS_OUT_OF_MEMORY = 0, VP8_STATUS_INVALID_PARAM = 0, VP8_STATUS_BITSTREAM_ERROR = 0, VP8_STATUS_UNSUPPORTED_FEATURE = 0, VP8_STATUS_SUSPENDED = 0, VP8_STATUS_USER_ABORT = 0, VP8_STATUS_NOT_ENOUGH_DATA = 0
+#End If
+
+'Encoding error conditions.
+Private Enum PD_WebPEncodingError
+    VP8_ENC_OK = 0
+    VP8_ENC_ERROR_OUT_OF_MEMORY             ' memory error allocating objects
+    VP8_ENC_ERROR_BITSTREAM_OUT_OF_MEMORY   ' memory error while flushing bits
+    VP8_ENC_ERROR_NULL_PARAMETER            ' a pointer parameter is NULL
+    VP8_ENC_ERROR_INVALID_CONFIGURATION     ' configuration is invalid
+    VP8_ENC_ERROR_BAD_DIMENSION             ' picture has invalid width/height
+    VP8_ENC_ERROR_PARTITION0_OVERFLOW       ' partition is bigger than 512k
+    VP8_ENC_ERROR_PARTITION_OVERFLOW        ' partition is bigger than 16M
+    VP8_ENC_ERROR_BAD_WRITE                 ' error while flushing bytes
+    VP8_ENC_ERROR_FILE_TOO_BIG              ' file is bigger than 4G
+    VP8_ENC_ERROR_USER_ABORT                ' abort request by user
+    VP8_ENC_ERROR_LAST                      ' list terminator. always last.
+End Enum
+
+#If False Then
+    Private Const VP8_ENC_OK = 0, VP8_ENC_ERROR_OUT_OF_MEMORY = 0, VP8_ENC_ERROR_BITSTREAM_OUT_OF_MEMORY = 0, VP8_ENC_ERROR_NULL_PARAMETER = 0, VP8_ENC_ERROR_INVALID_CONFIGURATION = 0, VP8_ENC_ERROR_BAD_DIMENSION = 0, VP8_ENC_ERROR_PARTITION0_OVERFLOW = 0, VP8_ENC_ERROR_PARTITION_OVERFLOW = 0, VP8_ENC_ERROR_BAD_WRITE = 0, VP8_ENC_ERROR_FILE_TOO_BIG = 0, VP8_ENC_ERROR_USER_ABORT = 0, VP8_ENC_ERROR_LAST = 0
 #End If
 
 Private Enum PD_WebPFormatFeature
@@ -177,6 +198,189 @@ Private Type PD_WebPAnimInfo
     padding(4) As Long          '// padding for later use
 End Type
 
+'Image characteristics hint for the underlying encoder.
+Private Enum PD_WebPImageHint
+    WEBP_HINT_DEFAULT = 0   'default preset.
+    WEBP_HINT_PICTURE       'digital picture, like portrait, inner shot
+    WEBP_HINT_PHOTO         'outdoor photograph, with natural lighting
+    WEBP_HINT_GRAPH         'Discrete tone image (graph, map-tile etc).
+    WEBP_HINT_LAST
+End Enum
+
+'Enumerate some predefined settings for WebPConfig, depending on the type
+' of source picture. These presets are used when calling WebPConfigPreset().
+Private Enum PD_WebPPreset
+    WEBP_PRESET_DEFAULT = 0  ' default preset.
+    WEBP_PRESET_PICTURE      ' digital picture, like portrait, inner shot
+    WEBP_PRESET_PHOTO        ' outdoor photograph, with natural lighting
+    WEBP_PRESET_DRAWING      ' hand or line drawing, with high-contrast details
+    WEBP_PRESET_ICON         ' small-sized colorful images
+    WEBP_PRESET_TEXT         ' text-like
+End Enum
+
+'Compression parameters
+Private Type PD_WebPConfig
+    lossless As Long          'Lossless encoding (0=lossy(default), 1=lossless).
+    quality As Single         'Between 0 and 100. For lossy, 0 gives the smallest
+                              ' size and 100 the largest. For lossless, this
+                              ' parameter is the amount of effort put into the
+                              ' compression: 0 is the fastest but gives larger
+                              ' files compared to the slowest, but best, 100.
+    compressMethod As Long    'Quality/speed trade-off (0=fast, 6=slower-better)
+    image_hint As PD_WebPImageHint 'Hint for image type (lossless only for now).
+    target_size As Long       'If non-zero, set the desired target size in bytes.
+                              ' Takes precedence over the 'compression' parameter.
+    target_PSNR As Single     'If non-zero, specifies the minimal distortion to
+                              ' try to achieve. Takes precedence over target_size.
+    segments As Long          'Maximum number of segments to use, in [1..4]
+    sns_strength As Long      'Spatial Noise Shaping. 0=off, 100=maximum.
+    filter_strength As Long   'Range: [0 = off .. 100 = strongest]
+    filter_sharpness As Long  'Range: [0 = off .. 7 = least sharp]
+    filter_type As Long       'Filtering type: 0 = simple, 1 = strong (only used
+                              ' if filter_strength > 0 or autofilter > 0)
+    autofilter As Long        'Auto adjust filter's strength [0 = off, 1 = on]
+    alpha_compression As Long 'Algorithm for encoding the alpha plane (0 = none,
+                              ' 1 = compressed with WebP lossless). Default is 1.
+    alpha_filtering As Long   'Predictive filtering method for alpha plane.
+                              '  0: none, 1: fast, 2: best. Default if 1.
+    alpha_quality As Long     'Between 0 (smallest size) and 100 (lossless).
+                              ' Default is 100.
+    pass As Long              'Number of entropy-analysis passes (in [1..10]).
+    show_compressed As Long   'If true, export the compressed picture back.
+                              ' In-loop filtering is not applied.
+    preprocessing As Long     'Preprocessing filter:
+                              ' 0=none, 1=segment-smooth, 2=pseudo-random dithering
+    partitions As Long        'Log2(number of token partitions) in [0..3]. Default
+                              ' is set to 0 for easier progressive decoding.
+    partition_limit As Long   'Quality degradation allowed to fit the 512k limit
+                              ' on prediction modes coding (0: no degradation,
+                              ' 100: maximum possible degradation).
+    emulate_jpeg_size As Long 'If true, compression parameters will be remapped
+                              ' to better match the expected output size from
+                              ' JPEG compression. Generally, the output size will
+                              ' be similar but the degradation will be lower.
+    thread_level As Long      'If non-zero, try and use multi-threaded encoding.
+    low_memory As Long        'If set, reduce memory usage (but increase CPU use).
+    near_lossless As Long     'Near lossless encoding [0 = max loss .. 100 = off
+                              ' (default)].
+    exact As Long             'If non-zero, preserve the exact RGB values under
+                              ' transparent area. Otherwise, discard this invisible
+                              ' RGB information for better compression. The default
+                              ' value is 0.
+    use_delta_palette As Long 'Reserved for future lossless feature
+    use_sharp_yuv As Long     'If needed, use sharp (and slow) RGB->YUV conversion
+    qmin As Long              'Minimum permissible quality factor
+    qmax As Long              'Maximum permissible quality factor
+End Type
+
+'Encoding color spaces
+Private Enum PD_WebPEncCSP
+    WEBP_YUV420 = 0         '4:2:0
+    WEBP_YUV420A = 4        'alpha channel variant
+    WEBP_CSP_UV_MASK = 3    'bit-mask to get the UV sampling factors
+    WEBP_CSP_ALPHA_BIT = 4  'bit that is set if alpha is present
+End Enum
+
+'Main exchange structure (input samples, output bytes, statistics)
+'  Once WebPPictureInit() has been called, it's ok to make all the INPUT fields
+'  (use_argb, y/u/v, argb, ...) point to user-owned data, even if
+'  WebPPictureAlloc() has been called. Depending on the value use_argb,
+'  it's guaranteed that either *argb or *y/*u/*v content will be kept untouched.
+Private Type PD_WebPPicture
+  
+    'INPUT
+  
+    'Main flag for encoder selecting between ARGB or YUV input.
+    '  It is recommended to use ARGB input (*argb, argb_stride) for lossless
+    '  compression, and YUV input (*y, *u, *v, etc.) for lossy compression
+    '  since these are the respective native colorspace for these formats.
+    use_argb As Long
+    
+    'YUV input (mostly used for input to lossy compression)
+    colorspace As PD_WebPEncCSP '// colorspace: should be YUV420 for now (=Y'CbCr).
+    webp_width As Long
+    webp_height As Long         '// dimensions (less or equal to WEBP_MAX_DIMENSION)
+    ptrY As Long
+    ptrU As Long
+    ptrV As Long                '// pointers to luma/chroma planes.
+    y_stride As Long
+    uv_stride As Long           '// luma/chroma strides.
+    ptrA As Long                '// pointer to the alpha plane
+    a_stride As Long            '// stride of the alpha plane
+    padding1a As Long          '// padding for later use
+    padding1b As Long
+    
+    '// ARGB input (mostly used for input to lossless compression)
+    ptrARGB As Long             '// Pointer to argb (32 bit) plane.
+    argb_stride As Long         '// This is stride in pixels units, not bytes.
+    padding2a As Long           '// padding for later use
+    padding2b As Long
+    padding2c As Long
+
+    '//   OUTPUT
+    
+    '// Byte-emission hook, to store compressed bytes as they are ready.
+    ptrToWebPWriterFunction As Long '// can be NULL
+    custom_ptr As Long              '// can be used by the writer.
+
+    '// map for extra information (only for lossy compression mode)
+    extra_info_type As Long     '// 1: intra type, 2: segment, 3: quant
+                                '// 4: intra-16 prediction mode,
+                                '// 5: chroma prediction mode,
+                                '// 6: bit cost, 7: distortion
+    extra_info As Long          '// if not NULL, points to an array of size
+                                '// ((width + 15) / 16) * ((height + 15) / 16) that
+                                '// will be filled with a macroblock map, depending
+                                '// on extra_info_type.
+
+    '//   STATS AND REPORTS
+    
+    '// Pointer to side statistics (updated only if not NULL)
+    stats_ptr As Long
+
+    '// Error code for the latest error encountered during encoding
+    error_code As PD_WebPEncodingError
+    
+    '// If not NULL, report progress during encoding.
+    progress_hook As Long
+    
+    user_data As Long       '// this field is free to be set to any value and
+                            '// used during callbacks (like progress-report e.g.).
+
+    padding3a As Long       '// padding for later use
+    padding3b As Long
+    padding3c As Long
+    
+    '// Unused for now
+    padding4 As Long
+    padding5 As Long
+    padding6a As Long       '// padding for later use
+    padding6b As Long
+    padding6c As Long
+    padding6d As Long
+    padding6e As Long
+    padding6f As Long
+    padding6g As Long
+    padding6h As Long
+    
+    '// PRIVATE FIELDS
+    
+    memory_yuva As Long     '// row chunk of memory for yuva planes
+    memory_argb As Long     '// and for argb too.
+    padding7a As Long       '// padding for later use
+    padding7b As Long
+    
+End Type
+
+'WebPMemoryWrite: a special WebPWriterFunction that writes to memory using
+' the following WebPMemoryWriter object (to be set as a custom_ptr).
+Private Type PD_WebPMemoryWriter
+    mem_buffer As Long      '// final buffer (of size 'max_size', larger than 'size').
+    mem_size As Long        '// final size
+    max_size As Long        '// total capacity
+    padding As Long         '// padding for later use
+End Type
+
 'Note that regular WebP features reside in libwebp; animation features are in libwebpde/mux.
 
 'libwebp uses a Google-specific toolchain for compilation, so we lean on their supplied makefile for building.
@@ -194,13 +398,43 @@ Private Enum WebP_ProcAddress
     WebPAnimDecoderNew
     WebPAnimDecoderOptionsInit
     WebPAnimDecoderReset
+    WebPBlendAlpha
+    WebPCleanupTransparentArea
+    WebPConfigInit
     WebPDecodeBGRAInto
     WebPDemux
     WebPDemuxDelete
     WebPDemuxGetI
+    WebPEncode
     WebPGetDecoderVersion
     WebPGetFeatures
     WebPGetInfo
+    WebPMemoryWrite
+    WebPMemoryWriterClear
+    WebPMemoryWriterInit
+    WebPPictureAlloc
+    WebPPictureARGBToYUVA
+    WebPPictureARGBToYUVADithered
+    WebPPictureCopy
+    WebPPictureCrop
+    WebPPictureDistortion
+    WebPPictureFree
+    WebPPictureHasTransparency
+    WebPPictureImportBGR
+    WebPPictureImportBGRA
+    WebPPictureImportBGRX
+    WebPPictureImportRGB
+    WebPPictureImportRGBA
+    WebPPictureImportRGBX
+    WebPPictureInitInternal
+    WebPPictureIsView
+    WebPPictureRescale
+    WebPPictureSharpARGBToYUVA
+    WebPPictureSmartARGBToYUVA
+    WebPPictureView
+    WebPPictureYUVAToARGB
+    WebPPlaneDistortion
+    WebPValidateConfig
     [last_address]
 End Enum
 
@@ -324,22 +558,24 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
             dstDIB.SetAlphaPremultiplication True
             
             'Initialize the target layer
-            Dim newLayerID As Long
-            newLayerID = dstImage.CreateBlankLayer()
+            Dim newLayerID As Long, tmpLayer As pdLayer
+            If (Not dstImage Is Nothing) Then
+                
+                newLayerID = dstImage.CreateBlankLayer()
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                tmpLayer.InitializeNewLayer PDL_Image, Files.FileGetName(srcFile, True), dstDIB, False
+                tmpLayer.SetLayerVisibility True
             
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-            tmpLayer.InitializeNewLayer PDL_Image, Files.FileGetName(srcFile, True), dstDIB, False
-            tmpLayer.SetLayerVisibility True
+                'Finish initializing the target image
+                dstImage.Width = m_imgWidth
+                dstImage.Height = m_imgHeight
             
-            'Finish initializing the target image
-            dstImage.Width = m_imgWidth
-            dstImage.Height = m_imgHeight
+                'WebP files do not provide a direct way to set DPI
+                dstImage.SetDPI 72, 72
+                dstImage.NotifyImageChanged UNDO_Everything
             
-            'WebP files do not provide a direct way to set DPI
-            dstImage.SetDPI 72, 72
+            End If
             
-            dstImage.NotifyImageChanged UNDO_Everything
             LoadWebP_FromMemory = True
             
         'decoding pixel data failed - not much we can do but abort completely
@@ -354,6 +590,120 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
     
     'Before exiting, free any allocated demuxer(s)
     FreeDemuxer
+    
+End Function
+
+Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As String, ByRef dstDIB As pdDIB) As Boolean
+    
+    Const FUNC_NAME As String = "SaveWebP_PreviewOnly"
+    SaveWebP_PreviewOnly = False
+    
+    'Prepare a compression options parser
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    Dim saveQuality As Long
+    saveQuality = cSettings.GetLong("webp-quality", 100, True)
+    
+    Dim imgPreset As PD_WebPPreset
+    imgPreset = WEBP_PRESET_DEFAULT
+    
+    'Initialize a blank options struct, and note that we need to pass the expected save quality as part
+    ' of initialization.
+    Dim saveConfig As PD_WebPConfig
+    If (CallCDeclW(WebPConfigInit, vbLong, VarPtr(saveConfig), imgPreset, CSng(saveQuality), WEBP_ENCODER_ABI_VERSION) = 0) Then
+        InternalError FUNC_NAME, "bad WebPConfigInit"
+        GoTo SafeDeallocate
+    End If
+    
+    'Modify any desired settings in the config struct
+    saveConfig.lossless = 0
+    saveConfig.quality = saveQuality
+    saveConfig.show_compressed = 0
+    
+    'Validate the config struct before proceeding
+    If (CallCDeclW(WebPValidateConfig, vbLong, VarPtr(saveConfig)) = 0) Then
+        InternalError FUNC_NAME, "bad config struct"
+        GoTo SafeDeallocate
+    End If
+    
+    'Config struct looks OK
+    
+    'libwebp can use a custom callback for writing WebP data to file.  This is complicated to make work
+    ' in VB6 because there's no macro for the calling-convention for this callback (and implementing cdecl
+    ' callbacks in VB6 - while not impossible (see https://github.com/thetrik/VBCDeclFix) - is problematic)
+    ' but fortunately, the authors of libwebp provide a workaround by plugging-in a library-managed struct
+    ' that handles the callback for you.  The only downside of this approach is that you lose progress
+    ' callbacks (not a huge deal) and that the memory is obviously libwebp-managed, so you have to copy it
+    ' into your own target after compression completes (also not a huge deal).
+    
+    'Anyway, with that limitation in mind, let's create a libwebp-managed memory writer.
+    Dim memWriter As PD_WebPMemoryWriter
+    CallCDeclW WebPMemoryWriterInit, vbEmpty, VarPtr(memWriter)
+    Debug.Print "memwriter", memWriter.mem_buffer, memWriter.mem_size, memWriter.max_size
+    'We also need to create a WebPPicture struct, which will hold all necessary information related to
+    ' the underlying image we're trying to encode
+    Dim wpPicture As PD_WebPPicture
+    
+    'For a preview, we're going to perform an in-place compression in the destination DIB.
+     'Initialize it.
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateFromExistingDIB srcDIB
+    
+    'Initialize the picture struct
+    If (CallCDeclW(WebPPictureInitInternal, vbLong, VarPtr(wpPicture), WEBP_ENCODER_ABI_VERSION) = 0) Then
+        InternalError FUNC_NAME, "bad WebPPictureInitInternal"
+        GoTo SafeDeallocate
+    End If
+    
+    'Populate some elements before initializing
+    With wpPicture
+        
+        'Recommended for lossy compression
+        .use_argb = 0
+        .webp_width = dstDIB.GetDIBWidth
+        .webp_height = dstDIB.GetDIBHeight
+        
+        'Use the underlying library's stand-in writer function, since we can't (easily) do
+        ' cdecl callbacks in VB6
+        .ptrToWebPWriterFunction = m_ProcAddresses(WebPMemoryWrite)
+        .custom_ptr = VarPtr(memWriter)
+        
+    End With
+    
+    'After initializing the WebP object, we now need to pass it our RGB data.  Dedicated import functions
+    ' exist for this, with different options for different pixel encodings.
+    Dim importOK As Boolean: importOK = False
+    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(wpPicture), dstDIB.GetDIBPointer, dstDIB.GetDIBStride) = 0) Then
+        InternalError FUNC_NAME, "bad import"
+        GoTo SafeDeallocate
+    Else
+        importOK = True
+    End If
+    Debug.Print "import OK", wpPicture.ptrARGB, wpPicture.ptrY, wpPicture.y_stride, wpPicture.custom_ptr, VarPtr(memWriter), wpPicture.ptrToWebPWriterFunction
+    'Note that the importer, above, converts the data to YUV (? TODO - confirm this, docs are confusing)
+    
+    'With the data safely imported, we can proceed with encoding
+    If (CallCDeclW(WebPEncode, vbLong, VarPtr(saveConfig), VarPtr(wpPicture)) = 0) Then
+        InternalError FUNC_NAME, "bad encode: " & wpPicture.error_code
+        GoTo SafeDeallocate
+    Else
+        SaveWebP_PreviewOnly = True
+        
+        'Decode now?
+        SaveWebP_PreviewOnly = Me.LoadWebP_FromMemory(vbNullString, memWriter.mem_buffer, memWriter.mem_size, Nothing, dstDIB)
+        
+    End If
+    Debug.Print "encode OK"
+    
+    'Compressed WebP stream now exists (hypothetically?) in memwriter.mem_buffer...
+    '...but because we used the show_compressed setting, the decoded pixels already exist in
+    ' useable BGRA format, which is all this function is concerned with.
+    
+SafeDeallocate:
+    If (memWriter.mem_buffer <> 0) Then CallCDeclW WebPMemoryWriterClear, vbEmpty, VarPtr(memWriter)
+    If importOK Then CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
     
 End Function
 
@@ -594,13 +944,43 @@ Private Sub Class_Initialize()
     m_ProcAddresses(WebPAnimDecoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderNewInternal")
     m_ProcAddresses(WebPAnimDecoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderOptionsInitInternal")
     m_ProcAddresses(WebPAnimDecoderReset) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderReset")
+    m_ProcAddresses(WebPBlendAlpha) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPBlendAlpha")
+    m_ProcAddresses(WebPCleanupTransparentArea) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPCleanupTransparentArea")
+    m_ProcAddresses(WebPConfigInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPConfigInitInternal")
     m_ProcAddresses(WebPDecodeBGRAInto) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPDecodeBGRAInto")
     m_ProcAddresses(WebPDemux) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxInternal")
     m_ProcAddresses(WebPDemuxDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxDelete")
     m_ProcAddresses(WebPDemuxGetI) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxGetI")
+    m_ProcAddresses(WebPEncode) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPEncode")
     m_ProcAddresses(WebPGetDecoderVersion) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetDecoderVersion")
     m_ProcAddresses(WebPGetFeatures) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetFeaturesInternal")
     m_ProcAddresses(WebPGetInfo) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetInfo")
+    m_ProcAddresses(WebPMemoryWrite) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPMemoryWrite")
+    m_ProcAddresses(WebPMemoryWriterClear) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPMemoryWriterClear")
+    m_ProcAddresses(WebPMemoryWriterInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPMemoryWriterInit")
+    m_ProcAddresses(WebPPictureAlloc) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureAlloc")
+    m_ProcAddresses(WebPPictureARGBToYUVA) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureARGBToYUVA")
+    m_ProcAddresses(WebPPictureARGBToYUVADithered) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureARGBToYUVADithered")
+    m_ProcAddresses(WebPPictureCopy) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureCopy")
+    m_ProcAddresses(WebPPictureCrop) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureCrop")
+    m_ProcAddresses(WebPPictureDistortion) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureDistortion")
+    m_ProcAddresses(WebPPictureFree) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureFree")
+    m_ProcAddresses(WebPPictureHasTransparency) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureHasTransparency")
+    m_ProcAddresses(WebPPictureImportBGR) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportBGR")
+    m_ProcAddresses(WebPPictureImportBGRA) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportBGRA")
+    m_ProcAddresses(WebPPictureImportBGRX) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportBGRX")
+    m_ProcAddresses(WebPPictureImportRGB) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportRGB")
+    m_ProcAddresses(WebPPictureImportRGBA) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportRGBA")
+    m_ProcAddresses(WebPPictureImportRGBX) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureImportRGBX")
+    m_ProcAddresses(WebPPictureInitInternal) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureInitInternal")
+    m_ProcAddresses(WebPPictureIsView) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureIsView")
+    m_ProcAddresses(WebPPictureRescale) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureRescale")
+    m_ProcAddresses(WebPPictureSharpARGBToYUVA) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureSharpARGBToYUVA")
+    m_ProcAddresses(WebPPictureSmartARGBToYUVA) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureSmartARGBToYUVA")
+    m_ProcAddresses(WebPPictureView) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureView")
+    m_ProcAddresses(WebPPictureYUVAToARGB) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPictureYUVAToARGB")
+    m_ProcAddresses(WebPPlaneDistortion) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPPlaneDistortion")
+    m_ProcAddresses(WebPValidateConfig) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPValidateConfig")
     
     'Initialize all module-level arrays
     ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
