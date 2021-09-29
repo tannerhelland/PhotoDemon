@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2021-2021 by Tanner Helland
 'Created: 22/September/21
 'Last updated: 29/September/21
-'Last update: WebP export now supported (animated still a work-in-progress)
+'Last update: WebP export now supported (animation export still a work-in-progress)
 '
 'LibWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
 ' Fortunately for PhotoDemon, it comes with a robust C interface and legacy compilation options, enabling
@@ -56,6 +56,7 @@ Private Const WEBP_DEBUG_VERBOSE As Boolean = True
 Private Const WEBP_DECODER_ABI_VERSION As Long = &H209& 'From decode.h
 Private Const WEBP_DEMUX_ABI_VERSION As Long = &H107&   'From demux.h
 Private Const WEBP_ENCODER_ABI_VERSION As Long = &H20F& 'From encode.h
+Private Const WEBP_MUX_ABI_VERSION As Long = &H108&     'From mux.h
 
 Private Enum PD_VP8StatusCode
     VP8_STATUS_OK = 0
@@ -381,6 +382,37 @@ Private Type PD_WebPMemoryWriter
     padding As Long         '// padding for later use
 End Type
 
+'Animation parameters.
+Private Type WebPMuxAnimParams
+    bgColorA As Byte    '// Background color of the canvas stored (in MSB order) as ARGB
+    bgColorR As Byte
+    bgColorG As Byte
+    bgColorB As Byte
+    loop_count As Long  '// Number of times to repeat the animation [0 = infinite].
+End Type
+
+Private Type WebPAnimEncoderOptions
+    anim_params As WebPMuxAnimParams  '// Animation parameters.
+    minimize_size As Long     '// If true, minimize the output size (slow). Implicitly
+                              '// disables key-frame insertion.
+    kmin As Long
+    kmax As Long              '// Minimum and maximum distance between consecutive key
+                              '// frames in the output. The library may insert some key
+                              '// frames as needed to satisfy this criteria.
+                              '// Note that these conditions should hold: kmax > kmin
+                              '// and kmin >= kmax / 2 + 1. Also, if kmax <= 0, then
+                              '// key-frame insertion is disabled; and if kmax == 1,
+                              '// then all frames will be key-frames (kmin value does
+                              '// not matter for these special cases).
+    allow_mixed As Long       '// If true, use mixed compression mode; may choose
+                              '// either lossy and lossless for each frame.
+    verbose As Long           '// If true, print info and warning messages to stderr.
+    padding1a As Long         '// Padding for later use.
+    padding1b As Long
+    padding1c As Long
+    padding1d As Long
+End Type
+
 'Note that regular WebP features reside in libwebp; animation features are in libwebpde/mux.
 
 'libwebp uses a Google-specific toolchain for compilation, so we lean on their supplied makefile for building.
@@ -398,6 +430,12 @@ Private Enum WebP_ProcAddress
     WebPAnimDecoderNew
     WebPAnimDecoderOptionsInit
     WebPAnimDecoderReset
+    WebPAnimEncoderAdd
+    WebPAnimEncoderAssemble
+    WebPAnimEncoderDelete
+    WebPAnimEncoderGetError
+    WebPAnimEncoderNew
+    WebPAnimEncoderOptionsInit
     WebPBlendAlpha
     WebPCleanupTransparentArea
     WebPConfigInit
@@ -1071,6 +1109,12 @@ Private Sub Class_Initialize()
     m_ProcAddresses(WebPAnimDecoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderNewInternal")
     m_ProcAddresses(WebPAnimDecoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderOptionsInitInternal")
     m_ProcAddresses(WebPAnimDecoderReset) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderReset")
+    m_ProcAddresses(WebPAnimEncoderAdd) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderAdd")
+    m_ProcAddresses(WebPAnimEncoderAssemble) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderAssemble")
+    m_ProcAddresses(WebPAnimEncoderDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderDelete")
+    m_ProcAddresses(WebPAnimEncoderGetError) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderGetError")
+    m_ProcAddresses(WebPAnimEncoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderNewInternal")
+    m_ProcAddresses(WebPAnimEncoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderOptionsInitInternal")
     m_ProcAddresses(WebPBlendAlpha) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPBlendAlpha")
     m_ProcAddresses(WebPCleanupTransparentArea) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPCleanupTransparentArea")
     m_ProcAddresses(WebPConfigInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPConfigInitInternal")

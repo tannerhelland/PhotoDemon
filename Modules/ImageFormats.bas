@@ -727,7 +727,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether the export format supports animation.
 Public Function IsAnimationSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
     Select Case outputPDIF
-        Case PDIF_GIF, PDIF_PNG
+        Case PDIF_GIF, PDIF_PNG, PDIF_WEBP
             IsAnimationSupported = True
         Case Else
             IsAnimationSupported = False

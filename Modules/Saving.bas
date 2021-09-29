@@ -385,7 +385,15 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_WEBP
-                GetExportParamsFromDialog = (Dialogs.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If (Not srcImage Is Nothing) Then
+                    If srcImage.IsAnimated Then
+                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedWebP(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    Else
+                        GetExportParamsFromDialog = (Dialogs.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    End If
+                Else
+                    GetExportParamsFromDialog = (Dialogs.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                End If
                 
         End Select
         
@@ -472,7 +480,11 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportTIFF(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_WEBP
-            ExportToSpecificFormat = ImageExporter.ExportWebP(srcImage, dstPath, saveParameters, metadataParameters)
+            If srcImage.IsAnimated Then
+                ExportToSpecificFormat = ImageExporter.ExportWebP_Animated(srcImage, dstPath, saveParameters, metadataParameters)
+            Else
+                ExportToSpecificFormat = ImageExporter.ExportWebP(srcImage, dstPath, saveParameters, metadataParameters)
+            End If
             
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
@@ -818,127 +830,13 @@ Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As p
     
 End Function
 
-'In 2019, PD gained animated GIF export support.  Because the process for exporting an animation is so different
-' from normal still images, it is split out into its own function.
-Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
-    
-    Export_AnimatedGIF = False
-    If (srcImage Is Nothing) Then Exit Function
-    
-    'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
-    If (srcImage.GetNumOfLayers <= 1) Then
-        If Not PromptSingleFrameSave() Then Exit Function
-    End If
-    
-    'Reuse the user's current "save image" path for the export
-    Dim cdInitialFolder As String
-    cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
-    
-    'Suggest a default file name.  (At present, we just reuse the current image's name.)
-    Dim dstFile As String
-    dstFile = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If (LenB(dstFile) = 0) Then dstFile = g_Language.TranslateMessage("New image")
-    dstFile = cdInitialFolder & dstFile
-    
-    Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Export animated GIF")
-    
-    'Start by prompting the user for an export path
-    Dim saveDialog As pdOpenSaveDialog
-    Set saveDialog = New pdOpenSaveDialog
-    
-    If saveDialog.GetSaveFileName(dstFile, , True, "GIF - Graphics Interchange Format (*.gif)|*.gif", , cdInitialFolder, cdTitle, ".gif", FormMain.hWnd) Then
-        
-        'The user supplied a path.
-        
-        'Before proceeding with the save, check for some file-level errors that may cause problems.
-        
-        'If the file already exists, ensure we have write+delete access
-        If (Not Files.FileTestAccess_Write(dstFile)) Then
-            Message "Warning - file locked: %1", dstFile
-            PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbExclamation Or vbOKOnly, "File locked", dstFile
-            Export_AnimatedGIF = False
-            Exit Function
-        End If
-        
-        'Update the stored last-save-folder value
-        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
-        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
-        
-        'Next, retrieve export settings
-        ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported
-        ' by the batch processor.)
-        Dim formatParams As String, metadataParams As String
-        Dim promptResult As VbMsgBoxResult
-        promptResult = Dialogs.PromptExportAnimatedGIF(srcImage, formatParams, metadataParams)
-        
-        If (promptResult <> vbOK) Then
-            Export_AnimatedGIF = False
-            Exit Function
-        End If
-        
-        'Lock the UI
-        Saving.BeginSaveProcess
-        
-        'Perform the actual save
-        Dim saveResult As Boolean
-        saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile, formatParams, metadataParams)
-        
-        If saveResult Then
-        
-            'If the file was successfully written, we can now embed any additional metadata.
-            ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-            ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
-            ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-            If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
-                
-                'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
-                'If ImageFormats.IsExifToolRelevant(PDIF_GIF) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
-                
-            End If
-            
-            'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
-            ' only applied if we are *not* in the midst  of a batch conversion.
-            If (Macros.GetMacroStatus <> MacroBATCH) Then
-                g_RecentFiles.AddFileToList dstFile, srcImage
-                Interface.SyncInterfaceToCurrentImage
-                Interface.NotifyImageChanged PDImages.GetActiveImageID()
-            End If
-            
-        End If
-        
-        'Free the UI
-        Saving.EndSaveProcess
-        Message "Save complete."
-        
-        'If FreeImage failed, it should have provided detailed information on the problem.  Present it to the user, in hopes that
-        ' they might use it to rectify the situation (or least notify us of what went wrong!)
-        If (Not saveResult) Then
-        
-            If Plugin_FreeImage.FreeImageErrorState Then
-                
-                Dim fiErrorList As String
-                fiErrorList = Plugin_FreeImage.GetFreeImageErrors
-                
-                'Display the error message
-                PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbOKOnly, "Error", fiErrorList
-                
-            Else
-                PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
-            End If
-        End If
-        
-    Else
-        Export_AnimatedGIF = False
-    End If
-    
-End Function
+'PhotoDemon can currently export animated GIF, PNG, and WebP images.  These fromats all have slight subtleties
+' in how we prep frames prior to export, but you can call this universal function to handle all those details
+' for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the pdImage
+' object you want saved.
+Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcImage As pdImage) As Boolean
 
-'In 2019, PD gained animated PNG export support.  Because the process for exporting an animation is so different
-' from normal still images, it is split out into its own function.
-Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
-    
-    Export_AnimatedPNG = False
+    Export_Animation = False
     If (srcImage Is Nothing) Then Exit Function
     
     'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
@@ -957,13 +855,33 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
     dstFile = cdInitialFolder & dstFile
     
     Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Export animated PNG")
+    Select Case dstFormat
+        Case PDIF_GIF
+            cdTitle = g_Language.TranslateMessage("Export animated GIF")
+        Case PDIF_PNG
+            cdTitle = g_Language.TranslateMessage("Export animated PNG")
+        Case PDIF_WEBP
+            cdTitle = g_Language.TranslateMessage("Export animated WebP")
+        Case Else
+            PDDebug.LogAction "WARNING! Saving.Export_Animation received bad PDIF: " & dstFormat
+            Exit Function
+    End Select
     
     'Start by prompting the user for an export path
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
     
-    If saveDialog.GetSaveFileName(dstFile, , True, "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png", , cdInitialFolder, cdTitle, ".apng", FormMain.hWnd) Then
+    Dim saveSuccess As Boolean
+    Select Case dstFormat
+        Case PDIF_GIF
+            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "GIF - Graphics Interchange Format (*.gif)|*.gif", , cdInitialFolder, cdTitle, ".gif", FormMain.hWnd)
+        Case PDIF_PNG
+            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png", , cdInitialFolder, cdTitle, ".apng", FormMain.hWnd)
+        Case PDIF_WEBP
+            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "WEBP - Google WebP (*.webp)|*.webp", , cdInitialFolder, cdTitle, ".webp", FormMain.hWnd)
+    End Select
+    
+    If saveSuccess Then
         
         'The user supplied a path.
         
@@ -973,7 +891,7 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         If (Not Files.FileTestAccess_Write(dstFile)) Then
             Message "Warning - file locked: %1", dstFile
             PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbExclamation Or vbOKOnly, "File locked", dstFile
-            Export_AnimatedPNG = False
+            Export_Animation = False
             Exit Function
         End If
         
@@ -986,10 +904,18 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         ' by the batch processor.)
         Dim formatParams As String, metadataParams As String
         Dim promptResult As VbMsgBoxResult
-        promptResult = Dialogs.PromptExportAnimatedPNG(srcImage, formatParams, metadataParams)
+        
+        Select Case dstFormat
+            Case PDIF_GIF
+                promptResult = Dialogs.PromptExportAnimatedGIF(srcImage, formatParams, metadataParams)
+            Case PDIF_PNG
+                promptResult = Dialogs.PromptExportAnimatedPNG(srcImage, formatParams, metadataParams)
+            Case PDIF_WEBP
+                promptResult = Dialogs.PromptExportAnimatedWebP(srcImage, formatParams, metadataParams)
+        End Select
         
         If (promptResult <> vbOK) Then
-            Export_AnimatedPNG = False
+            Export_Animation = False
             Exit Function
         End If
         
@@ -998,7 +924,14 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         
         'Perform the actual save
         Dim saveResult As Boolean
-        saveResult = ImageExporter.ExportPNG_Animated(srcImage, dstFile, formatParams, metadataParams)
+        Select Case dstFormat
+            Case PDIF_GIF
+                saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile, formatParams, metadataParams)
+            Case PDIF_PNG
+                saveResult = ImageExporter.ExportPNG_Animated(srcImage, dstFile, formatParams, metadataParams)
+            Case PDIF_WEBP
+                saveResult = ImageExporter.ExportWebP_Animated(srcImage, dstFile, formatParams, metadataParams)
+        End Select
         
         If saveResult Then
         
@@ -1009,7 +942,7 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
                 
                 'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
-                'If ImageFormats.IsExifToolRelevant(PDIF_PNG) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
+                If ImageFormats.IsExifToolRelevant(dstFormat) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
                 
             End If
             
@@ -1027,8 +960,23 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         Saving.EndSaveProcess
         Message "Save complete."
         
+        'Animated GIFs do not use our own encoder; instead, they rely on the 3rd-party FreeImage library.
+        ' If FreeImage fails, it should provide detailed information on any errors encountered.  Present these
+        ' to the user, in hopes that they might find it useful (or least pass it on to me!)
+        If (dstFormat = PDIF_GIF) Then
+            If (Not saveResult) Then
+                If Plugin_FreeImage.FreeImageErrorState Then
+                    Dim fiErrorList As String
+                    fiErrorList = Plugin_FreeImage.GetFreeImageErrors
+                    PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbOKOnly, "Error", fiErrorList
+                Else
+                    PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
+                End If
+            End If
+        End If
+        
     Else
-        Export_AnimatedPNG = False
+        Export_Animation = False
     End If
     
 End Function
@@ -1064,6 +1012,5 @@ End Sub
 
 'Want to free up memory?  Call this function to release all export caches.
 Public Sub FreeUpMemory()
-    Set m_PDIWriter = Nothing
     Set m_PDIWriter = Nothing
 End Sub

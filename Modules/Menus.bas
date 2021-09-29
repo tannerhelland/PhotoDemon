@@ -180,10 +180,11 @@ Public Sub InitializeMenus()
     AddMenuItem "Export", "file_export", 0, 12
         AddMenuItem "Animated GIF...", "file_export_animatedgif", 0, 12, 0
         AddMenuItem "Animated PNG...", "file_export_animatedpng", 0, 12, 1
-        AddMenuItem "-", "-", 0, 12, 2
-        AddMenuItem "Color lookup...", "file_export_colorlookup", 0, 12, 3
-        AddMenuItem "Color profile...", "file_export_colorprofile", 0, 12, 4
-        AddMenuItem "Palette...", "file_export_palette", 0, 12, 5
+        AddMenuItem "Animated WebP...", "file_export_animatedwebp", 0, 12, 2
+        AddMenuItem "-", "-", 0, 12, 3
+        AddMenuItem "Color lookup...", "file_export_colorlookup", 0, 12, 4
+        AddMenuItem "Color profile...", "file_export_colorprofile", 0, 12, 5
+        AddMenuItem "Palette...", "file_export_palette", 0, 12, 6
     AddMenuItem "-", "-", 0, 13
     AddMenuItem "Batch operations", "file_batch", 0, 14
         AddMenuItem "Process...", "file_batch_process", 0, 14, 0, "file_batch"
@@ -2111,6 +2112,9 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
             
             Case "file_export_animatedpng"
                 Process "Export animated PNG", True
+                
+            Case "file_export_animatedwebp"
+                Process "Export animated WebP", True
                 
             Case "file_export_colorlookup"
                 Process "Export color lookup", True

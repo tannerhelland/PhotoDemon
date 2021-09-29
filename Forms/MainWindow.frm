@@ -158,20 +158,24 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "-"
+            Caption         =   "Animated WebP..."
             Index           =   2
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color lookup..."
+            Caption         =   "-"
             Index           =   3
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color profile..."
+            Caption         =   "Color lookup..."
             Index           =   4
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "Color profile..."
             Index           =   5
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuFile 
@@ -3620,12 +3624,14 @@ Private Sub MnuFileExport_Click(Index As Integer)
         Case 1
             Menus.ProcessDefaultAction_ByName "file_export_animatedpng"
         Case 2
-            '(separator)
+            Menus.ProcessDefaultAction_ByName "file_export_animatedwebp"
         Case 3
-            Menus.ProcessDefaultAction_ByName "file_export_colorlookup"
+            '(separator)
         Case 4
-            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+            Menus.ProcessDefaultAction_ByName "file_export_colorlookup"
         Case 5
+            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+        Case 6
             Menus.ProcessDefaultAction_ByName "file_export_palette"
     End Select
     
