@@ -593,21 +593,81 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
     
 End Function
 
+'Preview the effect of WebP compression settings (in srcOptions) on an arbitrary pdDIB
 Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As String, ByRef dstDIB As pdDIB) As Boolean
     
     Const FUNC_NAME As String = "SaveWebP_PreviewOnly"
     SaveWebP_PreviewOnly = False
+    
+    'The vast majority of this function is handled by a separate in-memory encoder.
+    Dim memWriter As PD_WebPMemoryWriter
+    SaveWebP_PreviewOnly = SaveWebP_ToMemory(srcDIB, srcOptions, memWriter)
+    
+    'If saving was successful, we simply need to decode the in-memory WebP back to a pdDIB object.
+    If SaveWebP_PreviewOnly Then
+        SaveWebP_PreviewOnly = Me.LoadWebP_FromMemory(vbNullString, memWriter.mem_buffer, memWriter.mem_size, Nothing, dstDIB)
+    End If
+    
+    'Regardless of outcome, free the WebP memory struct
+    If (memWriter.mem_buffer <> 0) Then CallCDeclW WebPMemoryWriterClear, vbEmpty, VarPtr(memWriter)
+    
+End Function
+
+'Save an arbitrary DIB to a WebP memory struct.  Returns a WebP memory struct that the *CALLER* must dispose of.
+' (This function obviously CANNOT dispose of the object without making this whole function pointless.)
+' Disposal uses code like: CallCDeclW WebPMemoryWriterClear, vbEmpty, VarPtr(memWriter)
+Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As String, ByRef dstMemWriter As PD_WebPMemoryWriter) As Boolean
+
+    Const FUNC_NAME As String = "SaveWebP_ToMemory"
+    SaveWebP_ToMemory = False
     
     'Prepare a compression options parser
     Dim cSettings As pdSerialize
     Set cSettings = New pdSerialize
     cSettings.SetParamString srcOptions
     
-    Dim saveQuality As Long
-    saveQuality = cSettings.GetLong("webp-quality", 100, True)
+    Dim saveQuality As Single
+    saveQuality = cSettings.GetSingle("webp-quality", 100!, True)
+    If (saveQuality < 0!) Then saveQuality = 0
+    If (saveQuality > 100!) Then saveQuality = 100!
     
-    Dim imgPreset As PD_WebPPreset
+    Dim saveSpeed As PD_PerformanceSetting
+    Select Case cSettings.GetString("webp-compression", "default", True)
+        Case "fast"
+            saveSpeed = PD_PERF_FASTEST
+        Case "slow"
+            saveSpeed = PD_PERF_BESTQUALITY
+        Case Else
+            saveSpeed = PD_PERF_BALANCED
+    End Select
+    
+    'Presets and hints are supported, but it's unclear how useful these are in real-world usage.
+    ' (Note that the "preset" is applied to the config, and the "hint" is applied to the picture object,
+    '  and obnoxiously these are DIFFERENT ENUMS with different values.)
+    Dim imgPreset As PD_WebPPreset, imgHint As PD_WebPImageHint
     imgPreset = WEBP_PRESET_DEFAULT
+    imgHint = WEBP_HINT_DEFAULT
+    
+    Select Case cSettings.GetString("webp-hint", vbNullString, True)
+        Case "photo-indoor"
+            imgPreset = WEBP_PRESET_PICTURE
+            imgHint = WEBP_HINT_PICTURE
+        Case "photo-outdoor"
+            imgPreset = WEBP_PRESET_PHOTO
+            imgHint = WEBP_HINT_PHOTO
+        Case "art"
+            imgPreset = WEBP_PRESET_DRAWING
+            imgHint = WEBP_HINT_DEFAULT
+        Case "chart"
+            imgPreset = WEBP_PRESET_DRAWING
+            imgHint = WEBP_HINT_GRAPH
+        Case "icon"
+            imgPreset = WEBP_PRESET_ICON
+            imgHint = WEBP_HINT_GRAPH
+        Case "text"
+            imgPreset = WEBP_PRESET_TEXT
+            imgHint = WEBP_HINT_DEFAULT
+    End Select
     
     'Initialize a blank options struct, and note that we need to pass the expected save quality as part
     ' of initialization.
@@ -617,10 +677,61 @@ Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As 
         GoTo SafeDeallocate
     End If
     
-    'Modify any desired settings in the config struct
-    saveConfig.lossless = 0
-    saveConfig.quality = saveQuality
-    saveConfig.show_compressed = 0
+    'Modify any desired settings in the config struct.  Note that these mappings are adopted from
+    ' the official Google-sponsored WebP plugin for Photoshop (https://github.com/webmproject/WebPShop)
+    
+    '98+ map to lossless mode (or its close relative, "near-lossless" mode)
+    Const NEAR_LOSSLESS_STARTS_AT As Single = 98!
+    If (saveQuality >= NEAR_LOSSLESS_STARTS_AT) Then
+        saveConfig.lossless = 1
+        If (saveQuality = NEAR_LOSSLESS_STARTS_AT) Then
+            saveConfig.near_lossless = 60
+        ElseIf (saveQuality = NEAR_LOSSLESS_STARTS_AT + 1) Then
+            saveConfig.near_lossless = 80
+        Else
+            saveConfig.near_lossless = 100
+        End If
+        If (saveSpeed = PD_PERF_FASTEST) Then
+            saveConfig.quality = 0
+        ElseIf (saveSpeed = PD_PERF_BALANCED) Then
+            saveConfig.quality = 75!
+        Else
+            saveConfig.quality = 100!
+        End If
+    
+    'lossy mode
+    Else
+        
+        saveConfig.lossless = 0
+        
+        'map input range [0, 97] to output range [0, 100]
+        saveConfig.quality = saveQuality * (100! / (NEAR_LOSSLESS_STARTS_AT - 1!))
+        saveConfig.use_sharp_yuv = IIf(saveSpeed = PD_PERF_BESTQUALITY, 1, 0)
+        
+    End If
+    
+    'We also need to manually set the "speed" of the encoding; slower speeds can compress better,
+    ' but when they say "slow", they mean it!  (Seriously - slow means SLOW in this context.)
+    Select Case saveSpeed
+        Case PD_PERF_FASTEST
+            saveConfig.compressMethod = 0
+        Case PD_PERF_BESTQUALITY
+            saveConfig.compressMethod = 6
+        Case Else
+            saveConfig.compressMethod = 4
+    End Select
+    
+    'Per the WebP docs, "Low alpha qualities are terrible on gradients: limit to acceptable range."
+    ' (From WebPShopEncodeUtils.cpp in WebPShop)
+    saveConfig.alpha_quality = 50! + (saveQuality / 2!)
+    If (saveConfig.alpha_quality > 100!) Then saveConfig.alpha_quality = 100!
+    
+    'We calculated hint earlier; note that it generally only matters for lossless mode, but supplying
+    ' it regardless causes no harm
+    saveConfig.image_hint = imgHint
+    
+    'Multi-threading is (generally) fine, but we avoid it on single-core systems
+    If (OS.LogicalCoreCount > 1) Then saveConfig.thread_level = 1 Else saveConfig.thread_level = 0
     
     'Validate the config struct before proceeding
     If (CallCDeclW(WebPValidateConfig, vbLong, VarPtr(saveConfig)) = 0) Then
@@ -635,23 +746,15 @@ Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As 
     ' callbacks in VB6 - while not impossible (see https://github.com/thetrik/VBCDeclFix) - is problematic)
     ' but fortunately, the authors of libwebp provide a workaround by plugging-in a library-managed struct
     ' that handles the callback for you.  The only downside of this approach is that you lose progress
-    ' callbacks (not a huge deal) and that the memory is obviously libwebp-managed, so you have to copy it
-    ' into your own target after compression completes (also not a huge deal).
+    ' callbacks (not a huge deal) and the destination memory is obviously libwebp-managed, so you have to
+    ' copy it into your own target after compression completes (also not a huge deal).
     
-    'Anyway, with that limitation in mind, let's create a libwebp-managed memory writer.
-    Dim memWriter As PD_WebPMemoryWriter
-    CallCDeclW WebPMemoryWriterInit, vbEmpty, VarPtr(memWriter)
-    Debug.Print "memwriter", memWriter.mem_buffer, memWriter.mem_size, memWriter.max_size
+    'Anyway, with that limitation in mind, let's create the destination libwebp-managed memory writer.
+    CallCDeclW WebPMemoryWriterInit, vbEmpty, VarPtr(dstMemWriter)
+    
     'We also need to create a WebPPicture struct, which will hold all necessary information related to
     ' the underlying image we're trying to encode
     Dim wpPicture As PD_WebPPicture
-    
-    'For a preview, we're going to perform an in-place compression in the destination DIB.
-     'Initialize it.
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateFromExistingDIB srcDIB
-    
-    'Initialize the picture struct
     If (CallCDeclW(WebPPictureInitInternal, vbLong, VarPtr(wpPicture), WEBP_ENCODER_ABI_VERSION) = 0) Then
         InternalError FUNC_NAME, "bad WebPPictureInitInternal"
         GoTo SafeDeallocate
@@ -660,49 +763,42 @@ Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As 
     'Populate some elements before initializing
     With wpPicture
         
-        'Recommended for lossy compression
-        .use_argb = 0
-        .webp_width = dstDIB.GetDIBWidth
-        .webp_height = dstDIB.GetDIBHeight
+        'RGBA is recommended for lossless compression; anything else (including near-lossless) should use
+        ' YUV for improved compression.
+        .use_argb = (saveQuality >= 100!)
+        .webp_width = srcDIB.GetDIBWidth
+        .webp_height = srcDIB.GetDIBHeight
         
         'Use the underlying library's stand-in writer function, since we can't (easily) do
         ' cdecl callbacks in VB6
         .ptrToWebPWriterFunction = m_ProcAddresses(WebPMemoryWrite)
-        .custom_ptr = VarPtr(memWriter)
+        .custom_ptr = VarPtr(dstMemWriter)
         
     End With
     
     'After initializing the WebP object, we now need to pass it our RGB data.  Dedicated import functions
     ' exist for this, with different options for different pixel encodings.
     Dim importOK As Boolean: importOK = False
-    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(wpPicture), dstDIB.GetDIBPointer, dstDIB.GetDIBStride) = 0) Then
+    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(wpPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride) = 0) Then
         InternalError FUNC_NAME, "bad import"
         GoTo SafeDeallocate
     Else
         importOK = True
     End If
-    Debug.Print "import OK", wpPicture.ptrARGB, wpPicture.ptrY, wpPicture.y_stride, wpPicture.custom_ptr, VarPtr(memWriter), wpPicture.ptrToWebPWriterFunction
-    'Note that the importer, above, converts the data to YUV (? TODO - confirm this, docs are confusing)
     
     'With the data safely imported, we can proceed with encoding
     If (CallCDeclW(WebPEncode, vbLong, VarPtr(saveConfig), VarPtr(wpPicture)) = 0) Then
         InternalError FUNC_NAME, "bad encode: " & wpPicture.error_code
         GoTo SafeDeallocate
     Else
-        SaveWebP_PreviewOnly = True
         
-        'Decode now?
-        SaveWebP_PreviewOnly = Me.LoadWebP_FromMemory(vbNullString, memWriter.mem_buffer, memWriter.mem_size, Nothing, dstDIB)
+        'Encoding was successful!  memWriter.mem_buffer now points at the compressed WebP bytes.
+        ' It is up to the caller to handle things from here.
+        SaveWebP_ToMemory = True
         
     End If
-    Debug.Print "encode OK"
-    
-    'Compressed WebP stream now exists (hypothetically?) in memwriter.mem_buffer...
-    '...but because we used the show_compressed setting, the decoded pixels already exist in
-    ' useable BGRA format, which is all this function is concerned with.
     
 SafeDeallocate:
-    If (memWriter.mem_buffer <> 0) Then CallCDeclW WebPMemoryWriterClear, vbEmpty, VarPtr(memWriter)
     If importOK Then CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
     
 End Function
@@ -744,7 +840,6 @@ Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, 
         animDecodeOptions.color_mode = MODE_bgrAp
         
         '...and explicitly allow multi-thread decoding on relevant systems
-        Debug.Print animDecodeOptions.use_threads, "use threads?"
         If (OS.LogicalCoreCount > 1) Then animDecodeOptions.use_threads = 1 Else animDecodeOptions.use_threads = 0
         
         '...and finally, use the options struct to initialize an actual decoder object

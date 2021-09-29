@@ -25,14 +25,24 @@ Begin VB.Form dialog_ExportWebP
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsCompression 
-      Height          =   975
+   Begin PhotoDemon.pdDropDown ddImageHint 
+      Height          =   855
       Left            =   6000
-      TabIndex        =   3
-      Top             =   2160
+      TabIndex        =   4
+      Top             =   960
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   1720
+      _ExtentY        =   1508
+      Caption         =   "image type:"
+   End
+   Begin PhotoDemon.pdButtonStrip btsCompression 
+      Height          =   1095
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   3360
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1931
       Caption         =   "compression"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -59,7 +69,7 @@ Begin VB.Form dialog_ExportWebP
       Height          =   765
       Left            =   6000
       TabIndex        =   2
-      Top             =   600
+      Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1349
@@ -74,7 +84,7 @@ Begin VB.Form dialog_ExportWebP
       Height          =   435
       Index           =   0
       Left            =   6240
-      Top             =   1440
+      Top             =   2760
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   767
@@ -88,7 +98,7 @@ Begin VB.Form dialog_ExportWebP
       Height          =   435
       Index           =   1
       Left            =   8520
-      Top             =   1440
+      Top             =   2760
       Width           =   2190
       _ExtentX        =   3863
       _ExtentY        =   767
@@ -194,7 +204,9 @@ Private Function GetSaveParameters() As String
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     With cParams
+        
         If sldQuality.IsValid Then .AddParam "webp-quality", sldQuality.Value Else .AddParam "webp-quality", 100
+        
         Select Case btsCompression.ListIndex
             Case 0
                 .AddParam "webp-compression", "fast"
@@ -203,6 +215,24 @@ Private Function GetSaveParameters() As String
             Case 2
                 .AddParam "webp-compression", "slow"
         End Select
+        
+        Select Case ddImageHint.ListIndex
+            Case 0
+                .AddParam "webp-hint", "generic"
+            Case 1
+                .AddParam "webp-hint", "photo-indoor"
+            Case 2
+                .AddParam "webp-hint", "photo-outdoor"
+            Case 3
+                .AddParam "webp-hint", "chart"
+            Case 4
+                .AddParam "webp-hint", "art"
+            Case 5
+                .AddParam "webp-hint", "icon"
+            Case 6
+                .AddParam "webp-hint", "text"
+        End Select
+        
     End With
     
     GetSaveParameters = cParams.GetParamString()
@@ -215,6 +245,10 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     btsCompression.ListIndex = 1
+End Sub
+
+Private Sub ddImageHint_Click()
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -242,6 +276,17 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Message "Waiting for user to specify export options... "
     
     'Populate any UI elements
+    ddImageHint.SetAutomaticRedraws False
+    ddImageHint.Clear
+    ddImageHint.AddItem "generic", 0, True
+    ddImageHint.AddItem "indoor photo", 1
+    ddImageHint.AddItem "outdoor photo", 2
+    ddImageHint.AddItem "chart", 3
+    ddImageHint.AddItem "drawing (or other artwork)", 4
+    ddImageHint.AddItem "icon", 5
+    ddImageHint.AddItem "text", 6
+    ddImageHint.SetAutomaticRedraws True, True
+    
     btsCompression.AddItem "fastest", 0
     btsCompression.AddItem "default", 1
     btsCompression.AddItem "slowest", 2
@@ -299,12 +344,10 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         If (m_WebP Is Nothing) Then Set m_WebP = New pdWebP
         If m_WebP.SaveWebP_PreviewOnly(m_ImageBeforeSaving, GetSaveParameters, workingDIB) Then
             
-            'Ensure premultiplication
+            'Ensure premultiplication (the WebP loader will now provide this by default)
             If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
             FinalizeNonstandardPreview pdFxPreview, True
             
-        Else
-            Debug.Print "problem?"
         End If
         
     End If
