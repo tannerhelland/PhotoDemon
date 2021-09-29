@@ -319,9 +319,8 @@ Public Sub GenerateInputFormats()
     If m_FreeImageEnabled Then AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
         
     'libwebp is our preferred handler for WebP files, but if it goes missing, we can fall back to FreeImage
-    If (PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled) Then
-        AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
-    End If
+    ' (albeit with a greatly reduced feature-set)
+    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
@@ -418,7 +417,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = m_curFormatIndex

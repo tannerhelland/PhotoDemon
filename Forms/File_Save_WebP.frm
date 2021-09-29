@@ -335,7 +335,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_WebP.IsWebPEnabled() And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (workingDIB Is Nothing) Then UpdatePreviewSource

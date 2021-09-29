@@ -2823,6 +2823,55 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     ExportWebP = False
     Dim sFileType As String: sFileType = "WebP"
     
+    'WebP exporting leans on libwebp via pdWebP
+    If Plugin_WebP.IsWebPEnabled() Then
+        
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
+        ' mid-save, the original file is left untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Dim cRandom As pdRandomize
+            Set cRandom = New pdRandomize
+            cRandom.SetSeed_AutomaticAndRandom
+            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        Else
+            tmpFilename = dstFile
+        End If
+        
+        'Use pdWebP to save the WebP file
+        Dim cWebP As pdWebP
+        Set cWebP = New pdWebP
+        If cWebP.SaveWebP_ToFile(srcPDImage, formatParams, dstFile) Then
+        
+            If Strings.StringsEqual(dstFile, tmpFilename) Then
+                ExportWebP = True
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            Else
+            
+                ExportWebP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportWebP) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
+                End If
+                
+            End If
+        
+        Else
+            ExportWebP = False
+            ExportDebugMsg "WARNING!  pdWebP.SaveWebP_ToFile() failed for reasons unknown; check the debug log for additional details"
+        End If
+        
+        Exit Function
+    
+    End If
+    
+    'If we're still here, libwebp is missing or broken.  We can still attempt to save via FreeImage (if available)
+    ' but many WebP features will no longer work (and the following code is not actively maintained, so "you get what you get")
+    PDDebug.LogAction "libwebp missing or broken"
+    
     If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming WebP parameters

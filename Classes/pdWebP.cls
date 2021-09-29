@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'WebP Image Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 22/September/21
-'Last updated: 24/September/21
-'Last update: animated WebP now supported (import only)
+'Last updated: 29/September/21
+'Last update: WebP export now supported (animated still a work-in-progress)
 '
 'LibWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
 ' Fortunately for PhotoDemon, it comes with a robust C interface and legacy compilation options, enabling
@@ -606,6 +606,38 @@ Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As 
     'If saving was successful, we simply need to decode the in-memory WebP back to a pdDIB object.
     If SaveWebP_PreviewOnly Then
         SaveWebP_PreviewOnly = Me.LoadWebP_FromMemory(vbNullString, memWriter.mem_buffer, memWriter.mem_size, Nothing, dstDIB)
+    End If
+    
+    'Regardless of outcome, free the WebP memory struct
+    If (memWriter.mem_buffer <> 0) Then CallCDeclW WebPMemoryWriterClear, vbEmpty, VarPtr(memWriter)
+    
+End Function
+
+'Save an arbitrary pdImage to a WebP file
+Friend Function SaveWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+    
+    Const FUNC_NAME As String = "SaveWebP_ToFile"
+    SaveWebP_ToFile = False
+    
+    'Retrieve a composite copy of the image (layers are not supported by WebP)
+    Dim tmpDIB As pdDIB
+    srcImage.GetCompositedImage tmpDIB, False
+    
+    'The vast majority of this function is handled by a separate in-memory encoder.
+    Dim memWriter As PD_WebPMemoryWriter
+    SaveWebP_ToFile = SaveWebP_ToMemory(tmpDIB, srcOptions, memWriter)
+    Set tmpDIB = Nothing
+    
+    'If saving was successful, we simply need to dump the encoded bits out to file
+    If SaveWebP_ToFile Then
+        
+        'Dump the pointer to file!
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        SaveWebP_ToFile = cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, optimizeAccess:=OptimizeSequentialAccess)
+        cStream.WriteBytesFromPointer memWriter.mem_buffer, memWriter.mem_size
+        cStream.StopStream
+        
     End If
     
     'Regardless of outcome, free the WebP memory struct
