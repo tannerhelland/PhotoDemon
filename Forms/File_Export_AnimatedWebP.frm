@@ -149,10 +149,10 @@ Begin VB.Form dialog_ExportAnimatedWebP
       Caption         =   "quality"
       FontSizeCaption =   10
       Max             =   100
-      Value           =   100
+      Value           =   75
       GradientColorRight=   1703935
       NotchPosition   =   2
-      NotchValueCustom=   100
+      NotchValueCustom=   75
    End
    Begin PhotoDemon.pdButtonStrip btsCompression 
       Height          =   975
@@ -175,8 +175,8 @@ Attribute VB_Exposed = False
 'Animated WebP export dialog
 'Copyright 2019-2021 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 29/September/21
-'Last update: copy from original animated PNG export dialog and repurpose for WebP export
+'Last updated: 30/September/21
+'Last update: wrap up feature support unique to WebP
 '
 'In v9.0, PhotoDemon gained the ability to export animated WebP files.  This dialog exposes relevant
 ' export parameters to the user.
@@ -379,7 +379,7 @@ Private Sub cmdBar_ResetClick()
     If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
     
     'WebP-specific values follow
-    sldQuality.Value = 100
+    sldQuality.Value = 75
     btsCompression.ListIndex = 1
     
 End Sub
@@ -426,7 +426,7 @@ Private Function GetExportParamString() As String
     cParams.AddParam "frame-delay-default", sldFrameTime.Value
     
     'WebP-specific settings follow
-    cParams.AddParam "quality", sldQuality.Value
+    cParams.AddParam "webp-quality", sldQuality.Value
     Select Case btsCompression.ListIndex
         Case 0
             cParams.AddParam "webp-compression", "fast"
@@ -627,6 +627,9 @@ Private Sub RenderAnimationFrame()
             Set cParams = New pdSerialize
             cParams.AddParam "webp-quality", sldQuality.Value, True, True
             cParams.AddParam "webp-compression", "fast", True, True
+            
+            'Animated WebP files require RGBA (not sure why - possibly temporal stability?)
+            cParams.AddParam "force-rgba", True, True, True
             
             'Apply the compression
             m_WebP.SaveWebP_PreviewOnly m_tmpAnimationFrame, cParams.GetParamString(), m_tmpAnimationFrame

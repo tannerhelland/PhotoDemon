@@ -1194,6 +1194,7 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
                 'Other failure states are more problematic.  Defer to the primary error handler, which will try to restore the
                 ' original file setup as best as it can.
                 Case Else
+                    PDDebug.LogAction "pdFSO.ReplaceFile last DLL error: " & Err.LastDllError
                     GoTo ReplaceFailure
             
             End Select

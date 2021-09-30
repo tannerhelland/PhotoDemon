@@ -2018,7 +2018,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     End If
     
     'PD uses its own custom-built PNG encoder to create APNG files.  (Neither FreeImage nor GDI+ support APNGs,
-    ' and we use a comprehensive optimization tree that produces much better files than those would anyway! ;)
+    ' and we use a comprehensive optimization tree that produces much better files than those would anyway!)
     PDDebug.LogAction "Using internal PNG encoder for this operation..."
         
     Dim cPNG As pdPNG
@@ -2965,21 +2965,18 @@ Public Function ExportWebP_Animated(ByRef srcPDImage As pdImage, ByVal dstFile A
         'Use pdWebP to save the WebP file
         Dim cWebP As pdWebP
         Set cWebP = New pdWebP
-        If cWebP.SaveWebP_ToFile(srcPDImage, formatParams, dstFile) Then
+        If cWebP.SaveAnimatedWebP_ToFile(srcPDImage, formatParams, tmpFilename) Then
         
             If Strings.StringsEqual(dstFile, tmpFilename) Then
                 ExportWebP_Animated = True
             
             'If we wrote our data to a temp file, attempt to replace the original file
             Else
-            
                 ExportWebP_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
-                
                 If (Not ExportWebP_Animated) Then
                     Files.FileDelete tmpFilename
                     PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
                 End If
-                
             End If
         
         Else

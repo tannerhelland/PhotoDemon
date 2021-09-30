@@ -15,24 +15,25 @@ Attribute VB_Exposed = False
 'WebP Image Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 22/September/21
-'Last updated: 29/September/21
-'Last update: WebP export now supported (animation export still a work-in-progress)
+'Last updated: 30/September/21
+'Last update: animated WebP export now supported!
 '
-'LibWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
+'libWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
 ' Fortunately for PhotoDemon, it comes with a robust C interface and legacy compilation options, enabling
-' support all the way back to Windows XP (hypothetically - testing on XP is still TODO).
+' support all the way back to Windows XP.
 '
 'PhotoDemon historically used FreeImage to manage WebP files, but using libwebp directly allows for
-' significantly better performance and feature support, including animated WebP files (which FreeImage
-' does not support).
+' significantly better performance and feature support, including animated WebP files (which FreeImage's
+' interface does not support).
 '
-'Note that all features in this module rely on the libwebp binaries that ship with PhotoDemon.
-' These features will not work if libwebp cannot be located.
+'Note that all features in this module rely on the libwebp binaries that ship with PhotoDemon (all THREE
+' of them).  This class will not work if libwebp or its mux/demux partners are missing or broken.
 '
 'You can freely plug-in your own builds of libwebp and libwebpde/mux, but note that they must be built
-' using cdecl exports and x86 only (obviously).  Note also that many exported APIs require us to pass an
-' ABI identifier which may need to be updated against future library versions (to enable new library
-' features, at least).
+' using cdecl exports and x86 only (obviously).  Note also that many exported APIs require us to pass a
+' hard-coded ABI identifier which may need to be updated against future library versions (to enable new
+' library features, at least).  If you use your own libwebp copies, change the hard-coded ABI constants
+' at the top of this class to match.
 '
 'Please refer to Plugin_WebP for details on initializing the various libraries; that is not handled here.
 '
@@ -49,7 +50,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this will dump various bits of diagnostic info
 ' to the debug log.
-Private Const WEBP_DEBUG_VERBOSE As Boolean = True
+Private Const WEBP_DEBUG_VERBOSE As Boolean = False
 
 'Some exported APIs require passing ABI version numbers; confusingly, these exports are usually
 ' suffixed with "Internal"; see the class initialization function for details.
@@ -119,28 +120,6 @@ End Enum
 
 #If False Then
     Private Const ANIMATION_FLAG = &H2&, XMP_FLAG = &H4&, EXIF_FLAG = &H8&, ALPHA_FLAG = &H10&, ICCP_FLAG = &H20&, ALL_VALID_FLAGS = &H3E&
-#End If
-
-'Dispose method (animation only). Indicates how the area used by the current
-' frame is to be treated before rendering the next frame on the canvas.
-Private Enum PD_WebPMuxAnimDispose
-    WEBP_MUX_DISPOSE_NONE         'Do not dispose.
-    WEBP_MUX_DISPOSE_BACKGROUND   'Dispose to background color.
-End Enum
-
-#If False Then
-    Private Const WEBP_MUX_DISPOSE_NONE = 0, WEBP_MUX_DISPOSE_BACKGROUND = 1
-#End If
-
-'Blend operation (animation only). Indicates how transparent pixels of the
-' current frame are blended with those of the previous canvas.
-Private Enum PD_WebPMuxAnimBlend
-    WEBP_MUX_BLEND      'Blend.
-    WEBP_MUX_NO_BLEND   'Do not blend.
-End Enum
-
-#If False Then
-    Private Const WEBP_MUX_BLEND = 0, WEBP_MUX_NO_BLEND = 1
 #End If
 
 Private Enum PD_WEBP_CSP_MODE
@@ -383,7 +362,7 @@ Private Type PD_WebPMemoryWriter
 End Type
 
 'Animation parameters.
-Private Type WebPMuxAnimParams
+Private Type PD_WebPMuxAnimParams
     bgColorA As Byte    '// Background color of the canvas stored (in MSB order) as ARGB
     bgColorR As Byte
     bgColorG As Byte
@@ -391,8 +370,8 @@ Private Type WebPMuxAnimParams
     loop_count As Long  '// Number of times to repeat the animation [0 = infinite].
 End Type
 
-Private Type WebPAnimEncoderOptions
-    anim_params As WebPMuxAnimParams  '// Animation parameters.
+Private Type PD_WebPAnimEncoderOptions
+    anim_params As PD_WebPMuxAnimParams  '// Animation parameters.
     minimize_size As Long     '// If true, minimize the output size (slow). Implicitly
                               '// disables key-frame insertion.
     kmin As Long
@@ -422,7 +401,7 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 
 'At load-time, we cache a number of proc addresses (required for passing through DispCallFunc).
 ' This saves us a little time vs calling GetProcAddress on each call.
-Private Enum WebP_ProcAddress
+Private Enum PD_WebP_ProcAddress
     WebPAnimDecoderDelete
     WebPAnimDecoderGetInfo
     WebPAnimDecoderGetNext
@@ -444,6 +423,7 @@ Private Enum WebP_ProcAddress
     WebPDemuxDelete
     WebPDemuxGetI
     WebPEncode
+    WebPFree
     WebPGetDecoderVersion
     WebPGetFeatures
     WebPGetInfo
@@ -631,10 +611,184 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
     
 End Function
 
+'Save a pdImage (with animation data) to an animated WebP file
+Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+    
+    Const FUNC_NAME As String = "SaveWebP_ToFile"
+    SaveAnimatedWebP_ToFile = False
+    
+    'Basic input validation
+    If (srcImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError FUNC_NAME, "invalid function parameters"
+        Exit Function
+    End If
+    
+    'Before doing anything else, make sure the source image has multiple layers.  (If it doesn't,
+    ' we'll silently forward it to the single-frame saver.)
+    If (srcImage.GetNumOfLayers < 2) Then
+        SaveAnimatedWebP_ToFile = Me.SaveWebP_ToFile(srcImage, srcOptions, dstFile)
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD enforces safe overwriting in a parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'Initialize a progress bar
+    ProgressBars.SetProgBarMax srcImage.GetNumOfLayers()
+    
+    'Parse incoming options string
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    'Retrieve frame delay defaults and overrides from the passed param string
+    Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
+    useFixedFrameDelay = cSettings.GetBool("use-fixed-frame-delay", False)
+    frameDelayDefault = cSettings.GetLong("frame-delay-default", 100)
+    
+    'For WebP files, animation encoding is primarily routed through a WebpAnimEncoder object.
+    ' This object relies on a set of global animation options; prepare an option struct now.
+    Dim enc_options As PD_WebPAnimEncoderOptions
+    If (CallCDeclW(WebPAnimEncoderOptionsInit, vbLong, VarPtr(enc_options), WEBP_MUX_ABI_VERSION) = 0) Then
+        InternalError FUNC_NAME, "bad options init"
+        
+        'Docs say: "WebPAnimEncoderOptionsInit() must have succeeded before using the 'enc_options' object.
+        Exit Function
+    End If
+    
+    'Populate any settings we have control over (like loop count)
+    With enc_options
+        .anim_params.bgColorA = 0
+        .anim_params.bgColorR = 0
+        .anim_params.bgColorG = 0
+        .anim_params.bgColorB = 0
+        .anim_params.loop_count = cSettings.GetLong("animation-loop-count", 1) '(0 = infinite loops)
+        
+        'WebP offers some straightforward minimization options.  Note that the value of these functions
+        ' is tied to the incoming quality value, because the function will use heuristics to compare
+        ' the size of lossless vs lossy encoding of each frame *at the requested quality*.  Lossless will
+        ' be used if it produces a smaller file (which is not especially rare if coming from a limited-color
+        ' source like a GIF.  Note also that specifying SLOW compression will heavily penalize this function,
+        ' because each frame will be tested against a max-compression-lossless encoding... but you can
+        ' produce very small files this way (likely beating out both animated GIF and PNG).
+        .minimize_size = 1
+        .allow_mixed = 1
+        
+    End With
+    
+    'Next, we need an encoder object.  (Failure to initialize is a deal-breaker.)
+    Dim enc As Long
+    enc = CallCDeclW(WebPAnimEncoderNew, vbLong, srcImage.Width, srcImage.Height, VarPtr(enc_options), WEBP_MUX_ABI_VERSION)
+    If (enc = 0) Then
+        InternalError FUNC_NAME, "bad encoder creation"
+        Exit Function
+    End If
+    
+    'Next, we add all frames to the encoder.  This process is fairly complicated as we need to first convert
+    ' each individual frame into a WebPPicture (using an associated WebPConfig compression struct).
+    
+    'Start by initializing a configuration struct using the settings string we were passed.  This struct
+    ' will be reused for *all* frames (because they're all encoded with identical settings).
+    Dim saveConfig As PD_WebPConfig
+    If (Not GetWebPConfig(cSettings, saveConfig)) Then InternalError FUNC_NAME, "config object may be bad!"
+    
+    '(If you want to manually modify any configuration settings, this is your last chance.)
+    
+    Dim tmpLayer As pdLayer
+    Dim runningTimestamp As Long, curFrameTime As Long
+    runningTimestamp = 0
+    
+    'Note that unlike GIF and PNG, we do not auto-optimize each frame because libwebp will do this for us.
+    ' (I have not attempted to compare WebP's built-in optimizations against PD's strategies, but the
+    ' animations produced natively by the tool tend to beat GIF and PNG if you allow a slight quality loss,
+    ' so whatever the library does to optimize each frame seems to work well enough.)
+    Dim idxFrame As Long
+    For idxFrame = 0 To srcImage.GetNumOfLayers - 1
+        
+        'This stage can be time-consuming, so we provide UI feedback
+        ProgressBars.SetProgBarVal idxFrame
+        Message "Saving animation frame %1 of %2...", idxFrame + 1, srcImage.GetNumOfLayers, "DONOTLOG"
+        
+        'Convert the source layer to an image-sized, zero-offsets, all-transforms-applied layer,
+        ' then cache a local copy of it.  (This MUST be lossless for the source layer!)
+        Set tmpLayer = New pdLayer
+        tmpLayer.CopyExistingLayer srcImage.GetLayerByIndex(idxFrame)
+        tmpLayer.ConvertToNullPaddedLayer srcImage.Width, srcImage.Height, True
+        
+        'Convert this frame into a WebP picture object
+        Dim wpPicture As PD_WebPPicture
+        If GetWebPPicture(tmpLayer.layerDIB, wpPicture, True) Then
+            
+            'Calculate a timestamp for this frame.  WebP doesn't use frame times; instead, it uses
+            ' a (0-based, presumably?) additive timestamp and auto-calculates frame times from that.
+            If (idxFrame > 0) Then
+                
+                'Before dealing with pixel data, attempt to retrieve a frame time from the source layer's name.
+                ' (If the layer name does not provide a frame time, or if the user has specified a fixed
+                ' frame time, this value will be overwritten with their requsted value.)
+                curFrameTime = GetFrameTimeFromLayerName(srcImage.GetLayerByIndex(idxFrame - 1).GetLayerName, 0)
+                If (useFixedFrameDelay Or (curFrameTime = 0)) Then curFrameTime = frameDelayDefault
+                runningTimestamp = runningTimestamp + curFrameTime
+                
+            Else
+                runningTimestamp = 0
+            End If
+            
+            'With a WebPPicture created, we can now dump the frame into the encoder object
+            If (CallCDeclW(WebPAnimEncoderAdd, vbLong, enc, VarPtr(wpPicture), runningTimestamp, VarPtr(saveConfig)) = 0) Then
+                InternalError FUNC_NAME, "bad encoder add: " & wpPicture.error_code
+            End If
+            
+        Else
+            InternalError FUNC_NAME, "bad layer picture # " & idxFrame
+        End If
+        
+    Next idxFrame
+    
+    'With all frames added, we need to call WebPAnimEncoderAdd one last time with NULL inputs except
+    ' for the timestamp.  This (asinine) technique is used to establish frame time for the last frame.
+    curFrameTime = GetFrameTimeFromLayerName(srcImage.GetLayerByIndex(srcImage.GetNumOfLayers - 1).GetLayerName, 0)
+    If (useFixedFrameDelay Or (curFrameTime = 0)) Then curFrameTime = frameDelayDefault
+    runningTimestamp = runningTimestamp + curFrameTime
+    If (CallCDeclW(WebPAnimEncoderAdd, vbLong, enc, 0&, runningTimestamp, 0&) = 0) Then InternalError FUNC_NAME, "bad final frame"
+    
+    'With all frames assembled, we now need to generate the final bitstream.  The results of this operation
+    ' get placed into a WebPData struct.
+    ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
+    Message "Finalizing image..."
+    
+    Dim unionPtrAndLen(0 To 1) As Long
+    SaveAnimatedWebP_ToFile = (CallCDeclW(WebPAnimEncoderAssemble, vbLong, enc, VarPtr(unionPtrAndLen(0))) <> 0)
+    
+    'Regardless of outcome, the encoder is finished; free it immediately
+    CallCDeclW WebPAnimEncoderDelete, vbEmpty, enc
+    
+    If (Not SaveAnimatedWebP_ToFile) Then
+        InternalError FUNC_NAME, "bad assembly"
+    Else
+        
+        'Dump the pointer to file!
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        SaveAnimatedWebP_ToFile = cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, optimizeAccess:=OptimizeSequentialAccess)
+        cStream.WriteBytesFromPointer unionPtrAndLen(0), unionPtrAndLen(1)
+        cStream.StopStream
+        Set cStream = Nothing
+        
+        'Free the finished buffer
+        CallCDeclW WebPFree, vbEmpty, VarPtr(unionPtrAndLen(0))
+        
+    End If
+    
+    'Free any remaining UI elements
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
+    
+End Function
+
 'Preview the effect of WebP compression settings (in srcOptions) on an arbitrary pdDIB
 Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As String, ByRef dstDIB As pdDIB) As Boolean
     
-    Const FUNC_NAME As String = "SaveWebP_PreviewOnly"
     SaveWebP_PreviewOnly = False
     
     'The vast majority of this function is handled by a separate in-memory encoder.
@@ -651,10 +805,9 @@ Friend Function SaveWebP_PreviewOnly(ByRef srcDIB As pdDIB, ByRef srcOptions As 
     
 End Function
 
-'Save an arbitrary pdImage to a WebP file
+'Save an arbitrary pdImage to a single-frame WebP file
 Friend Function SaveWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
     
-    Const FUNC_NAME As String = "SaveWebP_ToFile"
     SaveWebP_ToFile = False
     
     'Retrieve a composite copy of the image (layers are not supported by WebP)
@@ -696,9 +849,131 @@ Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As St
     Set cSettings = New pdSerialize
     cSettings.SetParamString srcOptions
     
+    'Retrieve save quality (as it informs other settings)
     Dim saveQuality As Single
     saveQuality = cSettings.GetSingle("webp-quality", 100!, True)
     If (saveQuality < 0!) Then saveQuality = 0
+    If (saveQuality > 100!) Then saveQuality = 100!
+    
+    'We now need a WebP config object.  Initializing this is long and complicated, so we
+    ' hand it off to a dedicated initialization function.
+    Dim saveConfig As PD_WebPConfig
+    If (Not GetWebPConfig(cSettings, saveConfig)) Then
+        InternalError FUNC_NAME, "config object may be bad!"
+        GoTo SafeDeallocate
+    End If
+    
+    'Config struct looks OK
+    
+    'PD sometimes needs to force use of data in RGBA format (animation files require this, for example).
+    ' RGBA images are processed a little differently, because we supply direct pointers to the underlying
+    ' PD object (instead of importing them via a libwebp function that auto-converts to YUV).
+    Dim forceRGBA As Boolean
+    forceRGBA = cSettings.GetBool("force-rgba", False, True)
+    
+    'WebP docs also suggest using RGBA for all lossless encoding (which makes sense if you're supplying
+    ' the original image bytes in RGBA format!)
+    forceRGBA = forceRGBA Or (saveQuality >= 100!)
+    
+    'Next we need to create a WebPPicture struct, which will hold all necessary information related to
+    ' the underlying image we're trying to encode.  An external function handles this for us.
+    Dim wpPicture As PD_WebPPicture
+    If (Not GetWebPPicture(srcDIB, wpPicture, forceRGBA)) Then
+        InternalError FUNC_NAME, "bad picture init"
+        GoTo SafeDeallocate
+    End If
+    
+    'With a picture object initialized, we now need a "memory writer" struct (which defines where the
+    ' encoded WebP stream gets stored in-memory).
+    
+    'libwebp can use a custom callback for writing WebP data to file.  This is complicated to make work
+    ' in VB6 because there's no macro for the calling-convention for this callback (and implementing cdecl
+    ' callbacks in VB6 - while not impossible (see https://github.com/thetrik/VBCDeclFix) - is problematic)
+    ' but fortunately, the authors of libwebp provide a workaround by plugging-in a library-managed struct
+    ' that handles the callback for you.  The only downside of this approach is that you lose progress
+    ' callbacks (not a huge deal) and the destination memory is obviously libwebp-managed, so you have to
+    ' copy it into your own target after compression completes (also not a huge deal).
+    
+    'Anyway, with that limitation in mind, let's create the destination libwebp-managed memory writer.
+    CallCDeclW WebPMemoryWriterInit, vbEmpty, VarPtr(dstMemWriter)
+    
+    'We now need to place the writer information inside the WebPPicture object (I know, it's baffling).
+    wpPicture.ptrToWebPWriterFunction = m_ProcAddresses(WebPMemoryWrite)
+    wpPicture.custom_ptr = VarPtr(dstMemWriter)
+    
+    'With the data safely imported, we can proceed with encoding
+    If (CallCDeclW(WebPEncode, vbLong, VarPtr(saveConfig), VarPtr(wpPicture)) = 0) Then
+        InternalError FUNC_NAME, "bad encode: " & wpPicture.error_code
+        GoTo SafeDeallocate
+    Else
+        
+        'Encoding was successful!  memWriter.mem_buffer now points at the compressed WebP bytes.
+        ' It is up to the caller to handle things from here.
+        SaveWebP_ToMemory = True
+        
+    End If
+    
+SafeDeallocate:
+    CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
+    
+End Function
+
+'Given a source image, populate a WebPPicture struct.  Note that a memory writer is *NOT* initialized
+' by this function - you must manually populate the WebPPicture object with that information as needed.
+Private Function GetWebPPicture(ByRef srcDIB As pdDIB, ByRef dstPicture As PD_WebPPicture, Optional ByVal useRGBAMode As Boolean = True) As Boolean
+    
+    Const FUNC_NAME As String = "GetWebPPicture"
+    GetWebPPicture = False
+    
+    If (CallCDeclW(WebPPictureInitInternal, vbLong, VarPtr(dstPicture), WEBP_ENCODER_ABI_VERSION) = 0) Then
+        InternalError FUNC_NAME, "bad WebPPictureInitInternal"
+        Exit Function
+    End If
+    
+    'Populate some elements before initializing
+    With dstPicture
+        
+        'RGBA is recommended for lossless compression and animation frames (which do not work in YUV);
+        ' anything else (including near-lossless single frames) should use YUV for improved compression.
+        If useRGBAMode Then .use_argb = 1 Else .use_argb = 0
+        .webp_width = srcDIB.GetDIBWidth
+        .webp_height = srcDIB.GetDIBHeight
+        
+    End With
+    
+    'After initializing the WebP object, we now need to pass it our RGB data.  Dedicated import functions
+    ' exist for this (and they handle swizzling, which is especially useful, since there's no fast way to
+    ' swizzle in VB6).
+    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(dstPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride) = 0) Then
+        InternalError FUNC_NAME, "bad import"
+        Exit Function
+    Else
+        GetWebPPicture = True
+    End If
+    
+    'TODO: test if alpha channel is ignored automatically or not; if it isn't, we can possibly
+    ' test and flag automatically using WebP APIs:
+    '// Scan the picture 'picture' for the presence of non fully opaque alpha values.
+    '// Returns true in such case. Otherwise returns false (indicating that the
+    '// alpha plane can be ignored altogether e.g.).
+    'WEBP_EXTERN int WebPPictureHasTransparency(const WebPPicture* picture);
+    '
+    '// Remove the transparency information (if present) by blending the color with
+    '// the background color 'background_rgb' (specified as 24bit RGB triplet).
+    '// After this call, all alpha values are reset to 0xff.
+    'WEBP_EXTERN void WebPBlendAlpha(WebPPicture* pic, uint32_t background_rgb);
+    
+End Function
+
+'Given a PD-specific serialization object, return a fully initialized (and validated) WebPConfig object
+Private Function GetWebPConfig(ByRef cSettings As pdSerialize, ByRef dstConfig As PD_WebPConfig) As Boolean
+    
+    Const FUNC_NAME As String = "GetWebPConfig"
+    GetWebPConfig = False
+    
+    Dim saveQuality As Single
+    saveQuality = cSettings.GetSingle("webp-quality", 100!, True)
+    If (saveQuality < 0!) Then saveQuality = 0!
     If (saveQuality > 100!) Then saveQuality = 100!
     
     Dim saveSpeed As PD_PerformanceSetting
@@ -712,8 +987,12 @@ Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As St
     End Select
     
     'Presets and hints are supported, but it's unclear how useful these are in real-world usage.
-    ' (Note that the "preset" is applied to the config, and the "hint" is applied to the picture object,
-    '  and obnoxiously these are DIFFERENT ENUMS with different values.)
+    ' (Note that the options string can contain both a "preset" and "hint" value.  The "preset" is used
+    ' when INITIALIZING a config object, while the "hint" is actually stored WITHIN the config struct.
+    ' Obnoxiously, these are DIFFERENT ENUMS with DIFFERENT values smdh.)
+    '
+    'Anyway, all this is to say that we will use the preset up-front (during initialization), but the
+    ' hint won't be used until deeper into this function.
     Dim imgPreset As PD_WebPPreset, imgHint As PD_WebPImageHint
     imgPreset = WEBP_PRESET_DEFAULT
     imgHint = WEBP_HINT_DEFAULT
@@ -741,11 +1020,7 @@ Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As St
     
     'Initialize a blank options struct, and note that we need to pass the expected save quality as part
     ' of initialization.
-    Dim saveConfig As PD_WebPConfig
-    If (CallCDeclW(WebPConfigInit, vbLong, VarPtr(saveConfig), imgPreset, CSng(saveQuality), WEBP_ENCODER_ABI_VERSION) = 0) Then
-        InternalError FUNC_NAME, "bad WebPConfigInit"
-        GoTo SafeDeallocate
-    End If
+    If (CallCDeclW(WebPConfigInit, vbLong, VarPtr(dstConfig), imgPreset, CSng(saveQuality), WEBP_ENCODER_ABI_VERSION) = 0) Then InternalError FUNC_NAME, "bad WebPConfigInit"
     
     'Modify any desired settings in the config struct.  Note that these mappings are adopted from
     ' the official Google-sponsored WebP plugin for Photoshop (https://github.com/webmproject/WebPShop)
@@ -753,30 +1028,30 @@ Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As St
     '98+ map to lossless mode (or its close relative, "near-lossless" mode)
     Const NEAR_LOSSLESS_STARTS_AT As Single = 98!
     If (saveQuality >= NEAR_LOSSLESS_STARTS_AT) Then
-        saveConfig.lossless = 1
+        dstConfig.lossless = 1
         If (saveQuality = NEAR_LOSSLESS_STARTS_AT) Then
-            saveConfig.near_lossless = 60
+            dstConfig.near_lossless = 60
         ElseIf (saveQuality = NEAR_LOSSLESS_STARTS_AT + 1) Then
-            saveConfig.near_lossless = 80
+            dstConfig.near_lossless = 80
         Else
-            saveConfig.near_lossless = 100
+            dstConfig.near_lossless = 100
         End If
         If (saveSpeed = PD_PERF_FASTEST) Then
-            saveConfig.quality = 0
+            dstConfig.quality = 0
         ElseIf (saveSpeed = PD_PERF_BALANCED) Then
-            saveConfig.quality = 75!
+            dstConfig.quality = 75!
         Else
-            saveConfig.quality = 100!
+            dstConfig.quality = 100!
         End If
     
     'lossy mode
     Else
         
-        saveConfig.lossless = 0
+        dstConfig.lossless = 0
         
         'map input range [0, 97] to output range [0, 100]
-        saveConfig.quality = saveQuality * (100! / (NEAR_LOSSLESS_STARTS_AT - 1!))
-        saveConfig.use_sharp_yuv = IIf(saveSpeed = PD_PERF_BESTQUALITY, 1, 0)
+        dstConfig.quality = saveQuality * (100! / (NEAR_LOSSLESS_STARTS_AT - 1!))
+        dstConfig.use_sharp_yuv = IIf(saveSpeed = PD_PERF_BESTQUALITY, 1, 0)
         
     End If
     
@@ -784,92 +1059,32 @@ Private Function SaveWebP_ToMemory(ByRef srcDIB As pdDIB, ByRef srcOptions As St
     ' but when they say "slow", they mean it!  (Seriously - slow means SLOW in this context.)
     Select Case saveSpeed
         Case PD_PERF_FASTEST
-            saveConfig.compressMethod = 0
+            dstConfig.compressMethod = 0
         Case PD_PERF_BESTQUALITY
-            saveConfig.compressMethod = 6
+            dstConfig.compressMethod = 6
         Case Else
-            saveConfig.compressMethod = 4
+            dstConfig.compressMethod = 4
     End Select
     
     'Per the WebP docs, "Low alpha qualities are terrible on gradients: limit to acceptable range."
     ' (From WebPShopEncodeUtils.cpp in WebPShop)
-    saveConfig.alpha_quality = 50! + (saveQuality / 2!)
-    If (saveConfig.alpha_quality > 100!) Then saveConfig.alpha_quality = 100!
+    dstConfig.alpha_quality = 50! + (saveQuality / 2!)
+    If (dstConfig.alpha_quality > 100!) Then dstConfig.alpha_quality = 100!
     
     'We calculated hint earlier; note that it generally only matters for lossless mode, but supplying
     ' it regardless causes no harm
-    saveConfig.image_hint = imgHint
+    dstConfig.image_hint = imgHint
     
     'Multi-threading is (generally) fine, but we avoid it on single-core systems
-    If (OS.LogicalCoreCount > 1) Then saveConfig.thread_level = 1 Else saveConfig.thread_level = 0
+    If (OS.LogicalCoreCount > 1) Then dstConfig.thread_level = 1 Else dstConfig.thread_level = 0
     
     'Validate the config struct before proceeding
-    If (CallCDeclW(WebPValidateConfig, vbLong, VarPtr(saveConfig)) = 0) Then
+    If (CallCDeclW(WebPValidateConfig, vbLong, VarPtr(dstConfig)) <> 0) Then
+        GetWebPConfig = True
+    Else
         InternalError FUNC_NAME, "bad config struct"
-        GoTo SafeDeallocate
+        GetWebPConfig = False
     End If
-    
-    'Config struct looks OK
-    
-    'libwebp can use a custom callback for writing WebP data to file.  This is complicated to make work
-    ' in VB6 because there's no macro for the calling-convention for this callback (and implementing cdecl
-    ' callbacks in VB6 - while not impossible (see https://github.com/thetrik/VBCDeclFix) - is problematic)
-    ' but fortunately, the authors of libwebp provide a workaround by plugging-in a library-managed struct
-    ' that handles the callback for you.  The only downside of this approach is that you lose progress
-    ' callbacks (not a huge deal) and the destination memory is obviously libwebp-managed, so you have to
-    ' copy it into your own target after compression completes (also not a huge deal).
-    
-    'Anyway, with that limitation in mind, let's create the destination libwebp-managed memory writer.
-    CallCDeclW WebPMemoryWriterInit, vbEmpty, VarPtr(dstMemWriter)
-    
-    'We also need to create a WebPPicture struct, which will hold all necessary information related to
-    ' the underlying image we're trying to encode
-    Dim wpPicture As PD_WebPPicture
-    If (CallCDeclW(WebPPictureInitInternal, vbLong, VarPtr(wpPicture), WEBP_ENCODER_ABI_VERSION) = 0) Then
-        InternalError FUNC_NAME, "bad WebPPictureInitInternal"
-        GoTo SafeDeallocate
-    End If
-    
-    'Populate some elements before initializing
-    With wpPicture
-        
-        'RGBA is recommended for lossless compression; anything else (including near-lossless) should use
-        ' YUV for improved compression.
-        .use_argb = (saveQuality >= 100!)
-        .webp_width = srcDIB.GetDIBWidth
-        .webp_height = srcDIB.GetDIBHeight
-        
-        'Use the underlying library's stand-in writer function, since we can't (easily) do
-        ' cdecl callbacks in VB6
-        .ptrToWebPWriterFunction = m_ProcAddresses(WebPMemoryWrite)
-        .custom_ptr = VarPtr(dstMemWriter)
-        
-    End With
-    
-    'After initializing the WebP object, we now need to pass it our RGB data.  Dedicated import functions
-    ' exist for this, with different options for different pixel encodings.
-    Dim importOK As Boolean: importOK = False
-    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(wpPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride) = 0) Then
-        InternalError FUNC_NAME, "bad import"
-        GoTo SafeDeallocate
-    Else
-        importOK = True
-    End If
-    
-    'With the data safely imported, we can proceed with encoding
-    If (CallCDeclW(WebPEncode, vbLong, VarPtr(saveConfig), VarPtr(wpPicture)) = 0) Then
-        InternalError FUNC_NAME, "bad encode: " & wpPicture.error_code
-        GoTo SafeDeallocate
-    Else
-        
-        'Encoding was successful!  memWriter.mem_buffer now points at the compressed WebP bytes.
-        ' It is up to the caller to handle things from here.
-        SaveWebP_ToMemory = True
-        
-    End If
-    
-SafeDeallocate:
-    If importOK Then CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
     
 End Function
 
@@ -1065,7 +1280,7 @@ End Function
 
 'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
 ' for a link to his original, unmodified version
-Private Function CallCDeclW(ByVal lProc As WebP_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
+Private Function CallCDeclW(ByVal lProc As PD_WebP_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
 
     Dim i As Long, vTemp() As Variant, hResult As Long
     
@@ -1109,12 +1324,12 @@ Private Sub Class_Initialize()
     m_ProcAddresses(WebPAnimDecoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderNewInternal")
     m_ProcAddresses(WebPAnimDecoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderOptionsInitInternal")
     m_ProcAddresses(WebPAnimDecoderReset) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimDecoderReset")
-    m_ProcAddresses(WebPAnimEncoderAdd) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderAdd")
-    m_ProcAddresses(WebPAnimEncoderAssemble) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderAssemble")
-    m_ProcAddresses(WebPAnimEncoderDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderDelete")
-    m_ProcAddresses(WebPAnimEncoderGetError) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderGetError")
-    m_ProcAddresses(WebPAnimEncoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderNewInternal")
-    m_ProcAddresses(WebPAnimEncoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPAnimEncoderOptionsInitInternal")
+    m_ProcAddresses(WebPAnimEncoderAdd) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderAdd")
+    m_ProcAddresses(WebPAnimEncoderAssemble) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderAssemble")
+    m_ProcAddresses(WebPAnimEncoderDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderDelete")
+    m_ProcAddresses(WebPAnimEncoderGetError) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderGetError")
+    m_ProcAddresses(WebPAnimEncoderNew) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderNewInternal")
+    m_ProcAddresses(WebPAnimEncoderOptionsInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPMux(), "WebPAnimEncoderOptionsInitInternal")
     m_ProcAddresses(WebPBlendAlpha) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPBlendAlpha")
     m_ProcAddresses(WebPCleanupTransparentArea) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPCleanupTransparentArea")
     m_ProcAddresses(WebPConfigInit) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPConfigInitInternal")
@@ -1123,6 +1338,7 @@ Private Sub Class_Initialize()
     m_ProcAddresses(WebPDemuxDelete) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxDelete")
     m_ProcAddresses(WebPDemuxGetI) = GetProcAddress(Plugin_WebP.GetHandle_LibWebPDemux(), "WebPDemuxGetI")
     m_ProcAddresses(WebPEncode) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPEncode")
+    m_ProcAddresses(WebPFree) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPFree")
     m_ProcAddresses(WebPGetDecoderVersion) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetDecoderVersion")
     m_ProcAddresses(WebPGetFeatures) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetFeaturesInternal")
     m_ProcAddresses(WebPGetInfo) = GetProcAddress(Plugin_WebP.GetHandle_LibWebP(), "WebPGetInfo")
