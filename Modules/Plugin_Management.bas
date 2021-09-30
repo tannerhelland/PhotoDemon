@@ -38,18 +38,18 @@ Public Enum CORE_PLUGINS
     CCP_AvifExport
     CCP_AvifImport
     CCP_libdeflate
+    CCP_libwebp
     CCP_LittleCMS
     CCP_lz4
     CCP_OptiPNG
     CCP_PNGQuant
     CCP_pspiHost
-    CCP_WebP
     CCP_zstd
 End Enum
 
 #If False Then
     Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_pspiHost = 0, CCP_WebP = 0, CCP_zstd = 0
+    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -214,7 +214,7 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "pngquant.exe"
         Case CCP_pspiHost
             GetPluginFilename = "pspiHost.dll"
-        Case CCP_WebP
+        Case CCP_libwebp
             GetPluginFilename = "libwebp.dll"
         Case CCP_zstd
             GetPluginFilename = "libzstd.dll"
@@ -247,7 +247,7 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "PNGQuant"
         Case CCP_pspiHost
             GetPluginName = "pspiHost"
-        Case CCP_WebP
+        Case CCP_libwebp
             GetPluginName = "libwebp"
         Case CCP_zstd
             GetPluginName = "zstd"
@@ -312,7 +312,7 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
             
         'libwebp provides a dedicated version-checking function
-        Case CCP_WebP
+        Case CCP_libwebp
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_WebP.GetVersion()
             
         'zstd provides a dedicated version-checking function
@@ -377,7 +377,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_pspiHost
             dstStringStack.AddString "pspiHost-LICENSE.txt"
             
-        Case CCP_WebP
+        Case CCP_libwebp
             dstStringStack.AddString "libwebpdemux.dll"
             dstStringStack.AddString "libwebp-LICENSE.txt"
             dstStringStack.AddString "libwebpmux.dll"
@@ -431,7 +431,7 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = ImageFormats.IsPngQuantEnabled()
         Case CCP_pspiHost
             IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
-        Case CCP_WebP
+        Case CCP_libwebp
             IsPluginCurrentlyEnabled = Plugin_WebP.IsWebPEnabled()
         Case CCP_zstd
             IsPluginCurrentlyEnabled = m_ZstdEnabled
@@ -467,7 +467,7 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             ImageFormats.SetPngQuantEnabled newEnabledState
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability newEnabledState
-        Case CCP_WebP
+        Case CCP_libwebp
             Plugin_WebP.ForciblySetAvailability newEnabledState
         Case CCP_zstd
             m_ZstdEnabled = newEnabledState
@@ -509,7 +509,7 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = False
         Case CCP_pspiHost
             IsPluginHighPriority = False
-        Case CCP_WebP
+        Case CCP_libwebp
             IsPluginHighPriority = False
         Case CCP_zstd
             IsPluginHighPriority = True
@@ -544,7 +544,7 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
         Case CCP_pspiHost
             ExpectedPluginVersion = EXPECTED_PSPI_VERSION
-        Case CCP_WebP
+        Case CCP_libwebp
             ExpectedPluginVersion = EXPECTED_WEBP_VERSION
         Case CCP_zstd
             ExpectedPluginVersion = EXPECTED_ZSTD_VERSION
@@ -578,7 +578,7 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "https://pngquant.org"
         Case CCP_pspiHost
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
-        Case CCP_WebP
+        Case CCP_libwebp
             GetPluginHomepage = "https://developers.google.com/speed/webp"
         Case CCP_zstd
             GetPluginHomepage = "https://facebook.github.io/zstd/"
@@ -612,7 +612,7 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
         Case CCP_pspiHost
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
-        Case CCP_WebP
+        Case CCP_libwebp
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_zstd
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
@@ -646,7 +646,7 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "https://github.com/pornel/pngquant/blob/master/COPYRIGHT"
         Case CCP_pspiHost
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
-        Case CCP_WebP
+        Case CCP_libwebp
             GetPluginLicenseURL = "https://github.com/webmproject/libwebp/blob/master/COPYING"
         Case CCP_zstd
             GetPluginLicenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE"
@@ -722,7 +722,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_PNGQuant
             initializationSuccessful = True
             
-        Case CCP_WebP
+        Case CCP_libwebp
             initializationSuccessful = Plugin_WebP.InitializeEngine(PluginManager.GetPluginPath)
             
         Case CCP_pspiHost
@@ -776,7 +776,7 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability pluginState
             
-        Case CCP_WebP
+        Case CCP_libwebp
             Plugin_WebP.ForciblySetAvailability pluginState
         
         Case CCP_zstd

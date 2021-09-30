@@ -254,9 +254,9 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsFrameTimes.AddItem "pull from layer names", 1
     btsFrameTimes.ListIndex = 0
     
-    btsCompression.AddItem "fastest", 0
-    btsCompression.AddItem "default", 1
-    btsCompression.AddItem "slowest", 2
+    btsCompression.AddItem "fast", 0
+    btsCompression.AddItem "balanced", 1
+    btsCompression.AddItem "best", 2
     btsCompression.ListIndex = 1
     
     'Prep a preview (if any)

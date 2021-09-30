@@ -287,9 +287,9 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     ddImageHint.AddItem "text", 6
     ddImageHint.SetAutomaticRedraws True, True
     
-    btsCompression.AddItem "fastest", 0
-    btsCompression.AddItem "default", 1
-    btsCompression.AddItem "slowest", 2
+    btsCompression.AddItem "fast", 0
+    btsCompression.AddItem "balanced", 1
+    btsCompression.AddItem "best", 2
     btsCompression.ListIndex = 1
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
