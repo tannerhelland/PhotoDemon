@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormRecordAPNG 
+Begin VB.Form FormScreenVideo 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
@@ -60,7 +60,7 @@ Begin VB.Form FormRecordAPNG
       Caption         =   "Start recording"
    End
 End
-Attribute VB_Name = "FormRecordAPNG"
+Attribute VB_Name = "FormScreenVideo"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -72,8 +72,11 @@ Attribute VB_Exposed = False
 'Last updated: 24/July/20
 'Last update: finishing touches - this tool is ready for primetime!
 '
-'PD can write animated PNGs.  APNGs are a great fit for animated screen captures (lossless!).
-' This is my attempt to bring those two things together.
+'PD can write both animated PNGs and animated WebP files.  These formats are a great fit
+' for animated screen captures (lossless support!).  PhotoDemon provides a rudimentary screen
+' recorder that can dump frames directly to either format, or cache them internally for
+' subsequent loading into PhotoDemon (as a generic animated image container which you can then
+' export however you want, even to GIF).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -142,8 +145,11 @@ Private m_parentRect As winRect, m_myRect As winRect
 Private WithEvents m_Timer As pdTimer
 Attribute m_Timer.VB_VarHelpID = -1
 
-'A pdPNG instance handles the actual PNG writing
+'A pdPNG instance handles the actual PNG writing (if dumping directly to an APNG file)
 Private m_PNG As pdPNG
+
+'Similarly, a pdWebP instance handles WebP encoding
+Private m_WebP As pdWebP
 
 'Destination file, if one is selected (check for null before using)
 Private m_DstFilename As String

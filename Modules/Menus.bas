@@ -540,7 +540,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Play macro...", "tools_playmacro", 7, 6, , "macro_play"
     AddMenuItem "Recent macros", "tools_recentmacros", 7, 7
     AddMenuItem "-", "-", 7, 8
-    AddMenuItem "Animated screen capture (APNG)...", "tools_screenrecord", 7, 9, , "file_importscreen"
+    AddMenuItem "Animated screen capture...", "tools_screenrecord", 7, 9, , "file_importscreen"
     AddMenuItem "-", "-", 7, 10
     AddMenuItem "Options...", "tools_options", 7, 11, , "pref_advanced"
     AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 12, , "tools_plugin"
@@ -3012,7 +3012,7 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
         Case "tools_recentmacros"
         
         Case "tools_screenrecord"
-            ShowPDDialog vbModal, FormRecordAPNGPrefs
+            ShowPDDialog vbModal, FormScreenVideoPrefs
             
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions

@@ -1556,7 +1556,7 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Animated screen capture (APNG)..."
+         Caption         =   "Animated screen capture..."
          Index           =   9
       End
       Begin VB.Menu MnuTool 
