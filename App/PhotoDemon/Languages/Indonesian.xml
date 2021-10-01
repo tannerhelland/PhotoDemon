@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.504</langversion>
+<langversion>6.6.506</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1282,6 +1282,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Export animated WebP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation></translation>
 </phrase>
@@ -2401,7 +2406,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 276 phrases. 33 were duplicates of existing phrases, so only 243 new phrases were written to file. -->
+<!-- Menus.bas contains 277 phrases. 33 were duplicates of existing phrases, so only 244 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3125,7 +3130,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation></translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4029,6 +4034,8 @@ You will need to manually download this file using your Internet browser.</origi
 
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
+<!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>quick start</original>
 <translation></translation>
@@ -4757,6 +4764,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated WebP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation></translation>
 </phrase>
@@ -5322,7 +5334,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Animated screen capture (APNG)</original>
+<original>Animated screen capture</original>
 <translation></translation>
 </phrase>
 
@@ -5599,7 +5611,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 382 phrases. 201 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 383 phrases. 201 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9878,6 +9890,23 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>balanced</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>best</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
 <original>Palette export options</original>
 <translation></translation>
 </phrase>
@@ -10611,16 +10640,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>compression</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>maximize compatibility</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>target version</original>
@@ -10656,7 +10680,42 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- File_Save_WebP.frm contains 12 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>image type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>indoor photo</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outdoor photo</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chart</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>drawing (or other artwork)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icon</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>About PhotoDemon</original>
@@ -13594,10 +13653,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>open it in PhotoDemon (for further editing)</original>
+<original>open in PhotoDemon (for further editing)</original>
 <translation></translation>
 </phrase>
 
@@ -13632,7 +13691,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>save it directly to an animated PNG file</original>
+<original>save directly to image file</original>
 <translation></translation>
 </phrase>
 
@@ -13646,16 +13705,14 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- pdWebP.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2583</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5327 phrases. -->
-<!-- 2744 are duplicates, so only 2583 unique phrases have been written to file. -->
-<!-- These 2583 phrases contain approximately 11870 total words. -->
+<!-- As of this build, PhotoDemon contains 5361 phrases. -->
+<!-- 2767 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>
