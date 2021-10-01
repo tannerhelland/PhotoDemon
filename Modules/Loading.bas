@@ -643,7 +643,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 
                 If loadSuccessful Then
                     If (intermediaryPDIF = PDIF_PNG) Then
-                        'Dim cPNG As pdPNG
                         Set cPNG = New pdPNG
                         loadSuccessful = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, targetDIB) < png_Failure)
                     Else

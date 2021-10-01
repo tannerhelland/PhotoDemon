@@ -1,10 +1,10 @@
 VERSION 5.00
-Begin VB.Form FormRecordAPNGPrefs 
+Begin VB.Form FormScreenVideoPrefs 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
-   Caption         =   " Animated screen capture (APNG)"
-   ClientHeight    =   4950
+   Caption         =   " Animated screen capture"
+   ClientHeight    =   5985
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   11775
@@ -22,7 +22,7 @@ Begin VB.Form FormRecordAPNGPrefs
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   330
+   ScaleHeight     =   399
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   785
    ShowInTaskbar   =   0   'False
@@ -35,14 +35,14 @@ Begin VB.Form FormRecordAPNGPrefs
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
-      Caption         =   "open it in PhotoDemon (for further editing)"
+      Caption         =   "open in PhotoDemon (for further editing)"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   6
-      Top             =   4215
+      Top             =   5250
       Width           =   11775
       _ExtentX        =   20770
       _ExtentY        =   1296
@@ -79,7 +79,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   975
       Left            =   6360
       TabIndex        =   1
-      Top             =   2280
+      Top             =   3120
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1720
@@ -90,7 +90,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   735
       Left            =   6360
       TabIndex        =   2
-      Top             =   3360
+      Top             =   4200
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1296
@@ -117,7 +117,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   735
       Left            =   6360
       TabIndex        =   4
-      Top             =   1440
+      Top             =   2520
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1296
@@ -165,11 +165,38 @@ Begin VB.Form FormRecordAPNGPrefs
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
-      Caption         =   "save it directly to an animated PNG file"
+      Caption         =   "save directly to image file"
       Value           =   -1  'True
    End
+   Begin PhotoDemon.pdSlider sldQuality 
+      Height          =   735
+      Left            =   6360
+      TabIndex        =   9
+      Top             =   2280
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1296
+      Caption         =   "quality"
+      FontSizeCaption =   10
+      Max             =   100
+      Value           =   75
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   75
+   End
+   Begin PhotoDemon.pdButtonStrip btsFormat 
+      Height          =   975
+      Left            =   6360
+      TabIndex        =   10
+      Top             =   1440
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1720
+      Caption         =   "format"
+      FontSizeCaption =   10
+   End
 End
-Attribute VB_Name = "FormRecordAPNGPrefs"
+Attribute VB_Name = "FormScreenVideoPrefs"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -178,11 +205,17 @@ Attribute VB_Exposed = False
 'Animated screen capture dialog
 'Copyright 2020-2021 by Tanner Helland
 'Created: 01/July/20
-'Last updated: 24/July/20
-'Last update: add preference for a countdown before recording; set to 0 to record immediately
+'Last updated: 01/October/21
+'Last update: new option for exporting to WebP (in addition to existing APNG support)
 '
-'This dialog is just a thin wrapper to FormRecordAPNG.  It exists to allow the user to set
-' some recording preferences; once those are set, the real magic happens in FormRecordAPNG.
+'This dialog is just a thin wrapper to FormScreenVideo.  It exists to allow the user to set
+' some recording preferences; once those are set, the real magic happens in FormScreenVideo.
+'
+'As of 2021, animated PNG (APNG) and WebP are supported as recording targets.  GIF is not
+' supported due to performance issues and poor quality (and frankly, better alternatives like
+' LiceCAP).  If you *really* need an animated GIF, select the option to import the frames directly
+' into PhotoDemon after recording; from there, you can save as an animated GIF (although this is not
+' recommended since the other formats will produce better results with smaller file sizes).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -190,6 +223,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Private Sub btsFormat_Click(ByVal buttonIndex As Long)
+    ReflowInterface
+End Sub
 
 Private Sub btsLoop_Click(ByVal buttonIndex As Long)
     ReflowInterface
@@ -219,8 +256,23 @@ Private Sub cmdBar_OKClick()
         loopCount = CLng(sldLoop.Value + 1)
     End If
     
+    'Store all relevant parameters inside a serializer
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    With cSettings
+        .AddParam "frame-rate", sldFrameRate.Value
+        .AddParam "countdown", sldCountdown.Value
+        .AddParam "show-cursor", (btsMouse.ListIndex >= 1)
+        .AddParam "show-clicks", (btsMouse.ListIndex >= 2)
+        .AddParam "loop-count", loopCount
+        .AddParam "png-compression", sldCompression.Value
+        .AddParam "webp-quality", sldQuality.Value
+        .AddParam "save-to-disk", rdoAfter(1).Value
+        .AddParam "file-format", IIf(btsFormat.ListIndex = 0, "png", "webp")
+    End With
+    
     'Launch the capture form, then note that the command bar will handle unloading this form
-    FormRecordAPNG.ShowDialog VarPtr(myRect), sldFrameRate.Value, loopCount, (btsMouse.ListIndex >= 1), (btsMouse.ListIndex >= 2), sldCompression.Value, sldCountdown.Value, rdoAfter(1).Value
+    FormScreenVideo.ShowDialog VarPtr(myRect), cSettings.GetParamString()
     
 End Sub
 
@@ -232,13 +284,17 @@ Private Sub Form_Load()
     
     'If this dialog was previously used this session, we want to make sure the capture window
     ' has also been freed (as we need to reinitialize it)
-    Set FormRecordAPNG = Nothing
+    Set FormScreenVideo = Nothing
     
     'Prep any UI elements
     btsMouse.AddItem "no", 0
     btsMouse.AddItem "cursor only", 1
     btsMouse.AddItem "cursor and clicks", 2
     btsMouse.ListIndex = 1
+    
+    btsFormat.AddItem "PNG", 0
+    btsFormat.AddItem "WebP", 1
+    btsFormat.ListIndex = 1
     
     btsLoop.AddItem "none", 0
     btsLoop.AddItem "forever", 1
@@ -258,29 +314,54 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub ReflowInterface()
-
-    Dim yPadding As Long, yPaddingTitle As Long
-    yPadding = Interface.FixDPI(8)
-    yPaddingTitle = Interface.FixDPI(12)
     
-    Dim yOffset As Long
-    yOffset = btsLoop.GetTop + btsLoop.GetHeight + yPadding
-    sldLoop.Visible = (btsLoop.ListIndex = 2)
-    If sldLoop.Visible Then
-        sldLoop.SetTop yOffset
-        yOffset = yOffset + sldLoop.GetHeight + yPaddingTitle
+    'Hide all format-specific options if "load into PD" is selected (instead of save to disk)
+    btsFormat.Visible = rdoAfter(1).Value
+    btsLoop.Visible = rdoAfter(1).Value
+    
+    If rdoAfter(0).Value Then
+        sldCompression.Visible = False
+        sldQuality.Visible = False
+        sldLoop.Visible = False
+        
+    'Expose save-to-disk options
     Else
-        yOffset = yOffset - yPadding + yPaddingTitle
+        
+        Dim yPadding As Long, yPaddingTitle As Long
+        yPadding = Interface.FixDPI(6)
+        yPaddingTitle = Interface.FixDPI(12)
+        
+        Dim yOffset As Long
+        yOffset = btsFormat.GetTop + btsFormat.GetHeight + yPadding
+        
+        '0 = PNG, 1 = WebP
+        sldCompression.Visible = (btsFormat.ListIndex = 0)
+        sldQuality.Visible = (btsFormat.ListIndex = 1)
+        
+        'PNG
+        If (btsFormat.ListIndex = 0) Then
+            sldCompression.SetTop yOffset
+            yOffset = sldCompression.GetTop + sldCompression.GetHeight + yPadding
+        
+        'WebP
+        Else
+            sldQuality.SetTop yOffset
+            yOffset = sldQuality.GetTop + sldQuality.GetHeight + yPadding
+        End If
+        
+        btsLoop.SetTop yOffset
+        yOffset = btsLoop.GetTop + btsLoop.GetHeight + yPadding
+        
+        sldLoop.Visible = (btsLoop.ListIndex = 2)
+        If sldLoop.Visible Then
+            sldLoop.SetTop yOffset
+            yOffset = yOffset + sldLoop.GetHeight + yPaddingTitle
+        End If
+        
     End If
     
 End Sub
 
 Private Sub rdoAfter_Click(Index As Integer)
-    SyncAfterOptions
-End Sub
-
-Private Sub SyncAfterOptions()
-    sldCompression.Visible = rdoAfter(1).Value
-    btsLoop.Visible = rdoAfter(1).Value
-    sldLoop.Visible = rdoAfter(1).Value And (btsLoop.ListIndex = 2)
+    ReflowInterface
 End Sub

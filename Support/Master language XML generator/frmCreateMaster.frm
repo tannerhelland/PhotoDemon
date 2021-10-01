@@ -2088,6 +2088,7 @@ Private Sub Form_Load()
     AddBlacklist "Sobel"
     AddBlacklist "Reinhard"
     AddBlacklist "Drago"
+    AddBlacklist "WebP"
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String
@@ -2177,4 +2178,3 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
     Next i
     
 End Function
-

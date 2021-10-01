@@ -319,9 +319,8 @@ Public Sub GenerateInputFormats()
     If m_FreeImageEnabled Then AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
         
     'libwebp is our preferred handler for WebP files, but if it goes missing, we can fall back to FreeImage
-    If (PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled) Then
-        AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
-    End If
+    ' (albeit with a greatly reduced feature-set)
+    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
@@ -418,7 +417,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_WebP) Or m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = m_curFormatIndex
@@ -728,7 +727,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether the export format supports animation.
 Public Function IsAnimationSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
     Select Case outputPDIF
-        Case PDIF_GIF, PDIF_PNG
+        Case PDIF_GIF, PDIF_PNG, PDIF_WEBP
             IsAnimationSupported = True
         Case Else
             IsAnimationSupported = False

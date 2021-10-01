@@ -706,6 +706,20 @@ Public Function PromptExportAnimatedPNG(ByRef srcImage As pdImage, ByRef dstForm
     
 End Function
 
+Public Function PromptExportAnimatedWebP(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportAnimatedWebP
+    dialog_ExportAnimatedWebP.ShowDialog srcImage
+    
+    PromptExportAnimatedWebP = dialog_ExportAnimatedWebP.GetDialogResult
+    dstFormatParams = dialog_ExportAnimatedWebP.GetFormatParams
+    dstMetadataParams = dialog_ExportAnimatedWebP.GetMetadataParams
+    
+    Unload dialog_ExportAnimatedWebP
+    Set dialog_ExportAnimatedWebP = Nothing
+    
+End Function
+
 Public Sub PromptEffect_Animation(ByVal useBackgroundMode As Boolean)
     Load FormAnimBackground
     FormAnimBackground.SetBackgroundMode useBackgroundMode

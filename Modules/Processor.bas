@@ -1358,11 +1358,15 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animated GIF", True) Then
-        Saving.Export_AnimatedGIF PDImages.GetActiveImage()
+        Saving.Export_Animation PDIF_GIF, PDImages.GetActiveImage()
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animated PNG", True) Then
-        Saving.Export_AnimatedPNG PDImages.GetActiveImage()
+        Saving.Export_Animation PDIF_PNG, PDImages.GetActiveImage()
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Export animated WebP", True) Then
+        Saving.Export_Animation PDIF_WEBP, PDImages.GetActiveImage()
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Export color lookup", True) Then

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.65</langversion>
+<langversion>8.0.67</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -1280,6 +1280,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Export animated WebP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation>Eksportuj paletę</translation>
 </phrase>
@@ -2394,7 +2399,7 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <translation>Wyczyść listę ostatnich makro</translation>
 </phrase>
 
-<!-- Menus.bas contains 276 phrases. 33 were duplicates of existing phrases, so only 243 new phrases were written to file. -->
+<!-- Menus.bas contains 277 phrases. 33 were duplicates of existing phrases, so only 244 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3118,7 +3123,7 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 <translation>Eksportuj animację</translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4022,6 +4027,8 @@ You will need to manually download this file using your Internet browser.</origi
 
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
+<!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>quick start</original>
 <translation>Szybki start</translation>
@@ -4751,6 +4758,11 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
+<original>Animated WebP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation>Profil koloru</translation>
 </phrase>
@@ -5316,8 +5328,8 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
-<original>Animated screen capture (APNG)</original>
-<translation>Animowane zrzuty ekranu (APNG)</translation>
+<original>Animated screen capture</original>
+<translation>Animowane zrzuty ekranu</translation>
 </phrase>
 
 <phrase>
@@ -5590,7 +5602,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 382 phrases. 201 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 383 phrases. 201 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9868,6 +9880,23 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>compression</original>
+<translation>Kompresja</translation>
+</phrase>
+
+<phrase>
+<original>balanced</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>best</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
 <original>Palette export options</original>
 <translation>Opcje eksportu palety</translation>
 </phrase>
@@ -10602,16 +10631,11 @@ pliku nie zostaną zmodyfikowane.</translation>
 <!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>compression</original>
-<translation>Kompresja</translation>
-</phrase>
-
-<phrase>
 <original>maximize compatibility</original>
 <translation>Maksymalna kompatybilność</translation>
 </phrase>
 
-<!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>target version</original>
@@ -10647,7 +10671,42 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- File_Save_WebP.frm contains 12 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>image type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>indoor photo</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outdoor photo</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chart</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>drawing (or other artwork)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icon</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>About PhotoDemon</original>
@@ -13585,10 +13644,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <translation>Nagrywanie - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>open it in PhotoDemon (for further editing)</original>
+<original>open in PhotoDemon (for further editing)</original>
 <translation></translation>
 </phrase>
 
@@ -13623,7 +13682,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 </phrase>
 
 <phrase>
-<original>save it directly to an animated PNG file</original>
+<original>save directly to image file</original>
 <translation></translation>
 </phrase>
 
@@ -13637,16 +13696,14 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <translation>Kursor i kliknięcia</translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- pdWebP.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2583</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5327 phrases. -->
-<!-- 2744 are duplicates, so only 2583 unique phrases have been written to file. -->
-<!-- These 2583 phrases contain approximately 11870 total words. -->
+<!-- As of this build, PhotoDemon contains 5361 phrases. -->
+<!-- 2767 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

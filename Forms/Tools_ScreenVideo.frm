@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormRecordAPNG 
+Begin VB.Form FormScreenVideo 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
@@ -60,7 +60,7 @@ Begin VB.Form FormRecordAPNG
       Caption         =   "Start recording"
    End
 End
-Attribute VB_Name = "FormRecordAPNG"
+Attribute VB_Name = "FormScreenVideo"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -69,11 +69,14 @@ Attribute VB_Exposed = False
 'Animated screen capture dialog
 'Copyright 2020-2021 by Tanner Helland
 'Created: 01/July/20
-'Last updated: 24/July/20
-'Last update: finishing touches - this tool is ready for primetime!
+'Last updated: 01/October/21
+'Last update: add support for WebP as a target format (in addition to existing APNG support)
 '
-'PD can write animated PNGs.  APNGs are a great fit for animated screen captures (lossless!).
-' This is my attempt to bring those two things together.
+'PD can write both animated PNGs and animated WebP files.  These formats are a great fit
+' for animated screen captures (24-bit color!).  PhotoDemon provides a rudimentary screen
+' recorder that can dump frames directly to either format, or cache them internally for
+' subsequent loading into PhotoDemon (as a generic animated image container which you can then
+' export however you want, even to GIF with all its limitations).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -118,6 +121,7 @@ Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As 
 
 'END WAPI
 
+'Magic magenta is used to mark the transparent section of the recording frame
 Private Const KEY_COLOR As Long = &HFF00FF
 
 'There are several ways to create a window with a "cut-out" region.  They all have trade-offs,
@@ -142,8 +146,14 @@ Private m_parentRect As winRect, m_myRect As winRect
 Private WithEvents m_Timer As pdTimer
 Attribute m_Timer.VB_VarHelpID = -1
 
-'A pdPNG instance handles the actual PNG writing
+'Target format when dumping frames to file.  Must be either PDIF_PNG or PDIF_WEBP.
+Private m_FileFormat As PD_IMAGE_FORMAT
+
+'A pdPNG instance handles the actual PNG writing (if dumping directly to an APNG file)
 Private m_PNG As pdPNG
+
+'Similarly, a pdWebP instance handles WebP encoding
+Private m_WebP As pdWebP
 
 'Destination file, if one is selected (check for null before using)
 Private m_DstFilename As String
@@ -160,6 +170,9 @@ Private m_LoopCount As Long
 
 'DEFLATE compression level (goes to 12, c/o libdeflate)
 Private m_PNGCompressionLevel As Long
+
+'WebP quality level [0, 100].  100 = lossless.  libwebp uses a float so we do too.
+Private m_WebPQuality As Single
 
 'Whether to include mouse cursor position and/or clicks in the animation
 Private m_ShowCursor As Boolean, m_ShowClicks As Boolean
@@ -206,10 +219,9 @@ Private m_Cancel As Boolean
 
 'Captured frames are stored as a collection of lz4-compressed arrays.  I don't currently have
 ' access to a DEFLATE library that can compress screen-capture-sized frames (e.g. 1024x768) in
-' real-time on an XP-era PC.  lz4 is a better solution here, although it requires us to
-' "play back" the frames when the capture ends.
-'
-'(This type is now declared publicly, so that we can pass the data directly to the APNG encoder.)
+' real-time on an XP-era PC, which would be required for dumping frames directly to an APNG file.
+' lz4 ends up being a better general-purpose solution here, although it requires us to "play back"
+' the stored frames when the capture ends.
 Private Type PD_APNGFrameCapture
     fcTimeStamp As Currency
     frameSizeOrig As Long
@@ -244,24 +256,49 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long, ByVal countdownInSeconds As Long, ByVal saveToDisk As Boolean)
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef listOfSettings As String)
     
-    'Before doing anything else, determine how we're going to "cut-out" a portion of this window
+    'Before doing anything else, determine how we're going to "cut-out" a portion of this window.
+    ' (The method used is the result of a ton of testing across multiple Windows versions.  Change at
+    ' your own peril.)
     m_WindowMethod = tw_GDIRegion
     
-    'Cache all passed values
-    m_FPS = dstFrameRateFPS
+    'Only one parameter is passed as-is (a pointer to the preferences window rect).
+    ' All others are stored inside a standard PD parameter string.
     If (ptrToParentRect <> 0) Then CopyMemoryStrict VarPtr(m_parentRect), ptrToParentRect, LenB(m_parentRect)
-    m_LoopCount = dstLoopCount
-    m_ShowCursor = dstShowCursor
-    m_ShowClicks = dstShowClicks
-    m_PNGCompressionLevel = pngCompressionLevel
-    If (m_PNGCompressionLevel < 1) Then m_PNGCompressionLevel = 1
-    If (m_PNGCompressionLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then m_PNGCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
-    m_CountdownTime = countdownInSeconds
-    m_SaveImmediatelyToDisk = saveToDisk
     
-    'Initialize a last-used settings object
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString listOfSettings
+    
+    With cSettings
+        m_FPS = .GetLong("frame-rate", 10)
+        m_CountdownTime = .GetLong("countdown", 0)
+        m_ShowCursor = .GetBool("show-cursor", True)
+        m_ShowClicks = .GetBool("show-clicks", True)
+        m_LoopCount = .GetLong("loop-count", 0)
+        
+        'Compression levels are validated before forwarding to their respective libraries
+        m_PNGCompressionLevel = .GetLong("png-compression", 6)
+        If (m_PNGCompressionLevel < 1) Then m_PNGCompressionLevel = 1
+        If (m_PNGCompressionLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then m_PNGCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
+        m_WebPQuality = .GetSingle("webp-quality", 100!)
+        If (m_WebPQuality < 0!) Then m_WebPQuality = 0!
+        If (m_WebPQuality > 100!) Then m_WebPQuality = 100!
+        m_SaveImmediatelyToDisk = .GetBool("save-to-disk", True)
+        
+        'Only APNG and WebP are currently supported as recording targets
+        Select Case .GetString("file-format", "webp")
+            Case "png"
+                m_FileFormat = PDIF_PNG
+            Case Else
+                m_FileFormat = PDIF_WEBP
+        End Select
+        
+    End With
+    
+    'Initialize a last-used settings object.  (Because this isn't a "standard" PhotoDemon dialog,
+    ' it doesn't get things like last-used settings for free.)
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
     
@@ -352,13 +389,13 @@ Private Sub cmdStart_Click()
         
         'If all preliminary checks passed, activate the capture timer.  Note that this
         ' *will* forcibly overwrite the file at the destination location, if one exists.
-        ' (Also, note that we deliberately request a slightly shorter interval (4%) than
+        ' (Also, note that we deliberately request a slightly shorter interval (5%) than
         ' we require - timer events are not that precise, especially because of coalescing
         ' on Win 7+.  A slightly reduced interval gives us some breathing room and
         ' increases our chances of hitting the user's requested frame rate.)
         Dim tInterval As Long
         tInterval = Int(1000# / m_FPS + 0.5)
-        tInterval = Int((tInterval * 96) \ 100)
+        tInterval = Int((tInterval * 95#) / 100# + 0.5)
         
         Set m_Timer = New pdTimer
         m_Timer.Interval = tInterval
@@ -379,9 +416,6 @@ Private Sub cmdStart_Click()
         'Initialize the frame collection
         m_FrameCount = 0
         ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As PD_APNGFrameCapture
-        
-        'Initialize the PNG writer, but don't start streaming just yet!
-        Set m_PNG = New pdPNG
         
         'Change the start button to a STOP button
         cmdStart.AssignImage "macro_stop", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
@@ -418,6 +452,19 @@ Private Sub Capture_Stop()
         m_CaptureActive = False
         If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
         
+        'Saving to disk may take awhile.  We don't want to remain on-top while this occurs, so disable
+        ' top-most behavior until saving finishes.
+        
+        'Mark this window as "always on-top", then position it.
+        Dim currentRect As winRect
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetWindowRect_API Me.hWnd, currentRect
+        Const HWND_TOPMOST As Long = -1&, HWND_NOTOPMOST As Long = -2&
+        Const SWP_NOMOVE As Long = &H2&, SWP_NORESIZE As Long = &H1&, SWP_FRAMECHANGED As Long = &H20&
+        
+        With currentRect
+            g_WindowManager.SetWindowPos_API Me.hWnd, HWND_NOTOPMOST, .x1, .y1, .x2 - .x1, .y2 - .y1, SWP_NOMOVE Or SWP_NORESIZE Or SWP_FRAMECHANGED
+        End With
+        
         'Next, our behavior varies depending on the user's export settings.
         If m_SaveImmediatelyToDisk Then
             FinishRecording_ToDisk
@@ -430,6 +477,12 @@ Private Sub Capture_Stop()
         ' a successful capture!)
         m_CaptureSuccessful = True
         If (Not m_lastUsedSettings Is Nothing) Then m_lastUsedSettings.SaveAllControlValues
+        
+        'Restore original topmost behavior
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetWindowRect_API Me.hWnd, currentRect
+        With currentRect
+            g_WindowManager.SetWindowPos_API Me.hWnd, HWND_TOPMOST, .x1, .y1, .x2 - .x1, .y2 - .y1, SWP_NOMOVE Or SWP_NORESIZE Or SWP_FRAMECHANGED
+        End With
         
         'If the user is loading this file into PD, unload this dialog immediately
         If (Not m_SaveImmediatelyToDisk) Then
@@ -447,17 +500,23 @@ Private Sub FinishRecording_ToDisk()
     Animation.SetAnimationTmpFile vbNullString
     
     'We first need to prompt the user for a destination filename
-        
+    
     'Start by validating m_dstFilename, which will be filled with the user's past
     ' destination filename (if one exists), or a default capture filename in the
     ' user's current "Save image" folder
     If ((LenB(m_DstFilename) = 0) Or (Not Files.PathExists(Files.FileGetPath(m_DstFilename)))) Then
     
         'm_dstFilename is bad.  Attempt to populate it with default values.
-        Dim tmpPath As String, tmpFilename As String
+        Dim tmpPath As String, tmpFilename As String, tmpFileExtension As String
         tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
         tmpFilename = g_Language.TranslateMessage("capture")
-        m_DstFilename = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
+        
+        If (m_FileFormat = PDIF_PNG) Then
+            tmpFileExtension = "png"
+        ElseIf (m_FileFormat = PDIF_WEBP) Then
+            tmpFileExtension = "webp"
+        End If
+        m_DstFilename = tmpPath & IncrementFilename(tmpPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
     
     End If
     
@@ -467,7 +526,11 @@ Private Sub FinishRecording_ToDisk()
     
     Dim okToProceed As Boolean, sFile As String
     sFile = m_DstFilename
-    okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated PNG (.png)|*.png;*.apng", 1, Files.FileGetPath(m_DstFilename), "Save image", ".png", Me.hWnd)
+    If (m_FileFormat = PDIF_PNG) Then
+        okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated PNG (.png)|*.png;*.apng", 1, Files.FileGetPath(m_DstFilename), "Save image", ".png", Me.hWnd)
+    ElseIf (m_FileFormat = PDIF_WEBP) Then
+        okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated WebP (.webp)|*.webp", 1, Files.FileGetPath(m_DstFilename), "Save image", ".webp", Me.hWnd)
+    End If
         
     'The user can cancel the common-dialog - that's fine; it just means we don't save
     ' any of the current settings (or close the window).
@@ -482,65 +545,23 @@ Private Sub FinishRecording_ToDisk()
         ' It will get formally reset after the image export ends.
         cmdStart.Caption = g_Language.TranslateMessage("Please wait")
         
-        'Start the PNG streamer
-        If (m_PNG Is Nothing) Then Set m_PNG = New pdPNG
-        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
-            
-            'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
-            ' so that it can produce a usable APNG file!
-            Dim i As Long
-            For i = 0 To m_FrameCount - 1
-                
-                'Periodically check for emergency cancellation
-                If m_Cancel Then GoTo EndImmediately
-                
-                lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
-                lblInfo.RequestRefresh
-                
-                'Extract this frame into the capture DIB, then immediately free its compressed memory
-                Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
-                If m_Cancel Then GoTo EndImmediately
-                
-                '(Note that we deliberately do *not* free the first frame - we want to save it
-                ' to generate a file thumbnail before exiting.)
-                If (i <> 0) Then Erase m_Frames(i).frameData
-                
-                'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
-                If (m_captureDIB32 Is Nothing) Then
-                    Set m_captureDIB32 = New pdDIB
-                    m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
-                    m_captureDIB32.SetInitialAlphaPremultiplicationState True
-                End If
-                
-                GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
-                If m_Cancel Then GoTo EndImmediately
-                m_captureDIB32.ForceNewAlpha 255
-                
-                'Pass the frame off to the PNG encoder
-                If m_Cancel Then GoTo EndImmediately
-                m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
-                
-                'Every few frames, notify the OS that we're still alive
-                If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
-                
-            Next i
-            
-        Else
-            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+        'Start dumping frames to file
+        If (m_FileFormat = PDIF_PNG) Then
+            WriteAPNG
+        ElseIf (m_FileFormat = PDIF_WEBP) Then
+            WriteWebP
         End If
         
-EndImmediately:
+        'If the caller canceled recording, delete any in-progress file efforts
+        If m_Cancel Then
         
-        'Notify the PNG encoder that the stream has ended
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
-        Set m_PNG = Nothing
-        If m_Cancel Then Files.FileDeleteIfExists m_DstFilename
+            Files.FileDeleteIfExists m_DstFilename
         
-        'Add this image to PD's recent files list, which greatly simplifies the process of
-        ' re-opening it for further edits.
-        If (Not m_Cancel) Then
+        'If recording was successful, add this image to PD's recent files list
+        ' (which greatly simplifies the process of re-opening it for further edits).
+        Else
             
-            'Re-extract this frame's pixel data
+            'Re-extract the first frame's pixel data
             Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(0).frameSizeOrig, VarPtr(m_Frames(0).frameData(0)), m_Frames(0).frameSizeCompressed, cf_Lz4
             
             'Convert it to 32-bpp with a solid alpha channel
@@ -568,6 +589,109 @@ EndImmediately:
     cmdStart.Caption = g_Language.TranslateMessage("Start recording")
     cmdExit.Caption = g_Language.TranslateMessage("Exit")
     
+End Sub
+
+Private Sub WriteAPNG()
+
+    'Start an APNG streamer
+    If (m_PNG Is Nothing) Then Set m_PNG = New pdPNG
+    If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
+        
+        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+        ' so that it can produce a usable APNG file!
+        Dim i As Long
+        For i = 0 To m_FrameCount - 1
+            
+            'Periodically check for emergency cancellation
+            If m_Cancel Then GoTo EndImmediately
+            
+            lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+            lblInfo.RequestRefresh
+            
+            'Extract this frame into the capture DIB, then immediately free its compressed memory
+            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+            If m_Cancel Then GoTo EndImmediately
+            
+            '(Note that we deliberately do *not* free the first frame - we want to save it
+            ' to generate a file thumbnail before exiting.)
+            If (i <> 0) Then Erase m_Frames(i).frameData
+            
+            'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
+            If (m_captureDIB32 Is Nothing) Then
+                Set m_captureDIB32 = New pdDIB
+                m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+                m_captureDIB32.SetInitialAlphaPremultiplicationState True
+            End If
+            
+            GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+            If m_Cancel Then GoTo EndImmediately
+            m_captureDIB32.ForceNewAlpha 255
+            
+            'Pass the frame off to the PNG encoder
+            If m_Cancel Then GoTo EndImmediately
+            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
+            
+            'Every few frames, notify the OS that we're still alive
+            If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
+            
+        Next i
+        
+    Else
+        PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+    End If
+    
+EndImmediately:
+    
+    'Notify the PNG encoder that the stream has ended
+    If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
+    Set m_PNG = Nothing
+        
+End Sub
+
+Private Sub WriteWebP()
+
+    'Start a WebP streamer
+    If (m_WebP Is Nothing) Then Set m_WebP = New pdWebP
+    If m_WebP.SaveStreamingWebP_Start(m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, m_LoopCount, m_WebPQuality) Then
+        
+        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+        ' so that it can produce a usable APNG file!
+        Dim i As Long
+        For i = 0 To m_FrameCount - 1
+            
+            'Periodically check for emergency cancellation
+            If m_Cancel Then GoTo EndImmediately
+            
+            lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+            lblInfo.RequestRefresh
+            
+            'Extract this frame into the capture DIB, then immediately free its compressed memory
+            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+            If m_Cancel Then GoTo EndImmediately
+            
+            '(Note that we deliberately do *not* free the first frame - we want to save it
+            ' to generate a file thumbnail before exiting.)
+            If (i <> 0) Then Erase m_Frames(i).frameData
+            
+            'WebP encoding uses timestamps instead of frame times.  This means that individual frame times
+            ' are not calculated until the *next* frame arrives.
+            m_WebP.SaveStreamingWebP_AddFrame m_captureDIB24, m_Frames(i).fcTimeStamp
+            
+            'Every few frames, notify the OS that we're still alive
+            If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
+            
+        Next i
+        
+    Else
+        PDDebug.LogAction "WARNING!  WebP screen capture failed for unknown reason.  Consult debug log."
+    End If
+    
+EndImmediately:
+    
+    'Notify the WebP encoder that the stream has ended
+    If (Not m_WebP Is Nothing) Then m_WebP.SaveStreamingWebP_Stop m_Frames(m_FrameCount - 1).fcTimeStamp + 3000, m_DstFilename
+    Set m_WebP = Nothing
+        
 End Sub
 
 Private Sub FinishRecording_ToPD()
@@ -755,64 +879,59 @@ End Sub
 'On timer events, capture the current frame by calling this function
 Private Sub CaptureFrameNow()
     
-    'Ensure we have an active APNG instance
-    If (Not m_PNG Is Nothing) Then
-        
-        'Make sure we have room to store this frame
-        If (m_FrameCount > UBound(m_Frames)) Then ReDim Preserve m_Frames(0 To m_FrameCount * 2 - 1) As PD_APNGFrameCapture
-        
-        '*Immediately* before capture, note the current time
-        Dim capTime As Currency
-        capTime = VBHacks.GetHighResTimeInMSEx()
-        
-        'Capture the frame in question into a pdDIB object; note that we alternate
-        ' which DIB we use for capture; this allows us to compare back-to-back frames
-        ' in real-time without need for a manual copy op
-        Dim captureTarget As pdDIB
-        If ((m_FrameCount And &H1&) <> 0) Then
-            Set captureTarget = m_captureDIB24_2
-        Else
-            Set captureTarget = m_captureDIB24
-        End If
-        
-        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, m_ShowCursor, m_ShowClicks
-        
-        'Before saving this frame, check for duplicate frames.  This is very common during
-        ' a screen capture event, and we can save a lot of memory by skipping these frames.
-        ' (Note that the way we track time between frames handles these skips naturally,
-        ' no extra work required!)
-        Dim keepFrame As Boolean
-        keepFrame = (m_FrameCount = 0)
-        
-        If (Not keepFrame) Then
-            keepFrame = Not VBHacks.MemCmp(m_captureDIB24.GetDIBPointer, m_captureDIB24_2.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)
-        End If
-        
-        If keepFrame Then
-            
-            'Compress the captured frame into the temporary frame buffer
-            Dim cmpSize As Long
-            cmpSize = UBound(m_CompressionBuffer) + 1
-            Compression.CompressPtrToPtr VarPtr(m_CompressionBuffer(0)), cmpSize, captureTarget.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4
-            
-            'Allocate memory for this frame and store all data
-            With m_Frames(m_FrameCount)
-                .fcTimeStamp = capTime
-                .frameSizeOrig = m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight
-                .frameSizeCompressed = cmpSize
-                ReDim .frameData(0 To cmpSize - 1) As Byte
-                CopyMemoryStrict VarPtr(.frameData(0)), VarPtr(m_CompressionBuffer(0)), cmpSize
-            End With
-            
-            'PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
-            
-            'Increment frame count
-            m_FrameCount = m_FrameCount + 1
-        
-        End If
-        
+    'Make sure we have room to store this frame
+    If (m_FrameCount > UBound(m_Frames)) Then ReDim Preserve m_Frames(0 To m_FrameCount * 2 - 1) As PD_APNGFrameCapture
+    
+    '*Immediately* before capture, note the current time
+    Dim capTime As Currency
+    capTime = VBHacks.GetHighResTimeInMSEx()
+    
+    'Capture the frame in question into a pdDIB object; note that we alternate
+    ' which DIB we use for capture; this allows us to compare back-to-back frames
+    ' in real-time without need for a manual copy op
+    Dim captureTarget As pdDIB
+    If ((m_FrameCount And &H1&) <> 0) Then
+        Set captureTarget = m_captureDIB24_2
+    Else
+        Set captureTarget = m_captureDIB24
     End If
-
+    
+    ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, m_ShowCursor, m_ShowClicks
+    
+    'Before saving this frame, check for duplicate frames.  This is very common during
+    ' a screen capture event, and we can save a lot of memory by skipping these frames.
+    ' (Note that the way we track time between frames handles these skips naturally,
+    ' no extra work required!)
+    Dim keepFrame As Boolean
+    keepFrame = (m_FrameCount = 0)
+    
+    If (Not keepFrame) Then
+        keepFrame = Not VBHacks.MemCmp(m_captureDIB24.GetDIBPointer, m_captureDIB24_2.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)
+    End If
+    
+    If keepFrame Then
+        
+        'Compress the captured frame into the temporary frame buffer
+        Dim cmpSize As Long
+        cmpSize = UBound(m_CompressionBuffer) + 1
+        Compression.CompressPtrToPtr VarPtr(m_CompressionBuffer(0)), cmpSize, captureTarget.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4
+        
+        'Allocate memory for this frame and store all data
+        With m_Frames(m_FrameCount)
+            .fcTimeStamp = capTime
+            .frameSizeOrig = m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight
+            .frameSizeCompressed = cmpSize
+            ReDim .frameData(0 To cmpSize - 1) As Byte
+            CopyMemoryStrict VarPtr(.frameData(0)), VarPtr(m_CompressionBuffer(0)), cmpSize
+        End With
+        
+        'PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
+        
+        'Increment frame count
+        m_FrameCount = m_FrameCount + 1
+    
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -875,7 +994,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
             m_myRect.y1 = .RetrievePresetData("window-y1", m_parentRect.y1)
             m_myRect.y2 = .RetrievePresetData("window-y2", m_parentRect.y2)
         End With
-    
+        
     'Previous window state doesn't exist; try to create a good default position
     Else
         
@@ -898,17 +1017,29 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
     
     'Look for a previously saved destination filename.  If one does not exist,
     ' we want to populate the destination path with a good default suggestion.
+    Dim fileExtension As String
+    If (m_FileFormat = PDIF_PNG) Then
+        fileExtension = "png"
+    Else
+        fileExtension = "webp"
+    End If
+    
     If (Not m_lastUsedSettings.DoesPresetExist("dst-capture-filename")) Then
     
         Dim tmpPath As String, tmpFilename As String, tmpCombined As String
         tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
         tmpFilename = g_Language.TranslateMessage("capture")
-        tmpCombined = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
+        tmpCombined = tmpPath & IncrementFilename(tmpPath, tmpFilename, fileExtension) & "." & fileExtension
         
         m_DstFilename = tmpCombined
         
     Else
-        m_DstFilename = m_lastUsedSettings.RetrievePresetData("dst-capture-filename", UserPrefs.GetPref_String("Paths", "Save Image", vbNullString) & "capture.png")
+    
+        'Retrieve the previous filename, and ensure the extension is updated to match whatever the
+        ' *CURRENT* format is for recording (png or webp)
+        m_DstFilename = m_lastUsedSettings.RetrievePresetData("dst-capture-filename", UserPrefs.GetPref_String("Paths", "Save Image", vbNullString) & "capture." & fileExtension)
+        m_DstFilename = Files.FileGetPath(m_DstFilename) & Files.FileGetName(m_DstFilename, True) & "." & fileExtension
+    
     End If
     
 End Sub
@@ -973,7 +1104,7 @@ Private Sub m_Timer_Timer()
         m_NetFrameTime = 0
         m_TimerHits = 0
     Else
-        timeElapsedInSeconds = (VBHacks.GetHighResTimeInMSEx() - m_StartTimeMS) \ 1000
+        timeElapsedInSeconds = (VBHacks.GetHighResTimeInMSEx() - m_StartTimeMS) / 1000
     End If
     
     'Capture the current frame
@@ -984,7 +1115,7 @@ Private Sub m_Timer_Timer()
     If (m_TimerHits > 0) Then
         m_NetFrameTime = m_NetFrameTime + (VBHacks.GetHighResTimeInMSEx() - m_lastFrameTime)
         estimatedFPS = m_NetFrameTime / m_TimerHits
-        If (estimatedFPS > 0) Then estimatedFPS = (1000 / estimatedFPS)
+        If (estimatedFPS > 0) Then estimatedFPS = (1000# / estimatedFPS)
     Else
         estimatedFPS = m_FPS
     End If
@@ -994,7 +1125,7 @@ Private Sub m_Timer_Timer()
     
     'Convert total recording time to usable minutes/seconds values
     Dim timeElapsedInMinutes As Currency
-    timeElapsedInMinutes = Int(timeElapsedInSeconds / 60# + 0.5)
+    timeElapsedInMinutes = Int(timeElapsedInSeconds / 60#)
     timeElapsedInSeconds = timeElapsedInSeconds - (timeElapsedInMinutes * 60)
     
     'Display recording speed and elapsed time to the user
@@ -1014,6 +1145,10 @@ Private Sub StopTimer_Forcibly()
         'Cancel the PNG writer
         If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Cancel
         Set m_PNG = Nothing
+        
+        'Cancel the WebP writer
+        If (Not m_WebP Is Nothing) Then m_WebP.SaveStreamingWebP_Cancel
+        Set m_WebP = Nothing
         
         'Erase the destination file (if one exists)
         If Files.FileExists(m_DstFilename) Then Files.FileDelete m_DstFilename

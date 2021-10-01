@@ -2163,7 +2163,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
-     
+    
     'Initialize a progress bar
     ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 3
     

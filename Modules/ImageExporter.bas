@@ -2018,7 +2018,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     End If
     
     'PD uses its own custom-built PNG encoder to create APNG files.  (Neither FreeImage nor GDI+ support APNGs,
-    ' and we use a comprehensive optimization tree that produces much better files than those would anyway! ;)
+    ' and we use a comprehensive optimization tree that produces much better files than those would anyway!)
     PDDebug.LogAction "Using internal PNG encoder for this operation..."
         
     Dim cPNG As pdPNG
@@ -2815,13 +2815,62 @@ Private Function GetFreeImageTIFFConstant(ByRef compressionName As String) As Lo
     End If
 End Function
 
-'Save to WebP format using the FreeImage library
+'Save to WebP format using Google's official libwebp library
 Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportWebPError
     
     ExportWebP = False
     Dim sFileType As String: sFileType = "WebP"
+    
+    'WebP exporting leans on libwebp via pdWebP
+    If Plugin_WebP.IsWebPEnabled() Then
+        
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
+        ' mid-save, the original file is left untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Dim cRandom As pdRandomize
+            Set cRandom = New pdRandomize
+            cRandom.SetSeed_AutomaticAndRandom
+            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        Else
+            tmpFilename = dstFile
+        End If
+        
+        'Use pdWebP to save the WebP file
+        Dim cWebP As pdWebP
+        Set cWebP = New pdWebP
+        If cWebP.SaveWebP_ToFile(srcPDImage, formatParams, dstFile) Then
+        
+            If Strings.StringsEqual(dstFile, tmpFilename) Then
+                ExportWebP = True
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            Else
+            
+                ExportWebP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportWebP) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
+                End If
+                
+            End If
+        
+        Else
+            ExportWebP = False
+            ExportDebugMsg "WARNING!  pdWebP.SaveWebP_ToFile() failed for reasons unknown; check the debug log for additional details"
+        End If
+        
+        Exit Function
+    
+    End If
+    
+    'If we're still here, libwebp is missing or broken.  We can still attempt to save via FreeImage (if available)
+    ' but many WebP features will no longer work (and the following code is not actively maintained, so "you get what you get")
+    PDDebug.LogAction "libwebp missing or broken"
     
     If ImageFormats.IsFreeImageEnabled Then
     
@@ -2886,6 +2935,62 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
 ExportWebPError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportWebP = False
+    
+End Function
+
+'Same as "Save to WebP format using Google's official libwebp library", above, but for animated WebP targets
+Public Function ExportWebP_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportWebPError
+    
+    ExportWebP_Animated = False
+    Dim sFileType As String: sFileType = "WebP"
+    
+    'Exporting animated WebP files requires libwebp availability
+    If Plugin_WebP.IsWebPEnabled() Then
+        
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
+        ' mid-save, the original file is left untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Dim cRandom As pdRandomize
+            Set cRandom = New pdRandomize
+            cRandom.SetSeed_AutomaticAndRandom
+            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        Else
+            tmpFilename = dstFile
+        End If
+        
+        'Use pdWebP to save the WebP file
+        Dim cWebP As pdWebP
+        Set cWebP = New pdWebP
+        If cWebP.SaveAnimatedWebP_ToFile(srcPDImage, formatParams, tmpFilename) Then
+        
+            If Strings.StringsEqual(dstFile, tmpFilename) Then
+                ExportWebP_Animated = True
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            Else
+                ExportWebP_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                If (Not ExportWebP_Animated) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
+                End If
+            End If
+        
+        Else
+            ExportWebP_Animated = False
+            ExportDebugMsg "WARNING!  pdWebP.SaveWebPAnimation_ToFile() failed for reasons unknown; check the debug log for additional details"
+        End If
+        
+    End If
+    
+    Exit Function
+    
+ExportWebPError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportWebP_Animated = False
     
 End Function
 
