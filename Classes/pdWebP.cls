@@ -15,19 +15,18 @@ Attribute VB_Exposed = False
 'WebP Image Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 22/September/21
-'Last updated: 30/September/21
-'Last update: animated WebP export now supported!
+'Last updated: 01/October/21
+'Last update: add a streaming interface for writing animated WebP files on-the-fly (used by PD's screen recorder)
 '
 'libWebP is a BSD-licensed WebP image support library.  It is developed and actively maintained by Google.
 ' Fortunately for PhotoDemon, it comes with a robust C interface and legacy compilation options, enabling
 ' support all the way back to Windows XP.
 '
 'PhotoDemon historically used FreeImage to manage WebP files, but using libwebp directly allows for
-' significantly better performance and feature support, including animated WebP files (which FreeImage's
-' interface does not support).
+' significantly better performance and feature support, including import/export support for animated WebP.
 '
 'Note that all features in this module rely on the libwebp binaries that ship with PhotoDemon (all THREE
-' of them).  This class will not work if libwebp or its mux/demux partners are missing or broken.
+' of them).  This class will not work if libwebp or its mux/demux components are missing or broken.
 '
 'You can freely plug-in your own builds of libwebp and libwebpde/mux, but note that they must be built
 ' using cdecl exports and x86 only (obviously).  Note also that many exported APIs require us to pass a
@@ -95,13 +94,13 @@ End Enum
 #End If
 
 Private Enum PD_WebPFormatFeature
-    WEBP_FF_FORMAT_FLAGS    'bit-wise combination of WebPFeatureFlags corresponding to the 'VP8X' chunk (if present).
+    WEBP_FF_FORMAT_FLAGS     'bit-wise combination of WebPFeatureFlags corresponding to the 'VP8X' chunk (if present).
     WEBP_FF_CANVAS_WIDTH
     WEBP_FF_CANVAS_HEIGHT
-    WEBP_FF_LOOP_COUNT      'only relevant for animated file
-    WEBP_FF_BACKGROUND_COLOR    'idem.
-    WEBP_FF_FRAME_COUNT     'Number of frames present in the demux object. In case of a partial demux, this is the number
-                            ' of frames seen so far, with the last frame possibly being partial.
+    WEBP_FF_LOOP_COUNT       'only relevant for animated file
+    WEBP_FF_BACKGROUND_COLOR 'idem.
+    WEBP_FF_FRAME_COUNT      'Number of frames present in the demux object. In case of a partial demux, this is the number
+                             ' of frames seen so far, with the last frame possibly being partial.
 End Enum
 
 #If False Then
@@ -131,12 +130,12 @@ Private Enum PD_WEBP_CSP_MODE
     MODE_RGBA_4444 = 5
     MODE_RGB_565 = 6
     'RGB-premultiplied transparent modes (alpha value is preserved)
-    ' (names changed to work in VB)
+    ' (names changed to work in VB, which treats enums as case-insensitive)
     MODE_rgbAp = 7
     MODE_bgrAp = 8
     MODE_Argbp = 9
     MODE_rgbAp_4444 = 10
-    'YUV modes must come after RGB ones.
+    'YUV modes; note that these are *not* recommended for lossless mode
     MODE_YUV = 11
     MODE_YUVA = 12  '// yuv 4:2:0
     MODE_LAST = 13
@@ -148,15 +147,15 @@ End Enum
     Private Const MODE_YUV = 11, MODE_YUVA = 12, MODE_LAST = 13
 #End If
 
-'Various structs follow.  These all require use of the advanced decoding interface; the "quick" one
-' can't supply these
+'Various structs follow.  These all require use of the advanced decoding interface;
+' the "quick" one doesn't work with these
 Private Type PD_WebPBitstreamFeatures
-    webpWidth As Long       'Width in pixels, as read from the bitstream.
-    webpHeight As Long      'Height in pixels, as read from the bitstream.
-    webHasAlpha As Long     'True if the bitstream contains an alpha channel.
+    webpWidth As Long        'Width in pixels, as read from the bitstream.
+    webpHeight As Long       'Height in pixels, as read from the bitstream.
+    webHasAlpha As Long      'True if the bitstream contains an alpha channel.
     webpHasAnimation As Long 'True if the bitstream is an animation.
-    webpFormat As Long      '0 = undefined (/mixed), 1 = lossy, 2 = lossless
-    webpPadding(5) As Long  'padding for later use
+    webpFormat As Long       '0 = undefined (/mixed), 1 = lossy, 2 = lossless
+    webpPadding(5) As Long   'padding for later use
 End Type
 
 'Animation options
@@ -175,15 +174,15 @@ Private Type PD_WebPAnimInfo
     loop_count As Long
     bgcolor As Long
     frame_count As Long
-    padding(4) As Long          '// padding for later use
+    padding(0 To 3) As Long  ' // padding for later use
 End Type
 
 'Image characteristics hint for the underlying encoder.
 Private Enum PD_WebPImageHint
-    WEBP_HINT_DEFAULT = 0   'default preset.
-    WEBP_HINT_PICTURE       'digital picture, like portrait, inner shot
-    WEBP_HINT_PHOTO         'outdoor photograph, with natural lighting
-    WEBP_HINT_GRAPH         'Discrete tone image (graph, map-tile etc).
+    WEBP_HINT_DEFAULT = 0    ' default preset.
+    WEBP_HINT_PICTURE        ' digital picture, like portrait, inner shot
+    WEBP_HINT_PHOTO          ' outdoor photograph, with natural lighting
+    WEBP_HINT_GRAPH          ' discrete tone image (graph, map-tile etc).
     WEBP_HINT_LAST
 End Enum
 
@@ -287,7 +286,7 @@ Private Type PD_WebPPicture
     uv_stride As Long           '// luma/chroma strides.
     ptrA As Long                '// pointer to the alpha plane
     a_stride As Long            '// stride of the alpha plane
-    padding1a As Long          '// padding for later use
+    padding1a As Long           '// padding for later use
     padding1b As Long
     
     '// ARGB input (mostly used for input to lossless compression)
@@ -473,6 +472,11 @@ Private m_hDemuxer As Long
 
 'Animated files will fill this struct.  (Non-animated files WILL NOT.)
 Private m_AnimationInfo As PD_WebPAnimInfo
+
+'PhotoDemon provides a "streaming" interface for writing animated WebP files, where the total frame count
+' (and contents of individual frames) do not need to be known up-front.  Instead, you "stream" frames to
+' the encoder as they arrive.  This requires class-level tracking variables to correctly maintain state.
+Private m_StreamingEncoder As Long, m_StreamingSaveConfig As PD_WebPConfig
 
 Friend Function GetLibraryVersion() As Long
     GetLibraryVersion = CallCDeclW(WebPGetDecoderVersion, vbLong)
@@ -743,6 +747,9 @@ Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOpti
             InternalError FUNC_NAME, "bad layer picture # " & idxFrame
         End If
         
+        'Free the underlying picture object or it will leak!
+        CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
+        
     Next idxFrame
     
     'With all frames added, we need to call WebPAnimEncoderAdd one last time with NULL inputs except
@@ -783,6 +790,154 @@ Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOpti
     'Free any remaining UI elements
     ProgressBars.SetProgBarVal 0
     ProgressBars.ReleaseProgressBar
+    
+End Function
+
+'This next set of "streaming" functions are used to record an animated WebP to file in stages,
+' by "streaming" frames to the class.  You do not need to know the number of frames in advance,
+' but you do need to establish the canvas size up-front.
+'
+'Note that you *must* call the streaming functions in the correct order (Start, Add, Stop).
+' Calling the functions out of order could crash (or worse).
+Friend Function SaveStreamingWebP_AddFrame(ByRef srcDIB As pdDIB, ByVal frameTimestamp As Long) As Boolean
+    
+    Const FUNC_NAME As String = "SaveStreamingWebP_AddFrame"
+    SaveStreamingWebP_AddFrame = False
+    
+    'Start by converting the frame into a WebP picture object
+    Dim wpPicture As PD_WebPPicture
+    If GetWebPPicture(srcDIB, wpPicture, True) Then
+        
+        'With a WebPPicture created, we can now dump the frame into the encoder object
+        If (CallCDeclW(WebPAnimEncoderAdd, vbLong, m_StreamingEncoder, VarPtr(wpPicture), frameTimestamp, VarPtr(m_StreamingSaveConfig)) = 0) Then
+            InternalError FUNC_NAME, "bad encoder add: " & wpPicture.error_code
+        Else
+            SaveStreamingWebP_AddFrame = True
+        End If
+        
+    Else
+        InternalError FUNC_NAME, "bad frame"
+    End If
+    
+    'Free the underlying picture object or it will leak!
+    CallCDeclW WebPPictureFree, vbEmpty, VarPtr(wpPicture)
+    
+End Function
+
+Friend Function SaveStreamingWebP_Cancel() As Boolean
+    
+    'Free any running WebP objects
+    CallCDeclW WebPAnimEncoderDelete, vbEmpty, m_StreamingEncoder
+    m_StreamingEncoder = 0
+    
+End Function
+
+Friend Function SaveStreamingWebP_Start(ByVal pxWidth As Long, ByVal pxHeight As Long, Optional ByVal srcLoopCount As Long = 0, Optional ByVal encodingQuality As Single = 75!) As Boolean
+    
+    Const FUNC_NAME As String = "SaveStreamingWebP_Start"
+    SaveStreamingWebP_Start = False
+    
+    'Basic input validation
+    If (pxWidth <= 0) Or (pxHeight <= 0) Then
+        InternalError FUNC_NAME, "invalid parameters"
+        Exit Function
+    End If
+    
+    'Note that we don't need to touch the destination file (or even ask for it) yet; libwebp caches all
+    ' animation work in-memory, and simply supplies a pointer to the assembled image at the end.
+    
+    'For WebP files, animation encoding is primarily routed through a WebpAnimEncoder object.
+    ' This object relies on a set of global animation options; prepare an option struct now.
+    Dim enc_options As PD_WebPAnimEncoderOptions
+    If (CallCDeclW(WebPAnimEncoderOptionsInit, vbLong, VarPtr(enc_options), WEBP_MUX_ABI_VERSION) = 0) Then
+        InternalError FUNC_NAME, "bad options init"
+        
+        'Docs say: "WebPAnimEncoderOptionsInit() must have succeeded before using the 'enc_options' object.
+        Exit Function
+    End If
+    
+    'Populate any settings we have control over (like loop count)
+    With enc_options
+        .anim_params.bgColorA = 255
+        .anim_params.bgColorR = 255
+        .anim_params.bgColorG = 255
+        .anim_params.bgColorB = 255
+        .anim_params.loop_count = srcLoopCount
+        
+        'WebP offers some straightforward minimization options.  Note that the value of these functions
+        ' is tied to the incoming quality value, because the function will use heuristics to compare
+        ' the size of lossless vs lossy encoding of each frame *at the requested quality*.  Lossless will
+        ' be used if it produces a smaller file (which is not especially rare if coming from a limited-color
+        ' source like a GIF.  Note also that specifying SLOW compression will heavily penalize this function,
+        ' because each frame will be tested against a max-compression-lossless encoding... but you can
+        ' produce very small files this way (likely beating out both animated GIF and PNG).
+        .minimize_size = 1
+        .allow_mixed = 1
+        
+    End With
+    
+    'Next, we need an encoder object.  (Failure to initialize is a deal-breaker.)
+    ' This encoder must be cached, as it will be referenced on all frame "pushes".
+    m_StreamingEncoder = CallCDeclW(WebPAnimEncoderNew, vbLong, pxWidth, pxHeight, VarPtr(enc_options), WEBP_MUX_ABI_VERSION)
+    If (m_StreamingEncoder = 0) Then
+        InternalError FUNC_NAME, "bad encoder creation"
+        Exit Function
+    End If
+    
+    'Because we are using identical encoding options for each frame, it's easier to construct (and store)
+    ' a single config object up-front.  Because PD's config constructor requires a PD-format param string,
+    ' we need to serialize any settings to such an object before handing it off to the constructor.
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.AddParam "webp-quality", encodingQuality
+    
+    'Screen recordings are likely to be discrete-tone images, so supply some hints to improve encoding
+    cSettings.AddParam "webp-hint", "chart"
+    
+    'Build the config object
+    If (Not GetWebPConfig(cSettings, m_StreamingSaveConfig)) Then InternalError FUNC_NAME, "config object may be bad!"
+    
+    'Initialization is complete.
+    SaveStreamingWebP_Start = True
+    
+End Function
+
+Friend Function SaveStreamingWebP_Stop(ByVal finalTimestamp As Long, ByRef dstFile As String) As Boolean
+    
+    Const FUNC_NAME As String = "SaveStreamingWebP_Stop"
+    SaveStreamingWebP_Stop = False
+    
+    'With all frames added, we need to call WebPAnimEncoderAdd one last time with NULL inputs except
+    ' for the timestamp.  This (asinine) technique is used to establish frame time for the last frame.
+    If (CallCDeclW(WebPAnimEncoderAdd, vbLong, m_StreamingEncoder, 0&, finalTimestamp, 0&) = 0) Then InternalError FUNC_NAME, "bad final frame"
+    
+    'With all frames assembled, we now need to generate the final bitstream.  The results of this operation
+    ' get placed into a WebPData struct.
+    
+    Dim unionPtrAndLen(0 To 1) As Long
+    SaveStreamingWebP_Stop = (CallCDeclW(WebPAnimEncoderAssemble, vbLong, m_StreamingEncoder, VarPtr(unionPtrAndLen(0))) <> 0)
+    
+    'Regardless of outcome, the encoder is finished; free it immediately
+    CallCDeclW WebPAnimEncoderDelete, vbEmpty, m_StreamingEncoder
+    
+    If (Not SaveStreamingWebP_Stop) Then
+        InternalError FUNC_NAME, "bad assembly"
+    Else
+        
+        'Dump the pointer to file!
+        Files.FileDeleteIfExists dstFile
+        
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        SaveStreamingWebP_Stop = cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, optimizeAccess:=OptimizeSequentialAccess)
+        cStream.WriteBytesFromPointer unionPtrAndLen(0), unionPtrAndLen(1)
+        cStream.StopStream
+        Set cStream = Nothing
+        
+        'Free the finished buffer
+        CallCDeclW WebPFree, vbEmpty, VarPtr(unionPtrAndLen(0))
+        
+    End If
     
 End Function
 
@@ -944,7 +1099,14 @@ Private Function GetWebPPicture(ByRef srcDIB As pdDIB, ByRef dstPicture As PD_We
     'After initializing the WebP object, we now need to pass it our RGB data.  Dedicated import functions
     ' exist for this (and they handle swizzling, which is especially useful, since there's no fast way to
     ' swizzle in VB6).
-    If (CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(dstPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride) = 0) Then
+    Dim fReturn As Long
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        fReturn = CallCDeclW(WebPPictureImportBGRA, vbLong, VarPtr(dstPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride)
+    Else
+        fReturn = CallCDeclW(WebPPictureImportBGR, vbLong, VarPtr(dstPicture), srcDIB.GetDIBPointer, srcDIB.GetDIBStride)
+    End If
+    
+    If (fReturn = 0) Then
         InternalError FUNC_NAME, "bad import"
         Exit Function
     Else
