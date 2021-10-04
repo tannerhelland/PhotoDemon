@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.784</langversion>
+<langversion>9.0.816</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -239,7 +239,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Adjusting image white balance</original>
-<translation>Weißabgleich des Bildes wird angepasst</translation>
+<translation>Bild-Weißabgleich wird angepasst</translation>
 </phrase>
 
 <phrase>
@@ -1081,7 +1081,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 (Press No to continue recording.)</original>
 <translation>Dieses Makro enthält keine aufzeichenbaren Aktionen. Sind Sie sicher, dass Sie die Aufzeichnung stoppen wollen? 
 
-(Drücken Sie "Nein", um die Aufzeichnung fortzusetzen.)</translation>
+(Drücken Sie "Nein", um Aufzeichnung fortzusetzen.)</translation>
 </phrase>
 
 <phrase>
@@ -1285,7 +1285,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Export animated WebP</original>
-<translation></translation>
+<translation>Animiertes WebP exportieren</translation>
 </phrase>
 
 <phrase>
@@ -3121,7 +3121,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als animiertes Bild.</translation>
+<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als ein animiertes Bild (Image).</translation>
 </phrase>
 
 <phrase>
@@ -4767,7 +4767,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Animated WebP</original>
-<translation></translation>
+<translation>Animiertes WebP</translation>
 </phrase>
 
 <phrase>
@@ -9896,12 +9896,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>balanced</original>
-<translation></translation>
+<translation>Ausgewogen</translation>
 </phrase>
 
 <phrase>
 <original>best</original>
-<translation></translation>
+<translation>Am besten</translation>
 </phrase>
 
 <!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10052,7 +10052,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation>Dieses Programm ist derzeit minimiert. Für beste Resultate stellen Sie seine Normalgröße wieder her.</translation>
+<translation>Dieses Programm ist derzeit minimiert. Stellen Sie für beste Resultate dessen normale Größe wieder her.</translation>
 </phrase>
 
 <phrase>
@@ -10682,37 +10682,37 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>image type</original>
-<translation></translation>
+<translation>Bildtyp</translation>
 </phrase>
 
 <phrase>
 <original>generic</original>
-<translation></translation>
+<translation>Generisch</translation>
 </phrase>
 
 <phrase>
 <original>indoor photo</original>
-<translation></translation>
+<translation>Innenaufnahme</translation>
 </phrase>
 
 <phrase>
 <original>outdoor photo</original>
-<translation></translation>
+<translation>Außenaufnahme</translation>
 </phrase>
 
 <phrase>
 <original>chart</original>
-<translation></translation>
+<translation>Chart</translation>
 </phrase>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation></translation>
+<translation>Zeichnung (oder anderes Artwork)</translation>
 </phrase>
 
 <phrase>
 <original>icon</original>
-<translation></translation>
+<translation>Icon</translation>
 </phrase>
 
 <!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -13348,7 +13348,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>balance performance and quality</original>
-<translation>Balance zwischen Performance und Qualität</translation>
+<translation>Balance zw. Performance und Qualität</translation>
 </phrase>
 
 <phrase>
@@ -13413,7 +13413,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Wenn Sie nicht wissen, was diese Einstellung steuert, setzen Sie es auf "Perzeptiv". Perzeptives Rendering-Intent ist die beste Wahl für die meisten Benutzer.</translation>
+<translation>Wenn Sie nicht wissen, was diese Einstellung steuert, setzen Sie es auf "Perzeptiv". Perzeptives Rendering-Intent ist für die meisten Benutzer die beste Wahl.</translation>
 </phrase>
 
 <phrase>
@@ -13692,7 +13692,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>save directly to image file</original>
-<translation></translation>
+<translation>Direkt in Bilddatei speichern</translation>
 </phrase>
 
 <phrase>
