@@ -104,7 +104,7 @@ End Sub
 '
 'The optional parameter, "bottomLayerIsFullSize", should be set to TRUE if the bottom layer is the size of the image.  This saves
 ' some processing time, because we don't have to check for rect intersection.
-Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
 
     Dim xOffset As Double, yOffset As Double
     Dim i As Long
@@ -123,16 +123,43 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Layers.FillRectForLayerF topLayer, topRect, True, True
     UnionRectF finalRect, topRect, bottomRect
     
-    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
-    ' bottom layer is image-sized and the top layer has no active affine transforms.)
+    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass
+    ' this rect entirely, e.g. if the bottom layer is image-sized and the top layer has no active affine transforms.)
+    
+    'Next, solve for the base layer being the precise size of the image.  (This has a high probability
+    ' when being called from certain functions - like MergeVisibleLayers() - and we may be able to skip
+    ' a bunch of redundant memory allocations by reusing the existing base layer DIB as the merge target
+    ' instead of allocating a new DIB at the size of the union rect.)
+    Dim bottomLayerIsFullSize As Boolean
+    bottomLayerIsFullSize = (bottomLayer.GetLayerOffsetX = 0) And (bottomLayer.GetLayerOffsetY = 0)
+    bottomLayerIsFullSize = bottomLayerIsFullSize And (bottomLayer.GetLayerWidth(True) = PDImages.GetActiveImage.Width)
+    bottomLayerIsFullSize = bottomLayerIsFullSize And (bottomLayer.GetLayerHeight(True) = PDImages.GetActiveImage.Height)
+    bottomLayerIsFullSize = bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True))
+    
+    'We now need to perform a failsafe check on the "bottomLayerIsFullSize" parameter we just calculated.
+    ' We can't actually use it as a viable shortcut path if the top layer is *larger* than the base layer;
+    ' when this happens, we still need to create a new DIB to store the result, because the bottom layer
+    ' (even though it is the full size of the image) is too small to hold the merged layer (which will be
+    ' *larger* than image itself).
+    If bottomLayerIsFullSize Then
+        
+        Dim bottomLayerTooSmall As Boolean
+        bottomLayerTooSmall = (topRect.Left < 0) Or (topRect.Top < 0)
+        bottomLayerTooSmall = bottomLayerTooSmall Or ((topRect.Left + topRect.Width) > bottomRect.Width)
+        bottomLayerTooSmall = bottomLayerTooSmall Or ((topRect.Top + topRect.Height) > bottomRect.Height)
+        
+        'If the bottom layer is too small, disable the optimization flag and proceed normally.
+        If bottomLayerTooSmall Then bottomLayerIsFullSize = False
+        
+    End If
     
     'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
     ' creating a temporary one.  This can provide a nice performance boost depending on the complexity of subsequent layers.
     If bottomLayerIsFullSize Then
     
-        xOffset = topLayer.GetLayerOffsetX
-        yOffset = topLayer.GetLayerOffsetY
-    
+        xOffset = topRect.Left
+        yOffset = topRect.Top
+        
     'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
     Else
         
@@ -214,9 +241,9 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         
     End If
     
-    'The bottom layer DIB now represents the target for the final layer merge.  It has had any non-destructive effects processed,
-    ' its opacity has been accounted for (and it's tracking value reset to 100), and any non-destructive transformations (resize,
-    ' scaling, etc) have been made permanent.
+    'The bottom layer DIB now represents the target for the final layer merge.  Any non-destructive effects
+    ' have been processed, its opacity has been accounted for (and it's tracking value reset to 100),
+    ' and any non-destructive transformations (resize, scaling, etc) have been made permanent.
     
     'Now all we need to do is merge the top layer onto it.
     
@@ -249,7 +276,8 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             Dim xOffsetLong As Long, yOffsetLong As Long
             topLayer.GetAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong
             
-            'Calculate new offsets, using the x/y returned by that function (which may be slightly modified in order to preserve subpixel positioning)
+            'Calculate new offsets, using the x/y returned by that function (which may be slightly modified
+            ' in order to preserve subpixel positioning)
             xOffset = xOffsetLong - finalRect.Left
             yOffset = yOffsetLong - finalRect.Top
             
@@ -279,7 +307,7 @@ End Sub
 '
 'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge,
 ' paint ops on a vector layer are placed into a completely new raster layer.
-Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
+Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -307,6 +335,15 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     'If the bottom layer is the size of the image itself, we can use its DIB as the target DIB
     ' instead of creating a temporary one.  This provides a nice performance boost.
+    Dim bottomLayerIsFullSize As Boolean
+    If (Not parentImage Is Nothing) Then
+        With bottomLayer
+            bottomLayerIsFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = parentImage.Width) And (.layerDIB.GetDIBHeight = parentImage.Height))
+        End With
+    End If
+    
+    'An additional caveat is the bottom layer not having any active affine transforms; if it does, we need to commit
+    ' those before merging the scratch layer atop it.
     bottomLayerIsFullSize = (bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True)))
     
     If bottomLayerIsFullSize Then

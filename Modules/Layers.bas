@@ -752,7 +752,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
             With PDImages.GetActiveImage()
                 
                 'Request a merge from the parent pdImage
-                .MergeTwoLayers .GetLayerByIndex(dLayerIndex), .GetLayerByIndex(mergeTarget), False
+                .MergeTwoLayers .GetLayerByIndex(dLayerIndex), .GetLayerByIndex(mergeTarget)
                 
                 'Delete the now-merged layer
                 .DeleteLayerByIndex dLayerIndex
@@ -770,7 +770,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
             With PDImages.GetActiveImage()
             
                 'Request a merge from the parent pdImage
-                .MergeTwoLayers .GetLayerByIndex(mergeTarget), .GetLayerByIndex(dLayerIndex), False
+                .MergeTwoLayers .GetLayerByIndex(mergeTarget), .GetLayerByIndex(dLayerIndex)
                 
                 'Delete the now-merged layer
                 .DeleteLayerByIndex mergeTarget
@@ -1459,8 +1459,8 @@ Public Sub MergeVisibleLayers()
     'Fill that new layer with a blank DIB at the dimensions of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0
-    tmpDIB.SetAlphaPremultiplication True
+    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0, 0
+    tmpDIB.SetInitialAlphaPremultiplicationState True
     PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
@@ -1470,7 +1470,7 @@ Public Sub MergeVisibleLayers()
     
         'If this layer is visible, merge it with the base layer
         If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
-            PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.GetLayerByIndex(i), PDImages.GetActiveImage.GetLayerByIndex(0), True
+            PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.GetLayerByIndex(i), PDImages.GetActiveImage.GetLayerByIndex(0)
         End If
     
     Next i
@@ -1976,12 +1976,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
     ' layer onto it.
     If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
         
-        Dim bottomLayerFullSize As Boolean
-        With PDImages.GetActiveImage.GetActiveLayer
-            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
-        End With
-        
-        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True, VarPtr(srcRectF)
+        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, True, VarPtr(srcRectF)
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us.
