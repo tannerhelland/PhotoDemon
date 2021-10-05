@@ -104,6 +104,7 @@ Friend Function GetFullPath(ByVal itemIndex As Long) As String
     If (itemIndex >= 0) And (itemIndex < m_ItemCount) Then
         GetFullPath = m_Items(itemIndex).fullPathAndFilename
     Else
+        GetFullPath = vbNullString
         InternalError "GetFullPath: itemIndex OOB"
     End If
     

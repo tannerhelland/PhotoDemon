@@ -21,13 +21,18 @@ Attribute VB_Name = "Menus"
 
 Option Explicit
 
+'I am not generally in favor of public constants like this, but it's better than redeclaring the same
+' constant across a dozen different files.  Because PD uses this module to forward centralized "commands"
+' elsewhere in the project (e.g. hotkey commands are sent here first, for validation), it is helpful to
+' tag some unique command IDs so that they can be reused elsewhere.
+Public Const COMMAND_FILE_OPEN_RECENT As String = "file_open_recent_"
+
 Private Type PD_MenuEntry
     me_TopMenu As Long                    'Top-level index of this menu
     me_SubMenu As Long                    'Sub-menu index of this menu (if any)
     me_SubSubMenu As Long                 'Sub-sub-menu index of this menu (if any)
-    me_HotKeyCode As KeyCodeConstants     'Hotkey, if any, associated with this menu
-    me_HotKeyShift As ShiftConstants      'Hotkey shift modifiers, if any, associated with this menu
-    me_HotKeyTextTranslated As String     'Hotkey text, with translations (if any) always applied.
+    me_HotKeyID As Long                   'Hotkey, if any, associated with this menu.  (-1 = no hotkey)
+    me_HotKeyTextTranslated As String     'Hotkey text, with translations (if any) always applied.  Hotkeys module generates this.
     me_Name As String                     'Name of this menu (must be unique)
     me_ResImage As String                 'Name of this menu's image, as stored in PD's central resource file
     me_TextEn As String                   'Text of this menu, in English
@@ -119,6 +124,10 @@ Private Const IGNORE_MENU_ID As Long = -10
 Private Const ALL_MENU_SUBITEMS As Long = -9
 Private Const MENU_NONE As Long = -1
 
+'A special ID is used to flag menus with no associated hotkey.  (Menus need to track this so they can
+' display associated hotkey text, if any.)
+Private Const NO_MENU_HOTKEY As Long = -1
+
 'A number of menu features require us to interact directly with the API
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function EnableMenuItem Lib "user32" (ByVal hMenu As Long, ByVal uIDEnabledItem As Long, ByVal uEnable As Win32_EnableMenuItem) As Long
@@ -133,22 +142,6 @@ Private Declare Function VkKeyScanW Lib "user32" (ByVal wChar As Integer) As Int
 'Primary menu collection
 Private m_Menus() As PD_MenuEntry
 Private m_NumOfMenus As Long
-
-'To improve performance when language translations are active, we cache certain common translations
-' (such as "Ctrl+" for hotkey text) to minimize how many times we have to hit the language engine.
-' (Similarly, whenever the active language changes, make sure this text gets updated!)
-Private Enum PD_CommonMenuText
-    cmt_Ctrl = 0
-    cmt_Alt = 1
-    cmt_Shift = 2
-    cmt_NumEntries = 3
-End Enum
-
-#If False Then
-    Private Const cmt_Ctrl = 0, cmt_Alt = 1, cmt_Shift = 2, cmt_NumEntries = 3
-#End If
-
-Private m_CommonMenuText() As String
 
 'Early in the PD load process, we initialize the default set of menus.  In the future, it may be nice to let
 ' users customize this to match their favorite software (e.g. PhotoShop), but that's a ways off as I've yet to
@@ -634,8 +627,8 @@ End Sub
 Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, ByVal topMenuID As Long, Optional ByVal subMenuID As Long = MENU_NONE, Optional ByVal subSubMenuID As Long = MENU_NONE, Optional ByRef menuImageName As String = vbNullString, Optional ByVal allowInSearches As Boolean = True)
     
     'Make sure a sufficiently large buffer exists
-    Const INITIAL_MENU_COLLECTION_SIZE As Long = 128
     If (m_NumOfMenus = 0) Then
+        Const INITIAL_MENU_COLLECTION_SIZE As Long = 128
         ReDim m_Menus(0 To INITIAL_MENU_COLLECTION_SIZE - 1) As PD_MenuEntry
     Else
         If (m_NumOfMenus > UBound(m_Menus)) Then ReDim Preserve m_Menus(0 To m_NumOfMenus * 2 - 1) As PD_MenuEntry
@@ -649,6 +642,7 @@ Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, By
         .me_SubSubMenu = subSubMenuID
         .me_ResImage = menuImageName
         .me_DoNotIncludeInSearch = Not allowInSearches
+        .me_HotKeyID = NO_MENU_HOTKEY
     End With
     
     m_NumOfMenus = m_NumOfMenus + 1
@@ -755,7 +749,7 @@ Public Sub RequestCaptionChange_ByName(ByVal menuName As String, ByVal newCaptio
                         With m_Menus(targetMenu)
                             
                             'Combine caption, mnemonics, and hotkeys (if any) into a single, final, display-ready string
-                            If (.me_HotKeyCode <> 0) Then
+                            If (.me_HotKeyID >= 0) Then
                                 .me_TextFinal = .me_TextWithMnemonics & vbTab & .me_HotKeyTextTranslated
                             Else
                                 .me_TextFinal = .me_TextWithMnemonics
@@ -781,24 +775,11 @@ Public Sub RequestCaptionChange_ByName(ByVal menuName As String, ByVal newCaptio
 
 End Sub
 
-'Some menu-related text is accessed very frequently (e.g. "Ctrl" for hotkey text), so when a translation
-' is active, we want to just cache the translations locally instead of regenerating them over and over.
-Private Sub CacheCommonTranslations()
-    ReDim m_CommonMenuText(0 To cmt_NumEntries - 1) As String
-    If (Not g_Language Is Nothing) Then
-        m_CommonMenuText(cmt_Ctrl) = g_Language.TranslateMessage("Ctrl")
-        m_CommonMenuText(cmt_Alt) = g_Language.TranslateMessage("Alt")
-        m_CommonMenuText(cmt_Shift) = g_Language.TranslateMessage("Shift")
-    Else
-        PDDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
-    End If
-End Sub
-
 'After the active language changes, you must call this menu to translate all menu captions.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = True)
     
-    'Before proceeding, cache some common menu terms (so we don't have to keep translating them)
-    CacheCommonTranslations
+    'Before proceeding, cache any hotkey-related translations (so we don't have to keep translating them)
+    Hotkeys.UpdateHotkeyLocalization
     
     Dim i As Long
     
@@ -835,11 +816,14 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     'Generate localized text for all hotkeys
     For i = 0 To m_NumOfMenus - 1
         With m_Menus(i)
+            
+            'Failsafe checks for separator and null menus (VB doesn't short-circuit, so we do it manually)
             If (.me_Name <> "-") Then
-                If (LenB(.me_TextEn) <> 0) Then
-                    If (.me_HotKeyCode <> 0) Then .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
-                End If
+            If (LenB(.me_TextEn) <> 0) Then
+                If (.me_HotKeyID >= 0) Then .me_HotKeyTextTranslated = Hotkeys.GetHotkeyText(.me_HotKeyID)
             End If
+            End If
+            
         End With
     Next i
     
@@ -850,7 +834,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
         With m_Menus(i)
             If (.me_Name <> "-") Then
                 If (LenB(.me_TextEn) <> 0) Then
-                    If (.me_HotKeyCode <> 0) Then
+                    If (.me_HotKeyID >= 0) Then
                         .me_TextFinal = .me_TextWithMnemonics & vbTab & .me_HotKeyTextTranslated
                     Else
                         .me_TextFinal = .me_TextWithMnemonics
@@ -1460,23 +1444,26 @@ End Function
 'When the hotkey associated with a menu changes, call this sub to update our internal hotkey trackers.
 ' (We need to know hotkeys so we can render them with the menu captions.)
 '
-'NOTE: this function doesn't update the hotkey text associated with this menu, unless requested.
-Public Sub NotifyMenuHotkey(ByRef menuID As String, ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants)
+'NOTE: this function doesn't actually render the new menu text; the assumption is that new hotkeys
+' are assigned in bulk, and for performance reasons you'll want to do a single full-menu-system refresh
+' after the bulk assignments finish.
+Public Sub NotifyMenuHotkey(ByRef menuID As String, Optional ByVal hkID As Long = NO_MENU_HOTKEY)
     
-    'Resolve the menuID into a list of indices.  (Note that menus can share the same name, meaning there can be more
-    ' than one physical menu associated with a given hotkey.)
+    'Resolve the menuID into a list of indices.  (Note that menus can share the same ID, meaning there can be more
+    ' than one physical menu associated with a given hotkey; this is used to display correct hotkeys for menus like
+    ' Import > From Clipboard and Edit > Paste which appear in two places for usability reasons, but ultimately map
+    ' to the same action.)
     Dim listOfMatches() As Long, numOfMatches As Long
     GetAllMatchingMenuIndices menuID, numOfMatches, listOfMatches
     
     'Before we enter the loop, generate a translated text representation of this hotkey
     Dim hotkeyText As String
-    hotkeyText = GetHotkeyText(vKeyCode, Shift)
+    hotkeyText = Hotkeys.GetHotkeyText(hkID)
     
     Dim i As Long
     For i = 0 To numOfMatches - 1
         With m_Menus(listOfMatches(i))
-            .me_HotKeyCode = vKeyCode
-            .me_HotKeyShift = Shift
+            .me_HotKeyID = hkID
             .me_HotKeyTextTranslated = hotkeyText
         End With
     Next i
@@ -1638,264 +1625,10 @@ Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As B
     
 End Sub
 
-'Until I have a better place to stick this, hotkeys are handled here, by the menu module.
-' This is primarily done because there is (somewhat) tight integration between hotkeys and
-' menu captions, and both need to be handled together while accounting for the usual
-' nightmares (like language translations).
-Public Sub InitializeAllHotkeys()
-    
-    With FormMain.HotkeyManager
-    
-        .Enabled = True
-        
-        'Special hotkeys
-        .AddAccelerator vbKeyF, vbCtrlMask, "tool_search", , False, False, False
-        
-        'Tool hotkeys (e.g. keys not associated with menus)
-        .AddAccelerator vbKeyH, , "tool_activate_hand", , , , False
-        .AddAccelerator vbKeyM, , "tool_activate_move", , , , False
-        .AddAccelerator vbKeyI, , "tool_activate_colorpicker", , , , False
-        
-        'Note that some hotkeys do double-duty in tool selection; you can press some of these shortcuts multiple times
-        ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in
-        ' FormMain.pdHotkey event handlers.
-        .AddAccelerator vbKeyS, , "tool_activate_selectrect", , , , False
-        .AddAccelerator vbKeyL, , "tool_activate_selectlasso", , , , False
-        .AddAccelerator vbKeyW, , "tool_activate_selectwand", , , , False
-        .AddAccelerator vbKeyT, , "tool_activate_text", , , , False
-        .AddAccelerator vbKeyP, , "tool_activate_pencil", , , , False
-        .AddAccelerator vbKeyB, , "tool_activate_brush", , , , False
-        .AddAccelerator vbKeyE, , "tool_activate_eraser", , , , False
-        .AddAccelerator vbKeyC, , "tool_activate_clone", , , , False
-        .AddAccelerator vbKeyF, , "tool_activate_fill", , , , False
-        .AddAccelerator vbKeyG, , "tool_activate_gradient", , , , False
-        
-        'File menu
-        .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyO, vbCtrlMask, "Open", "file_open", True, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyW, vbCtrlMask, "Close", "file_close", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyW, vbCtrlMask Or vbAltMask, "Close all", "file_closeall", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyS, vbCtrlMask, "Save", "file_save", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", "file_savecopy", True, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", "file_saveas", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyF12, 0, "Revert", "file_revert", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", "file_batch_process", True, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyP, vbCtrlMask, "Print", "file_print", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", "file_quit", True, False, True, UNDO_Nothing
-        
-            'File -> Import submenu
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", "file_import_scanner", True, False, True, UNDO_Nothing
-            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", "file_import_web", True, False, True, UNDO_Nothing
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", "file_import_screenshot", True, False, True, UNDO_Nothing
-        
-            'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
-            ' exist at run-time.  (They are dynamically created as necessary.)
-            .AddAccelerator vbKey1, vbCtrlMask Or vbShiftMask, "MRU_0", requiresOpenImage:=False
-            .AddAccelerator vbKey2, vbCtrlMask Or vbShiftMask, "MRU_1", requiresOpenImage:=False
-            .AddAccelerator vbKey3, vbCtrlMask Or vbShiftMask, "MRU_2", requiresOpenImage:=False
-            .AddAccelerator vbKey4, vbCtrlMask Or vbShiftMask, "MRU_3", requiresOpenImage:=False
-            .AddAccelerator vbKey5, vbCtrlMask Or vbShiftMask, "MRU_4", requiresOpenImage:=False
-            .AddAccelerator vbKey6, vbCtrlMask Or vbShiftMask, "MRU_5", requiresOpenImage:=False
-            .AddAccelerator vbKey7, vbCtrlMask Or vbShiftMask, "MRU_6", requiresOpenImage:=False
-            .AddAccelerator vbKey8, vbCtrlMask Or vbShiftMask, "MRU_7", requiresOpenImage:=False
-            .AddAccelerator vbKey9, vbCtrlMask Or vbShiftMask, "MRU_8", requiresOpenImage:=False
-            .AddAccelerator vbKey0, vbCtrlMask Or vbShiftMask, "MRU_9", requiresOpenImage:=False
-            
-        'Edit menu
-        .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyY, vbCtrlMask, "Redo", "edit_redo", True, True, False, UNDO_Nothing
-        
-        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
-        
-        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cutlayer", True, True, False, UNDO_Image
-        'This "cut from layer" hotkey combination is used as "crop to selection" in other software; as such,
-        ' I am suspending this instance for now.
-        '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_Layer
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copylayer", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", "edit_copymerged", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste", "edit_pasteaslayer", True, False, False, UNDO_Image_VectorSafe
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbAltMask, "Paste to cursor", "edit_pastetocursor", True, True, False, UNDO_Image_VectorSafe
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste to new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
-        
-        'Image menu
-        .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, True, UNDO_ImageHeader
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", "image_crop", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty image borders", "image_trim", True, True, False, UNDO_ImageHeader
-        
-            'Image -> Rotate submenu
-            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
-        
-        'Layer Menu
-        .AddAccelerator vbKeyN, vbCtrlMask Or vbShiftMask, "Add new layer", "layer_addbasic", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyJ, vbCtrlMask, "Layer via copy", "layer_addviacopy", True, True, False, UNDO_Image_VectorSafe
-        .AddAccelerator vbKeyJ, vbCtrlMask Or vbShiftMask, "Layer via cut", "layer_addviacut", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyPageUp, vbCtrlMask Or vbAltMask, "Go to top layer", "layer_gotop", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyPageDown, vbAltMask, "Go to layer below", "layer_godown", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyE, vbCtrlMask, "layer_mergedown", "layer_mergedown", False, True, False, UNDO_Image
-        .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "image_mergevisible", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "image_flatten", True, True, True, UNDO_Nothing
-        
-        'Select Menu
-        .AddAccelerator vbKeyA, vbCtrlMask, "Select all", "select_all", True, True, False, UNDO_Selection
-        .AddAccelerator vbKeyD, vbCtrlMask, "Remove selection", "select_none", False, True, False, UNDO_Selection
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", "select_invert", True, True, False, UNDO_Selection
-        'KeyCode VK_OEM_4 = {[  (next to the letter P), VK_OEM_6 = }]
-        .AddAccelerator VK_OEM_6, vbCtrlMask Or vbAltMask, "Grow selection", "select_grow", True, True, True, UNDO_Nothing
-        .AddAccelerator VK_OEM_4, vbCtrlMask Or vbAltMask, "Shrink selection", "select_shrink", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", "select_feather", True, True, True, UNDO_Nothing
-        
-        'Adjustments Menu
-        
-        'Adjustments top shortcut menu
-        .AddAccelerator vbKeyL, vbCtrlMask Or vbShiftMask, "Auto correct", "adj_autocorrect", True, True, False, UNDO_Layer
-        .AddAccelerator vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "Auto enhance", "adj_autoenhance", True, True, False, UNDO_Layer
-        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", "adj_blackandwhite", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", "adj_bandc", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", "adj_curves", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", "adj_levels", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", "adj_sandh", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, True, UNDO_Nothing
-        .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, True, UNDO_Nothing
-        
-        'Ctrl+W has been remapped to File > Close
-        '.AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_Nothing
-        
-            'Color adjustments
-            .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", "adj_hsl", True, True, True, UNDO_Nothing
-            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", "adj_temperature", True, True, True, UNDO_Nothing
-            
-            'Lighting adjustments
-            .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", "adj_gamma", True, True, True, UNDO_Nothing
-            
-            'Adjustments -> Invert submenu
-            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", "adj_invertRGB", True, True, False, UNDO_Layer
-            
-            'Adjustments -> Monochrome submenu
-            .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", "adj_colortomonochrome", True, True, True, UNDO_Nothing
-            
-            'Adjustments -> Photography submenu
-            .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", "adj_exposure", True, True, True, UNDO_Nothing
-            .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", "adj_photofilters", True, True, True, UNDO_Nothing
-            
-        
-        'Effects Menu
-        '.AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask Or vbShiftMask, "Add RGB noise", FormMain.MnuNoise(1), True, True, True, False
-        '.AddAccelerator vbKeyG, vbCtrlMask Or vbAltMask Or vbShiftMask, "Gaussian blur", FormMain.MnuBlurFilter(1), True, True, True, False
-        '.AddAccelerator vbKeyY, vbCtrlMask Or vbAltMask Or vbShiftMask, "Correct lens distortion", FormMain.MnuDistortEffects(1), True, True, True, False
-        '.AddAccelerator vbKeyU, vbCtrlMask Or vbAltMask Or vbShiftMask, "Unsharp mask", FormMain.MnuSharpen(1), True, True, True, False
-        
-        'Tools menu
-        'KeyCode 190 = >.  (two keys to the right of the M letter key)
-        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, True, UNDO_Nothing
-        
-        'Previously, Alt+Enter was used for preferences; I dislike this, however, as holding down the Alt-key
-        ' is useful for keyboard navigation of menus (via mnemonics), and if you use Enter to select a menu
-        ' item, this accelerator overrides your menu click.  Photoshop uses Ctrl+K - maybe we should
-        ' investigate that as an option?  TODO!
-        '.AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_3rdpartylibs", False, False, True, UNDO_Nothing
-        
-        'View menu
-        .AddAccelerator vbKey0, vbCtrlMask, "FitOnScreen", "view_fit", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyAdd, vbCtrlMask, "Zoom_In", "view_zoomin", False, True, False, UNDO_Nothing
-        .AddAccelerator VK_OEM_PLUS, vbCtrlMask, "Zoom_In", , False, True, False, UNDO_Nothing
-        .AddAccelerator vbKeySubtract, vbCtrlMask, "Zoom_Out", "view_zoomout", False, True, False, UNDO_Nothing
-        .AddAccelerator VK_OEM_MINUS, vbCtrlMask, "Zoom_Out", , False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey5, vbCtrlMask, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey4, vbCtrlMask, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey3, vbCtrlMask, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey2, vbCtrlMask, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey1, vbCtrlMask, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, True, False, UNDO_Nothing
-        
-        'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", "window_previous", False, True, False, UNDO_Nothing
-        
-        'Activate hotkey detection
-        .ActivateHook
-        
-    End With
-    
-    'Before exiting, notify the menu manager of all menu changes
-    Dim i As Long
-    
-    CacheCommonTranslations
-    
-    With FormMain.HotkeyManager
-        For i = 0 To .Count - 1
-            If .HasMenu(i) Then Menus.NotifyMenuHotkey .GetMenuName(i), .GetKeyCode(i), .GetShift(i)
-        Next i
-    End With
-    
-End Sub
-
-'If a menu has a hotkey associated with it, you can use this function to update the language-specific text representation of the hotkey.
-' (This text is appended to the menu caption automatically.)
-Private Function GetHotkeyText(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants) As String
-    
-    Dim tmpString As String
-    If (Shift And vbCtrlMask) Then tmpString = m_CommonMenuText(cmt_Ctrl) & "+"
-    If (Shift And vbAltMask) Then tmpString = tmpString & m_CommonMenuText(cmt_Alt) & "+"
-    If (Shift And vbShiftMask) Then tmpString = tmpString & m_CommonMenuText(cmt_Shift) & "+"
-    
-    'Processing the string itself takes a bit of extra work, as some keyboard keys don't automatically map to a
-    ' string equivalent.  (Also, translations need to be considered.)
-    Select Case vKeyCode
-    
-        Case vbKeyAdd
-            tmpString = tmpString & "+"
-        
-        Case vbKeySubtract
-            tmpString = tmpString & "-"
-        
-        Case vbKeyReturn
-            tmpString = tmpString & g_Language.TranslateMessage("Enter")
-        
-        Case vbKeyPageUp
-            tmpString = tmpString & g_Language.TranslateMessage("Page Up")
-        
-        Case vbKeyPageDown
-            tmpString = tmpString & g_Language.TranslateMessage("Page Down")
-            
-        Case vbKeyF1 To vbKeyF16
-            tmpString = tmpString & "F" & (vKeyCode - 111)
-        
-        'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
-        ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-        ' At the moment, however, they're implemented as magic numbers.
-        Case 188
-            tmpString = tmpString & ","
-            
-        Case 190
-            tmpString = tmpString & "."
-            
-        Case 219
-            tmpString = tmpString & "["
-            
-        Case 221
-            tmpString = tmpString & "]"
-            
-        Case Else
-            tmpString = tmpString & UCase$(ChrW$(vKeyCode))
-        
-    End Select
-    
-    GetHotkeyText = tmpString
-    
-End Function
-
 Private Sub GetAllMatchingMenuIndices(ByRef menuID As String, ByRef numOfMenus As Long, ByRef menuArray() As Long)
 
-    'At present, there will never be more than two menus matching a given ID; this can be revisited in the future
+    'At present, there will never be more than two menus matching a given ID; this can be revisited in the future,
+    ' but imposing an upper limit improves performance (because we can exit immediately if a second match is found)
     Const MAX_MENU_MATCHES As Long = 2
     If (Not VBHacks.IsArrayInitialized(menuArray)) Then
         ReDim menuArray(0 To MAX_MENU_MATCHES - 1) As Long
@@ -2070,8 +1803,8 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
             Process "Open", True
             
         Case "file_openrecent"
-            If (LenB(g_RecentFiles.GetFullPath(0)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(0)
-        
+            'Top-level menu only; see the end of this function for handling actual recent file actions
+            
         Case "file_import"
             Case "file_import_paste"
                 Process "Paste to new image", False, , UNDO_Nothing, , False
@@ -2142,6 +1875,23 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
             cmdFound = False
         
     End Select
+    
+    'If we haven't found a match, look for commands related to the Recent Files menu;
+    ' these are preceded by the unique "file_open_recent_[n]" command, where [n] is the index of
+    ' the recent file to open (0-based).
+    If (Not cmdFound) Then
+    
+        cmdFound = Strings.StringsEqualLeft(srcMenuName, COMMAND_FILE_OPEN_RECENT, True)
+        If cmdFound Then
+        
+            'Load the target file
+            Dim targetIndex As Long
+            targetIndex = Val(Right$(srcMenuName, Len(srcMenuName) - Len(COMMAND_FILE_OPEN_RECENT)))
+            If (LenB(g_RecentFiles.GetFullPath(targetIndex)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(targetIndex)
+            
+        End If
+        
+    End If
     
     PDA_ByName_MenuFile = cmdFound
     

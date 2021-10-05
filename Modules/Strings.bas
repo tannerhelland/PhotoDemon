@@ -455,12 +455,12 @@ End Function
 '
 'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
 ' StringFromUTF16_FixedLen() function, below.
-Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
+Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal MaxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
     
     'Check string length
     Dim strLength As Long
     If useMaxLengthAsStrLength Then
-        strLength = maxLength
+        strLength = MaxLength
     Else
         If srcStringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
     End If
@@ -472,7 +472,7 @@ Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcSt
         
         'Make sure the string's length is valid.
         Dim maxAllowedLength As Long
-        If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
+        If (MaxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = MaxLength
         If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
         
         'Create the target string and copy the bytes over
@@ -868,6 +868,18 @@ Public Function StringsEqualAny(ByRef firstString As String, ByVal ignoreCase As
         Next i
     End If
     
+End Function
+
+'Compare the left [n] characters of a target string to another string.  The length of the second string
+' (parameter `fixedLengthString`) is used to determine the length of the comparison.
+'
+'Returns TRUE if the left [n] characters of string 1 equal string 2.  If string 1 is shorter than string 2,
+' automatically returns FALSE.
+Public Function StringsEqualLeft(ByRef firstString As String, ByRef fixedLengthString As String, ByVal ignoreCase As Boolean) As Boolean
+    StringsEqualLeft = False
+    If (LenB(firstString) >= LenB(fixedLengthString)) Then
+        StringsEqualLeft = StringsEqual(Left$(firstString, Len(fixedLengthString)), fixedLengthString, ignoreCase)
+    End If
 End Function
 
 'Convenience not-wrapper to StringsEqual, above

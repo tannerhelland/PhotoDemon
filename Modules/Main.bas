@@ -644,9 +644,10 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
     
-    'In the future, hotkeys really need to become user-editable, but for now, the list is hard-coded.
+    'Initialize PD's default set of hotkeys
+    ' TODO: after initialization, load any user-created custom hotkeys
     perfCheck.MarkEvent "Initialize hotkey manager"
-    Menus.InitializeAllHotkeys
+    Hotkeys.InitializeDefaultHotkeys
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"

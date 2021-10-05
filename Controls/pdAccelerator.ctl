@@ -33,27 +33,33 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
 'Copyright 2013-2021 by Tanner Helland and contributors
-'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
-'Last updated: 21/June/18
-'Last update: new workaround to correctly capture keypress state after PD loses focus via keyboard actions
-'             (e.g. Alt+Tab).  Thank you jpbro for reporting; see https://github.com/tannerhelland/PhotoDemon/issues/267
-'             for additional details.
+'Created: 06/November/15 (split off from a heavily modified vbaIHookControl by Steve McMahon)
+'Last updated: 04/October/21
+'Last update: migrate all hotkey management to a dedicated module in preparation for customizable
+'             hotkeys.  From now on, this control will only be responsible for keyboard hooking/tracking.
+'             Managing the underlying hotkey collection is now the responsibility of the Hotkeys module.
 '
-'For many years, PD used vbAccelerator's "hook control" to handle program hotkeys:
+'For many years, PD used a "hook control" by vbAccelerator.com to handle program hotkeys:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
 '
-'Starting in August 2013 (https://github.com/tannerhelland/PhotoDemon/commit/373882e452201bb00584a52a791236e05bc97c1e),
-' I rewrote much of the control to solve some glaring stability issues.  Over time, I rewrote it more and more
-' (https://github.com/tannerhelland/PhotoDemon/commits/master/Controls/vbalHookControl.ctl), tacking on PD-specific
-' features and attempting to fix problematic bugs, until ultimately the control became a horrible mishmash of
-' spaghetti code: some old, some new, some completely unused, and some that was still problematic and unreliable.
+'In 2013 (https://github.com/tannerhelland/PhotoDemon/commit/373882e452201bb00584a52a791236e05bc97c1e)
+' I rewrote the control to solve some glaring stability issues.  Over time, I rewrote it more and more
+' (https://github.com/tannerhelland/PhotoDemon/commits/master/Controls/vbalHookControl.ctl),
+' tacking on PhotoDemon-specific features and attempting to fix problematic bugs, until ultimately the
+' control became a horrible mishmash of spaghetti code: some old, some new, some completely unused,
+' and some that was still problematic and unreliable.
 '
-'Because dynamic hooking has enormous potential for causing hard-to-replicate bugs, a ground-up rewrite seemed long
-' overdue.  Hence this new control.
+'Because dynamic hooking has enormous potential for causing hard-to-replicate bugs, a ground-up rewrite
+' seemed long overdue.  Thus this control was born.
 '
-'Many thanks to Steve McMahon for his original implementation, which was my first introduction to hooking from VB6.
-' It's still a fine reference for beginners, and you can find the original here (good as of November '15):
-' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
+'Thank you to Steve McMahon for his original implementation, which was my first introduction to hooking
+' from VB6.  It's still a useful reference for beginners, and you can find the original here
+' (hopefully... Steve's work has intermittently disappeared from the web in recent years):
+' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/
+'
+'Thank you also to Jason Brown (https://github.com/jpbro), who has submitted many fixes and
+' improvements to this module over the years.  Hotkey behavior in PhotoDemon is greatly improved
+' thanks to him.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -63,27 +69,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control only raises a single "Accelerator" event, and it only does it when one (or more) keys in the combination are released
-Public Event Accelerator(ByVal acceleratorIndex As Long)
-
-'Each hotkey stores several additional (and sometimes optional) parameters.  This spares us from writing specialized
-' handling code for each individual keypress.
-Private Type pdHotkey
-    AccKeyCode As Long
-    AccShiftState As ShiftConstants
-    AccKeyName As String
-    AccIsProcessorString As Boolean
-    AccRequiresOpenImage As Boolean
-    AccShowProcDialog As Boolean
-    AccProcUndo As PD_UndoType
-    AccMenuNameIfAny As String
-End Type
-
-'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using built-in VB functions,
-' and because the list of keys is short, performance isn't in issue.
-Private m_Hotkeys() As pdHotkey
-Private m_NumOfHotkeys As Long
-Private Const INITIAL_HOTKEY_LIST_SIZE As Long = 16&
+'This control only raises a single event: "Accelerator", and it only does it when one (or more) keys in the
+' combination are released.  (At present, the only object in PD that consumes these events is FormMain.)
+Public Event HotkeyPressed(ByVal hotkeyID As Long)
 
 'New solution!  Virtual-key tracking is a bad idea, because we want to know key state at the time the hotkey
 ' was pressed (not what it is right now).  Solving this is as easy as tracking key up/down state for Ctrl/Alt/Shift
@@ -113,9 +101,9 @@ Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As I
 ' finishes enforcing a slight delay, we then perform the actual accelerator evaluation.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Currency
 
-'To reduce the potential for double-fired keys, we track the last-fired accelerator key and shift state, and compare
-' it to the current one.  The current system keyboard delay must pass before we fire the same accelerator a second time.
-Private m_LastAccKeyCode As Long, m_LastAccShiftState As ShiftConstants
+'To reduce the potential for double-fired keys, we track the last-fired accelerator ID.  The current system
+' keyboard delay must pass before we fire the same accelerator a second time.
+Private m_LastHotkeyIndex As Long
 
 'This control may be problematic on systems with system-wide custom key handlers (like some Intel systems, argh).
 ' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
@@ -142,7 +130,6 @@ End Function
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
-Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -167,8 +154,8 @@ Private Sub m_FireTimer_Timer()
             
          End If
         
-         'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
-         ' current sub will still complete its actions.
+         'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again,
+         ' but the current sub will still complete its actions.
          m_InFireTimerNow = True ' Notify other methods that we are busy in the timer
          m_FireTimer.StopTimer
          
@@ -179,7 +166,7 @@ Private Sub m_FireTimer_Timer()
          
              If (m_AcceleratorIndex <> -1) Then
                 PDDebug.LogAction "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ", " & HotKeyName(m_AcceleratorIndex) & ")"
-                RaiseEvent Accelerator(m_AcceleratorIndex)
+                RaiseEvent HotkeyPressed(m_AcceleratorIndex)
                 m_AcceleratorIndex = -1
              End If
              
@@ -248,9 +235,6 @@ Private Sub UserControl_Initialize()
     
     m_HookingActive = False
     m_AcceleratorIndex = -1
-    
-    m_NumOfHotkeys = 0
-    ReDim m_Hotkeys(0 To INITIAL_HOTKEY_LIST_SIZE - 1) As pdHotkey
         
     'You may want to consider straight-up disabling hotkeys inside the IDE
     If PDMain.IsProgramRunning() Then
@@ -348,125 +332,6 @@ Public Sub NotifyAltKeystateChange(ByVal newState As Boolean)
     m_AltDown = newState
 End Sub
 
-'Add a new accelerator key combination to the collection.  A ton of PD-specific functionality is included in this function, so let me break it down.
-' - "isProcessorString": if TRUE, hotKeyName is assumed to a be a string meant for PD's central processor.  It will be directly passed
-'    to the processor there when that hotkey is used.
-' - "correspondingMenu": a reference to the menu associated with this hotkey.  The reference is used to dynamically draw matching shortcut text
-'    onto the menu.  It is not otherwise used.
-' - "requiresOpenImage": specifies that this action *must be disallowed* unless one (or more) image(s) are loaded and active.
-' - "showProcForm": controls the "showDialog" parameter of processor string directives.
-' - "procUndo": controls the "createUndo" parameter of processor string directives.  Remember that UNDO_NOTHING means "do not create Undo data."
-Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UndoType = UNDO_Nothing) As Long
-    
-    'Make sure this key combination doesn't already exist in the collection
-    Dim failsafeCheck As Long
-    failsafeCheck = GetAcceleratorIndex(vKeyCode, Shift)
-    
-    If (failsafeCheck >= 0) Then
-        AddAccelerator = failsafeCheck
-        Exit Function
-    End If
-    
-    'We now know that this key combination is unique.
-    
-    'Make sure the list is large enough to hold this new entry.
-    If (m_NumOfHotkeys > UBound(m_Hotkeys)) Then ReDim Preserve m_Hotkeys(0 To UBound(m_Hotkeys) * 2 + 1) As pdHotkey
-    
-    'Add the new entry
-    With m_Hotkeys(m_NumOfHotkeys)
-        .AccKeyCode = vKeyCode
-        .AccShiftState = Shift
-        .AccKeyName = HotKeyName
-        .AccMenuNameIfAny = correspondingMenu
-        .AccIsProcessorString = IsProcessorString
-        .AccRequiresOpenImage = requiresOpenImage
-        .AccShowProcDialog = showProcDialog
-        .AccProcUndo = procUndo
-    End With
-    
-    'Return this index, and increment the active hotkey count
-    AddAccelerator = m_NumOfHotkeys
-    m_NumOfHotkeys = m_NumOfHotkeys + 1
-    
-End Function
-
-'If an accelerator exists in our current collection, this will return a value >= 0 corresponding to its position in the master array.
-Private Function GetAcceleratorIndex(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants) As Long
-    
-    GetAcceleratorIndex = -1
-    
-    If (m_NumOfHotkeys > 0) Then
-        
-        Dim i As Long
-        For i = 0 To m_NumOfHotkeys - 1
-            If (m_Hotkeys(i).AccKeyCode = vKeyCode) And (m_Hotkeys(i).AccShiftState = Shift) Then
-                GetAcceleratorIndex = i
-                Exit For
-            End If
-        Next i
-        
-    End If
-
-End Function
-
-'Outside functions can retrieve certain accelerator properties.  Note that - by design - these properties should only be retrieved from inside
-' an Accelerator event.
-Public Function Count() As Long
-    Count = m_NumOfHotkeys
-End Function
-
-Public Function IsProcessorString(ByVal hkIndex As Long) As Boolean
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsProcessorString = m_Hotkeys(hkIndex).AccIsProcessorString
-    End If
-End Function
-
-Public Function IsImageRequired(ByVal hkIndex As Long) As Boolean
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsImageRequired = m_Hotkeys(hkIndex).AccRequiresOpenImage
-    End If
-End Function
-
-Public Function IsDialogDisplayed(ByVal hkIndex As Long) As Boolean
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsDialogDisplayed = m_Hotkeys(hkIndex).AccShowProcDialog
-    End If
-End Function
-
-Public Function HasMenu(ByVal hkIndex As Long) As Boolean
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        HasMenu = (Len(m_Hotkeys(hkIndex).AccMenuNameIfAny) <> 0)
-    End If
-End Function
-
-Public Function HotKeyName(ByVal hkIndex As Long) As String
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        HotKeyName = m_Hotkeys(hkIndex).AccKeyName
-    End If
-End Function
-
-Public Function GetMenuName(ByVal hkIndex As Long) As String
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetMenuName = m_Hotkeys(hkIndex).AccMenuNameIfAny
-    End If
-End Function
-
-Public Function GetKeyCode(ByVal hkIndex As Long) As KeyCodeConstants
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetKeyCode = m_Hotkeys(hkIndex).AccKeyCode
-    End If
-End Function
-
-Public Function GetShift(ByVal hkIndex As Long) As ShiftConstants
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetShift = m_Hotkeys(hkIndex).AccShiftState
-    End If
-End Function
-
-Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UndoType
-    ProcUndoValue = m_Hotkeys(hkIndex).AccProcUndo
-End Function
-
 'Dummy theme function; this control isn't visible, so theming isn't relevant - but having a bare sub spares
 ' pointless errors inside the central theme engine.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
@@ -509,7 +374,7 @@ Private Function CanIRaiseAnAcceleratorEvent(Optional ByVal ignoreActiveTimer As
     
     'I'm not entirely sure how VB's message pumps work when WM_TIMER events hit disabled controls, so just to be safe,
     ' let's be paranoid and ensure this control hasn't been externally deactivated.
-    If (Me.Enabled And (m_NumOfHotkeys > 0)) Then
+    If (Me.Enabled And (Hotkeys.GetNumOfHotkeys() > 0)) Then
         
         'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
         ' action is in the middle of execution)
@@ -547,57 +412,43 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
     If m_ShiftDown Then retShiftConstants = retShiftConstants Or vbShiftMask
     
     'Search our accelerator database for a match to the current keycode
-    If (m_NumOfHotkeys > 0) Then
+    If (Hotkeys.GetNumOfHotkeys() > 0) Then
         
-        Dim i As Long
-        For i = 0 To m_NumOfHotkeys - 1
+        'See if the keycode matches an entry in the hotkey collection
+        Dim idxHotkey As Long
+        idxHotkey = Hotkeys.GetHotkeyIndex(wParam, retShiftConstants)
             
-            'First, see if the keycode matches.
-            If (m_Hotkeys(i).AccKeyCode = wParam) Then
-                
-                'Next, see if the Ctrl+Alt+Shift state matches
-                If (m_Hotkeys(i).AccShiftState = retShiftConstants) Then
-                
-                    'We have a match!
-                    
-                    'We have one last check to perform before firing this accelerator.  Users with accessibility constraints
-                    ' (including elderly users) may press-and-hold accelerators long enough to trigger repeat occurrences.
-                    ' Accelerators should require full "release key and press again" behavior to avoid double-firing
-                    ' their associated events.
-                    If (m_Hotkeys(i).AccKeyCode = m_LastAccKeyCode) And (m_Hotkeys(i).AccShiftState = m_LastAccShiftState) Then
-                        If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then
-                           Exit For
-                        End If
-                    End If
-                    
-                    m_AcceleratorIndex = i
-                    VBHacks.GetHighResTime m_TimerAtAcceleratorPress
-                    
-                    If p_AccumulateOnly Then
-                        'Add to accelerator accumulator, it will be processed later.
-                        m_AcceleratorAccumulator.Add m_AcceleratorIndex
-                        
-                    Else
-                        'Add to the live accelerator processing queue
-                        m_AcceleratorQueue.Add m_AcceleratorIndex
-                     
-                       If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
-                    End If
-                    
-                    'Also, make sure to eat this keystroke
-                    HandleActualKeypress = True
-                    
-                    m_LastAccKeyCode = m_Hotkeys(i).AccKeyCode
-                    m_LastAccShiftState = m_Hotkeys(i).AccShiftState
-                    
-                    Exit For
-                
-                End If
-                
+        If (idxHotkey >= 0) Then
+            
+            'We have a match!
+            
+            'We have one last check to perform before firing this accelerator.  Users with accessibility constraints
+            ' (including elderly users) may press-and-hold accelerators long enough to trigger repeat occurrences.
+            ' Accelerators should require full "release key and press again" behavior to avoid double-firing
+            ' their associated events.
+            If (idxHotkey = m_LastHotkeyIndex) Then
+                If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then Exit Function
             End If
-        
-        Next i
+            
+            m_AcceleratorIndex = idxHotkey
+            VBHacks.GetHighResTime m_TimerAtAcceleratorPress
     
+            If p_AccumulateOnly Then
+                'Add to accelerator accumulator, it will be processed later.
+                m_AcceleratorAccumulator.Add m_AcceleratorIndex
+                
+            Else
+                'Add to the live accelerator processing queue
+                m_AcceleratorQueue.Add m_AcceleratorIndex
+                If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
+            End If
+            
+            'Also, make sure to eat this keystroke
+            HandleActualKeypress = True
+            m_LastHotkeyIndex = idxHotkey
+            
+        End If
+        
     End If  'Hotkey collection exists
     
 End Function
