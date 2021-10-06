@@ -1914,23 +1914,18 @@ Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     'Accelerators that are direct processor strings are handled automatically
     If Hotkeys.IsProcessorString(hotkeyID) Then
         
-        'If the action requires an open image, check for that first
-        If Hotkeys.IsImageRequired(hotkeyID) Then
-            If (Not PDImages.IsImageActive()) Then Exit Sub
-        End If
-        
         'If this action is associated with a menu, make sure that corresponding menu is enabled
         If (Hotkeys.HasMenu(hotkeyID)) Then
             If (Not Menus.IsMenuEnabled(Hotkeys.GetMenuName(hotkeyID))) Then
                 
                 'A rare exception to "allow hotkey even when menu is disabled" is the PASTE shortcut.
                 ' We instead silently reroute Ctrl+V to "Paste as New Image" if no images are currently active.
-                If Strings.StringsNotEqual(Hotkeys.HotKeyName(hotkeyID), "paste", True) Then Exit Sub
+                If Strings.StringsNotEqual(Hotkeys.GetHotKeyName(hotkeyID), "paste", True) Then Exit Sub
                 
             End If
         End If
         
-        Processor.Process Hotkeys.HotKeyName(hotkeyID), Hotkeys.IsDialogDisplayed(hotkeyID), cParams.GetParamString(), Hotkeys.ProcUndoValue(hotkeyID)
+        Processor.Process Hotkeys.GetHotKeyName(hotkeyID), Hotkeys.IsDialogDisplayed(hotkeyID), cParams.GetParamString(), Hotkeys.ProcUndoValue(hotkeyID)
         Exit Sub
         
     End If
@@ -1939,7 +1934,7 @@ Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     'This block of code holds:
     ' - Accelerators that DO NOT require at least one loaded image
     Dim hkName As String
-    hkName = Hotkeys.HotKeyName(hotkeyID)
+    hkName = Hotkeys.GetHotKeyName(hotkeyID)
     
     'Tool selection
     If Strings.StringsEqual(hkName, "tool_activate_hand", True) Then
@@ -2061,6 +2056,8 @@ Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     
 End Sub
 
+'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can modify
+' its behavior accordingly.
 Private Sub m_FocusDetector_GotFocusReliable()
     HotkeyManager.RecaptureKeyStates
 End Sub
@@ -3251,10 +3248,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Stop tracking hotkeys
     PDDebug.LogAction "Turning off hotkey manager..."
-    If (Not HotkeyManager Is Nothing) Then
-        HotkeyManager.DeactivateHook True
-        HotkeyManager.ReleaseResources
-    End If
+    If (Not HotkeyManager Is Nothing) Then HotkeyManager.ReleaseResources
     
     'Release the tooltip tracker
     PDDebug.LogAction "Releasing tooltip manager..."

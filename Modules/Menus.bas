@@ -1762,10 +1762,16 @@ Public Sub ProcessDefaultAction_BySearch(ByRef srcSearchText As String)
 
 End Sub
 
-'Given a menu name, apply the corresponding default processor action.
+'Given a menu name, apply the corresponding default processor action.  This function is referenced in many places
+' throughout PD (e.g. the program's menus pretty much all reference this!) and it is distinct from PD's Processor
+' module because it validates actions before executing them.  For example - if you request an operation associated
+' with a menu, it won't apply that action if the associated menu isn't enabled.  Similarly, if you request an
+' operation that requires an open image, this function will ensure an image is open before actually applying that
+' command.  PhotoDemon's central processor does not handle validation (but it handles a ton of other complex tasks,
+' like Undo/Redo behavior) so for operations that need to be safely validated, call *this* function instead.
 Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
     
-    'Failsafe check
+    'Failsafe check for other actions already processing in the background
     If Processor.IsProgramBusy() Then Exit Sub
     
     'Helper functions exist for each main menu; once a command is located, we can stop searching.
@@ -1785,8 +1791,16 @@ Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
     If (Not cmdFound) Then cmdFound = PDA_ByName_MenuHelp(srcMenuName)
     If (Not cmdFound) Then cmdFound = PDA_ByName_NonMenu(srcMenuName)
     
-    'Failsafe check to make sure we found *something*
-    If (Not cmdFound) Then PDDebug.LogAction "WARNING: Menus.ProcessDefaultAction_ByName received an unknown request: " & srcMenuName
+    'Before exiting, report a debug note if we found *no* matches.
+    '
+    'NOTE 2021: this can be useful when adding a new feature to the program (to make sure all triggers for it
+    ' execute correctly), but it is *not* useful in day-to-day usage because the menu searcher may find a command,
+    ' but choose not to execute it because certain safety conditions aren't met (e.g. Ctrl+S is pressed, but no
+    ' image is open).  Many of these validation checks occur at the top of a group of related commands -
+    ' e.g. nothing in the Effects category will trigger without an open image - and some of those validation
+    ' checks will prevent menu-matching from even occurring.  This will report a "no match found", but only
+    ' because large chunks of the search were short-circuited.
+    'If (Not cmdFound) Then PDDebug.LogAction "WARNING: Menus.ProcessDefaultAction_ByName received an unknown request: " & srcMenuName
     
 End Sub
 
@@ -1822,40 +1836,52 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
                 Process "Screen capture", True
                 
         Case "file_close"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Close", True
             
         Case "file_closeall"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Close all", True
             
         Case "file_save"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Save", True
             
         Case "file_savecopy"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Save copy", True
             
         Case "file_saveas"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Save as", True
             
         Case "file_revert"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Revert", False, , UNDO_Everything
             
         Case "file_export"
             Case "file_export_animatedgif"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export animated GIF", True
             
             Case "file_export_animatedpng"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export animated PNG", True
                 
             Case "file_export_animatedwebp"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export animated WebP", True
                 
             Case "file_export_colorlookup"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export color lookup", True
                 
             Case "file_export_colorprofile"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export color profile", True
                 
             Case "file_export_palette"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export palette", True
                 
         Case "file_batch"
@@ -1866,6 +1892,7 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
                 ShowPDDialog vbModal, FormBatchRepair
                 
         Case "file_print"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Print", True
             
         Case "file_quit"
@@ -1884,7 +1911,7 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
         cmdFound = Strings.StringsEqualLeft(srcMenuName, COMMAND_FILE_OPEN_RECENT, True)
         If cmdFound Then
         
-            'Load the target file
+            '(Attempt to) load the target file
             Dim targetIndex As Long
             targetIndex = Val(Right$(srcMenuName, Len(srcMenuName) - Len(COMMAND_FILE_OPEN_RECENT)))
             If (LenB(g_RecentFiles.GetFullPath(targetIndex)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(targetIndex)
@@ -1898,7 +1925,19 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
 End Function
 
 Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
-
+    
+    '*Almost* all actions in this menu require an open image.  The few outliers that do not can be
+    ' checked here, in advance.
+    If (Not PDImages.IsImageActive()) Then
+        
+        'Note that "edit_pasteaslayer" is a weird exception here, as PD's processor will silently forward it
+        ' to "edit_pasteasimage" if no images are open.  (This simplifies use of Ctrl+V by beginners.)
+        If (Not Strings.StringsEqualAny(srcMenuName, True, "edit_pasteaslayer", "edit_pasteasimage", "edit_specialpaste", "edit_emptyclipboard")) Then
+            Exit Function
+        End If
+        
+    End If
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -1972,7 +2011,10 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
 End Function
 
 Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
-
+    
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -2059,6 +2101,9 @@ End Function
 
 Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
 
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -2241,6 +2286,9 @@ End Function
 
 Private Function PDA_ByName_MenuSelect(ByRef srcMenuName As String) As Boolean
 
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -2296,6 +2344,9 @@ End Function
 
 Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Boolean
 
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -2440,6 +2491,9 @@ End Function
 
 Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
 
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
@@ -2748,15 +2802,19 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
             
         Case "tools_macrocreatetop"
             Case "tools_macrofromhistory"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 ShowPDDialog vbModal, FormMacroSession
                 
             Case "tools_recordmacro"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Start macro recording", , , UNDO_Nothing
                 
             Case "tools_stopmacro"
+                If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Stop macro recording", True
                 
         Case "tools_playmacro"
+            If (Not PDImages.IsImageActive()) Then Exit Function
             Process "Play macro", True
             
         Case "tools_recentmacros"
@@ -2793,6 +2851,9 @@ End Function
 
 Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
 
+    'All actions in this category require an open image.  If no images are open, do not apply the requested action.
+    If (Not PDImages.IsImageActive()) Then Exit Function
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
