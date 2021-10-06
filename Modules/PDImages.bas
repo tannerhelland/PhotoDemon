@@ -227,7 +227,7 @@ End Function
 Public Sub MoveToNextImage(ByVal moveForward As Boolean)
 
     'If one (or zero) images are loaded, ignore this option
-    If (PDImages.GetNumOpenImages() <= 1) Then Exit Sub
+    If (PDImages.GetNumOpenImages() < 2) Then Exit Sub
     
     Dim newIndex As Long
     newIndex = PDImages.GetNextImageID(PDImages.GetActiveImageID(), moveForward)
