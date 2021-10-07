@@ -1098,16 +1098,16 @@ Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoadi
 
 End Sub
 
-'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
-' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
+'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually
+' hardware dependent (e.g. the system returns a value from 0 to 3), but we use a "good enough" approximation.
 Public Function GetKeyboardDelay() As Double
     Dim keyDelayIndex As Long
     SystemParametersInfo SPI_GETKEYBOARDDELAY, 0, keyDelayIndex, 0
     GetKeyboardDelay = (keyDelayIndex + 1) * 0.25
 End Function
 
-'Return the system keyboard repeat rate, in seconds.  This isn't an exact science because the delay is actually hardware dependent
-' (e.g. the system returns a value from 0 to 31), but we can use a "good enough" approximation.
+'Return the system keyboard repeat rate, in seconds.  This isn't an exact science because the delay is actually
+' hardware dependent (e.g. the system returns a value from 0 to 31), but we use a "good enough" approximation.
 Public Function GetKeyboardRepeatRate() As Double
     
     Dim keyRepeatIndex As Long

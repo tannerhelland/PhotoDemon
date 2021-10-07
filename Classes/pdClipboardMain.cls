@@ -503,37 +503,32 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
         
         If srcIsMeantAsLayer And (pasteToThisDIBInstead Is Nothing) Then
             
-            'Check the param string; if it was raised by a hotkey, check for a cursor position.
+            'Check the param string; the Paste to Cursor command specifies a manual canvas x/y to paste to
             Dim positionedAlready As Boolean
             positionedAlready = False
             
-            If cParams.GetBool("from-hotkey", False, True) Then
+            'If passed mouse positions exist, they will be in hWnd coordinate space, and they will only exist if
+            ' the mouse was over the canvas at the time of loading (hypothetically - testing is TODO).
+            If cParams.DoesParamExist("canvas-mouse-x", True) And cParams.DoesParamExist("canvas-mouse-y") Then
             
-                'This request was initiated via hotkey.  Look for mouse positions; these will be in
-                ' hWnd coordinate space, and they will only exist if the mouse was over the canvas
-                ' at the time of loading.
-                If cParams.DoesParamExist("canvas-mouse-x", True) And cParams.DoesParamExist("canvas-mouse-y") Then
+                'Mouse coordinates exist!  Retrieve and validate them, then apply them to
+                ' the newly created layer.
+                Dim reportedX As Long, reportedY As Long
+                reportedX = cParams.GetLong("canvas-mouse-x", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX(), True)
+                reportedY = cParams.GetLong("canvas-mouse-y", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY(), True)
                 
-                    'Mouse coordinates exist!  Retrieve and validate them, then apply them to
-                    ' the newly created layer.
-                    Dim reportedX As Long, reportedY As Long
-                    reportedX = cParams.GetLong("canvas-mouse-x", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX(), True)
-                    reportedY = cParams.GetLong("canvas-mouse-y", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY(), True)
-                    
-                    'Convert those values to image coordinates
-                    Dim imgX As Double, imgY As Double
-                    Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, reportedX, reportedY, imgX, imgY, True
-                    
-                    'Apply to the layer
-                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(imgX + 0.5)
-                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY Int(imgY + 0.5)
-                    
-                    'Notify the parent image of the change
-                    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
-                    positionedAlready = True
-                    
-                End If
-            
+                'Convert those values to image coordinates
+                Dim imgX As Double, imgY As Double
+                Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, reportedX, reportedY, imgX, imgY, True
+                
+                'Apply to the layer
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(imgX + 0.5)
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY Int(imgY + 0.5)
+                
+                'Notify the parent image of the change
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+                positionedAlready = True
+                
             End If
             
             'If we didn't position the layer in a previous step, the newly pasted layer will default

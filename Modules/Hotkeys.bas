@@ -22,20 +22,17 @@ Attribute VB_Name = "Hotkeys"
 
 Option Explicit
 
-'Each hotkey stores several additional (and sometimes optional) parameters.  This spares us from writing specialized
-' handling code for each individual keypress.
+'Each hotkey must store a key code, shift state (can be 0), and action ID string.  The action ID string
+' will be blindly forwarded to the Menus.ProcessDefaultAction_ByName() function, so make sure the spelling
+' (and case! always lowercase!) match the action as it is declared there.
 Private Type PD_Hotkey
     hkKeyCode As Long
     hkShiftState As ShiftConstants
-    hkIsProcessorString As Boolean
-    hkShowProcDialog As Boolean
-    hkProcUndo As PD_UndoType
-    hkKeyName As String
-    hkMenuNameIfAny As String
+    hkAction As String
 End Type
 
-'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using built-in VB functions,
-' and because the list of keys is short, performance isn't in issue.
+'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using
+' built-in VB functions, and because the list of keys is short, performance isn't in issue.
 Private m_Hotkeys() As PD_Hotkey
 Private m_NumOfHotkeys As Long
 Private Const INITIAL_HOTKEY_LIST_SIZE As Long = 16&
@@ -56,17 +53,12 @@ End Enum
 
 Private m_CommonMenuText() As String
 
-'Add a new accelerator key combination to the collection.
-' - "isProcessorString": if TRUE, hotKeyName is assumed to a be a string meant for PD's central processor.
-'    It will be directly passed to the processor there when that hotkey is used.
-' - "correspondingMenu": a reference to the menu associated with this hotkey.  The reference is used to
-'    dynamically draw matching shortcut text onto the menu.  It is not otherwise used.
-' - "requiresOpenImage": specifies that this action *must be disallowed* unless one (or more) image(s)
-'    are loaded and active.
-' - "showProcForm": controls the "showDialog" parameter of processor string directives.
-' - "procUndo": controls the "createUndo" parameter of processor string directives.  Remember that UNDO_NOTHING
-'    means "do not create Undo data."
-Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UndoType = UNDO_Nothing) As Long
+'Add a new hotkey to the collection.  While the final parameter is marked as OPTIONAL, that's purely to
+' allow the preceding constant (shift modifiers, which are often null) to be optional.  I plan to reorder
+' parameters in the future to make it abundantly clear that the hotkey action is 100% MANDATORY lol.
+'
+'RETURNS: the ID (index) of the added hotkey
+Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString) As Long
     
     'If this hotkey already exists in the collection, we will overwrite it with the new hotkey target.
     ' (This works well for overwriting PD's default hotkeys with new ones specified by the user.)
@@ -76,11 +68,10 @@ Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shi
     idxHotkey = Hotkeys.GetHotkeyIndex(vKeyCode, Shift)
     If (idxHotkey >= 0) Then
         'TODO: notify old menu here, so it can remove hotkey info??
-        PDDebug.LogAction "WARNING: duplicate hotkey: " & Hotkeys.GetHotKeyName(idxHotkey)
-    End If
+        PDDebug.LogAction "WARNING: duplicate hotkey: " & Hotkeys.GetHotKeyAction(idxHotkey)
     
     'If this is a novel entry, enlarge the list accordingly
-    If (idxHotkey < 0) Then
+    Else
         
         If (m_NumOfHotkeys = 0) Then
             ReDim m_Hotkeys(0 To INITIAL_HOTKEY_LIST_SIZE - 1) As PD_Hotkey
@@ -92,25 +83,19 @@ Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shi
         idxHotkey = m_NumOfHotkeys
         m_NumOfHotkeys = m_NumOfHotkeys + 1
         
-    Else
-    
     End If
     
     'Add the new entry (or overwrite the previous one, doesn't matter)
     With m_Hotkeys(idxHotkey)
         .hkKeyCode = vKeyCode
         .hkShiftState = Shift
-        .hkKeyName = hotKeyName
-        .hkMenuNameIfAny = correspondingMenu
-        .hkIsProcessorString = IsProcessorString
-        .hkShowProcDialog = showProcDialog
-        .hkProcUndo = procUndo
+        .hkAction = hotKeyAction
     End With
     
     'Return the matching index
     AddHotkey = idxHotkey
     
-    'TODO: consider notifying corresponding menu here?
+    'TODO: consider notifying corresponding menu here, instead of in a batch operation at the end?
     
 End Function
 
@@ -120,33 +105,9 @@ Public Function GetNumOfHotkeys() As Long
     GetNumOfHotkeys = m_NumOfHotkeys
 End Function
 
-Public Function IsProcessorString(ByVal idxHotkey As Long) As Boolean
+Public Function GetHotKeyAction(ByVal idxHotkey As Long) As String
     If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
-        IsProcessorString = m_Hotkeys(idxHotkey).hkIsProcessorString
-    End If
-End Function
-
-Public Function IsDialogDisplayed(ByVal idxHotkey As Long) As Boolean
-    If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
-        IsDialogDisplayed = m_Hotkeys(idxHotkey).hkShowProcDialog
-    End If
-End Function
-
-Public Function HasMenu(ByVal idxHotkey As Long) As Boolean
-    If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
-        HasMenu = (LenB(m_Hotkeys(idxHotkey).hkMenuNameIfAny) <> 0)
-    End If
-End Function
-
-Public Function GetHotKeyName(ByVal idxHotkey As Long) As String
-    If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
-        GetHotKeyName = m_Hotkeys(idxHotkey).hkKeyName
-    End If
-End Function
-
-Public Function GetMenuName(ByVal idxHotkey As Long) As String
-    If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
-        GetMenuName = m_Hotkeys(idxHotkey).hkMenuNameIfAny
+        GetHotKeyAction = m_Hotkeys(idxHotkey).hkAction
     End If
 End Function
 
@@ -160,10 +121,6 @@ Public Function GetShift(ByVal idxHotkey As Long) As ShiftConstants
     If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
         GetShift = m_Hotkeys(idxHotkey).hkShiftState
     End If
-End Function
-
-Public Function ProcUndoValue(ByVal idxHotkey As Long) As PD_UndoType
-    ProcUndoValue = m_Hotkeys(idxHotkey).hkProcUndo
 End Function
 
 'If an accelerator exists in our current collection, this will return a value >= 0 corresponding to
@@ -186,54 +143,43 @@ Public Function GetHotkeyIndex(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
 
 End Function
 
-'Until I have a better place to stick this, hotkeys are handled here, by the menu module.
-' This is primarily done because there is (somewhat) tight integration between hotkeys and
-' menu captions, and both need to be handled together while accounting for the usual
-' nightmares (like language translations).
+'Initialize a default set of program hotkeys.  For the most part, these attempt to mimic hotkey
+' "conventions" in popular photo editors (with a strong emphasis on Photoshop).  Order does not
+' matter when adding hotkeys.  Duplicate hotkeys are also okay; the second instance will simply
+' overwrite the previous instance, if any.  Action strings need to ALWAYS be full lowercase,
+' and identical to their corresponding action in the Menus module.  (This is how hotkeys get
+' matched up to a corresponding menu, which is important since that's the primary mechanism for
+' discovery!)
 Public Sub InitializeDefaultHotkeys()
     
     'Special hotkeys
-    Hotkeys.AddHotkey vbKeyF, vbCtrlMask, "tool_search", , False, False
+    Hotkeys.AddHotkey vbKeyF, vbCtrlMask, "tool_search"
     
     'Tool hotkeys (e.g. keys not associated with menus)
-    Hotkeys.AddHotkey vbKeyH, , "tool_activate_hand", , , False
-    Hotkeys.AddHotkey vbKeyM, , "tool_activate_move", , , False
-    Hotkeys.AddHotkey vbKeyI, , "tool_activate_colorpicker", , , False
+    Hotkeys.AddHotkey vbKeyH, , "tool_hand"
+    Hotkeys.AddHotkey vbKeyM, , "tool_move"
+    Hotkeys.AddHotkey vbKeyI, , "tool_colorselect"
     
     'Note that some hotkeys do double-duty in tool selection; you can press some of these shortcuts multiple times
     ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in
     ' FormMain.pdHotkey event handlers.
-    Hotkeys.AddHotkey vbKeyS, , "tool_activate_selectrect", , , False
-    Hotkeys.AddHotkey vbKeyL, , "tool_activate_selectlasso", , , False
-    Hotkeys.AddHotkey vbKeyW, , "tool_activate_selectwand", , , False
-    Hotkeys.AddHotkey vbKeyT, , "tool_activate_text", , , False
-    Hotkeys.AddHotkey vbKeyP, , "tool_activate_pencil", , , False
-    Hotkeys.AddHotkey vbKeyB, , "tool_activate_brush", , , False
-    Hotkeys.AddHotkey vbKeyE, , "tool_activate_eraser", , , False
-    Hotkeys.AddHotkey vbKeyC, , "tool_activate_clone", , , False
-    Hotkeys.AddHotkey vbKeyF, , "tool_activate_fill", , , False
-    Hotkeys.AddHotkey vbKeyG, , "tool_activate_gradient", , , False
+    Hotkeys.AddHotkey vbKeyS, , "tool_select_rect"
+    Hotkeys.AddHotkey vbKeyL, , "tool_select_lasso"
+    Hotkeys.AddHotkey vbKeyW, , "tool_select_wand"
+    Hotkeys.AddHotkey vbKeyT, , "tool_text_basic"
+    Hotkeys.AddHotkey vbKeyP, , "tool_pencil"
+    Hotkeys.AddHotkey vbKeyB, , "tool_paintbrush"
+    Hotkeys.AddHotkey vbKeyE, , "tool_erase"
+    Hotkeys.AddHotkey vbKeyC, , "tool_clone"
+    Hotkeys.AddHotkey vbKeyF, , "tool_paintbucket"
+    Hotkeys.AddHotkey vbKeyG, , "tool_gradient"
     
     'File menu
-    Hotkeys.AddHotkey vbKeyN, vbCtrlMask, "New image", "file_new", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyO, vbCtrlMask, "Open", "file_open", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyW, vbCtrlMask, "Close", "file_close", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyW, vbCtrlMask Or vbAltMask, "Close all", "file_closeall", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask, "Save", "file_save", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", "file_savecopy", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", "file_saveas", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyF12, 0, "Revert", "file_revert", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyB, vbCtrlMask, "Batch wizard", "file_batch_process", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyP, vbCtrlMask, "Print", "file_print", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyQ, vbCtrlMask, "Exit program", "file_quit", True, True, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyN, vbCtrlMask, "file_new"
+    Hotkeys.AddHotkey vbKeyO, vbCtrlMask, "file_open"
     
-        'File -> Import submenu
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", "file_import_scanner", True, True, UNDO_Nothing
-        Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", "file_import_web", True, True, UNDO_Nothing
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", "file_import_screenshot", True, True, UNDO_Nothing
-    
-        'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
-        ' exist at run-time.  (They are dynamically created as necessary.)
+        'Most-recently used files.  Note that we cannot automatically associate these with a menu,
+        ' as these menus may not exist at run-time.  (They are created dynamically.)
         Hotkeys.AddHotkey vbKey1, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "0"
         Hotkeys.AddHotkey vbKey2, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "1"
         Hotkeys.AddHotkey vbKey3, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "2"
@@ -245,124 +191,119 @@ Public Sub InitializeDefaultHotkeys()
         Hotkeys.AddHotkey vbKey9, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "8"
         Hotkeys.AddHotkey vbKey0, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "9"
         
-    'Edit menu
-    Hotkeys.AddHotkey vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyY, vbCtrlMask, "Redo", "edit_redo", True, False, UNDO_Nothing
+        'File -> Import submenu
+        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_import_scanner"
+        Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbShiftMask, "file_import_web"
+        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbAltMask, "file_import_screenshot"
     
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask, "Cut", "edit_cutlayer", True, False, UNDO_Image
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask, "Copy", "edit_copylayer", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", "edit_copymerged", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask, "Paste", "edit_pasteaslayer", True, False, UNDO_Image_VectorSafe
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbAltMask, "Paste to cursor", "edit_pastetocursor", True, False, UNDO_Image_VectorSafe
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbShiftMask, "Paste to new image", "edit_pasteasimage", True, False, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyW, vbCtrlMask, "file_close"
+    Hotkeys.AddHotkey vbKeyW, vbCtrlMask Or vbAltMask, "file_closeall"
+    Hotkeys.AddHotkey vbKeyS, vbCtrlMask, "file_save"
+    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "file_savecopy"
+    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbShiftMask, "file_saveas"
+    Hotkeys.AddHotkey vbKeyF12, 0, "file_revert"
+    Hotkeys.AddHotkey vbKeyB, vbCtrlMask, "file_batch_process"
+    Hotkeys.AddHotkey vbKeyP, vbCtrlMask, "file_print"
+    Hotkeys.AddHotkey vbKeyQ, vbCtrlMask, "file_quit"
+        
+    'Edit menu
+    Hotkeys.AddHotkey vbKeyZ, vbCtrlMask, "edit_undo"
+    Hotkeys.AddHotkey vbKeyY, vbCtrlMask, "edit_redo"
+    
+    Hotkeys.AddHotkey vbKeyX, vbCtrlMask, "edit_cutlayer"
+    Hotkeys.AddHotkey vbKeyC, vbCtrlMask, "edit_copylayer"
+    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbShiftMask, "edit_copymerged"
+    Hotkeys.AddHotkey vbKeyV, vbCtrlMask, "edit_pasteaslayer"
+    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbAltMask, "edit_pastetocursor"
+    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbShiftMask, "edit_pasteasimage"
     
     'Image menu
-    Hotkeys.AddHotkey vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, UNDO_ImageHeader
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", "image_crop", True, False, UNDO_Image
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty image borders", "image_trim", True, False, UNDO_ImageHeader
+    Hotkeys.AddHotkey vbKeyA, vbCtrlMask Or vbShiftMask, "image_duplicate"
+    Hotkeys.AddHotkey vbKeyR, vbCtrlMask, "image_resize"
+    Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbAltMask, "image_canvassize"
+    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbShiftMask, "image_crop"
+    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbAltMask, "image_trim"
     
         'Image -> Rotate submenu
-        Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, UNDO_Nothing
+        Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "image_rotatearbitrary"
+    
+    Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbShiftMask, "image_mergevisible"
+    Hotkeys.AddHotkey vbKeyF, vbCtrlMask Or vbShiftMask, "image_flatten"
     
     'Layer Menu
-    Hotkeys.AddHotkey vbKeyN, vbCtrlMask Or vbShiftMask, "Add new layer", "layer_addbasic", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask, "Layer via copy", "layer_addviacopy", True, False, UNDO_Image_VectorSafe
-    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask Or vbShiftMask, "Layer via cut", "layer_addviacut", True, False, UNDO_Image
-    Hotkeys.AddHotkey vbKeyPageUp, vbCtrlMask Or vbAltMask, "Go to top layer", "layer_gotop", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyPageDown, vbAltMask, "Go to layer below", "layer_godown", True, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyE, vbCtrlMask, "layer_mergedown", "layer_mergedown", False, False, UNDO_Image
-    Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "image_mergevisible", True, False, UNDO_Image
-    Hotkeys.AddHotkey vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "image_flatten", True, True, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyN, vbCtrlMask Or vbShiftMask, "layer_addbasic"
+    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask, "layer_addviacopy"
+    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask Or vbShiftMask, "layer_addviacut"
+    Hotkeys.AddHotkey vbKeyPageUp, vbCtrlMask Or vbAltMask, "layer_gotop"
+    Hotkeys.AddHotkey vbKeyPageUp, vbAltMask, "layer_goup"
+    Hotkeys.AddHotkey vbKeyPageDown, vbAltMask, "layer_godown"
+    Hotkeys.AddHotkey vbKeyPageDown, vbCtrlMask Or vbAltMask, "layer_gobottom"
+    Hotkeys.AddHotkey vbKeyE, vbCtrlMask, "layer_mergedown"
     
     'Select Menu
-    Hotkeys.AddHotkey vbKeyA, vbCtrlMask, "Select all", "select_all", True, False, UNDO_Selection
-    Hotkeys.AddHotkey vbKeyD, vbCtrlMask, "Remove selection", "select_none", False, False, UNDO_Selection
-    Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", "select_invert", True, False, UNDO_Selection
-    'KeyCode VK_OEM_4 = {[  (next to the letter P), VK_OEM_6 = }]
-    Hotkeys.AddHotkey VK_OEM_6, vbCtrlMask Or vbAltMask, "Grow selection", "select_grow", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey VK_OEM_4, vbCtrlMask Or vbAltMask, "Shrink selection", "select_shrink", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", "select_feather", True, True, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyA, vbCtrlMask, "select_all"
+    Hotkeys.AddHotkey vbKeyD, vbCtrlMask, "select_none"
+    Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask, "select_invert"
+    Hotkeys.AddHotkey VK_OEM_6, vbCtrlMask Or vbAltMask, "select_grow"      'VK_OEM_6 = }]
+    Hotkeys.AddHotkey VK_OEM_4, vbCtrlMask Or vbAltMask, "select_shrink"    'VK_OEM_4 = {[  (next to the letter P)
+    Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbAltMask, "select_feather"
     
     'Adjustments Menu
     
     'Adjustments top shortcut menu
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask, "Auto correct", "adj_autocorrect", True, False, UNDO_Layer
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "Auto enhance", "adj_autoenhance", True, False, UNDO_Layer
-    Hotkeys.AddHotkey vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", "adj_blackandwhite", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", "adj_bandc", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyM, vbCtrlMask, "Curves", "adj_curves", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask, "Levels", "adj_levels", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", "adj_sandh", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, UNDO_Nothing
-    Hotkeys.AddHotkey VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, UNDO_Nothing
-    
-    'Ctrl+W has been remapped to File > Close
-    'Hotkeys.AddHotkey vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask, "adj_autocorrect"
+    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "adj_autoenhance"
+    Hotkeys.AddHotkey vbKeyU, vbCtrlMask Or vbShiftMask, "adj_blackandwhite"
+    Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbShiftMask, "adj_bandc"
+    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbAltMask, "adj_colorbalance"
+    Hotkeys.AddHotkey vbKeyM, vbCtrlMask, "adj_curves"
+    Hotkeys.AddHotkey vbKeyL, vbCtrlMask, "adj_levels"
+    Hotkeys.AddHotkey vbKeyH, vbCtrlMask Or vbShiftMask, "adj_sandh"
+    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask Or vbAltMask, "adj_vibrance"
     
         'Color adjustments
-        Hotkeys.AddHotkey vbKeyH, vbCtrlMask, "Hue and saturation", "adj_hsl", True, True, UNDO_Nothing
-        Hotkeys.AddHotkey vbKeyT, vbCtrlMask, "Temperature", "adj_temperature", True, True, UNDO_Nothing
+        Hotkeys.AddHotkey vbKeyH, vbCtrlMask, "adj_hsl"
+        Hotkeys.AddHotkey vbKeyP, vbCtrlMask Or vbAltMask, "adj_photofilters"
+        Hotkeys.AddHotkey vbKeyT, vbCtrlMask, "adj_temperature"
         
         'Lighting adjustments
-        Hotkeys.AddHotkey vbKeyG, vbCtrlMask, "Gamma", "adj_gamma", True, True, UNDO_Nothing
+        Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbAltMask, "adj_exposure"
+        Hotkeys.AddHotkey vbKeyG, vbCtrlMask, "adj_gamma"
         
         'Adjustments -> Invert submenu
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask, "Invert RGB", "adj_invertRGB", True, False, UNDO_Layer
+        Hotkeys.AddHotkey vbKeyI, vbCtrlMask, "adj_invertrgb"
         
         'Adjustments -> Monochrome submenu
-        Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", "adj_colortomonochrome", True, True, UNDO_Nothing
+        Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "adj_colortomonochrome"
         
-        'Adjustments -> Photography submenu
-        Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", "adj_exposure", True, True, UNDO_Nothing
-        Hotkeys.AddHotkey vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", "adj_photofilters", True, True, UNDO_Nothing
-        
-    
-    'Effects Menu
-    'Hotkeys.AddHotkey vbKeyZ, vbCtrlMask Or vbAltMask Or vbShiftMask, "Add RGB noise", FormMain.MnuNoise(1), True, True, False
-    'Hotkeys.AddHotkey vbKeyG, vbCtrlMask Or vbAltMask Or vbShiftMask, "Gaussian blur", FormMain.MnuBlurFilter(1), True, True, False
-    'Hotkeys.AddHotkey vbKeyY, vbCtrlMask Or vbAltMask Or vbShiftMask, "Correct lens distortion", FormMain.MnuDistortEffects(1), True, True, False
-    'Hotkeys.AddHotkey vbKeyU, vbCtrlMask Or vbAltMask Or vbShiftMask, "Unsharp mask", FormMain.MnuSharpen(1), True, True, False
-    
     'Tools menu
-    'KeyCode 190 = >.  (two keys to the right of the M letter key)
-    Hotkeys.AddHotkey 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, UNDO_Nothing
-    
-    'Previously, Alt+Enter was used for preferences; I dislike this, however, as holding down the Alt-key
-    ' is useful for keyboard navigation of menus (via mnemonics), and if you use Enter to select a menu
-    ' item, this accelerator overrides your menu click.  Photoshop uses Ctrl+K - maybe we should
-    ' investigate that as an option?  TODO!
-    'Hotkeys.AddHotkey vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, True, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_3rdpartylibs", False, True, UNDO_Nothing
+    Hotkeys.AddHotkey 190, vbCtrlMask Or vbAltMask, "tools_playmacro"   'KeyCode 190 = >.  (two keys to the right of the M letter key)
+    Hotkeys.AddHotkey vbKeyK, vbCtrlMask, "tools_options"
+    Hotkeys.AddHotkey vbKeyM, vbCtrlMask Or vbAltMask, "tools_3rdpartylibs"
     
     'View menu
-    Hotkeys.AddHotkey vbKey0, vbCtrlMask, "FitOnScreen", "view_fit", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask, "Zoom_In", "view_zoomin", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey VK_OEM_PLUS, vbCtrlMask, "Zoom_In", , False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeySubtract, vbCtrlMask, "Zoom_Out", "view_zoomout", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey VK_OEM_MINUS, vbCtrlMask, "Zoom_Out", , False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey5, vbCtrlMask, "Zoom_161", "zoom_16_1", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey4, vbCtrlMask, "Zoom_81", "zoom_8_1", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey3, vbCtrlMask, "Zoom_41", "zoom_4_1", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey2, vbCtrlMask, "Zoom_21", "zoom_2_1", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey1, vbCtrlMask, "Actual_Size", "zoom_actual", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, False, UNDO_Nothing
+    Hotkeys.AddHotkey vbKey0, vbCtrlMask, "view_fit"
+    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask, "view_zoomin"
+    Hotkeys.AddHotkey vbKeySubtract, vbCtrlMask, "view_zoomout"
+    Hotkeys.AddHotkey vbKey5, vbCtrlMask, "zoom_16_1"
+    Hotkeys.AddHotkey vbKey4, vbCtrlMask, "zoom_8_1"
+    Hotkeys.AddHotkey vbKey3, vbCtrlMask, "zoom_4_1"
+    Hotkeys.AddHotkey vbKey2, vbCtrlMask, "zoom_2_1"
+    Hotkeys.AddHotkey vbKey1, vbCtrlMask, "zoom_actual"
+    Hotkeys.AddHotkey vbKey2, vbShiftMask, "zoom_1_2"
+    Hotkeys.AddHotkey vbKey3, vbShiftMask, "zoom_1_4"
+    Hotkeys.AddHotkey vbKey4, vbShiftMask, "zoom_1_8"
+    Hotkeys.AddHotkey vbKey5, vbShiftMask, "zoom_1_16"
     
     'Window menu
-    Hotkeys.AddHotkey vbKeyPageDown, 0, "Next_Image", "window_next", False, False, UNDO_Nothing
-    Hotkeys.AddHotkey vbKeyPageUp, 0, "Prev_Image", "window_previous", False, False, UNDO_Nothing
+    Hotkeys.AddHotkey vbKeyPageDown, , "window_next"
+    Hotkeys.AddHotkey vbKeyPageUp, , "window_previous"
     
-    'All hotkeys have now been added to the collection.
+    'All default hotkeys have now been added to the collection.
     
-    'Activate hotkey detection on the main form.  (FormMain has a specialized user control that actually detects
-    ' hotkey presses, then forwards the key combinations to us for translation and execution.)
+    'Activate hotkey detection on the main form.  (FormMain has a specialized user control that
+    ' actually detects hotkey presses, then forwards the key combinations to us for translation
+    ' and execution.)
     FormMain.HotkeyManager.Enabled = True
     FormMain.HotkeyManager.ActivateHook
     
@@ -372,7 +313,7 @@ Public Sub InitializeDefaultHotkeys()
     
     Dim i As Long
     For i = 0 To m_NumOfHotkeys - 1
-        If (LenB(m_Hotkeys(i).hkMenuNameIfAny) > 0) Then Menus.NotifyMenuHotkey m_Hotkeys(i).hkMenuNameIfAny, i
+        Menus.NotifyMenuHotkey m_Hotkeys(i).hkAction, i
     Next i
     
 End Sub

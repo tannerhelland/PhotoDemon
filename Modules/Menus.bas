@@ -1413,7 +1413,9 @@ Private Function GetIndexFromName(ByRef mnuName As String, ByRef dstIndex As Lon
     Next i
     
     GetIndexFromName = (dstIndex >= 0)
-    If (Not GetIndexFromName) Then InternalMenuWarning "GetIndexFromName", "no match found for name: " & mnuName
+    
+    'Debugging missing menu names can be helpful when adding new tools:
+    'If (Not GetIndexFromName) Then InternalMenuWarning "GetIndexFromName", "no match found for name: " & mnuName
     
 End Function
 
@@ -1447,26 +1449,33 @@ End Function
 'NOTE: this function doesn't actually render the new menu text; the assumption is that new hotkeys
 ' are assigned in bulk, and for performance reasons you'll want to do a single full-menu-system refresh
 ' after the bulk assignments finish.
-Public Sub NotifyMenuHotkey(ByRef menuID As String, Optional ByVal hkID As Long = NO_MENU_HOTKEY)
+Public Sub NotifyMenuHotkey(ByRef actionID As String, Optional ByVal hkID As Long = NO_MENU_HOTKEY)
     
     'Resolve the menuID into a list of indices.  (Note that menus can share the same ID, meaning there can be more
     ' than one physical menu associated with a given hotkey; this is used to display correct hotkeys for menus like
     ' Import > From Clipboard and Edit > Paste which appear in two places for usability reasons, but ultimately map
     ' to the same action.)
     Dim listOfMatches() As Long, numOfMatches As Long
-    GetAllMatchingMenuIndices menuID, numOfMatches, listOfMatches
+    GetAllMatchingMenuIndices actionID, numOfMatches, listOfMatches
     
-    'Before we enter the loop, generate a translated text representation of this hotkey
-    Dim hotkeyText As String
-    hotkeyText = Hotkeys.GetHotkeyText(hkID)
-    
-    Dim i As Long
-    For i = 0 To numOfMatches - 1
-        With m_Menus(listOfMatches(i))
-            .me_HotKeyID = hkID
-            .me_HotKeyTextTranslated = hotkeyText
-        End With
-    Next i
+    'No menus may match the current hotkey.  That's okay - some hotkeys trigger actions (like "select tool")
+    ' that don't have a menu equivalent.  They'll still work just fine, but we don't have to paint those
+    ' hotkey combinations to any corresponding menu.
+    If (numOfMatches > 0) Then
+        
+        'Before we enter the loop, generate a translated text representation of this hotkey
+        Dim hotkeyText As String
+        hotkeyText = Hotkeys.GetHotkeyText(hkID)
+        
+        Dim i As Long
+        For i = 0 To numOfMatches - 1
+            With m_Menus(listOfMatches(i))
+                .me_HotKeyID = hkID
+                .me_HotKeyTextTranslated = hotkeyText
+            End With
+        Next i
+        
+    End If
 
 End Sub
 
@@ -1504,10 +1513,15 @@ Public Function IsMenuChecked(ByRef mnuName As String) As Boolean
     
 End Function
 
-'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
-' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
-' same-named menus are enabled and disabled as a group.
-Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
+'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names;
+' in fact, duplicates are specifically allowed by design.  As such, this function only returns the *first*
+' matching entry, with the assumption that same-named menus are enabled and disabled as a group.
+'
+'Optionally, you can test to see if the specified menu even exists in the collection using the optional
+' mnuDoesntExist parameter.  This is helpful if you want to prevent an action from running if its
+' corresponding menu is disabled; if an action doesn't HAVE a corresponding menu, you can ignore the return
+' of this function entirely, and simply execute that action as-is (assuming the action self-validates).
+Public Function IsMenuEnabled(ByRef mnuName As String, Optional ByRef dstMenuDoesntExist As Boolean = False) As Boolean
 
     'Resolve the menu name into an index into our menu collection
     Dim mnuIndex As Long
@@ -1552,6 +1566,9 @@ Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
             
         End If
         
+    'If we don't find a menu matching this name, return it via the optional parameter
+    Else
+        dstMenuDoesntExist = True
     End If
 
 End Function
@@ -1769,27 +1786,34 @@ End Sub
 ' operation that requires an open image, this function will ensure an image is open before actually applying that
 ' command.  PhotoDemon's central processor does not handle validation (but it handles a ton of other complex tasks,
 ' like Undo/Redo behavior) so for operations that need to be safely validated, call *this* function instead.
-Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
+Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False)
     
     'Failsafe check for other actions already processing in the background
     If Processor.IsProgramBusy() Then Exit Sub
+    
+    'Failsafe check to see if the menu associated with an action is enabled; if it isn't, that's an
+    ' excellent surrogate for "do not allow this operation to proceed".
+    Dim mnuDoesntExist As Boolean
+    If (Not Menus.IsMenuEnabled(srcMenuName, mnuDoesntExist)) Then
+        If (Not mnuDoesntExist) Then Exit Sub
+    End If
     
     'Helper functions exist for each main menu; once a command is located, we can stop searching.
     Dim cmdFound As Boolean: cmdFound = False
     
     'Search each menu group in turn
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuFile(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuEdit(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuImage(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuLayer(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuSelect(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuAdjustments(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuEffects(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuTools(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuView(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuWindow(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuHelp(srcMenuName)
-    If (Not cmdFound) Then cmdFound = PDA_ByName_NonMenu(srcMenuName)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuFile(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuEdit(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuImage(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuLayer(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuSelect(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuAdjustments(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuEffects(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuTools(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuView(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuWindow(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_MenuHelp(srcMenuName, srcIsHotkey)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_NonMenu(srcMenuName, srcIsHotkey)
     
     'Before exiting, report a debug note if we found *no* matches.
     '
@@ -1804,7 +1828,7 @@ Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
     
 End Sub
 
-Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     Dim cmdFound As Boolean: cmdFound = True
     
@@ -1924,7 +1948,7 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
     
     '*Almost* all actions in this menu require an open image.  The few outliers that do not can be
     ' checked here, in advance.
@@ -1982,7 +2006,7 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
             Process "Paste", False, , UNDO_Image_VectorSafe
             
         Case "edit_pastetocursor"
-            Process "Paste to cursor", False, , UNDO_Image_VectorSafe
+            Process "Paste to cursor", False, BuildParamList("canvas-mouse-x", FormMain.MainCanvas(0).GetLastMouseX(), "canvas-mouse-y", FormMain.MainCanvas(0).GetLastMouseY()), UNDO_Image_VectorSafe
             
         Case "edit_pasteasimage"
             Process "Paste to new image", False, , UNDO_Nothing, , False
@@ -2010,7 +2034,7 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
     
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2099,7 +2123,7 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2284,7 +2308,7 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuSelect(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuSelect(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2342,7 +2366,7 @@ Private Function PDA_ByName_MenuSelect(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2489,7 +2513,7 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
     
 End Function
 
-Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2782,7 +2806,7 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     Dim cmdFound As Boolean: cmdFound = True
     
@@ -2849,7 +2873,7 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuView(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
@@ -2920,7 +2944,7 @@ Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuWindow(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuWindow(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     Dim cmdFound As Boolean: cmdFound = True
     
@@ -2988,7 +3012,7 @@ Private Function PDA_ByName_MenuWindow(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
+Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
 
     Dim cmdFound As Boolean: cmdFound = True
     
@@ -3035,66 +3059,90 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
     
 End Function
 
-Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
-
+Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String, Optional ByVal srcIsHotkey As Boolean = False) As Boolean
+    
     Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
         
+        'Activate various tools
         Case "tool_hand"
-            toolbar_Toolbox.SelectNewTool NAV_DRAG, True, True
+            toolbar_Toolbox.SelectNewTool NAV_DRAG, (Not srcIsHotkey), True
         
         Case "tool_move"
-            toolbar_Toolbox.SelectNewTool NAV_MOVE, True, True
+            toolbar_Toolbox.SelectNewTool NAV_MOVE, (Not srcIsHotkey), True
         
+        'When using hotkeys to activate a tool, we use a slightly different strategy.  Some hotkeys are double-assigned
+        ' to neighboring tools.  If one of the tools that share a hotkey already has focus, pressing that hotkey will
+        ' toggle focus to the other tool in that group.
         Case "tool_colorselect"
-            toolbar_Toolbox.SelectNewTool COLOR_PICKER, True, True
+            If srcIsHotkey Then
+                If (g_CurrentTool = COLOR_PICKER) Then toolbar_Toolbox.SelectNewTool ND_MEASURE Else toolbar_Toolbox.SelectNewTool COLOR_PICKER
+            Else
+                toolbar_Toolbox.SelectNewTool COLOR_PICKER, True, True
+            End If
         
         Case "tool_measure"
-            toolbar_Toolbox.SelectNewTool ND_MEASURE, True, True
+            toolbar_Toolbox.SelectNewTool ND_MEASURE, (Not srcIsHotkey), True
         
         Case "tool_select_rect"
-            toolbar_Toolbox.SelectNewTool SELECT_RECT, True, True
+            If srcIsHotkey Then
+                If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
+            Else
+                toolbar_Toolbox.SelectNewTool SELECT_RECT, True, True
+            End If
         
         Case "tool_select_ellipse"
-            toolbar_Toolbox.SelectNewTool SELECT_CIRC, True, True
+            toolbar_Toolbox.SelectNewTool SELECT_CIRC, (Not srcIsHotkey), True
         
         Case "tool_select_line"
-            toolbar_Toolbox.SelectNewTool SELECT_LINE, True, True
+            toolbar_Toolbox.SelectNewTool SELECT_LINE, (Not srcIsHotkey), True
         
         Case "tool_select_polygon"
-            toolbar_Toolbox.SelectNewTool SELECT_POLYGON, True, True
+            toolbar_Toolbox.SelectNewTool SELECT_POLYGON, (Not srcIsHotkey), True
         
         Case "tool_select_lasso"
-            toolbar_Toolbox.SelectNewTool SELECT_LASSO, True, True
+            If srcIsHotkey Then
+                If (g_CurrentTool = SELECT_LASSO) Then toolbar_Toolbox.SelectNewTool SELECT_POLYGON Else toolbar_Toolbox.SelectNewTool SELECT_LASSO
+            Else
+                toolbar_Toolbox.SelectNewTool SELECT_LASSO, (Not srcIsHotkey), True
+            End If
         
-        Case "tool_select wand"
-            toolbar_Toolbox.SelectNewTool SELECT_WAND, True, True
+        Case "tool_select_wand"
+            toolbar_Toolbox.SelectNewTool SELECT_WAND, (Not srcIsHotkey), True
         
         Case "tool_text_basic"
-            toolbar_Toolbox.SelectNewTool TEXT_BASIC, True, True
+            If srcIsHotkey Then
+                If (g_CurrentTool = TEXT_BASIC) Then toolbar_Toolbox.SelectNewTool TEXT_ADVANCED Else toolbar_Toolbox.SelectNewTool TEXT_BASIC
+            Else
+                toolbar_Toolbox.SelectNewTool TEXT_BASIC, (Not srcIsHotkey), True
+            End If
         
         Case "tool_text_advanced"
-            toolbar_Toolbox.SelectNewTool TEXT_ADVANCED, True, True
+            toolbar_Toolbox.SelectNewTool TEXT_ADVANCED, (Not srcIsHotkey), True
         
         Case "tool_pencil"
-            toolbar_Toolbox.SelectNewTool PAINT_PENCIL, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_PENCIL, (Not srcIsHotkey), True
         
         Case "tool_paintbrush"
-            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH, (Not srcIsHotkey), True
         
         Case "tool_erase"
-            toolbar_Toolbox.SelectNewTool PAINT_ERASER, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_ERASER, (Not srcIsHotkey), True
         
         Case "tool_clone"
-            toolbar_Toolbox.SelectNewTool PAINT_CLONE, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_CLONE, (Not srcIsHotkey), True
         
         Case "tool_paintbucket"
-            toolbar_Toolbox.SelectNewTool PAINT_FILL, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_FILL, (Not srcIsHotkey), True
         
         Case "tool_gradient"
-            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT, (Not srcIsHotkey), True
         
+        'Open the search panel and set focus to the search box
+        Case "tool_search"
+            toolbar_Layers.SetFocusToSearchBox
+            
         Case Else
             cmdFound = False
             

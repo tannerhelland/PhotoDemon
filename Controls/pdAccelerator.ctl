@@ -34,10 +34,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Accelerator ("Hotkey") handler
 'Copyright 2013-2021 by Tanner Helland and contributors
 'Created: 06/November/15 (split off from a heavily modified vbaIHookControl by Steve McMahon)
-'Last updated: 04/October/21
-'Last update: migrate all hotkey management to a dedicated module in preparation for customizable
-'             hotkeys.  From now on, this control will only be responsible for keyboard hooking/tracking.
-'             Managing the underlying hotkey collection is now the responsibility of the Hotkeys module.
+'Last updated: 06/October/21
+'Last update: map "duplicate" virtual key IDs (e.g. keyboard + and numpad +) to the same internal key ID;
+'             doing that here spares us from needing to track it in the hotkey collection
 '
 'In its early years, PD used a "hook control" by vbAccelerator.com to handle program hotkeys:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
@@ -433,6 +432,15 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
     'Search our accelerator database for a match to the current keycode
     If (Hotkeys.GetNumOfHotkeys() > 0) Then
         
+        'Remap some virtual key IDs to more common equivalents.  For example, Windows will return different
+        ' virtual keys (as it should) for the + key next to backspace vs the + key on your number pad.
+        ' For the purposes of hotkeys, PD currently treats these as equivalent (though I reserve the right
+        ' to revisit this in the future if people complain lol).  Anyway, remapping them here spares the
+        ' hotkey manager from needing to double-add hotkeys that are duplicated by the number pad.
+        If (wParam = VK_OEM_PLUS) Then wParam = vbKeyAdd
+        If (wParam = VK_OEM_MINUS) Then wParam = vbKeySubtract
+        'TODO: other numpad variants?
+        
         'See if the keycode matches an entry in the hotkey collection
         Dim idxHotkey As Long
         idxHotkey = Hotkeys.GetHotkeyIndex(wParam, retShiftConstants)
@@ -446,7 +454,7 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
             ' to avoid double-firing their associated events.  We handle this by looking for back-to-back
             ' presses of the same hotkey, and enforcing the system keyboard delay between presses.
             If (idxHotkey = m_LastHotkeyIndex) Then
-                If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then Exit Function
+                If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardRepeatRate()) Then Exit Function
             End If
             
             'Update the current time tracker

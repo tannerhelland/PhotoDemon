@@ -1856,11 +1856,11 @@ Attribute VB_Exposed = False
 'Primary PhotoDemon Window
 'Copyright 2002-2021 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 27/March/18
-'Last update: new export menu items added
+'Last updated: 06/October/21
+'Last update: remove all hotkey code; it's now handled elsewhere!
 '
-'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
-' parameters to other, more interesting sections of the program.
+'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose
+' is sending parameters to other, more interesting sections of the program.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -1890,170 +1890,10 @@ Attribute m_FocusDetector.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
 
+'As of 2021, hotkeys can be blindly passed to PD's high-level action processor.  (We no longer need
+' to validate things like image state in advance.)
 Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
-
-    'Before initiating any actions, cache some values that may be useful to initiated commands
-    ' (like cursor position; tools may use this to initiate an action at that position).
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.AddParam "from-hotkey", True, True, True
-    
-    If (PDImages.GetNumOpenImages > 0) Then
-        If FormMain.MainCanvas(0).IsMouseOverCanvas() Then
-            cParams.AddParam "canvas-mouse-x", FormMain.MainCanvas(0).GetLastMouseX(), True
-            cParams.AddParam "canvas-mouse-y", FormMain.MainCanvas(0).GetLastMouseY(), True
-        End If
-    End If
-    
-    'Accelerators are divided into three groups, and they are processed in the following order:
-    ' 1) Direct processor strings.  These are automatically submitted to PD's command processor.
-    ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
-    ' 3) Non-processor directives that require an image.
-
-    '***********************************************************
-    'Accelerators that are direct processor strings are handled automatically
-    If Hotkeys.IsProcessorString(hotkeyID) Then
-        
-        'If this action is associated with a menu, make sure that corresponding menu is enabled
-        If (Hotkeys.HasMenu(hotkeyID)) Then
-            If (Not Menus.IsMenuEnabled(Hotkeys.GetMenuName(hotkeyID))) Then
-                
-                'A rare exception to "allow hotkey even when menu is disabled" is the PASTE shortcut.
-                ' We instead silently reroute Ctrl+V to "Paste as New Image" if no images are currently active.
-                If Strings.StringsNotEqual(Hotkeys.GetHotKeyName(hotkeyID), "paste", True) Then Exit Sub
-                
-            End If
-        End If
-        
-        Processor.Process Hotkeys.GetHotKeyName(hotkeyID), Hotkeys.IsDialogDisplayed(hotkeyID), cParams.GetParamString(), Hotkeys.ProcUndoValue(hotkeyID)
-        Exit Sub
-        
-    End If
-
-    '***********************************************************
-    'This block of code holds:
-    ' - Accelerators that DO NOT require at least one loaded image
-    Dim hkName As String
-    hkName = Hotkeys.GetHotKeyName(hotkeyID)
-    
-    'Tool selection
-    If Strings.StringsEqual(hkName, "tool_activate_hand", True) Then
-        toolbar_Toolbox.SelectNewTool NAV_DRAG
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_move", True) Then
-        toolbar_Toolbox.SelectNewTool NAV_MOVE
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_colorpicker", True) Then
-        If (g_CurrentTool = COLOR_PICKER) Then toolbar_Toolbox.SelectNewTool ND_MEASURE Else toolbar_Toolbox.SelectNewTool COLOR_PICKER
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_selectrect", True) Then
-        If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_selectlasso", True) Then
-        If (g_CurrentTool = SELECT_LASSO) Then toolbar_Toolbox.SelectNewTool SELECT_POLYGON Else toolbar_Toolbox.SelectNewTool SELECT_LASSO
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_selectwand", True) Then
-        toolbar_Toolbox.SelectNewTool SELECT_WAND
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_text", True) Then
-        If (g_CurrentTool = TEXT_BASIC) Then toolbar_Toolbox.SelectNewTool TEXT_ADVANCED Else toolbar_Toolbox.SelectNewTool TEXT_BASIC
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_pencil", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_PENCIL
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_brush", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_eraser", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_ERASER
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_clone", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_CLONE
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_fill", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_FILL
-    ElseIf Strings.StringsEqual(hkName, "tool_activate_gradient", True) Then
-        toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
-    
-    'Search
-    ElseIf Strings.StringsEqual(hkName, "tool_search", True) Then
-        toolbar_Layers.SetFocusToSearchBox
-        
-    'Menus
-    ElseIf Strings.StringsEqual(hkName, "Preferences", True) Then
-        If Not FormOptions.Visible Then
-            ShowPDDialog vbModal, FormOptions
-            Exit Sub
-        End If
-    
-    ElseIf Strings.StringsEqual(hkName, "Plugin manager", True) Then
-        If Not FormPluginManager.Visible Then
-            ShowPDDialog vbModal, FormPluginManager
-            Exit Sub
-        End If
-    End If
-    
-    'MRU files
-    If Strings.StringsEqualLeft(hkName, COMMAND_FILE_OPEN_RECENT, True) Then
-        Menus.ProcessDefaultAction_ByName hkName
-        Exit Sub
-    End If
-    
-    '***********************************************************
-    'This block of code holds:
-    ' - Accelerators that DO require at least one loaded image
-    
-    'If no images are loaded, exit immediately
-    If (Not PDImages.IsImageActive()) Then Exit Sub
-    
-    'Layer > merge down (requires a passed parameter to ID the active layer)
-    If hkName = "layer_mergedown" Then Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
-    
-    'Fit on screen
-    If hkName = "FitOnScreen" Then Menus.ProcessDefaultAction_ByName "view_fit"
-    
-    'Zoom in
-    If hkName = "Zoom_In" Then Menus.ProcessDefaultAction_ByName "view_zoomin"
-    
-    'Zoom out
-    If hkName = "Zoom_Out" Then Menus.ProcessDefaultAction_ByName "view_zoomout"
-    
-    'Actual size
-    If hkName = "Actual_Size" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then Menus.ProcessDefaultAction_ByName "zoom_actual"
-    End If
-    
-    'Various zoom values
-    If hkName = "Zoom_161" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 2
-    End If
-    
-    If hkName = "Zoom_81" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 4
-    End If
-    
-    If hkName = "Zoom_41" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 8
-    End If
-    
-    If hkName = "Zoom_21" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 10
-    End If
-    
-    If hkName = "Zoom_12" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 14
-    End If
-    
-    If hkName = "Zoom_14" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 16
-    End If
-    
-    If hkName = "Zoom_18" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 19
-    End If
-    
-    If hkName = "Zoom_116" Then
-        If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
-    End If
-    
-    'Remove selection
-    If hkName = "Remove selection" Then
-        Process "Remove selection", , , UNDO_Selection
-    End If
-    
-    'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-    If hkName = "Next_Image" Then PDImages.MoveToNextImage True
-    If hkName = "Prev_Image" Then PDImages.MoveToNextImage False
-    
+    Menus.ProcessDefaultAction_ByName Hotkeys.GetHotKeyAction(hotkeyID), True
 End Sub
 
 'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can modify
