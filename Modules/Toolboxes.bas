@@ -239,7 +239,7 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
     SetParent toolboxHWnd, parentHwnd
     
     'Cache default VB6 window bits (only the first time!), then set new window bits matching the
-    ' parent/child relationship we're about to establish.
+    ' parent/child relationship we just established.
     If (m_WindowBits Is Nothing) Then Set m_WindowBits = New pdDictionary
     If (Not m_WindowBits.DoesKeyExist(toolboxHWnd)) Then m_WindowBits.AddEntry toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE)
     SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) Or WS_CHILD
