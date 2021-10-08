@@ -710,13 +710,13 @@ Private Sub cmdStart_Click(Index As Integer)
 
     'Some indices are hard-coded, others are contingent on current user settings (like recent files)
     If (Index = 0) Then
-        Menus.ProcessDefaultAction_ByName "file_new"
+        Actions.LaunchAction_ByName "file_new"
     ElseIf (Index = 1) Then
-        Menus.ProcessDefaultAction_ByName "file_open"
+        Actions.LaunchAction_ByName "file_open"
     ElseIf (Index = 2) Then
-        Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
+        Actions.LaunchAction_ByName "edit_pasteasimage"
     ElseIf (Index = 3) Then
-        Menus.ProcessDefaultAction_ByName "file_batch_process"
+        Actions.LaunchAction_ByName "file_batch_process"
     End If
 
 End Sub
@@ -732,19 +732,19 @@ Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCap
         
         'Save
         Case 0
-            Menus.ProcessDefaultAction_ByName "file_save"
+            Actions.LaunchAction_ByName "file_save"
             
         'Save copy (lossless)
         Case 1
-            Menus.ProcessDefaultAction_ByName "file_savecopy"
+            Actions.LaunchAction_ByName "file_savecopy"
         
         'Save as
         Case 2
-            Menus.ProcessDefaultAction_ByName "file_saveas"
+            Actions.LaunchAction_ByName "file_saveas"
         
         'Revert
         Case 3
-            Menus.ProcessDefaultAction_ByName "file_revert"
+            Actions.LaunchAction_ByName "file_revert"
         
         '(separator)
         Case 4
@@ -758,7 +758,7 @@ Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCap
         
         'Close
         Case 7
-            Menus.ProcessDefaultAction_ByName "file_close"
+            Actions.LaunchAction_ByName "file_close"
         
         'Close all but this
         Case 8

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.67</langversion>
+<langversion>8.0.68</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -14,1199 +14,8 @@
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
-<original>Autosave reconstruction complete for %1</original>
-<translation>Rekonstrukcja autozapisu zakończona dla %1</translation>
-</phrase>
-
-<phrase>
-<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Autozapis nie mógł być w pełni zrekonstruowany. Podjęto próbę częściowej rekonstrukcji.</translation>
-</phrase>
-
-<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>[untitled image]</original>
-<translation>[obraz bez tytułu]</translation>
-</phrase>
-
-<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Unloading image %1 of %2</original>
-<translation>Wypakowywanie obrazu %1 z %2</translation>
-</phrase>
-
-<phrase>
-<original>Closing image</original>
-<translation>Zamykanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Finished.</original>
-<translation>Zakończono</translation>
-</phrase>
-
-<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
-<original>Color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Export color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ICC profile</original>
-<translation>Profil ICC</translation>
-</phrase>
-
-<phrase>
-<original>New color profile</original>
-<translation>Nowy profil koloruw</translation>
-</phrase>
-
-<phrase>
-<original>Export color profile</original>
-<translation>Eksportuj profil kolorów</translation>
-</phrase>
-
-<phrase>
-<original>Profile exported successfully.</original>
-<translation>Profil został pomyślnie wyeksportowany.</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<phrase>
-<original>How would you like to load this image?</original>
-<translation>Jak chcesz załadować ten obraz?</translation>
-</phrase>
-
-<phrase>
-<original>Open it as a standalone image.</original>
-<translation>Otwórz jako samodzielny obraz.</translation>
-</phrase>
-
-<phrase>
-<original>Add it to the current image as a new layer.</original>
-<translation>Dodaj do bieżącego obrazu jako nową warstwę.</translation>
-</phrase>
-
-<phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>Nie mogę zdecydować się. Anuluj tę akcję.</translation>
-</phrase>
-
-<phrase>
-<original>in the future, do this without asking me</original>
-<translation>W przyszłości zrób to bez pytania mnie.</translation>
-</phrase>
-
-<phrase>
-<original>Drop as image or layer</original>
-<translation>Upuść jako obraz lub warstwę</translation>
-</phrase>
-
-<phrase>
-<original>Cut special</original>
-<translation>Wytnij specjalnie</translation>
-</phrase>
-
-<phrase>
-<original>Copy special</original>
-<translation>Kopiuj specjalnie</translation>
-</phrase>
-
-<phrase>
-<original>Paste special</original>
-<translation>Wklej specjalnie</translation>
-</phrase>
-
-<!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool nie może zostać uruchomiony. Metadane są niedostępne dla tej sesji.</translation>
-</phrase>
-
-<phrase>
-<original>Please wait while the tag database is created</original>
-<translation>Poczekaj - tworzona jest baza danych tagów</translation>
-</phrase>
-
-<phrase>
-<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>Baza danych tagów zawiera szczegółowe informacje techniczne dotyczące ponad 20.000 tagów obsługiwanych przez PhotoDemon. Tworzenie bazy danych trwa od 10 do 15 sekund, ale trzeba ją utworzyć tylko raz, gdy edytor metadanych jest używany po raz pierwszy.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>Brak dostępnych metadanych</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain metadata.</original>
-<translation>Ten obraz nie zawiera metadanych.</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<phrase>
-<original>Open an image</original>
-<translation>Otwórz obraz</translation>
-</phrase>
-
-<phrase>
-<original>Select an image</original>
-<translation>Wybierz obraz</translation>
-</phrase>
-
-<phrase>
 <original>New image</original>
 <translation>Nowy obraz</translation>
-</phrase>
-
-<phrase>
-<original>Save an image</original>
-<translation>Zapisz obraz</translation>
-</phrase>
-
-<phrase>
-<original>Before lossless copies can be saved, you must save this image at least once.
-
-Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>Zanim będzie można zapisać bezstratne kopie, należy przynajmniej raz zapisać ten obraz.
-
-Bezstratne kopie zostaną zapisane w tym samym folderze, w którym zapisany został początkowy obraz.</translation>
-</phrase>
-
-<phrase>
-<original>Initial save required</original>
-<translation>Wymagany wstępny zapis</translation>
-</phrase>
-
-<phrase>
-<original>Save canceled.</original>
-<translation>Zapisywanie anulowano.</translation>
-</phrase>
-
-<phrase>
-<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
-
-If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Podczas próby zapisania tego obrazu wystąpił nieokreślony błąd. Spróbuj zapisać obraz w innym formacie.
-
-Jeśli problem będzie się powtarzał, zgłoś go programistom PhotoDemon za pośrednictwem photodemon.org/contact</translation>
-</phrase>
-
-<phrase>
-<original>Error</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>Tło</translation>
-</phrase>
-
-<phrase>
-<original>Original image</original>
-<translation>Oryginalny obraz</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Niestety, ten PC nie ma wystarczającej ilości pamięci, aby utworzyć obraz %1x%2 . Zmniejsz żądany rozmiar i spróbuj ponownie.</translation>
-</phrase>
-
-<phrase>
-<original>Image too large</original>
-<translation>Obraz zbyt duży</translation>
-</phrase>
-
-<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Auto-correcting colors and lighting</original>
-<translation>Automatyczna korekta koloru i oświetlenia</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>Regulacja balansu bieli obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Inverting</original>
-<translation>Odwracanie</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values</original>
-<translation>Zmiana wartości RGB</translation>
-</phrase>
-
-<phrase>
-<original>Calculating film negative values</original>
-<translation>Obliczanie ujemnych wartości filmu</translation>
-</phrase>
-
-<phrase>
-<original>Isolating maximum color channels</original>
-<translation>Izolowanie maksymalnych kanałów kolorów</translation>
-</phrase>
-
-<phrase>
-<original>Isolating minimum color channels</original>
-<translation>Izolowanie minimalnych kanałów kolorów</translation>
-</phrase>
-
-<phrase>
-<original>Auto-enhancing color and lighting</original>
-<translation>Automatyczna poprawa koloru i oświetlenia</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
-
-<phrase>
-<original>Applying %1 filter</original>
-<translation>Zastosowanie filtru %1</translation>
-</phrase>
-
-<phrase>
-<original>Generating grids</original>
-<translation>Generowanie siatek</translation>
-</phrase>
-
-<phrase>
-<original>Applying grid blur</original>
-<translation>Stosowanie rozmycia siatki</translation>
-</phrase>
-
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Counting the number of unique colors in this image</original>
-<translation>Liczenie unikalnych kolorów w tym obrazie</translation>
-</phrase>
-
-<phrase>
-<original>Total colors: %1</original>
-<translation>Suma kolorów: %1</translation>
-</phrase>
-
-<phrase>
-<original>This image contains %1 unique colors (RGB).
-
-This image contains %2 unique color + opacity values (RGBA).</original>
-<translation>Ten obraz zawiera% 1 unikalnych kolorów (RGB).
-
-Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>Liczba unikalnych kolorów</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
-
-<phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>Obraz</translation>
-</phrase>
-
-<phrase>
-<original>repeat</original>
-<translation>Powtórz</translation>
-</phrase>
-
-<phrase>
-<original>waves</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>arc</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line</original>
-<translation>Linia</translation>
-</phrase>
-
-<phrase>
-<original>maze</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>triangle</original>
-<translation>Trójkątny</translation>
-</phrase>
-
-<phrase>
-<original>octagon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>Okrąg</translation>
-</phrase>
-
-<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Time taken</original>
-<translation>Czas trwania</translation>
-</phrase>
-
-<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Analyzing image</original>
-<translation>Analiza obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>Obraz jest w jednym kolorze. Automatyczne przycinanie jest niepotrzebne.</translation>
-</phrase>
-
-<phrase>
-<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>Obraz jest inteligentnie wykadrowany. Auto kadrowanie przerwano. (Nie wprowadzono żadnych zmian w obrazie).</translation>
-</phrase>
-
-<phrase>
-<original>Cropping image</original>
-<translation>Kadrowanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>No active selection found.  Crop abandoned.</original>
-<translation>Brak aktywnego wyboru. Kadrowanie przerwano.</translation>
-</phrase>
-
-<phrase>
-<original>Crop</original>
-<translation>Kadrowanie</translation>
-</phrase>
-
-<phrase>
-<original>Flipping image</original>
-<translation>Odwracanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Mirroring image</original>
-<translation>Odbicie lustrzane obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image</original>
-<translation>Obracanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Fitting image canvas around layer</original>
-<translation>Dopasowywanie płótna wokół warstwy obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Image is fully transparent.  Trim abandoned.</original>
-<translation>Obraz jest w pełni przezroczysty. Przycinanie przerwano.</translation>
-</phrase>
-
-<phrase>
-<original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>Obraz jest już przycięty. (Nie wprowadzono żadnych zmian w obrazie).</translation>
-</phrase>
-
-<phrase>
-<original>Trimming image</original>
-<translation>Kadrowanie obrazu</translation>
-</phrase>
-
-<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Loading page %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>Zapisywanie</translation>
-</phrase>
-
-<phrase>
-<original>Save complete.</original>
-<translation>Zapisywanie zakończone.</translation>
-</phrase>
-
-<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>Rozciąganie histogramu</translation>
-</phrase>
-
-<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Saving %1 file</original>
-<translation>Zapisywanie pliku %1</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 zapis nieudany (cichy błąd FreeImage_SaveEx). Zgłoś ten błąd za pomocą menu Pomoc -> Prześlij raport o błędzie.</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 zapis nie powiódł się (FreeImage zwrócił pusty uchwyt). Zgłoś ten błąd za pomocą menu Pomoc -> Prześlij raport o błędzie.</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Zapisywanie animacji klatki %1 z %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Komletowanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Wtyczka interfejsu FreeImage (FreeImage.dll) została oznaczona jako brakująca lub wyłączona podczas inicjalizacji programu.
-
-Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pobrania z http://freeimage.sourceforge.net/download.html) do katalogu wtyczek i uruchom ponownie program.</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>Zapisywanie nie może zostać zakończone bez biblioteki FreeImage.</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>Wszystkie obrazy wspierane</translation>
-</phrase>
-
-<phrase>
-<original>All files</original>
-<translation>Wszystkie pliki</translation>
-</phrase>
-
-<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Wystąpił błąd (# %1 - %2). Ładowanie PDI przerwano.</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Repeat</original>
-<translation>Powtórz</translation>
-</phrase>
-
-<phrase>
-<original>Fade</original>
-<translation>Zanikanie</translation>
-</phrase>
-
-<phrase>
-<original>Fade: %1</original>
-<translation>Zanikanie: %1</translation>
-</phrase>
-
-<phrase>
-<original>Repeat: %1</original>
-<translation>Powtórz: %1</translation>
-</phrase>
-
-<phrase>
-<original>Undo</original>
-<translation>Cofnij</translation>
-</phrase>
-
-<phrase>
-<original>Undo last action</original>
-<translation>Cofnij ostatnią czynność</translation>
-</phrase>
-
-<phrase>
-<original>Redo</original>
-<translation>Ponów</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>Ponów poprzednią czynność</translation>
-</phrase>
-
-<phrase>
-<original>Recording</original>
-<translation>Nagrywanie</translation>
-</phrase>
-
-<phrase>
-<original>clamp</original>
-<translation>Ściśnij</translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation>Odbij</translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation>Zawiń</translation>
-</phrase>
-
-<phrase>
-<original>erase</original>
-<translation>Wyczyść</translation>
-</phrase>
-
-<phrase>
-<original>ignore</original>
-<translation>Ignoruj</translation>
-</phrase>
-
-<phrase>
-<original>square</original>
-<translation>Kwadrat</translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation>Romb</translation>
-</phrase>
-
-<phrase>
-<original>Normal</original>
-<translation>Normalny</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Przyciemnienie</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Zwielokrotnienie</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Ściemnianie koloru</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Ściemnianie liniowe</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Rozjaśnianie</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Ekran</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Rozjaśnianie koloru</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Rozjaśnianie liniowe</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Nakładka</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Łagodne światło</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Ostre światło</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Wyraźne światło</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Liniowe światło</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Spiczaste światło</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Mocny kiks</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Różne</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Wykluczenie</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Odejmowanie</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Dzielenie</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Odcień</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Nasycenie</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Kolor</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Jaskrawość</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Oddzielanie ziarna</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Scalanie ziarna</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Wymaż</translation>
-</phrase>
-
-<phrase>
-<original>Inherit</original>
-<translation>Dziedziczony</translation>
-</phrase>
-
-<phrase>
-<original>Locked</original>
-<translation>Zablokowany</translation>
-</phrase>
-
-<phrase>
-<original>Perceptual</original>
-<translation>Percepcja</translation>
-</phrase>
-
-<phrase>
-<original>Relative colorimetric</original>
-<translation>Kolorymetryka względna</translation>
-</phrase>
-
-<phrase>
-<original>Absolute colorimetric</original>
-<translation>Kolorymetryka bezwzględna</translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>Kolor</translation>
-</phrase>
-
-<phrase>
-<original>color and opacity</original>
-<translation>Kolor i krycie</translation>
-</phrase>
-
-<phrase>
-<original>luminance</original>
-<translation>Luminancja</translation>
-</phrase>
-
-<phrase>
-<original>red only</original>
-<translation>Tylko czerwony</translation>
-</phrase>
-
-<phrase>
-<original>green only</original>
-<translation>Tylko zielony</translation>
-</phrase>
-
-<phrase>
-<original>blue only</original>
-<translation>Tylko niebieski</translation>
-</phrase>
-
-<phrase>
-<original>alpha only</original>
-<translation>Tylko alpha</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>Czy na pewno chcesz anulować %1?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel action</original>
-<translation>Anuluj akcję</translation>
-</phrase>
-
-<phrase>
-<original>preview not available</original>
-<translation>Podgląd niedostępny</translation>
-</phrase>
-
-<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
-
-<phrase>
-<original>Blank layer</original>
-<translation>Pusta warstwa</translation>
-</phrase>
-
-<phrase>
-<original>Group start</original>
-<translation>Rozpocznij grupę</translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation>Zakończ grupę</translation>
-</phrase>
-
-<phrase>
-<original>Basic text layer</original>
-<translation>Podstawowa warstwa tekstu</translation>
-</phrase>
-
-<phrase>
-<original>Advanced text layer</original>
-<translation>Zaawansowana warstwa tekstu</translation>
-</phrase>
-
-<phrase>
-<original>Visible</original>
-<translation>Widoczne</translation>
-</phrase>
-
-<phrase>
-<original>Replace layer from file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer from file</original>
-<translation>Nowa warstwa z pliku</translation>
-</phrase>
-
-<phrase>
-<original>Layer updated successfully.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer added successfully.</original>
-<translation>Nowa warstwa dodana pomyślnie.</translation>
-</phrase>
-
-<phrase>
-<original>Copying layer</original>
-<translation>Kopiowanie warstwy</translation>
-</phrase>
-
-<phrase>
-<original>Conversion complete.</original>
-<translation>Konwersja zakończona</translation>
-</phrase>
-
-<phrase>
-<original>Adding image</original>
-<translation>Dodawanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Merged layers</original>
-<translation>Połączone warstwy</translation>
-</phrase>
-
-<phrase>
-<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Działanie to spowoduje konwersję warstw tekstowych i wektorowych do warstwy obrazu (raster), dzięki czemu można zmodyfikować ustawienia warstw dla danego typu tekstu, czcionki, koloru lub kształtu.</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to continue?</original>
-<translation>Czy chcesz kontynuować?</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation>Tak. Konwersja warstw tekstowych i wektorowych do warstwy obrazu (raster).</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave text and vector layers as they are.</original>
-<translation>Nie. Pozostaw warstwy tekstowe i wektorowe w obecnej postaci.</translation>
-</phrase>
-
-<phrase>
-<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>Ta warstwa tekstowa zostanie zmieniona na warstwę obrazu (raster), co oznacza, że nie będzie można już modyfikować jej ustawień tekstu ani czcionek.</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Please convert this text layer.</original>
-<translation>Tak. Przekształć tę warstwę tekstową.</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave this text layer as it is.</original>
-<translation>Nie. Pozostaw warstwę tekstową bez zmian.</translation>
-</phrase>
-
-<phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>W przyszłości, automatycznie rasteryzuj bez monitowania.</translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation>Warstwa farby</translation>
-</phrase>
-
-<phrase>
-<original>Frame %1</original>
-<translation>Ramka %1</translation>
-</phrase>
-
-<phrase>
-<original>Page %1</original>
-<translation>Strona %1</translation>
-</phrase>
-
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
-
-<phrase>
-<original>Loading image</original>
-<translation>Ładowanie obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file not found: %1</original>
-<translation>Uwaga: Nie nie znaleziono pliku: %1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the image '%1' could not be found.
-
-If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Niestety, obraz: '%1' nie został znaleziony.                                                                 
-Jeżeli obraz ten pierwotnie znajdował się na nośniku wymiennym (płycie DVD, dysku USB itp.), należy ponownie podłączyć nośnik i spróbować jeszcze raz.</translation>
-</phrase>
-
-<phrase>
-<original>File not found</original>
-<translation>Nie znaleziono pliku</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file locked: %1</original>
-<translation>Uwaga: Zablokowany plik: %1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
-
-Please close this file in any other running programs, then try again.</original>
-<translation>Niestety, plik '%1' jest obecnie zablokowany przez inny program na tym PC.
-
-Zamknij ten plik w innym uruchomionym programie, a następnie spróbuj ponownie.</translation>
-</phrase>
-
-<phrase>
-<original>File locked</original>
-<translation>Plik zablokowany</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Obraz załadowany pomyślnie.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to load %1</original>
-<translation>Nie udało się załadować %1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>Niestety, PhotoDemon nie był w stanie załadować obrazu: %1
-
-Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadowaniem.</translation>
-</phrase>
-
-<phrase>
-<original>Image import failed</original>
-<translation>Nieudany import obrazu.</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>Import warstwy anulowany.</translation>
-</phrase>
-
-<phrase>
-<original>%1 of %2 images loaded successfully</original>
-<translation> %1 z %2 obrazów pomyślnie załadowano</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image(s):
-
-%1
-Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>Niestety, PhotoDemon nie był w stanie załadować następujących obrazów:
-
-%1
-Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu obrazu (jak JPEG lub PNG).  Dzięki!</translation>
-</phrase>
-
-<phrase>
-<original>Some images were not loaded</original>
-<translation>Niektóre obrazy nie zostały załadowane</translation>
-</phrase>
-
-<phrase>
-<original>Duplicating current image</original>
-<translation>Powielanie bieżącego obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Copy</original>
-<translation>Kopiuj</translation>
-</phrase>
-
-<phrase>
-<original>Image duplication complete.</original>
-<translation>Powielanie obrazu zakończono.</translation>
-</phrase>
-
-<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
-
-(Press No to continue recording.)</original>
-<translation>Makro nie zawiera żadnych możliwych do zarejestrowania działań. Czy chcesz zatrzymać nagrywanie? 
-(Naciśnij Nie, aby kontynuować nagrywanie.)</translation>
-</phrase>
-
-<phrase>
-<original>Warning: invalid macro</original>
-<translation>Uwaga: Nieprawidłowe makro</translation>
-</phrase>
-
-<phrase>
-<original>Macro abandoned.</original>
-<translation>Tworzenie makro przerwano.</translation>
-</phrase>
-
-<phrase>
-<original>Macro saved successfully.</original>
-<translation>Makro zapisano pomyślnie.</translation>
-</phrase>
-
-<phrase>
-<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
-
-(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Jeśli nie zapiszesz tego makro, wszystkie akcje zarejestrowane podczas tej sesji zostaną bezpowrotnie utracone. Czy na pewno chcesz anulować? 
-
-(Naciśnij Nie, aby powrócić do ekranu "Zapisz makro". Pamiętaj, że zawsze możesz usunąć to makro później, jeśli zdecydujesz, że nie potrzebujesz go).</translation>
-</phrase>
-
-<phrase>
-<original>Warning: last chance to save macro</original>
-<translation>Uwaga: Ostatnia szansa do zapisania makro</translation>
-</phrase>
-
-<phrase>
-<original>Macro</original>
-<translation>Makro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Zapisz dane makro</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording started.</original>
-<translation>Nagrywanie makro rozpoczęto.</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording stopped.</original>
-<translation>Nagrywanie makro zatrzymano.</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Otwórz plik makro</translation>
-</phrase>
-
-<phrase>
-<original>Loading macro data</original>
-<translation>Ładowanie danych makro</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>ładowanie makro anulowane.</translation>
-</phrase>
-
-<phrase>
-<original>Macro complete!</original>
-<translation>Makro kompletne!</translation>
-</phrase>
-
-<phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Znaleziono niezgodną wersję makro. Odtwarzanie makro przerwano.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Niestety, ten plik makro nie jest już obsługiwany przez aktualną wersję PhotoDemon.
-
-Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierania nowych możliwości, poprawy wydajności i rozwiązania niektórych  problemów z niezawodnością. Oznacza to, że zapisane w wersji 6.0 makra nie są kompatybilne z nowszymi wersjami PhotoDemon. Należy ponownie nagrać te makra.
-
-(Wszystkie stare pliki makro będą nadal działać w starszych wersjach PhotoDemon, jeśli koniecznie musisz ich użyć).</translation>
-</phrase>
-
-<phrase>
-<original>Unsupported macro file</original>
-<translation>Nieobsługiwany plik makro</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Przetwarzanie danych makro</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
-<original>Alt</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Shift</original>
-<translation>Shift</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>Enter</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Page Down</translation>
 </phrase>
 
 <phrase>
@@ -1285,6 +94,16 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Export color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export color profile</original>
+<translation>Eksportuj profil kolorów</translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation>Eksportuj paletę</translation>
 </phrase>
@@ -1305,6 +124,16 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Undo</original>
+<translation>Cofnij</translation>
+</phrase>
+
+<phrase>
+<original>Redo</original>
+<translation>Ponów</translation>
+</phrase>
+
+<phrase>
 <original>Undo history</original>
 <translation>Cofnij historię</translation>
 </phrase>
@@ -1315,6 +144,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Fade</original>
+<translation>Zanikanie</translation>
+</phrase>
+
+<phrase>
 <original>Cut</original>
 <translation>Kadruj</translation>
 </phrase>
@@ -1322,6 +156,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <phrase>
 <original>Cut merged</original>
 <translation>Kadruj scalone</translation>
+</phrase>
+
+<phrase>
+<original>Copy</original>
+<translation>Kopiuj</translation>
 </phrase>
 
 <phrase>
@@ -1337,6 +176,21 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <phrase>
 <original>Paste to cursor</original>
 <translation>Wklej do kursora</translation>
+</phrase>
+
+<phrase>
+<original>Cut special</original>
+<translation>Wytnij specjalnie</translation>
+</phrase>
+
+<phrase>
+<original>Copy special</original>
+<translation>Kopiuj specjalnie</translation>
+</phrase>
+
+<phrase>
+<original>Paste special</original>
+<translation>Wklej specjalnie</translation>
 </phrase>
 
 <phrase>
@@ -1372,6 +226,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <phrase>
 <original>Fit canvas around all layers</original>
 <translation>Dopasuj płótno do wszystkich warstw</translation>
+</phrase>
+
+<phrase>
+<original>Crop</original>
+<translation>Kadrowanie</translation>
 </phrase>
 
 <phrase>
@@ -1445,6 +304,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Count unique colors</original>
+<translation>Liczba unikalnych kolorów</translation>
+</phrase>
+
+<phrase>
 <original>Add new layer</original>
 <translation>Dodaj nową warstwę</translation>
 </phrase>
@@ -1457,6 +321,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <phrase>
 <original>Duplicate Layer</original>
 <translation>Duplikuj warstwy</translation>
+</phrase>
+
+<phrase>
+<original>New layer from file</original>
+<translation>Nowa warstwa z pliku</translation>
 </phrase>
 
 <phrase>
@@ -1486,6 +355,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from file</original>
 <translation></translation>
 </phrase>
 
@@ -1847,6 +721,11 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <phrase>
 <original>Tint</original>
 <translation>Odcień</translation>
+</phrase>
+
+<phrase>
+<original>Color lookup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2379,6 +1258,1131 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <translation>Sprawdż aktualizacje oprogramowania</translation>
 </phrase>
 
+<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[obraz bez tytułu]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Autosave reconstruction complete for %1</original>
+<translation>Rekonstrukcja autozapisu zakończona dla %1</translation>
+</phrase>
+
+<phrase>
+<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
+<translation>Autozapis nie mógł być w pełni zrekonstruowany. Podjęto próbę częściowej rekonstrukcji.</translation>
+</phrase>
+
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>Unloading image %1 of %2</original>
+<translation>Wypakowywanie obrazu %1 z %2</translation>
+</phrase>
+
+<phrase>
+<original>Closing image</original>
+<translation>Zamykanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Finished.</original>
+<translation>Zakończono</translation>
+</phrase>
+
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>ICC profile</original>
+<translation>Profil ICC</translation>
+</phrase>
+
+<phrase>
+<original>New color profile</original>
+<translation>Nowy profil koloruw</translation>
+</phrase>
+
+<phrase>
+<original>Profile exported successfully.</original>
+<translation>Profil został pomyślnie wyeksportowany.</translation>
+</phrase>
+
+<!-- ColorManagement_ICM.bas contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>How would you like to load this image?</original>
+<translation>Jak chcesz załadować ten obraz?</translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation>Otwórz jako samodzielny obraz.</translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation>Dodaj do bieżącego obrazu jako nową warstwę.</translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>Nie mogę zdecydować się. Anuluj tę akcję.</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation>W przyszłości zrób to bez pytania mnie.</translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation>Upuść jako obraz lub warstwę</translation>
+</phrase>
+
+<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<phrase>
+<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
+<translation>ExifTool nie może zostać uruchomiony. Metadane są niedostępne dla tej sesji.</translation>
+</phrase>
+
+<phrase>
+<original>Please wait while the tag database is created</original>
+<translation>Poczekaj - tworzona jest baza danych tagów</translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation>Baza danych tagów zawiera szczegółowe informacje techniczne dotyczące ponad 20.000 tagów obsługiwanych przez PhotoDemon. Tworzenie bazy danych trwa od 10 do 15 sekund, ale trzeba ją utworzyć tylko raz, gdy edytor metadanych jest używany po raz pierwszy.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>Brak dostępnych metadanych</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain metadata.</original>
+<translation>Ten obraz nie zawiera metadanych.</translation>
+</phrase>
+
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>Open an image</original>
+<translation>Otwórz obraz</translation>
+</phrase>
+
+<phrase>
+<original>Select an image</original>
+<translation>Wybierz obraz</translation>
+</phrase>
+
+<phrase>
+<original>Save an image</original>
+<translation>Zapisz obraz</translation>
+</phrase>
+
+<phrase>
+<original>Before lossless copies can be saved, you must save this image at least once.
+
+Lossless copies will be saved to the same folder as this initial image save.</original>
+<translation>Zanim będzie można zapisać bezstratne kopie, należy przynajmniej raz zapisać ten obraz.
+
+Bezstratne kopie zostaną zapisane w tym samym folderze, w którym zapisany został początkowy obraz.</translation>
+</phrase>
+
+<phrase>
+<original>Initial save required</original>
+<translation>Wymagany wstępny zapis</translation>
+</phrase>
+
+<phrase>
+<original>Save canceled.</original>
+<translation>Zapisywanie anulowano.</translation>
+</phrase>
+
+<phrase>
+<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
+
+If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
+<translation>Podczas próby zapisania tego obrazu wystąpił nieokreślony błąd. Spróbuj zapisać obraz w innym formacie.
+
+Jeśli problem będzie się powtarzał, zgłoś go programistom PhotoDemon za pośrednictwem photodemon.org/contact</translation>
+</phrase>
+
+<phrase>
+<original>Error</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>Tło</translation>
+</phrase>
+
+<phrase>
+<original>Original image</original>
+<translation>Oryginalny obraz</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation>Niestety, ten PC nie ma wystarczającej ilości pamięci, aby utworzyć obraz %1x%2 . Zmniejsz żądany rozmiar i spróbuj ponownie.</translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation>Obraz zbyt duży</translation>
+</phrase>
+
+<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Auto-correcting colors and lighting</original>
+<translation>Automatyczna korekta koloru i oświetlenia</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image white balance</original>
+<translation>Regulacja balansu bieli obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Inverting</original>
+<translation>Odwracanie</translation>
+</phrase>
+
+<phrase>
+<original>Shifting RGB values</original>
+<translation>Zmiana wartości RGB</translation>
+</phrase>
+
+<phrase>
+<original>Calculating film negative values</original>
+<translation>Obliczanie ujemnych wartości filmu</translation>
+</phrase>
+
+<phrase>
+<original>Isolating maximum color channels</original>
+<translation>Izolowanie maksymalnych kanałów kolorów</translation>
+</phrase>
+
+<phrase>
+<original>Isolating minimum color channels</original>
+<translation>Izolowanie minimalnych kanałów kolorów</translation>
+</phrase>
+
+<phrase>
+<original>Auto-enhancing color and lighting</original>
+<translation>Automatyczna poprawa koloru i oświetlenia</translation>
+</phrase>
+
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>Applying %1 filter</original>
+<translation>Zastosowanie filtru %1</translation>
+</phrase>
+
+<phrase>
+<original>Generating grids</original>
+<translation>Generowanie siatek</translation>
+</phrase>
+
+<phrase>
+<original>Applying grid blur</original>
+<translation>Stosowanie rozmycia siatki</translation>
+</phrase>
+
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Counting the number of unique colors in this image</original>
+<translation>Liczenie unikalnych kolorów w tym obrazie</translation>
+</phrase>
+
+<phrase>
+<original>Total colors: %1</original>
+<translation>Suma kolorów: %1</translation>
+</phrase>
+
+<phrase>
+<original>This image contains %1 unique colors (RGB).
+
+This image contains %2 unique color + opacity values (RGBA).</original>
+<translation>Ten obraz zawiera% 1 unikalnych kolorów (RGB).
+
+Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
+</phrase>
+
+<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>Obraz</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>Powtórz</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>Linia</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>Trójkątny</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>Okrąg</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
+<original>Time taken</original>
+<translation>Czas trwania</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Analyzing image</original>
+<translation>Analiza obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Image is all one color.  Autocrop unnecessary.</original>
+<translation>Obraz jest w jednym kolorze. Automatyczne przycinanie jest niepotrzebne.</translation>
+</phrase>
+
+<phrase>
+<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
+<translation>Obraz jest inteligentnie wykadrowany. Auto kadrowanie przerwano. (Nie wprowadzono żadnych zmian w obrazie).</translation>
+</phrase>
+
+<phrase>
+<original>Cropping image</original>
+<translation>Kadrowanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>No active selection found.  Crop abandoned.</original>
+<translation>Brak aktywnego wyboru. Kadrowanie przerwano.</translation>
+</phrase>
+
+<phrase>
+<original>Flipping image</original>
+<translation>Odwracanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Mirroring image</original>
+<translation>Odbicie lustrzane obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Rotating image</original>
+<translation>Obracanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Fitting image canvas around layer</original>
+<translation>Dopasowywanie płótna wokół warstwy obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Image is fully transparent.  Trim abandoned.</original>
+<translation>Obraz jest w pełni przezroczysty. Przycinanie przerwano.</translation>
+</phrase>
+
+<phrase>
+<original>Image is already trimmed.  (No changes were made to the image.)</original>
+<translation>Obraz jest już przycięty. (Nie wprowadzono żadnych zmian w obrazie).</translation>
+</phrase>
+
+<phrase>
+<original>Trimming image</original>
+<translation>Kadrowanie obrazu</translation>
+</phrase>
+
+<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Loading page %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>Zapisywanie</translation>
+</phrase>
+
+<phrase>
+<original>Save complete.</original>
+<translation>Zapisywanie zakończone.</translation>
+</phrase>
+
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>Rozciąganie histogramu</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Enter</original>
+<translation>Enter</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Page Down</translation>
+</phrase>
+
+<phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Shift</translation>
+</phrase>
+
+<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>Saving %1 file</original>
+<translation>Zapisywanie pliku %1</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+<translation> %1 zapis nieudany (cichy błąd FreeImage_SaveEx). Zgłoś ten błąd za pomocą menu Pomoc -> Prześlij raport o błędzie.</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+<translation> %1 zapis nie powiódł się (FreeImage zwrócił pusty uchwyt). Zgłoś ten błąd za pomocą menu Pomoc -> Prześlij raport o błędzie.</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Zapisywanie animacji klatki %1 z %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Komletowanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
+
+To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
+<translation>Wtyczka interfejsu FreeImage (FreeImage.dll) została oznaczona jako brakująca lub wyłączona podczas inicjalizacji programu.
+
+Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pobrania z http://freeimage.sourceforge.net/download.html) do katalogu wtyczek i uruchom ponownie program.</translation>
+</phrase>
+
+<phrase>
+<original>Save cannot be completed without FreeImage library.</original>
+<translation>Zapisywanie nie może zostać zakończone bez biblioteki FreeImage.</translation>
+</phrase>
+
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>Wszystkie obrazy wspierane</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>Wszystkie pliki</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>Wystąpił błąd (# %1 - %2). Ładowanie PDI przerwano.</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Repeat</original>
+<translation>Powtórz</translation>
+</phrase>
+
+<phrase>
+<original>Fade: %1</original>
+<translation>Zanikanie: %1</translation>
+</phrase>
+
+<phrase>
+<original>Repeat: %1</original>
+<translation>Powtórz: %1</translation>
+</phrase>
+
+<phrase>
+<original>Undo last action</original>
+<translation>Cofnij ostatnią czynność</translation>
+</phrase>
+
+<phrase>
+<original>Redo previous action</original>
+<translation>Ponów poprzednią czynność</translation>
+</phrase>
+
+<phrase>
+<original>Recording</original>
+<translation>Nagrywanie</translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
+<translation>Ściśnij</translation>
+</phrase>
+
+<phrase>
+<original>reflect</original>
+<translation>Odbij</translation>
+</phrase>
+
+<phrase>
+<original>wrap</original>
+<translation>Zawiń</translation>
+</phrase>
+
+<phrase>
+<original>erase</original>
+<translation>Wyczyść</translation>
+</phrase>
+
+<phrase>
+<original>ignore</original>
+<translation>Ignoruj</translation>
+</phrase>
+
+<phrase>
+<original>square</original>
+<translation>Kwadrat</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>Romb</translation>
+</phrase>
+
+<phrase>
+<original>Normal</original>
+<translation>Normalny</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Przyciemnienie</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Zwielokrotnienie</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Ściemnianie koloru</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Ściemnianie liniowe</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Rozjaśnianie</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Ekran</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Rozjaśnianie koloru</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Rozjaśnianie liniowe</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Nakładka</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Łagodne światło</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Ostre światło</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Wyraźne światło</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Liniowe światło</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Spiczaste światło</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Mocny kiks</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Różne</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Wykluczenie</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Odejmowanie</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Dzielenie</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Odcień</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Nasycenie</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Kolor</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Jaskrawość</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Oddzielanie ziarna</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Scalanie ziarna</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Wymaż</translation>
+</phrase>
+
+<phrase>
+<original>Inherit</original>
+<translation>Dziedziczony</translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation>Zablokowany</translation>
+</phrase>
+
+<phrase>
+<original>Perceptual</original>
+<translation>Percepcja</translation>
+</phrase>
+
+<phrase>
+<original>Relative colorimetric</original>
+<translation>Kolorymetryka względna</translation>
+</phrase>
+
+<phrase>
+<original>Absolute colorimetric</original>
+<translation>Kolorymetryka bezwzględna</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>Kolor</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation>Kolor i krycie</translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>Luminancja</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation>Tylko czerwony</translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation>Tylko zielony</translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation>Tylko niebieski</translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation>Tylko alpha</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>Czy na pewno chcesz anulować %1?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel action</original>
+<translation>Anuluj akcję</translation>
+</phrase>
+
+<phrase>
+<original>preview not available</original>
+<translation>Podgląd niedostępny</translation>
+</phrase>
+
+<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+
+<phrase>
+<original>Blank layer</original>
+<translation>Pusta warstwa</translation>
+</phrase>
+
+<phrase>
+<original>Group start</original>
+<translation>Rozpocznij grupę</translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation>Zakończ grupę</translation>
+</phrase>
+
+<phrase>
+<original>Basic text layer</original>
+<translation>Podstawowa warstwa tekstu</translation>
+</phrase>
+
+<phrase>
+<original>Advanced text layer</original>
+<translation>Zaawansowana warstwa tekstu</translation>
+</phrase>
+
+<phrase>
+<original>Visible</original>
+<translation>Widoczne</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New layer added successfully.</original>
+<translation>Nowa warstwa dodana pomyślnie.</translation>
+</phrase>
+
+<phrase>
+<original>Copying layer</original>
+<translation>Kopiowanie warstwy</translation>
+</phrase>
+
+<phrase>
+<original>Conversion complete.</original>
+<translation>Konwersja zakończona</translation>
+</phrase>
+
+<phrase>
+<original>Adding image</original>
+<translation>Dodawanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Merged layers</original>
+<translation>Połączone warstwy</translation>
+</phrase>
+
+<phrase>
+<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
+<translation>Działanie to spowoduje konwersję warstw tekstowych i wektorowych do warstwy obrazu (raster), dzięki czemu można zmodyfikować ustawienia warstw dla danego typu tekstu, czcionki, koloru lub kształtu.</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to continue?</original>
+<translation>Czy chcesz kontynuować?</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
+<translation>Tak. Konwersja warstw tekstowych i wektorowych do warstwy obrazu (raster).</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave text and vector layers as they are.</original>
+<translation>Nie. Pozostaw warstwy tekstowe i wektorowe w obecnej postaci.</translation>
+</phrase>
+
+<phrase>
+<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
+<translation>Ta warstwa tekstowa zostanie zmieniona na warstwę obrazu (raster), co oznacza, że nie będzie można już modyfikować jej ustawień tekstu ani czcionek.</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Please convert this text layer.</original>
+<translation>Tak. Przekształć tę warstwę tekstową.</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave this text layer as it is.</original>
+<translation>Nie. Pozostaw warstwę tekstową bez zmian.</translation>
+</phrase>
+
+<phrase>
+<original>In the future, automatically rasterize without prompting me</original>
+<translation>W przyszłości, automatycznie rasteryzuj bez monitowania.</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>Warstwa farby</translation>
+</phrase>
+
+<phrase>
+<original>Frame %1</original>
+<translation>Ramka %1</translation>
+</phrase>
+
+<phrase>
+<original>Page %1</original>
+<translation>Strona %1</translation>
+</phrase>
+
+<!-- Layers.bas contains 56 phrases. 33 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>Loading image</original>
+<translation>Ładowanie obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file not found: %1</original>
+<translation>Uwaga: Nie nie znaleziono pliku: %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the image '%1' could not be found.
+
+If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+<translation>Niestety, obraz: '%1' nie został znaleziony.                                                                 
+Jeżeli obraz ten pierwotnie znajdował się na nośniku wymiennym (płycie DVD, dysku USB itp.), należy ponownie podłączyć nośnik i spróbować jeszcze raz.</translation>
+</phrase>
+
+<phrase>
+<original>File not found</original>
+<translation>Nie znaleziono pliku</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation>Uwaga: Zablokowany plik: %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation>Niestety, plik '%1' jest obecnie zablokowany przez inny program na tym PC.
+
+Zamknij ten plik w innym uruchomionym programie, a następnie spróbuj ponownie.</translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation>Plik zablokowany</translation>
+</phrase>
+
+<phrase>
+<original>Image loaded successfully.</original>
+<translation>Obraz załadowany pomyślnie.</translation>
+</phrase>
+
+<phrase>
+<original>Failed to load %1</original>
+<translation>Nie udało się załadować %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation>Niestety, PhotoDemon nie był w stanie załadować obrazu: %1
+
+Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadowaniem.</translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation>Nieudany import obrazu.</translation>
+</phrase>
+
+<phrase>
+<original>Layer import canceled.</original>
+<translation>Import warstwy anulowany.</translation>
+</phrase>
+
+<phrase>
+<original>%1 of %2 images loaded successfully</original>
+<translation> %1 z %2 obrazów pomyślnie załadowano</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image(s):
+
+%1
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation>Niestety, PhotoDemon nie był w stanie załadować następujących obrazów:
+
+%1
+Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu obrazu (jak JPEG lub PNG).  Dzięki!</translation>
+</phrase>
+
+<phrase>
+<original>Some images were not loaded</original>
+<translation>Niektóre obrazy nie zostały załadowane</translation>
+</phrase>
+
+<phrase>
+<original>Duplicating current image</original>
+<translation>Powielanie bieżącego obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Image duplication complete.</original>
+<translation>Powielanie obrazu zakończono.</translation>
+</phrase>
+
+<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
+
+(Press No to continue recording.)</original>
+<translation>Makro nie zawiera żadnych możliwych do zarejestrowania działań. Czy chcesz zatrzymać nagrywanie? 
+(Naciśnij Nie, aby kontynuować nagrywanie.)</translation>
+</phrase>
+
+<phrase>
+<original>Warning: invalid macro</original>
+<translation>Uwaga: Nieprawidłowe makro</translation>
+</phrase>
+
+<phrase>
+<original>Macro abandoned.</original>
+<translation>Tworzenie makro przerwano.</translation>
+</phrase>
+
+<phrase>
+<original>Macro saved successfully.</original>
+<translation>Makro zapisano pomyślnie.</translation>
+</phrase>
+
+<phrase>
+<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
+
+(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
+<translation>Jeśli nie zapiszesz tego makro, wszystkie akcje zarejestrowane podczas tej sesji zostaną bezpowrotnie utracone. Czy na pewno chcesz anulować? 
+
+(Naciśnij Nie, aby powrócić do ekranu "Zapisz makro". Pamiętaj, że zawsze możesz usunąć to makro później, jeśli zdecydujesz, że nie potrzebujesz go).</translation>
+</phrase>
+
+<phrase>
+<original>Warning: last chance to save macro</original>
+<translation>Uwaga: Ostatnia szansa do zapisania makro</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Makro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Zapisz dane makro</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording started.</original>
+<translation>Nagrywanie makro rozpoczęto.</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording stopped.</original>
+<translation>Nagrywanie makro zatrzymano.</translation>
+</phrase>
+
+<phrase>
+<original>Open Macro File</original>
+<translation>Otwórz plik makro</translation>
+</phrase>
+
+<phrase>
+<original>Loading macro data</original>
+<translation>Ładowanie danych makro</translation>
+</phrase>
+
+<phrase>
+<original>Macro load canceled.</original>
+<translation>ładowanie makro anulowane.</translation>
+</phrase>
+
+<phrase>
+<original>Macro complete!</original>
+<translation>Makro kompletne!</translation>
+</phrase>
+
+<phrase>
+<original>Incompatible macro version found.  Macro playback abandoned.</original>
+<translation>Znaleziono niezgodną wersję makro. Odtwarzanie makro przerwano.</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
+
+In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
+
+(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
+<translation>Niestety, ten plik makro nie jest już obsługiwany przez aktualną wersję PhotoDemon.
+
+Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierania nowych możliwości, poprawy wydajności i rozwiązania niektórych  problemów z niezawodnością. Oznacza to, że zapisane w wersji 6.0 makra nie są kompatybilne z nowszymi wersjami PhotoDemon. Należy ponownie nagrać te makra.
+
+(Wszystkie stare pliki makro będą nadal działać w starszych wersjach PhotoDemon, jeśli koniecznie musisz ich użyć).</translation>
+</phrase>
+
+<phrase>
+<original>Unsupported macro file</original>
+<translation>Nieobsługiwany plik makro</translation>
+</phrase>
+
+<phrase>
+<original>Processing macro data</original>
+<translation>Przetwarzanie danych makro</translation>
+</phrase>
+
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
 <phrase>
 <original>Open all recent images</original>
 <translation>Otwórz wszystkie ostatnie obrazy</translation>
@@ -2399,7 +2403,7 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 <translation>Wyczyść listę ostatnich makro</translation>
 </phrase>
 
-<!-- Menus.bas contains 277 phrases. 33 were duplicates of existing phrases, so only 244 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5548,11 +5552,6 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>Ta kopia PhotoDemon jest aktualna.</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
@@ -5562,6 +5561,11 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>PhotoDemon Updates</original>
 <translation>Aktualizacje PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>Ta kopia PhotoDemon jest aktualna.</translation>
 </phrase>
 
 <phrase>
@@ -5602,7 +5606,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 383 phrases. 201 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13702,8 +13706,8 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5361 phrases. -->
-<!-- 2767 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5360 phrases. -->
+<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

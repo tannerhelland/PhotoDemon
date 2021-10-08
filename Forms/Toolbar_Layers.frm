@@ -169,8 +169,12 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 'Number of panels; set automatically at Form_Load
 Private m_NumOfPanels As Long
 
-'When the user is in the midst of resizing a vertical panel, this will be set to a value >= 0 (corresponding to the
-' panel being resized).
+'When the form is first loaded, we need to suspend all layout decisions until the form height has been
+' correctly set.  This flag means DO NOT CALCULATE LAYOUT data yet.
+Private m_FormStillLoading As Boolean
+
+'When the user is in the midst of resizing a vertical panel, this will be set to a value >= 0
+' (corresponding to the panel being resized).
 Private m_PanelResizeActive As Long
 
 'Similarly, during a panel resize, we track both the panel's initial size, and its "net change" amount.  We use these
@@ -178,7 +182,22 @@ Private m_PanelResizeActive As Long
 Private m_NetResizeAmount As Long, m_PanelStartHeight As Long
 
 Private Sub Form_Load()
-    
+        
+    'Before doing anything else, we need to set this form to its final height - the client height of the
+    ' main window.  (If we don't do this first, all subsequent layout initialization - like setting
+    ' initial panel heights - may be wrong, because they're contingent on the size of the full panel.)
+    If PDMain.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then
+        
+        Dim parentClientHeight As Long
+        parentClientHeight = g_WindowManager.GetClientHeight(FormMain.hWnd)
+        
+        'Set a flag to prevent additional layout calculations, then *immediately* apply the new height.
+        m_FormStillLoading = True
+        g_WindowManager.SetSizeByHWnd Me.hWnd, g_WindowManager.GetWindowWidth(Me.hWnd), parentClientHeight, True
+        m_FormStillLoading = False
+        
+    End If
+        
     'All layout decisions on this form are contingent on the number of panels, so set this first as subsequent code
     ' will likely rely on it.
     m_NumOfPanels = ttlPanel.Count
@@ -277,7 +296,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Resize()
-    ReflowInterface
+    If (Not m_FormStillLoading) Then ReflowInterface
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
@@ -453,11 +472,7 @@ End Sub
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
 Private Sub ReflowInterface()
-        
-    'We need to wait for the main form to initialize before reflowing our interface; otherwise, we can't guarantee that
-    ' this form is even the right size!
-    If (Not FormMain.ToolbarsAllowedToReflow) Then Exit Sub
-        
+    
     'If the form is invisible (due to minimize or something else), just exit now
     Dim formWidth As Long, formHeight As Long
     If (g_WindowManager Is Nothing) Then

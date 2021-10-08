@@ -456,15 +456,21 @@ End Sub
 
 Private Sub HandleWMKillFocus()
 
-    'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
-    ' as soon as the system allows.
+    'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will
+    ' release the hook as soon as the system allows.
     SafelyRemoveKeyboardHook
     
     'Immediately mark the control-wide focus state, even though the hook has not yet been removed
     If m_HasFocus Then
         m_HasFocus = False
     Else
-        PDDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
+        'Quick note (because I'm commenting this out in an unrelated commit while working on hotkeys);
+        ' this path appears to trigger if you use a hotkey to trigger a control, but that control didn't
+        ' receive focus first.  (To test: Open an image, hit Ctrl+R to load `Image > Resize`, then press
+        ' ESCAPE and you'll see the warning below.)  This is a safe workflow that doesn't cause any issues,
+        ' so I'm not sure the warning below is useful.  TODO: consider removing branch entirely after
+        ' more testing.
+        'PDDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
     End If
     
 End Sub

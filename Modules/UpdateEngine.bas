@@ -1,10 +1,10 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
-'Automatic Software Updater
+'Automatic App Updater
 'Copyright 2012-2021 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 08/June/18
-'Last update: start migrating to a 2.0 update method
+'Last updated: 07/October/21
+'Last update: move some global variables here, make 'em private, and wrap them with safety functions
 '
 'This module includes support functions for determining if a new version of PhotoDemon is available
 ' for automatic patching.
@@ -52,6 +52,24 @@ Private m_UpdateVersion As String
 ' and store this value as necessary.
 Private m_BetaNumber As String
 
+'If the user wants to restart the program after applying an update (vs just applying it at shutdown)
+Private m_UserRequestedRestart As Boolean
+
+'If an update is available, this will be set to TRUE.  (Other parts of the app can query this value
+' and raise a notification accordingly.)
+Private m_UpdateReady As Boolean
+
+Public Function GetRestartAfterUpdate() As Boolean
+    GetRestartAfterUpdate = m_UserRequestedRestart
+End Function
+
+Public Sub SetRestartAfterUpdate(ByVal newState As Boolean)
+    m_UserRequestedRestart = newState
+End Sub
+
+Public Function IsUpdateReadyToInstall() As Boolean
+    IsUpdateReadyToInstall = m_UpdateReady
+End Function
 
 'Determine if the program should check online for update information.  This will return true IFF the following
 ' criteria are met:
@@ -352,7 +370,7 @@ Public Function PatchProgramFiles() As Boolean
     
     'All that's left to do is shell the patch .exe.  It will wait for PD to close, then initiate the patching process.
     Dim patchParams As String
-    If g_UserWantsRestart Then patchParams = "/restart"
+    If m_UserRequestedRestart Then patchParams = "/restart"
     patchParams = patchParams & " /sourceIsPD"
     
     Dim targetPath As String
@@ -475,8 +493,10 @@ Public Sub StandardUpdateChecks()
     If UserPrefs.IsNonPortableModeActive() Then Exit Sub
     
     'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is
-    ' successfully applied, for example.
-    g_ProgramStartedViaRestart = Updates.WasProgramStartedViaRestart
+    ' successfully applied, for example - and if it happens, we want to know later in the function, so we
+    ' can skip an update check this session.
+    Dim appWasJustRestarted As Boolean
+    appWasJustRestarted = Updates.WasProgramStartedViaRestart
         
     'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time
     ' is messy business, and Windows is sometimes unpredictable about allowing replaced files to be deleted.)
@@ -489,8 +509,8 @@ Public Sub StandardUpdateChecks()
     allowedToUpdate = Updates.IsItTimeForAnUpdate()
     
     'If this PD session was the result of an internal restart (e.g. an automatic update *just* finished),
-    ' disallow this session's check.
-    If g_ProgramStartedViaRestart Then allowedToUpdate = False
+    ' disallow this session's update check.
+    If appWasJustRestarted Then allowedToUpdate = False
     
     'If this is the user's first time using the program, don't pester them with update notifications
     If g_IsFirstRun Then allowedToUpdate = False
@@ -522,14 +542,14 @@ Public Sub DisplayUpdateNotification()
     On Error GoTo CouldNotDisplayUpdateNotification
     
     'Suspend any previous update notification flags
-    g_ShowUpdateNotification = False
+    m_UpdateReady = False
     
     'Check user preferences; they can choose to ignore update notifications
     If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then
         
         'Display the dialog, while yielding for the rare case that a modal dialog is already active
         If Interface.IsModalDialogActive() Then
-            g_ShowUpdateNotification = True
+            m_UpdateReady = True
         Else
             FormUpdateNotify.Show vbModeless, FormMain
         End If
@@ -541,7 +561,7 @@ Public Sub DisplayUpdateNotification()
 CouldNotDisplayUpdateNotification:
 
     'Set a global flag; PD's central processor will use this to display the notification as soon as it reasonably can
-    g_ShowUpdateNotification = True
+    m_UpdateReady = True
 
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.53</langversion>
+<langversion>8.0.54</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -14,1203 +14,8 @@
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
-<original>Autosave reconstruction complete for %1</original>
-<translation>Autosave reconstructie compleet voor %1</translation>
-</phrase>
-
-<phrase>
-<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Autosave kon niet volledig worden gereconstrueerd. Poging gedeeltelijke reconstructie in plaats.</translation>
-</phrase>
-
-<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>[untitled image]</original>
-<translation>[naamloze afbeelding]</translation>
-</phrase>
-
-<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Unloading image %1 of %2</original>
-<translation>Ontladen afbeelding %1 van %2</translation>
-</phrase>
-
-<phrase>
-<original>Closing image</original>
-<translation>Afbeelding wordt afgesloten</translation>
-</phrase>
-
-<phrase>
-<original>Finished.</original>
-<translation>Klaar.</translation>
-</phrase>
-
-<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
-<original>Color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Export color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ICC profile</original>
-<translation>ICC profiel</translation>
-</phrase>
-
-<phrase>
-<original>New color profile</original>
-<translation>Nieuw kleurprofiel</translation>
-</phrase>
-
-<phrase>
-<original>Export color profile</original>
-<translation>Exporteer kleurprofiel</translation>
-</phrase>
-
-<phrase>
-<original>Profile exported successfully.</original>
-<translation>Profiel met succes geëxporteerd.</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<phrase>
-<original>How would you like to load this image?</original>
-<translation>Hoe wilt u deze afbeelding laden?</translation>
-</phrase>
-
-<phrase>
-<original>Open it as a standalone image.</original>
-<translation>Open het als een op zichzelf staand beeld.</translation>
-</phrase>
-
-<phrase>
-<original>Add it to the current image as a new layer.</original>
-<translation>Voeg het toe aan de huidige afbeelding als een nieuwe laag.</translation>
-</phrase>
-
-<phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>Ik kan niet beslissen. Annuleer deze actie.</translation>
-</phrase>
-
-<phrase>
-<original>in the future, do this without asking me</original>
-<translation>in de toekomst, doe dit zonder het mij te vragen</translation>
-</phrase>
-
-<phrase>
-<original>Drop as image or layer</original>
-<translation>Drop als afbeelding of laag</translation>
-</phrase>
-
-<phrase>
-<original>Cut special</original>
-<translation>Knip speciaal</translation>
-</phrase>
-
-<phrase>
-<original>Copy special</original>
-<translation>Kopieer speciaal</translation>
-</phrase>
-
-<phrase>
-<original>Paste special</original>
-<translation>Plakspecialiteit</translation>
-</phrase>
-
-<!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool kan niet worden gestart. Metagegevens niet beschikbaar voor deze sessie.</translation>
-</phrase>
-
-<phrase>
-<original>Please wait while the tag database is created</original>
-<translation>Even wachten terwijl de tagdatabase wordt gemaakt</translation>
-</phrase>
-
-<phrase>
-<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>De tagdatabase behandelt technische details van de 20.000 metadatatags ondersteund door PhotoDemon. Het maken van de database duurt 10 tot 15 seconden, en het hoeft slechts één keer te worden gemaakt wanneer de metadata-editor voor het eerst wordt gebruikt.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>Geen metagegevens beschikbaar</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain metadata.</original>
-<translation>Deze afbeelding bevat geen metadata.</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<phrase>
-<original>Open an image</original>
-<translation>Open een afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Select an image</original>
-<translation>Selecteer een afbeelding</translation>
-</phrase>
-
-<phrase>
 <original>New image</original>
 <translation>Nieuwe afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Save an image</original>
-<translation>Een afbeelding opslaan</translation>
-</phrase>
-
-<phrase>
-<original>Before lossless copies can be saved, you must save this image at least once.
-
-Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>Voordat verliesloze kopieën kunnen worden opgeslagen, moet u de afbeelding minstens één maal bewaren.
-
-Verliesloze kopieën worden opgeslagen in dezelfde map als deze initiële afbeeldings opslag.</translation>
-</phrase>
-
-<phrase>
-<original>Initial save required</original>
-<translation>Initiële opslag vereist</translation>
-</phrase>
-
-<phrase>
-<original>Save canceled.</original>
-<translation>Opslaan geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
-
-If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Een niet nader gespecificeerde fout is opgetreden bij een poging om de afbeelding op te slaan. Probeer de afbeelding op te slaan in een ander format.
-
-Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/contact aan de PhotoDemon ontwikkelaars</translation>
-</phrase>
-
-<phrase>
-<original>Error</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>achtergrond</translation>
-</phrase>
-
-<phrase>
-<original>Original image</original>
-<translation>oorspronkelijke afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Helaas heeft deze pc niet genoeg geheugen om een %1x %2 afbeelding te maken. Verminder de gevraagde grootte en probeer het opnieuw.</translation>
-</phrase>
-
-<phrase>
-<original>Image too large</original>
-<translation>Afbeelding is te groot</translation>
-</phrase>
-
-<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Auto-correcting colors and lighting</original>
-<translation>Autocorrectie van kleuren en verlichting</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>Instellen witbalans van de afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Inverting</original>
-<translation>Omkeren van de afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values</original>
-<translation>Verschuivende RGB-waarden</translation>
-</phrase>
-
-<phrase>
-<original>Calculating film negative values</original>
-<translation>Berekenen film negatieve waarden</translation>
-</phrase>
-
-<phrase>
-<original>Isolating maximum color channels</original>
-<translation>Isoleren maximale kleurkanalen</translation>
-</phrase>
-
-<phrase>
-<original>Isolating minimum color channels</original>
-<translation>Isoleren minimum kleurkanalen</translation>
-</phrase>
-
-<phrase>
-<original>Auto-enhancing color and lighting</original>
-<translation>Autoverhogende kleur en verlichting</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
-
-<phrase>
-<original>Applying %1 filter</original>
-<translation>Toepassen %1 filter</translation>
-</phrase>
-
-<phrase>
-<original>Generating grids</original>
-<translation>Genereren van rasters</translation>
-</phrase>
-
-<phrase>
-<original>Applying grid blur</original>
-<translation>Toepassen onscherpte raster</translation>
-</phrase>
-
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Counting the number of unique colors in this image</original>
-<translation>Tellen van het aantal unieke kleuren in deze afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Total colors: %1</original>
-<translation>Totale kleuren: %1</translation>
-</phrase>
-
-<phrase>
-<original>This image contains %1 unique colors (RGB).
-
-This image contains %2 unique color + opacity values (RGBA).</original>
-<translation>Deze afbeelding bevat %1 unieke kleuren (RGB).
-
-Deze afbeelding bevat %2 unieke kleuren + opaciteitswaarden (RGBA).</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>Tel unieke kleuren</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
-
-<phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>repeat</original>
-<translation>herhaal</translation>
-</phrase>
-
-<phrase>
-<original>waves</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>arc</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line</original>
-<translation>lijn</translation>
-</phrase>
-
-<phrase>
-<original>maze</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>triangle</original>
-<translation>driehoek</translation>
-</phrase>
-
-<phrase>
-<original>octagon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>cirkel</translation>
-</phrase>
-
-<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Time taken</original>
-<translation>Tijd in beslag genomen</translation>
-</phrase>
-
-<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Analyzing image</original>
-<translation>Analyse van het beeld</translation>
-</phrase>
-
-<phrase>
-<original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>Afbeelding is helemaal in één kleur. Auto-bijsnijden overbodig.</translation>
-</phrase>
-
-<phrase>
-<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>De afbeelding is al intelligent bijgesneden. Automatisch bijsnijden verlaten. (Er zijn geen wijzigingen aangebracht in de afbeelding)</translation>
-</phrase>
-
-<phrase>
-<original>Cropping image</original>
-<translation>Bijsnijden beeld</translation>
-</phrase>
-
-<phrase>
-<original>No active selection found.  Crop abandoned.</original>
-<translation>Geen actieve selectie gevonden. Bijsnijden verlaten.</translation>
-</phrase>
-
-<phrase>
-<original>Crop</original>
-<translation>Bijsnijden</translation>
-</phrase>
-
-<phrase>
-<original>Flipping image</original>
-<translation>Omdraaien afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Mirroring image</original>
-<translation>Spiegelen afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image</original>
-<translation>Draaien afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Fitting image canvas around layer</original>
-<translation>Passen afbeeldingscanvas rond laag</translation>
-</phrase>
-
-<phrase>
-<original>Image is fully transparent.  Trim abandoned.</original>
-<translation>De afbeelding is volledig transparant. Trim verlaten.</translation>
-</phrase>
-
-<phrase>
-<original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>De afbeelding is al getrimd. (Er werden geen wijzigingen aangebracht in de afbeelding.)</translation>
-</phrase>
-
-<phrase>
-<original>Trimming image</original>
-<translation>Trimbeeld</translation>
-</phrase>
-
-<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Loading page %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>Opslaan</translation>
-</phrase>
-
-<phrase>
-<original>Save complete.</original>
-<translation>Opslaan voltooid.</translation>
-</phrase>
-
-<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>Uitrekken histogram</translation>
-</phrase>
-
-<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Saving %1 file</original>
-<translation>Opslaan %1 bestand</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 opslaan mislukt (FreeImage_SaveEx silent fail). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 opslaan mislukt (FreeImage gaf blanco handle terug). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Besparing van het animatieframe %1 van %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Afrondend beeld</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>De FreeImage -interface plug-in (FreeImage.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
-
-Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het FreeImage.dll bestand (te downloaden van http://freeimage.sourceforge.net/download.html) in de plug-in map en herstart je het programma.</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>Opslaan kan niet worden voltooid zonder FreeImage bibliotheek.</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>Alle Compatibele Afbeeldingen</translation>
-</phrase>
-
-<phrase>
-<original>All files</original>
-<translation>Alle bestanden</translation>
-</phrase>
-
-<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Er is een fout opgetreden (#%1 - %2). PDI Laden afgebroken.</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Repeat</original>
-<translation>Herhaal</translation>
-</phrase>
-
-<phrase>
-<original>Fade</original>
-<translation>Vervagen</translation>
-</phrase>
-
-<phrase>
-<original>Fade: %1</original>
-<translation>Vervagen: %1</translation>
-</phrase>
-
-<phrase>
-<original>Repeat: %1</original>
-<translation>Herhaal: %1</translation>
-</phrase>
-
-<phrase>
-<original>Undo</original>
-<translation>Ongedaan maken</translation>
-</phrase>
-
-<phrase>
-<original>Undo last action</original>
-<translation>Ongedaan maken laatste actie</translation>
-</phrase>
-
-<phrase>
-<original>Redo</original>
-<translation>Opnieuw</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>Herhalen vorige actie</translation>
-</phrase>
-
-<phrase>
-<original>Recording</original>
-<translation>Opname</translation>
-</phrase>
-
-<phrase>
-<original>clamp</original>
-<translation>klem</translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation>weerspiegelen</translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation>wikkel</translation>
-</phrase>
-
-<phrase>
-<original>erase</original>
-<translation>verwijder</translation>
-</phrase>
-
-<phrase>
-<original>ignore</original>
-<translation>negeer</translation>
-</phrase>
-
-<phrase>
-<original>square</original>
-<translation>vierkant</translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation>diamant</translation>
-</phrase>
-
-<phrase>
-<original>Normal</original>
-<translation>Normaal</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Verdonker</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Vermenigvuldig</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Kleurenbrand</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Lineaire brand</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Verlicht</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Scherm</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Kleuren ontwijking</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Liniare ontwijking</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Overlay</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Zacht licht</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Hard licht</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Levendig licht</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Lineair licht</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Pin licht</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Harde mix</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Verschil</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Uitsluiting</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Aftrekken</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Delen</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Kleurtoon</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Verzadiging</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Kleur</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Helderheid</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Graan extractie</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Graan samenvoeging</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Wissen</translation>
-</phrase>
-
-<phrase>
-<original>Inherit</original>
-<translation>Erven</translation>
-</phrase>
-
-<phrase>
-<original>Locked</original>
-<translation>vergrendeld</translation>
-</phrase>
-
-<phrase>
-<original>Perceptual</original>
-<translation>Perceptueel</translation>
-</phrase>
-
-<phrase>
-<original>Relative colorimetric</original>
-<translation>Relatief colorimetrisch</translation>
-</phrase>
-
-<phrase>
-<original>Absolute colorimetric</original>
-<translation>Absoluuut colorimetrisch</translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>kleur</translation>
-</phrase>
-
-<phrase>
-<original>color and opacity</original>
-<translation>kleur en dekking</translation>
-</phrase>
-
-<phrase>
-<original>luminance</original>
-<translation>luminantie</translation>
-</phrase>
-
-<phrase>
-<original>red only</original>
-<translation>alleen rood</translation>
-</phrase>
-
-<phrase>
-<original>green only</original>
-<translation>alleen groen</translation>
-</phrase>
-
-<phrase>
-<original>blue only</original>
-<translation>alleen blauw</translation>
-</phrase>
-
-<phrase>
-<original>alpha only</original>
-<translation>alleen alpha</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>Weet je zeker dat je %1 wilt annuleren?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel action</original>
-<translation>Annuleer actie</translation>
-</phrase>
-
-<phrase>
-<original>preview not available</original>
-<translation>Voorbeeld niet beschikbaar</translation>
-</phrase>
-
-<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
-
-<phrase>
-<original>Blank layer</original>
-<translation>Lege laag</translation>
-</phrase>
-
-<phrase>
-<original>Group start</original>
-<translation>Groepsstart</translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation>Groepseinde</translation>
-</phrase>
-
-<phrase>
-<original>Basic text layer</original>
-<translation>Basistekstlaag</translation>
-</phrase>
-
-<phrase>
-<original>Advanced text layer</original>
-<translation>Geavanceerde tekstlaag</translation>
-</phrase>
-
-<phrase>
-<original>Visible</original>
-<translation>Zichtbaar</translation>
-</phrase>
-
-<phrase>
-<original>Replace layer from file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer from file</original>
-<translation>Nieuwe laag uit bestand</translation>
-</phrase>
-
-<phrase>
-<original>Layer updated successfully.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer added successfully.</original>
-<translation>Nieuwe laag succesvol toegevoegd.</translation>
-</phrase>
-
-<phrase>
-<original>Copying layer</original>
-<translation>Kopieerlaag</translation>
-</phrase>
-
-<phrase>
-<original>Conversion complete.</original>
-<translation>Conversie voltooid.</translation>
-</phrase>
-
-<phrase>
-<original>Adding image</original>
-<translation>Afbeelding toevoegen</translation>
-</phrase>
-
-<phrase>
-<original>Merged layers</original>
-<translation>Samengevoegde lagen</translation>
-</phrase>
-
-<phrase>
-<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Met deze actie worden tekst- en vectorlagen omgezet in afbeeldings (raster) lagen, waardoor u niet langer laagspecifieke instellingen zoals tekst, lettertype, kleur of vorm kunt wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to continue?</original>
-<translation>Weet je zeker dat je door wilt gaan?</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation>Ja. Converteer tekst- en vectorlagen naar afbeeldings (raster) lagen.</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave text and vector layers as they are.</original>
-<translation>Nee. Laat tekst en vectorlagen zoals ze zijn.</translation>
-</phrase>
-
-<phrase>
-<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>Deze tekstlaag wordt veranderd in een afbeelding (raster) laag, wat betekent dat u de tekst- of lettertypeninstellingen niet meer kunt wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Please convert this text layer.</original>
-<translation>Ja. Zet deze tekstlaag om.</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave this text layer as it is.</original>
-<translation>Nee. Laat deze tekstlaag zoals ze is.</translation>
-</phrase>
-
-<phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>In de toekomst rasteriseer je automatisch zonder dat je me het vraagt</translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation>Verflaag</translation>
-</phrase>
-
-<phrase>
-<original>Frame %1</original>
-<translation>Kader %1</translation>
-</phrase>
-
-<phrase>
-<original>Page %1</original>
-<translation>Pagina %1</translation>
-</phrase>
-
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
-
-<phrase>
-<original>Loading image</original>
-<translation>Afbeelding wordt geladen</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file not found: %1</original>
-<translation>Waarschuwing - bestand niet gevonden: %1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the image '%1' could not be found.
-
-If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Helaas, de afbeelding '%1' kan niet worden gevonden.
-
-Als deze afbeelding oorspronkelijk opgeslagen was op een verwisselbaar medium (DVD, USB-stick, etc), voer dan het medium opnieuw in en probeer opnieuw.</translation>
-</phrase>
-
-<phrase>
-<original>File not found</original>
-<translation>Bestand niet gevonden</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file locked: %1</original>
-<translation>Waarschuwing . bestand vergrendeld: %1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
-
-Please close this file in any other running programs, then try again.</original>
-<translation>Helaas is het bestand '%1' momenteel vergrendeld door een ander programma op deze pc.
-
-Sluit dit bestand in elk ander programma, en probeer het opnieuw</translation>
-</phrase>
-
-<phrase>
-<original>File locked</original>
-<translation>Bestand vergrendeld</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Afbeelding met succes geladen.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to load %1</original>
-<translation>Kon %1 niet laden</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>Helaas kon PhotoDemon volgende afbeelding niet laden:
-
-% 1
-
-Gebruik een ander programma om deze afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat je ze laadt. Bedankt!</translation>
-</phrase>
-
-<phrase>
-<original>Image import failed</original>
-<translation>Importeren afbeeldingen gefaald</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>Laag import geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>%1 of %2 images loaded successfully</original>
-<translation>%1 of %2 afbeeldingen succesvol geladen</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image(s):
-
-%1
-Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>Helaas kon PhotoDemon de volgende foto's niet laden:
-
-%1
-Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeldingsformaat gebruiken (zoals JPEG of PNG). Bedankt!</translation>
-</phrase>
-
-<phrase>
-<original>Some images were not loaded</original>
-<translation>Sommige bestanden zijn niet geladen</translation>
-</phrase>
-
-<phrase>
-<original>Duplicating current image</original>
-<translation>Dupliceren huidige afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Copy</original>
-<translation>Kopieër</translation>
-</phrase>
-
-<phrase>
-<original>Image duplication complete.</original>
-<translation>Duplicatie afbeelding klaar.</translation>
-</phrase>
-
-<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
-
-(Press No to continue recording.)</original>
-<translation>Deze macro bevat geen opneembare acties. Weet u zeker dat u de opname wilt stoppen?
-
-(Druk op Nee door te gaan met opnemen.)</translation>
-</phrase>
-
-<phrase>
-<original>Warning: invalid macro</original>
-<translation>Waarschuwing: ongeldige macro</translation>
-</phrase>
-
-<phrase>
-<original>Macro abandoned.</original>
-<translation>Macro verlaten.</translation>
-</phrase>
-
-<phrase>
-<original>Macro saved successfully.</original>
-<translation>Macro succesvol opgeslagen.</translation>
-</phrase>
-
-<phrase>
-<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
-
-(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Als u deze macro niet opslaat gaan alle acties opgenomen tijdens deze sessie permanent verloren. Weet u zeker dat u wilt annuleren?
-
-(Druk op Nee om terug te keren naar het Bewaren Macro scherm. Merk op dat u deze macro later altijd kunt verwijderen als u besluit dat u deze niet wilt.)</translation>
-</phrase>
-
-<phrase>
-<original>Warning: last chance to save macro</original>
-<translation>Waarschuwing: Laatste kans om macro op te slaan</translation>
-</phrase>
-
-<phrase>
-<original>Macro</original>
-<translation>Macro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Opslaan macrogegevens</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording started.</original>
-<translation>Macro opname gestart.</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording stopped.</original>
-<translation>Macro opname gestopt.</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Open Macro File</translation>
-</phrase>
-
-<phrase>
-<original>Loading macro data</original>
-<translation>Laden macrogegevens</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>Macro openen geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>Macro complete!</original>
-<translation>Macro compleet!</translation>
-</phrase>
-
-<phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Incompatibele macro-versie gevonden. Verlaten van Macro afspelen.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Helaas wordt dit macrobestand niet meer ondersteund door de huidige versie van PhotoDemon.
-
-In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies te ondersteunen, de prestaties te verbeteren, en om een aantal reeds lang bestaande problemen met de betrouwbaarheid op te lossen. Helaas, dit betekent dat macro's opgenomen voorafgaand aan versie 6.0, niet meer vereenigbaar zijn. U moet deze macor's opnieuw opnemen.
-
-(Merk op dat alle oude macro bestanden nog zullen werken in oude versies van PhotoDemon, als u het absoluut nodig vind om ze te openen.)</translation>
-</phrase>
-
-<phrase>
-<original>Unsupported macro file</original>
-<translation>Ongesupporteerd macro-bestand</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Verwerking macrogegevens</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
-<original>Alt</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Shift</original>
-<translation>Shift</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>Enter</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Page Down</translation>
 </phrase>
 
 <phrase>
@@ -1289,6 +94,16 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Export color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export color profile</original>
+<translation>Exporteer kleurprofiel</translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation>Pallet exporteren</translation>
 </phrase>
@@ -1309,6 +124,16 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Undo</original>
+<translation>Ongedaan maken</translation>
+</phrase>
+
+<phrase>
+<original>Redo</original>
+<translation>Opnieuw</translation>
+</phrase>
+
+<phrase>
 <original>Undo history</original>
 <translation>Ongedaan maken geschiedenis</translation>
 </phrase>
@@ -1319,6 +144,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Fade</original>
+<translation>Vervagen</translation>
+</phrase>
+
+<phrase>
 <original>Cut</original>
 <translation>Knippen</translation>
 </phrase>
@@ -1326,6 +156,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Cut merged</original>
 <translation>Knippen samengevoegd</translation>
+</phrase>
+
+<phrase>
+<original>Copy</original>
+<translation>Kopieër</translation>
 </phrase>
 
 <phrase>
@@ -1341,6 +176,21 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Paste to cursor</original>
 <translation>Plakken aan de cursor</translation>
+</phrase>
+
+<phrase>
+<original>Cut special</original>
+<translation>Knip speciaal</translation>
+</phrase>
+
+<phrase>
+<original>Copy special</original>
+<translation>Kopieer speciaal</translation>
+</phrase>
+
+<phrase>
+<original>Paste special</original>
+<translation>Plakspecialiteit</translation>
 </phrase>
 
 <phrase>
@@ -1376,6 +226,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Fit canvas around all layers</original>
 <translation>Pas canvas rond alle lagen</translation>
+</phrase>
+
+<phrase>
+<original>Crop</original>
+<translation>Bijsnijden</translation>
 </phrase>
 
 <phrase>
@@ -1449,6 +304,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Count unique colors</original>
+<translation>Tel unieke kleuren</translation>
+</phrase>
+
+<phrase>
 <original>Add new layer</original>
 <translation>Voeg een nieuwe laag toe</translation>
 </phrase>
@@ -1461,6 +321,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Duplicate Layer</original>
 <translation>Dupliceer laag</translation>
+</phrase>
+
+<phrase>
+<original>New layer from file</original>
+<translation>Nieuwe laag uit bestand</translation>
 </phrase>
 
 <phrase>
@@ -1490,6 +355,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 
 <phrase>
 <original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from file</original>
 <translation></translation>
 </phrase>
 
@@ -1851,6 +721,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Tint</original>
 <translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Color lookup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2383,6 +1258,1135 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Controleren op software-updates</translation>
 </phrase>
 
+<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[naamloze afbeelding]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Autosave reconstruction complete for %1</original>
+<translation>Autosave reconstructie compleet voor %1</translation>
+</phrase>
+
+<phrase>
+<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
+<translation>Autosave kon niet volledig worden gereconstrueerd. Poging gedeeltelijke reconstructie in plaats.</translation>
+</phrase>
+
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>Unloading image %1 of %2</original>
+<translation>Ontladen afbeelding %1 van %2</translation>
+</phrase>
+
+<phrase>
+<original>Closing image</original>
+<translation>Afbeelding wordt afgesloten</translation>
+</phrase>
+
+<phrase>
+<original>Finished.</original>
+<translation>Klaar.</translation>
+</phrase>
+
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>ICC profile</original>
+<translation>ICC profiel</translation>
+</phrase>
+
+<phrase>
+<original>New color profile</original>
+<translation>Nieuw kleurprofiel</translation>
+</phrase>
+
+<phrase>
+<original>Profile exported successfully.</original>
+<translation>Profiel met succes geëxporteerd.</translation>
+</phrase>
+
+<!-- ColorManagement_ICM.bas contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>How would you like to load this image?</original>
+<translation>Hoe wilt u deze afbeelding laden?</translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation>Open het als een op zichzelf staand beeld.</translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation>Voeg het toe aan de huidige afbeelding als een nieuwe laag.</translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>Ik kan niet beslissen. Annuleer deze actie.</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation>in de toekomst, doe dit zonder het mij te vragen</translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation>Drop als afbeelding of laag</translation>
+</phrase>
+
+<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<phrase>
+<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
+<translation>ExifTool kan niet worden gestart. Metagegevens niet beschikbaar voor deze sessie.</translation>
+</phrase>
+
+<phrase>
+<original>Please wait while the tag database is created</original>
+<translation>Even wachten terwijl de tagdatabase wordt gemaakt</translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation>De tagdatabase behandelt technische details van de 20.000 metadatatags ondersteund door PhotoDemon. Het maken van de database duurt 10 tot 15 seconden, en het hoeft slechts één keer te worden gemaakt wanneer de metadata-editor voor het eerst wordt gebruikt.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>Geen metagegevens beschikbaar</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain metadata.</original>
+<translation>Deze afbeelding bevat geen metadata.</translation>
+</phrase>
+
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>Open an image</original>
+<translation>Open een afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Select an image</original>
+<translation>Selecteer een afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Save an image</original>
+<translation>Een afbeelding opslaan</translation>
+</phrase>
+
+<phrase>
+<original>Before lossless copies can be saved, you must save this image at least once.
+
+Lossless copies will be saved to the same folder as this initial image save.</original>
+<translation>Voordat verliesloze kopieën kunnen worden opgeslagen, moet u de afbeelding minstens één maal bewaren.
+
+Verliesloze kopieën worden opgeslagen in dezelfde map als deze initiële afbeeldings opslag.</translation>
+</phrase>
+
+<phrase>
+<original>Initial save required</original>
+<translation>Initiële opslag vereist</translation>
+</phrase>
+
+<phrase>
+<original>Save canceled.</original>
+<translation>Opslaan geannuleerd.</translation>
+</phrase>
+
+<phrase>
+<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
+
+If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
+<translation>Een niet nader gespecificeerde fout is opgetreden bij een poging om de afbeelding op te slaan. Probeer de afbeelding op te slaan in een ander format.
+
+Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/contact aan de PhotoDemon ontwikkelaars</translation>
+</phrase>
+
+<phrase>
+<original>Error</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>achtergrond</translation>
+</phrase>
+
+<phrase>
+<original>Original image</original>
+<translation>oorspronkelijke afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation>Helaas heeft deze pc niet genoeg geheugen om een %1x %2 afbeelding te maken. Verminder de gevraagde grootte en probeer het opnieuw.</translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation>Afbeelding is te groot</translation>
+</phrase>
+
+<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Auto-correcting colors and lighting</original>
+<translation>Autocorrectie van kleuren en verlichting</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image white balance</original>
+<translation>Instellen witbalans van de afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Inverting</original>
+<translation>Omkeren van de afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Shifting RGB values</original>
+<translation>Verschuivende RGB-waarden</translation>
+</phrase>
+
+<phrase>
+<original>Calculating film negative values</original>
+<translation>Berekenen film negatieve waarden</translation>
+</phrase>
+
+<phrase>
+<original>Isolating maximum color channels</original>
+<translation>Isoleren maximale kleurkanalen</translation>
+</phrase>
+
+<phrase>
+<original>Isolating minimum color channels</original>
+<translation>Isoleren minimum kleurkanalen</translation>
+</phrase>
+
+<phrase>
+<original>Auto-enhancing color and lighting</original>
+<translation>Autoverhogende kleur en verlichting</translation>
+</phrase>
+
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>Applying %1 filter</original>
+<translation>Toepassen %1 filter</translation>
+</phrase>
+
+<phrase>
+<original>Generating grids</original>
+<translation>Genereren van rasters</translation>
+</phrase>
+
+<phrase>
+<original>Applying grid blur</original>
+<translation>Toepassen onscherpte raster</translation>
+</phrase>
+
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Counting the number of unique colors in this image</original>
+<translation>Tellen van het aantal unieke kleuren in deze afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Total colors: %1</original>
+<translation>Totale kleuren: %1</translation>
+</phrase>
+
+<phrase>
+<original>This image contains %1 unique colors (RGB).
+
+This image contains %2 unique color + opacity values (RGBA).</original>
+<translation>Deze afbeelding bevat %1 unieke kleuren (RGB).
+
+Deze afbeelding bevat %2 unieke kleuren + opaciteitswaarden (RGBA).</translation>
+</phrase>
+
+<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>herhaal</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>lijn</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>driehoek</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>cirkel</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
+<original>Time taken</original>
+<translation>Tijd in beslag genomen</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Analyzing image</original>
+<translation>Analyse van het beeld</translation>
+</phrase>
+
+<phrase>
+<original>Image is all one color.  Autocrop unnecessary.</original>
+<translation>Afbeelding is helemaal in één kleur. Auto-bijsnijden overbodig.</translation>
+</phrase>
+
+<phrase>
+<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
+<translation>De afbeelding is al intelligent bijgesneden. Automatisch bijsnijden verlaten. (Er zijn geen wijzigingen aangebracht in de afbeelding)</translation>
+</phrase>
+
+<phrase>
+<original>Cropping image</original>
+<translation>Bijsnijden beeld</translation>
+</phrase>
+
+<phrase>
+<original>No active selection found.  Crop abandoned.</original>
+<translation>Geen actieve selectie gevonden. Bijsnijden verlaten.</translation>
+</phrase>
+
+<phrase>
+<original>Flipping image</original>
+<translation>Omdraaien afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Mirroring image</original>
+<translation>Spiegelen afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Rotating image</original>
+<translation>Draaien afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Fitting image canvas around layer</original>
+<translation>Passen afbeeldingscanvas rond laag</translation>
+</phrase>
+
+<phrase>
+<original>Image is fully transparent.  Trim abandoned.</original>
+<translation>De afbeelding is volledig transparant. Trim verlaten.</translation>
+</phrase>
+
+<phrase>
+<original>Image is already trimmed.  (No changes were made to the image.)</original>
+<translation>De afbeelding is al getrimd. (Er werden geen wijzigingen aangebracht in de afbeelding.)</translation>
+</phrase>
+
+<phrase>
+<original>Trimming image</original>
+<translation>Trimbeeld</translation>
+</phrase>
+
+<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Loading page %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>Opslaan</translation>
+</phrase>
+
+<phrase>
+<original>Save complete.</original>
+<translation>Opslaan voltooid.</translation>
+</phrase>
+
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>Uitrekken histogram</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Enter</original>
+<translation>Enter</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Page Down</translation>
+</phrase>
+
+<phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Shift</translation>
+</phrase>
+
+<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>Saving %1 file</original>
+<translation>Opslaan %1 bestand</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 opslaan mislukt (FreeImage_SaveEx silent fail). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 opslaan mislukt (FreeImage gaf blanco handle terug). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Besparing van het animatieframe %1 van %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Afrondend beeld</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
+
+To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
+<translation>De FreeImage -interface plug-in (FreeImage.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
+
+Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het FreeImage.dll bestand (te downloaden van http://freeimage.sourceforge.net/download.html) in de plug-in map en herstart je het programma.</translation>
+</phrase>
+
+<phrase>
+<original>Save cannot be completed without FreeImage library.</original>
+<translation>Opslaan kan niet worden voltooid zonder FreeImage bibliotheek.</translation>
+</phrase>
+
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>Alle Compatibele Afbeeldingen</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>Alle bestanden</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>Er is een fout opgetreden (#%1 - %2). PDI Laden afgebroken.</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Repeat</original>
+<translation>Herhaal</translation>
+</phrase>
+
+<phrase>
+<original>Fade: %1</original>
+<translation>Vervagen: %1</translation>
+</phrase>
+
+<phrase>
+<original>Repeat: %1</original>
+<translation>Herhaal: %1</translation>
+</phrase>
+
+<phrase>
+<original>Undo last action</original>
+<translation>Ongedaan maken laatste actie</translation>
+</phrase>
+
+<phrase>
+<original>Redo previous action</original>
+<translation>Herhalen vorige actie</translation>
+</phrase>
+
+<phrase>
+<original>Recording</original>
+<translation>Opname</translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
+<translation>klem</translation>
+</phrase>
+
+<phrase>
+<original>reflect</original>
+<translation>weerspiegelen</translation>
+</phrase>
+
+<phrase>
+<original>wrap</original>
+<translation>wikkel</translation>
+</phrase>
+
+<phrase>
+<original>erase</original>
+<translation>verwijder</translation>
+</phrase>
+
+<phrase>
+<original>ignore</original>
+<translation>negeer</translation>
+</phrase>
+
+<phrase>
+<original>square</original>
+<translation>vierkant</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>diamant</translation>
+</phrase>
+
+<phrase>
+<original>Normal</original>
+<translation>Normaal</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Verdonker</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Vermenigvuldig</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Kleurenbrand</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Lineaire brand</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Verlicht</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Scherm</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Kleuren ontwijking</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Liniare ontwijking</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Overlay</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Zacht licht</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Hard licht</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Levendig licht</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Lineair licht</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Pin licht</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Harde mix</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Verschil</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Uitsluiting</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Aftrekken</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Delen</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Kleurtoon</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Verzadiging</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Kleur</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Helderheid</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Graan extractie</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Graan samenvoeging</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Wissen</translation>
+</phrase>
+
+<phrase>
+<original>Inherit</original>
+<translation>Erven</translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation>vergrendeld</translation>
+</phrase>
+
+<phrase>
+<original>Perceptual</original>
+<translation>Perceptueel</translation>
+</phrase>
+
+<phrase>
+<original>Relative colorimetric</original>
+<translation>Relatief colorimetrisch</translation>
+</phrase>
+
+<phrase>
+<original>Absolute colorimetric</original>
+<translation>Absoluuut colorimetrisch</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>kleur</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation>kleur en dekking</translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>luminantie</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation>alleen rood</translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation>alleen groen</translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation>alleen blauw</translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation>alleen alpha</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>Weet je zeker dat je %1 wilt annuleren?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel action</original>
+<translation>Annuleer actie</translation>
+</phrase>
+
+<phrase>
+<original>preview not available</original>
+<translation>Voorbeeld niet beschikbaar</translation>
+</phrase>
+
+<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+
+<phrase>
+<original>Blank layer</original>
+<translation>Lege laag</translation>
+</phrase>
+
+<phrase>
+<original>Group start</original>
+<translation>Groepsstart</translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation>Groepseinde</translation>
+</phrase>
+
+<phrase>
+<original>Basic text layer</original>
+<translation>Basistekstlaag</translation>
+</phrase>
+
+<phrase>
+<original>Advanced text layer</original>
+<translation>Geavanceerde tekstlaag</translation>
+</phrase>
+
+<phrase>
+<original>Visible</original>
+<translation>Zichtbaar</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New layer added successfully.</original>
+<translation>Nieuwe laag succesvol toegevoegd.</translation>
+</phrase>
+
+<phrase>
+<original>Copying layer</original>
+<translation>Kopieerlaag</translation>
+</phrase>
+
+<phrase>
+<original>Conversion complete.</original>
+<translation>Conversie voltooid.</translation>
+</phrase>
+
+<phrase>
+<original>Adding image</original>
+<translation>Afbeelding toevoegen</translation>
+</phrase>
+
+<phrase>
+<original>Merged layers</original>
+<translation>Samengevoegde lagen</translation>
+</phrase>
+
+<phrase>
+<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
+<translation>Met deze actie worden tekst- en vectorlagen omgezet in afbeeldings (raster) lagen, waardoor u niet langer laagspecifieke instellingen zoals tekst, lettertype, kleur of vorm kunt wijzigen.</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to continue?</original>
+<translation>Weet je zeker dat je door wilt gaan?</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
+<translation>Ja. Converteer tekst- en vectorlagen naar afbeeldings (raster) lagen.</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave text and vector layers as they are.</original>
+<translation>Nee. Laat tekst en vectorlagen zoals ze zijn.</translation>
+</phrase>
+
+<phrase>
+<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
+<translation>Deze tekstlaag wordt veranderd in een afbeelding (raster) laag, wat betekent dat u de tekst- of lettertypeninstellingen niet meer kunt wijzigen.</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Please convert this text layer.</original>
+<translation>Ja. Zet deze tekstlaag om.</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave this text layer as it is.</original>
+<translation>Nee. Laat deze tekstlaag zoals ze is.</translation>
+</phrase>
+
+<phrase>
+<original>In the future, automatically rasterize without prompting me</original>
+<translation>In de toekomst rasteriseer je automatisch zonder dat je me het vraagt</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>Verflaag</translation>
+</phrase>
+
+<phrase>
+<original>Frame %1</original>
+<translation>Kader %1</translation>
+</phrase>
+
+<phrase>
+<original>Page %1</original>
+<translation>Pagina %1</translation>
+</phrase>
+
+<!-- Layers.bas contains 56 phrases. 33 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>Loading image</original>
+<translation>Afbeelding wordt geladen</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file not found: %1</original>
+<translation>Waarschuwing - bestand niet gevonden: %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the image '%1' could not be found.
+
+If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+<translation>Helaas, de afbeelding '%1' kan niet worden gevonden.
+
+Als deze afbeelding oorspronkelijk opgeslagen was op een verwisselbaar medium (DVD, USB-stick, etc), voer dan het medium opnieuw in en probeer opnieuw.</translation>
+</phrase>
+
+<phrase>
+<original>File not found</original>
+<translation>Bestand niet gevonden</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation>Waarschuwing . bestand vergrendeld: %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation>Helaas is het bestand '%1' momenteel vergrendeld door een ander programma op deze pc.
+
+Sluit dit bestand in elk ander programma, en probeer het opnieuw</translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation>Bestand vergrendeld</translation>
+</phrase>
+
+<phrase>
+<original>Image loaded successfully.</original>
+<translation>Afbeelding met succes geladen.</translation>
+</phrase>
+
+<phrase>
+<original>Failed to load %1</original>
+<translation>Kon %1 niet laden</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation>Helaas kon PhotoDemon volgende afbeelding niet laden:
+
+% 1
+
+Gebruik een ander programma om deze afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat je ze laadt. Bedankt!</translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation>Importeren afbeeldingen gefaald</translation>
+</phrase>
+
+<phrase>
+<original>Layer import canceled.</original>
+<translation>Laag import geannuleerd.</translation>
+</phrase>
+
+<phrase>
+<original>%1 of %2 images loaded successfully</original>
+<translation>%1 of %2 afbeeldingen succesvol geladen</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image(s):
+
+%1
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation>Helaas kon PhotoDemon de volgende foto's niet laden:
+
+%1
+Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeldingsformaat gebruiken (zoals JPEG of PNG). Bedankt!</translation>
+</phrase>
+
+<phrase>
+<original>Some images were not loaded</original>
+<translation>Sommige bestanden zijn niet geladen</translation>
+</phrase>
+
+<phrase>
+<original>Duplicating current image</original>
+<translation>Dupliceren huidige afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Image duplication complete.</original>
+<translation>Duplicatie afbeelding klaar.</translation>
+</phrase>
+
+<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
+
+(Press No to continue recording.)</original>
+<translation>Deze macro bevat geen opneembare acties. Weet u zeker dat u de opname wilt stoppen?
+
+(Druk op Nee door te gaan met opnemen.)</translation>
+</phrase>
+
+<phrase>
+<original>Warning: invalid macro</original>
+<translation>Waarschuwing: ongeldige macro</translation>
+</phrase>
+
+<phrase>
+<original>Macro abandoned.</original>
+<translation>Macro verlaten.</translation>
+</phrase>
+
+<phrase>
+<original>Macro saved successfully.</original>
+<translation>Macro succesvol opgeslagen.</translation>
+</phrase>
+
+<phrase>
+<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
+
+(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
+<translation>Als u deze macro niet opslaat gaan alle acties opgenomen tijdens deze sessie permanent verloren. Weet u zeker dat u wilt annuleren?
+
+(Druk op Nee om terug te keren naar het Bewaren Macro scherm. Merk op dat u deze macro later altijd kunt verwijderen als u besluit dat u deze niet wilt.)</translation>
+</phrase>
+
+<phrase>
+<original>Warning: last chance to save macro</original>
+<translation>Waarschuwing: Laatste kans om macro op te slaan</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Macro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Opslaan macrogegevens</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording started.</original>
+<translation>Macro opname gestart.</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording stopped.</original>
+<translation>Macro opname gestopt.</translation>
+</phrase>
+
+<phrase>
+<original>Open Macro File</original>
+<translation>Open Macro File</translation>
+</phrase>
+
+<phrase>
+<original>Loading macro data</original>
+<translation>Laden macrogegevens</translation>
+</phrase>
+
+<phrase>
+<original>Macro load canceled.</original>
+<translation>Macro openen geannuleerd.</translation>
+</phrase>
+
+<phrase>
+<original>Macro complete!</original>
+<translation>Macro compleet!</translation>
+</phrase>
+
+<phrase>
+<original>Incompatible macro version found.  Macro playback abandoned.</original>
+<translation>Incompatibele macro-versie gevonden. Verlaten van Macro afspelen.</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
+
+In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
+
+(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
+<translation>Helaas wordt dit macrobestand niet meer ondersteund door de huidige versie van PhotoDemon.
+
+In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies te ondersteunen, de prestaties te verbeteren, en om een aantal reeds lang bestaande problemen met de betrouwbaarheid op te lossen. Helaas, dit betekent dat macro's opgenomen voorafgaand aan versie 6.0, niet meer vereenigbaar zijn. U moet deze macor's opnieuw opnemen.
+
+(Merk op dat alle oude macro bestanden nog zullen werken in oude versies van PhotoDemon, als u het absoluut nodig vind om ze te openen.)</translation>
+</phrase>
+
+<phrase>
+<original>Unsupported macro file</original>
+<translation>Ongesupporteerd macro-bestand</translation>
+</phrase>
+
+<phrase>
+<original>Processing macro data</original>
+<translation>Verwerking macrogegevens</translation>
+</phrase>
+
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
 <phrase>
 <original>Open all recent images</original>
 <translation>Open alle recente afbeeldingen</translation>
@@ -2403,7 +2407,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Wis recente macro-lijst</translation>
 </phrase>
 
-<!-- Menus.bas contains 277 phrases. 33 were duplicates of existing phrases, so only 244 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5554,11 +5558,6 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>Dit exemplaar van PhotoDemon is up to date.</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
@@ -5570,6 +5569,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <phrase>
 <original>PhotoDemon Updates</original>
 <translation>PhotoDemon updates</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>Dit exemplaar van PhotoDemon is up to date.</translation>
 </phrase>
 
 <phrase>
@@ -5611,7 +5615,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 383 phrases. 201 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13711,8 +13715,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5361 phrases. -->
-<!-- 2767 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5360 phrases. -->
+<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

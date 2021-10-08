@@ -310,9 +310,9 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left * curDIBValues.BytesPerPixel
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right * curDIBValues.BytesPerPixel
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -374,13 +374,10 @@ Public Sub fxAutoEnhance()
     Dim imageData() As Byte, tmpSA2D As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA2D
     
-    Dim imgDepth As Long
-    imgDepth = curDIBValues.BytesPerPixel
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left * imgDepth
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right * imgDepth
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
     
     'Finally, a bunch of variables used in color calculation
@@ -389,8 +386,7 @@ Public Sub fxAutoEnhance()
     'Prepare a look-up table for the adjustment.  Clarity is simply a contrast adjustment limited to midtones.
     ' Values at 127 are processed most strongly, with a linear decrease as input values approach 0 or 255.
     ' Also, I reduce the strength of the adjustment by a bit to prevent blowout.
-    Dim contrastLookup() As Byte
-    ReDim contrastLookup(0 To 255) As Byte
+    Dim contrastLookup(0 To 255) As Byte
     
     For x = 0 To 255
     
@@ -416,7 +412,7 @@ Public Sub fxAutoEnhance()
     'Apply the filter
     For y = initY To finalY
         workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
-    For x = initX To finalX Step imgDepth
+    For x = initX To finalX Step 4
         
         b = imageData(x)
         g = imageData(x + 1)

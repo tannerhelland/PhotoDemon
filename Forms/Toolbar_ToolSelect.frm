@@ -513,28 +513,28 @@ Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
     Select Case Index
     
         Case FILE_NEW
-            Menus.ProcessDefaultAction_ByName "file_new"
+            Actions.LaunchAction_ByName "file_new"
             
         Case FILE_OPEN
-            Menus.ProcessDefaultAction_ByName "file_open"
+            Actions.LaunchAction_ByName "file_open"
             
         Case FILE_CLOSE
-            Menus.ProcessDefaultAction_ByName "file_close"
+            Actions.LaunchAction_ByName "file_close"
         
         Case FILE_SAVE
-            Menus.ProcessDefaultAction_ByName "file_save"
+            Actions.LaunchAction_ByName "file_save"
         
         Case FILE_SAVEAS_LAYERS
-            Menus.ProcessDefaultAction_ByName "file_savecopy"
+            Actions.LaunchAction_ByName "file_savecopy"
             
         Case FILE_SAVEAS_FLAT
-            Menus.ProcessDefaultAction_ByName "file_saveas"
+            Actions.LaunchAction_ByName "file_saveas"
         
         Case FILE_UNDO
-            Menus.ProcessDefaultAction_ByName "edit_undo"
+            Actions.LaunchAction_ByName "edit_undo"
             
         Case FILE_REDO
-            Menus.ProcessDefaultAction_ByName "edit_redo"
+            Actions.LaunchAction_ByName "edit_redo"
     
     End Select
     

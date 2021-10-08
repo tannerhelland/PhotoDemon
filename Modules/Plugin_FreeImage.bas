@@ -3,16 +3,16 @@ Attribute VB_Name = "Plugin_FreeImage"
 'FreeImage Interface (Advanced)
 'Copyright 2012-2021 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 08/August/17
-'Last update: migrate all tone-mapping code to XML params; new performance improvements for tone-mapping
+'Last updated: 07/October/21
+'Last update: move output message callback here, and rewrite it to use internal PD objects for better perf
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
 ' and quality.
 '
 'Please note that this module relies heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
-' as Outside_FreeImageV3; see that file for license details).  Thank you to Carsten for his work on simplifying
-' FreeImage usage from classic VB.
+' as Outside_FreeImageV3; see that file for license details).  Thank you to Carsten for his work on translating
+' myriad FreeImage declares into VB-compatible formats.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -40,8 +40,11 @@ Private Type BITMAPINFO
     bmiColors As Long
 End Type
 
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
 Private Declare Function AlphaBlend Lib "gdi32" Alias "GdiAlphaBlend" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
+
+'A single FreeImage declare is used here, to supply a callback for errors and other output messages
+Private Declare Sub FreeImage_SetOutputMessage Lib "FreeImage" Alias "_FreeImage_SetOutputMessageStdCall@4" (ByVal pCallback As Long)
 
 'DLL handle; if it is zero, FreeImage is not available
 Private m_FreeImageHandle As Long
@@ -53,6 +56,9 @@ Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As D
 'Cache(s) for post-export image previews.  These objects can be safely freed, as they will be properly initialized on-demand.
 Private m_ExportPreviewBytes() As Byte
 Private m_ExportPreviewDIB As pdDIB
+
+'FreeImage supports a callback for errors.  We store any returned strings in a normal pdStringStack, for convenience.
+Private m_Errors As pdStringStack
 
 'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via the PluginManager module)
 Public Function InitializeFreeImage() As Boolean
@@ -2301,30 +2307,74 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     
 End Function
 
+'FreeImage supports a user-defined callback for library errors.  We use this and store errors in a pdStringStack object.
+Public Sub InitializeFICallback()
+    Set m_Errors = New pdStringStack
+    FreeImage_SetOutputMessage AddressOf FreeImage_ErrorHandler
+End Sub
+
+'If InitializeFICallback(), above, was called, FreeImage will supply output messages (typically errors only)
+' to this function.
+Private Sub FreeImage_ErrorHandler(ByVal imgFormat As FREE_IMAGE_FORMAT, ByVal ptrMessage As Long)
+    
+    Dim strErrorMessage As String
+    If (ptrMessage <> 0) Then
+        strErrorMessage = Strings.TrimNull(Strings.StringFromCharPtr(ptrMessage, False))
+    Else
+        strErrorMessage = "unknown error (blank *char)"
+    End If
+    
+    If (LenB(strErrorMessage) <> 0) Then
+        
+        If (m_Errors Is Nothing) Then Set m_Errors = New pdStringStack
+        
+        'Avoid duplicates when adding error strings.  (A single bad image may return the same problem
+        ' multiple times, and we don't want to flood the user with useless crap.)
+        If (Not m_Errors.ContainsString(strErrorMessage, True)) Then m_Errors.AddString strErrorMessage
+        
+    End If
+    
+    'In nightly builds, it can be helpful to see error messages *immediately* instead of saving a list
+    ' and presenting them to the user all at once.
+    PDDebug.LogAction "FreeImage reported an internal error: " & strErrorMessage, PDM_External_Lib
+    
+End Sub
+
 Public Function FreeImageErrorState() As Boolean
-    FreeImageErrorState = (LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0)
+    If (Not m_Errors Is Nothing) Then
+        FreeImageErrorState = (m_Errors.GetNumOfStrings > 0)
+    Else
+        FreeImageErrorState = False
+    End If
 End Function
 
 Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean = True) As String
     
-    Dim listOfFreeImageErrors As String
-    listOfFreeImageErrors = """"
+    Const DOUBLE_QUOTES As String = """"
     
-    'Condense all recorded errors into a single string
-    If (UBound(g_FreeImageErrorMessages) > 0) Then
-        Dim i As Long
-        For i = 0 To UBound(g_FreeImageErrorMessages)
-            listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(i)
-            If (i < UBound(g_FreeImageErrorMessages)) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
+    Dim listOfErrors As pdString
+    Set listOfErrors = New pdString
+    listOfErrors.Append DOUBLE_QUOTES
+    
+    'To simplify our life, instantiate the error stack if it wasn't already.
+    If (m_Errors Is Nothing) Then Set m_Errors = New pdStringStack
+    
+    'Condense all recorded errors into a single multi-line string
+    If (m_Errors.GetNumOfStrings > 0) Then
+        Dim i As Long, tmpString As pdString
+        For i = 0 To m_Errors.GetNumOfStrings - 1
+            If (i < m_Errors.GetNumOfStrings - 1) Then
+                listOfErrors.AppendLine m_Errors.GetString(i)
+            Else
+                listOfErrors.Append m_Errors.GetString(i)
+            End If
         Next i
-    Else
-        listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(0)
     End If
     
-    listOfFreeImageErrors = listOfFreeImageErrors & """"
-    GetFreeImageErrors = listOfFreeImageErrors
+    listOfErrors.Append DOUBLE_QUOTES
+    GetFreeImageErrors = listOfErrors.ToString()
     
-    If eraseListUponReturn Then ReDim g_FreeImageErrorMessages(0) As String
+    If eraseListUponReturn Then m_Errors.ResetStack
     
 End Function
 

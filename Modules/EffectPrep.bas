@@ -729,6 +729,8 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
             ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
             ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
+            '
+            'TODO: figure out if this is necessary for normal layers, and not just ones with affine transforms.
             PDImages.GetActiveImage.GetActiveLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
             'Un-pad any null pixels we may have added as part of the selection interaction

@@ -349,30 +349,30 @@ Private Sub cmdLayerAction_Click(Index As Integer, ByVal Shift As ShiftConstants
     
         Case LYR_BTN_ADD
             If (Shift = vbShiftMask) Then
-                Menus.ProcessDefaultAction_ByName "layer_addblank"
+                Actions.LaunchAction_ByName "layer_addblank"
             Else
-                Menus.ProcessDefaultAction_ByName "layer_addbasic"
+                Actions.LaunchAction_ByName "layer_addbasic"
             End If
             
         Case LYR_BTN_DELETE
-            Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
+            Actions.LaunchAction_ByName "layer_deletecurrent"
             
         Case LYR_BTN_MOVE_UP
             If (Shift = vbShiftMask) Then
-                Menus.ProcessDefaultAction_ByName "layer_mergeup"
+                Actions.LaunchAction_ByName "layer_mergeup"
             Else
-                Menus.ProcessDefaultAction_ByName "layer_moveup"
+                Actions.LaunchAction_ByName "layer_moveup"
             End If
             
         Case LYR_BTN_MOVE_DOWN
             If (Shift = vbShiftMask) Then
-                Menus.ProcessDefaultAction_ByName "layer_mergedown"
+                Actions.LaunchAction_ByName "layer_mergedown"
             Else
-                Menus.ProcessDefaultAction_ByName "layer_movedown"
+                Actions.LaunchAction_ByName "layer_movedown"
             End If
             
         Case LYR_BTN_DUPLICATE
-            Menus.ProcessDefaultAction_ByName "layer_duplicate"
+            Actions.LaunchAction_ByName "layer_duplicate"
             
     End Select
     

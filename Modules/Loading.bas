@@ -909,3 +909,22 @@ Public Sub DuplicateCurrentImage()
     Message "Image duplication complete."
     
 End Sub
+
+'When testing, it can be helpful to load *all* entries from the recent files menu.
+Public Sub LoadAllRecentFiles()
+    
+    If (g_RecentFiles.GetNumOfItems > 0) Then
+        
+        Dim listOfFiles As pdStringStack
+        Set listOfFiles = New pdStringStack
+        
+        Dim i As Long
+        For i = 0 To g_RecentFiles.GetNumOfItems() - 1
+            listOfFiles.AddString g_RecentFiles.GetFullPath(i)
+        Next i
+        
+        Loading.LoadMultipleImageFiles listOfFiles, True
+        
+    End If
+        
+End Sub

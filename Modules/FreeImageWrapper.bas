@@ -713,10 +713,6 @@ End Type
 ' General functions
 Private Declare Function FreeImage_GetVersionInt Lib "FreeImage.dll" Alias "_FreeImage_GetVersion@0" () As Long
 
-Private Declare Sub FreeImage_SetOutputMessage Lib "FreeImage.dll" Alias "_FreeImage_SetOutputMessageStdCall@4" ( _
-           ByVal omf As Long)
-
-
 ' Bitmap management functions
 Public Declare Function FreeImage_Allocate Lib "FreeImage.dll" Alias "_FreeImage_Allocate@24" ( _
            ByVal Width As Long, _
@@ -870,7 +866,7 @@ Public Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "
 
 Public Declare Function FreeImage_Threshold Lib "FreeImage.dll" Alias "_FreeImage_Threshold@8" ( _
            ByVal Bitmap As Long, _
-           ByVal Threshold As Byte) As Long
+           ByVal threshold As Byte) As Long
 
 Public Declare Function FreeImage_Dither Lib "FreeImage.dll" Alias "_FreeImage_Dither@8" ( _
            ByVal Bitmap As Long, _
@@ -921,7 +917,7 @@ Public Declare Function FreeImage_GetBlueMask Lib "FreeImage.dll" Alias "_FreeIm
 ' Tone mapping operators
 Public Declare Function FreeImage_TmoDrago03 Lib "FreeImage.dll" Alias "_FreeImage_TmoDrago03@20" ( _
            ByVal Bitmap As Long, _
-  Optional ByVal Gamma As Double = 2.2, _
+  Optional ByVal gamma As Double = 2.2, _
   Optional ByVal Exposure As Double) As Long
 
 Public Declare Function FreeImage_TmoReinhard05Ex Lib "FreeImage.dll" Alias "_FreeImage_TmoReinhard05Ex@36" ( _
@@ -1099,8 +1095,8 @@ Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeI
            ByVal Angle As Double, _
            ByVal ShiftX As Double, _
            ByVal ShiftY As Double, _
-           ByVal OriginX As Double, _
-           ByVal OriginY As Double, _
+           ByVal originX As Double, _
+           ByVal originY As Double, _
            ByVal UseMask As Long) As Long
 
 Private Declare Function FreeImage_FlipHorizontal Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" (ByVal FIBITMAP As Long) As Long
@@ -1541,12 +1537,12 @@ Public Function FreeImage_RotateEx(ByVal Bitmap As Long, _
                                    ByVal Angle As Double, _
                           Optional ByVal ShiftX As Double, _
                           Optional ByVal ShiftY As Double, _
-                          Optional ByVal OriginX As Double, _
-                          Optional ByVal OriginY As Double, _
+                          Optional ByVal originX As Double, _
+                          Optional ByVal originY As Double, _
                           Optional ByVal UseMask As Boolean) As Long
     Dim lUseMask As Long
     If UseMask Then lUseMask = 1 Else lUseMask = 0
-    FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
+    FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, originX, originY, lUseMask)
 End Function
 
 Public Function FreeImage_MakeThumbnail(ByVal Bitmap As Long, _
@@ -2084,7 +2080,7 @@ End Function
 Public Function FreeImage_ConvertColorDepth(ByVal Bitmap As Long, _
                                             ByVal Conversion As FREE_IMAGE_CONVERSION_FLAGS, _
                                    Optional ByVal UnloadSource As Boolean, _
-                                   Optional ByVal Threshold As Byte = 128, _
+                                   Optional ByVal threshold As Byte = 128, _
                                    Optional ByVal ditherMethod As FREE_IMAGE_DITHER = FID_FS, _
                                    Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
                                             
@@ -2124,7 +2120,7 @@ Dim bForceLinearRamp As Boolean
       
       Case FICF_MONOCHROME_THRESHOLD
          If (lBPP > 1) Then
-            hDIBNew = FreeImage_Threshold(Bitmap, Threshold)
+            hDIBNew = FreeImage_Threshold(Bitmap, threshold)
          End If
 
       Case FICF_MONOCHROME_DITHER
@@ -2942,62 +2938,7 @@ Public Function FreeImage_FlipVertically(ByVal fi_DIB As Long) As Boolean
     FreeImage_FlipVertically = (FreeImage_FlipVertical(fi_DIB) <> 0)
 End Function
 
-'--------------------------------------------------------------------------------
-' Error handling functions
-'--------------------------------------------------------------------------------
-
-Public Sub FreeImage_InitErrorHandler()
-
-    'Initialize the error message array
-    ReDim g_FreeImageErrorMessages(0) As String
-    
-    ' Call this function once for using the FreeImage 3 error handling callback.
-    ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
-    Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
-   
-End Sub
-
-' This function is called whenever the FreeImage 3 libraray throws an error.
-' Currently this function gets the error message and the format name of the
-' involved image type as VB string and prints both to the VB Debug console. Feel
-' free to modify this function to call an error handling routine of your own.
-Private Sub FreeImage_ErrorHandler(ByVal imgFormat As FREE_IMAGE_FORMAT, ByVal ptrMessage As Long)
-    
-    Dim strErrorMessage As String
-    If (ptrMessage <> 0) Then strErrorMessage = Trim$(pGetStringFromPointerA(ptrMessage)) Else strErrorMessage = "unknown error, no char ptr"
-    
-    If (LenB(strErrorMessage) <> 0) Then
-        
-        'Save a copy of the FreeImage error in a public string, where other functions can retrieve it
-        If (LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0) Then
-            
-            'See if this error already exists in the log
-            Dim errorFound As Boolean: errorFound = False
-            
-            Dim i As Long
-            For i = 0 To UBound(g_FreeImageErrorMessages)
-                errorFound = Strings.StringsEqual(g_FreeImageErrorMessages(i), strErrorMessage, True)
-                If errorFound Then Exit For
-            Next i
-            
-            'If the error was not found in the log, add it now
-            If (Not errorFound) Then
-                ReDim Preserve g_FreeImageErrorMessages(0 To UBound(g_FreeImageErrorMessages) + 1) As String
-                g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = strErrorMessage
-            End If
-            
-        Else
-            g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = strErrorMessage
-        End If
-        
-        PDDebug.LogAction "FreeImage reported an internal error: " & strErrorMessage, PDM_External_Lib
-        
-    End If
-    
-End Sub
-
 'Metadata functions
-
 Public Function FreeImage_CreateTagEx(ByVal Model As FREE_IMAGE_MDMODEL, _
                              Optional ByVal Key As String, _
                              Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _

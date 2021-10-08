@@ -1846,21 +1846,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'Please see the included README file for additional information on licensing and redistribution.
-
 'PhotoDemon is Copyright 1999-2021 by Tanner Helland, tannerhelland.com
-
-'Please visit https://photodemon.org for updates and additional downloads
-
+'
+'PhotoDemon's INSTALL file provides important information for developers:
+' https://github.com/tannerhelland/PhotoDemon/blob/master/INSTALL.md
+'
+'PhotoDemon's LICENSE file provides important information on code licensing and redistribution:
+' https://github.com/tannerhelland/PhotoDemon/blob/master/LICENSE.md
+'
+'For further information, visit https://photodemon.org or https://github.com/tannerhelland/PhotoDemon
+'
 '***************************************************************************
-'Primary PhotoDemon Window
+'Primary PhotoDemon Interface
 'Copyright 2002-2021 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 27/March/18
-'Last update: new export menu items added
+'Last updated: 06/October/21
+'Last update: remove all hotkey code - it's now handled elsewhere!
 '
-'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
-' parameters to other, more interesting sections of the program.
+'This is PhotoDemon's main window.  In actuality, it contains relatively little code.  Its primary purpose
+' is sending parameters to other, more interesting sections of the program.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -1876,7 +1880,7 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 
 'If the user has set the preference for single-session behavior, subsequent PD sessions will forward
 ' their command-lines to us via a named pipe.  Pipe messages will be raised as events, and the pdStream
-' object gets automatically filled with data as it arrives.
+' object is automatically filled with data from the second instance as it arrives.
 Private WithEvents m_OtherSessions As pdPipe
 Attribute m_OtherSessions.VB_VarHelpID = -1
 Private m_SessionStream As pdStream
@@ -1888,296 +1892,429 @@ Private m_uniqueSessionName As String
 Private WithEvents m_FocusDetector As pdFocusDetector
 Attribute m_FocusDetector.VB_VarHelpID = -1
 
-Private m_AllowedToReflowInterface As Boolean
-
-Private Sub m_FocusDetector_GotFocusReliable()
-    HotkeyManager.RecaptureKeyStates
-End Sub
-
-Private Sub m_FocusDetector_LostFocusReliable()
-    HotkeyManager.ResetKeyStates
-End Sub
-
-Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
+'FormMain is loaded by PDMain.Main().  Look there for the *true* start of the program.
+Private Sub Form_Load()
     
-    'This pipe is used by other PD sessions to forward their command-line contents to us,
-    ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
-    ' data until the full pipe contents have arrived; for this reason, we don't care about
-    ' the passed pipe stream position - we only care about the size of the pipe matching
-    ' the long-type value at the start of the stream (which is the size of the passed string).
-    m_SessionStream.SetPosition 0, FILE_BEGIN
+    'PhotoDemon is always developed with the VB6 IDE set to "Break on All Errors"
+    ' (Tools > Options > General > Error Trapping > Break on All Errors)
+    '
+    'VB6-raised errors are *never* intended behavior in PhotoDemon.  The program is designed to check
+    ' potential problem-states in advance, and deal with them preemptively instead of plowing ahead
+    ' and waiting for errors to raise.  Built-in VB6 error handling constructs exist only as an
+    ' absolute last resort, and they are only used in a select few places - like here, where I've
+    ' included an error clause in case new developers want to "play around" with PhotoDemon and
+    ' accidentally break something.
+    '
+    'From this point forward in the program, do not rely on VB6 error handling.  Validate incoming
+    ' data and input properly, and deal with problem states *before* they cause errors.
+    On Error GoTo FormMainLoadError
     
-    'If at least four bytes are available, retrieve them; they're the size of the command line placed
-    ' into the pipe buffer.
-    If (m_SessionStream.GetStreamSize >= 4) Then
+    '*************************************************************************************************************************************
+    ' Start by rerouting control to "ContinueLoadingProgram", which initializes all key PD systems
+    '*************************************************************************************************************************************
+    
+    'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
+    Dim suspendAdditionalMessages As Boolean
+    If PDMain.ContinueLoadingProgram(suspendAdditionalMessages) Then
         
-        Dim msgSize As Long
-        msgSize = m_SessionStream.ReadLong()
-        
-        'If the stream has received the full pipe message, retrieve all data, then blank out
-        ' the stream.
-        If (m_SessionStream.GetStreamSize = msgSize + 4) Then
+        'With the program successfully initialized, we now need to (optionally) start listening
+        ' for other active PhotoDemon sessions.  The user can set an option (in Tools > Options)
+        ' to only allow one PhotoDemon instance at a time.  Attempting to load an image into a
+        ' new PhotoDemon instance will instead route that image here, to this instance.
+        If Mutex.IsThisOnlyInstance() And OS.IsProgramCompiled() Then
             
-            'If arguments were passed, extract them to a string stack
-            If (msgSize > 0) Then
+            'Write a unique session name to the user prefs file; other instances will use this
+            ' to connect to our named pipe.
+            m_uniqueSessionName = OS.GetArbitraryGUID()
+            UserPrefs.WritePreference "Core", "SessionID", m_uniqueSessionName
             
-                'Iterate strings
-                Dim numArguments As Long
-                numArguments = m_SessionStream.ReadLong()
-                
-                If (numArguments > 0) Then
-                    
-                    Dim i As Long, argSize As Long, argString As String
-                    For i = 0 To numArguments - 1
-                        argSize = m_SessionStream.ReadLong()
-                        argString = m_SessionStream.ReadString_UTF8(argSize, False)
-                        
-                        'This is a path to an image.  If PD is idle, attempt to load it.
-                        If (Not Processor.IsProgramBusy()) Then Loading.LoadFileAsNewImage argString
-                        'PDDebug.LogAction CStr(i + 1) & ": " & argString
-                        
-                    Next i
-                    
-                End If
-                
-            Else
-                PDDebug.LogAction "Received 0-length string from second instance; no action taken."
-            End If
+            'Prep a pdStream object.  It will receive any incoming pipe data.
+            Set m_SessionStream = New pdStream
+            m_SessionStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
             
-            'Reset the stream in case other sessions connect in the future
-            m_SessionStream.SetPosition 0
-            m_SessionStream.SetSizeExternally 0
+            'Start listening for other PhotoDemon sessions.  (Note that this function will
+            ' check the user's preference before initializing single-session mode, but we
+            ' initialize the session stream in advance in case the user changes the option
+            ' mid-session - we'll already have everything ready to go for them!)
+            Me.ChangeSessionListenerState True, True
             
-            'Forcibly disconnect from the client (required regardless of client connection state,
-            ' e.g. even if the client has disconnected, we still need to disconnect from this
-            ' instance as well), then recreate the pipe.  (This could be avoided by switching
-            ' to asynchronous I/O, but I haven't written that code... yet.)
-            m_OtherSessions.DisconnectFromClient
-            m_OtherSessions.ClosePipe
-            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then m_OtherSessions.Server_WaitForResponse 1000
-            
-        Else
-            'Do nothing; we just need to chill and wait for the rest of the stream to arrive
         End If
+        
+        '*************************************************************************************************************************************
+        ' Now that all program engines are initialized, we can finally display this window
+        '*************************************************************************************************************************************
+        
+        PDDebug.LogAction "Registering toolbars with the window manager..."
+        
+        'Now that the main form has been correctly positioned on-screen, position all toolbars and the
+        ' primary canvas to match, then display the window.
+        g_WindowManager.SetAutoRefreshMode True
+        FormMain.UpdateMainLayout
+        g_WindowManager.SetAutoRefreshMode False
+        
+        'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
+        ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't
+        ' running full Aero, e.g. "Classic Mode".)
+        FormMain.Show vbModeless
+        FormMain.Refresh
+        DoEvents
+        
+        'Visibility for the options toolbox is automatically set according to the current tool;
+        ' this is different from the left and right toolboxes. (Note that the .ResetToolButtonStates
+        ' function checks the relevant preference prior to changing the window state, so all cases
+        ' are covered correctly.)
+        toolbar_Toolbox.ResetToolButtonStates
+        
+        'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the
+        ' main window.
+        g_WindowManager.SetAutoRefreshMode True
+        
+        
+        '*************************************************************************************************************************************
+        ' Make sure the user's previous session (if any) terminated successfully
+        '*************************************************************************************************************************************
+        
+        PDDebug.LogAction "Checking for old autosave data..."
+        Autosaves.InitializeAutosave
+        
+        
+        '*************************************************************************************************************************************
+        ' Next, analyze the command line and load any passed image files
+        '*************************************************************************************************************************************
+        
+        PDDebug.LogAction "Checking command line..."
+        
+        'Retrieve a Unicode-friendly copy of any command line parameters
+        Dim cmdLineParams As pdStringStack
+        If OS.CommandW(cmdLineParams, True) Then
+            PDDebug.LogAction "Command line might contain images.  Attempting to load..."
+            Loading.LoadMultipleImageFiles cmdLineParams, True
+        End If
+        
+        
+        '*************************************************************************************************************************************
+        ' Next, see if we need to launch an asynchronous check for updates
+        '*************************************************************************************************************************************
+        
+        'Update checks only work in (default) portable mode, because we require write access to our
+        ' own folder.  Note that PhotoDemon will still attempt to run even if the user places us in
+        ' a restricted folder (e.g. /Program Files), but we suspend updates and silently remap PD's
+        ' user folder to the local Users folder instead.
+        If (Not UserPrefs.IsNonPortableModeActive()) Then Updates.StandardUpdateChecks
+        
+        
+        '*************************************************************************************************************************************
+        ' Display any final messages and/or warnings
+        '*************************************************************************************************************************************
+        
+        Message vbNullString
+        FormMain.Refresh
+        DoEvents
+        
+        '*************************************************************************************************************************************
+        ' Next, see if we need to display the language/theme selection dialog
+        '*************************************************************************************************************************************
+        
+        'In v7.0, a new "choose your language and UI theme" dialog was added to the project.
+        ' We automatically show it to first-time users to help them set everything up just the way they want.
+        If (Not UserPrefs.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then Dialogs.PromptUITheme
+        
+        '*************************************************************************************************************************************
+        'For developers only, calculate some debug information and warn about running from the IDE
+        '*************************************************************************************************************************************
+        
+        PDDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
+        
+        'Because people may be using this code in the IDE, warn them about the consequences of doing so
+        If (Not OS.IsProgramCompiled) Then
+            If (UserPrefs.GetPref_Boolean("Core", "Display IDE Warning", True)) Then Dialogs.DisplayIDEWarning
+        End If
+        
+        'Because various user preferences may have been modified during the load process (to account for
+        ' failure states, system configurations, etc), write a copy of our potentially-modified
+        ' preference list out to file.
+        UserPrefs.ForceWriteToFile False
+        
+        'In debug mode, note that we are about to turn control over to the user
+        PDDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
+        PDDebug.LogAction vbNullString, PDM_Mem_Report
+        
+        'Before setting focus to the main form, active a focus tracker; it catches some cases that VB's
+        ' built-in focus events do not.
+        Set m_FocusDetector = New pdFocusDetector
+        m_FocusDetector.StartFocusTracking FormMain.hWnd
+        
+        'Finally, return focus to the main form.  The app is ready for interaction!
+        g_WindowManager.SetFocusAPI FormMain.hWnd
+        
+        Exit Sub
+        
+FormMainLoadError:
+        PDDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+        
+    'Something went catastrophically wrong during the load process.  Do not continue with the loading process.
+    Else
+    
+        'Because we can't guarantee that the translation subsystem is loaded, default to
+        ' a plain English error message, then terminate the program.
+        If (Not suspendAdditionalMessages) Then
+            Dim tmpMsg As String, tmpTitle As String
+            tmpMsg = "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)"
+            tmpTitle = "Startup failure"
+            MsgBox tmpMsg, vbOKOnly + vbCritical, tmpTitle
+        End If
+        Unload Me
         
     End If
     
 End Sub
 
-Private Sub MnuEffectAnimation_Click(Index As Integer)
+'Allow the user to drag-and-drop files and URLs onto the main form
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If (Not g_AllowDragAndDrop) Then Exit Sub
     
-    Select Case Index
+    'Use the external function (in the clipboard handler, as the code is roughly identical to
+    ' clipboard pasting) to load the OLE source.
+    Dim dropAsNewLayer As VbMsgBoxResult
+    dropAsNewLayer = Dialogs.PromptForDropAsNewLayer()
+    If (dropAsNewLayer <> vbCancel) Then g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
+    
+End Sub
+
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    
+    'PD supports many different types of drop sources.  These values are defined and addressed by
+    ' the main clipboard handler, because Drag/Drop and clipboard actions use very similar code.
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
+        Effect = vbDropEffectCopy And Effect
+    Else
+        Effect = vbDropEffectNone
+    End If
+
+End Sub
+
+'If the user attempts to close the program, run some checks first.  Specifically, we want to notify them
+' about any images with unsaved images.
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    'Set a public variable to let other functions know that the user has initiated a program-wide shutdown.
+    ' (Asynchronous functions in particular need this to prep their own shutdown routines.)
+    g_ProgramShuttingDown = True
+    
+    'An external function handles unloading.  If it fails, we will also cancel our unload.
+    Cancel = (Not CanvasManager.CloseAllImages())
+    If Cancel Then
+        g_ProgramShuttingDown = False
+        If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString
+    End If
+    
+End Sub
+
+'When the main form is resized, we must re-align all toolboxes and the main canvas to match
+Private Sub Form_Resize()
+    If (Not g_WindowManager Is Nothing) Then
+        If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
+    Else
+        UpdateMainLayout
+    End If
+End Sub
+
+'Do not call this function directly.  Use the standard shutdown order to ensure the user has a chance
+' to save unsaved work.
+Private Sub Form_Unload(Cancel As Integer)
+    
+    'FYI, this function includes a fair amount of debug code.  It is *critical* that we unload everything
+    ' correctly and do not leave any open handles on the user's PC.
+    PDDebug.LogAction "Shutdown initiated"
+    
+    'Store the main window's location to file.  (We will use this in the next session to restore the
+    ' program to the same monitor + position.)
+    UserPrefs.SetPref_Long "Core", "Last Window State", Me.WindowState
+    UserPrefs.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
+    UserPrefs.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
+    UserPrefs.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
+    UserPrefs.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
+    
+    'Hide the main window to make shutdown appear "faster"
+    Me.Visible = False
+    Interface.ReleaseResources
+    
+    'Cancel any pending downloads
+    PDDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
+    Me.AsyncDownloader.Reset
+    
+    'Allow any objects on this form to save preferences and other user data
+    PDDebug.LogAction "Asking all FormMain components to write out final user preference values..."
+    FormMain.MainCanvas(0).WriteUserPreferences
+    Toolboxes.SaveToolboxData
+    
+    'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually
+    ' upload a copy of all supported formats - which can take a little while.
+    PDDebug.LogAction "Shutting down clipboard manager..."
+    
+    If (Not g_Clipboard Is Nothing) Then
+    
+        If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
+            PDDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
+            g_Clipboard.RenderAllClipboardFormatsManually
+        End If
+    
+        Set g_Clipboard = Nothing
         
-        'Background
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_animation_background"
+    End If
+    
+    'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
+    ' no images are loaded by this point.  Because it takes some time to shut down, trigger it now.
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
+        ExifTool.TerminateExifTool
+        PDDebug.LogAction "ExifTool terminated"
+    End If
+    
+    'Stop tracking hotkeys
+    PDDebug.LogAction "Turning off hotkey manager..."
+    If (Not HotkeyManager Is Nothing) Then HotkeyManager.ReleaseResources
+    
+    'Release the tooltip tracker
+    PDDebug.LogAction "Releasing tooltip manager..."
+    UserControls.FinalTooltipUnload
+    
+    'Perform any printer-related cleanup
+    PDDebug.LogAction "Removing printer temp files..."
+    Printing.PerformPrinterCleanup
+    
+    'Destroy all custom-created icons and cursors
+    PDDebug.LogAction "Destroying custom icons and cursors..."
+    IconsAndCursors.UnloadAllCursors
+    
+    'Destroy all paint-related resources
+    PDDebug.LogAction "Destroying paint tool resources..."
+    Tools_Paint.FreeBrushResources
+    Tools_Pencil.FreeBrushResources
+    Tools_Clone.FreeBrushResources
+    Tools_Fill.FreeFillResources
         
-        'Foreground
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_animation_foreground"
+    'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded,
+    ' but the only time that would be an improvement is if the program crashes, and if it does crash,
+    ' the user wouldn't want to re-load the problematic image anyway... so we do it here.)
+    PDDebug.LogAction "Saving recent file list..."
+    If (Not g_RecentFiles Is Nothing) Then
+        g_RecentFiles.WriteListToFile
+        g_RecentMacros.MRU_SaveToFile
+    End If
+    
+    'Release any Win7+ features (which typically rely on custom run-time interfaces)
+    PDDebug.LogAction "Releasing custom Windows 7+ features..."
+    OS.StopWin7PlusFeatures
+    
+    'Tool panels need to be shut down carefully because we've messed with their window longs
+    ' (to embed them correctly on their parent window).
+    PDDebug.LogAction vbNullString, PDM_Mem_Report
+    PDDebug.LogAction "Unloading tool panels..."
+    toolbar_Toolbox.FreeAllToolpanels
+    
+    'With all tool panels unloaded, unload all toolboxes too
+    PDDebug.LogAction "Unloading toolboxes..."
+    
+    'Before unloading toolboxes, we need to reset their window bits.  (These window bits get
+    ' toggled by the toolbox module as part of assigning parent/child relationships.)
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Layers.hWnd
+        Unload toolbar_Layers
+    End If
+    Set toolbar_Layers = Nothing
+    
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Options.hWnd
+        Unload toolbar_Options
+    End If
+    Set toolbar_Options = Nothing
+    
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Toolbox.hWnd
+        Unload toolbar_Toolbox
+    End If
+    Set toolbar_Toolbox = Nothing
+    
+    'Release this window from the central window manager
+    PDDebug.LogAction "Shutting down window manager..."
+    If (Not g_WindowManager Is Nothing) Then
+        Interface.ReleaseFormTheming Me
+        g_WindowManager.UnregisterMainForm Me
+    End If
+    
+    'As a final failsafe, forcibly unload any remaining forms.  (This shouldn't do anything, but it's
+    ' a nice way to ensure no mistakes were made.)
+    PDDebug.LogAction "Forcibly unloading any remaining forms..."
+    
+    Dim tmpForm As Form
+    For Each tmpForm In Forms
+
+        'Note that there is no need to unload FormMain, as we're about to unload it anyway
+        If Strings.StringsNotEqual(tmpForm.Name, "FormMain", True) Then
+            PDDebug.LogAction "Forcibly unloading " & tmpForm.Name
+            Unload tmpForm
+            Set tmpForm = Nothing
+        End If
+
+    Next tmpForm
+    
+    'If an update package was downloaded, this is a good time to apply it
+    If Updates.IsUpdatePackageAvailable And PDMain.WasStartupSuccessful() Then
+        If Updates.PatchProgramFiles() Then
+            PDDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
+        Else
+            PDDebug.LogAction "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
+        End If
+    End If
         
-    End Select
+    'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
+    ' it can compare its version against this value, to infer if an update occurred.
+    PDDebug.LogAction "Writing session data to file..."
+    UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
+    
+    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
+    PDDebug.LogAction "Final step: writing out new autosave checksum..."
+    Autosaves.PurgeOldAutosaveData
+    Autosaves.NotifyCleanShutdown
+    
+    PDDebug.LogAction "Shutdown appears to be clean.  Turning final control over to pdMain.FinalShutdown()..."
+    PDMain.FinalShutdown
     
 End Sub
 
-Private Sub MnuEffectUpper_Click(Index As Integer)
+'Whenever the window is resized, we need to update the layout of the primary canvas and all toolboxes.
+Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
 
-    Select Case Index
+    'If the main form has been minimized, don't refresh anything
+    If (FormMain.WindowState = vbMinimized) Then Exit Sub
     
-        Case 0
-            'Artistic
-        Case 1
-            'Blur
-        Case 2
-            'Distort
-        Case 3
-            'Edge
-        Case 4
-            'Light and Shadow
-        Case 5
-            'Natural
-        Case 6
-            'Noise
-        Case 7
-            'Pixelate
-        Case 8
-            'Render
-        Case 9
-            'Sharpen
-        Case 10
-            'Stylize
-        Case 11
-            'Transform
-        Case 12
-            '(separator)
-        Case 13
-            'Animation
-        Case 14
-            Menus.ProcessDefaultAction_ByName "effects_customfilter"
-        Case 15
-            Menus.ProcessDefaultAction_ByName "effects_8bf"
-    End Select
-
-End Sub
-
-Private Sub MnuFileImport_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "file_import_paste"
-        Case 1
-            '(separator)
-        Case 2
-            Menus.ProcessDefaultAction_ByName "file_import_scanner"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "file_import_selectscanner"
-        Case 4
-            '(separator)
-        Case 5
-            Menus.ProcessDefaultAction_ByName "file_import_web"
-        Case 6
-            '(separator)
-        Case 7
-            Menus.ProcessDefaultAction_ByName "file_import_screenshot"
-    End Select
-End Sub
-
-Private Sub MnuLayerCrop_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_cropselection"
-        Case 1
-            '(separator)
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_pad"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_trim"
-    End Select
-End Sub
-
-Private Sub MnuLayerReplace_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_replacefromclipboard"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_replacefromfile"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_replacefromvisiblelayers"
-    End Select
-End Sub
-
-Private Sub MnuLayerSplit_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_splitlayertoimage"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_splitalllayerstoimages"
-        Case 2
-            '(separator)
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_splitimagestolayers"
-    End Select
-End Sub
-
-Private Sub MnuLayerVisibility_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_show"
-        Case 1
-            '(separator)
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_showonly"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_hideonly"
-        Case 4
-            '(separator)
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_showall"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "layer_hideall"
-    End Select
-End Sub
-
-Private Sub MnuMacroCreate_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "tools_macrofromhistory"
-        Case 1
-            '(separator)
-        Case 2
-            Menus.ProcessDefaultAction_ByName "tools_recordmacro"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "tools_stopmacro"
-    End Select
-End Sub
-
-Private Sub MnuRecentFiles_Click(Index As Integer)
+    'As of 7.0, a new, lightweight toolbox manager will calculate idealized window positions for us.
+    Dim mainRect As winRect, canvasRect As winRect
+    g_WindowManager.GetClientWinRect FormMain.hWnd, mainRect
+    Toolboxes.CalculateNewToolboxRects mainRect, canvasRect
     
-    Select Case Index
-        
-        Case 0
-            'separator
-        
-        'Load all MRU files
-        Case 1
-            Dim listOfFiles As pdStringStack
-            Set listOfFiles = New pdStringStack
-            
-            Dim i As Long
-            For i = 0 To g_RecentFiles.GetNumOfItems() - 1
-                listOfFiles.AddString g_RecentFiles.GetFullPath(i)
-            Next i
-            
-            Loading.LoadMultipleImageFiles listOfFiles, True
-        
-        'Clear MRU
-        Case 2
-            g_RecentFiles.ClearList
-            
-    End Select
+    'With toolbox positions successfully calculated, we can now synchronize each toolbox to its calculated rect.
+    If resizeToolboxesToo Then
+        Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
+    End If
+    
+    'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
+    ' Note that resizing the canvas rect will automatically trigger a redraw of the viewport, as necessary.
+    With canvasRect
+        FormMain.MainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
+    End With
+    
+    'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
+    If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
     
 End Sub
 
-Private Sub MnuRender_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_clouds"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_fibers"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_truchet"
-    End Select
-End Sub
-
-Private Sub MnuTest_Click()
-    
-    On Error GoTo StopTestImmediately
-    
-    'Use for timing results
-    Dim startTime As Currency, lastTime As Currency
-    VBHacks.GetHighResTime startTime
-    lastTime = startTime
-    
-    'Test code goes here
-    
-    'Report timing results:
-    PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
-    
-    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
-    ' then uncomment these two lines:
-    'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
-    
-    'Want to test a new dialog?  Call it here, using a line like the following:
-    'ShowPDDialog vbModal, FormToTest
-    
-    Exit Sub
-    
-StopTestImmediately:
-    Debug.Print "Error in test sub: " & Err.Number & ", " & Err.Description
-
-End Sub
-
-'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
+'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated
+' with the download process.
 Private Sub AsyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
     'Core program updates are handled specially, so their resources can be freed without question.
@@ -2185,26 +2322,27 @@ Private Sub AsyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     AsyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     
     FormMain.MainCanvas(0).SetNetworkState False
-    Debug.Print "All downloads complete."
+    PDDebug.LogAction "All downloads complete."
     
 End Sub
 
 'When an asynchronous download completes, deal with it here
 Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, downloadedData() As Byte, ByVal savedToThisFile As String)
     
-    'On a typical PD install, updates are checked every session, but users can specify a larger interval in the preferences dialog.
-    ' As part of honoring that preference, whenever an update check successfully completes, we write the current date out to the
-    ' preferences file, so subsequent runs can limit their check frequency accordingly.
+    'On a typical PD install updates are checked every session, but users can specify a larger interval
+    ' (from the Tools > Options menu).  To honor that preference, whenever an update check completes,
+    ' we write the current date out to the preferences file so subsequent sessions can limit their update
+    ' frequency accordingly.
     If Strings.StringsEqual(entryKey, "PROGRAM_UPDATE_CHECK", True) Or Strings.StringsEqual(entryKey, "PROGRAM_UPDATE_CHECK_USER", True) Then
         
         If downloadSuccessful Then
         
-            'The update file downloaded correctly.  Write today's date to the master preferences file, so we can correctly calculate
-            ' weekly/monthly update checks for users that require it.
+            'The update file downloaded correctly.  Write today's date to the master preferences file
+            ' so we can correctly calculate weekly or monthly update checks for users that request it.
             PDDebug.LogAction "Update file download complete.  Update information has been saved at " & savedToThisFile
             UserPrefs.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
             
-            'Retrieve the file contents into a string
+            'Pull the file contents (which are just simple XML) into a VB string.
             Dim updateXML As String
             updateXML = StrConv(downloadedData, vbUnicode)
             
@@ -2213,25 +2351,19 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             updateAvailable = Updates.ProcessProgramUpdateFile(updateXML)
             
             'If the user initiated the download, display a modal notification now
-            If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
+            If Strings.StringsEqual(entryKey, "PROGRAM_UPDATE_CHECK_USER", True) Then
                 
                 If updateAvailable Then
                     Message "A new version of PhotoDemon is available.  The update is automatically processing in the background..."
-                Else
-                    Message "This copy of PhotoDemon is up to date."
-                End If
-                
-                'Perform a low-risk yield to events, so the status bar message has time to repaint itself before the message box appears
-                DoEvents
-                
-                If updateAvailable Then
                     PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 Else
+                    Message "This copy of PhotoDemon is up to date."
                     PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 End If
                 
-                'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
-                If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
+                'If the update managed to download while the reader was staring at the message box,
+                ' display the restart notification immediately.  (This is more likely than you'd think.)
+                If Updates.IsUpdateReadyToInstall() Then Updates.DisplayUpdateNotification
                 
             End If
             
@@ -2263,17 +2395,17 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
         End If
     
-    'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
-    ' we can start patching immediately.
+    'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.
+    ' When the download arrives, we can start patching immediately.
     ElseIf (OptionalType = PD_PATCH_IDENTIFIER) Then
         
         If downloadSuccessful Then
             
-            'Notify the software updater that an update package was downloaded successfully.  It will make a note of this, so it can
-            ' complete the actual patching when PD closes.
+            'Notify the software updater that an update package was downloaded successfully.
+            ' It needs to know this so it can actually patch all necesssary files when PD closes.
             Updates.NotifyUpdatePackageAvailable savedToThisFile
             
-            'Display a notification to the user
+            'Display a notification so the user can choose to restart immediately for any new features
             Updates.DisplayUpdateNotification
                         
         Else
@@ -2290,50 +2422,9 @@ Public Function RequestAsynchronousDownload(ByRef downloadKey As String, ByRef u
     RequestAsynchronousDownload = Me.AsyncDownloader.AddToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, True, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
-'When the main form is resized, we must re-align the main canvas to match
-Private Sub Form_Resize()
-    If (Not g_WindowManager Is Nothing) Then
-        If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
-    Else
-        UpdateMainLayout
-    End If
-End Sub
-
-Public Function ToolbarsAllowedToReflow() As Boolean
-    ToolbarsAllowedToReflow = m_AllowedToReflowInterface
-End Function
-
-'Resize all currently active canvases.  This was an important function back when PD used an MDI engine, but now that we
-' use our own tabbed interface, it's due for a major revisit.  If we could kill this function entirely, I'd be very happy.
-Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
-
-    'If the main form has been minimized, don't refresh anything
-    If (FormMain.WindowState = vbMinimized) Then Exit Sub
-    If (Not m_AllowedToReflowInterface) Then Exit Sub
-    
-    'As of 7.0, a new, lightweight toolbox manager can calculate idealized window positions for us.
-    Dim mainRect As winRect, canvasRect As winRect
-    g_WindowManager.GetClientWinRect FormMain.hWnd, mainRect
-    Toolboxes.CalculateNewToolboxRects mainRect, canvasRect
-    
-    'With toolbox positions successfully calculated, we can now synchronize each toolbox to its calculated rect.
-    If resizeToolboxesToo Then
-        Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
-        Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
-        Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
-    End If
-    
-    'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
-    ' Note that resizing the canvas rect will automatically trigger a redraw of the viewport, as necessary.
-    With canvasRect
-        FormMain.MainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
-    End With
-    
-    'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
-    If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
-    
-End Sub
-
+'When loading an image, metadata is parsed by ExifTool in a separate process.  This timer can fire
+' at a shorter interval (and it's entirely dependent on other parts of the image load process yielding)
+' because it's not time-sensitive - its goal is just to collect image metadata in the background.
 Public Sub StartMetadataTimer()
     
     If (m_MetadataTimer Is Nothing) Then
@@ -2345,9 +2436,10 @@ Public Sub StartMetadataTimer()
     
 End Sub
 
-'This metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
-' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
-' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
+'This metadata timer is a final failsafe for images with huge metadata collections that take a long time
+' to parse.  If an image has successfully loaded but its metadata parsing is still in-progress, PD's image
+' load function will activate this timer.  The timer will wait (asynchronously) for metadata parsing to finish,
+' and when it does, it will copy the metadata into the active pdImage object, then turn itself off.
 Private Sub m_MetadataTimer_Timer()
 
     'I don't like resorting to hackneyed error-handling, but ExifTool can be unpredictable,
@@ -2465,1589 +2557,90 @@ Private Sub m_MetadataTimer_Timer()
 
 End Sub
 
-Private Sub MnuBatch_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "file_batch_process"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "file_batch_repair"
-    End Select
+'As of 2021, hotkeys can be blindly passed to PD's high-level action processor.
+' (The new action processor handles all validation and routing duties.)
+Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
+    Actions.LaunchAction_ByName Hotkeys.GetHotKeyAction(hotkeyID), pdas_Hotkey
 End Sub
 
-Private Sub MnuClearRecentMacros_Click()
-    g_RecentMacros.MRU_ClearList
+'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can
+' de/activate accordingly.
+Private Sub m_FocusDetector_GotFocusReliable()
+    HotkeyManager.RecaptureKeyStates
 End Sub
 
-'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
-Private Sub MnuDevelopers_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "tools_themeeditor"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "tools_themepackage"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "tools_standalonepackage"
-    End Select
+Private Sub m_FocusDetector_LostFocusReliable()
+    HotkeyManager.ResetKeyStates
 End Sub
 
-'Menu: effect > transform actions
-Private Sub MnuEffectTransform_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_panandzoom"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_perspective"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_polarconversion"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_rotate"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_shear"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_spherize"
-    End Select
-End Sub
-
-'Menu: top-level layer actions
-Private Sub MnuLayer_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            'Add submenu
-        Case 1
-            'Delete submenu
-        Case 2
-            'Replace submenu
-        Case 3
-            '(separator)
-        Case 4
-            Menus.ProcessDefaultAction_ByName "layer_mergeup"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_mergedown"
-        Case 6
-            'Order submenu
-        Case 7
-            'Visibility submenu
-        Case 8
-            '(separator)
-        Case 9
-            'Crop submenu
-        Case 10
-            'Orientation submenu
-        Case 11
-            'Size submenu
-        Case 12
-            '(separator)
-        Case 13
-            'Transparency submenu
-        Case 14
-            '(separator)
-        Case 15
-            'Rasterize submenu
-    End Select
-End Sub
-
-'Menu: remove layers from the image
-Private Sub MnuLayerDelete_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_deletehidden"
-    End Select
-End Sub
-
-'Menu: add a layer to the image
-Private Sub MnuLayerNew_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_addbasic"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_addblank"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_duplicate"
-        Case 3
-            '(separator)
-        Case 4
-            Menus.ProcessDefaultAction_ByName "layer_addfromclipboard"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_addfromfile"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "layer_addfromvisiblelayers"
-        Case 7
-            '(separator)
-        Case 8
-            Menus.ProcessDefaultAction_ByName "layer_addviacopy"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "layer_addviacut"
-    End Select
-End Sub
-
-'Menu: change layer order
-Private Sub MnuLayerOrder_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_gotop"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_goup"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_godown"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_gobottom"
-        Case 4
-            'Separator
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_movetop"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "layer_moveup"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "layer_movedown"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "layer_movebottom"
-        Case 9
-            'Separator
-        Case 10
-            Menus.ProcessDefaultAction_ByName "layer_reverse"
-    End Select
+'This listener will raise events when PD is in single-session mode and another session is initiated.
+' The other session will forward any "open this image" requests passed on its command line.
+Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
     
-End Sub
-
-Private Sub MnuLayerOrientation_Click(Index As Integer)
+    'This pipe is used by other PD sessions to forward their command-line contents to us,
+    ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
+    ' data until the full pipe contents have arrived; for this reason, we don't care about
+    ' the passed pipe stream position - we only care about the size of the pipe matching
+    ' the long-type value at the start of the stream (which is the size of the passed string).
+    m_SessionStream.SetPosition 0, FILE_BEGIN
     
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the Image > Orientation menu; as such, we must explicitly request actions
-    Select Case Index
-    
-        'Straighten
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_straighten"
+    'If at least four bytes are available, retrieve them; they're the size of the command line placed
+    ' into the pipe buffer.
+    If (m_SessionStream.GetStreamSize >= 4) Then
+        
+        Dim msgSize As Long
+        msgSize = m_SessionStream.ReadLong()
+        
+        'If the stream has received the full pipe message, retrieve all data, then blank out
+        ' the stream.
+        If (m_SessionStream.GetStreamSize >= msgSize + 4) Then
             
-        '<separator>
-        Case 1
-        
-        'Rotate 90
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_rotate90"
-        
-        'Rotate 270
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_rotate270"
-        
-        'Rotate 180
-        Case 4
-            Menus.ProcessDefaultAction_ByName "layer_rotate180"
-        
-        'Rotate arbitrary
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_rotatearbitrary"
-        
-        '<separator>
-        Case 6
-        
-        'Flip horizontal
-        Case 7
-            Menus.ProcessDefaultAction_ByName "layer_fliphorizontal"
-        
-        'Flip vertical
-        Case 8
-            Menus.ProcessDefaultAction_ByName "layer_flipvertical"
-    
-    End Select
-
-End Sub
-
-Private Sub MnuLayerRasterize_Click(Index As Integer)
-    
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the Layer > Delete menu (e.g. "Current layer"); as such, we must explicitly
-    ' request actions.
-     Select Case Index
-    
-        'Current layer
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_rasterizecurrent"
+            'If arguments were passed, extract them to a string stack
+            If (msgSize > 0) Then
             
-        'All layers
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_rasterizeall"
-            
-    End Select
-    
-End Sub
-
-Private Sub MnuLayerSize_Click(Index As Integer)
-    
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the Image > Orientation menu; as such, we must explicitly request actions
-    Select Case Index
-    
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_resetsize"
-        
-        Case 1
-            '<separator>
-            
-        Case 2
-            Menus.ProcessDefaultAction_ByName "layer_resize"
-        
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_contentawareresize"
-        
-        Case 4
-            '<separator>
-        
-        Case 5
-            Menus.ProcessDefaultAction_ByName "layer_fittoimage"
-    
-    End Select
-    
-End Sub
-
-'Light and shadow effect menu
-Private Sub MnuLightShadow_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_blacklight"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_crossscreen"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_rainbow"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_sunshine"
-        Case 4
-            'separator
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_dilate"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_erode"
-    End Select
-End Sub
-
-Private Sub MnuPixelate_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_colorhalftone"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_crystallize"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_fragment"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_mezzotint"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_mosaic"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_pointillize"
-    End Select
-End Sub
-
-Private Sub mnuRecentMacros_Click(Index As Integer)
-    
-    'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
-    Dim tmpString As String
-    tmpString = g_RecentMacros.GetSpecificMRU(Index)
-    
-    'Check - just in case - to make sure the path isn't empty
-    If (LenB(tmpString) <> 0) Then Macros.PlayMacroFromFile tmpString
-    
-End Sub
-
-Private Sub MnuView_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "view_fit"
-        Case 1
-            'separator
-        Case 2
-            Menus.ProcessDefaultAction_ByName "view_zoomin"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "view_zoomout"
-        Case 4
-            'zoom-to-value top-level menu
-        Case 5
-            'separator
-        Case 6
-            Menus.ProcessDefaultAction_ByName "view_rulers"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "view_statusbar"
-    End Select
-End Sub
-
-Private Sub MnuWindowOpen_Click(Index As Integer)
-
-    'Open the current document corresponding to the index in the menu
-    Dim listOfOpenImages As pdStack
-    PDImages.GetListOfActiveImageIDs listOfOpenImages
-    
-    If (Index < listOfOpenImages.GetNumOfInts) Then
-        If PDImages.IsImageActive(listOfOpenImages.GetInt(Index)) Then CanvasManager.ActivatePDImage listOfOpenImages.GetInt(Index), "window menu"
-    End If
-
-End Sub
-
-Private Sub MnuWindowToolbox_Click(Index As Integer)
-    
-    'Because this is a checkbox-based menu, we handle its commands specially
-    Select Case Index
-    
-        'Toggle toolbox visibility
-        Case 0
-            Menus.ProcessDefaultAction_ByName "window_displaytoolbox"
-        
-        '<separator>
-        Case 1
-        
-        'Toggle category labels
-        Case 2
-            Menus.ProcessDefaultAction_ByName "window_displaytoolcategories"
-        
-        '<separator>
-        Case 3
-        
-        'Changes to button size (small, normal, large)
-        Case 4
-            Menus.ProcessDefaultAction_ByName "window_smalltoolbuttons"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "window_normaltoolbuttons"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "window_largetoolbuttons"
-             
-            
-    End Select
-    
-End Sub
-
-Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
-    
-    'Before initiating any actions, cache some values that may be useful to initiated commands
-    ' (like cursor position; tools may use this to initiate an action at that position).
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.AddParam "from-hotkey", True, True, True
-    
-    If (PDImages.GetNumOpenImages > 0) Then
-        If FormMain.MainCanvas(0).IsMouseOverCanvas() Then
-            cParams.AddParam "canvas-mouse-x", FormMain.MainCanvas(0).GetLastMouseX(), True
-            cParams.AddParam "canvas-mouse-y", FormMain.MainCanvas(0).GetLastMouseY(), True
-        End If
-    End If
-    
-    'Accelerators are divided into three groups, and they are processed in the following order:
-    ' 1) Direct processor strings.  These are automatically submitted to PD's command processor.
-    ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
-    ' 3) Non-processor directives that require an image.
-
-    '***********************************************************
-    'Accelerators that are direct processor strings are handled automatically
-    
-    With HotkeyManager
-    
-        If .IsProcessorString(acceleratorIndex) Then
-            
-            'If the action requires an open image, check for that first
-            If .IsImageRequired(acceleratorIndex) Then
-                If (Not PDImages.IsImageActive()) Then Exit Sub
-            End If
-            
-            'If this action is associated with a menu, make sure that corresponding menu is enabled
-            If (.HasMenu(acceleratorIndex)) Then
-                If (Not Menus.IsMenuEnabled(.GetMenuName(acceleratorIndex))) Then
+                'Iterate strings
+                Dim numArguments As Long
+                numArguments = m_SessionStream.ReadLong()
+                
+                If (numArguments > 0) Then
                     
-                    'A rare exception to "allow hotkey even when menu is disabled" is the PASTE shortcut.
-                    ' We instead silently reroute Ctrl+V to "Paste as New Image" if no images are currently active.
-                    If (LCase$(.HotKeyName(acceleratorIndex)) <> "paste") Then Exit Sub
+                    Dim i As Long, argSize As Long, argString As String
+                    For i = 0 To numArguments - 1
+                        
+                        argSize = m_SessionStream.ReadLong()
+                        If (argSize > 0) Then
+                            
+                            'This is a path to an image.  If PD is idle, attempt to load it.
+                            argString = m_SessionStream.ReadString_UTF8(argSize, False)
+                            If (Not Processor.IsProgramBusy()) Then Loading.LoadFileAsNewImage argString
+                        End If
+                        
+                    Next i
                     
                 End If
-            End If
-            
-            Processor.Process .HotKeyName(acceleratorIndex), .IsDialogDisplayed(acceleratorIndex), cParams.GetParamString(), .ProcUndoValue(acceleratorIndex)
-            Exit Sub
-            
-        End If
-    
-        '***********************************************************
-        'This block of code holds:
-        ' - Accelerators that DO NOT require at least one loaded image
-        Dim keyName As String
-        keyName = .HotKeyName(acceleratorIndex)
-        
-        'Tool selection
-        If Strings.StringsEqual(keyName, "tool_activate_hand", True) Then
-            toolbar_Toolbox.SelectNewTool NAV_DRAG
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_move", True) Then
-            toolbar_Toolbox.SelectNewTool NAV_MOVE
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_colorpicker", True) Then
-            If (g_CurrentTool = COLOR_PICKER) Then toolbar_Toolbox.SelectNewTool ND_MEASURE Else toolbar_Toolbox.SelectNewTool COLOR_PICKER
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectrect", True) Then
-            If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectlasso", True) Then
-            If (g_CurrentTool = SELECT_LASSO) Then toolbar_Toolbox.SelectNewTool SELECT_POLYGON Else toolbar_Toolbox.SelectNewTool SELECT_LASSO
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectwand", True) Then
-            toolbar_Toolbox.SelectNewTool SELECT_WAND
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_text", True) Then
-            If (g_CurrentTool = TEXT_BASIC) Then toolbar_Toolbox.SelectNewTool TEXT_ADVANCED Else toolbar_Toolbox.SelectNewTool TEXT_BASIC
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_pencil", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_PENCIL
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_brush", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_eraser", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_ERASER
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_clone", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_CLONE
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_fill", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_FILL
-        ElseIf Strings.StringsEqual(keyName, "tool_activate_gradient", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
-        
-        'Search
-        ElseIf Strings.StringsEqual(keyName, "tool_search", True) Then
-            toolbar_Layers.SetFocusToSearchBox
-            
-        'Menus
-        ElseIf Strings.StringsEqual(keyName, "Preferences", True) Then
-            If Not FormOptions.Visible Then
-                ShowPDDialog vbModal, FormOptions
-                Exit Sub
-            End If
-        
-        ElseIf Strings.StringsEqual(keyName, "Plugin manager", True) Then
-            If Not FormPluginManager.Visible Then
-                ShowPDDialog vbModal, FormPluginManager
-                Exit Sub
-            End If
-        End If
-        
-        'MRU files
-        Dim i As Integer
-        For i = 0 To 9
-            
-            If .HotKeyName(acceleratorIndex) = ("MRU_" & i) Then
                 
-                If (FormMain.MnuRecDocs.Count >= i) Then
-                    If FormMain.MnuRecDocs(i).Enabled Then
-                        FormMain.mnuRecDocs_Click i
-                        Exit Sub
-                    End If
-                End If
-                
+            Else
+                PDDebug.LogAction "Received 0-length string from second instance; no action taken."
             End If
-        Next i
-        
-        '***********************************************************
-        'This block of code holds:
-        ' - Accelerators that DO require at least one loaded image
-        
-        'If no images are loaded, exit immediately
-        If (Not PDImages.IsImageActive()) Then Exit Sub
-        
-        'Layer > merge down (requires a passed parameter to ID the active layer)
-        If .HotKeyName(acceleratorIndex) = "layer_mergedown" Then Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
-        
-        'Fit on screen
-        If .HotKeyName(acceleratorIndex) = "FitOnScreen" Then Menus.ProcessDefaultAction_ByName "view_fit"
-        
-        'Zoom in
-        If .HotKeyName(acceleratorIndex) = "Zoom_In" Then Menus.ProcessDefaultAction_ByName "view_zoomin"
-        
-        'Zoom out
-        If .HotKeyName(acceleratorIndex) = "Zoom_Out" Then Menus.ProcessDefaultAction_ByName "view_zoomout"
-        
-        'Actual size
-        If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then Menus.ProcessDefaultAction_ByName "zoom_actual"
-        End If
-        
-        'Various zoom values
-        If .HotKeyName(acceleratorIndex) = "Zoom_161" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 2
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_81" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 4
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_41" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 8
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_21" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 10
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_12" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 14
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_14" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 16
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_18" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 19
-        End If
-        
-        If .HotKeyName(acceleratorIndex) = "Zoom_116" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
-        End If
-        
-        'Remove selection
-        If .HotKeyName(acceleratorIndex) = "Remove selection" Then
-            Process "Remove selection", , , UNDO_Selection
-        End If
-        
-        'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-        If .HotKeyName(acceleratorIndex) = "Next_Image" Then PDImages.MoveToNextImage True
-        If .HotKeyName(acceleratorIndex) = "Prev_Image" Then PDImages.MoveToNextImage False
-        
-    End With
-        
-End Sub
-
-'Note that FormMain is only loaded after pdMain.Main() has triggered.  Look there for the *true* start of the program.
-Private Sub Form_Load()
-    
-    On Error GoTo FormMainLoadError
-    
-    '*************************************************************************************************************************************
-    ' Start by rerouting control to "ContinueLoadingProgram", which initializes all key PD systems
-    '*************************************************************************************************************************************
-    
-    'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    Dim suspendAdditionalMessages As Boolean
-    If PDMain.ContinueLoadingProgram(suspendAdditionalMessages) Then
-        
-        'Initialize our multi-session listener
-        
-        'TODO: check user preference for single-session behavior here
-        If Mutex.IsThisOnlyInstance() And OS.IsProgramCompiled() Then
             
-            'Write a unique session name to the user prefs file; other instances will use this
-            ' to connect to our named pipe.
-            m_uniqueSessionName = OS.GetArbitraryGUID()
-            UserPrefs.WritePreference "Core", "SessionID", m_uniqueSessionName
+            'Reset the stream in case other sessions connect in the future
+            m_SessionStream.SetPosition 0
+            m_SessionStream.SetSizeExternally 0
             
-            'Prep the stream that will receive pipe data.  (At present, we use a plain
-            ' memory-backed stream.)
-            Set m_SessionStream = New pdStream
-            m_SessionStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
-            
-            'Start listening for other sessions
-            Me.ChangeSessionListenerState True, True
-            
-        End If
-        
-        '*************************************************************************************************************************************
-        ' Now that all program engines are initialized, we can finally display the primary window
-        '*************************************************************************************************************************************
-        
-        PDDebug.LogAction "Registering toolbars with the window manager..."
-        m_AllowedToReflowInterface = True
-        
-        'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
-        ' to match, then display the window.
-        g_WindowManager.SetAutoRefreshMode True
-        FormMain.UpdateMainLayout
-        g_WindowManager.SetAutoRefreshMode False
-        
-        'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
-        ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't
-        ' running full Aero, e.g. "Classic Mode" and the like.)
-        FormMain.Show vbModeless
-        FormMain.Refresh
-        DoEvents
-        
-        'Visibility for the options toolbox is automatically set according to the current tool; this is different from
-        ' other dialogs. (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing
-        ' the window state, so all cases are covered nicely.)
-        toolbar_Toolbox.ResetToolButtonStates
-        
-        'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
-        g_WindowManager.SetAutoRefreshMode True
-        
-        
-        '*************************************************************************************************************************************
-        ' Next, make sure PD's previous session closed down successfully
-        '*************************************************************************************************************************************
-        
-        PDDebug.LogAction "Checking for old autosave data..."
-        Autosaves.InitializeAutosave
-        
-        
-        '*************************************************************************************************************************************
-        ' Next, analyze the command line and load any image files (if present).
-        '*************************************************************************************************************************************
-        
-        PDDebug.LogAction "Checking command line..."
-        
-        'Retrieve a Unicode-friendly copy of any command line parameters
-        Dim cmdLineParams As pdStringStack
-        If OS.CommandW(cmdLineParams, True) Then
-            PDDebug.LogAction "Command line might contain images.  Attempting to load..."
-            Loading.LoadMultipleImageFiles cmdLineParams, True
-        End If
-        
-        
-        '*************************************************************************************************************************************
-        ' Next, see if we need to launch an asynchronous check for updates
-        '*************************************************************************************************************************************
-        
-        'Update checks only work in portable mode (because we require write access to our own folder to do an
-        ' in-place update).
-        If (Not UserPrefs.IsNonPortableModeActive()) Then Updates.StandardUpdateChecks
-        
-        
-        '*************************************************************************************************************************************
-        ' Display any final messages and/or warnings
-        '*************************************************************************************************************************************
-        
-        Message vbNullString
-        FormMain.Refresh
-        DoEvents
-        
-        'I occasionally add dire messages to nightly builds.  The line below is the best place to enable that, as necessary.
-        'PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
-        
-        '*************************************************************************************************************************************
-        ' Next, see if we need to display the language/theme selection dialog
-        '*************************************************************************************************************************************
-        
-        'In v7.0, a new "choose your language and UI theme" dialog was added to the project.  This is helpful for first-time
-        ' users to help them get everything set up just the way they want it.
-        
-        'See if we've shown this dialog before; if we have, suspend its load.
-        If (Not UserPrefs.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then Dialogs.PromptUITheme
-        
-        '*************************************************************************************************************************************
-        ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
-        '*************************************************************************************************************************************
-        
-        PDDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
-        
-        'Because people may be using this code in the IDE, warn them about the consequences of doing so
-        If (Not OS.IsProgramCompiled) Then
-            If (UserPrefs.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
-        End If
-        
-        'Because various user preferences may have been modified during the load process (to account for
-        ' failure states, system configurations, etc), write a copy of our potentially-modified
-        ' preference list out to file.
-        UserPrefs.ForceWriteToFile False
-        
-        'In debug mode, note that we are about to turn control over to the user
-        PDDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
-        PDDebug.LogAction vbNullString, PDM_Mem_Report
-        
-        'Before setting focus to the main form, active a focus tracker; this class catches some cases
-        ' that VB's built-in focus events do not.
-        Set m_FocusDetector = New pdFocusDetector
-        m_FocusDetector.StartFocusTracking FormMain.hWnd
-        
-        'Finally, return focus to the main form
-        g_WindowManager.SetFocusAPI FormMain.hWnd
-        
-        Exit Sub
-        
-FormMainLoadError:
-        PDDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
-        
-    'Something went catastrophically wrong during the load process.  Do not continue with the loading process.
-    Else
-    
-        'Because we can't guarantee that the translation subsystem is loaded, default to
-        ' a plain English error message, then terminate the program.
-        If (Not suspendAdditionalMessages) Then
-            Dim tmpMsg As String, tmpTitle As String
-            tmpMsg = "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)"
-            tmpTitle = "Startup failure"
-            MsgBox tmpMsg, vbOKOnly + vbCritical, tmpTitle
-        End If
-        Unload Me
-        
-    End If
-    
-End Sub
-
-'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If (Not g_AllowDragAndDrop) Then Exit Sub
-    
-    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
-    ' to load the OLE source.
-    Dim dropAsNewLayer As VbMsgBoxResult
-    dropAsNewLayer = Dialogs.PromptForDropAsNewLayer()
-    If (dropAsNewLayer <> vbCancel) Then g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
-    
-End Sub
-
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-    
-    'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
-    ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
-    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
-        Effect = vbDropEffectCopy And Effect
-    Else
-        Effect = vbDropEffectNone
-    End If
-
-End Sub
-
-'If the user is attempting to close the program, run some checks.  Specifically, we want to make sure all child forms have been saved.
-' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
-Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-    
-    'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
-    g_ProgramShuttingDown = True
-    
-    'An external function handles unloading.  If it fails, we will also cancel our unload.
-    Cancel = (Not CanvasManager.CloseAllImages())
-    If Cancel Then
-        g_ProgramShuttingDown = False
-        If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString
-    End If
-    
-End Sub
-
-'UNLOAD EVERYTHING
-Private Sub Form_Unload(Cancel As Integer)
-    
-    'FYI, this function includes a fair amount of debug code!
-    PDDebug.LogAction "Shutdown initiated"
-    
-    'Store the main window's location to file now.  We will use this in the future to determine which monitor
-    ' to display the splash screen on
-    UserPrefs.SetPref_Long "Core", "Last Window State", Me.WindowState
-    UserPrefs.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
-    UserPrefs.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
-    UserPrefs.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
-    UserPrefs.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
-    
-    'Hide the main window to make it appear as if we shut down quickly
-    Me.Visible = False
-    Interface.ReleaseResources
-    
-    'Cancel any pending downloads
-    PDDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
-    
-    Me.AsyncDownloader.Reset
-    
-    'Allow any objects on this form to save preferences and other user data
-    PDDebug.LogAction "Asking all FormMain components to write out final user preference values..."
-    
-    FormMain.MainCanvas(0).WriteUserPreferences
-    Toolboxes.SaveToolboxData
-    
-    'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
-    ' copy of all supported formats - for this reason, this step may be a little slow.
-    PDDebug.LogAction "Shutting down clipboard manager..."
-    
-    If (Not g_Clipboard Is Nothing) Then
-    
-        If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
-            PDDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
-            g_Clipboard.RenderAllClipboardFormatsManually
-        End If
-    
-        Set g_Clipboard = Nothing
-        
-    End If
-    
-    'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
-    ' no images are loaded by this point.  Because it takes some time to shut down, trigger it prematurely.
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
-        ExifTool.TerminateExifTool
-        PDDebug.LogAction "ExifTool terminated"
-    End If
-    
-    'Perform any printer-related cleanup
-    PDDebug.LogAction "Removing printer temp files..."
-    Printing.PerformPrinterCleanup
-    
-    'Stop tracking hotkeys
-    PDDebug.LogAction "Turning off hotkey manager..."
-    If (Not HotkeyManager Is Nothing) Then
-        HotkeyManager.DeactivateHook True
-        HotkeyManager.ReleaseResources
-    End If
-    
-    'Release the tooltip tracker
-    PDDebug.LogAction "Releasing tooltip manager..."
-    UserControls.FinalTooltipUnload
-    
-    'Destroy all custom-created icons and cursors
-    PDDebug.LogAction "Destroying custom icons and cursors..."
-    IconsAndCursors.UnloadAllCursors
-    
-    'Destroy all paint-related resources
-    PDDebug.LogAction "Destroying paint tool resources..."
-    Tools_Paint.FreeBrushResources
-    Tools_Pencil.FreeBrushResources
-    Tools_Clone.FreeBrushResources
-    Tools_Fill.FreeFillResources
-        
-    'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
-    ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
-    ' the problematic image anyway.)
-    PDDebug.LogAction "Saving recent file list..."
-    If (Not g_RecentFiles Is Nothing) Then
-        g_RecentFiles.WriteListToFile
-        g_RecentMacros.MRU_SaveToFile
-    End If
-    
-    'Release any Win7-specific features
-    PDDebug.LogAction "Releasing custom Windows 7+ features..."
-    OS.StopWin7PlusFeatures
-    
-    'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
-    PDDebug.LogAction vbNullString, PDM_Mem_Report
-    PDDebug.LogAction "Unloading tool panels..."
-    toolbar_Toolbox.FreeAllToolpanels
-    
-    'With all tool panels unloaded, unload all toolboxes as well
-    PDDebug.LogAction "Unloading toolboxes..."
-    
-    'Before unloading toolboxes, we need to reset their window bits.  (These window bits get
-    ' toggled by the toolbox module as part of assigning parent/child relationships.)
-    If PDMain.WasStartupSuccessful() Then
-        Toolboxes.ReleaseToolbox toolbar_Layers.hWnd
-        Unload toolbar_Layers
-    End If
-    Set toolbar_Layers = Nothing
-    
-    If PDMain.WasStartupSuccessful() Then
-        Toolboxes.ReleaseToolbox toolbar_Options.hWnd
-        Unload toolbar_Options
-    End If
-    Set toolbar_Options = Nothing
-    
-    If PDMain.WasStartupSuccessful() Then
-        Toolboxes.ReleaseToolbox toolbar_Toolbox.hWnd
-        Unload toolbar_Toolbox
-    End If
-    Set toolbar_Toolbox = Nothing
-    
-    'Release this form from the window manager, and write out all window data to file
-    PDDebug.LogAction "Shutting down window manager..."
-    If (Not g_WindowManager Is Nothing) Then
-        Interface.ReleaseFormTheming Me
-        g_WindowManager.UnregisterMainForm Me
-    End If
-    
-    'As a final failsafe, forcibly unload any remaining forms
-    PDDebug.LogAction "Forcibly unloading any remaining forms..."
-    
-    Dim tmpForm As Form
-    For Each tmpForm In Forms
-
-        'Note that there is no need to unload FormMain, as we're about to unload it anyway!
-        If Strings.StringsNotEqual(tmpForm.Name, "FormMain", True) Then
-            PDDebug.LogAction "Forcibly unloading " & tmpForm.Name
-            Unload tmpForm
-            Set tmpForm = Nothing
-        End If
-
-    Next tmpForm
-    
-    'If an update package was downloaded, this is a good time to apply it
-    If Updates.IsUpdatePackageAvailable And PDMain.WasStartupSuccessful() Then
-        
-        If Updates.PatchProgramFiles() Then
-            PDDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
-            
-            'If the user wants a restart, create a restart batch file now
-            'If g_UserWantsRestart Then Updates.CreateRestartBatchFile
+            'Forcibly disconnect from the client (required regardless of client connection state,
+            ' e.g. even if the client has disconnected, we still need to disconnect from this
+            ' instance as well), then recreate the pipe.  (This could be avoided by switching
+            ' to asynchronous I/O, but I haven't written that code... yet.)
+            m_OtherSessions.DisconnectFromClient
+            m_OtherSessions.ClosePipe
+            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then m_OtherSessions.Server_WaitForResponse 1000
             
         Else
-            PDDebug.LogAction "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
+            'Do nothing; we just need to chill and wait for the rest of the stream to arrive
         End If
         
     End If
-        
-    'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
-    ' it can compare its version against this value, to infer if an update occurred.
-    PDDebug.LogAction "Writing session data to file..."
-    UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
-    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
-    PDDebug.LogAction "Final step: writing out new autosave checksum..."
-    Autosaves.PurgeOldAutosaveData
-    Autosaves.NotifyCleanShutdown
-    
-    PDDebug.LogAction "Shutdown appears to be clean.  Turning final control over to pdMain.FinalShutdown()..."
-    PDMain.FinalShutdown
-    
-    'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
-    'If g_UserWantsRestart Then Updates.InitiateRestart
-    
-End Sub
-
-'The top-level adjustments menu provides some shortcuts to most-used items.
-Private Sub MnuAdjustments_Click(Index As Integer)
-    
-    'Check the index; if it's past 10, then it's just a top-level menu for one of the
-    ' adjustment categories; we don't want to auto-trigger these, as one menu is named
-    ' "Invert" which is also a command in the "Selection" menu!
-    If (Index <= 10) Then Menus.ProcessDefaultAction_ByCaption MnuAdjustments(Index).Caption
-    
-End Sub
-
-Private Sub MnuArtistic_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuArtistic(Index).Caption
-End Sub
-
-'All blur filters are handled here
-Private Sub MnuBlur_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_boxblur"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_gaussianblur"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_surfaceblur"
-        Case 3
-            'separator
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_motionblur"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_radialblur"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_zoomblur"
-    End Select
-End Sub
-
-'All Color sub-menu entries are handled here.
-Private Sub MnuColor_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_colorbalance"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_whitebalance"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "adj_hsl"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "adj_temperature"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "adj_tint"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "adj_vibrance"
-        Case 7
-            'separator
-        Case 8
-            Menus.ProcessDefaultAction_ByName "adj_blackandwhite"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "adj_colorlookup"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "adj_colorize"
-        Case 11
-            Menus.ProcessDefaultAction_ByName "adj_photofilters"
-        Case 12
-            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
-        Case 13
-            Menus.ProcessDefaultAction_ByName "adj_sepia"
-        Case 14
-            Menus.ProcessDefaultAction_ByName "adj_splittone"
-    End Select
-End Sub
-
-'All entries in the Color -> Channels sub-menu are handled here
-Private Sub MnuChannels_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_channelmixer"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_rechannel"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "adj_maxchannel"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "adj_minchannel"
-        Case 5
-            'separator
-        Case 6
-            Menus.ProcessDefaultAction_ByName "adj_shiftchannelsleft"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "adj_shiftchannelsright"
-    End Select
-End Sub
-
-'All distortion filters happen here
-Private Sub MnuDistort_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_fixlensdistort"
-        Case 1
-            'separator
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_donut"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_droste"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_lens"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_pinchandwhirl"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_poke"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "effects_ripple"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "effects_squish"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "effects_swirl"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "effects_waves"
-        Case 11
-            'separator
-        Case 12
-            Menus.ProcessDefaultAction_ByName "effects_miscdistort"
-    End Select
-End Sub
-
-Private Sub MnuEdge_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_emboss"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_enhanceedges"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_findedges"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_gradientflow"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_rangefilter"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_tracecontour"
-    End Select
-End Sub
-
-Private Sub MnuEdit_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "edit_undo"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "edit_redo"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "edit_history"
-        Case 3
-            'separator
-        Case 4
-            Menus.ProcessDefaultAction_ByName "edit_repeat"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "edit_fade"
-        Case 6
-            'separator
-        Case 7
-            Menus.ProcessDefaultAction_ByName "edit_cutlayer"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "edit_cutmerged"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "edit_copylayer"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "edit_copymerged"
-        Case 11
-            Menus.ProcessDefaultAction_ByName "edit_pasteaslayer"
-        Case 12
-            Menus.ProcessDefaultAction_ByName "edit_pastetocursor"
-        Case 13
-            Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
-        Case 14
-            'Top-level "cut/copy/paste special"
-        Case 15
-            'separator
-        Case 16
-            Menus.ProcessDefaultAction_ByName "edit_emptyclipboard"
-    End Select
-End Sub
-
-Private Sub MnuEditSpecial_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "edit_specialcut"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "edit_specialcopy"
-        Case 2
-            'Menus.ProcessDefaultAction_ByName "edit_specialpaste"
-    End Select
-End Sub
-
-Private Sub MnuFile_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "file_new"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "file_open"
-        Case 2
-            '<Open Recent top-level>
-        Case 3
-            '<Import top-level>
-        Case 4
-            '<separator>
-        Case 5
-            Menus.ProcessDefaultAction_ByName "file_close"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "file_closeall"
-        Case 7
-            '<separator>
-        Case 8
-            Menus.ProcessDefaultAction_ByName "file_save"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "file_savecopy"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "file_saveas"
-        Case 11
-            Menus.ProcessDefaultAction_ByName "file_revert"
-        Case 12
-            'Export top-level
-        Case 13
-            '<separator>
-        Case 14
-            'Batch top-level
-        Case 15
-            '<separator>
-        Case 16
-            Menus.ProcessDefaultAction_ByName "file_print"
-        Case 17
-            '<separator>
-        Case 18
-            Menus.ProcessDefaultAction_ByName "file_quit"
-    End Select
-End Sub
-
-Private Sub MnuFileExport_Click(Index As Integer)
-    
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "file_export_animatedgif"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "file_export_animatedpng"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "file_export_animatedwebp"
-        Case 3
-            '(separator)
-        Case 4
-            Menus.ProcessDefaultAction_ByName "file_export_colorlookup"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "file_export_palette"
-    End Select
-    
-End Sub
-
-'All help menu entries are launched from here
-Private Sub MnuHelp_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "help_patreon"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "help_donate"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "help_forum"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "help_checkupdates"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "help_reportbug"
-        Case 6
-            'separator
-        Case 7
-            Menus.ProcessDefaultAction_ByName "help_forum"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "help_license"
-        Case 9
-            Menus.ProcessDefaultAction_ByName "help_sourcecode"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "help_website"
-        Case 11
-            'separator
-        Case 12
-            Menus.ProcessDefaultAction_ByName "help_about"
-    End Select
-End Sub
-
-Private Sub MnuHistogram_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_histogramdisplay"
-        Case 1
-            'separator
-        Case 2
-            Menus.ProcessDefaultAction_ByName "adj_histogramequalize"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "adj_histogramstretch"
-    End Select
-End Sub
-
-'All top-level Image menu actions are handled here
-Private Sub MnuImage_Click(Index As Integer)
-
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "image_duplicate"
-        Case 1
-            'separator
-        Case 2
-            Menus.ProcessDefaultAction_ByName "image_resize"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "image_contentawareresize"
-        Case 4
-            'separator
-        Case 5
-            Menus.ProcessDefaultAction_ByName "image_canvassize"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "image_fittolayer"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "image_fitalllayers"
-        Case 8
-            'separator
-        Case 9
-            Menus.ProcessDefaultAction_ByName "image_crop"
-        Case 10
-            Menus.ProcessDefaultAction_ByName "image_trim"
-        Case 11
-            'separator
-        Case 12
-            'top-level rotate
-        Case 13
-            Menus.ProcessDefaultAction_ByName "image_fliphorizontal"
-        Case 14
-            Menus.ProcessDefaultAction_ByName "image_flipvertical"
-        Case 15
-            'separator
-        Case 16
-            Menus.ProcessDefaultAction_ByName "image_mergevisible"
-        Case 17
-            Menus.ProcessDefaultAction_ByName "image_flatten"
-        Case 18
-            'separator
-        Case 19
-            Menus.ProcessDefaultAction_ByName "image_animation"
-        Case 20
-            Menus.ProcessDefaultAction_ByName "image_compare"
-        Case 21
-            'Metadata top-level
-    End Select
-
-End Sub
-
-'When a language is clicked, immediately activate it
-Private Sub mnuLanguages_Click(Index As Integer)
-
-    Screen.MousePointer = vbHourglass
-    
-    'Because loading a language can take some time, display a wait screen to discourage attempted interaction
-    DisplayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
-    
-    'Remove the existing translation from any visible windows
-    Message "Removing existing translation..."
-    g_Language.UndoTranslations FormMain
-    g_Language.UndoTranslations toolbar_Toolbox
-    g_Language.UndoTranslations toolbar_Options
-    g_Language.UndoTranslations toolbar_Layers
-    DoEvents
-    
-    'Apply the new translation
-    Message "Applying new translation..."
-    g_Language.ActivateNewLanguage Index
-    g_Language.ApplyLanguage True, True
-    
-    Message "Language changed successfully."
-    
-    HideWaitScreen
-    
-    Screen.MousePointer = vbDefault
-    
-End Sub
-
-Private Sub MnuLighting_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_bandc"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_curves"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "adj_dehaze"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "adj_exposure"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "adj_gamma"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "adj_hdr"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "adj_levels"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "adj_sandh"
-    End Select
-End Sub
-
-'All metadata sub-menu options are handled here
-Private Sub MnuMetadata_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "image_editmetadata"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "image_removemetadata"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "image_countcolors"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "image_maplocation"
-    End Select
-    
-End Sub
-
-Private Sub MnuMonochrome_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_colortomonochrome"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_monochrometogray"
-    End Select
-End Sub
-
-Private Sub MnuNatureFilter_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_atmosphere"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_fog"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_ignite"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_lava"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_metal"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_snow"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_underwater"
-    End Select
-End Sub
-
-Private Sub MnuInvert_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_invertcmyk"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_inverthue"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "adj_invertrgb"
-    End Select
-End Sub
-
-'All noise filters are handled here
-Private Sub MnuNoise_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_filmgrain"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_rgbnoise"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_anisotropic"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_dustandscratches"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_harmonicmean"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_meanshift"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "effects_median"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "effects_snn"
-    End Select
-End Sub
-
-'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
-Public Sub mnuRecDocs_Click(Index As Integer)
-    If (LenB(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
-End Sub
-
-'All rotation actions are initiated here
-Private Sub MnuRotate_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "image_straighten"
-        Case 1
-            '<separator>
-        Case 2
-            Menus.ProcessDefaultAction_ByName "image_rotate90"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "image_rotate270"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "image_rotate180"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "image_rotatearbitrary"
-    End Select
-End Sub
-
-'All select menu items are handled here
-Private Sub MnuSelect_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuSelect(Index).Caption
-End Sub
-
-'All Select -> Export menu items are handled here
-Private Sub MnuSelectExport_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuSelectExport(Index).Caption
-End Sub
-
-'All sharpen filters are handled here
-Private Sub MnuSharpen_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_sharpen"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_unsharp"
-    End Select
-End Sub
-
-'These menu items correspond to specific zoom values
-Private Sub MnuSpecificZoom_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "zoom_16_1"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "zoom_8_1"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "zoom_4_1"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "zoom_2_1"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "zoom_actual"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "zoom_1_2"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "zoom_1_4"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "zoom_1_8"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "zoom_1_16"
-    End Select
-End Sub
-
-'All stylize filters are handled here
-Private Sub MnuStylize_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "effects_antique"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "effects_diffuse"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "effects_kuwahara"
-        Case 3
-            Menus.ProcessDefaultAction_ByName "effects_outline"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "effects_palettize"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "effects_portraitglow"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "effects_solarize"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "effects_twins"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "effects_vignetting"
-    End Select
-End Sub
-
-'All tool menu items are launched from here
-Private Sub mnuTool_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            'Language top-level
-        Case 1
-            Menus.ProcessDefaultAction_ByName "tools_languageeditor"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "tools_theme"
-        Case 4
-            'separator
-        Case 5
-            'Create macro top-level
-        Case 6
-            Menus.ProcessDefaultAction_ByName "tools_playmacro"
-        Case 7
-            'Recent macros top-level
-        Case 8
-            'separator
-        Case 9
-            Menus.ProcessDefaultAction_ByName "tools_screenrecord"
-        Case 10
-            'separator
-        Case 11
-            Menus.ProcessDefaultAction_ByName "tools_options"
-        Case 12
-            Menus.ProcessDefaultAction_ByName "tools_3rdpartylibs"
-    End Select
-End Sub
-
-'Add / Remove / Modify a layer's alpha channel with this menu
-Private Sub MnuLayerTransparency_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "layer_colortoalpha"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "layer_luminancetoalpha"
-        Case 2
-            'separator
-        Case 3
-            Menus.ProcessDefaultAction_ByName "layer_removealpha"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "layer_thresholdalpha"
-    End Select
-End Sub
-
-'All "Window" menu items are handled here
-Private Sub MnuWindow_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            'Toolbox top-level
-        Case 1
-            Menus.ProcessDefaultAction_ByName "window_tooloptions"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "window_layers"
-        Case 3
-            'Tab-strip top level
-        Case 4
-            'separator
-        Case 5
-            Menus.ProcessDefaultAction_ByName "window_resetsettings"
-        Case 6
-            'separator
-        Case 7
-            Menus.ProcessDefaultAction_ByName "window_next"
-        Case 8
-            Menus.ProcessDefaultAction_ByName "window_previous"
-    End Select
-End Sub
-
-'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable
-' under a variety of conditions, and we allow the user to specify any alignment.
-Private Sub MnuWindowTabstrip_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alwaysshow"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_shownormal"
-        Case 2
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_nevershow"
-        Case 3
-            '<separator>
-        Case 4
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignleft"
-        Case 5
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_aligntop"
-        Case 6
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignright"
-        Case 7
-            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignbottom"
-    End Select
 End Sub
 
 'Start/stop multisession listening support.  Note that this behavior can be overruled by the
@@ -4057,7 +2650,7 @@ End Sub
 'That said, it is important to call these functions before PD engages something like a
 ' batch process, because opening new images in the midst of a batch process can produce
 ' very unpredictable behavior.  Same goes for e.g. an effect window being active, because PD
-' isn't really equipped to deal with the active image changing while a modal dialog is live.
+' isn't equipped to deal with the active image changing while a modal dialog is live.
 '
 'Pass FALSE to turn off multi-session detection; TRUE to turn it on.  Note that if the current
 ' state is set to OFF, parallel PD sessions will be allowed to start regardless of the user's
@@ -4098,14 +2691,10 @@ Public Sub ChangeSessionListenerState(ByVal newState As Boolean, Optional ByVal 
     
     'The caller wants to allow multiple parallel instances.  Turn off the multi-session listener.
     Else
-        
         If (Not m_OtherSessions Is Nothing) Then
             m_OtherSessions.DisconnectFromClient
             m_OtherSessions.ClosePipe
         End If
-        
-        Exit Sub
-        
     End If
     
 End Sub
@@ -4122,4 +2711,1208 @@ Public Sub UpdateAgainstCurrentTheme()
     IconsAndCursors.ApplyAllMenuIcons
     IconsAndCursors.ResetMenuIcons
     
+End Sub
+
+Private Sub MnuAdjustments_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_autocorrect"
+        Case 1
+            Actions.LaunchAction_ByName "adj_autoenhance"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "adj_blackandwhite"
+        Case 4
+            Actions.LaunchAction_ByName "adj_bandc"
+        Case 5
+            Actions.LaunchAction_ByName "adj_colorbalance"
+        Case 6
+            Actions.LaunchAction_ByName "adj_curves"
+        Case 7
+            Actions.LaunchAction_ByName "adj_levels"
+        Case 8
+            Actions.LaunchAction_ByName "adj_sandh"
+        Case 9
+            Actions.LaunchAction_ByName "adj_vibrance"
+        Case 10
+            Actions.LaunchAction_ByName "adj_whitebalance"
+        Case Else
+            'All remaining commands in this menu are parent menus only
+    End Select
+End Sub
+
+Private Sub MnuArtistic_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_colorpencil"
+        Case 1
+            Actions.LaunchAction_ByName "effects_comicbook"
+        Case 2
+            Actions.LaunchAction_ByName "effects_figuredglass"
+        Case 3
+            Actions.LaunchAction_ByName "effects_filmnoir"
+        Case 4
+            Actions.LaunchAction_ByName "effects_glasstiles"
+        Case 5
+            Actions.LaunchAction_ByName "effects_kaleidoscope"
+        Case 6
+            Actions.LaunchAction_ByName "effects_modernart"
+        Case 7
+            Actions.LaunchAction_ByName "effects_oilpainting"
+        Case 8
+            Actions.LaunchAction_ByName "effects_plasticwrap"
+        Case 9
+            Actions.LaunchAction_ByName "effects_posterize"
+        Case 10
+            Actions.LaunchAction_ByName "effects_relief"
+        Case 11
+            Actions.LaunchAction_ByName "effects_stainedglass"
+    End Select
+End Sub
+
+Private Sub MnuBatch_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "file_batch_process"
+        Case 1
+            Actions.LaunchAction_ByName "file_batch_repair"
+    End Select
+End Sub
+
+Private Sub MnuBlur_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_boxblur"
+        Case 1
+            Actions.LaunchAction_ByName "effects_gaussianblur"
+        Case 2
+            Actions.LaunchAction_ByName "effects_surfaceblur"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "effects_motionblur"
+        Case 5
+            Actions.LaunchAction_ByName "effects_radialblur"
+        Case 6
+            Actions.LaunchAction_ByName "effects_zoomblur"
+    End Select
+End Sub
+
+Private Sub MnuColor_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_colorbalance"
+        Case 1
+            Actions.LaunchAction_ByName "adj_whitebalance"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "adj_hsl"
+        Case 4
+            Actions.LaunchAction_ByName "adj_temperature"
+        Case 5
+            Actions.LaunchAction_ByName "adj_tint"
+        Case 6
+            Actions.LaunchAction_ByName "adj_vibrance"
+        Case 7
+            '(separator)
+        Case 8
+            Actions.LaunchAction_ByName "adj_blackandwhite"
+        Case 9
+            Actions.LaunchAction_ByName "adj_colorlookup"
+        Case 10
+            Actions.LaunchAction_ByName "adj_colorize"
+        Case 11
+            Actions.LaunchAction_ByName "adj_photofilters"
+        Case 12
+            Actions.LaunchAction_ByName "adj_replacecolor"
+        Case 13
+            Actions.LaunchAction_ByName "adj_sepia"
+        Case 14
+            Actions.LaunchAction_ByName "adj_splittone"
+    End Select
+End Sub
+
+Private Sub MnuChannels_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_channelmixer"
+        Case 1
+            Actions.LaunchAction_ByName "adj_rechannel"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "adj_maxchannel"
+        Case 4
+            Actions.LaunchAction_ByName "adj_minchannel"
+        Case 5
+            '(separator)
+        Case 6
+            Actions.LaunchAction_ByName "adj_shiftchannelsleft"
+        Case 7
+            Actions.LaunchAction_ByName "adj_shiftchannelsright"
+    End Select
+End Sub
+
+Private Sub MnuClearRecentMacros_Click()
+    g_RecentMacros.MRU_ClearList
+End Sub
+
+'The Developer Tools menu is automatically hidden in production builds, so (obviously)
+' DO NOT PUT ANYTHING HERE that end-users should be able to access.
+Private Sub MnuDevelopers_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "tools_themeeditor"
+        Case 1
+            Actions.LaunchAction_ByName "tools_themepackage"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "tools_standalonepackage"
+    End Select
+End Sub
+
+Private Sub MnuDistort_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_fixlensdistort"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "effects_donut"
+        Case 3
+            Actions.LaunchAction_ByName "effects_droste"
+        Case 4
+            Actions.LaunchAction_ByName "effects_lens"
+        Case 5
+            Actions.LaunchAction_ByName "effects_pinchandwhirl"
+        Case 6
+            Actions.LaunchAction_ByName "effects_poke"
+        Case 7
+            Actions.LaunchAction_ByName "effects_ripple"
+        Case 8
+            Actions.LaunchAction_ByName "effects_squish"
+        Case 9
+            Actions.LaunchAction_ByName "effects_swirl"
+        Case 10
+            Actions.LaunchAction_ByName "effects_waves"
+        Case 11
+            '(separator)
+        Case 12
+            Actions.LaunchAction_ByName "effects_miscdistort"
+    End Select
+End Sub
+
+Private Sub MnuEdge_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_emboss"
+        Case 1
+            Actions.LaunchAction_ByName "effects_enhanceedges"
+        Case 2
+            Actions.LaunchAction_ByName "effects_findedges"
+        Case 3
+            Actions.LaunchAction_ByName "effects_gradientflow"
+        Case 4
+            Actions.LaunchAction_ByName "effects_rangefilter"
+        Case 5
+            Actions.LaunchAction_ByName "effects_tracecontour"
+    End Select
+End Sub
+
+Private Sub MnuEdit_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "edit_undo"
+        Case 1
+            Actions.LaunchAction_ByName "edit_redo"
+        Case 2
+            Actions.LaunchAction_ByName "edit_history"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "edit_repeat"
+        Case 5
+            Actions.LaunchAction_ByName "edit_fade"
+        Case 6
+            '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "edit_cutlayer"
+        Case 8
+            Actions.LaunchAction_ByName "edit_cutmerged"
+        Case 9
+            Actions.LaunchAction_ByName "edit_copylayer"
+        Case 10
+            Actions.LaunchAction_ByName "edit_copymerged"
+        Case 11
+            Actions.LaunchAction_ByName "edit_pasteaslayer"
+        Case 12
+            Actions.LaunchAction_ByName "edit_pastetocursor"
+        Case 13
+            Actions.LaunchAction_ByName "edit_pasteasimage"
+        Case 14
+            'Top-level "cut/copy/paste special"
+        Case 15
+            '(separator)
+        Case 16
+            Actions.LaunchAction_ByName "edit_emptyclipboard"
+    End Select
+End Sub
+
+Private Sub MnuEditSpecial_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "edit_specialcut"
+        Case 1
+            Actions.LaunchAction_ByName "edit_specialcopy"
+        Case 2
+            'Actions.LaunchAction_ByName "edit_specialpaste"
+    End Select
+End Sub
+
+Private Sub MnuEffectAnimation_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_animation_background"
+        Case 1
+            Actions.LaunchAction_ByName "effects_animation_foreground"
+    End Select
+End Sub
+
+Private Sub MnuEffectTransform_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_panandzoom"
+        Case 1
+            Actions.LaunchAction_ByName "effects_perspective"
+        Case 2
+            Actions.LaunchAction_ByName "effects_polarconversion"
+        Case 3
+            Actions.LaunchAction_ByName "effects_rotate"
+        Case 4
+            Actions.LaunchAction_ByName "effects_shear"
+        Case 5
+            Actions.LaunchAction_ByName "effects_spherize"
+    End Select
+End Sub
+
+Private Sub MnuEffectUpper_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            'Artistic
+        Case 1
+            'Blur
+        Case 2
+            'Distort
+        Case 3
+            'Edge
+        Case 4
+            'Light and Shadow
+        Case 5
+            'Natural
+        Case 6
+            'Noise
+        Case 7
+            'Pixelate
+        Case 8
+            'Render
+        Case 9
+            'Sharpen
+        Case 10
+            'Stylize
+        Case 11
+            'Transform
+        Case 12
+            '(separator)
+        Case 13
+            'Animation
+        Case 14
+            Actions.LaunchAction_ByName "effects_customfilter"
+        Case 15
+            Actions.LaunchAction_ByName "effects_8bf"
+    End Select
+End Sub
+
+Private Sub MnuFile_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "file_new"
+        Case 1
+            Actions.LaunchAction_ByName "file_open"
+        Case 2
+            '<Open Recent top-level>
+        Case 3
+            '<Import top-level>
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "file_close"
+        Case 6
+            Actions.LaunchAction_ByName "file_closeall"
+        Case 7
+            '(separator)
+        Case 8
+            Actions.LaunchAction_ByName "file_save"
+        Case 9
+            Actions.LaunchAction_ByName "file_savecopy"
+        Case 10
+            Actions.LaunchAction_ByName "file_saveas"
+        Case 11
+            Actions.LaunchAction_ByName "file_revert"
+        Case 12
+            'Export top-level
+        Case 13
+            '(separator)
+        Case 14
+            'Batch top-level
+        Case 15
+            '(separator)
+        Case 16
+            Actions.LaunchAction_ByName "file_print"
+        Case 17
+            '(separator)
+        Case 18
+            Actions.LaunchAction_ByName "file_quit"
+    End Select
+End Sub
+
+Private Sub MnuFileExport_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "file_export_animatedgif"
+        Case 1
+            Actions.LaunchAction_ByName "file_export_animatedpng"
+        Case 2
+            Actions.LaunchAction_ByName "file_export_animatedwebp"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "file_export_colorlookup"
+        Case 5
+            Actions.LaunchAction_ByName "file_export_colorprofile"
+        Case 6
+            Actions.LaunchAction_ByName "file_export_palette"
+    End Select
+End Sub
+
+Private Sub MnuFileImport_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "file_import_paste"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "file_import_scanner"
+        Case 3
+            Actions.LaunchAction_ByName "file_import_selectscanner"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "file_import_web"
+        Case 6
+            '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "file_import_screenshot"
+    End Select
+End Sub
+
+Private Sub MnuHelp_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "help_patreon"
+        Case 1
+            Actions.LaunchAction_ByName "help_donate"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "help_forum"
+        Case 4
+            Actions.LaunchAction_ByName "help_checkupdates"
+        Case 5
+            Actions.LaunchAction_ByName "help_reportbug"
+        Case 6
+            '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "help_forum"
+        Case 8
+            Actions.LaunchAction_ByName "help_license"
+        Case 9
+            Actions.LaunchAction_ByName "help_sourcecode"
+        Case 10
+            Actions.LaunchAction_ByName "help_website"
+        Case 11
+            '(separator)
+        Case 12
+            Actions.LaunchAction_ByName "help_about"
+    End Select
+End Sub
+
+Private Sub MnuHistogram_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_histogramdisplay"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "adj_histogramequalize"
+        Case 3
+            Actions.LaunchAction_ByName "adj_histogramstretch"
+    End Select
+End Sub
+
+Private Sub MnuImage_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "image_duplicate"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "image_resize"
+        Case 3
+            Actions.LaunchAction_ByName "image_contentawareresize"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "image_canvassize"
+        Case 6
+            Actions.LaunchAction_ByName "image_fittolayer"
+        Case 7
+            Actions.LaunchAction_ByName "image_fitalllayers"
+        Case 8
+            '(separator)
+        Case 9
+            Actions.LaunchAction_ByName "image_crop"
+        Case 10
+            Actions.LaunchAction_ByName "image_trim"
+        Case 11
+            '(separator)
+        Case 12
+            'top-level rotate
+        Case 13
+            Actions.LaunchAction_ByName "image_fliphorizontal"
+        Case 14
+            Actions.LaunchAction_ByName "image_flipvertical"
+        Case 15
+            '(separator)
+        Case 16
+            Actions.LaunchAction_ByName "image_mergevisible"
+        Case 17
+            Actions.LaunchAction_ByName "image_flatten"
+        Case 18
+            '(separator)
+        Case 19
+            Actions.LaunchAction_ByName "image_animation"
+        Case 20
+            Actions.LaunchAction_ByName "image_compare"
+        Case 21
+            'Metadata top-level
+    End Select
+End Sub
+
+Private Sub MnuInvert_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_invertcmyk"
+        Case 1
+            Actions.LaunchAction_ByName "adj_inverthue"
+        Case 2
+            Actions.LaunchAction_ByName "adj_invertrgb"
+    End Select
+End Sub
+
+'When a language is clicked, immediately activate it
+Private Sub mnuLanguages_Click(Index As Integer)
+
+    Screen.MousePointer = vbHourglass
+    
+    'Because loading a language can take some time, display a wait screen to discourage interactions
+    DisplayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
+    
+    'Remove the existing translation from any visible windows
+    Message "Removing existing translation..."
+    g_Language.UndoTranslations FormMain
+    g_Language.UndoTranslations toolbar_Toolbox
+    g_Language.UndoTranslations toolbar_Options
+    g_Language.UndoTranslations toolbar_Layers
+    DoEvents
+    
+    'Apply the new translation
+    Message "Applying new translation..."
+    g_Language.ActivateNewLanguage Index
+    g_Language.ApplyLanguage True, True
+    
+    Message "Language changed successfully."
+    
+    HideWaitScreen
+    
+    Screen.MousePointer = vbDefault
+    
+End Sub
+
+Private Sub MnuLayer_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            'Add submenu
+        Case 1
+            'Delete submenu
+        Case 2
+            'Replace submenu
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "layer_mergeup"
+        Case 5
+            Actions.LaunchAction_ByName "layer_mergedown"
+        Case 6
+            'Order submenu
+        Case 7
+            'Visibility submenu
+        Case 8
+            '(separator)
+        Case 9
+            'Crop submenu
+        Case 10
+            'Orientation submenu
+        Case 11
+            'Size submenu
+        Case 12
+            '(separator)
+        Case 13
+            'Transparency submenu
+        Case 14
+            '(separator)
+        Case 15
+            'Rasterize submenu
+    End Select
+End Sub
+
+Private Sub MnuLayerDelete_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_deletecurrent"
+        Case 1
+            Actions.LaunchAction_ByName "layer_deletehidden"
+    End Select
+End Sub
+
+Private Sub MnuLayerNew_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_addbasic"
+        Case 1
+            Actions.LaunchAction_ByName "layer_addblank"
+        Case 2
+            Actions.LaunchAction_ByName "layer_duplicate"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "layer_addfromclipboard"
+        Case 5
+            Actions.LaunchAction_ByName "layer_addfromfile"
+        Case 6
+            Actions.LaunchAction_ByName "layer_addfromvisiblelayers"
+        Case 7
+            '(separator)
+        Case 8
+            Actions.LaunchAction_ByName "layer_addviacopy"
+        Case 9
+            Actions.LaunchAction_ByName "layer_addviacut"
+    End Select
+End Sub
+
+Private Sub MnuLayerCrop_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_cropselection"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "layer_pad"
+        Case 3
+            Actions.LaunchAction_ByName "layer_trim"
+    End Select
+End Sub
+
+Private Sub MnuLayerOrder_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_gotop"
+        Case 1
+            Actions.LaunchAction_ByName "layer_goup"
+        Case 2
+            Actions.LaunchAction_ByName "layer_godown"
+        Case 3
+            Actions.LaunchAction_ByName "layer_gobottom"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "layer_movetop"
+        Case 6
+            Actions.LaunchAction_ByName "layer_moveup"
+        Case 7
+            Actions.LaunchAction_ByName "layer_movedown"
+        Case 8
+            Actions.LaunchAction_ByName "layer_movebottom"
+        Case 9
+            '(separator)
+        Case 10
+            Actions.LaunchAction_ByName "layer_reverse"
+    End Select
+End Sub
+
+Private Sub MnuLayerOrientation_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_straighten"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "layer_rotate90"
+        Case 3
+            Actions.LaunchAction_ByName "layer_rotate270"
+        Case 4
+            Actions.LaunchAction_ByName "layer_rotate180"
+        Case 5
+            Actions.LaunchAction_ByName "layer_rotatearbitrary"
+        Case 6
+            '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "layer_fliphorizontal"
+        Case 8
+            Actions.LaunchAction_ByName "layer_flipvertical"
+    End Select
+End Sub
+
+Private Sub MnuLayerRasterize_Click(Index As Integer)
+     Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_rasterizecurrent"
+        Case 1
+            Actions.LaunchAction_ByName "layer_rasterizeall"
+    End Select
+End Sub
+
+Private Sub MnuLayerReplace_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_replacefromclipboard"
+        Case 1
+            Actions.LaunchAction_ByName "layer_replacefromfile"
+        Case 2
+            Actions.LaunchAction_ByName "layer_replacefromvisiblelayers"
+    End Select
+End Sub
+
+Private Sub MnuLayerSize_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_resetsize"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "layer_resize"
+        Case 3
+            Actions.LaunchAction_ByName "layer_contentawareresize"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "layer_fittoimage"
+    End Select
+End Sub
+
+Private Sub MnuLayerSplit_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_splitlayertoimage"
+        Case 1
+            Actions.LaunchAction_ByName "layer_splitalllayerstoimages"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "layer_splitimagestolayers"
+    End Select
+End Sub
+
+Private Sub MnuLayerTransparency_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_colortoalpha"
+        Case 1
+            Actions.LaunchAction_ByName "layer_luminancetoalpha"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "layer_removealpha"
+        Case 4
+            Actions.LaunchAction_ByName "layer_thresholdalpha"
+    End Select
+End Sub
+
+Private Sub MnuLayerVisibility_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "layer_show"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "layer_showonly"
+        Case 3
+            Actions.LaunchAction_ByName "layer_hideonly"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "layer_showall"
+        Case 6
+            Actions.LaunchAction_ByName "layer_hideall"
+    End Select
+End Sub
+
+Private Sub MnuLighting_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_bandc"
+        Case 1
+            Actions.LaunchAction_ByName "adj_curves"
+        Case 2
+            Actions.LaunchAction_ByName "adj_dehaze"
+        Case 3
+            Actions.LaunchAction_ByName "adj_exposure"
+        Case 4
+            Actions.LaunchAction_ByName "adj_gamma"
+        Case 5
+            Actions.LaunchAction_ByName "adj_hdr"
+        Case 6
+            Actions.LaunchAction_ByName "adj_levels"
+        Case 7
+            Actions.LaunchAction_ByName "adj_sandh"
+    End Select
+End Sub
+
+Private Sub MnuLightShadow_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_blacklight"
+        Case 1
+            Actions.LaunchAction_ByName "effects_crossscreen"
+        Case 2
+            Actions.LaunchAction_ByName "effects_rainbow"
+        Case 3
+            Actions.LaunchAction_ByName "effects_sunshine"
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "effects_dilate"
+        Case 6
+            Actions.LaunchAction_ByName "effects_erode"
+    End Select
+End Sub
+
+Private Sub MnuMacroCreate_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "tools_macrofromhistory"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "tools_recordmacro"
+        Case 3
+            Actions.LaunchAction_ByName "tools_stopmacro"
+    End Select
+End Sub
+
+Private Sub MnuMetadata_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "image_editmetadata"
+        Case 1
+            Actions.LaunchAction_ByName "image_removemetadata"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "image_countcolors"
+        Case 4
+            Actions.LaunchAction_ByName "image_maplocation"
+    End Select
+    
+End Sub
+
+Private Sub MnuMonochrome_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_colortomonochrome"
+        Case 1
+            Actions.LaunchAction_ByName "adj_monochrometogray"
+    End Select
+End Sub
+
+Private Sub MnuNatureFilter_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_atmosphere"
+        Case 1
+            Actions.LaunchAction_ByName "effects_fog"
+        Case 2
+            Actions.LaunchAction_ByName "effects_ignite"
+        Case 3
+            Actions.LaunchAction_ByName "effects_lava"
+        Case 4
+            Actions.LaunchAction_ByName "effects_metal"
+        Case 5
+            Actions.LaunchAction_ByName "effects_snow"
+        Case 6
+            Actions.LaunchAction_ByName "effects_underwater"
+    End Select
+End Sub
+
+Private Sub MnuNoise_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_filmgrain"
+        Case 1
+            Actions.LaunchAction_ByName "effects_rgbnoise"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "effects_anisotropic"
+        Case 4
+            Actions.LaunchAction_ByName "effects_dustandscratches"
+        Case 5
+            Actions.LaunchAction_ByName "effects_harmonicmean"
+        Case 6
+            Actions.LaunchAction_ByName "effects_meanshift"
+        Case 7
+            Actions.LaunchAction_ByName "effects_median"
+        Case 8
+            Actions.LaunchAction_ByName "effects_snn"
+    End Select
+End Sub
+
+Private Sub MnuPixelate_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_colorhalftone"
+        Case 1
+            Actions.LaunchAction_ByName "effects_crystallize"
+        Case 2
+            Actions.LaunchAction_ByName "effects_fragment"
+        Case 3
+            Actions.LaunchAction_ByName "effects_mezzotint"
+        Case 4
+            Actions.LaunchAction_ByName "effects_mosaic"
+        Case 5
+            Actions.LaunchAction_ByName "effects_pointillize"
+    End Select
+End Sub
+
+Public Sub MnuRecDocs_Click(Index As Integer)
+    Actions.LaunchAction_ByName COMMAND_FILE_OPEN_RECENT & Trim$(Str$(Index))
+End Sub
+
+Private Sub MnuRecentFiles_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            '(separator)
+        Case 1
+            Actions.LaunchAction_ByName "file_open_allrecent"
+        Case 2
+            Actions.LaunchAction_ByName "file_open_clearrecent"
+    End Select
+End Sub
+
+Private Sub MnuRecentMacros_Click(Index As Integer)
+    
+    'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
+    Dim tmpString As String
+    tmpString = g_RecentMacros.GetSpecificMRU(Index)
+    
+    'Check - just in case - to make sure the path isn't empty
+    If (LenB(tmpString) <> 0) Then Macros.PlayMacroFromFile tmpString
+    
+End Sub
+
+Private Sub MnuRender_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_clouds"
+        Case 1
+            Actions.LaunchAction_ByName "effects_fibers"
+        Case 2
+            Actions.LaunchAction_ByName "effects_truchet"
+    End Select
+End Sub
+
+Private Sub MnuRotate_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "image_straighten"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "image_rotate90"
+        Case 3
+            Actions.LaunchAction_ByName "image_rotate270"
+        Case 4
+            Actions.LaunchAction_ByName "image_rotate180"
+        Case 5
+            Actions.LaunchAction_ByName "image_rotatearbitrary"
+    End Select
+End Sub
+
+Private Sub MnuSelect_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "select_all"
+        Case 1
+            Actions.LaunchAction_ByName "select_none"
+        Case 2
+            Actions.LaunchAction_ByName "select_invert"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "select_grow"
+        Case 5
+            Actions.LaunchAction_ByName "select_shrink"
+        Case 6
+            Actions.LaunchAction_ByName "select_border"
+        Case 7
+            Actions.LaunchAction_ByName "select_feather"
+        Case 8
+            Actions.LaunchAction_ByName "select_sharpen"
+        Case 9
+            '(separator)
+        Case 10
+            Actions.LaunchAction_ByName "select_erasearea"
+        Case 11
+            '(separator)
+        Case 12
+            Actions.LaunchAction_ByName "select_load"
+        Case 13
+            Actions.LaunchAction_ByName "select_save"
+        Case 14
+            'Top-level "Export selection as..." menu
+    End Select
+End Sub
+
+Private Sub MnuSelectExport_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "select_exportarea"
+        Case 1
+            Actions.LaunchAction_ByName "select_exportmask"
+    End Select
+End Sub
+
+Private Sub MnuSharpen_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_sharpen"
+        Case 1
+            Actions.LaunchAction_ByName "effects_unsharp"
+    End Select
+End Sub
+
+Private Sub MnuSpecificZoom_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "zoom_16_1"
+        Case 1
+            Actions.LaunchAction_ByName "zoom_8_1"
+        Case 2
+            Actions.LaunchAction_ByName "zoom_4_1"
+        Case 3
+            Actions.LaunchAction_ByName "zoom_2_1"
+        Case 4
+            Actions.LaunchAction_ByName "zoom_actual"
+        Case 5
+            Actions.LaunchAction_ByName "zoom_1_2"
+        Case 6
+            Actions.LaunchAction_ByName "zoom_1_4"
+        Case 7
+            Actions.LaunchAction_ByName "zoom_1_8"
+        Case 8
+            Actions.LaunchAction_ByName "zoom_1_16"
+    End Select
+End Sub
+
+Private Sub MnuStylize_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "effects_antique"
+        Case 1
+            Actions.LaunchAction_ByName "effects_diffuse"
+        Case 2
+            Actions.LaunchAction_ByName "effects_kuwahara"
+        Case 3
+            Actions.LaunchAction_ByName "effects_outline"
+        Case 4
+            Actions.LaunchAction_ByName "effects_palettize"
+        Case 5
+            Actions.LaunchAction_ByName "effects_portraitglow"
+        Case 6
+            Actions.LaunchAction_ByName "effects_solarize"
+        Case 7
+            Actions.LaunchAction_ByName "effects_twins"
+        Case 8
+            Actions.LaunchAction_ByName "effects_vignetting"
+    End Select
+End Sub
+
+Private Sub mnuTool_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            'Language top-level
+        Case 1
+            Actions.LaunchAction_ByName "tools_languageeditor"
+        Case 2
+            '(separator)
+        Case 3
+            Actions.LaunchAction_ByName "tools_theme"
+        Case 4
+            '(separator)
+        Case 5
+            'Create macro top-level
+        Case 6
+            Actions.LaunchAction_ByName "tools_playmacro"
+        Case 7
+            'Recent macros top-level
+        Case 8
+            '(separator)
+        Case 9
+            Actions.LaunchAction_ByName "tools_screenrecord"
+        Case 10
+            '(separator)
+        Case 11
+            Actions.LaunchAction_ByName "tools_options"
+        Case 12
+            Actions.LaunchAction_ByName "tools_3rdpartylibs"
+    End Select
+End Sub
+
+Private Sub MnuView_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "view_fit"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "view_zoomin"
+        Case 3
+            Actions.LaunchAction_ByName "view_zoomout"
+        Case 4
+            'zoom-to-value top-level menu
+        Case 5
+            '(separator)
+        Case 6
+            Actions.LaunchAction_ByName "view_rulers"
+        Case 7
+            Actions.LaunchAction_ByName "view_statusbar"
+    End Select
+End Sub
+
+Private Sub MnuWindow_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            'Toolbox top-level
+        Case 1
+            Actions.LaunchAction_ByName "window_tooloptions"
+        Case 2
+            Actions.LaunchAction_ByName "window_layers"
+        Case 3
+            'Tab-strip top level
+        Case 4
+            '(separator)
+        Case 5
+            Actions.LaunchAction_ByName "window_resetsettings"
+        Case 6
+            '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "window_next"
+        Case 8
+            Actions.LaunchAction_ByName "window_previous"
+    End Select
+End Sub
+
+Private Sub MnuWindowOpen_Click(Index As Integer)
+
+    'Open the current document corresponding to the index in the menu
+    Dim listOfOpenImages As pdStack
+    PDImages.GetListOfActiveImageIDs listOfOpenImages
+    
+    If (Index < listOfOpenImages.GetNumOfInts) Then
+        If PDImages.IsImageActive(listOfOpenImages.GetInt(Index)) Then CanvasManager.ActivatePDImage listOfOpenImages.GetInt(Index), "window menu"
+    End If
+
+End Sub
+
+Private Sub MnuWindowTabstrip_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "window_imagetabstrip_alwaysshow"
+        Case 1
+            Actions.LaunchAction_ByName "window_imagetabstrip_shownormal"
+        Case 2
+            Actions.LaunchAction_ByName "window_imagetabstrip_nevershow"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "window_imagetabstrip_alignleft"
+        Case 5
+            Actions.LaunchAction_ByName "window_imagetabstrip_aligntop"
+        Case 6
+            Actions.LaunchAction_ByName "window_imagetabstrip_alignright"
+        Case 7
+            Actions.LaunchAction_ByName "window_imagetabstrip_alignbottom"
+    End Select
+End Sub
+
+Private Sub MnuWindowToolbox_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "window_displaytoolbox"
+        Case 1
+            '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "window_displaytoolcategories"
+        Case 3
+            '(separator)
+        Case 4
+            Actions.LaunchAction_ByName "window_smalltoolbuttons"
+        Case 5
+            Actions.LaunchAction_ByName "window_normaltoolbuttons"
+        Case 6
+            Actions.LaunchAction_ByName "window_largetoolbuttons"
+    End Select
+End Sub
+
+'Test TEST menu is a special, developer-only menu for easy access to whatever feature you're currently testing.
+' Do NOT expose this menu in public builds.
+Private Sub MnuTest_Click()
+    
+    On Error GoTo StopTestImmediately
+    
+    'Use for timing results
+    Dim startTime As Currency, lastTime As Currency
+    VBHacks.GetHighResTime startTime
+    lastTime = startTime
+    
+    'Test code goes here
+    
+    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
+    ' then uncomment these two lines:
+    'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+    'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    
+    'Want to test a new dialog?  Call it here, using a line like the following:
+    'ShowPDDialog vbModal, FormToTest
+    
+    'Report timing results:
+    PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    Exit Sub
+    
+StopTestImmediately:
+    Debug.Print "Error in test sub: " & Err.Number & ", " & Err.Description
+
 End Sub
