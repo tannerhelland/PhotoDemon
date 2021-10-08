@@ -17,7 +17,6 @@ Attribute VB_Name = "Interface"
 '
 '***************************************************************************
 
-
 Option Explicit
 
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As PointAPI) As Long
@@ -1279,7 +1278,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     dstForm.MousePointer = 0
     
     'TODO: solve icon issues here?
-    If (Not (dstForm.Name = "FormMain")) Then Set dstForm.Icon = Nothing
+    If (dstForm.Name <> "FormMain") Then Set dstForm.Icon = Nothing
     
     'While we're here, notify the tab manager of the newly loaded form, and make a note of the form's hWnd so we
     ' can relay it to various child controls.
@@ -1288,10 +1287,10 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     NavKey.NotifyFormLoading dstForm, handleAutoResize, hWndCustomAnchor
     
     Dim ctlThemedOK As Boolean
+    On Error GoTo ControlIsNotPD
     
     'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
-    
     For Each eControl In dstForm.Controls
         
         'We now want to ignore all built-in VB6 controls.  PhotoDemon doesn't use many of these
@@ -1316,7 +1315,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
             
         Else
             
-            On Error GoTo ControlIsNotPD
             ctlThemedOK = False
             
             'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.

@@ -213,7 +213,7 @@ Friend Sub NotifyChildControl(ByRef childControl As Object, ByVal canReceiveFocu
         .hWnd = childControl.hWnd
         GetWindowRect .hWnd, VarPtr(.ctlRectLoadTime)
         MapWindowPoints 0&, m_ParentHWnd, VarPtr(.ctlRectLoadTime), 2&
-        .ctlName = childControl.GetControlName()
+        If DISPLAY_DEBUG_TABORDER_DATA Then .ctlName = childControl.GetControlName()
         .ctlType = childControl.GetControlType()
         .ctlCanGetFocus = canReceiveFocus
         If (.ctlType = pdct_CommandBar) Or (.ctlType = pdct_CommandBarMini) Then m_CommandBarIndex = m_numOfControls

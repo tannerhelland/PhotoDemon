@@ -93,6 +93,7 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 
 'Constants to improve color space conversion performance
 Private Const ONE_DIV_SIX As Double = 0.166666666666667
+Private Const HEX_PREFIX As String = "&H"
 
 'Collection of SVG color names, extracted at run-time from a compressed text file in PD's resource segment.
 ' This collection is *not* populated by default; it is automagically populated at first request.
@@ -710,8 +711,18 @@ End Function
 '       won't send it gibberish!
 Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
-    'To make things simpler, remove variability from the source string
-    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then srcHex = (Right$(srcHex, Len(srcHex) - 1))
+    'This function will correctly handle *any* valid color hex string, but we deliberately optimize the
+    ' most common scenario ("#RRGGBB) for improved performance.
+    If (Left$(srcHex, 1) = "#") Then
+        If (Len(srcHex) = 7) Then
+            GetRGBLongFromHex = RGB(Val(HEX_PREFIX & Mid$(srcHex, 2, 2)), Val(HEX_PREFIX & Mid$(srcHex, 4, 2)), Val(HEX_PREFIX & Right$(srcHex, 2)))
+            Exit Function
+            
+        'Parsing resumes after removing the left "#"
+        Else
+            srcHex = (Right$(srcHex, Len(srcHex) - 1))
+        End If
+    End If
     
     'If short-hand length is in use, expand it to 6 chars now
     If (Len(srcHex) < 6) Then
@@ -724,7 +735,7 @@ Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
             srcHex = String$(6, srcHex)
         Else
             'We can't handle this character string!
-            Debug.Print "WARNING! Invalid hex passed to GetRGBLongFromHex: " & srcHex
+            'Debug.Print "WARNING! Invalid hex passed to GetRGBLongFromHex: " & srcHex
             Exit Function
         End If
         
@@ -732,7 +743,6 @@ Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'Parse the string to calculate actual numeric values; we can use VB's Val() function for this.
     Dim r As Long, g As Long, b As Long
-    Const HEX_PREFIX As String = "&H"
     r = Val(HEX_PREFIX & Left$(srcHex, 2))
     g = Val(HEX_PREFIX & Mid$(srcHex, 3, 2))
     b = Val(HEX_PREFIX & Right$(srcHex, 2))

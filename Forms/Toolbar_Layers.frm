@@ -125,8 +125,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Right-side ("Layers") Toolbar
 'Copyright 2014-2021 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 25/April/19
-'Last update: add the "search" panel, which is a little tricky because it isn't resizable (unlike other panels)
+'Last updated: 08/October/21
+'Last update: fix the way the form is initialized on large screens (ensure saved panel positions are loaded correctly,
+'             by *first* ensuring the form is its correct final size)
 '
 'For historical reasons, I call this the "layers" toolbar, but it actually encompasses everything that appears on
 ' the right-side toolbar.  Most of the code in this window is dedicated to supporting collapsible/resizable panels,
