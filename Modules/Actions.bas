@@ -122,7 +122,12 @@ Private Function Launch_ByName_MenuFile(ByRef srcMenuName As String, Optional By
             Process "Open", True
             
         Case "file_openrecent"
-            'Top-level menu only; see the end of this function for handling actual recent file actions
+            'Top-level menu only; see the end of this function for handling actual recent file actions.
+            ' (Note that the search bar does present this term, and if clicked, we will simply load the
+            ' *top* item in the Recent Files list.)
+            If (actionSource = pdas_Search) Or (actionSource = pdas_Hotkey) Then
+                If (LenB(g_RecentFiles.GetFullPath(0)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(0)
+            End If
             
             Case "file_open_allrecent"
                 Loading.LoadAllRecentFiles
