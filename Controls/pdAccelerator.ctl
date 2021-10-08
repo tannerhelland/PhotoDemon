@@ -429,8 +429,9 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
     If m_AltDown Then retShiftConstants = retShiftConstants Or vbAltMask
     If m_ShiftDown Then retShiftConstants = retShiftConstants Or vbShiftMask
     
-    'Search our accelerator database for a match to the current keycode
+    'Search our accelerator database for a match to the current keycode (only if a menu doesn't have focus)
     If (Hotkeys.GetNumOfHotkeys() > 0) Then
+    If (Not Menus.IsMainMenuActive()) Then
         
         'Remap some virtual key IDs to more common equivalents.  For example, Windows will return different
         ' virtual keys (as it should) for the + key next to backspace vs the + key on your number pad.
@@ -480,7 +481,8 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
         '/no matching hotkey found
         End If
         
-    '/no hotkeys in collection
+    '/no hotkeys in collection, and main menu (or system menu) has not stolen focus
+    End If
     End If
     
 End Function

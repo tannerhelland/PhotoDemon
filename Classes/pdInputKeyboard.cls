@@ -336,7 +336,10 @@ End Sub
 
 Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
+    'Ensure 1) the user wants key events, and 2) PD's main menu is not dropped (we don't receive a
+    ' focus change notification for this, so we need to check it here)
     If (m_NumOfTrackedKeys > 0) Then
+    If (Not Menus.IsMainMenuActive()) Then
     
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
@@ -387,7 +390,8 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
             End If
         
         Next i
-        
+    
+    End If
     End If
         
 End Function
@@ -404,7 +408,7 @@ Friend Function PDIKKeyboardProc(ByVal nCode As Long, ByVal wParam As Long, ByVa
         
         'If we don't have focus, ignore this completely
         If m_HasFocus Then
-        
+            
             'MSDN states that negative codes must be passed to the next hook, without processing
             ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
             If (nCode >= 0) Then PDIKKeyboardProc = HandleKeyProc(nCode, wParam, lParam, msgEaten)

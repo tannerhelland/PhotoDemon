@@ -955,8 +955,9 @@ End Sub
 
 Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
-    'Only respond to actual key presses (not just message peeks)
+    'Only respond to actual key presses (not just message peeks), and ignore key events if a menu is dropped
     If (nCode = 0) Then
+    If (Not Menus.IsMainMenuActive()) Then
         
         'For the most part, we can safely ignore key presses, and instead let the default window handler handle them.
         ' The main outlier is arrow keys; VB intercepts and eat these (under the faulty assumption that they're
@@ -994,6 +995,7 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
             
             End If
         End If
+    End If
     End If
     
 End Function

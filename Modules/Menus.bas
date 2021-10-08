@@ -119,6 +119,14 @@ End Enum
     Private Const MFE_BYPOSITION = &H400&, MFE_DISABLED = &H2&, MFE_ENABLED = &H0&, MFE_GRAYED = &H1&
 #End If
 
+Private Type Win32_MENUBARINFO
+    cbSize As Long
+    rcBar As RectL
+    hMenu As Long
+    hwndMenu As Long
+    fFlags As Long
+End Type
+
 'When modifying menus, special ID values can be used to restrict operations
 Private Const IGNORE_MENU_ID As Long = -10
 Private Const ALL_MENU_SUBITEMS As Long = -9
@@ -132,6 +140,7 @@ Private Const NO_MENU_HOTKEY As Long = -1
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function EnableMenuItem Lib "user32" (ByVal hMenu As Long, ByVal uIDEnabledItem As Long, ByVal uEnable As Win32_EnableMenuItem) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetMenuBarInfo Lib "user32" (ByVal hWnd As Long, ByVal idObject As Long, ByVal idItem As Long, ByVal pMBI As Long) As Long
 Private Declare Function GetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
@@ -1500,6 +1509,34 @@ Public Sub NotifyMenuHotkey(ByRef actionID As String, Optional ByVal hkID As Lon
     End If
 
 End Sub
+
+'This function is part of an incredibly unpleasant workaround for ensuring that menu navigation
+' still works.  When a hotkey like Alt+F is used to send focus to PD's main menu, the active window
+' does not actually receive a WM_KILLFOCUS or WM_ACTIVATE (with relevant flags) message, so it will
+' unknowingly eat keypresses (arrow or otherwise).  We can work around this by checking for menu
+' drop state on the main window (FormMain in PD) and suspending key tracking if the menu is in
+' dropped/focused state.  Note that this function also returns TRUE if PD's system menu is dropped.
+Public Function IsMainMenuActive() As Boolean
+
+    Dim tmpMBI As Win32_MENUBARINFO
+    tmpMBI.cbSize = LenB(tmpMBI)
+    
+    'Check main menu first
+    Const OBJID_MENU As Long = &HFFFFFFFD
+    If (GetMenuBarInfo(FormMain.hWnd, OBJID_MENU, 0&, VarPtr(tmpMBI)) <> 0) Then
+        IsMainMenuActive = ((tmpMBI.fFlags And 3&) <> 0&)
+        
+        'Check system menu next
+        If (Not IsMainMenuActive) Then
+            Const OBJID_SYSMENU As Long = &HFFFFFFFF
+            If (GetMenuBarInfo(FormMain.hWnd, OBJID_SYSMENU, 0&, VarPtr(tmpMBI)) <> 0) Then
+                IsMainMenuActive = ((tmpMBI.fFlags And 3&) <> 0&)
+            End If
+        End If
+        
+    End If
+    
+End Function
 
 'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
 ' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
