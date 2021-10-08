@@ -496,7 +496,7 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
         Case CCP_EZTwain
             IsPluginHighPriority = False
         Case CCP_FreeImage
-            IsPluginHighPriority = True
+            IsPluginHighPriority = False
         Case CCP_libdeflate
             IsPluginHighPriority = True
         Case CCP_LittleCMS
@@ -794,15 +794,15 @@ Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
 
     Select Case pluginEnumID
                 
+        'EZTwain is currently the only supported method for scanners.  (WIA should probably be added in the future.)
+        ' As such, availability of the scanner UI is based on EZTwain's successful initialization.
         Case CCP_EZTwain
-            'EZTwain is currently the only supported method for scanners.  (I hope to fix this in the future.)
-            ' As such, availability of the scanner UI is based on EZTwain's successful initialization.
             FormMain.MnuFileImport(2).Enabled = pluginState
             FormMain.MnuFileImport(3).Enabled = pluginState
             
+        'On successful initialization, PD supplies a callback to FreeImage for detailed error messages.
         Case CCP_FreeImage
-            'As of v6.4, PD uses a dedicated callback function to track and report any internal FreeImage errors.
-            If pluginState Then Outside_FreeImageV3.FreeImage_InitErrorHandler
+            If pluginState Then Plugin_FreeImage.InitializeFICallback
             
         Case Else
         

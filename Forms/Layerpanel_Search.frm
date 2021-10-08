@@ -49,10 +49,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Tool Panel
 'Copyright 2019-2021 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 25/April/19
-'Last update: initial build
+'Last updated: 07/October/21
+'Last update: rework (slightly) search triggers to integrate with the new Actions module
 '
-'PhotoDemon has a lot of tools and menus.  It can be hard to find things.  This search bar is meant to help.
+'PhotoDemon has a lot of tools and menus.  It can be hard to find things.  This search tool can help.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -145,12 +145,12 @@ Private Sub srchMain_Click(bestSearchHit As String)
     srchMain.Text = bestSearchHit
     
     If (m_MenuSearchTerms.ContainsString(bestSearchHit) >= 0) Then
-        Menus.ProcessDefaultAction_BySearch bestSearchHit
+        Actions.LaunchAction_BySearch bestSearchHit
     
     'If the search result is *not* a menu, the menu module can't auto-map it to a corresponding
     ' action string.  Return the action string instead.
     Else
-        Menus.ProcessDefaultAction_ByName m_ToolActions.GetString(m_ToolSearchTerms.ContainsString(bestSearchHit, True))
+        Actions.LaunchAction_ByName m_ToolActions.GetString(m_ToolSearchTerms.ContainsString(bestSearchHit, True)), pdas_Search
     End If
     
     'Before exiting, update the search list as available items may have changed.

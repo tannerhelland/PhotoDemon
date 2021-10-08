@@ -23,7 +23,7 @@ Attribute VB_Name = "Hotkeys"
 Option Explicit
 
 'Each hotkey must store a key code, shift state (can be 0), and action ID string.  The action ID string
-' will be blindly forwarded to the Menus.ProcessDefaultAction_ByName() function, so make sure the spelling
+' will be blindly forwarded to the Actions.LaunchAction_ByName() function, so make sure the spelling
 ' (and case! always lowercase!) match the action as it is declared there.
 Private Type PD_Hotkey
     hkKeyCode As Long

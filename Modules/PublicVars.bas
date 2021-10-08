@@ -94,22 +94,6 @@ Public g_UndoCompressionLevel As Long
 '       activation code in LoadTheProgram.
 Public g_DisplayTimingReports As Boolean
 
-'If FreeImage throws an error, the error string(s) will be stored here.  Make sure to clear it after reading to prevent future
-' functions from mistakenly displaying the same message!
-Public g_FreeImageErrorMessages() As String
-
-'If an update notification is ready, but we can't display it (for example, because a modal dialog is active) this flag will
-' be set to TRUE.  PD's central processor uses this to display the update notification as soon as it reasonably can.
-Public g_ShowUpdateNotification As Boolean
-
-'If an update has been successfully applied, the user is given the option to restart PD immediately.  If the user chooses
-' to restart, this global value will be set to TRUE.
-Public g_UserWantsRestart As Boolean
-
-'If this PhotoDemon session was started by a restart (because an update patch was applied), this will be set to TRUE.
-' PD uses this value to suspend any other automatic updates, as a precaution against any bugs in the updater.
-Public g_ProgramStartedViaRestart As Boolean
-
 'Asynchronous tasks may require a modal wait screen.  To unload them successfully, we use a global flag that other
 ' asynchronous methods (like timers) can trigger.
 Public g_UnloadWaitWindow As Boolean

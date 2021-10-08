@@ -126,7 +126,7 @@ Private Sub cmdUpdate_Click(Index As Integer)
         Case 0
         
             'Set a program-wide restart flag, which PD will use post-patch to initiate a restart.
-            g_UserWantsRestart = True
+            Updates.SetRestartAfterUpdate True
             
             'Hide this dialog
             Me.Visible = False
@@ -136,7 +136,10 @@ Private Sub cmdUpdate_Click(Index As Integer)
             
         'Restart later
         Case 1
-        
+            
+            'The update will apply at shutdown time, and the user does *not* want us to restart
+            Updates.SetRestartAfterUpdate False
+            
             'If the user wants to keep working, we don't have to do anything special.
             ' (PhotoDemon will automatically apply the remaining patches at shut-down time.)
             Unload Me

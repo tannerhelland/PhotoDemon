@@ -388,7 +388,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
     'PD periodically checks for background updates.  If one is available, and we haven't displayed a notification yet, do so now
-    If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
+    If Updates.IsUpdateReadyToInstall() Then Updates.DisplayUpdateNotification
     
     Dim procFinalStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procFinalStopTime

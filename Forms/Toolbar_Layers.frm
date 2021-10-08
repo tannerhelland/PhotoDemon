@@ -453,11 +453,7 @@ End Sub
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
 Private Sub ReflowInterface()
-        
-    'We need to wait for the main form to initialize before reflowing our interface; otherwise, we can't guarantee that
-    ' this form is even the right size!
-    If (Not FormMain.ToolbarsAllowedToReflow) Then Exit Sub
-        
+    
     'If the form is invisible (due to minimize or something else), just exit now
     Dim formWidth As Long, formHeight As Long
     If (g_WindowManager Is Nothing) Then
