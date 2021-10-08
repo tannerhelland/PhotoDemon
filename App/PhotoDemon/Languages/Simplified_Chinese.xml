@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.105</langversion>
+<langversion>8.2.106</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -14,1196 +14,8 @@
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
-<original>Autosave reconstruction complete for %1</original>
-<translation>自动保存重建完成 %1</translation>
-</phrase>
-
-<phrase>
-<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>自动保存不能完全恢复。</translation>
-</phrase>
-
-<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>[untitled image]</original>
-<translation>[无图]</translation>
-</phrase>
-
-<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Unloading image %1 of %2</original>
-<translation>未打开图像 %1 %2</translation>
-</phrase>
-
-<phrase>
-<original>Closing image</original>
-<translation>关闭图像</translation>
-</phrase>
-
-<phrase>
-<original>Finished.</original>
-<translation>完成。</translation>
-</phrase>
-
-<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
-<original>Color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Export color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ICC profile</original>
-<translation>ICC配置文件</translation>
-</phrase>
-
-<phrase>
-<original>New color profile</original>
-<translation>新的颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>Export color profile</original>
-<translation>导出颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>Profile exported successfully.</original>
-<translation>配置文件导出成功.</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<phrase>
-<original>How would you like to load this image?</original>
-<translation>您想怎么加载这个图片？</translation>
-</phrase>
-
-<phrase>
-<original>Open it as a standalone image.</original>
-<translation>将其作为独立图像打开。</translation>
-</phrase>
-
-<phrase>
-<original>Add it to the current image as a new layer.</original>
-<translation>将其作为新图层添加到当前图像。</translation>
-</phrase>
-
-<phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>我不能确定。取消此操作。</translation>
-</phrase>
-
-<phrase>
-<original>in the future, do this without asking me</original>
-<translation>以后不再询问</translation>
-</phrase>
-
-<phrase>
-<original>Drop as image or layer</original>
-<translation>作为图像或图层删除</translation>
-</phrase>
-
-<phrase>
-<original>Cut special</original>
-<translation>特殊切割</translation>
-</phrase>
-
-<phrase>
-<original>Copy special</original>
-<translation>特殊复制</translation>
-</phrase>
-
-<phrase>
-<original>Paste special</original>
-<translation>特殊粘贴</translation>
-</phrase>
-
-<!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool无法启动。元数据不可用。</translation>
-</phrase>
-
-<phrase>
-<original>Please wait while the tag database is created</original>
-<translation>请稍候，正在创建标签数据库</translation>
-</phrase>
-
-<phrase>
-<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>标签数据库处理20000+元数据标签支持的PhotoDemon技术细节。创建数据库需要10到15秒，当元数据编辑器第一次使用时，它只需要创建一次。</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>没有可用的元数据</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain metadata.</original>
-<translation>此图像不包含元数据。</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<phrase>
-<original>Open an image</original>
-<translation>打开图像文件</translation>
-</phrase>
-
-<phrase>
-<original>Select an image</original>
-<translation>选择一个图像</translation>
-</phrase>
-
-<phrase>
 <original>New image</original>
 <translation>新图像</translation>
-</phrase>
-
-<phrase>
-<original>Save an image</original>
-<translation>保存图像</translation>
-</phrase>
-
-<phrase>
-<original>Before lossless copies can be saved, you must save this image at least once.
-
-Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>为了恢复以前丢失的副本，您必须保存此图像至少一次。
-
-此副本将被保存到同一文件夹。</translation>
-</phrase>
-
-<phrase>
-<original>Initial save required</original>
-<translation>初始保存所需</translation>
-</phrase>
-
-<phrase>
-<original>Save canceled.</original>
-<translation>取消保存</translation>
-</phrase>
-
-<phrase>
-<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
-
-If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>试图保存该图像时出现未知错误。请尝试将图像保存到一个备用格式。
-如果问题仍然存在，请报告PhotoDemon开发商</translation>
-</phrase>
-
-<phrase>
-<original>Error</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>背景：</translation>
-</phrase>
-
-<phrase>
-<original>Original image</original>
-<translation>原始图像</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>没有足够的内存来创建图像 %1 x %2 ，请选择一个小点的图像大小后再试。</translation>
-</phrase>
-
-<phrase>
-<original>Image too large</original>
-<translation>图像太大</translation>
-</phrase>
-
-<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Auto-correcting colors and lighting</original>
-<translation>自动校正颜色和照明</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>调整图像的白平衡</translation>
-</phrase>
-
-<phrase>
-<original>Inverting</original>
-<translation>反转图像</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values</original>
-<translation>调整RGB值</translation>
-</phrase>
-
-<phrase>
-<original>Calculating film negative values</original>
-<translation>计算负值</translation>
-</phrase>
-
-<phrase>
-<original>Isolating maximum color channels</original>
-<translation>隔离最大颜色通道</translation>
-</phrase>
-
-<phrase>
-<original>Isolating minimum color channels</original>
-<translation>隔离最小颜色通道</translation>
-</phrase>
-
-<phrase>
-<original>Auto-enhancing color and lighting</original>
-<translation>自动增强色彩和照明</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
-
-<phrase>
-<original>Applying %1 filter</original>
-<translation>正在应用滤镜 %1</translation>
-</phrase>
-
-<phrase>
-<original>Generating grids</original>
-<translation>生成网格</translation>
-</phrase>
-
-<phrase>
-<original>Applying grid blur</original>
-<translation>应用网格模糊</translation>
-</phrase>
-
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Counting the number of unique colors in this image</original>
-<translation>在这幅独特的颜色统计数</translation>
-</phrase>
-
-<phrase>
-<original>Total colors: %1</original>
-<translation>颜色总数: %1</translation>
-</phrase>
-
-<phrase>
-<original>This image contains %1 unique colors (RGB).
-
-This image contains %2 unique color + opacity values (RGBA).</original>
-<translation>此图像包含 %1 个唯一颜色（RGB）。
-此图像包含 %2 个唯一颜色+不透明度值（RGBA）。</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>统计特别颜色</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
-
-<phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>图像</translation>
-</phrase>
-
-<phrase>
-<original>repeat</original>
-<translation>重复</translation>
-</phrase>
-
-<phrase>
-<original>waves</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>arc</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line</original>
-<translation>线</translation>
-</phrase>
-
-<phrase>
-<original>maze</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>triangle</original>
-<translation>三角形</translation>
-</phrase>
-
-<phrase>
-<original>octagon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>圈</translation>
-</phrase>
-
-<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Time taken</original>
-<translation>耗时</translation>
-</phrase>
-
-<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Analyzing image</original>
-<translation>分析图像</translation>
-</phrase>
-
-<phrase>
-<original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>图片就一个颜色，无需自动裁剪。</translation>
-</phrase>
-
-<phrase>
-<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>图像已被智能裁剪。自动裁剪废弃。（没有改变图像。）</translation>
-</phrase>
-
-<phrase>
-<original>Cropping image</original>
-<translation>裁剪图像</translation>
-</phrase>
-
-<phrase>
-<original>No active selection found.  Crop abandoned.</original>
-<translation>没有活动的选择找到，放弃裁剪</translation>
-</phrase>
-
-<phrase>
-<original>Crop</original>
-<translation>裁剪</translation>
-</phrase>
-
-<phrase>
-<original>Flipping image</original>
-<translation>翻转图像</translation>
-</phrase>
-
-<phrase>
-<original>Mirroring image</original>
-<translation>镜像图像</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image</original>
-<translation>旋转图像</translation>
-</phrase>
-
-<phrase>
-<original>Fitting image canvas around layer</original>
-<translation>适合画布到旋转层</translation>
-</phrase>
-
-<phrase>
-<original>Image is fully transparent.  Trim abandoned.</original>
-<translation>图像是完全透明的，放弃修剪。</translation>
-</phrase>
-
-<phrase>
-<original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>图像已修剪。（没有改变图像。）</translation>
-</phrase>
-
-<phrase>
-<original>Trimming image</original>
-<translation>修整图像</translation>
-</phrase>
-
-<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<phrase>
-<original>Loading page %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>保存</translation>
-</phrase>
-
-<phrase>
-<original>Save complete.</original>
-<translation>保存成功</translation>
-</phrase>
-
-<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>拉伸直方图</translation>
-</phrase>
-
-<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Saving %1 file</original>
-<translation>正在保有 %1 </translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 保存失败（FreeImage_SaveEx 失败）。请报告此错误使用帮助->提交错误报告。</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 保存失败（FreeImage返回空白处理）。请报告此错误使用帮助->提交错误报告。</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>保存动画帧  %1 / %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>正在完成图像</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>对FreeImage接口插件（FreeImage。DLL）被丢失或在程序初始化时错误。
-
-为了使这种图像格式的支持，请复制FreeImage.dll文件（http://freeimage.sourceforge.net/download.html）到插件目录并重新加载程序。</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>由于缺失 FreeImage 库，没有保存成功</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>所有兼容的图像</translation>
-</phrase>
-
-<phrase>
-<original>All files</original>
-<translation>全部文件</translation>
-</phrase>
-
-<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>发生一个错误（#%1 - 2%）。 取消打开PDI</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<phrase>
-<original>Repeat</original>
-<translation>重复</translation>
-</phrase>
-
-<phrase>
-<original>Fade</original>
-<translation>褪色</translation>
-</phrase>
-
-<phrase>
-<original>Fade: %1</original>
-<translation>淡出：%1</translation>
-</phrase>
-
-<phrase>
-<original>Repeat: %1</original>
-<translation>重复：%1</translation>
-</phrase>
-
-<phrase>
-<original>Undo</original>
-<translation>撤消</translation>
-</phrase>
-
-<phrase>
-<original>Undo last action</original>
-<translation>撤消上一个操作</translation>
-</phrase>
-
-<phrase>
-<original>Redo</original>
-<translation>重做</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>重复上一个操作</translation>
-</phrase>
-
-<phrase>
-<original>Recording</original>
-<translation>录制</translation>
-</phrase>
-
-<phrase>
-<original>clamp</original>
-<translation>夹具</translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation>反射</translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation>缠绕</translation>
-</phrase>
-
-<phrase>
-<original>erase</original>
-<translation>擦除</translation>
-</phrase>
-
-<phrase>
-<original>ignore</original>
-<translation>忽略</translation>
-</phrase>
-
-<phrase>
-<original>square</original>
-<translation>广场</translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation>钻石</translation>
-</phrase>
-
-<phrase>
-<original>Normal</original>
-<translation>标准</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>变暗</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>相乘</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>颜色加深</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>线性加深</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>减轻</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>屏幕</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>颜色减淡</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>线性减淡</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>覆盖</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>柔和的光</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>强光</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>亮光</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>线性光</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>针光</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>硬混合</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>差异</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>排除</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>减去</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>划分</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>色调</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>饱和度</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>颜色</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>亮度</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>纹理提取</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>合并纹理</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>清除</translation>
-</phrase>
-
-<phrase>
-<original>Inherit</original>
-<translation>继承</translation>
-</phrase>
-
-<phrase>
-<original>Locked</original>
-<translation>锁定</translation>
-</phrase>
-
-<phrase>
-<original>Perceptual</original>
-<translation>感知</translation>
-</phrase>
-
-<phrase>
-<original>Relative colorimetric</original>
-<translation>相对比色</translation>
-</phrase>
-
-<phrase>
-<original>Absolute colorimetric</original>
-<translation>绝对色度法</translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>颜色</translation>
-</phrase>
-
-<phrase>
-<original>color and opacity</original>
-<translation>颜色和透明度</translation>
-</phrase>
-
-<phrase>
-<original>luminance</original>
-<translation>亮度</translation>
-</phrase>
-
-<phrase>
-<original>red only</original>
-<translation>仅红色</translation>
-</phrase>
-
-<phrase>
-<original>green only</original>
-<translation>仅绿色</translation>
-</phrase>
-
-<phrase>
-<original>blue only</original>
-<translation>仅蓝色</translation>
-</phrase>
-
-<phrase>
-<original>alpha only</original>
-<translation>仅Alpha</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>是否确定取消 %1?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel action</original>
-<translation>取消操作</translation>
-</phrase>
-
-<phrase>
-<original>preview not available</original>
-<translation>预览不可用</translation>
-</phrase>
-
-<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
-
-<phrase>
-<original>Blank layer</original>
-<translation>空白层</translation>
-</phrase>
-
-<phrase>
-<original>Group start</original>
-<translation>组开始</translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation>组结束</translation>
-</phrase>
-
-<phrase>
-<original>Basic text layer</original>
-<translation>基本文本层</translation>
-</phrase>
-
-<phrase>
-<original>Advanced text layer</original>
-<translation>高级文本层</translation>
-</phrase>
-
-<phrase>
-<original>Visible</original>
-<translation>可见</translation>
-</phrase>
-
-<phrase>
-<original>Replace layer from file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer from file</original>
-<translation>从文件新建图层</translation>
-</phrase>
-
-<phrase>
-<original>Layer updated successfully.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>New layer added successfully.</original>
-<translation>新层添加成功.</translation>
-</phrase>
-
-<phrase>
-<original>Copying layer</original>
-<translation>复制层</translation>
-</phrase>
-
-<phrase>
-<original>Conversion complete.</original>
-<translation>转换完成。</translation>
-</phrase>
-
-<phrase>
-<original>Adding image</original>
-<translation>添加图像</translation>
-</phrase>
-
-<phrase>
-<original>Merged layers</original>
-<translation>合并后的图层</translation>
-</phrase>
-
-<phrase>
-<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>这个动作将文本和矢量图层转换成图像（栅格）图层，这意味着你可以不再修改图层的特定设置，比如文字，字体，颜色或者形状。</translation>
-</phrase>
-
-<phrase>
-<original>Are you sure you want to continue?</original>
-<translation>你确定要继续吗？</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation>是。转换文本和矢量图层图像（光栅）层。</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave text and vector layers as they are.</original>
-<translation>否，因为它们离开文本和矢量图层</translation>
-</phrase>
-
-<phrase>
-<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>这个文本层将被更改为一个图像（栅格）层，这意味着你可以不再修改它的文本或字体设置。</translation>
-</phrase>
-
-<phrase>
-<original>Yes.  Please convert this text layer.</original>
-<translation>是，请转换该文本图层。</translation>
-</phrase>
-
-<phrase>
-<original>No.  Leave this text layer as it is.</original>
-<translation>否，放弃转换。</translation>
-</phrase>
-
-<phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>以后不自动提示我自动栅格化</translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation>漆层</translation>
-</phrase>
-
-<phrase>
-<original>Frame %1</original>
-<translation>%1 帧</translation>
-</phrase>
-
-<phrase>
-<original>Page %1</original>
-<translation>%1 页</translation>
-</phrase>
-
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
-
-<phrase>
-<original>Loading image</original>
-<translation>打开图像</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file not found: %1</original>
-<translation>警告-找不到文件：%1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the image '%1' could not be found.
-
-If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>图像 '%1' 没有找到，如果源图像位于可移动媒体（DVD、USB驱动器等），请重新插入或重新连接媒体并再试一次。
-</translation>
-</phrase>
-
-<phrase>
-<original>File not found</original>
-<translation>文件没有找到</translation>
-</phrase>
-
-<phrase>
-<original>Warning - file locked: %1</original>
-<translation>警告-文件锁定：%1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
-
-Please close this file in any other running programs, then try again.</original>
-<translation>不幸的是，文件  '%1' 当前被该PC上的另一个程序锁定。
-
-请在任何其他正在运行的程序中关闭此文件，然后重试。</translation>
-</phrase>
-
-<phrase>
-<original>File locked</original>
-<translation>文件锁定</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>图像加载成功。</translation>
-</phrase>
-
-<phrase>
-<original>Failed to load %1</original>
-<translation>加载 %1 失败</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>PhotoDemon无法加载以下图像：
-%1
-请使用另一个程序在一个通用的格式保存该图像（如JPEG或PNG）前加载。谢谢!</translation>
-</phrase>
-
-<phrase>
-<original>Image import failed</original>
-<translation>图像导入失败</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>取消导出层</translation>
-</phrase>
-
-<phrase>
-<original>%1 of %2 images loaded successfully</original>
-<translation>% 2 图像加载成功 % 1</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image(s):
-
-%1
-Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>PhotoDemon无法加载下面的图像：
-%1
-请验证这些图像是否存在，以及是否使用支持的图像格式（如JPEG或PNG）。 谢谢！</translation>
-</phrase>
-
-<phrase>
-<original>Some images were not loaded</original>
-<translation>一些图像没有加载</translation>
-</phrase>
-
-<phrase>
-<original>Duplicating current image</original>
-<translation>复制当前图像</translation>
-</phrase>
-
-<phrase>
-<original>Copy</original>
-<translation>复制</translation>
-</phrase>
-
-<phrase>
-<original>Image duplication complete.</original>
-<translation>图像复制完成。</translation>
-</phrase>
-
-<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
-
-(Press No to continue recording.)</original>
-<translation>该宏不包含任何可记录的动作。要停止记录吗？
-
-（按否继续录音。）</translation>
-</phrase>
-
-<phrase>
-<original>Warning: invalid macro</original>
-<translation>警告：无效的宏</translation>
-</phrase>
-
-<phrase>
-<original>Macro abandoned.</original>
-<translation>放弃宏。</translation>
-</phrase>
-
-<phrase>
-<original>Macro saved successfully.</original>
-<translation>宏保存成功。</translation>
-</phrase>
-
-<phrase>
-<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
-
-(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>如果您没有保存该宏，所有的行动，在这个会议记录将永久丢失。您确定要取消吗？
-（按“取消”返回到保存宏屏幕。请注意，您可以删除这个宏以后如果你决定你不想要它。）</translation>
-</phrase>
-
-<phrase>
-<original>Warning: last chance to save macro</original>
-<translation>警告：最后一次保存宏</translation>
-</phrase>
-
-<phrase>
-<original>Macro</original>
-<translation>宏</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>保存宏</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording started.</original>
-<translation>宏录制开始。</translation>
-</phrase>
-
-<phrase>
-<original>Macro recording stopped.</original>
-<translation>宏录制停止。</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>打开宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Loading macro data</original>
-<translation>加载宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>取消加载宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Macro complete!</original>
-<translation>宏完成！</translation>
-</phrase>
-
-<phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>不兼容的宏版本，宏回放放弃。</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>该宏文件不再被PhotoDemon的当前版本支持。
-
-在6.0版本中，PhotoDemon宏文件进行了重新设计，以支持新的功能，提高性能，并解决了一些长期存在的可靠性问题。这意味着之前的版本6.0宏不再兼容。您将需要重新记录这些宏。
-
-（请注意，任何旧的宏文件仍然可以工作在旧版本PhotoDemon的，如果你确实需要访问它们。）</translation>
-</phrase>
-
-<phrase>
-<original>Unsupported macro file</original>
-<translation>不支持的宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>处理宏数据</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
-<original>Alt</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Shift</original>
-<translation>Shift</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>Enter</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Page Down</translation>
 </phrase>
 
 <phrase>
@@ -1282,6 +94,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Export color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export color profile</original>
+<translation>导出颜色配置文件</translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation>导出调色板</translation>
 </phrase>
@@ -1302,6 +124,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Undo</original>
+<translation>撤消</translation>
+</phrase>
+
+<phrase>
+<original>Redo</original>
+<translation>重做</translation>
+</phrase>
+
+<phrase>
 <original>Undo history</original>
 <translation>撤消历史</translation>
 </phrase>
@@ -1312,6 +144,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Fade</original>
+<translation>褪色</translation>
+</phrase>
+
+<phrase>
 <original>Cut</original>
 <translation>剪切</translation>
 </phrase>
@@ -1319,6 +156,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Cut merged</original>
 <translation>剪切合并</translation>
+</phrase>
+
+<phrase>
+<original>Copy</original>
+<translation>复制</translation>
 </phrase>
 
 <phrase>
@@ -1334,6 +176,21 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Paste to cursor</original>
 <translation>粘贴为光标</translation>
+</phrase>
+
+<phrase>
+<original>Cut special</original>
+<translation>特殊切割</translation>
+</phrase>
+
+<phrase>
+<original>Copy special</original>
+<translation>特殊复制</translation>
+</phrase>
+
+<phrase>
+<original>Paste special</original>
+<translation>特殊粘贴</translation>
 </phrase>
 
 <phrase>
@@ -1369,6 +226,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Fit canvas around all layers</original>
 <translation>适合画布到所有层</translation>
+</phrase>
+
+<phrase>
+<original>Crop</original>
+<translation>裁剪</translation>
 </phrase>
 
 <phrase>
@@ -1442,6 +304,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Count unique colors</original>
+<translation>统计特别颜色</translation>
+</phrase>
+
+<phrase>
 <original>Add new layer</original>
 <translation>添加一个新的层</translation>
 </phrase>
@@ -1454,6 +321,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Duplicate Layer</original>
 <translation>重复层</translation>
+</phrase>
+
+<phrase>
+<original>New layer from file</original>
+<translation>从文件新建图层</translation>
 </phrase>
 
 <phrase>
@@ -1483,6 +355,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from file</original>
 <translation></translation>
 </phrase>
 
@@ -1844,6 +721,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Tint</original>
 <translation>色彩</translation>
+</phrase>
+
+<phrase>
+<original>Color lookup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2376,6 +1258,1128 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>检查更新</translation>
 </phrase>
 
+<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[无图]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Autosave reconstruction complete for %1</original>
+<translation>自动保存重建完成 %1</translation>
+</phrase>
+
+<phrase>
+<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
+<translation>自动保存不能完全恢复。</translation>
+</phrase>
+
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>Unloading image %1 of %2</original>
+<translation>未打开图像 %1 %2</translation>
+</phrase>
+
+<phrase>
+<original>Closing image</original>
+<translation>关闭图像</translation>
+</phrase>
+
+<phrase>
+<original>Finished.</original>
+<translation>完成。</translation>
+</phrase>
+
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>ICC profile</original>
+<translation>ICC配置文件</translation>
+</phrase>
+
+<phrase>
+<original>New color profile</original>
+<translation>新的颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>Profile exported successfully.</original>
+<translation>配置文件导出成功.</translation>
+</phrase>
+
+<!-- ColorManagement_ICM.bas contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>How would you like to load this image?</original>
+<translation>您想怎么加载这个图片？</translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation>将其作为独立图像打开。</translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation>将其作为新图层添加到当前图像。</translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>我不能确定。取消此操作。</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation>以后不再询问</translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation>作为图像或图层删除</translation>
+</phrase>
+
+<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<phrase>
+<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
+<translation>ExifTool无法启动。元数据不可用。</translation>
+</phrase>
+
+<phrase>
+<original>Please wait while the tag database is created</original>
+<translation>请稍候，正在创建标签数据库</translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation>标签数据库处理20000+元数据标签支持的PhotoDemon技术细节。创建数据库需要10到15秒，当元数据编辑器第一次使用时，它只需要创建一次。</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>没有可用的元数据</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain metadata.</original>
+<translation>此图像不包含元数据。</translation>
+</phrase>
+
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>Open an image</original>
+<translation>打开图像文件</translation>
+</phrase>
+
+<phrase>
+<original>Select an image</original>
+<translation>选择一个图像</translation>
+</phrase>
+
+<phrase>
+<original>Save an image</original>
+<translation>保存图像</translation>
+</phrase>
+
+<phrase>
+<original>Before lossless copies can be saved, you must save this image at least once.
+
+Lossless copies will be saved to the same folder as this initial image save.</original>
+<translation>为了恢复以前丢失的副本，您必须保存此图像至少一次。
+
+此副本将被保存到同一文件夹。</translation>
+</phrase>
+
+<phrase>
+<original>Initial save required</original>
+<translation>初始保存所需</translation>
+</phrase>
+
+<phrase>
+<original>Save canceled.</original>
+<translation>取消保存</translation>
+</phrase>
+
+<phrase>
+<original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
+
+If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
+<translation>试图保存该图像时出现未知错误。请尝试将图像保存到一个备用格式。
+如果问题仍然存在，请报告PhotoDemon开发商</translation>
+</phrase>
+
+<phrase>
+<original>Error</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>背景：</translation>
+</phrase>
+
+<phrase>
+<original>Original image</original>
+<translation>原始图像</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation>没有足够的内存来创建图像 %1 x %2 ，请选择一个小点的图像大小后再试。</translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation>图像太大</translation>
+</phrase>
+
+<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Auto-correcting colors and lighting</original>
+<translation>自动校正颜色和照明</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image white balance</original>
+<translation>调整图像的白平衡</translation>
+</phrase>
+
+<phrase>
+<original>Inverting</original>
+<translation>反转图像</translation>
+</phrase>
+
+<phrase>
+<original>Shifting RGB values</original>
+<translation>调整RGB值</translation>
+</phrase>
+
+<phrase>
+<original>Calculating film negative values</original>
+<translation>计算负值</translation>
+</phrase>
+
+<phrase>
+<original>Isolating maximum color channels</original>
+<translation>隔离最大颜色通道</translation>
+</phrase>
+
+<phrase>
+<original>Isolating minimum color channels</original>
+<translation>隔离最小颜色通道</translation>
+</phrase>
+
+<phrase>
+<original>Auto-enhancing color and lighting</original>
+<translation>自动增强色彩和照明</translation>
+</phrase>
+
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>Applying %1 filter</original>
+<translation>正在应用滤镜 %1</translation>
+</phrase>
+
+<phrase>
+<original>Generating grids</original>
+<translation>生成网格</translation>
+</phrase>
+
+<phrase>
+<original>Applying grid blur</original>
+<translation>应用网格模糊</translation>
+</phrase>
+
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Counting the number of unique colors in this image</original>
+<translation>在这幅独特的颜色统计数</translation>
+</phrase>
+
+<phrase>
+<original>Total colors: %1</original>
+<translation>颜色总数: %1</translation>
+</phrase>
+
+<phrase>
+<original>This image contains %1 unique colors (RGB).
+
+This image contains %2 unique color + opacity values (RGBA).</original>
+<translation>此图像包含 %1 个唯一颜色（RGB）。
+此图像包含 %2 个唯一颜色+不透明度值（RGBA）。</translation>
+</phrase>
+
+<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>图像</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>重复</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>线</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>三角形</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>圈</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
+<original>Time taken</original>
+<translation>耗时</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Analyzing image</original>
+<translation>分析图像</translation>
+</phrase>
+
+<phrase>
+<original>Image is all one color.  Autocrop unnecessary.</original>
+<translation>图片就一个颜色，无需自动裁剪。</translation>
+</phrase>
+
+<phrase>
+<original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
+<translation>图像已被智能裁剪。自动裁剪废弃。（没有改变图像。）</translation>
+</phrase>
+
+<phrase>
+<original>Cropping image</original>
+<translation>裁剪图像</translation>
+</phrase>
+
+<phrase>
+<original>No active selection found.  Crop abandoned.</original>
+<translation>没有活动的选择找到，放弃裁剪</translation>
+</phrase>
+
+<phrase>
+<original>Flipping image</original>
+<translation>翻转图像</translation>
+</phrase>
+
+<phrase>
+<original>Mirroring image</original>
+<translation>镜像图像</translation>
+</phrase>
+
+<phrase>
+<original>Rotating image</original>
+<translation>旋转图像</translation>
+</phrase>
+
+<phrase>
+<original>Fitting image canvas around layer</original>
+<translation>适合画布到旋转层</translation>
+</phrase>
+
+<phrase>
+<original>Image is fully transparent.  Trim abandoned.</original>
+<translation>图像是完全透明的，放弃修剪。</translation>
+</phrase>
+
+<phrase>
+<original>Image is already trimmed.  (No changes were made to the image.)</original>
+<translation>图像已修剪。（没有改变图像。）</translation>
+</phrase>
+
+<phrase>
+<original>Trimming image</original>
+<translation>修整图像</translation>
+</phrase>
+
+<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Loading page %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>保存</translation>
+</phrase>
+
+<phrase>
+<original>Save complete.</original>
+<translation>保存成功</translation>
+</phrase>
+
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>拉伸直方图</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Enter</original>
+<translation>Enter</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Page Down</translation>
+</phrase>
+
+<phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Shift</translation>
+</phrase>
+
+<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>Saving %1 file</original>
+<translation>正在保有 %1 </translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 保存失败（FreeImage_SaveEx 失败）。请报告此错误使用帮助->提交错误报告。</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 保存失败（FreeImage返回空白处理）。请报告此错误使用帮助->提交错误报告。</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>保存动画帧  %1 / %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>正在完成图像</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
+
+To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
+<translation>对FreeImage接口插件（FreeImage。DLL）被丢失或在程序初始化时错误。
+
+为了使这种图像格式的支持，请复制FreeImage.dll文件（http://freeimage.sourceforge.net/download.html）到插件目录并重新加载程序。</translation>
+</phrase>
+
+<phrase>
+<original>Save cannot be completed without FreeImage library.</original>
+<translation>由于缺失 FreeImage 库，没有保存成功</translation>
+</phrase>
+
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>所有兼容的图像</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>全部文件</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>发生一个错误（#%1 - 2%）。 取消打开PDI</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Repeat</original>
+<translation>重复</translation>
+</phrase>
+
+<phrase>
+<original>Fade: %1</original>
+<translation>淡出：%1</translation>
+</phrase>
+
+<phrase>
+<original>Repeat: %1</original>
+<translation>重复：%1</translation>
+</phrase>
+
+<phrase>
+<original>Undo last action</original>
+<translation>撤消上一个操作</translation>
+</phrase>
+
+<phrase>
+<original>Redo previous action</original>
+<translation>重复上一个操作</translation>
+</phrase>
+
+<phrase>
+<original>Recording</original>
+<translation>录制</translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
+<translation>夹具</translation>
+</phrase>
+
+<phrase>
+<original>reflect</original>
+<translation>反射</translation>
+</phrase>
+
+<phrase>
+<original>wrap</original>
+<translation>缠绕</translation>
+</phrase>
+
+<phrase>
+<original>erase</original>
+<translation>擦除</translation>
+</phrase>
+
+<phrase>
+<original>ignore</original>
+<translation>忽略</translation>
+</phrase>
+
+<phrase>
+<original>square</original>
+<translation>广场</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>钻石</translation>
+</phrase>
+
+<phrase>
+<original>Normal</original>
+<translation>标准</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>变暗</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>相乘</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>颜色加深</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>线性加深</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>减轻</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>屏幕</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>颜色减淡</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>线性减淡</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>覆盖</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>柔和的光</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>强光</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>亮光</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>线性光</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>针光</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>硬混合</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>差异</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>排除</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>减去</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>划分</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>色调</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>饱和度</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>颜色</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>亮度</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>纹理提取</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>合并纹理</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>清除</translation>
+</phrase>
+
+<phrase>
+<original>Inherit</original>
+<translation>继承</translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation>锁定</translation>
+</phrase>
+
+<phrase>
+<original>Perceptual</original>
+<translation>感知</translation>
+</phrase>
+
+<phrase>
+<original>Relative colorimetric</original>
+<translation>相对比色</translation>
+</phrase>
+
+<phrase>
+<original>Absolute colorimetric</original>
+<translation>绝对色度法</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>颜色</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation>颜色和透明度</translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>亮度</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation>仅红色</translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation>仅绿色</translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation>仅蓝色</translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation>仅Alpha</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>是否确定取消 %1?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel action</original>
+<translation>取消操作</translation>
+</phrase>
+
+<phrase>
+<original>preview not available</original>
+<translation>预览不可用</translation>
+</phrase>
+
+<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+
+<phrase>
+<original>Blank layer</original>
+<translation>空白层</translation>
+</phrase>
+
+<phrase>
+<original>Group start</original>
+<translation>组开始</translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation>组结束</translation>
+</phrase>
+
+<phrase>
+<original>Basic text layer</original>
+<translation>基本文本层</translation>
+</phrase>
+
+<phrase>
+<original>Advanced text layer</original>
+<translation>高级文本层</translation>
+</phrase>
+
+<phrase>
+<original>Visible</original>
+<translation>可见</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New layer added successfully.</original>
+<translation>新层添加成功.</translation>
+</phrase>
+
+<phrase>
+<original>Copying layer</original>
+<translation>复制层</translation>
+</phrase>
+
+<phrase>
+<original>Conversion complete.</original>
+<translation>转换完成。</translation>
+</phrase>
+
+<phrase>
+<original>Adding image</original>
+<translation>添加图像</translation>
+</phrase>
+
+<phrase>
+<original>Merged layers</original>
+<translation>合并后的图层</translation>
+</phrase>
+
+<phrase>
+<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
+<translation>这个动作将文本和矢量图层转换成图像（栅格）图层，这意味着你可以不再修改图层的特定设置，比如文字，字体，颜色或者形状。</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to continue?</original>
+<translation>你确定要继续吗？</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
+<translation>是。转换文本和矢量图层图像（光栅）层。</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave text and vector layers as they are.</original>
+<translation>否，因为它们离开文本和矢量图层</translation>
+</phrase>
+
+<phrase>
+<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
+<translation>这个文本层将被更改为一个图像（栅格）层，这意味着你可以不再修改它的文本或字体设置。</translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Please convert this text layer.</original>
+<translation>是，请转换该文本图层。</translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave this text layer as it is.</original>
+<translation>否，放弃转换。</translation>
+</phrase>
+
+<phrase>
+<original>In the future, automatically rasterize without prompting me</original>
+<translation>以后不自动提示我自动栅格化</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>漆层</translation>
+</phrase>
+
+<phrase>
+<original>Frame %1</original>
+<translation>%1 帧</translation>
+</phrase>
+
+<phrase>
+<original>Page %1</original>
+<translation>%1 页</translation>
+</phrase>
+
+<!-- Layers.bas contains 56 phrases. 33 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>Loading image</original>
+<translation>打开图像</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file not found: %1</original>
+<translation>警告-找不到文件：%1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the image '%1' could not be found.
+
+If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+<translation>图像 '%1' 没有找到，如果源图像位于可移动媒体（DVD、USB驱动器等），请重新插入或重新连接媒体并再试一次。
+</translation>
+</phrase>
+
+<phrase>
+<original>File not found</original>
+<translation>文件没有找到</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation>警告-文件锁定：%1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation>不幸的是，文件  '%1' 当前被该PC上的另一个程序锁定。
+
+请在任何其他正在运行的程序中关闭此文件，然后重试。</translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation>文件锁定</translation>
+</phrase>
+
+<phrase>
+<original>Image loaded successfully.</original>
+<translation>图像加载成功。</translation>
+</phrase>
+
+<phrase>
+<original>Failed to load %1</original>
+<translation>加载 %1 失败</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation>PhotoDemon无法加载以下图像：
+%1
+请使用另一个程序在一个通用的格式保存该图像（如JPEG或PNG）前加载。谢谢!</translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation>图像导入失败</translation>
+</phrase>
+
+<phrase>
+<original>Layer import canceled.</original>
+<translation>取消导出层</translation>
+</phrase>
+
+<phrase>
+<original>%1 of %2 images loaded successfully</original>
+<translation>% 2 图像加载成功 % 1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image(s):
+
+%1
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation>PhotoDemon无法加载下面的图像：
+%1
+请验证这些图像是否存在，以及是否使用支持的图像格式（如JPEG或PNG）。 谢谢！</translation>
+</phrase>
+
+<phrase>
+<original>Some images were not loaded</original>
+<translation>一些图像没有加载</translation>
+</phrase>
+
+<phrase>
+<original>Duplicating current image</original>
+<translation>复制当前图像</translation>
+</phrase>
+
+<phrase>
+<original>Image duplication complete.</original>
+<translation>图像复制完成。</translation>
+</phrase>
+
+<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
+
+(Press No to continue recording.)</original>
+<translation>该宏不包含任何可记录的动作。要停止记录吗？
+
+（按否继续录音。）</translation>
+</phrase>
+
+<phrase>
+<original>Warning: invalid macro</original>
+<translation>警告：无效的宏</translation>
+</phrase>
+
+<phrase>
+<original>Macro abandoned.</original>
+<translation>放弃宏。</translation>
+</phrase>
+
+<phrase>
+<original>Macro saved successfully.</original>
+<translation>宏保存成功。</translation>
+</phrase>
+
+<phrase>
+<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
+
+(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
+<translation>如果您没有保存该宏，所有的行动，在这个会议记录将永久丢失。您确定要取消吗？
+（按“取消”返回到保存宏屏幕。请注意，您可以删除这个宏以后如果你决定你不想要它。）</translation>
+</phrase>
+
+<phrase>
+<original>Warning: last chance to save macro</original>
+<translation>警告：最后一次保存宏</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>宏</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>保存宏</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording started.</original>
+<translation>宏录制开始。</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording stopped.</original>
+<translation>宏录制停止。</translation>
+</phrase>
+
+<phrase>
+<original>Open Macro File</original>
+<translation>打开宏文件</translation>
+</phrase>
+
+<phrase>
+<original>Loading macro data</original>
+<translation>加载宏文件</translation>
+</phrase>
+
+<phrase>
+<original>Macro load canceled.</original>
+<translation>取消加载宏文件</translation>
+</phrase>
+
+<phrase>
+<original>Macro complete!</original>
+<translation>宏完成！</translation>
+</phrase>
+
+<phrase>
+<original>Incompatible macro version found.  Macro playback abandoned.</original>
+<translation>不兼容的宏版本，宏回放放弃。</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
+
+In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
+
+(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
+<translation>该宏文件不再被PhotoDemon的当前版本支持。
+
+在6.0版本中，PhotoDemon宏文件进行了重新设计，以支持新的功能，提高性能，并解决了一些长期存在的可靠性问题。这意味着之前的版本6.0宏不再兼容。您将需要重新记录这些宏。
+
+（请注意，任何旧的宏文件仍然可以工作在旧版本PhotoDemon的，如果你确实需要访问它们。）</translation>
+</phrase>
+
+<phrase>
+<original>Unsupported macro file</original>
+<translation>不支持的宏文件</translation>
+</phrase>
+
+<phrase>
+<original>Processing macro data</original>
+<translation>处理宏数据</translation>
+</phrase>
+
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
 <phrase>
 <original>Open all recent images</original>
 <translation>打开所有最近的图像</translation>
@@ -2396,7 +2400,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 277 phrases. 33 were duplicates of existing phrases, so only 244 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5546,11 +5550,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>PhotoDemon这个副本是最新的。</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
@@ -5562,6 +5561,11 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>PhotoDemon Updates</original>
 <translation>PhotoDemon 更新</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>PhotoDemon这个副本是最新的。</translation>
 </phrase>
 
 <phrase>
@@ -5602,7 +5606,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 383 phrases. 201 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13699,8 +13703,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5361 phrases. -->
-<!-- 2767 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5360 phrases. -->
+<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>
