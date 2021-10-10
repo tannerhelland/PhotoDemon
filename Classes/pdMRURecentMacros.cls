@@ -107,7 +107,7 @@ End Sub
 ' menu entries.
 Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As Long, ByVal mruCaption As String)
     
-    'Note that we do not need to load mnuRecDocs(0) - it is always loaded.  Only load menu items greater than this.
+    'Note that we do not need to load index 0 - it is always loaded.  Only load menu items greater than this.
     If (Index > 0) Then
         Load FormMain.MnuRecentMacros(Index)
     Else

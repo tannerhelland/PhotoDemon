@@ -68,7 +68,7 @@ Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shi
     idxHotkey = Hotkeys.GetHotkeyIndex(vKeyCode, Shift)
     If (idxHotkey >= 0) Then
         'TODO: notify old menu here, so it can remove hotkey info??
-        PDDebug.LogAction "WARNING: duplicate hotkey: " & Hotkeys.GetHotKeyAction(idxHotkey)
+        If PRINT_WARNING_ON_HOTKEY_DUPE Then PDDebug.LogAction "WARNING: duplicate hotkey: " & Hotkeys.GetHotKeyAction(idxHotkey)
     
     'If this is a novel entry, enlarge the list accordingly
     Else

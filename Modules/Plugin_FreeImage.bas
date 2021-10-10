@@ -2361,7 +2361,7 @@ Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean
     
     'Condense all recorded errors into a single multi-line string
     If (m_Errors.GetNumOfStrings > 0) Then
-        Dim i As Long, tmpString As pdString
+        Dim i As Long
         For i = 0 To m_Errors.GetNumOfStrings - 1
             If (i < m_Errors.GetNumOfStrings - 1) Then
                 listOfErrors.AppendLine m_Errors.GetString(i)

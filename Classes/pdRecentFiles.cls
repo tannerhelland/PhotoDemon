@@ -199,33 +199,33 @@ Friend Sub UpdateUI_NonEmptyList()
         Dim i As Long
         
         'First, make sure we have the correct number of menus available
-        If (m_ItemCount <> FormMain.MnuRecDocs.Count) Then
+        If (m_ItemCount <> FormMain.MnuRecentFileList.Count) Then
         
             'Check for too many menus...
-            If (FormMain.MnuRecDocs.Count > m_ItemCount) Then
-                For i = m_ItemCount To FormMain.MnuRecDocs.Count - 1
-                    Unload FormMain.MnuRecDocs(i)
+            If (FormMain.MnuRecentFileList.Count > m_ItemCount) Then
+                For i = m_ItemCount To FormMain.MnuRecentFileList.Count - 1
+                    Unload FormMain.MnuRecentFileList(i)
                 Next i
             
             'Check for too few menus...
             Else
-                For i = FormMain.MnuRecDocs.Count To m_ItemCount - 1
-                    Load FormMain.MnuRecDocs(i)
+                For i = FormMain.MnuRecentFileList.Count To m_ItemCount - 1
+                    Load FormMain.MnuRecentFileList(i)
                 Next i
             End If
         
         End If
         
         'Now that we have the correct number of controls, make sure all menus are enabled.
-        For i = 0 To FormMain.MnuRecDocs.Count - 1
-            FormMain.MnuRecDocs(i).Enabled = True
+        For i = 0 To FormMain.MnuRecentFileList.Count - 1
+            FormMain.MnuRecentFileList(i).Enabled = True
         Next i
         
         'If (for some reason) there is a mismatch between our current menu count and the existing menu count,
         ' kill any extra menus.
-        If (FormMain.MnuRecDocs.Count > m_ItemCount) Then
-            For i = m_ItemCount To FormMain.MnuRecDocs.Count - 1
-                Unload FormMain.MnuRecDocs(i)
+        If (FormMain.MnuRecentFileList.Count > m_ItemCount) Then
+            For i = m_ItemCount To FormMain.MnuRecentFileList.Count - 1
+                Unload FormMain.MnuRecentFileList(i)
             Next i
         End If
         
@@ -249,13 +249,13 @@ Friend Sub UpdateUI_EmptyList()
     If (m_ItemCount = 0) Then
     
         Dim i As Long
-        If FormMain.MnuRecDocs.Count > 1 Then
-            For i = 1 To FormMain.MnuRecDocs.Count - 1
-                Unload FormMain.MnuRecDocs(i)
+        If FormMain.MnuRecentFileList.Count > 1 Then
+            For i = 1 To FormMain.MnuRecentFileList.Count - 1
+                Unload FormMain.MnuRecentFileList(i)
             Next i
         End If
         
-        FormMain.MnuRecDocs(0).Enabled = False
+        FormMain.MnuRecentFileList(0).Enabled = False
         
         For i = 0 To FormMain.MnuRecentFiles.Count - 1
             FormMain.MnuRecentFiles(i).Visible = False

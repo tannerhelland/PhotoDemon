@@ -60,7 +60,7 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuFile 
          Caption         =   "Open recent"
          Index           =   2
-         Begin VB.Menu MnuRecDocs 
+         Begin VB.Menu MnuRecentFileList 
             Caption         =   "empty"
             Enabled         =   0   'False
             Index           =   0
@@ -3516,7 +3516,7 @@ Private Sub MnuPixelate_Click(Index As Integer)
     End Select
 End Sub
 
-Public Sub MnuRecDocs_Click(Index As Integer)
+Public Sub MnuRecentFileList_Click(Index As Integer)
     Actions.LaunchAction_ByName COMMAND_FILE_OPEN_RECENT & Trim$(Str$(Index))
 End Sub
 
