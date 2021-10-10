@@ -902,6 +902,14 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
             
             End If
             
+            'If we generated text for this menu, strip any trailing "...".  IMO ellipses do not add value to
+            ' search results and simply clutter up the search list, but you could probably make a case either way
+            ' based on current HIG (for example, see https://stackoverflow.com/a/637708/3511152)
+            Const STR_ELLIPSES As String = "..."
+            If (LenB(.me_TextSearchable) > 3) Then
+                If (Right$(.me_TextSearchable, 3) = STR_ELLIPSES) Then .me_TextSearchable = Left$(.me_TextSearchable, Len(.me_TextSearchable) - 3)
+            End If
+            
         End With
         
     Next i
