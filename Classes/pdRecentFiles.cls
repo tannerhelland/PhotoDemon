@@ -490,7 +490,7 @@ Friend Function GetNumOfItems() As Long
 End Function
 
 Private Sub InternalError(ByVal errText As String)
-    PDDebug.LogAction "WARNING!  pdRecentFiles has a problem: " & errText
+    PDDebug.LogAction "WARNING!  pdRecentFiles problem: " & errText
 End Sub
 
 Private Sub Class_Initialize()

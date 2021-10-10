@@ -3,8 +3,8 @@ Attribute VB_Name = "Actions"
 'Action Handler
 'Copyright 2001-2021 by Tanner Helland
 'Created: 07/October/21
-'Last updated: 07/October/21
-'Last update: pull action code out of Menus module and into a new, dedicated home.
+'Last updated: 10/October/21
+'Last update: add new support for recent files and macros (so they can be accessed from the search bar)
 '
 'Want to execute a program operation?  Call this module.
 '
@@ -34,11 +34,18 @@ Attribute VB_Name = "Actions"
 
 Option Explicit
 
+'I am not generally in favor of public constants like this, but it's better than redeclaring the same
+' constant across a dozen different files.  Because PD uses this module to forward centralized "commands"
+' elsewhere in the project (e.g. hotkey commands are sent here first, for validation), it is helpful to
+' tag some unique command IDs so that they can be reused elsewhere.
+Public Const COMMAND_FILE_OPEN_RECENT As String = "file_open_recent_"
+Public Const COMMAND_TOOLS_MACRO_RECENT As String = "tools_macro_recent_"
+
 'PhotoDemon actions can be triggered by different places: menu clicks, hotkeys, or searches.  Some actions
 ' behave slightly differently depending on source.  (For example, "Paste to cursor" only works if the
 ' source is a hotkey; if it's a menu or search, a normal Paste action needs to be used instead, because we
 ' don't have a reliable cursor position.)  When calling the Action module, please pass the correct source
-' of the action so that the router can handle any special source-related details.
+' so the router can handle any special source-related details.
 Public Enum PD_ActionSource
     pdas_Hotkey
     pdas_Menu
@@ -93,6 +100,7 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuWindow(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuHelp(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_NonMenu(srcMenuName, actionSource)
+    If (Not cmdFound) Then cmdFound = Launch_ByName_Misc(srcMenuName, actionSource)
     
     LaunchAction_ByName = cmdFound
     
@@ -104,7 +112,7 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     ' image is open).  Many of these validation checks occur at the top of a group of related commands -
     ' e.g. nothing in the Effects category will trigger without an open image - and some of those validation
     ' checks will prevent menu-matching from even occurring.  This will report a "no match found", but only
-    ' because large chunks of the search were short-circuited.
+    ' because large chunks of the search were short-circuited because a validation condition wasn't met.
     'If (Not cmdFound) Then PDDebug.LogAction "WARNING: Actions.LaunchAction_ByName received an unknown request: " & srcMenuName
     
 End Function
@@ -1165,6 +1173,23 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
         
     End Select
     
+    'If we haven't found a match, look for commands related to the Recent Macros menu;
+    ' these are preceded by the unique "tools_macro_recent_[n]" command, where [n] is the index of
+    ' the recent macro to open (0-based).
+    If (Not cmdFound) And PDImages.IsImageActive() Then
+    
+        cmdFound = Strings.StringsEqualLeft(srcMenuName, COMMAND_TOOLS_MACRO_RECENT, True)
+        If cmdFound Then
+        
+            '(Attempt to) play the target macro
+            Dim targetIndex As Long
+            targetIndex = Val(Right$(srcMenuName, Len(srcMenuName) - Len(COMMAND_TOOLS_MACRO_RECENT)))
+            If (LenB(g_RecentMacros.GetSpecificMRU(targetIndex)) <> 0) Then Macros.PlayMacroFromFile g_RecentMacros.GetSpecificMRU(targetIndex)
+        
+        End If
+        
+    End If
+    
     Launch_ByName_MenuTools = cmdFound
     
 End Function
@@ -1447,3 +1472,67 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
     Launch_ByName_NonMenu = cmdFound
 
 End Function
+
+Private Function Launch_ByName_Misc(ByRef srcMenuName As String, Optional ByVal actionSource As PD_ActionSource = pdas_Menu) As Boolean
+    
+    Dim cmdFound As Boolean: cmdFound = True
+    
+    'Image and macro paths can be supplied here.  Check these states up-front, by validating a hard-coded prefix
+    ' (and extension, in the case of macros) and then verifying file existence.
+    Dim targetFile As String
+    If (LCase$(Left$(srcMenuName, 11)) = "image-file:") Then
+        targetFile = Right$(srcMenuName, Len(srcMenuName) - 11)
+        If Files.FileExists(targetFile) Then Loading.LoadFileAsNewImage targetFile
+    ElseIf (LCase$(Left$(srcMenuName, 11)) = "macro-file:") Then
+        targetFile = Right$(srcMenuName, Len(srcMenuName) - 11)
+        If Files.FileExists(targetFile) And PDImages.IsImageActive() Then Macros.PlayMacroFromFile targetFile
+    End If
+    
+    Launch_ByName_Misc = cmdFound
+    
+End Function
+
+'PD's search bar aims to be a versatile tool.  It calls this function to retrieve search targets that don't
+' fit nicely into the "menu" or "tools" category.
+Public Sub GetMiscellaneousSearchActions(ByRef dstNames As pdStringStack, ByRef dstActions As pdStringStack)
+    
+    Set dstNames = New pdStringStack
+    Set dstActions = New pdStringStack
+    
+    'This list is not managed automatically.  Stick any interesting and/or "hard-to-categorize" search results here.
+    ' Just remember that you have to also supply an action trigger elsewhere in the module that actually executes
+    ' the passed action!
+    
+    'These first few items are written like this for the localization engine.  We don't want to produce
+    ' new terms for localization (because these terms already exist in the Menus module), but for complex
+    ' technical reasons, the menu manager does not manage certain menus.  (Usually ones whose position
+    ' changes at run-time.)
+    dstNames.AddString g_Language.TranslateMessage("File") & " > " & g_Language.TranslateMessage("Open recent") & " > " & g_Language.TranslateMessage("Open all recent images")
+    dstActions.AddString "file_open_allrecent"
+    
+    dstNames.AddString g_Language.TranslateMessage("File") & " > " & g_Language.TranslateMessage("Open recent") & " > " & g_Language.TranslateMessage("Clear recent image list")
+    dstActions.AddString "file_open_clearrecent"
+    
+    'Next, add all the user's recent files to the list.
+    Const MAX_LEN_IN_CHARS As Long = 40&
+    Dim i As Long
+    If (Not g_RecentFiles Is Nothing) Then
+        If (g_RecentFiles.GetNumOfItems > 0) Then
+            For i = 0 To g_RecentFiles.GetNumOfItems() - 1
+                dstNames.AddString Files.PathCompact(Files.FileGetName(g_RecentFiles.GetFullPath(i), False), MAX_LEN_IN_CHARS)
+                dstActions.AddString "image-file:" & g_RecentFiles.GetFullPath(i)
+            Next i
+        End If
+    End If
+    
+    '...followed by all the user's recent macros
+    If (Not g_RecentMacros Is Nothing) Then
+        If (g_RecentMacros.MRU_ReturnCount > 0) Then
+            For i = 0 To g_RecentMacros.MRU_ReturnCount() - 1
+                dstNames.AddString Files.PathCompact(Files.FileGetName(g_RecentMacros.GetSpecificMRU(i), False), MAX_LEN_IN_CHARS)
+                dstActions.AddString "macro-file:" & g_RecentMacros.GetSpecificMRU(i)
+            Next i
+        End If
+    End If
+    
+End Sub

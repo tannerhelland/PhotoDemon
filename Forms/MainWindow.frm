@@ -3532,14 +3532,7 @@ Private Sub MnuRecentFiles_Click(Index As Integer)
 End Sub
 
 Private Sub MnuRecentMacros_Click(Index As Integer)
-    
-    'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
-    Dim tmpString As String
-    tmpString = g_RecentMacros.GetSpecificMRU(Index)
-    
-    'Check - just in case - to make sure the path isn't empty
-    If (LenB(tmpString) <> 0) Then Macros.PlayMacroFromFile tmpString
-    
+    Actions.LaunchAction_ByName COMMAND_TOOLS_MACRO_RECENT & Trim$(Str$(Index))
 End Sub
 
 Private Sub MnuRender_Click(Index As Integer)

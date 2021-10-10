@@ -21,12 +21,6 @@ Attribute VB_Name = "Menus"
 
 Option Explicit
 
-'I am not generally in favor of public constants like this, but it's better than redeclaring the same
-' constant across a dozen different files.  Because PD uses this module to forward centralized "commands"
-' elsewhere in the project (e.g. hotkey commands are sent here first, for validation), it is helpful to
-' tag some unique command IDs so that they can be reused elsewhere.
-Public Const COMMAND_FILE_OPEN_RECENT As String = "file_open_recent_"
-
 Private Type PD_MenuEntry
     me_TopMenu As Long                    'Top-level index of this menu
     me_SubMenu As Long                    'Sub-menu index of this menu (if any)

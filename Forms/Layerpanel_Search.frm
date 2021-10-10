@@ -65,13 +65,20 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
-'Some search terms are managed by the menu manager.  Others are managed by the tool manager.
+'Some search terms are managed by the menu manager; other, the tool manager or a miscellaneous catcha-ll.
 ' We want to condense these into a single list of search terms, and when a search result is returned,
 ' we'll match it up against its relevant source stack.
 Private m_AllSearchTerms As pdStringStack
 Private m_MenuSearchTerms As pdStringStack
+
+'Menus can auto-map between searchable text and underlying query ID.  Tools and miscellaneous targets cannot,
+' so we need to store *two* stacks per category - one for human-readable search terms, and another for
+' tool action IDs.
 Private m_ToolSearchTerms As pdStringStack
 Private m_ToolActions As pdStringStack
+
+Private m_MiscSearchTerms As pdStringStack
+Private m_MiscActions As pdStringStack
 
 Private Sub Form_Load()
     
@@ -132,8 +139,13 @@ Private Sub Form_Resize()
     ReflowInterface
 End Sub
 
+'If the search box does not have focus, give it focus.  If it already has focus, select all text.
 Public Sub SetFocusToSearchBox()
-    srchMain.SetFocusToSearchBox
+    If srchMain.HasFocus() Then
+        srchMain.SelectAll
+    Else
+        srchMain.SetFocusToSearchBox
+    End If
 End Sub
 
 Private Sub lastUsedSettings_ReadCustomPresetData()
@@ -144,13 +156,30 @@ Private Sub srchMain_Click(bestSearchHit As String)
     
     srchMain.Text = bestSearchHit
     
-    If (m_MenuSearchTerms.ContainsString(bestSearchHit) >= 0) Then
+    'Because the search term can come from one of three stacks (menus, tools, misc), we need to identify
+    ' which stack the current search term originated from to best know where to trigger its associated action.
+    
+    'Check the menu stack first
+    Dim idxQuery As Long
+    idxQuery = m_MenuSearchTerms.ContainsString(bestSearchHit, True)
+    
+    If (idxQuery >= 0) Then
         Actions.LaunchAction_BySearch bestSearchHit
     
-    'If the search result is *not* a menu, the menu module can't auto-map it to a corresponding
-    ' action string.  Return the action string instead.
     Else
-        Actions.LaunchAction_ByName m_ToolActions.GetString(m_ToolSearchTerms.ContainsString(bestSearchHit, True)), pdas_Search
+        
+        'Check the tool stack next
+        idxQuery = m_ToolSearchTerms.ContainsString(bestSearchHit, True)
+        If (idxQuery >= 0) Then
+            Actions.LaunchAction_ByName m_ToolActions.GetString(idxQuery), pdas_Search
+        Else
+        
+            'Finally, check the miscellaneous stack
+            idxQuery = m_MiscSearchTerms.ContainsString(bestSearchHit, True)
+            Actions.LaunchAction_ByName m_MiscActions.GetString(idxQuery), pdas_Search
+        
+        End If
+        
     End If
     
     'Before exiting, update the search list as available items may have changed.
@@ -169,12 +198,20 @@ End Sub
 
 Private Sub UpdateSearchTerms()
     
+    'Start with menu-based search terms
     Set m_AllSearchTerms = New pdStringStack
     Menus.GetSearchableMenuList m_MenuSearchTerms
     m_AllSearchTerms.CloneStack m_MenuSearchTerms
     
+    'Add tool search terms
     toolbar_Toolbox.GetListOfToolNamesAndActions m_ToolSearchTerms, m_ToolActions
     m_AllSearchTerms.AppendStack m_ToolSearchTerms
+    
+    'Add misc search terms
+    Actions.GetMiscellaneousSearchActions m_MiscSearchTerms, m_MiscActions
+    m_AllSearchTerms.AppendStack m_MiscSearchTerms
+    
+    'Forward the full list to the search box
     srchMain.SetSearchList m_AllSearchTerms
     
 End Sub
