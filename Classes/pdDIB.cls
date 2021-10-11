@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2021 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 17/August/20
-'Last update: new .GetThumbnail function; I'm tired of writing external wrappers for this behavior!
+'Last updated: 10/October/21
+'Last update: remove old CreateFromStdPicture function; it's only used one place (Drag/Drop from old
+'             bitmap sources), so I've sent it to the DIBs module instead
 '
 'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
 ' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
@@ -60,22 +61,19 @@ Private Type BITMAPFILEHEADER
     OffBits As Long
 End Type
 
-'Drawing API functions
+'Drawing APIs
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
 
-'DIB API functions
+'DIB APIs
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, ByRef lpBits As Long, ByVal hSection As Long, ByVal dwOffset As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
-'Object API functions
-Private Const OBJ_BITMAP As Long = 7
+'Generic object APIs
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObjectType Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
@@ -410,23 +408,21 @@ Friend Function GetDIBHeight() As Long
     GetDIBHeight = m_dibHeight
 End Function
 
-'Return whether or not this DIB has image data associated with it
+'Return whether or not this DIB has image data associated with it.  Requires unsuspending first.
 Friend Function HasImage() As Boolean
-    
-    'Unsuspend this DIB (as necessary)
     If m_IsSuspended Then UnsuspendDIB
-    
     HasImage = (m_dibHandle <> 0)
-    
 End Function
 
-'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
+'Return whether the DIB is top-down (negative height) or bottom-up (positive height).  Only relevant
+' when trading data with 3rd-party sources; internally, PD always assumes top-down.
 Friend Function IsDIBTopDown() As Boolean
     IsDIBTopDown = (m_dibHeader.Height < 0)
 End Function
 
-'Return this DIB's hDC.  DIBs receive a DC by default, at creation-time.  However, the caller can remove the DIB from its DC by
-' calling the FreeFromDC() sub.  If you subsequently request a DC for the DIB, one will be auto-created for you.
+'Return this DIB's hDC.  DIBs receive a DC by default, when they are first created.  However, the caller
+' can remove the DIB from that DC by calling .FreeFromDC().  If you subsequently request a DC for the DIB,
+' one will be auto-created for you.
 Friend Function GetDIBDC() As Long
     
     GetDIBDC = m_dibDC
@@ -445,38 +441,27 @@ Friend Function GetDIBDC() As Long
     
 End Function
 
-'Return a pointer to this DIB's actual DIB
+'Return a pointer to this DIB's actual DIB.  Useful primarily for GDI interop.  Requires unsuspending first.
 Friend Function GetDIBHandle() As Long
-    
-    'Unsuspend this DIB (as necessary)
     If m_IsSuspended Then UnsuspendDIB
-    
     GetDIBHandle = m_dibHandle
-    
 End Function
 
-'Return a pointer to this DIB's pixel data (no header)
+'Return a pointer to this DIB's pixel data (no header).  Use dib stride and height to determine total bitmap size.
+' Requires unsuspending first.
 Friend Function GetDIBPointer() As Long
-    
-    'Unsuspend this DIB (as necessary)
     If m_IsSuspended Then UnsuspendDIB
-    
     GetDIBPointer = m_dibBits
-    
 End Function
 
 'Return a pointer to an individual scanline.  For performance reasons, this function does not perform bounds checking -
-' so use it carefully!
+' so use it carefully!  Requires unsuspending first.
 Friend Function GetDIBScanline(ByVal targetScanline As Long) As Long
-    
-    'Unsuspend this DIB (as necessary)
     If m_IsSuspended Then UnsuspendDIB
-    
     GetDIBScanline = m_dibBits + (targetScanline * m_dibStride)
-    
 End Function
 
-'Return a pointer to this DIB's header
+'Return a pointer to this DIB's header.  Does *NOT* require unsuspending first.
 Friend Function GetDIBHeader() As Long
     GetDIBHeader = VarPtr(m_dibHeader)
 End Function
@@ -639,25 +624,26 @@ Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
         Set tmpDIB = New pdDIB
         tmpDIB.CreateFromExistingDIB Me
         
-        'Now erase our own DIB
-        Me.EraseDIB
-
-        'Create a new DIB that's exactly the same size as the old one
+        'Now erase this DIB and create a new one that's exactly the same size, but 32-bit
         If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
-            
-            'Copy the image data from the temporary DIB without modification
+        
+            'Copy the image data from the temporary DIB without modification, then free the source image
+            ' (it's no longer required).
             BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+            Set tmpDIB = Nothing
             
-            'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
-            ' be completely transparent (and we don't want that!)
+            'Finally, we need to loop through the image and set all alpha values to 255. (BitBlt from a
+            ' 24-bpp to 32-bpp target technically treats the destination alpha channel as "undefined",
+            ' but in real-world practice it always forces alpha to 0.)
             Dim imgPixels() As Byte, tmpSA As SafeArray1D
-            Dim x As Long, y As Long
+            Dim x As Long, y As Long, xMax As Long
+            xMax = (m_dibWidth * 4) - 1
             
             'Loop through the image, setting the alpha of each pixel to 255 (opaque)
             For y = 0 To m_dibHeight - 1
                 Me.WrapArrayAroundScanline imgPixels, tmpSA, y
-            For x = 0 To m_dibWidth - 1
-                imgPixels(x * 4 + 3) = newTransparency
+            For x = 3 To xMax Step 4
+                imgPixels(x) = newTransparency
             Next x
             Next y
             
@@ -673,63 +659,6 @@ Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
         
         'Minimize GDI resources by freeing our DC
         Me.FreeFromDC
-        
-    End If
-    
-End Function
-
-'Give this DIB a picture from a standard VB picture object
-Friend Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
-
-    CreateFromPicture = False
-    
-    'Make sure the picture we're passed isn't empty
-    If (Not srcPicture Is Nothing) Then
-    
-        'Make sure the picture is actually a picture
-        If (GetObjectType(srcPicture) = OBJ_BITMAP) Then
-        
-            'Select the picture's attributes into a bitmap object
-            Dim tmpBitmap As GDI_Bitmap
-            GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
-            
-            'Use that bitmap object to create a new, blank DIB of the same size
-            Dim targetColorDepth As Long
-            If (tmpBitmap.BitsPerPixel = 32) Then targetColorDepth = 32 Else targetColorDepth = 24
-            If Me.CreateBlank(tmpBitmap.Width, tmpBitmap.Height, targetColorDepth, , 255) Then
-            
-                'Create a new DC
-                Dim tmpDC As Long
-                tmpDC = GDI.GetMemoryDC()
-                
-                'If successful, select the object into that DC
-                If (tmpDC <> 0) Then
-                
-                    'Temporary holder for the object selection
-                    Dim oldBitmap As Long
-                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
-                    
-                    'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
-                    
-                    'Now that we have the pixel data, erase all temporary objects
-                    SelectObject tmpDC, oldBitmap
-                    GDI.FreeMemoryDC tmpDC
-                    
-                    'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
-                    ' black background. We typically want the background to be white, so perform a composite if requested.
-                    If forceWhiteBackground And (m_dibColorDepth = 32) Then CompositeBackgroundColor
-                    
-                    CreateFromPicture = True
-                    
-                    'Minimize GDI resources by freeing our DC
-                    Me.FreeFromDC
-                    
-                End If
-            
-            End If
-            
-        End If
         
     End If
     
@@ -975,9 +904,6 @@ End Sub
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
 Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     
-    'TODO: if DIB is suspended, kill the suspended data first?
-    'If m_IsSuspended Then ???
-    
     'If we have image data, clear it out
     If (m_dibHandle <> 0) Then
         
@@ -1014,7 +940,7 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     m_IsSuspended = 0
     
     'Finally, release the memory-mapped file backing the DIB, if one exists
-    m_FileMM.CloseFile
+    If (Not m_FileMM Is Nothing) Then m_FileMM.CloseFile
     
 End Sub
 
@@ -1028,8 +954,6 @@ Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
     'Erase everything
     If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then
         If (fillValue = 0) Then ZeroMemory tmpDIBPointer, tmpDIBSize Else FillMemory tmpDIBPointer, tmpDIBSize, fillValue
-    Else
-        Debug.Print "ResetDIB was called on an empty DIB!", tmpDIBPointer, tmpDIBSize
     End If
     
 End Sub
@@ -1089,7 +1013,7 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     PDDebug.UpdateResourceTracker PDRT_hDIB, -1
     
     'Free the underlying memory-mapped file instance
-    m_FileMM.CloseFile
+    If (Not m_FileMM Is Nothing) Then m_FileMM.CloseFile
     
     'This DIB has been "suspended"
     m_IsSuspended = True

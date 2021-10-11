@@ -1544,7 +1544,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     
     'In the event that the bitmap contains alpha data, let's migrate it from that picture container to a pdDIB object
     Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
-    tmpDIB.CreateFromPicture tmpPicture
+    DIBs.CreateDIBFromStdPicture tmpDIB, tmpPicture
     Set tmpPicture = Nothing
     
     'Ask the DIB to write its contents to file in BMP format

@@ -3,8 +3,9 @@ Attribute VB_Name = "DIBs"
 'DIB Support Functions
 'Copyright 2012-2021 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
-'Last updated: 20/May/20
-'Last update: add a dedicated ReverseScanlines function for converting top-down to bottom-up DIBs
+'Last updated: 10/October/21
+'Last update: move ancient CreateDibFromStdPicture function out of pdDIB and into here (it's currently
+'             only used by
 '
 'This module contains support functions for the pdDIB class.  In old versions of PD,
 ' these functions were provided by pdDIB, but there's no sense cluttering up that class
@@ -17,6 +18,11 @@ Attribute VB_Name = "DIBs"
 '***************************************************************************
 
 Option Explicit
+
+Private Const OBJ_BITMAP As Long = 7
+Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
+Private Declare Function GetObjectType Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Does a given DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 '
@@ -380,8 +386,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             If (curRange = 0) Then curRange = 1
             
             'Build a normalization lookup table
-            Dim normalizedLookup() As Byte
-            ReDim normalizedLookup(0 To 255) As Byte
+            Dim normalizedLookup(0 To 255) As Byte
             
             For x = 0 To 255
                 
@@ -650,6 +655,71 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         CreateDIBFromGrayscaleMap_Alpha = False
     End If
 
+End Function
+
+'Create a pdDIB object from a StdPicture object.  Returns TRUE if successful.
+Public Function CreateDIBFromStdPicture(ByRef dstDIB As pdDIB, ByRef srcPicture As StdPicture, Optional ByVal forceWhiteBackground As Boolean = False) As Boolean
+    
+    CreateDIBFromStdPicture = False
+    
+    'Make sure the picture we're passed isn't empty
+    If (Not srcPicture Is Nothing) Then
+    
+        'Failsafe check to ensure bitmap contents
+        If (GetObjectType(srcPicture) = OBJ_BITMAP) Then
+        
+            'Select the picture's attributes into a bitmap object
+            Dim tmpBitmap As GDI_Bitmap
+            If (GetObject(srcPicture.Handle, Len(tmpBitmap), tmpBitmap) <> 0) Then
+                
+                'Use that bitmap object to create a new, blank DIB of the same size
+                Dim targetColorDepth As Long
+                If (tmpBitmap.BitsPerPixel = 32) Then targetColorDepth = 32 Else targetColorDepth = 24
+                
+                Set dstDIB = New pdDIB
+                If dstDIB.CreateBlank(tmpBitmap.Width, tmpBitmap.Height, targetColorDepth, vbWhite, 255) Then
+                
+                    'Create a new DC
+                    Dim tmpDC As Long
+                    tmpDC = GDI.GetMemoryDC()
+                    
+                    'If successful, select the object into that DC
+                    If (tmpDC <> 0) Then
+                    
+                        'Temporary holder for the object selection
+                        Dim oldBitmap As Long
+                        oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
+                        
+                        'Use BitBlt to copy the pixel data to the target DIB
+                        GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, tmpBitmap.Width, tmpBitmap.Height, tmpDC, 0, 0, vbSrcCopy
+                        
+                        'Now that we have the pixel data, erase all temporary objects
+                        SelectObject tmpDC, oldBitmap
+                        GDI.FreeMemoryDC tmpDC
+                        
+                        'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
+                        ' black background. We typically want the background to be white, so perform a composite if requested.
+                        If forceWhiteBackground And (targetColorDepth = 32) Then dstDIB.CompositeBackgroundColor 255, 255, 255
+                        
+                        'Minimize GDI resources by freeing the auto-created DC
+                        dstDIB.FreeFromDC
+                        
+                        CreateDIBFromStdPicture = True
+                        
+                    End If
+                
+                '/Created dstDIB succcessfully
+                End If
+            
+            '/GetObject succeeded
+            End If
+            
+        '/GetObjectType = BITMAP
+        End If
+    
+    '/srcPicture non-null
+    End If
+    
 End Function
 
 'Convert a DIB to its grayscale equivalent.  (Note that this function does not support progress bar reports, by design.)
