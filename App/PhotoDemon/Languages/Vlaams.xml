@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.54</langversion>
+<langversion>8.0.55</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -1258,7 +1258,22 @@
 <translation>Controleren op software-updates</translation>
 </phrase>
 
-<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+<phrase>
+<original>File</original>
+<translation>Bestand</translation>
+</phrase>
+
+<phrase>
+<original>Open all recent images</original>
+<translation>Open alle recente afbeeldingen</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent image list</original>
+<translation>Wis recente lijst met afbeeldingen</translation>
+</phrase>
+
+<!-- Actions.bas contains 258 phrases. 6 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2388,16 +2403,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Open all recent images</original>
-<translation>Open alle recente afbeeldingen</translation>
-</phrase>
-
-<phrase>
-<original>Clear recent image list</original>
-<translation>Wis recente lijst met afbeeldingen</translation>
-</phrase>
-
-<phrase>
 <original>empty</original>
 <translation>leeg</translation>
 </phrase>
@@ -2407,7 +2412,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Wis recente macro-lijst</translation>
 </phrase>
 
-<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4703,11 +4708,6 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>File</original>
-<translation>Bestand</translation>
-</phrase>
-
-<phrase>
 <original>New</original>
 <translation>Nieuw</translation>
 </phrase>
@@ -5615,7 +5615,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13715,8 +13715,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5360 phrases. -->
-<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5364 phrases. -->
+<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.66</langversion>
+<langversion>8.0.67</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -1258,7 +1258,22 @@
 <translation>Búsqueda de actualizaciones de software</translation>
 </phrase>
 
-<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+<phrase>
+<original>File</original>
+<translation>Archivo</translation>
+</phrase>
+
+<phrase>
+<original>Open all recent images</original>
+<translation>Abrir todas las imágenes recientes</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent image list</original>
+<translation>Borrar lista reciente imagen</translation>
+</phrase>
+
+<!-- Actions.bas contains 258 phrases. 6 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2384,16 +2399,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Open all recent images</original>
-<translation>Abrir todas las imágenes recientes</translation>
-</phrase>
-
-<phrase>
-<original>Clear recent image list</original>
-<translation>Borrar lista reciente imagen</translation>
-</phrase>
-
-<phrase>
 <original>empty</original>
 <translation>vacío</translation>
 </phrase>
@@ -2403,7 +2408,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Borrar lista macro reciente</translation>
 </phrase>
 
-<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4697,11 +4702,6 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>File</original>
-<translation>Archivo</translation>
-</phrase>
-
-<phrase>
 <original>New</original>
 <translation>Nuevo</translation>
 </phrase>
@@ -5609,7 +5609,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13709,8 +13709,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5360 phrases. -->
-<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5364 phrases. -->
+<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

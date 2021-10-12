@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.507</langversion>
+<langversion>6.6.508</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1263,7 +1263,22 @@
 <translation>Memeriksa pembaruan perangkat lunak</translation>
 </phrase>
 
-<!-- Actions.bas contains 254 phrases. 5 were duplicates of existing phrases, so only 249 new phrases were written to file. -->
+<phrase>
+<original>File</original>
+<translation>Berkas</translation>
+</phrase>
+
+<phrase>
+<original>Open all recent images</original>
+<translation>Buka semua gambar terbaru</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent image list</original>
+<translation>bersih baru-baru ini Daftar Gambar</translation>
+</phrase>
+
+<!-- Actions.bas contains 258 phrases. 6 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2391,16 +2406,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Open all recent images</original>
-<translation>Buka semua gambar terbaru</translation>
-</phrase>
-
-<phrase>
-<original>Clear recent image list</original>
-<translation>bersih baru-baru ini Daftar Gambar</translation>
-</phrase>
-
-<phrase>
 <original>empty</original>
 <translation>kosong</translation>
 </phrase>
@@ -2410,7 +2415,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4703,11 +4708,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>File</original>
-<translation>Berkas</translation>
-</phrase>
-
-<phrase>
 <original>New</original>
 <translation>Baru</translation>
 </phrase>
@@ -5615,7 +5615,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 199 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13715,8 +13715,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5360 phrases. -->
-<!-- 2766 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5364 phrases. -->
+<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>
