@@ -1979,21 +1979,22 @@ Private Function AutoCorrectImageOrientation(ByVal hImage As Long) As Boolean
         
 End Function
 
-'After calling GDIPlusLoadPicture and discovering that your file is multi-page (or multi-frame,
-' in the case of GIFs), you can call this function to continue loading subsequent pages into the
-' active image.  If you do *not* do this, you must call MultiPageDataNotWanted(), below, to free
-' the image handle that GDIPlusLoadPicture cached (in expectation of additional loading).
+'After calling GDIPlusLoadPicture and discovering that your file is multi-frame (GIF) or multi-page (TIFF),
+' you can call this function to continue loading subsequent frames/pages into the active image.  Note that
+' PD will *always* call this function on multi-page images, and this is important because the saved image
+' handle would leak if you encountered a multipage image but *didn't* call this function after.
 Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As Boolean
     
     ContinueLoadingMultipageImage = False
     
-    'For now, just free the incoming handle
+    'Ensure we maintained a handle to the image in question
     If (m_hMultiPageImage <> 0) Then
         
         'Failsafe check to ensure the destination DIB exists
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         
-        'GDI+ uses GUIDs to access frame parameters; for TIFF, these are defined by "page", for GIF, by "time"
+        'GDI+ uses GUIDs to access frame parameters; for TIFF, these are defined by "page", for GIF, by "time".
+        ' To simplify our code, we'll store the GUID we need in a format-agnostic struct.
         Dim frameDimensionID(0 To 15) As Byte
         If (m_OriginalFIF = PDIF_TIFF) Then
             CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
@@ -2023,17 +2024,19 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             Exit Function
         End If
         
-        'We're going to be pulling a lot of information from each page, as we try to support edge-cases like
-        ' CMYK or color-managed pages.
+        'To correctly assemble a correct image (particularly in the case of animated GIFs), we need to cache
+        ' a *lot* of per-frame data.  TIFFs have their own complications because each frame can be in a different
+        ' color format, including ones that require color-management like CMYK.  PD attempts to cover all
+        ' possible cases in a proper color-managed fashion, regardless of incoming format.
         Dim imgWidth As Long, imgHeight As Long, imgHResolution As Single, imgVResolution As Single
-        Dim imgPixelFormat As GP_PixelFormat, imgColorDepth As Long, imgHasAlpha As Boolean, isCMYK As Boolean
+        Dim imgPixelFormat As GP_PixelFormat, imgHasAlpha As Boolean, isCMYK As Boolean
         Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, cTransform As pdLCMSTransform
         Dim hGraphics As Long, copyBitmapData As GP_BitmapData, tmpRect As RectL
         Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
         Dim imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile
         
-        'If the multipage handle is valid, and the image is a GIF, retrieve some GIF-specific metadata
-        ' (e.g. animation loop count) and cache it inside the parent object
+        'If the multipage handle is valid, and the image is a GIF, retrieve some animation-specific metadata
+        ' (like loop count) and cache it inside the parent object.
         If (m_OriginalFIF = PDIF_GIF) Then
             If GDIPlus_ImageGetProperty(m_hMultiPageImage, GP_PT_LoopCount, tmpPropHeader, tmpPropBuffer) Then
             
@@ -2045,14 +2048,24 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             End If
         End If
         
+        'TIFFs are messy because individual frames can have rotation tags that require a post-load transform.
+        ' Grab the user's preference for this in advance, so we don't have to travel out to the preferences
+        ' file on each frame.
+        Dim autoRotatePref As Boolean
+        autoRotatePref = UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True)
+        
+        'Time to start iterating pages.  The first page was already loaded in a previous step, so we start
+        ' at index 1 (indices are always 0-based).
         Dim pageToLoad As Long
         For pageToLoad = 1 To numOfPages - 1
             
-            'If the image is large, it's nice to provide status updates to the user, as this may take awhile
+            'If the image is large, it's nice to provide status updates to the user - we try to do this every 8-ish frames
             Message "Loading page %1 of %2...", CStr(pageToLoad + 1), numOfPages, "DONOTLOG"
             If ((pageToLoad And 7) = 0) Then VBHacks.DoEvents_SingleHwnd FormMain.hWnd
             
-            'Select the current page
+            'Notify GDI+ of the frame/page we want to select.  Note that performance is better when
+            ' accessing frames in sequence, as GIF frame appearance can depend on the contents of previous
+            ' frames (so accessing out-of-order requires more work on GDI+'s part).
             If (GdipImageSelectActiveFrame(m_hMultiPageImage, VarPtr(frameDimensionID(0)), pageToLoad) = GP_OK) Then
                 
                 'Throughout this process, we'll be notifying the destination DIB of various page parameters.
@@ -2079,10 +2092,10 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 If isCMYK Then PDDebug.LogAction "CMYK page found."
                 
                 'Make a note of the image's specific color depth, as relevant to PD
-                imgColorDepth = GetColorDepthFromPixelFormat(imgPixelFormat)
-                dstDIB.SetOriginalColorDepth imgColorDepth
+                dstDIB.SetOriginalColorDepth GetColorDepthFromPixelFormat(imgPixelFormat)
                 
-                'Look for an ICC profile and cache the result
+                'Look for an ICC profile and cache the result.  (Again, this is a TIFF issue; each page
+                ' could theoretically have its own ICC profile, ugh.)
                 imgHasIccProfile = GDIPlus_ImageGetProperty(m_hMultiPageImage, GP_PT_ICCProfile, tmpPropHeader, tmpPropBuffer)
                 If imgHasIccProfile Then
                     Set embeddedProfile = New pdICCProfile
@@ -2094,14 +2107,15 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     
                 End If
                 
-                'Next, pull an orientation flag, if any, and apply it to the underlying page
-                If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
+                'Next, pull an orientation flag, if any, and apply it to the underlying page.
+                ' (Note that we can skip this step for GIFs; they don't support rotation tags.)
+                If autoRotatePref And (m_OriginalFIF <> PDIF_GIF) Then
                     If AutoCorrectImageOrientation(m_hMultiPageImage) Then PDDebug.LogAction "Image contains orientation data, and it was successfully handled."
                 End If
                 
                 'We now need to copy the relevant image bytes into the destination DIB.  This is complicated, unfortunately.
                 
-                'Create the destination DIB for this image.  Alpha-channels require special handling.
+                'Create the destination DIB for this image.  CMYK requires special handling.
                 If isCMYK Then
                     dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
                 Else
@@ -2272,22 +2286,24 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     
                 End If
                 
-                'Create a blank layer in the receiving image, and copy our DIB into it
+                'Create a blank layer in the receiving image, then copy our finished DIB into it
                 Dim newLayerID As Long, newLayerName As String
                 newLayerID = targetImage.CreateBlankLayer
                 newLayerName = Layers.GenerateInitialLayerName(vbNullString, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
                 targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, dstDIB, True
-                
+            
+            '/bad select frame call
             Else
                 PDDebug.LogAction "WARNING!  Failed to set active page #" & pageToLoad
             End If
         
         Next pageToLoad
         
-        'For animated GIFs, we now want to assign frame times to each frame.  We do this similar to other software
-        ' (e.g. GIMP, Chasys Draw) by simply adding the frame time - in ms - to each layer's name.
+        'For animated GIFs, we now want to assign frame times to each frame.  We store the frame time as
+        ' an absolute value inside each layer, and we also append frame time to each layer's name.
         If (m_OriginalFIF = PDIF_GIF) And (m_FrameCount > 0) Then
-        
+            
+            'Failsafe check for success on original frame time retrieval
             If (UBound(m_FrameTimes) = m_FrameCount - 1) Then
                 
                 'Add frame count to the target image (this is not currently used)
@@ -2303,7 +2319,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             
         End If
         
-        'Before exiting, make sure we free the master image handle!
+        'Before exiting, make sure we free the master image handle
         GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
         
         ContinueLoadingMultipageImage = True
@@ -2313,13 +2329,6 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
     End If
     
 End Function
-
-'Encountered a multi-page TIFF and you just want to load one page?  No worries; just call this
-' function after the load function completes to free any cached multi-page assets.
-' (PD doesn't use this currently; we always load all pages when available.)
-'Public Sub MultiPageDataNotWanted()
-'    If (m_hMultiPageImage <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
-'End Sub
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
 Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As GP_PixelFormat) As Long
