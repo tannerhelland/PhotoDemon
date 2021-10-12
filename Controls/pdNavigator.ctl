@@ -243,6 +243,7 @@ End Sub
 Private Sub sldFrame_FinalChange()
     If m_Animated And (Not m_DoNotUpdate) And (Not PDImages.GetActiveImage Is Nothing) Then
         If (sldFrame.Value <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
+            Layers.MakeJustOneLayerVisible sldFrame.Value
             Layers.SetActiveLayerByIndex sldFrame.Value, True, True
         End If
     End If
