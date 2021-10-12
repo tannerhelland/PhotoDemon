@@ -1740,18 +1740,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End If
     
         'We now copy over image data in one of two ways.  Additional transforms may be required if
-        ' the source image is in an unexpected color format (e.g. CMYK) or depth.
+        ' the source image is in an unexpected color format (e.g. CMYK).
         If imgHasAlpha Then
             
-            'Make sure the image is in 32bpp premultiplied ARGB format
-            If (imgPixelFormat <> GP_PF_32bppPARGB) Then
-                Dim hNewImage As Long
-                GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hNewImage
-                GDI_Plus.ReleaseGDIPlusImage hImage
-                hImage = hNewImage
-            End If
-            
-            'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+            'We are now going to copy the image's data directly into our destination DIB by using LockBits.
+            ' Very fast, and not much code!
             
             'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
             With copyBitmapData
@@ -2115,16 +2108,12 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
                 End If
                 
-                Dim tmpBmpHandle As Long
-                
                 'We now copy over image data in one of two ways.  Additional transforms may be required if
-                ' the source image is in an unexpected color format (e.g. CMYK) or depth.
+                ' the source image is in an unexpected color format (e.g. CMYK).
                 If imgHasAlpha Then
                     
-                    'Make sure the image is in 32bpp premultiplied ARGB format
-                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageImage, tmpBmpHandle
-                    
-                    'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+                    'We are now going to copy the image's data directly into our destination DIB by using LockBits.
+                    ' Very fast, and not much code!
                     
                     'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
                     With copyBitmapData
@@ -2144,9 +2133,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     End With
                     
                     'Use LockBits to perform the copy for us.
-                    GdipBitmapLockBits tmpBmpHandle, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
-                    GdipBitmapUnlockBits tmpBmpHandle, copyBitmapData
-                    GDI_Plus.ReleaseGDIPlusImage tmpBmpHandle
+                    GdipBitmapLockBits m_hMultiPageImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
+                    GdipBitmapUnlockBits m_hMultiPageImage, copyBitmapData
                     
                 'Image does *not* have alpha
                 Else
@@ -2230,6 +2218,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                         
                         'Render the GDI+ image directly onto the newly created DIB
                         GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+                        GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
                         If (hGraphics <> 0) Then
                             GdipDrawImageRect hGraphics, m_hMultiPageImage, 0, 0, imgWidth, imgHeight
                             GdipDeleteGraphics hGraphics

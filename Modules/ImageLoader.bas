@@ -1094,7 +1094,7 @@ LibAVIFDidntWork:
         ' so let's also default to GDI+ for JPEGs.
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
         
-        'Animated GIF support is currently a work in progress
+        'Animated GIFs are also much faster via GDI+
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
         
         If tryGDIPlusFirst Then
