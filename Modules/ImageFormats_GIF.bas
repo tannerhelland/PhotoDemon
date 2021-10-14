@@ -3,8 +3,9 @@ Attribute VB_Name = "ImageFormats_GIF"
 'Additional support functions for GIF support
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 13/October/21
-'Last update: mirror optimization strategies from APNG module here; the results look good!
+'Last updated: 14/October/21
+'Last update: pull actual AGIF encoding stages into their own function; this will make it easier to
+'             switch encoders in the future
 '
 'Most image exporters existin the ImageExporter module.  GIF is a weird exception because animated GIFs
 ' require a ton of preprocessing (to optimize animation frames), so I've given them their own home here.
@@ -38,6 +39,13 @@ Private Type PD_GifFrame
     palNumColors As Long
     framePalette() As RGBQuad
 End Type
+
+'Optimized GIF frames will be stored here.  This array is auto-cleared after a successful dump to file.
+Private m_allFrames() As PD_GifFrame
+
+'PD always writes a global palette, and it attempts to use it on as many frames as possible.
+' (Local palettes will automatically be generated too, as necessary.)
+Private m_globalPalette() As RGBQuad, m_numColorsInGP As Long, m_GlobalTrnsIndex As Long
 
 'Low-level GIF export interface
 Public Function ExportGIF_LL(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
@@ -149,14 +157,6 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     autoDither = Strings.StringsEqual(ditherText, "auto", True)
     If (Not autoDither) Then useDithering = Strings.StringsEqual(ditherText, "on", True)
     
-    'Hypothetically the user could have access to these, but I don't really see a scenario where
-    ' the user would *want* to produce a larger GIF file... so much like Interlacing, I'm inclined
-    ' to hide the property entirely since it'll only be misused by beginners.
-    Dim optimizeGlobalPalette As Boolean: optimizeGlobalPalette = True
-    Dim optimizeFrameDeltas As Boolean: optimizeFrameDeltas = True
-    Dim optimizeFrameCropping As Boolean: optimizeFrameCropping = True
-    Dim optimizeSortPalette As Boolean: optimizeSortPalette = True
-    
     'FreeImage is currently required for animated GIF export.  I'd really like to change this
     ' in the future because FreeImage is slow and does not write optimal GIFs (it always writes
     ' 256-color palettes, for example, regardless of actual palette count), but for now it's
@@ -181,7 +181,6 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' parameters) which we can then hand off to any capable GIF encoder.
     Dim imgPalette() As RGBQuad, palSize As Long
     Dim tmpLayer As pdLayer
-    Dim tmpTag As FREE_IMAGE_TAG
     
     'GIF files support a "global palette".  This is a shared palette that any frame can choose to
     ' use (in place of a "local palette").
@@ -191,15 +190,12 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' If, however, the first frame does *not* require a full 256-color palette, we will merge colors
     ' from subsequent frames into the global palette, until we arrive at 256 colors (or until all
     ' colors in all frames have been assembled).
-    Dim globalPaletteWritten As Boolean
-    globalPaletteWritten = False
     
     'This global palette starts out on the range [0, 255] but may be shrunk if fewer colors are used.
-    Dim globalPalette() As RGBQuad
-    ReDim globalPalette(0 To 255) As RGBQuad
+    ReDim m_globalPalette(0 To 255) As RGBQuad
     
     'Color trackers exist for both global and local palettes (PD may use one or both)
-    Dim numColorsInGP As Long: numColorsInGP = 0
+    m_numColorsInGP = 0
     Dim numColorsInLP As Long
     
     Dim idxPalette As Long
@@ -216,8 +212,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' which comes with the nice perk of making the actual GIF encoding step "encoder
     ' agnostic", e.g. any GIF encoder can be dropped-in at the end, because we perform
     ' all optimizations internally.
-    Dim allFrames() As PD_GifFrame
-    ReDim allFrames(0 To srcPDImage.GetNumOfLayers - 1) As PD_GifFrame
+    ReDim m_allFrames(0 To srcPDImage.GetNumOfLayers - 1) As PD_GifFrame
         
     'GIFs are obnoxious because each frame specifies a "frame disposal" requirement; this is
     ' what to do with the screen buffer *after* the current frame is displayed.  We calculate
@@ -228,7 +223,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' per-frame basis, after testing different optimization strategies.
     Dim i As Long
     For i = 0 To srcPDImage.GetNumOfLayers - 1
-        allFrames(i).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
+        m_allFrames(i).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
     Next i
     
     'As part of optimizing frames, we need to keep a running copy several different frames:
@@ -303,7 +298,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         ProgressBars.SetProgBarVal i
         Message "Saving animation frame %1 of %2...", i + 1, srcPDImage.GetNumOfLayers()
         
-        With allFrames(i)
+        With m_allFrames(i)
         
             'Before dealing with pixel data, attempt to retrieve a frame time from the
             ' source layer's name. (If the layer name does not provide a frame time,
@@ -338,7 +333,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         'Ensure we have a target DIB to operate on; the final, optimized frame will be stored here.
         If (curFrameBackup Is Nothing) Then Set curFrameBackup = New pdDIB
         curFrameBackup.CreateFromExistingDIB tmpLayer.layerDIB
-        Set allFrames(i).frameDIB = New pdDIB
+        Set m_allFrames(i).frameDIB = New pdDIB
         
         'Force alpha to 0 or 255 only (this is a GIF requirement). It simplifies
         ' subsequent steps to handle this up-front.
@@ -356,7 +351,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
             'Cache the temporary layer DIB as-is; it serves as both the first frame in
             ' the animation, and the fallback "static" image for decoders that don't
             ' understand animated GIFs.
-            allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.layerDIB
+            m_allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.layerDIB
             
             'Initialize the frame buffer to be the same as the first frame...
             bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
@@ -417,14 +412,14 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                     'If the frame *before* the frame *before* this one is smallest...
                     If (prevFrameArea.Width * prevFrameArea.Height) < (dupArea.Width * dupArea.Height) Then
                         Set refFrame = prevFrame
-                        allFrames(i).rectOfInterest = prevFrameArea
-                        allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_PREVIOUS
+                        m_allFrames(i).rectOfInterest = prevFrameArea
+                        m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_PREVIOUS
                         
                     'or if the frame immediately preceding this one is smallest...
                     Else
                         Set refFrame = bufferFrame
-                        allFrames(i).rectOfInterest = dupArea
-                        allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE
+                        m_allFrames(i).rectOfInterest = dupArea
+                        m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE
                     End If
                     
                     'We now have the smallest possible rectangle that defines this frame,
@@ -440,16 +435,16 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                     If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsRect) Then
                     
                         'If this frame is smaller than the previous "winner", switch to using this op instead.
-                        If (trnsRect.Width * trnsRect.Height) < (allFrames(i).rectOfInterest.Width * allFrames(i).rectOfInterest.Height) Then
-                            allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
-                            allFrames(i).rectOfInterest = trnsRect
+                        If (trnsRect.Width * trnsRect.Height) < (m_allFrames(i).rectOfInterest.Width * m_allFrames(i).rectOfInterest.Height) Then
+                            m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
+                            m_allFrames(i).rectOfInterest = trnsRect
                         End If
                         
                         'Crop the "winning" region into a separate DIB, and store it as the formal pixel buffer
                         ' for this frame.
-                        With allFrames(i).rectOfInterest
-                            allFrames(i).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
-                            GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+                        With m_allFrames(i).rectOfInterest
+                            m_allFrames(i).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
+                            GDI.BitBltWrapper m_allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
                         End With
                     
                     'This weird (but valid) branch means that the current frame is 100% transparent.  For this
@@ -457,26 +452,26 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                     ' transparent pixel.
                     Else
                         
-                        allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
-                        With allFrames(i).rectOfInterest
+                        m_allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                        With m_allFrames(i).rectOfInterest
                             .Left = 0
                             .Top = 0
                             .Width = 1
                             .Height = 1
                         End With
-                        allFrames(i).frameNeedsTransparency = True
-                        allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE
+                        m_allFrames(i).frameNeedsTransparency = True
+                        m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE
                         
                     End If
                     
                     'Because the current frame came from a premultiplied source, we can safely
                     ' mark it as premultiplied as well.
-                    If (Not allFrames(i).frameDIB Is Nothing) Then allFrames(i).frameDIB.SetInitialAlphaPremultiplicationState True
+                    If (Not m_allFrames(i).frameDIB Is Nothing) Then m_allFrames(i).frameDIB.SetInitialAlphaPremultiplicationState True
                     
                     'If the previous frame is not being blanked, we have additional optimization
                     ' strategies to attempt.  (If, however, the previous frame *is* being blanked,
                     ' we are done with preprocessing because we have no "previous" data to work with.)
-                    If (allFrames(lastGoodFrame).frameDisposal <> FIFD_GIF_DISPOSAL_BACKGROUND) Then
+                    If (m_allFrames(lastGoodFrame).frameDisposal <> FIFD_GIF_DISPOSAL_BACKGROUND) Then
                     
                         'The next optimization we want to attempt is duplicate pixel blanking,
                         ' which takes pixels in the current frame that are identical to the previous frame
@@ -498,17 +493,17 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                         
                         'Because (1) has already been taken care of by the frame disposal If/Then statement above,
                         ' we now want to address case (2).
-                        If DIBs.RetrieveTransparencyTable(allFrames(i).frameDIB, trnsTable) Then
-                        If DIBs.CheckAlpha_DuplicatePixels(refFrame, allFrames(i).frameDIB, trnsTable, Int(allFrames(i).rectOfInterest.Left), Int(allFrames(i).rectOfInterest.Top)) Then
+                        If DIBs.RetrieveTransparencyTable(m_allFrames(i).frameDIB, trnsTable) Then
+                        If DIBs.CheckAlpha_DuplicatePixels(refFrame, m_allFrames(i).frameDIB, trnsTable, Int(m_allFrames(i).rectOfInterest.Left), Int(m_allFrames(i).rectOfInterest.Top)) Then
                             
                             'This frame contains transparency where the previous frame does not.
                             ' This means the previous frame *must* be blanked.
                             ' Skip any remaining frame differential optimizations entirely.
-                            allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
+                            m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND
                             
                             'As a consequence of "blanking" the previous frame, we need to render the current
                             ' frame in its entirety (except for transparent borders, if they exist).
-                            With allFrames(i).rectOfInterest
+                            With m_allFrames(i).rectOfInterest
                                 
                                 If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsRect) Then
                                     .Left = trnsRect.Left
@@ -526,8 +521,8 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                                 
                                 'Crop the "winning" region into a separate DIB, and store it as the formal
                                 ' pixel buffer for this frame.
-                                allFrames(i).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
-                                GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+                                m_allFrames(i).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
+                                GDI.BitBltWrapper m_allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
                             
                             End With
                             
@@ -535,7 +530,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                         Else
                             
                             'This frame is a candidate for frame differentials!
-                            allFrames(i).frameNeedsTransparency = True
+                            m_allFrames(i).frameNeedsTransparency = True
                             
                             'A transparent index must be provided, so we have a mechanism for "erasing" parts
                             ' of this frame to allow the previous frame can show through.
@@ -553,8 +548,8 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                             ' overwrite whatever it needs to.)
                             Dim initSize As Long, initCmpSize As Long
                             initCmpSize = cmpTestBufferSize
-                            initSize = allFrames(i).frameDIB.GetDIBStride * allFrames(i).frameDIB.GetDIBHeight
-                            Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), initCmpSize, allFrames(i).frameDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                            initSize = m_allFrames(i).frameDIB.GetDIBStride * m_allFrames(i).frameDIB.GetDIBHeight
+                            Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), initCmpSize, m_allFrames(i).frameDIB.GetDIBPointer, initSize, 1, cf_Zlib
                             
                             'With current entropy established (well... "estimated"), we're next going to try
                             ' blanking out any pixels that are identical between this frame and the current frame
@@ -564,10 +559,10 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                             ' produce equally noisy results, which can actually *harm* compression ratio. This is
                             ' why we estimated entropy for the untouched frame data (above), and why we're gonna
                             ' perform all our tests on a temporary frame copy (in case we have to throw the copy away).
-                            testDIB.CreateFromExistingDIB allFrames(i).frameDIB
+                            testDIB.CreateFromExistingDIB m_allFrames(i).frameDIB
                             
                             If DIBs.RetrieveTransparencyTable(testDIB, trnsTable) Then
-                            If DIBs.ApplyAlpha_DuplicatePixels(testDIB, refFrame, trnsTable, allFrames(i).rectOfInterest.Left, allFrames(i).rectOfInterest.Top) Then
+                            If DIBs.ApplyAlpha_DuplicatePixels(testDIB, refFrame, trnsTable, m_allFrames(i).rectOfInterest.Left, m_allFrames(i).rectOfInterest.Top) Then
                             If DIBs.ApplyTransparencyTable(testDIB, trnsTable) Then
                         
                                 'The frame differential was produced successfully.  See if it compresses better
@@ -578,7 +573,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                                 
                                 'This frame compressed better!  Use it instead of the original frame.
                                 If (testSize < initCmpSize) Then
-                                    allFrames(i).frameDIB.CreateFromExistingDIB testDIB
+                                    m_allFrames(i).frameDIB.CreateFromExistingDIB testDIB
                                     
                                 'If this frame compressed worse (or identically), we can simply leave current
                                 ' frame settings as they are.
@@ -606,15 +601,15 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                 Else
                     
                     'Ensure transparency is available
-                    allFrames(i).frameNeedsTransparency = True
-                    allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
-                    With allFrames(i).rectOfInterest
+                    m_allFrames(i).frameNeedsTransparency = True
+                    m_allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                    With m_allFrames(i).rectOfInterest
                         .Left = 0
                         .Top = 0
                         .Width = 1
                         .Height = 1
                     End With
-                    allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_PREVIOUS
+                    m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_PREVIOUS
                 
                 End If
                 
@@ -622,9 +617,9 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
             ' frame that preceded it.  Rather than optimize this frame, let's just delete it from
             ' the animation and merge its frame time into the previous frame.
             Else
-                allFrames(i).frameIsDuplicateOrEmpty = True
-                allFrames(lastGoodFrame).frameTime = allFrames(lastGoodFrame).frameTime + allFrames(i).frameTime
-                Set allFrames(i).frameDIB = Nothing
+                m_allFrames(i).frameIsDuplicateOrEmpty = True
+                m_allFrames(lastGoodFrame).frameTime = m_allFrames(lastGoodFrame).frameTime + m_allFrames(i).frameTime
+                Set m_allFrames(i).frameDIB = Nothing
             End If
             
             'This frame is now optimized as well as we can possibly optimize it.
@@ -632,9 +627,9 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
             'Before moving to the next frame, create backup copies of the buffer frames
             ' *we* were handed.  The next frame can request that we reset our state to this
             ' frame, which may be closer to their frame's contents (and thus compress better).
-            If (allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE) Then
+            If (m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_LEAVE) Then
                 prevFrame.CreateFromExistingDIB bufferFrame
-            ElseIf (allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND) Then
+            ElseIf (m_allFrames(lastGoodFrame).frameDisposal = FIFD_GIF_DISPOSAL_BACKGROUND) Then
                 prevFrame.ResetDIB 0
             
             'We don't have to cover the case of DISPOSE_OP_PREVIOUS, as that's the state the prevFrame
@@ -649,7 +644,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
             
             'If this frame is valid (e.g. not a duplicate of the previous frame), increment our current
             ' "good frame" count, and mark this frame as the "last good" index.
-            If (Not allFrames(i).frameIsDuplicateOrEmpty) Then
+            If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
                 numGoodFrames = numGoodFrames + 1
                 lastGoodFrame = i
             End If
@@ -660,7 +655,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         'With optimizations accounted for, it is now time to palettize this layer.
         
         'Generate an optimal 256-color palette for the image.  (TODO: move this to our neural-network quantizer.)
-        Palettes.GetOptimizedPaletteIncAlpha allFrames(i).frameDIB, imgPalette, 256, pdqs_Variance, True
+        Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 256, pdqs_Variance, True
         numColorsInLP = UBound(imgPalette) + 1
         
         'Ensure that in the course of producing an optimal palette, the optimizer didn't change
@@ -675,7 +670,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         Next pEntry
         
         'If the current frame requires transparency, ensure transparency exists in the palette.
-        If allFrames(i).frameNeedsTransparency Then
+        If m_allFrames(i).frameNeedsTransparency Then
             
             Dim trnsFound As Boolean: trnsFound = False
             For pEntry = 0 To UBound(imgPalette)
@@ -691,7 +686,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                 
                 If (numColorsInLP = 256) Then
                     numColorsInLP = 255
-                    Palettes.GetOptimizedPaletteIncAlpha allFrames(i).frameDIB, imgPalette, 255, pdqs_Variance, True
+                    Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 255, pdqs_Variance, True
                 End If
                 
                 ReDim Preserve imgPalette(0 To numColorsInLP) As RGBQuad
@@ -708,68 +703,62 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         'Frames that need transparency are now guaranteed to have it.
         
         'If this is the *first* frame, we will use it as the basis of our global palette.
-        If optimizeGlobalPalette Then
+        If (i = 0) Then
+        
+            'Simply copy over the palette as-is into our running global palette tracker
+            m_numColorsInGP = numColorsInLP
+            ReDim m_globalPalette(0 To m_numColorsInGP - 1) As RGBQuad
             
-            If (i = 0) Then
+            For idxPalette = 0 To m_numColorsInGP - 1
+                m_globalPalette(idxPalette) = imgPalette(idxPalette)
+            Next idxPalette
             
-                'Simply copy over the palette as-is into our running global palette tracker
-                numColorsInGP = numColorsInLP
-                ReDim globalPalette(0 To numColorsInGP - 1) As RGBQuad
-                
-                For idxPalette = 0 To numColorsInGP - 1
-                    globalPalette(idxPalette) = imgPalette(idxPalette)
-                Next idxPalette
-                
-                'Sort the palette by popularity (with a few tweaks), which can eke out slightly
-                ' better compression ratios.
-                If optimizeSortPalette Then Palettes.SortPaletteForCompression_IncAlpha allFrames(i).frameDIB, globalPalette
-                
-                frameUsesGP = True
+            'Sort the palette by popularity (with a few tweaks), which can eke out slightly
+            ' better compression ratios.
+            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, m_globalPalette
             
-            'If this is *not* the first frame, and we have yet to write a global palette, append as many
-            ' unique colors from this palette as we can into the global palette.
-            Else
+            frameUsesGP = True
+        
+        'If this is *not* the first frame, and we have yet to write a global palette, append as many
+        ' unique colors from this palette as we can into the global palette.
+        Else
+            
+            'If there's still room in the global palette, append this palette to it.
+            If (m_numColorsInGP < 256) Then
                 
-                'If we've already embedded the global palette in the file (meaning its color table is full),
-                ' skip the appending colors step.
-                If (Not globalPaletteWritten) Then
-                    
-                    numColorsInGP = Palettes.MergePalettes(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
-                    
-                    'Enforce a strict 256-color limit
-                    If (numColorsInGP > 256) Then
-                        numColorsInGP = 256
-                        ReDim Preserve globalPalette(0 To 255) As RGBQuad
-                    End If
-                    
+                m_numColorsInGP = Palettes.MergePalettes(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
+                
+                'Enforce a strict 256-color limit; colors past the end will simply be discarded, and this frame
+                ' will use a local palette instead.
+                If (m_numColorsInGP > 256) Then
+                    m_numColorsInGP = 256
+                    ReDim Preserve m_globalPalette(0 To 255) As RGBQuad
                 End If
-                
-                'Next, we need to see if all colors in this frame appear in the global palette.
-                ' If they do, we can simply use the global palette to write this frame.
-                frameUsesGP = Palettes.DoesPaletteContainPalette(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
                 
             End If
             
-        Else
-            frameUsesGP = False
+            'Next, we need to see if all colors in this frame appear in the global palette.
+            ' If they do, we can simply use the global palette to write this frame.
+            frameUsesGP = Palettes.DoesPaletteContainPalette(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
+            
         End If
         
-        allFrames(i).usesGlobalPalette = frameUsesGP
+        m_allFrames(i).usesGlobalPalette = frameUsesGP
         
         'With all optimizations applied, we are finally ready to palettize this layer.
         
         'If this frame requires a local palette, sort the local palette (to optimize compression ratios),
         ' then cache a copy of the palette before proceeding.
-        If (Not allFrames(i).usesGlobalPalette) Then
+        If (Not m_allFrames(i).usesGlobalPalette) Then
             
             'Sort the palette prior to saving it; this can improve compression ratios
-            If optimizeSortPalette Then Palettes.SortPaletteForCompression_IncAlpha allFrames(i).frameDIB, imgPalette
+            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, imgPalette
             
-            allFrames(i).palNumColors = UBound(imgPalette) + 1
-            ReDim allFrames(i).framePalette(0 To UBound(imgPalette))
+            m_allFrames(i).palNumColors = UBound(imgPalette) + 1
+            ReDim m_allFrames(i).framePalette(0 To UBound(imgPalette))
             
             For idxPalette = 0 To UBound(imgPalette)
-                allFrames(i).framePalette(idxPalette) = imgPalette(idxPalette)
+                m_allFrames(i).framePalette(idxPalette) = imgPalette(idxPalette)
             Next idxPalette
             
         End If
@@ -777,23 +766,23 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         'If this frame is a duplicate of the previous frame, we don't need to perform any more
         ' optimizations on its pixel data, because we will simply reuse the previous frame in
         ' its place.
-        If (Not allFrames(i).frameIsDuplicateOrEmpty) Then
+        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
             
             'Using either the local or global palette (whichever matches this image),
             ' create an 8-bit version of the source image.  (TODO: switch to neural network quantizer)
             If frameUsesGP Then
-                palSize = numColorsInGP
+                palSize = m_numColorsInGP
                 If useDithering Then
-                    Palettes.GetPalettizedImage_Dithered_IncAlpha allFrames(i).frameDIB, globalPalette, allFrames(i).pixelData, PDDM_SierraLite, 0.67, True
+                    Palettes.GetPalettizedImage_Dithered_IncAlpha m_allFrames(i).frameDIB, m_globalPalette, m_allFrames(i).pixelData, PDDM_SierraLite, 0.67, True
                 Else
-                    DIBs.GetDIBAs8bpp_RGBA_SrcPalette allFrames(i).frameDIB, globalPalette, allFrames(i).pixelData
+                    DIBs.GetDIBAs8bpp_RGBA_SrcPalette m_allFrames(i).frameDIB, m_globalPalette, m_allFrames(i).pixelData
                 End If
             Else
                 palSize = numColorsInLP
                 If useDithering Then
-                    Palettes.GetPalettizedImage_Dithered_IncAlpha allFrames(i).frameDIB, imgPalette, allFrames(i).pixelData, PDDM_SierraLite, 0.67, True
+                    Palettes.GetPalettizedImage_Dithered_IncAlpha m_allFrames(i).frameDIB, imgPalette, m_allFrames(i).pixelData, PDDM_SierraLite, 0.67, True
                 Else
-                    DIBs.GetDIBAs8bpp_RGBA_SrcPalette allFrames(i).frameDIB, imgPalette, allFrames(i).pixelData
+                    DIBs.GetDIBAs8bpp_RGBA_SrcPalette m_allFrames(i).frameDIB, imgPalette, m_allFrames(i).pixelData
                 End If
             End If
             
@@ -801,8 +790,8 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         
         'We can now free the (temporary) frame DIB copy, because it is either unnecessary
         ' (because this frame isn't being encoded) or because it has been palettized and
-        ' stored inside allFrames(i).pixelData.
-        Set allFrames(i).frameDIB = Nothing
+        ' stored inside m_allFrames(i).pixelData.
+        Set m_allFrames(i).frameDIB = Nothing
         
     'Next frame
     Next i
@@ -819,41 +808,67 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     
     ' The GIF spec requires global palette color count to be a power of 2.  (It does this because
     ' the compression table will only use n bits for each of 2 ^ n colors.)
-    If (numColorsInGP < 2) Then
-        numColorsInGP = 2
-    ElseIf (numColorsInGP < 4) Then
-        numColorsInGP = 4
-    ElseIf (numColorsInGP < 8) Then
-        numColorsInGP = 8
-    ElseIf (numColorsInGP < 16) Then
-        numColorsInGP = 16
-    ElseIf (numColorsInGP < 32) Then
-        numColorsInGP = 32
-    ElseIf (numColorsInGP < 64) Then
-        numColorsInGP = 64
-    ElseIf (numColorsInGP < 128) Then
-        numColorsInGP = 128
+    If (m_numColorsInGP < 2) Then
+        m_numColorsInGP = 2
+    ElseIf (m_numColorsInGP < 4) Then
+        m_numColorsInGP = 4
+    ElseIf (m_numColorsInGP < 8) Then
+        m_numColorsInGP = 8
+    ElseIf (m_numColorsInGP < 16) Then
+        m_numColorsInGP = 16
+    ElseIf (m_numColorsInGP < 32) Then
+        m_numColorsInGP = 32
+    ElseIf (m_numColorsInGP < 64) Then
+        m_numColorsInGP = 64
+    ElseIf (m_numColorsInGP < 128) Then
+        m_numColorsInGP = 128
     Else
-        numColorsInGP = 256
+        m_numColorsInGP = 256
     End If
     
     'Since we need to CopyMemory the palette into our encoder,
     ' make sure we've allocated enough bytes to match the final color count.
-    If (UBound(globalPalette) <> numColorsInGP - 1) Then ReDim Preserve globalPalette(0 To numColorsInGP - 1) As RGBQuad
+    If (UBound(m_globalPalette) <> m_numColorsInGP - 1) Then ReDim Preserve m_globalPalette(0 To m_numColorsInGP - 1) As RGBQuad
     
     'If the global palette has a transparent index, locate it in advance
-    Dim trnsIndex As Long
-    trnsIndex = -1
-    
-    For i = 0 To numColorsInGP - 1
-        If (globalPalette(i).Alpha = 0) Then
-            trnsIndex = i
+    m_GlobalTrnsIndex = -1
+    For i = 0 To m_numColorsInGP - 1
+        If (m_globalPalette(i).Alpha = 0) Then
+            m_GlobalTrnsIndex = i
             Exit For
         End If
     Next i
     
     'We've successfully optimized all GIF frames.  Now it's time to involve our encoder.
     Message "Finalizing image..."
+    
+    ExportGIF_Animated_LL = WriteOptimizedAGIFToFile(srcPDImage, dstFile, formatParams, metadataParams)
+    
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
+    
+    Exit Function
+    
+ExportGIFError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportGIF_Animated_LL = False
+    
+End Function
+
+'After optimizing GIF frames (which you must do to generate the structures used by this function),
+' call this function to actually write GIF data out to file.  In this build, FreeImage is used.
+' This may change pending further testing.
+Private Function WriteOptimizedAGIFToFile(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+
+    On Error GoTo ExportGIFError
+    
+    WriteOptimizedAGIFToFile = False
+    Dim sFileType As String: sFileType = "GIF"
+    
+    'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
     
     'If the target file already exists, use "safe" file saving (e.g. write the save data to
     ' a new file, and if it's saved successfully, overwrite the original file - this way,
@@ -868,24 +883,27 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         tmpFilename = dstFile
     End If
     
+    Dim tmpTag As FREE_IMAGE_TAG
+    
     'Create a blank multipage FreeImage object.  All GIF frames will be "added" to this object.
     Dim fi_MasterHandle As Long
     fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, True, False, True)
     If (fi_MasterHandle <> 0) Then
     
         'We are now ready to write the GIF file
+        Dim i As Long
         For i = 0 To srcPDImage.GetNumOfLayers - 1
             
-            If (Not allFrames(i).frameIsDuplicateOrEmpty) Then
+            If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
                 
                 'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
                 ' palette and pixel data.  (Note that we don't actually use the local palette for frames that use
                 ' the global palette - but we have to supply *something* in order to construct the FI image.)
                 Dim fi_DIB As Long
-                With allFrames(i)
+                With m_allFrames(i)
                     
                     If .usesGlobalPalette Then
-                        fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(Int(.rectOfInterest.Width), Int(.rectOfInterest.Height), VarPtr(.pixelData(0, 0)), VarPtr(globalPalette(0)), numColorsInGP)
+                        fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(Int(.rectOfInterest.Width), Int(.rectOfInterest.Height), VarPtr(.pixelData(0, 0)), VarPtr(m_globalPalette(0)), m_numColorsInGP)
                     Else
                         fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(Int(.rectOfInterest.Width), Int(.rectOfInterest.Height), VarPtr(.pixelData(0, 0)), VarPtr(.framePalette(0)), .palNumColors)
                     End If
@@ -910,9 +928,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
                         
                         'Global palette
-                        If optimizeGlobalPalette Then
-                            If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
-                        End If
+                        If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(m_globalPalette(0)), m_numColorsInGP, m_numColorsInGP * 4, &H3)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
                         
                     End If
                     
@@ -920,38 +936,39 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                     ' to achieve proper 30 or 60 fps display.  To improve output, round the specified msec amount
                     ' to the nearest csec equivalent.  Note also that most browsers enforce a minimum display rate
                     ' of their own, independent of this value (20 msec is prevalent as of 2019).
-                    finalFrameTime = Int((allFrames(i).frameTime + 5) \ 10) * 10
+                    Dim finalFrameTime As Long
+                    finalFrameTime = Int((m_allFrames(i).frameTime + 5) \ 10) * 10
                     tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, finalFrameTime, 1, &H1005&)
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
                     
                     'Specify frame left/top for all but the first frame (which is always specified
                     ' as starting at [0, 0])
                     If (i > 0) Then
-                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameLeft", FIDT_SHORT, CLng(Int(allFrames(i).rectOfInterest.Left)), 1, &H1001&)
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameLeft", FIDT_SHORT, CLng(Int(m_allFrames(i).rectOfInterest.Left)), 1, &H1001&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
-                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTop", FIDT_SHORT, CLng(Int(allFrames(i).rectOfInterest.Top)), 1, &H1002&)
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTop", FIDT_SHORT, CLng(Int(m_allFrames(i).rectOfInterest.Top)), 1, &H1002&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
                     End If
                     
                     'If we use the global palette, flag it now, including the transparent index
-                    If allFrames(i).usesGlobalPalette Then
+                    If m_allFrames(i).usesGlobalPalette Then
                         tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "NoLocalPalette", FIDT_BYTE, 1, 1, &H1003&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
-                        If (trnsIndex >= 0) Then FreeImage_SetTransparentIndex fi_DIB, trnsIndex
+                        If (m_GlobalTrnsIndex >= 0) Then FreeImage_SetTransparentIndex fi_DIB, m_GlobalTrnsIndex
                     Else
                         
                         'Note that PD prefers that the transparency index - if one exists - is always the
                         ' *first* palette index.  This improves compatibility with old GIF decoders (some of
                         ' which make this exact assumption).
-                        If (allFrames(i).framePalette(0).Alpha = 0) Then
+                        If (m_allFrames(i).framePalette(0).Alpha = 0) Then
                             FreeImage_SetTransparentIndex fi_DIB, 0
                         
                         'If PD finds transparency in a non-ideal location, it will still write it correctly,
                         ' but you risk old GIF decoders not displaying the frames properly.
                         Else
                             Dim idxPal As Long
-                            For idxPal = 0 To allFrames(i).palNumColors - 1
-                                If (allFrames(i).framePalette(idxPal).Alpha = 0) Then
+                            For idxPal = 0 To m_allFrames(i).palNumColors - 1
+                                If (m_allFrames(i).framePalette(idxPal).Alpha = 0) Then
                                     FreeImage_SetTransparentIndex fi_DIB, idxPal
                                     PDDebug.LogAction "palette transparency in suboptimal location (" & idxPal & "); consider fixing!"
                                     Exit For
@@ -963,7 +980,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                     
                     'Set this frame to either erase to background (transparent black) or retain data
                     ' from the previous frame.
-                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, allFrames(i).frameDisposal, 1, &H1006&)
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, m_allFrames(i).frameDisposal, 1, &H1006&)
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated_LL failed to set a tag"
                     
                     'Append the finished frame
@@ -984,14 +1001,14 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
         
         'Finally, we can close the multipage handle "once and for all"; FreeImage handles the rest from here
-        ExportGIF_Animated_LL = FreeImage_CloseMultiBitmap(fi_MasterHandle)
+        WriteOptimizedAGIFToFile = FreeImage_CloseMultiBitmap(fi_MasterHandle)
         
         'If we wrote our data to a temp file, attempt to replace the original file
         If Strings.StringsNotEqual(dstFile, tmpFilename) Then
             
-            ExportGIF_Animated_LL = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            WriteOptimizedAGIFToFile = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
             
-            If (Not ExportGIF_Animated_LL) Then
+            If (Not WriteOptimizedAGIFToFile) Then
                 Files.FileDelete tmpFilename
                 PDDebug.LogAction "WARNING!  ImageExporter could not overwrite GIF file; original file is likely open elsewhere."
             End If
@@ -1000,17 +1017,14 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         
     Else
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        ExportGIF_Animated_LL = False
+        WriteOptimizedAGIFToFile = False
     End If
-
-    ProgressBars.SetProgBarVal 0
-    ProgressBars.ReleaseProgressBar
     
     Exit Function
     
 ExportGIFError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
-    ExportGIF_Animated_LL = False
+    WriteOptimizedAGIFToFile = False
     
 End Function
 
