@@ -7,17 +7,17 @@ Attribute VB_Name = "ImageFormats_GIF"
 'Last update: pull actual AGIF encoding stages into their own function; this will make it easier to
 '             switch encoders in the future
 '
-'Most image exporters existin the ImageExporter module.  GIF is a weird exception because animated GIFs
-' require a ton of preprocessing (to optimize animation frames), so I've given them their own home here.
+'Most image exporters exist in the ImageExporter module.  GIF is a weird exception because animated GIFs
+' require a ton of preprocessing (to optimize animation frames), so I've moved them to their own home.
 '
 'PhotoDemon automatically optimizes saved GIFs to produce the smallest possible files.  A variety of
 ' optimizations are used, and the encoder tests various strategies to try and choose the "best"
-' (smallest file) solution on each frame.
+' (smallest) solution on each frame.
 '
 'Note that the optimizer is specifically written in an export-library-agnostic way.  PD internally
 ' stores the results of all optimizations, then just hands the optimized frames off to an encoder
-' at the end of the process.  Currently this encoder is FreeImage.  I am actively investigating
-' alternatives, however.
+' at the end of the process.  Currently this encoder is FreeImage.  FreeImage has many quirks and
+' produces unnecessarily large files, however, so I am actively investigating alternatives.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

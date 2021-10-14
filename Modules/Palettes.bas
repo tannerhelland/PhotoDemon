@@ -4054,13 +4054,13 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
     If (numColors > 8) Then
         tmpSortQ = srcPalette(8)
         srcPalette(8) = srcPalette(3)
-        srcPalette(3) = srcPalette(8)
+        srcPalette(3) = tmpSortQ
     End If
     
     If (numColors > 16) Then
         tmpSortQ = srcPalette(16)
         srcPalette(16) = srcPalette(5)
-        srcPalette(5) = srcPalette(16)
+        srcPalette(5) = tmpSortQ
     End If
     
     If (numColors > 32) Then
