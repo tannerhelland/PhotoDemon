@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2021 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 11/July/20
-'Last update: new streaming interface for generating APNGs.  This works better for animated screen captures,
-'             as we don't need to have access to all animation frames up front.
+'Last updated: 13/October/21
+'Last update: fix rare edge-case bug when optimizing transparency in back-to-back APNG frames
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -2549,10 +2548,13 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                         If DIBs.RetrieveTransparencyTable(allFrames(i).frameDIB, trnsTable) Then
                         If DIBs.CheckAlpha_DuplicatePixels(refFrame, allFrames(i).frameDIB, trnsTable, Int(allFrames(i).rectOfInterest.Left), Int(allFrames(i).rectOfInterest.Top)) Then
                             
-                            'This frame contains variable alpha transparency where the previous frame does not.
-                            ' This means the previous frame *must* be blanked.  Skip frame differentials entirely.
-                            allFrames(lastGoodFrame).frameDisposal = APNG_DisposeOp_Background
-                        
+                            'This frame contains variable alpha transparency where the previous frame
+                            ' does not. This means that we cannot pixel-blank this frame, and we *must*
+                            ' specify replace mode for pixels in the current frame (to ensure our
+                            ' transparent pixels *overwrite* the previous frame's non-transparent ones,
+                            ' instead of simply "overlaying" atop whatever was there before).
+                            allFrames(i).frameBlend = APNG_BlendOp_Source
+                            
                         'The current frame can be safely alpha-blended "over the top" of the previous one
                         Else
                             
