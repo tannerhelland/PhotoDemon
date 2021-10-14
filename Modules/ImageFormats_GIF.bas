@@ -653,120 +653,119 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         End If
         
         'With optimizations accounted for, it is now time to palettize this layer.
-        
-        'Generate an optimal 256-color palette for the image.  (TODO: move this to our neural-network quantizer.)
-        Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 256, pdqs_Variance, True
-        numColorsInLP = UBound(imgPalette) + 1
-        
-        'Ensure that in the course of producing an optimal palette, the optimizer didn't change
-        ' any transparent values to number other than 0 or 255.
-        Dim pEntry As Long
-        For pEntry = LBound(imgPalette) To UBound(imgPalette)
-            If (imgPalette(pEntry).Alpha < 127) Then
-                imgPalette(pEntry).Alpha = 0
-            Else
-                imgPalette(pEntry).Alpha = 255
-            End If
-        Next pEntry
-        
-        'If the current frame requires transparency, ensure transparency exists in the palette.
-        If m_allFrames(i).frameNeedsTransparency Then
+        ' (If this frame is a duplicate of the previous frame, we don't need to perform any more
+        ' optimizations on its pixel data, because we will simply reuse the previous frame in
+        ' its place.)
+        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
             
-            Dim trnsFound As Boolean: trnsFound = False
-            For pEntry = 0 To UBound(imgPalette)
-                If (imgPalette(pEntry).Alpha = 0) Then
-                    trnsFound = True
-                    Exit For
+            'Generate an optimal 256-color palette for the image.  (TODO: move this to our neural-network quantizer.)
+            Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 256, pdqs_Variance, True
+            numColorsInLP = UBound(imgPalette) + 1
+            
+            'Ensure that in the course of producing an optimal palette, the optimizer didn't change
+            ' any transparent values to number other than 0 or 255.
+            Dim pEntry As Long
+            For pEntry = LBound(imgPalette) To UBound(imgPalette)
+                If (imgPalette(pEntry).Alpha < 127) Then
+                    imgPalette(pEntry).Alpha = 0
+                Else
+                    imgPalette(pEntry).Alpha = 255
                 End If
             Next pEntry
             
-            'If transparency *wasn't* found, add it manually (if there's room), or generate a new
-            ' 255-color palette and stick transparency at the end.
-            If (Not trnsFound) Then
+            'If the current frame requires transparency, ensure transparency exists in the palette.
+            If m_allFrames(i).frameNeedsTransparency Then
                 
-                If (numColorsInLP = 256) Then
-                    numColorsInLP = 255
-                    Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 255, pdqs_Variance, True
-                End If
+                Dim trnsFound As Boolean: trnsFound = False
+                For pEntry = 0 To UBound(imgPalette)
+                    If (imgPalette(pEntry).Alpha = 0) Then
+                        trnsFound = True
+                        Exit For
+                    End If
+                Next pEntry
                 
-                ReDim Preserve imgPalette(0 To numColorsInLP) As RGBQuad
-                imgPalette(numColorsInLP).Blue = 0
-                imgPalette(numColorsInLP).Green = 0
-                imgPalette(numColorsInLP).Red = 0
-                imgPalette(numColorsInLP).Alpha = 0
-                numColorsInLP = numColorsInLP + 1
-                
-            End If
-            
-        End If
-        
-        'Frames that need transparency are now guaranteed to have it.
-        
-        'If this is the *first* frame, we will use it as the basis of our global palette.
-        If (i = 0) Then
-        
-            'Simply copy over the palette as-is into our running global palette tracker
-            m_numColorsInGP = numColorsInLP
-            ReDim m_globalPalette(0 To m_numColorsInGP - 1) As RGBQuad
-            
-            For idxPalette = 0 To m_numColorsInGP - 1
-                m_globalPalette(idxPalette) = imgPalette(idxPalette)
-            Next idxPalette
-            
-            'Sort the palette by popularity (with a few tweaks), which can eke out slightly
-            ' better compression ratios.
-            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, m_globalPalette, True, True
-            
-            frameUsesGP = True
-        
-        'If this is *not* the first frame, and we have yet to write a global palette, append as many
-        ' unique colors from this palette as we can into the global palette.
-        Else
-            
-            'If there's still room in the global palette, append this palette to it.
-            If (m_numColorsInGP < 256) Then
-                
-                m_numColorsInGP = Palettes.MergePalettes(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
-                
-                'Enforce a strict 256-color limit; colors past the end will simply be discarded, and this frame
-                ' will use a local palette instead.
-                If (m_numColorsInGP > 256) Then
-                    m_numColorsInGP = 256
-                    ReDim Preserve m_globalPalette(0 To 255) As RGBQuad
+                'If transparency *wasn't* found, add it manually (if there's room), or generate a new
+                ' 255-color palette and stick transparency at the end.
+                If (Not trnsFound) Then
+                    
+                    If (numColorsInLP = 256) Then
+                        numColorsInLP = 255
+                        Palettes.GetOptimizedPaletteIncAlpha m_allFrames(i).frameDIB, imgPalette, 255, pdqs_Variance, True
+                    End If
+                    
+                    ReDim Preserve imgPalette(0 To numColorsInLP) As RGBQuad
+                    imgPalette(numColorsInLP).Blue = 0
+                    imgPalette(numColorsInLP).Green = 0
+                    imgPalette(numColorsInLP).Red = 0
+                    imgPalette(numColorsInLP).Alpha = 0
+                    numColorsInLP = numColorsInLP + 1
+                    
                 End If
                 
             End If
+                
+            'Frames that need transparency are now guaranteed to have it.
             
-            'Next, we need to see if all colors in this frame appear in the global palette.
-            ' If they do, we can simply use the global palette to write this frame.
-            frameUsesGP = Palettes.DoesPaletteContainPalette(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
+            'If this is the *first* frame, we will use it as the basis of our global palette.
+            If (i = 0) Then
             
-        End If
-        
-        m_allFrames(i).usesGlobalPalette = frameUsesGP
-        
-        'With all optimizations applied, we are finally ready to palettize this layer.
-        
-        'If this frame requires a local palette, sort the local palette (to optimize compression ratios),
-        ' then cache a copy of the palette before proceeding.
-        If (Not m_allFrames(i).usesGlobalPalette) Then
+                'Simply copy over the palette as-is into our running global palette tracker
+                m_numColorsInGP = numColorsInLP
+                ReDim m_globalPalette(0 To m_numColorsInGP - 1) As RGBQuad
+                
+                For idxPalette = 0 To m_numColorsInGP - 1
+                    m_globalPalette(idxPalette) = imgPalette(idxPalette)
+                Next idxPalette
+                
+                'Sort the palette by popularity (with a few tweaks), which can eke out slightly
+                ' better compression ratios.
+                Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, m_globalPalette, True, True
+                
+                frameUsesGP = True
             
-            'Sort the palette prior to saving it; this can improve compression ratios
-            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, imgPalette, True, True
+            'If this is *not* the first frame, and we have yet to write a global palette, append as many
+            ' unique colors from this palette as we can into the global palette.
+            Else
+                
+                'If there's still room in the global palette, append this palette to it.
+                If (m_numColorsInGP < 256) Then
+                    
+                    m_numColorsInGP = Palettes.MergePalettes(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
+                    
+                    'Enforce a strict 256-color limit; colors past the end will simply be discarded, and this frame
+                    ' will use a local palette instead.
+                    If (m_numColorsInGP > 256) Then
+                        m_numColorsInGP = 256
+                        ReDim Preserve m_globalPalette(0 To 255) As RGBQuad
+                    End If
+                    
+                End If
+                
+                'Next, we need to see if all colors in this frame appear in the global palette.
+                ' If they do, we can simply use the global palette to write this frame.
+                frameUsesGP = Palettes.DoesPaletteContainPalette(m_globalPalette, m_numColorsInGP, imgPalette, numColorsInLP)
+                
+            End If
             
-            m_allFrames(i).palNumColors = UBound(imgPalette) + 1
-            ReDim m_allFrames(i).framePalette(0 To UBound(imgPalette))
+            m_allFrames(i).usesGlobalPalette = frameUsesGP
+                
+            'With all optimizations applied, we are finally ready to palettize this layer.
             
-            For idxPalette = 0 To UBound(imgPalette)
-                m_allFrames(i).framePalette(idxPalette) = imgPalette(idxPalette)
-            Next idxPalette
-            
-        End If
-        
-        'If this frame is a duplicate of the previous frame, we don't need to perform any more
-        ' optimizations on its pixel data, because we will simply reuse the previous frame in
-        ' its place.
-        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
+            'If this frame requires a local palette, sort the local palette (to optimize compression ratios),
+            ' then cache a copy of the palette before proceeding.
+            If (Not m_allFrames(i).usesGlobalPalette) Then
+                
+                'Sort the palette prior to saving it; this can improve compression ratios
+                Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, imgPalette, True, True
+                
+                m_allFrames(i).palNumColors = UBound(imgPalette) + 1
+                ReDim m_allFrames(i).framePalette(0 To UBound(imgPalette))
+                
+                For idxPalette = 0 To UBound(imgPalette)
+                    m_allFrames(i).framePalette(idxPalette) = imgPalette(idxPalette)
+                Next idxPalette
+                
+            End If
             
             'Using either the local or global palette (whichever matches this image),
             ' create an 8-bit version of the source image.  (TODO: switch to neural network quantizer)
