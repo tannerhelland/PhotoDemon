@@ -715,7 +715,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
             
             'Sort the palette by popularity (with a few tweaks), which can eke out slightly
             ' better compression ratios.
-            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, m_globalPalette
+            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, m_globalPalette, True, True
             
             frameUsesGP = True
         
@@ -752,7 +752,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
         If (Not m_allFrames(i).usesGlobalPalette) Then
             
             'Sort the palette prior to saving it; this can improve compression ratios
-            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, imgPalette
+            Palettes.SortPaletteForCompression_IncAlpha m_allFrames(i).frameDIB, imgPalette, True, True
             
             m_allFrames(i).palNumColors = UBound(imgPalette) + 1
             ReDim m_allFrames(i).framePalette(0 To UBound(imgPalette))
