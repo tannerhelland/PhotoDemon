@@ -230,7 +230,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Blue = tmpData(xStride, y)
                 .Green = tmpData(xStride + 1, y)
                 .Red = tmpData(xStride + 2, y)
-                If m_dibColorDepth = 32 Then .Alpha = tmpData(xStride + 3, y)
+                If (m_dibColorDepth = 32) Then .Alpha = tmpData(xStride + 3, y)
             End With
             
         End If
@@ -240,6 +240,46 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
     'This coordinate does not lie inside the layer.
     Else
         GetPixelRGBQuad = False
+    End If
+
+End Function
+
+'Given a pixel coordinate, set an RGBA quad to that coordinate.
+' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.
+Friend Function SetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef srcQuad As RGBQuad) As Boolean
+
+    'Before doing anything else, check to see if the x/y postition lies inside the DIB
+    If (x >= 0) And (x < m_dibWidth) And (y >= 0) And (y < m_dibHeight) Then
+        
+        'The point lies inside the DIB, which means we need to figure out the color at this position
+        SetPixelRGBQuad = True
+        
+        'Unsuspend this DIB (as necessary)
+        If m_IsSuspended Then UnsuspendDIB
+        
+        Dim tmpData() As Byte, tSA As SafeArray2D
+        Me.WrapArrayAroundDIB tmpData, tSA
+        
+        Dim xStride As Long
+        xStride = x * (m_dibColorDepth \ 8)
+        
+        'Failsafe bounds check
+        If ((xStride + 2) < m_dibStride) Then
+        
+            With srcQuad
+                tmpData(xStride, y) = .Blue
+                tmpData(xStride + 1, y) = .Green
+                tmpData(xStride + 2, y) = .Red
+                If (m_dibColorDepth = 32) Then tmpData(xStride + 3, y) = .Alpha
+            End With
+            
+        End If
+        
+        Me.UnwrapArrayFromDIB tmpData
+        
+    'This coordinate does not lie inside the layer.
+    Else
+        SetPixelRGBQuad = False
     End If
 
 End Function
