@@ -1223,9 +1223,7 @@ End Function
 
 'Unsigned int writes; pass a Long, per PD convention.
 Friend Function WriteIntU(ByVal srcInt As Long) As Boolean
-    Dim tmpInteger As Integer
-    CopyMemoryStrict VarPtr(tmpInteger), VarPtr(srcInt), 2
-    WriteIntU = WriteBytesFromPointer(VarPtr(tmpInteger), 2)
+    WriteIntU = WriteBytesFromPointer(VarPtr(srcInt), 2)
 End Function
 
 'Big-endian unsigned int writes
