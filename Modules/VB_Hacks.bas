@@ -557,6 +557,22 @@ Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As 
 End Function
 
 'Wrap an array of [type] around an arbitrary pointer.
+Public Sub WrapArrayAroundPtr_Byte(ByRef dstBytes() As Byte, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
+    With dstSA1D
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcLenInBytes
+        .pvData = srcPtr
+    End With
+    PutMem4 VarPtrArray(dstBytes()), VarPtr(dstSA1D)
+End Sub
+
+Public Sub UnwrapArrayFromPtr_Byte(ByRef dstBytes() As Byte)
+    PutMem4 VarPtrArray(dstBytes), 0&
+End Sub
+
 Public Sub WrapArrayAroundPtr_Float(ByRef dstFloats() As Single, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
     With dstSA1D
         .cbElements = 4
