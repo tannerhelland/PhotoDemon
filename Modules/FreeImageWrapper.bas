@@ -588,18 +588,6 @@ End Enum
    Private Const FIMD_CUSTOM = 10, FIMD_EXIF_RAW = 11
 #End If
 
-' These are the GIF_DISPOSAL metadata constants
-Public Enum FREE_IMAGE_FRAME_DISPOSAL_METHODS
-   FIFD_GIF_DISPOSAL_UNSPECIFIED = 0
-   FIFD_GIF_DISPOSAL_LEAVE = 1
-   FIFD_GIF_DISPOSAL_BACKGROUND = 2
-   FIFD_GIF_DISPOSAL_PREVIOUS = 3
-End Enum
-
-#If False Then
-    Private Const FIFD_GIF_DISPOSAL_UNSPECIFIED = 0, FIFD_GIF_DISPOSAL_LEAVE = 1, FIFD_GIF_DISPOSAL_BACKGROUND = 2, FIFD_GIF_DISPOSAL_PREVIOUS = 3
-#End If
-
 ' the next enums are only used by derived functions of the
 ' FreeImage 3 VB wrapper
 Public Enum FREE_IMAGE_CONVERSION_FLAGS

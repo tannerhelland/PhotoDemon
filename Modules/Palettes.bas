@@ -156,6 +156,19 @@ Public Function DoesPaletteContainPalette(ByRef parentPalette() As RGBQuad, ByVa
     
 End Function
 
+'Ensure alpha values in a palette are limited to 0 or 255, nothing in-between.  (This is useful
+' when exporting GIFs, for example.)
+Public Sub EnsureBinaryAlphaPalette(ByRef srcPalette() As RGBQuad)
+    Dim idxEntry As Long
+    For idxEntry = LBound(srcPalette) To UBound(srcPalette)
+        If (srcPalette(idxEntry).Alpha < 127) Then
+            srcPalette(idxEntry).Alpha = 0
+        Else
+            srcPalette(idxEntry).Alpha = 255
+        End If
+    Next idxEntry
+End Sub
+
 'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
 ' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
 ' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that
@@ -667,7 +680,11 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     Set cPaletteSorter = New pdPaletteChild
     cPaletteSorter.CreateFromRGBQuads dstPalette
     cPaletteSorter.SortByChannel 3                  '0 = red, 1 = green, 2 = blue, 3 = alpha
+    
+    'Failsafe; it's fast and easy to remove duplicates, just in case weirdness happened during quantization
+    cPaletteSorter.FindAndRemoveDuplicates
     cPaletteSorter.CopyRGBQuadsToArray dstPalette
+    
     
 End Function
 
@@ -4006,7 +4023,7 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
                 If (palPopularity(i) > maxPopularity) Then maxPopularity = palPopularity(i)
             Next i
         End If
-            
+        
         For i = 0 To UBound(srcPalette)
             
             'Transparent pixel...
@@ -4017,14 +4034,10 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
                 If skipPopularityScan Then
                 
                     If (i > 0) Then
-                        For j = 0 To UBound(srcPalette)
-                            If (srcPalette(j).Alpha <> 0) Then
-                                tmpQuad = srcPalette(0)
-                                srcPalette(0) = srcPalette(j)
-                                srcPalette(j) = tmpQuad
-                                Exit For
-                            End If
-                        Next j
+                        tmpQuad = srcPalette(0)
+                        srcPalette(0) = srcPalette(i)
+                        srcPalette(i) = tmpQuad
+                        Exit For
                     End If
                 
                 'In a normal popularity search, set all transparent pixels to "max+1" popularity

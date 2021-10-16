@@ -3,9 +3,10 @@ Attribute VB_Name = "DIBs"
 'DIB Support Functions
 'Copyright 2012-2021 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
-'Last updated: 10/October/21
-'Last update: move ancient CreateDibFromStdPicture function out of pdDIB and into here (it's currently
-'             only used by
+'Last updated: 15/October/21
+'Last update: new functions for comparing two DIBs and outputting a new DIB with the lowest-entropy bits
+'             from either input stream (we use this during animation export to determine ideal strategies
+'             when pixel-blanking back-to-back frames)
 '
 'This module contains support functions for the pdDIB class.  In old versions of PD,
 ' these functions were provided by pdDIB, but there's no sense cluttering up that class
@@ -894,7 +895,12 @@ End Function
 '
 'Note that - by design - neither DIB is modified by this function.  Only the transparency table
 ' is modified.
-Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByRef dstTransparencyTable() As Byte, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
+'
+'If activated, the optional "autoDenoise" parameter will change the algorithm to *not* blank out
+' pixels unless at least two of them are touching (under the assumption that introducing 1-px
+' noise will hurt most compression schemes).  Note that the denoiser does not work across
+' scanline boundaries, at present, but could be modified to do so.
+Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByRef dstTransparencyTable() As Byte, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0, Optional ByVal autoDenoise As Boolean = False) As Boolean
     
     If (topDIB Is Nothing) Then Exit Function
     If (bottomDIB Is Nothing) Then Exit Function
@@ -909,8 +915,15 @@ Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDI
         finalX = (topDIB.GetDIBWidth - 1)
         finalY = (topDIB.GetDIBHeight - 1)
         
+        'Failsafe check for single-pixel images
+        If (finalX < 1) Then
+            ApplyAlpha_DuplicatePixels = True
+            Exit Function
+        End If
+        
         Dim srcDataTop() As Long, tmpSATop As SafeArray1D
         Dim srcDataBottom() As Long, tmpSABottom As SafeArray1D
+        Dim origAlpha As Byte
         
         'Loop through the image, checking alphas as we go
         For y = 0 To finalY
@@ -918,8 +931,39 @@ Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDI
             bottomDIB.WrapLongArrayAroundScanline srcDataBottom, tmpSABottom, y + topOffsetY
         For x = 0 To finalX
             
-            'Make matching pixels transparent
-            If srcDataTop(x) = srcDataBottom(x + topOffsetX) Then dstTransparencyTable(x, y) = 0
+            'We use two strategies here, based on whether autoDenoise is active
+            If autoDenoise Then
+                
+                origAlpha = dstTransparencyTable(x, y)
+                
+                'First, see if this pixel will be blanked at all
+                If srcDataTop(x) = srcDataBottom(x + topOffsetX) Then
+                
+                    If (x > 0) Then
+                        
+                        'Check left pixel regardless; if it matches, we can blank the pixel immediately
+                        If srcDataTop(x - 1) = srcDataBottom(x + topOffsetX - 1) Then
+                            dstTransparencyTable(x, y) = 0
+                        
+                        'Left pixel doesn't match; try right pixel
+                        Else
+                            If (x < finalX) Then
+                                If srcDataTop(x + 1) = srcDataBottom(x + topOffsetX + 1) Then dstTransparencyTable(x, y) = 0
+                            End If
+                        End If
+                        
+                    'x = 0, check right pixel before blanking
+                    Else
+                        If srcDataTop(x + 1) = srcDataBottom(x + topOffsetX + 1) Then dstTransparencyTable(x, y) = 0
+                    End If
+                
+                '/do nothing if pixels don't match
+                End If
+                
+            'When autoDenoise is disabled, just make matching pixels transparent
+            Else
+                If srcDataTop(x) = srcDataBottom(x + topOffsetX) Then dstTransparencyTable(x, y) = 0
+            End If
             
         Next x
         Next y
@@ -1548,6 +1592,181 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
     Else
         Debug.Print "WARNING!  DIBs.ColorizeDIB() requires a 32-bpp DIB to operate correctly."
     End If
+    
+End Function
+
+'This function is used specifically for optimizing animation frames.  PD can perform an optimization
+' called "pixel blanking", which involves making pixels transparent if they are identical to the
+' previous frame's pixels.  It is difficult to predict the cost vs benefit of this optimization
+' because sometimes pixel blanking creates a lot of noise, which actually compresses poorly, while
+' other times it can provide massive gains.  To try and maximize our benefits from pixel blanking,
+' PD's animated GIF exporter will produce two copies of an exported frame: a non-pixel-blanked one,
+' and a maximally-pixel-blanked one.  This function will then loop through each scanline and pick
+' the one with minimal entropy (using a shorthand estimator by the PNG working group).  Only that
+' line gets copied into the destination DIB.  The result is generally a mixed-blanking frame that
+' compresses better than either of the source DIBs.
+Public Function MakeMinimalEntropyScanlines(ByRef srcData1() As Byte, ByRef srcData2() As Byte, ByVal dataWidth As Long, ByVal dataHeight As Long, ByRef dstData() As Byte) As Boolean
+
+    'Ensure the destination array exists and is the correct size
+    ReDim dstData(0 To dataWidth - 1, 0 To dataHeight - 1) As Byte
+    
+    'We now split into two possible sub-tests, which vary their behavior based on the size of the
+    ' incoming dataset(s).  (If the set is too small, DEFLATE is a poor predictor of entropy
+    ' because there's not enough data to build a meaningful compression table; in these instances,
+    ' we drop back to a simpler RLE scheme.)
+    If (dataWidth * dataHeight < 128) Then
+        MakeMinimalEntropyScanlines = MakeMinimalEntropy_Small(srcData1, srcData2, dataWidth, dataHeight, dstData)
+    Else
+        MakeMinimalEntropyScanlines = MakeMinimalEntropy_Big(srcData1, srcData2, dataWidth, dataHeight, dstData)
+    End If
+    
+End Function
+
+Private Function MakeMinimalEntropy_Small(ByRef srcData1() As Byte, ByRef srcData2() As Byte, ByVal dataWidth As Long, ByVal dataHeight As Long, ByRef dstData() As Byte) As Boolean
+
+    'For small data sets, we use a simple RLE-based entropy detector.  Whichever source dataset
+    ' currently maintains the longest run of identical bytes gets sent to the destination.
+    Dim ent1 As Long, ent2 As Long
+    ent1 = 0
+    ent2 = 0
+    
+    Dim cmpPrevious1 As Long, cmpPrevious2 As Long
+    Dim pX As Long, pY As Long
+    
+    'Iterate through the image, tracking consecutive matching pixels as we go
+    Dim x As Long, y As Long
+    For y = 0 To dataHeight - 1
+        
+        For x = 0 To dataWidth - 1
+            
+            'Determine a previous pixel value for both data sets, accounting for scanline wrapping
+            ' (compression generally treats the data as a 1D dataset)
+            If (x = 0) Then
+                If (y > 0) Then
+                    pX = dataWidth - 1
+                    pY = y - 1
+                Else
+                    pX = 0
+                    pY = 0
+                End If
+            Else
+                pX = x - 1
+                pY = y
+                
+            End If
+            
+            cmpPrevious1 = srcData1(pX, pY)
+            cmpPrevious2 = srcData2(pX, pY)
+            
+            'If this is *not* the first pixel, store a pixel from whichever data set
+            ' has the longest run of identical pixels.
+            If (x > 0) Or (y > 0) Then
+                If (srcData1(x, y) = cmpPrevious1) Then ent1 = ent1 + 1 Else ent1 = 0
+                If (srcData2(x, y) = cmpPrevious2) Then ent2 = ent2 + 1 Else ent2 = 0
+                
+                'Whichever pixel value is higher determines what we store for the *previous* pixel.
+                ' (If both are 0, it doesn't matter what gets stored; the previous pixel doesn't
+                ' match either of these ones, so there's no obvious winner.)
+                If (ent1 >= ent2) Then
+                    dstData(x, y) = srcData1(x, y)
+                    If (x = 1) And (y = 0) Then dstData(0, 0) = srcData1(0, 0)
+                Else
+                    dstData(x, y) = srcData2(x, y)
+                    If (x = 1) And (y = 0) Then dstData(0, 0) = srcData2(0, 0)
+                End If
+                
+            End If
+            
+        Next x
+        
+    Next y
+    
+    'Handle the final pixel manually
+    pX = dataWidth - 1
+    pY = dataHeight - 1
+    If (ent1 >= ent2) Then
+        dstData(pX, pY) = srcData1(pX, pY)
+    Else
+        dstData(pX, pY) = srcData2(pX, pY)
+    End If
+    
+    MakeMinimalEntropy_Small = True
+    
+End Function
+
+Private Function MakeMinimalEntropy_Big(ByRef srcData1() As Byte, ByRef srcData2() As Byte, ByVal dataWidth As Long, ByVal dataHeight As Long, ByRef dstData() As Byte) As Boolean
+    
+    'On larger data sets, an easy test for entropy is a compression engine (any works).
+    ' Just attempt to compress the source data streams and assume whichever compresses better
+    ' will produce a similar result in the destination stream.
+    Dim chunkSize As Long
+    chunkSize = dataWidth
+    
+    'Wrap 1D arrays around source and destination targets because it makes life much simpler
+    Dim totalSize As Long
+    totalSize = dataWidth * dataHeight
+    
+    Dim src1() As Byte, src2() As Byte, dst() As Byte
+    Dim srcSA1 As SafeArray1D, srcSA2 As SafeArray1D, dstSA As SafeArray1D
+    VBHacks.WrapArrayAroundPtr_Byte src1, srcSA1, VarPtr(srcData1(0, 0)), totalSize
+    VBHacks.WrapArrayAroundPtr_Byte src2, srcSA2, VarPtr(srcData2(0, 0)), totalSize
+    VBHacks.WrapArrayAroundPtr_Byte dst, dstSA, VarPtr(dstData(0, 0)), totalSize
+    
+    Dim curOffset As Long
+    curOffset = 0
+    
+    Dim tmpCompress() As Byte, tmpCompressSize As Long
+    tmpCompressSize = Compression.GetWorstCaseSize(chunkSize, cf_Lz4)
+    ReDim tmpCompress(0 To tmpCompressSize - 1) As Byte
+    
+    Dim size1 As Long, size2 As Long
+    
+    'To try and prevent overly-aggressive "flipping" between streams, we apply a slight penalty
+    ' to whichever stream was *not* chosen last.  This biases the encoder toward consistently
+    ' selecting the same stream (which likely provides better long-term compression benefits)
+    ' unless switching to a new stream shows a meaningful compression advantage.
+    '
+    'The current value of this constant was chosen by trial-and-error.  I am open to modifying
+    ' it further pending better data.  Because the modifier is multiplied directly by the
+    ' compressed size of the targeted stream, make sure it is > 1 or you'll bias it the
+    ' wrong way!
+    Const AVOIDANCE_PENALTY_PERCENT As Double = 1.025
+    Dim idLastChosenStream As Long
+    idLastChosenStream = 0
+    
+    'Iterate both source arrays and copy over the best-compressing chunks from either
+    Do While (curOffset < totalSize)
+        
+        If (curOffset + chunkSize) > totalSize Then chunkSize = totalSize - curOffset
+        
+        size1 = tmpCompressSize
+        size2 = tmpCompressSize
+        Compression.CompressPtrToPtr VarPtr(tmpCompress(0)), size1, VarPtr(src1(curOffset)), chunkSize, cf_Lz4, 1
+        Compression.CompressPtrToPtr VarPtr(tmpCompress(0)), size2, VarPtr(src2(curOffset)), chunkSize, cf_Lz4, 1
+        
+        'Apply a slight penalty to whichever stream was *not* used previously
+        If (idLastChosenStream = 1) Then size2 = Int(size2 * AVOIDANCE_PENALTY_PERCENT)
+        If (idLastChosenStream = 2) Then size1 = Int(size1 * AVOIDANCE_PENALTY_PERCENT)
+        
+        'Favor the first input on matches
+        If (size1 <= size2) Then
+            CopyMemoryStrict VarPtr(dst(curOffset)), VarPtr(src1(curOffset)), chunkSize
+            idLastChosenStream = 1
+        Else
+            CopyMemoryStrict VarPtr(dst(curOffset)), VarPtr(src2(curOffset)), chunkSize
+            idLastChosenStream = 2
+        End If
+        
+        If (chunkSize = dataWidth) Then curOffset = curOffset + chunkSize Else curOffset = totalSize
+        
+    Loop
+    
+    'Unwrap unsafe arrray wrappers
+    VBHacks.UnwrapArrayFromPtr_Byte src1
+    VBHacks.UnwrapArrayFromPtr_Byte src2
+    VBHacks.UnwrapArrayFromPtr_Byte dst
+    
+    MakeMinimalEntropy_Big = True
     
 End Function
 
