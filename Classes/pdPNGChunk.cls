@@ -845,8 +845,8 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     'Heuristics, per the spec, use a (greatly simplified) variance calculation that treats the
     ' difference between neighboring values as a signed value.  Because VB doesn't support signed
     ' byte types, calculate a quick lut to avoid branches on the inner loop.
-    Dim useHeuristics As Boolean, heurTable() As Long
-    ReDim heurTable(0 To 255) As Long
+    Dim useHeuristics As Boolean
+    Dim heurTable(0 To 255) As Long
     Dim i As Long
     For i = 0 To 255
         If (i < 128) Then
