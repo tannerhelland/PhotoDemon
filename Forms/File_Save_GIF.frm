@@ -258,7 +258,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
-    If (Not ImageFormats.IsFreeImageEnabled()) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    If (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Next, prepare various controls on the metadata panel
     mtdManager.SetParentImage m_SrcImage, PDIF_GIF

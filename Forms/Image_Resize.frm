@@ -141,7 +141,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Internal flag to use/not use GDI+ resize functions.  GDI+ is significantly faster than our internal PD resampler,
+'Internal flag to use/not use GDI+ resize functions.  GDI+ is significantly faster than our internal resampler,
 ' but its algorithms are nonstandard and have some weird quirks vs theoretically "correct" implementations
 ' (see https://photosauce.net/blog/post/image-scaling-with-gdi-part-4-examining-the-interpolationmode-values).
 ' My current feeling is that the performance vs quality trade-offs are worth it, and the GDI+ resamplers should
