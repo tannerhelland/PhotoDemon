@@ -1343,8 +1343,7 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
                 
                 'Next is the image bitstream!  Encoding happens elsewhere; we just pass the stream to them
                 ' and let them encode away.
-                ImageFormats_GIF_LZW.Encode cStream, VarPtr(m_allFrames(i).pixelData(0, 0)), m_allFrames(i).rectOfInterest.Width * m_allFrames(i).rectOfInterest.Height, lzwCodeSize + 1
-                'TODO
+                ImageFormats_GIF_LZW.CompressLZW cStream, VarPtr(m_allFrames(i).pixelData(0, 0)), m_allFrames(i).rectOfInterest.Width * m_allFrames(i).rectOfInterest.Height, lzwCodeSize + 1
                 
                 'All that's left for this frame is to explicitly terminate the black
                 cStream.WriteByte 0
