@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.818</langversion>
+<langversion>9.0.819</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1747,16 +1747,6 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 </phrase>
 
 <phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Bild wird finalisiert</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -1770,7 +1760,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Speichern kann nicht ohne FreeImage-Library abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1783,6 +1773,23 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Animations-Frame %1 von %2 wird optimiert</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Bild wird finalisiert</translation>
+</phrase>
+
+<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3973,16 +3980,11 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird optimiert</translation>
-</phrase>
-
-<phrase>
 <original>Analyzing animation frame %1 of %2</original>
 <translation>Animations-Frame %1 von %2 wird analysiert</translation>
 </phrase>
 
-<!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>%1 (Channel %2)</original>
@@ -13715,8 +13717,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5365 phrases. -->
+<!-- 2771 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

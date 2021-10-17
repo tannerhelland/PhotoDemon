@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.41</langversion>
+<langversion>1.0.42</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1748,16 +1748,6 @@ Görselde %2 eşşiz renk + opaklık değeri var (RGBA)</translation>
 </phrase>
 
 <phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>%2 animasyon karesinden %1. kaydediliyor</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Görsel tamamlanıyor</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -1772,7 +1762,7 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 <translation>FreeImage kütüphanesi olmadan kayıt tamamlanamaz.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1785,6 +1775,23 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>%2 animasyon karesinden %1. kaydediliyor</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Görsel tamamlanıyor</translation>
+</phrase>
+
+<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3944,16 +3951,11 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Analyzing animation frame %1 of %2</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>%1 (Channel %2)</original>
@@ -13663,8 +13665,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5365 phrases. -->
+<!-- 2771 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>

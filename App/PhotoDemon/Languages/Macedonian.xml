@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.362</langversion>
+<langversion>1.0.363</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1744,16 +1744,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -1767,7 +1757,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Зачувај не може да се заврши без FreeImage библиотека.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1780,6 +1770,23 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation></translation>
+</phrase>
+
+<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3966,16 +3973,11 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Analyzing animation frame %1 of %2</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>%1 (Channel %2)</original>
@@ -13709,8 +13711,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2770 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5365 phrases. -->
+<!-- 2771 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 11885 total words. -->
 
 </pdData>
