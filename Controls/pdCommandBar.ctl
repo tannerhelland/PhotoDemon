@@ -123,8 +123,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2021 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 26/August/20
-'Last update: parent windows can now manually opt out of automatic p/resets for specific controls
+'Last updated: 18/October/21
+'Last update: unify settings strategy with pdLastUsedSettings
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -1114,6 +1114,7 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
     If (LenB(srcPresetName) <> 0) Then m_Params.AddParam "fullPresetName", srcPresetName, True
     
     Dim controlName As String, controlType As String, controlValue As String
+    Dim controlIndex As Long
     
     'Next, we're going to iterate through each control on the form.  For each control, we're going to assemble two things:
     ' a name (basically, the control name plus its index, if any), and its value.  These are forwarded to the preset manager,
@@ -1123,7 +1124,7 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
         
         'Retrieve the control name and index, if any
         controlName = eControl.Name
-        If VBHacks.InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
+        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
         
         'Reset our control value checker
         controlValue = vbNullString
@@ -1133,13 +1134,17 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
         Select Case controlType
         
             'PD-specific sliders, checkboxes, option buttons, and text up/downs return a .Value property
-            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner"
+            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner", "pdTitle", "pdScrollBar", "pdButtonToolbox"
                 controlValue = Str$(eControl.Value)
             
-            'Button strips have a .ListIndex property
+            'List-type objects have a .ListIndex property
             Case "pdButtonStrip", "pdButtonStripVertical"
                 controlValue = Str$(eControl.ListIndex)
             
+            'Note that we don't store presets for the preset combo box itself!
+            Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str$(eControl.ListIndex)
+                
             'Various PD controls have their own custom "value"-type properties.
             Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                 controlValue = Str$(eControl.Color)
@@ -1152,29 +1157,19 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
                 
             Case "pdGradientSelector"
                 controlValue = eControl.Gradient
-            
-            'VB scroll bars return a standard .Value property
-            Case "HScrollBar", "VScrollBar"
-                controlValue = Str$(eControl.Value)
-            
-            'Listboxes and Combo Boxes return a .ListIndex property
-            Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
-            
-                'Note that we don't store presets for the preset combo box itself!
-                If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str$(eControl.ListIndex)
                 
             'Text boxes will store a copy of their current text
-            Case "TextBox", "pdTextBox"
+            Case "pdTextBox"
                 controlValue = eControl.Text
-                
-            'pdTitle stores an up/down state in its .Value property
-            Case "pdTitle"
-                controlValue = Str$(eControl.Value)
                 
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
                 controlValue = eControl.GetCurrentSettingsAsXML()
+                
+            'History managers also provide their own XML string
+            Case "pdHistory"
+                controlValue = eControl.GetHistoryAsString()
                 
             'Metadata management controls provide their own XML string
             Case "pdMetadataExport"
@@ -1183,10 +1178,6 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
             Case "pdColorDepth"
                 controlValue = eControl.GetAllSettings()
             
-            'History managers also provide their own XML string
-            Case "pdHistory"
-                controlValue = eControl.GetHistoryAsString()
-                
             Case "pdPaletteUI"
                 controlValue = eControl.SerializeToXML()
                 
@@ -1199,7 +1190,13 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
         If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
         
         'If the control value still has a non-zero length, add it now
-        If (LenB(controlValue) <> 0) Then m_Params.AddParam controlName, controlValue
+        If (LenB(controlValue) <> 0) Then
+            If (controlIndex >= 0) Then
+                m_Params.AddParam controlName & ":" & controlIndex, controlValue
+            Else
+                m_Params.AddParam controlName, controlValue
+            End If
+        End If
         
     'Continue with the next control on the parent dialog
     Next eControl

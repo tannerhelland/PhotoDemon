@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Auto-Save Form Settings custom class
 'Copyright 2013-2021 by Tanner Helland
 'Created: 14/September/13
-'Last updated: 26/June/14
-'Last update: add recent localization fixes from the command bar UC version of this code
+'Last updated: 18/October/21
+'Last update: unify settings strategy with pdLastUsedSettings
 '
 'This class is a spin-off of the (far more involved) command bar user control.  Its purpose is
 ' to assist with saving and loading the values of all controls on a given form.  When the parent
@@ -67,7 +67,10 @@ End Sub
 'The parent form must manually request the restoration of all previous values.  We do this to give the parent time
 ' to initialize things like drop-downs and other objects.
 Friend Function LoadAllControlValues(Optional ByVal customSettingsOnly As Boolean = False) As Boolean
-
+    
+    'Failsafe only
+    If (m_ParentForm Is Nothing) Then Exit Function
+    
     'In previous versions of this control, each instance used a unique presets file inside the /Data/Presets folder.
     ' This was problematic, because unique disk accesses for each main window panel adds up, slowing program launch time.
     
@@ -117,6 +120,9 @@ End Function
 ' do not support last-used settings, by design.)
 Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False)
     
+    'Failsafe only
+    If (m_ParentForm Is Nothing) Then Exit Sub
+    
     'If a dialog only wants us to store custom settings, skip the automatic control loop
     If (Not customSettingsOnly) Then
         
@@ -140,9 +146,12 @@ Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False
                     controlValue = Str$(eControl.Value)
                 
                 'List-type objects have an index
-                Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                Case "pdButtonStrip", "pdButtonStripVertical"
                     controlValue = Str$(eControl.ListIndex)
-                    
+                
+                Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                    controlValue = Str$(eControl.ListIndex)
+                
                 'Custom values, including those returned as strings
                 Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                     controlValue = Str$(eControl.Color)
@@ -164,6 +173,12 @@ Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False
                 
                 Case "pdHistory"
                     controlValue = eControl.GetHistoryAsString()
+                    
+                Case "pdMetadataExport"
+                    controlValue = eControl.GetMetadataSettings()
+                
+                Case "pdColorDepth"
+                    controlValue = eControl.GetAllSettings()
                     
                 Case "pdPaletteUI"
                     controlValue = eControl.SerializeToXML()
@@ -187,7 +202,7 @@ Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False
                 End If
                 
             End If
-            
+        
         Next eControl
         
     End If
