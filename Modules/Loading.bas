@@ -823,14 +823,22 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         
         Dim tmpFilename As String
         Do While srcList.PopString(tmpFilename)
-            If LoadFileAsNewImage(tmpFilename, , updateRecentFileList, True, False) Then
-                numSuccesses = numSuccesses + 1
-            Else
-                If (Len(tmpFilename) <> 0) Then
-                    numFailures = numFailures + 1
-                    brokenFiles = brokenFiles & Files.FileGetName(tmpFilename) & vbCrLf
+            
+            'The command-line may include other switches besides just filenames.  Ensure target file
+            ' exists before forwarding it to the loader.
+            If Files.FileExists(tmpFilename) Then
+                
+                If LoadFileAsNewImage(tmpFilename, , updateRecentFileList, True, False) Then
+                    numSuccesses = numSuccesses + 1
+                Else
+                    If (LenB(tmpFilename) <> 0) Then
+                        numFailures = numFailures + 1
+                        brokenFiles = brokenFiles & Files.FileGetName(tmpFilename) & vbCrLf
+                    End If
                 End If
+                
             End If
+            
         Loop
         
         'Make sure we loaded at least one image from the original list

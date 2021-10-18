@@ -3,8 +3,8 @@ Attribute VB_Name = "Autosaves"
 'Image Autosave Handler
 'Copyright 2014-2021 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 14/September/20
-'Last update: rely on new Mutex class for detecting parallel sessions and modifying behavior accordingly
+'Last updated: 18/October/21
+'Last update: use autosave engine to (silently) restore previous sessions after forced system reboot
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -134,7 +134,33 @@ Public Sub InitializeAutosave()
                 Dim userWantsAutosaves As VbMsgBoxResult
                 Dim listOfFilesToSave() As AutosaveXML
                 
-                userWantsAutosaves = DisplayAutosaveWarning(listOfFilesToSave)
+                'If this is an auto-recovery session after a forced system reboot, and the user allows
+                ' us to auto-recover their previous session, skip displaying any UI and just jump
+                ' right to restoration.
+                Dim cmdParams As pdStringStack, showUI As Boolean
+                showUI = True
+                
+                If OS.CommandW(cmdParams, True) Then
+                    
+                    Dim i As Long
+                    For i = 0 To cmdParams.GetNumOfStrings - 1
+                        If Strings.StringsEqual(cmdParams.GetString(i), "/system-reboot", True) Then
+                            showUI = False
+                            Exit For
+                        End If
+                    Next i
+                    
+                    'If the autosave data comes from a perfectly good session interrupted by a forced system reboot,
+                    ' restore all work silently.
+                    If (Not showUI) Then
+                        Dim tmpXMLCount As Long
+                        Autosaves.GetXMLAutosaveEntries listOfFilesToSave, tmpXMLCount
+                        userWantsAutosaves = vbYes
+                    End If
+                    
+                End If
+                
+                If showUI Then userWantsAutosaves = DisplayAutosaveWarning(listOfFilesToSave)
                 
                 'If the user wants to restore old Autosave data, do so now.
                 If (userWantsAutosaves = vbYes) Then
@@ -142,12 +168,12 @@ Public Sub InitializeAutosave()
                     'listOfFilesToSave contains the list of Autosave files the user wants restored.
                     ' Hand them off to the autosave handler, which will load and restore each file in turn.
                     Autosaves.LoadTheseAutosaveFiles listOfFilesToSave
-                    SyncInterfaceToCurrentImage
+                    Interface.SyncInterfaceToCurrentImage
                                 
                 Else
                     
-                    'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
-                    ' up in future AutoSave searches.
+                    'The user has no interest in recovering AutoSave data.  Purge all the entries we found,
+                    ' so they don't show up in future AutoSave checks.
                     Autosaves.PurgeOldAutosaveData
                 
                 End If

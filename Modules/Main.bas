@@ -288,6 +288,11 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
         PDDebug.LogAction "(Note: this PD instance is unique; no other instances discovered.)"
     End If
     
+    'While here, check another start-up related user perference.  Forced system reboots are
+    ' an ever-more-annoying issue on modern versions of Window.  PhotoDemon can automatically
+    ' recover sessions interrupted by reboots.
+    If UserPrefs.GetPref_Boolean("Loading", "RestoreAfterReboot", False) Then OS.SetRestartRestoreBehavior True
+    
     
     '*************************************************************************************************************************************
     ' Initialize the plugin manager and load any high-priority plugins (e.g. those required to start the program successfully)

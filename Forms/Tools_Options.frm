@@ -335,6 +335,28 @@ Begin VB.Form FormOptions
          FontSize        =   12
          ForeColor       =   5263440
       End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   22
+         Left            =   0
+         Top             =   5520
+         Width           =   8115
+         _ExtentX        =   14314
+         _ExtentY        =   503
+         Caption         =   "session restore"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdCheckBox chkSystemReboots 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   42
+         Top             =   5880
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "automatically restore sessions interrupted by system updates or reboots"
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6720
@@ -1168,6 +1190,10 @@ Private Sub cmdBarMini_OKClick()
     
     UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", chkLoadingOrientation.Value
     
+    'Restore after reboot behavior requires an immediate API to de/activate
+    UserPrefs.SetPref_Boolean "Loading", "RestoreAfterReboot", chkSystemReboots.Value
+    OS.SetRestartRestoreBehavior chkSystemReboots.Value
+    
     'Saving preferences
     SetProgBarVal 3
     
@@ -1388,6 +1414,7 @@ Private Sub LoadAllPreferences()
     chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
     chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
     chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
+    chkSystemReboots.Value = UserPrefs.GetPref_Boolean("Loading", "RestoreAfterReboot", False)
     
     'Saving preferences
     chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
@@ -1525,7 +1552,8 @@ Private Sub Form_Load()
     chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
     chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
     chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
-        
+    chkSystemReboots.AssignTooltip "If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session."
+    
     'Saving prefs
     chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
     

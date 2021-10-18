@@ -3,8 +3,8 @@ Attribute VB_Name = "OS"
 'OS-specific specific features
 'Copyright 2013-2021 by Tanner Helland
 'Created: 21/November/13
-'Last updated: 18/July/17
-'Last update: migrate various OS-specific bits to this module
+'Last updated: 18/October/21
+'Last update: new helper function for requesting app restart after forced system reboots
 '
 'Newer Windows versions expose some neat features (like progress bars overlaying the taskbar), and PhotoDemon
 ' tries to make use of them when relevant.  Similarly, some OS-level features are not easily mimicked from within VB
@@ -287,6 +287,7 @@ Private Declare Function LocalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As Long, ByVal bInheritHandle As Long, ByVal dwProcId As Long) As Long
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32FirstW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
 Private Declare Function ProcessNext Lib "kernel32" Alias "Process32NextW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
+Private Declare Function RegisterApplicationRestart Lib "kernel32" (ByVal pwzCommandline As Long, ByVal dwFlags As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 
@@ -908,6 +909,39 @@ Public Function RAM_SystemTotal() As String
     End If
     
 End Function
+
+'PhotoDemon can automatically recover sessions interrupted by forced system reboots.  This function
+' can be called to enable or disable this behavior (but note that there are some restrictions;
+' for example, the app must be running for ~60 seconds before it's eligible for recovery.  This is
+' an OS-level restriction.)  Note also that this is only available on Vista+, but PD actually limits
+' it to Win 7+ due to a lack of testing on Vista.
+Public Sub SetRestartRestoreBehavior(ByVal allowToRestore As Boolean)
+    
+    'Not available on XP.  Possibly available on Vista but I no longer maintain a Vista VM, so I'm
+    ' not enabling until someone can test for me.
+    If OS.IsWin7OrLater Then
+        
+        'Possible flags for this API; not all are used by PD
+        Const RESTART_NO_CRASH As Long = 1  'Do not restart the process if it terminates due to an unhandled exception.
+        Const RESTART_NO_HANG As Long = 2   'Do not restart the process if it terminates due to the application not responding.
+        'Const RESTART_NO_PATCH As Long = 4  'Do not restart the process if it terminates due to the installation of an update.
+        'Const RESTART_NO_REBOOT As Long = 8 'Do not restart the process if the computer is restarted as the result of an update.
+        Const RESTART_NONE As Long = &HF&   'All the above; used to disable restarts completely after previously requesting them
+        
+        'This function can also pass command-line parameters; we use an internal flag that bypasses
+        ' the AutoSave Recovery prompt.
+        Dim cmdParams As String
+        cmdParams = " /system-reboot"
+        
+        If allowToRestore Then
+            RegisterApplicationRestart StrPtr(cmdParams), RESTART_NO_CRASH Or RESTART_NO_HANG
+        Else
+            RegisterApplicationRestart ByVal 0&, RESTART_NONE
+        End If
+        
+    End If
+    
+End Sub
 
 'If desired, a custom state can be set for the taskbar.  (Normally this is handled by the SetTaskbarProgressValue function.)
 Public Function SetTaskbarProgressState(ByVal tbpFlags As PD_TaskBarProgress) As Long

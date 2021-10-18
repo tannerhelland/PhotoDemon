@@ -168,7 +168,7 @@ Public Sub ShowDialog()
     
     'Load command button images
     Dim buttonIconSize As Long
-    buttonIconSize = FixDPI(32)
+    buttonIconSize = Interface.FixDPI(32)
     cmdOK.AssignImage "generic_ok", , buttonIconSize, buttonIconSize
     cmdCancel.AssignImage "generic_cancel", , buttonIconSize, buttonIconSize
     
