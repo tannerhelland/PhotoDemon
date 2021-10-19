@@ -40,11 +40,20 @@ Friend Sub ResetEndSessionFlags()
 End Sub
 
 Friend Function WasEndSessionReceived(Optional ByVal useQueryEndSessionInstead As Boolean = True) As Boolean
-    If useQueryEndSessionInstead Then
-        WasEndSessionReceived = m_QueryEndSessionReceived
+    
+    'At present, WM_QUERY/ENDSESSION is tracked as part of automatic session restore after a forced
+    ' system reboot.  This feature is only available on Win 7+ (possibly Vista too, but I no longer
+    ' keep a Vista VM for testing).  On earlier OS versions, we return FALSE unilaterally.
+    If OS.IsWin7OrLater Then
+        If useQueryEndSessionInstead Then
+            WasEndSessionReceived = m_QueryEndSessionReceived
+        Else
+            WasEndSessionReceived = m_EndSessionReceived
+        End If
     Else
-        WasEndSessionReceived = m_EndSessionReceived
+        WasEndSessionReceived = False
     End If
+    
 End Function
 
 Private Sub Class_Initialize()

@@ -288,6 +288,7 @@ Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As 
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32FirstW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
 Private Declare Function ProcessNext Lib "kernel32" Alias "Process32NextW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
 Private Declare Function RegisterApplicationRestart Lib "kernel32" (ByVal pwzCommandline As Long, ByVal dwFlags As Long) As Long
+Private Declare Function UnregisterApplicationRestart Lib "kernel32" () As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 
@@ -936,7 +937,7 @@ Public Sub SetRestartRestoreBehavior(ByVal allowToRestore As Boolean)
         If allowToRestore Then
             RegisterApplicationRestart StrPtr(cmdParams), RESTART_NO_CRASH Or RESTART_NO_HANG
         Else
-            RegisterApplicationRestart ByVal 0&, RESTART_NONE
+            UnregisterApplicationRestart
         End If
         
     End If
