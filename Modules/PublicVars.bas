@@ -6,6 +6,9 @@ Attribute VB_Name = "Public_Variables"
 
 Option Explicit
 
+'Lightweight ThunderMain listener
+Public g_ThunderMain As pdThunderMain
+
 'Main resource handler
 Public g_Resources As pdResources
 

@@ -129,7 +129,9 @@ Public Sub InitializeAutosave()
             
             'See if there's any image autosave data worth recovering.
             If (Autosaves.SaveableImagesPresent > 0) Then
-            
+                
+                PDDebug.LogAction "Saveable images found.  Preparing to restore..."
+                
                 'Autosave data was found!  Present it to the user.
                 Dim userWantsAutosaves As VbMsgBoxResult
                 Dim listOfFilesToSave() As AutosaveXML
@@ -153,6 +155,7 @@ Public Sub InitializeAutosave()
                     'If the autosave data comes from a perfectly good session interrupted by a forced system reboot,
                     ' restore all work silently.
                     If (Not showUI) Then
+                        PDDebug.LogAction "System reboot terminated the previous session.  Restoring it now..."
                         Dim tmpXMLCount As Long
                         Autosaves.GetXMLAutosaveEntries listOfFilesToSave, tmpXMLCount
                         userWantsAutosaves = vbYes
@@ -182,7 +185,7 @@ Public Sub InitializeAutosave()
             'There's not any AutoSave data worth recovering.  This is okay, as it means the unsafe shutdown
             ' occurred without any images being loaded.  Do nothing.
             Else
-            
+                PDDebug.LogAction "No saveable images found.  Skipping session restoration."
             End If
         
         Else

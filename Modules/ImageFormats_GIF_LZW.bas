@@ -85,7 +85,7 @@ Private m_hashTable(0 To TABLE_SIZE - 1) As Long
 Private m_codeTable(0 To TABLE_SIZE - 1) As Long
 
 'A special "Clear code" is always defined as 2 ^ bits-per-pixel.  So for a 256-color image
-' (8-bpp), the clear code would be 257.  From the GIF spec:
+' (8-bpp), the clear code is exactly 256.  From the GIF spec:
 '
 ' "A special Clear code is defined which resets all compression/decompression parameters and
 ' tables to a start-up state... The Clear code can appear at any point in the image data stream

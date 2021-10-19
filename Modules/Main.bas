@@ -149,9 +149,12 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     ' With the debugger initialized, prep a few crucial variables
     '*************************************************************************************************************************************
     
-    'Most importantly, we need to create a default image array, as some initialization functions may attempt to access that array
+    'Most importantly, we need to create a default image array, as some initialization functions
+    ' may attempt to access it
     PDImages.ResetPDImageCollection
     
+    'Also prep a generic ThunderMain listener
+    Set g_ThunderMain = New pdThunderMain
     
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
@@ -708,6 +711,7 @@ Public Sub FinalShutdown()
     PDDebug.LogAction "FinalShutdown() reached."
     PDDebug.LogAction "Manually unloading all remaining public class instances..."
     
+    Set g_ThunderMain = Nothing
     Set g_RecentFiles = Nothing
     Set g_RecentMacros = Nothing
     Set g_Themer = Nothing
@@ -757,7 +761,7 @@ Public Sub FinalShutdown()
     
     'We have now terminated everything we can physically terminate.
     
-    'Suppress any crashes caused by VB herself (which may be possible due to a variety of issues outside our control),
+    'Suppress any crashes caused by VB herself (which can happen due to a variety of issues outside our control),
     ' then let the program go...
     SetErrorMode SEM_NOGPFAULTERRORBOX
     

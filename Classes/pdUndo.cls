@@ -1033,6 +1033,20 @@ Friend Sub ClearUndos()
     'If Undo data has already been cleared, exit
     If (m_UndoTotal = 0) Then Exit Sub
     
+    '99.9% of time we now want to wipe all Undos associated with this class.  There's a single
+    ' exception to this, however - if a system-initiated shutdown is occurring and the user wants
+    ' us to auto-restore this session after a reboot.  If that happens, we *must* preserve Undo data
+    ' since it's a key component of PD's Autosave system.
+    Dim suspendClearUndos As Boolean: suspendClearUndos = False
+    If g_ProgramShuttingDown Then
+        If (Not g_ThunderMain Is Nothing) Then suspendClearUndos = g_ThunderMain.WasEndSessionReceived(True)
+    End If
+    
+    If suspendClearUndos Then
+        PDDebug.LogAction "Suspending Undo clear due to session restoration setting"
+        Exit Sub
+    End If
+    
     'Destroy every potential Undo file
     Dim i As Long
     For i = 0 To m_UndoTotal
@@ -1422,6 +1436,6 @@ Private Sub Class_Terminate()
         m_ThumbnailFileHandle = 0
     End If
     
-    ClearUndos
+    Me.ClearUndos
     
 End Sub

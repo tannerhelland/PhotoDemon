@@ -2107,7 +2107,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Cancel = (Not CanvasManager.CloseAllImages())
     If Cancel Then
         g_ProgramShuttingDown = False
-        If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString
+        If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString  'Clear any shutdown-related messages
     End If
     
 End Sub
@@ -2274,10 +2274,20 @@ Private Sub Form_Unload(Cancel As Integer)
     PDDebug.LogAction "Writing session data to file..."
     UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
-    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
-    PDDebug.LogAction "Final step: writing out new autosave checksum..."
-    Autosaves.PurgeOldAutosaveData
-    Autosaves.NotifyCleanShutdown
+    'All core PD functions appear to have terminated correctly, so notify the Autosave handler
+    ' that this session was clean.  (One exception to this rule is if this is a system-initiated shutdown,
+    ' and the user has enabled auto-restart-after-reboot behavior.  We *must* maintain Autosave data
+    ' so that we can restore their session as-is.)
+    Dim allowAutosaveClean As Boolean: allowAutosaveClean = True
+    If (Not g_ThunderMain Is Nothing) Then allowAutosaveClean = Not g_ThunderMain.WasEndSessionReceived(True)
+    
+    If allowAutosaveClean Then
+        PDDebug.LogAction "Final step: writing out new autosave checksum..."
+        Autosaves.PurgeOldAutosaveData
+        Autosaves.NotifyCleanShutdown
+    Else
+        PDDebug.LogAction "Suspending autosave purge due to system reboot"
+    End If
     
     PDDebug.LogAction "Shutdown appears to be clean.  Turning final control over to pdMain.FinalShutdown()..."
     PDMain.FinalShutdown

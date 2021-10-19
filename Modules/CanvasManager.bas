@@ -3,9 +3,8 @@ Attribute VB_Name = "CanvasManager"
 'Image Canvas Handler (formerly Image Window Handler)
 'Copyright 2002-2021 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 11/December/18
-'Last update: migrate various PDImage-specific functions to the new PDImage-specific module,
-'             so that this module can focus on UI-related tasks only
+'Last updated: 18/October/21
+'Last update: rework image unload wrappers to support new "automatic session restore after reboot" preference
 '
 'This module contains functions relating to the creation, sizing, and maintenance of the windows ("canvases") associated
 ' with each image loaded by the user.  At present, PD uses only a single canvas, on the main form.  This could change
@@ -118,59 +117,106 @@ Public Function CloseAllImages() As Boolean
     'Note that we are attempting to close all images
     g_ClosingAllImages = True
     
+    'We now branch according to an interesting condition.  If the user initiated this shutdown,
+    ' we'll close normally - first by closing all images with saved changes, then by prompting
+    ' for any unsaved changes (and continuing/canceling accordingly).
+    '
+    '*But* if this shutdown request came from the system (e.g. from Windows rebooting due to a
+    ' system update or similar), then we need to check a user preference.  If the user allows us
+    ' to automatically pick up where we left off after a reboot, we don't need to prompt -
+    ' just shut down and rely on the AutoSave engine to restore everything for us.  But if that
+    ' option is disabled, we need to (attempt to) prevent shutdown by raising a modal dialog
+    ' for unsaved changes.
+    Dim useNormalShutdownBehavior As Boolean: useNormalShutdownBehavior = True
+    If (Not g_ThunderMain Is Nothing) Then
+        
+        If g_ThunderMain.WasEndSessionReceived(True) Then
+            
+            'This is a system-initiated shutdown.  Check the auto-start-after-reboot preference.
+            If UserPrefs.GetPref_Boolean("Loading", "RestoreAfterReboot", False) Then
+                
+                'Auto-start-after-reboot is enabled.  Skip shutdown dialogs and leave the
+                ' entire session as-is, so the AutoSave engine can flag it accordingly.
+                useNormalShutdownBehavior = False
+                
+            End If
+            
+        End If
+        
+    End If
+    
     Dim listOfOpenImages As pdStack
+    Dim i As Long, tmpImageID As Long
+    
     If PDImages.GetListOfActiveImageIDs(listOfOpenImages) Then
         
-        'We are now going to close images in a somewhat strange fashion (but one that improves performance).
-        
-        'First, figure out how many images need to be closed.  (We need this number so that we can display
-        ' progress reports to the user.)
-        Dim numImagesToClose As Long
-        numImagesToClose = listOfOpenImages.GetNumOfInts()
-        
-        Dim numImagesClosed As Long
-        numImagesClosed = 0
-        
-        'Next, unload all images *without* unsaved changes.  These images don't require shutdown prompts,
-        ' so we can unload them without consequence or user intervention.
-        Dim i As Long, tmpImageID As Long
-        For i = 0 To listOfOpenImages.GetNumOfInts - 1
-            tmpImageID = listOfOpenImages.GetInt(i)
-            If PDImages.GetImageByID(tmpImageID).GetSaveState(pdSE_AnySave) Then
+        If useNormalShutdownBehavior Then
+            
+            'We are now going to close images in a somewhat strange fashion (but one that improves performance).
+            
+            'First, figure out how many images need to be closed.  (We need this number so that we can display
+            ' progress reports to the user.)
+            Dim numImagesToClose As Long
+            numImagesToClose = listOfOpenImages.GetNumOfInts()
+            
+            Dim numImagesClosed As Long
+            numImagesClosed = 0
+            
+            'Next, unload all images *without* unsaved changes.  These images don't require shutdown prompts,
+            ' so we can unload them without consequence or user intervention.
+            For i = 0 To listOfOpenImages.GetNumOfInts - 1
+                tmpImageID = listOfOpenImages.GetInt(i)
+                If PDImages.GetImageByID(tmpImageID).GetSaveState(pdSE_AnySave) Then
+                    numImagesClosed = numImagesClosed + 1
+                    Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
+                    CanvasManager.FullPDImageUnload tmpImageID, False
+                End If
+            Next i
+            
+            'If the above step unloaded one or more images, we need to forcibly redraw the image tabstrip.
+            ' (If we don't, and the user cancels the "unsaved changes" dialog we are about to raise,
+            ' the tabpstrip will display an out-of-date list of open images.)
+            If (numImagesClosed > 0) Then Interface.RequestTabstripRedraw False
+            
+            'The only images still open (if any) are ones with unsaved changes.  Starting with the currently
+            ' active image, unload each remaining image in turn.
+            Do While (PDImages.GetNumOpenImages() > 0)
+                
                 numImagesClosed = numImagesClosed + 1
                 Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
-                CanvasManager.FullPDImageUnload tmpImageID, False
-            End If
-        Next i
+                
+                'Attempt to unload the currently active image.
+                ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
+                '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
+                CanvasManager.FullPDImageUnload PDImages.GetActiveImageID(), False
+                
+                'If the "unsaved changes" prompt canceled shut down for some reason, it will reset the
+                ' g_ClosingAllImages variable.  Read that variable and use it to determine whether we
+                ' are allowed to continue closing images.
+                If (Not g_ClosingAllImages) Then
+                    CloseAllImages = False
+                    Exit Function
+                End If
+                
+            Loop
+            
+        'Non-standard closing behavior.  Immediately clear every pdImage object.
+        Else
+            
+            PDDebug.LogAction "Session restart pending; dumping pdImage objects ASAP..."
+            
+            For i = 0 To listOfOpenImages.GetNumOfInts - 1
+                tmpImageID = listOfOpenImages.GetInt(i)
+                CanvasManager.UnloadPDImage tmpImageID, False
+            Next i
+            
+            CloseAllImages = True
+            
+        End If
         
-        'If the above step unloaded one or more images, we need to forcibly redraw the image tabstrip.
-        ' (If we don't, and the user cancels the "unsaved changes" dialog we are about to raise,
-        ' the tabpstrip will display an out-of-date list of open images.)
-        If (numImagesClosed > 0) Then Interface.RequestTabstripRedraw False
-        
-        'The only images still open (if any) are ones with unsaved changes.  Starting with the currently
-        ' active image, unload each remaining image in turn.
-        Do While (PDImages.GetNumOpenImages() > 0)
-            
-            numImagesClosed = numImagesClosed + 1
-            Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
-            
-            'Attempt to unload the currently active image.
-            ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
-            '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
-            CanvasManager.FullPDImageUnload PDImages.GetActiveImageID(), False
-            
-            'If the "unsaved changes" prompt canceled shut down for some reason, it will reset the
-            ' g_ClosingAllImages variable.  Read that variable and use it to determine whether we
-            ' are allowed to continue closing images.
-            If (Not g_ClosingAllImages) Then
-                CloseAllImages = False
-                Exit Function
-            End If
-            
-        Loop
-    
     'No open images
+    Else
+        CloseAllImages = True
     End If
     
 End Function
@@ -299,6 +345,9 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
                     g_ProgramShuttingDown = False
                     g_ClosingAllImages = False
                     g_DealWithAllUnsavedImages = False
+                    
+                    'As a failsafe, also reset flags for any system-originating shutdown messages
+                    If (Not g_ThunderMain Is Nothing) Then g_ThunderMain.ResetEndSessionFlags
                        
                 'Save all unsaved images
                 ElseIf (confirmReturn = vbYes) Then
