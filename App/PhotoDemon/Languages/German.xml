@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.819</langversion>
+<langversion>9.0.820</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12954,6 +12954,16 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
+<original>session restore</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when closing images, warn about unsaved changes</original>
 <translation>Beim Schließen von Bildern vor ungesicherten Änderungen warnen</translation>
 </phrase>
@@ -13293,6 +13303,11 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>Defaultmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
 </phrase>
@@ -13535,7 +13550,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 <translation>Dieser neue Ort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 187 phrases. 55 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13715,10 +13730,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5365 phrases. -->
-<!-- 2771 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 11885 total words. -->
+<!-- As of this build, PhotoDemon contains 5368 phrases. -->
+<!-- 2771 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 11911 total words. -->
 
 </pdData>
