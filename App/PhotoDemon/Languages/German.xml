@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.820</langversion>
+<langversion>9.0.937</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2627,7 +2627,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Bitte achten Sie darauf, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte achten Sie darauf, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, rebooten Sie Ihren PC und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -12955,12 +12955,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>session restore</original>
-<translation></translation>
+<translation>Session wiederherstellen</translation>
 </phrase>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation></translation>
+<translation>Durch System-Updates oder Reboots unterbrochene Sessions automatisch wiederherstellen</translation>
 </phrase>
 
 <phrase>
@@ -13304,7 +13304,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation></translation>
+<translation>Wenn Ihr PC rebootet, während PhotoDemon ausgeführt wird, kann PhotoDemon Ihre vorherige Session automatisch wiederherstellen.</translation>
 </phrase>
 
 <phrase>
@@ -13444,7 +13444,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>each session</original>
-<translation>Bei jeder Session</translation>
+<translation>Jede Session</translation>
 </phrase>
 
 <phrase>
