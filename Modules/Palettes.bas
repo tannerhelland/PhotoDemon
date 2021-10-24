@@ -120,6 +120,64 @@ Public Function GetDIBColorCount(ByRef srcDIB As pdDIB, Optional ByVal includeAl
     
 End Function
 
+'Return the number of unique colors in a DIB, *UP TO 256 RGBA QUADS*.  Once 257 unique quads are identified,
+' the function immediately aborts.  This function is designed primarily for image export to 8-bit formats,
+' so you can quickly determine if you need to manually palettize a given image or save it as-is.
+'
+'Note that - by design - this function includes alpha in its calculations (e.g. [0, 0, 0, 0] and [0, 0, 0, 255]
+' will be treated as *different* entities).  If you don't want this behavior, composite against a backcolor
+' prior to calling this function.
+Public Function GetDIBColorCount_FastAbort(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad) As Long
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    Dim r As Long, g As Long, b As Long, a As Long, numColors As Long
+    numColors = 0
+    
+    'A special color counting class is used to count unique RGB and RGBA values
+    Dim cTree As pdColorCount
+    Set cTree = New pdColorCount
+    cTree.SetAlphaTracking True
+    
+    'Iterate through all pixels, counting unique values as we go.
+    For y = initY To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step 4
+    
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
+        a = imageData(x + 3)
+        If cTree.AddColor(r, g, b, a) Then
+            numColors = numColors + 1
+            If (numColors > 256) Then
+                GetDIBColorCount_FastAbort = 257
+                GoTo ExitImmediately
+            End If
+        End If
+        
+    Next x
+    Next y
+    
+ExitImmediately:
+    
+    'Safely deallocate imageData(), then return the final color count
+    srcDIB.UnwrapArrayFromDIB imageData
+    GetDIBColorCount_FastAbort = cTree.GetUniqueRGBACount()
+    
+    'If the final color count is <= 256, the palette will most likely be used as-is.
+    ' Return it, so the caller can skip an additional palette generation call after this.
+    If (numColors <= 256) Then cTree.GetPalette dstPalette
+    
+End Function
+
 'Does an arbitrary parent palette contain all colors in an arbitrary child palette?  This is used when exporting
 ' animated GIF files, as a global palette that already contains all colors in a child palette can be used in place
 ' of a (redundant) local palette.

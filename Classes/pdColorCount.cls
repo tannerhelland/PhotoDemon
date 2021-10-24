@@ -89,7 +89,7 @@ Private m_Colors() As PD_ColorEntry
 Private m_NumOfRGBTriplets As Long, m_NumOfRGBAQuads As Long
 
 'Used for fast lookup indices
-Private m_PowersOfTwo() As Long, m_DivBy32() As Byte
+Private m_PowersOfTwo(0 To 31) As Long, m_DivBy32(0 To 255) As Byte
 
 'Used as a persistent temporary buffer when changing the lower bound of existing arrays, since VB
 ' doesn't allow this w/ ReDim Preserve.
@@ -502,14 +502,12 @@ Private Sub Class_Initialize()
     m_TrackRGBA = True
     
     'Prep some persistent luts
-    ReDim m_PowersOfTwo(0 To 31) As Long
     Dim i As Long
     For i = 0 To 30
         m_PowersOfTwo(i) = 2 ^ i
     Next i
     m_PowersOfTwo(31) = &H80000000
     
-    ReDim m_DivBy32(0 To 255) As Byte
     For i = 0 To 255
         m_DivBy32(i) = i \ 32
     Next i

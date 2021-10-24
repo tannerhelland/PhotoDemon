@@ -727,7 +727,7 @@ End Function
 Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShades As Long = 256, Optional ByVal ignoreMagicMagenta As Boolean = True) As Boolean
     
     'Make sure the DIB exists
-    If srcDIB Is Nothing Then Exit Function
+    If (srcDIB Is Nothing) Then Exit Function
     
     'Make sure the source DIB isn't empty
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then

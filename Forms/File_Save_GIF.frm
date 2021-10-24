@@ -184,8 +184,12 @@ Attribute VB_Exposed = False
 'GIF export dialog
 'Copyright 2012-2021 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 11/April/16
-'Last update: repurpose old color-depth dialog into a GIF-specific one
+'Last updated: 20/October/21
+'Last update: remove all FreeImage dependencies; everything here is 100% homebrew, baby!
+'
+'UI for GIF export settings.  Live previews are available for all relevant features.  Note that some
+' ancient GIF features (like interlacing) are deliberately hidden to prevent users from producing large,
+' slow GIFs for no good reason.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -194,16 +198,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
-' the dialog from the batch process dialog, as no image is associated with that preview.
+'This form should always be notified of the image being exported.  (One exception to this rule is
+' invoking the dialog from the batch process dialog, as no image is associated with that preview.
+' This case is automatically covered by this dialog.)
 Private m_SrcImage As pdImage
 
-'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
+'A composite of the current image, 32-bpp, fully composited.  This only needs to be regenerated
+' if the source image changes.
 Private m_CompositedImage As pdDIB
-
-'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
-' but note that it must be regenerated whenever the preview source is regenerated.
-Private m_FIHandle As Long
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -267,7 +269,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePanelVisibility
     UpdateAllVisibility
     UpdateTransparencyOptions
-    UpdatePreviewSource
     UpdatePreview
     
     'Apply translations and visual themes
@@ -281,7 +282,6 @@ End Sub
 
 Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
     UpdateTransparencyOptions
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -330,7 +330,6 @@ End Sub
 
 Private Sub btsColorModel_Click(ByVal buttonIndex As Long)
     UpdateAllVisibility
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -361,17 +360,14 @@ Private Sub UpdateColorCountVisibility(ByVal newValue As Boolean)
 End Sub
 
 Private Sub chkColorCount_Click()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
 Private Sub clsAlphaColor_ColorChanged()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
 Private Sub clsBackground_ColorChanged()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -407,7 +403,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 Private Function GetExportParamString() As String
@@ -443,8 +438,8 @@ Private Function GetExportParamString() As String
     
     cParams.AddParam "gif-alpha-mode", outputAlphaMode
     
-    'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.  There may be a better way to do this,
-    ' but I'm not currently aware of it!
+    'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.
+    ' There may be a better way to do this (Otsu's, but for alpha?), but I haven't investigated in detail.
     Dim outputAlphaCutoff As Long
     If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = PD_DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
     cParams.AddParam "gif-alpha-cutoff", outputAlphaCutoff
@@ -468,80 +463,38 @@ Private Sub pdFxPreview_ColorSelected()
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
-    UpdatePreviewSource
     UpdatePreview
-End Sub
-
-'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
-' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
-' changes (like quality, subsampling, etc).
-Private Sub UpdatePreviewSource()
-
-    If (Not m_CompositedImage Is Nothing) Then
-        
-        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
-        ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SafeArray2D
-        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
-        
-        'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
-        ' (Note that one way or another, we'll always be converting the image to an 8-bpp mode.)
-        Dim forceGrayscale As Boolean
-        forceGrayscale = (btsColorModel.ListIndex = 2)
-        
-        Dim paletteCount As Long
-        If (btsColorModel.ListIndex = 0) Then
-            paletteCount = 256
-        Else
-            If chkColorCount.Value And sldColorCount.IsValid Then paletteCount = sldColorCount.Value Else paletteCount = 256
-        End If
-        
-        Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
-        If btsAlpha.ListIndex = 0 Then
-            desiredAlphaMode = PDAS_BinaryAlpha       'Auto
-            desiredAlphaCutoff = PD_DEFAULT_ALPHA_CUTOFF
-        ElseIf btsAlpha.ListIndex = 1 Then
-            desiredAlphaMode = PDAS_NoAlpha           'None
-            desiredAlphaCutoff = 0
-        ElseIf btsAlpha.ListIndex = 2 Then
-            desiredAlphaMode = PDAS_BinaryAlpha       'By cut-off
-            If sldAlphaCutoff.IsValid Then desiredAlphaCutoff = sldAlphaCutoff.Value Else desiredAlphaCutoff = 96
-        Else
-            desiredAlphaMode = PDAS_NewAlphaFromColor 'By color
-            desiredAlphaCutoff = clsAlphaColor.Color
-        End If
-        
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, clsBackground.Color, forceGrayscale, paletteCount)
-        
-    End If
-    
 End Sub
 
 Private Sub UpdatePreview()
 
-    If (cmdBar.PreviewsAllowed And ImageFormats.IsFreeImageEnabled() And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
+    If (cmdBar.PreviewsAllowed And sldColorCount.IsValid And (Not m_CompositedImage Is Nothing)) Then
         
-        'Make sure the preview source is up-to-date
-        If (m_FIHandle = 0) Then UpdatePreviewSource
+        'Because the user can change the preview viewport, we can't guarantee that the preview region
+        ' hasn't changed since the last preview.  Prep a new preview now.
+        Dim tmpSafeArray As SafeArray2D
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview
         
-        'Retrieve a BMP-saved version of the current preview image
-        workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_GIF) Then
-            FinalizeNonstandardPreview pdFxPreview, True
-        End If
+        'This export dialog is a little weird because we need to preview a lot of possible settings,
+        ' but none of them require the GIF encoder.  Instead, they are just convenience options
+        ' for converting a 32-bpp image to an 8-bpp GIF with (or without) transparency.
+        '
+        'As such, we won't actually involve the GIF encoder at all here.  Just create a pdGIF class
+        ' and request the pre-processing step by itself.
+        Dim cGIF As pdGIF
+        Set cGIF = New pdGIF
+        cGIF.GetGifReadyImage workingDIB, GetExportParamString(), True
+        FinalizeNonstandardPreview pdFxPreview, False
         
     End If
     
 End Sub
 
 Private Sub sldAlphaCutoff_Change()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
 Private Sub sldColorCount_Change()
     If (Not chkColorCount.Value) Then chkColorCount.Value = True
-    UpdatePreviewSource
     UpdatePreview
 End Sub

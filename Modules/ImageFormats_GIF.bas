@@ -3,10 +3,8 @@ Attribute VB_Name = "ImageFormats_GIF"
 'Additional support functions for GIF support
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 16/October/21
-'Last update: overhaul GIF optimizations.  PhotoDemon can now produce smaller GIFs than pretty much any
-'             other general-purpose photo editor, and it can even beat dedicated optimizers like
-'             gifsicle on certain image types!
+'Last updated: 24/October/21
+'Last update: switch static GIF encoder to new homebrew GIF encoder; FreeImage is no longer used for any GIF features!
 '
 'Most image exporters exist in the ImageExporter module.  GIF is a weird exception because animated GIFs
 ' require a ton of preprocessing (to optimize animation frames), so I've moved them to their own home.
@@ -77,75 +75,66 @@ Private m_allFrames() As PD_GifFrame
 ' (Local palettes will automatically be generated too, as necessary.)
 Private m_globalPalette() As RGBQuad, m_numColorsInGP As Long, m_GlobalTrnsIndex As Long
 
-'Low-level GIF export interface
+'Low-level GIF export interface.  As of 2021, image pre-processing (including palettization) and GIf encoding
+' is all performed using homebrew code.
 Public Function ExportGIF_LL(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportGIFError
     
     ExportGIF_LL = False
     
-    'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.SetParamString formatParams
-    
-    'Only two parameters are mandatory; the others are used on an as-needed basis
-    Dim gifColorMode As String, gifAlphaMode As String
-    gifColorMode = cParams.GetString("gif-color-mode", "auto")
-    gifAlphaMode = cParams.GetString("gif-alpha-mode", "auto")
-    
-    Dim gifAlphaCutoff As Long, gifColorCount As Long, gifBackgroundColor As Long, gifAlphaColor As Long
-    gifAlphaCutoff = cParams.GetLong("gif-alpha-cutoff", 64)
-    gifColorCount = cParams.GetLong("gif-color-count", 256)
-    gifBackgroundColor = cParams.GetLong("gif-backcolor", vbWhite)
-    gifAlphaColor = cParams.GetLong("gif-alpha-color", RGB(255, 0, 255))
-    
-    'Some combinations of parameters invalidate other parameters.  Calculate any overrides now.
-    Dim gifForceGrayscale As Boolean
-    gifForceGrayscale = Strings.StringsEqual(gifColorMode, "gray", True)
-    If Strings.StringsEqual(gifColorMode, "auto", True) Then gifColorCount = 256
-    
-    Dim desiredAlphaStatus As PD_ALPHA_STATUS
-    desiredAlphaStatus = PDAS_BinaryAlpha
-    If Strings.StringsEqual(gifAlphaMode, "none", True) Then desiredAlphaStatus = PDAS_NoAlpha
-    If Strings.StringsEqual(gifAlphaMode, "by-color", True) Then
-        desiredAlphaStatus = PDAS_NewAlphaFromColor
-        gifAlphaCutoff = gifAlphaColor
-    End If
-    
-    'Generate a composited image copy, with alpha automatically un-premultiplied
-    Dim tmpImageCopy As pdDIB
-    Set tmpImageCopy = New pdDIB
-    srcPDImage.GetCompositedImage tmpImageCopy, False
-        
-    'FreeImage provides the most comprehensive GIF encoder, so we prefer it whenever possible
-    If ImageFormats.IsFreeImageEnabled Then
-            
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 8, desiredAlphaStatus, PDAS_ComplicatedAlpha, gifAlphaCutoff, gifBackgroundColor, gifForceGrayscale, gifColorCount)
-        
-        'Finally, prepare some GIF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
-        ' request RLE encoding from FreeImage.
-        Dim GIFflags As Long: GIFflags = GIF_DEFAULT
-        
-        'Use that handle to save the image to GIF format, with required color conversion based on the outgoing color depth
-        If (fi_DIB <> 0) Then
-            ExportGIF_LL = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_GIF, GIFflags, FICD_8BPP, , , , , True)
-            If ExportGIF_LL Then
-                ExportDebugMsg "Export to " & GIF_FILE_EXTENSION & " appears successful."
-            Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", GIF_FILE_EXTENSION
-            End If
-        Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", GIF_FILE_EXTENSION
-            ExportGIF_LL = False
-        End If
-    
-    'If FreeImage is unavailable, fall back to GDI+
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to
+    ' a new file, and if it's saved successfully, overwrite the original file - this way,
+    ' if an error occurs mid-save, the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
     Else
-        ExportGIF_LL = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_GIF, 8)
+        tmpFilename = dstFile
     End If
     
+    'As always, pdStream handles actual writing duties.  (Memory mapping is used for ideal performance.)
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, tmpFilename, optimizeAccess:=OptimizeSequentialAccess) Then
+        
+        'A pdGIF instance handles the actual encoding
+        Dim cGIF As pdGIF
+        Set cGIF = New pdGIF
+        If cGIF.SaveGIF_ToStream_Static(srcPDImage, cStream, formatParams, metadataParams) Then
+            
+            'Close the stream, then release the pdGIF instance
+            cStream.StopStream
+            Set cGIF = Nothing
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                
+                ExportGIF_LL = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportGIF_LL) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite GIF file; original file is likely open elsewhere."
+                End If
+            
+            'Encode is already done!
+            Else
+                ExportGIF_LL = True
+            End If
+            
+        Else
+            PDDebug.LogAction "WARNING! pdGIF failed to save GIF"
+        End If
+        
+        ProgressBars.SetProgBarVal 0
+        ProgressBars.ReleaseProgressBar
+        
+    Else
+        PDDebug.LogAction "WARNING!  Couldn't initialize stream against " & dstFile
+    End If
     
     Exit Function
     
@@ -155,9 +144,7 @@ ExportGIFError:
     
 End Function
 
-'Low-level animated GIF export.  Currently relies on FreeImage for export, but it's designed so that any
-' capable encoder can be easily dropped-in.  (Frame optimization happens locally, using PD data structures,
-' so the encoder doesn't need to support it at all.)
+'Low-level animated GIF export.  As of 2021, frame optimization and GIF encoding is all done with homebrew code.
 Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportGIFError

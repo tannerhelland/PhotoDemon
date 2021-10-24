@@ -17,12 +17,15 @@ Attribute VB_Name = "ImageFormats_GIF_LZW"
 '
 'https://github.com/Planet-Source-Code/carles-p-v-image-8-bpp-ditherer-native-gif-encoder__1-45899
 '
-'Carles's project is a modified version of a VB6 LZW implementation by Ron van Tilburg (whose
-' original project has I think been lost to time, alas).  Per the comments in Carles's code, Ron
-' translated his initial version from C sources derived from the original UNIX compress.c.  It was
-' a fun trip down memory lane to see some familiar PSC authors, but as always, there's a critical
-' problem with VB6 code from public archives like this - the likelihood of the code being buggy
-' and/or unreliable is extremely high.
+'Carles's project is a modified version of a VB6 LZW implementation originally by Ron van Tilburg:
+'
+'https://github.com/Planet-Source-Code/ron-van-tilburg-rvtvbimg__1-14210/blob/master/GIFSave.bas
+'
+'Per the comments in his code, Ron translated his initial version from C sources derived from the
+' original UNIX compress.c.  It was a fun trip down memory lane to see some familiar PSC authors,
+' but as always, there's a critical problem with VB6 code from public archives like this -
+' the likelihood of the code being exhaustively stress-tested (for performance, security,
+' reliability, etc) is... not so likely.
 '
 'Fortunately, the original C sources for compress.c are still available, as are translations into
 ' myriad other languages - for example, a few seconds on GitHub turned up these:
@@ -31,10 +34,10 @@ Attribute VB_Name = "ImageFormats_GIF_LZW"
 '
 'Armed with multiple references to compare and contrast, I set about mixing and matching the
 ' original C code with some ideas from Carles/Ron's VB6 versions to produce something appropriate
-' for PhotoDemon.  I think the final result is very good, with greatly improved performance over
-' previous VB6 translations.  Some edge-case bugs have been fixed, a lot of suboptimal-for-VB6
-' decisions have been reworked, and LZW encoding efficiency has been improved.  The final result
-' is a very compact LZW encoder with efficiency and performance on par with giflib.
+' for PhotoDemon.  I think the final result is very good, with meaningfully improved performance,
+' a number of fixed edge-case bugs, reworking of various suboptimal-for-VB6 designs, and improved
+' LZW encoding efficiency .  The final result is a very compact LZW encoder with efficiency and
+' performance on par with giflib, and pretty much on-par with the original compress.c version.
 '
 'Note that this module only handles the LZW encoding portion of GIF export.  All the actual file
 ' encoding (including headers, tables, etc) is 100% my own work and it remains in the
@@ -77,7 +80,7 @@ Private m_bitsPerCode As Long
 
 'Max code value, given m_bitsPerCode (works as an index into the m_Masks array)
 Private m_maxCode As Long
-Private m_masks(0 To 16) As Long    '2 ^ n-1, see InitMasks() function
+Private m_masks(0 To 16) As Long    '(2 ^ n) - 1, see InitMasks() function
 
 'Hash table stores indices into code table.  This is an implementation detail only;
 ' LZW can be implemented any number of other ways.
@@ -146,8 +149,8 @@ Private m_codeBucket As Long, m_codeBits As Long
 
 'GIF's LZW implementation requires you to flush collected codes out to file in 255-byte
 ' increments (max size; blocks can be smaller if you want).  The final LZW stream is thus
-' a list of 1-byte block size indicators, followed by [n] bytes of LZW-encoded data.
-Private m_curBlock(0 To 254) As Byte, m_blockSize As Long
+' a series of 1-byte block size indicators followed by [n] bytes of LZW-encoded data.
+Private m_curBlock(0 To 255) As Byte, m_blockSize As Long
 
 'PD-specific objects:
 
@@ -218,10 +221,6 @@ Private Sub CompressAndWriteBits()
     Dim idxTable As Long
     idxTable = 0
     
-    Dim lC       As Long
-    Dim lEnt     As Long
-    Dim lDisp    As Long
-    
     'Start with an empty bucket at bit-offset 0
     m_codeBucket = 0
     m_codeBits = 0
@@ -246,9 +245,10 @@ Private Sub CompressAndWriteBits()
         fCode = fCode * 2
     Loop
     
+    'Set hash code range bound
     hShift = m_masks(8 - hShift) + 1
     
-    'Initialize a default table
+    'Initialize a default hash table (initialized to "-1", because 0 is a valid indicator for "empty")
     ClearTable
     
     'From the GIF spec:
@@ -256,7 +256,10 @@ Private Sub CompressAndWriteBits()
     OutputCode LZW_CLEAR_CODE
     
     'Retrieve the first two pixels, then get the show underway!
+    Dim lEnt As Long
     lEnt = GetNextPixel()
+    
+    Dim lC As Long
     lC = GetNextPixel()
     
     Do While (lC <> EOF_CODE)
@@ -278,6 +281,7 @@ Private Sub CompressAndWriteBits()
         
         'The hash table hit an entry, but not one matching the current pattern.
         ' Hash it again and see what we find.
+        Dim lDisp As Long
         lDisp = TABLE_SIZE - idxTable
         If (idxTable = 0) Then lDisp = 1    'Failsafe to ensure we change position
 
@@ -307,7 +311,7 @@ NoMatch:
         ' *and* the hash table.
         If (m_freeEntry < MAX_CODE) Then
             m_codeTable(idxTable) = m_freeEntry
-            m_freeEntry = m_freeEntry + 1  ' Code -> Hash table
+            m_freeEntry = m_freeEntry + 1  'Code -> Hash table
             m_hashTable(idxTable) = fCode
         
         'If we don't have room, reset the table
@@ -329,7 +333,8 @@ NoMatch:
         'Work complete!  Grab the next pixel and carry on
 NextPixel:
         lC = GetNextPixel()
-        
+    
+    '/do while (lC <> EOF_CODE)
     Loop
 
     'Output the final code, then mark EOF and exit
@@ -426,9 +431,9 @@ End Sub
 
 'Add a char to the current packet and flush when max capacity is reached
 Private Sub AddCharToBlock(ByVal lChar As Long)
+    m_blockSize = m_blockSize + 1       'Start at position [1], leaving position [0] for block size indicator
     m_curBlock(m_blockSize) = lChar
-    m_blockSize = m_blockSize + 1
-    If (m_blockSize >= 255) Then FlushBlock
+    If (m_blockSize = 255) Then FlushBlock
 End Sub
 
 'Place the current packet (up to 255 entries) to the destination stream, and reset the
@@ -439,8 +444,8 @@ Private Sub FlushBlock()
     If (m_blockSize > 0) Then
         
         'Write block length (single byte, max 255) followed by block itself
-        m_dstStream.WriteByte m_blockSize
-        m_dstStream.WriteBytesFromPointer VarPtr(m_curBlock(0)), m_blockSize
+        m_curBlock(0) = m_blockSize
+        m_dstStream.WriteBytesFromPointer VarPtr(m_curBlock(0)), m_blockSize + 1
         
         'Reset the accumulator and note that we don't need to zero the table;
         ' it's automatically overwritten as necessary.
