@@ -1092,10 +1092,15 @@ LibAVIFDidntWork:
         
         'On modern Windows builds (8+) FreeImage is markedly slower than GDI+ at loading JPEG images,
         ' so let's also default to GDI+ for JPEGs.
-        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
+        If (Not tryGDIPlusFirst) Then
+            If OS.IsWin7OrLater() Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
+        End If
         
-        'Animated GIFs are also much faster via GDI+
-        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
+        'Animated GIFs are also much faster via GDI+, but the Windows XP GIF importer has serious bugs,
+        ' so only defer to GDI+ for GIFs if we're on Win 7+.
+        If (Not tryGDIPlusFirst) Then
+            If OS.IsWin7OrLater() Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
+        End If
         
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
