@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.69</langversion>
+<langversion>8.0.70</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -1789,7 +1789,7 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 <translation>Imagen final</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -13732,8 +13732,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5368 phrases. -->
-<!-- 2771 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5366 phrases. -->
+<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
 <!-- These 2597 phrases contain approximately 11911 total words. -->
 
 </pdData>

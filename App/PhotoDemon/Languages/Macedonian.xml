@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.364</langversion>
+<langversion>1.0.365</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1786,7 +1786,7 @@ To овозможи поддршка за овој формат на слика,
 <translation></translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -13726,8 +13726,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5368 phrases. -->
-<!-- 2771 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5366 phrases. -->
+<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
 <!-- These 2597 phrases contain approximately 11911 total words. -->
 
 </pdData>

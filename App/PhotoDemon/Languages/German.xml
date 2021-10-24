@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.937</langversion>
+<langversion>9.0.938</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1789,7 +1789,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Bild wird finalisiert</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -13732,8 +13732,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5368 phrases. -->
-<!-- 2771 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5366 phrases. -->
+<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
 <!-- These 2597 phrases contain approximately 11911 total words. -->
 
 </pdData>

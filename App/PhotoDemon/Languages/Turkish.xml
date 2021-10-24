@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.43</langversion>
+<langversion>1.0.44</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1791,7 +1791,7 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 <translation>Görsel tamamlanıyor</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -13680,8 +13680,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5368 phrases. -->
-<!-- 2771 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5366 phrases. -->
+<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
 <!-- These 2597 phrases contain approximately 11911 total words. -->
 
 </pdData>
