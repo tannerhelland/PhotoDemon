@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.70</langversion>
+<langversion>8.0.71</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -1737,13 +1737,8 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 </phrase>
 
 <phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 guardar fallado (FreeImage_SaveEx silenciosa falla). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 guardar fallado (FreeImage regresó mango blanco). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 guardar fallado. Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
 </phrase>
 
 <phrase>
@@ -1760,7 +1755,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1789,7 +1784,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Imagen final</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -10125,11 +10120,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Imprimir vista previa requiere el plugin FreeImage, que no pudo ser localizado en este equipo. Para activar la vista previa, por favor vaya a Editar -> Preferencias y seleccione "Buscar plugins faltantes en el arranque del programa." La próxima vez que cargue PhotoDemon, ofrecerá para descargar este plugin para usted.</translation>
-</phrase>
-
-<phrase>
 <original>draft</original>
 <translation>proyecto</translation>
 </phrase>
@@ -10144,7 +10134,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>paisaje</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -13724,10 +13714,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5366 phrases. -->
-<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 11911 total words. -->
+<!-- As of this build, PhotoDemon contains 5363 phrases. -->
+<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11847 total words. -->
 
 </pdData>

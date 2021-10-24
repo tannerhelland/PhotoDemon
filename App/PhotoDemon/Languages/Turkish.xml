@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.44</langversion>
+<langversion>1.0.45</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1738,13 +1738,8 @@ Görselde %2 eşşiz renk + opaklık değeri var (RGBA)</translation>
 </phrase>
 
 <phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 kaydı hatalı (FreeImage_SaveEx sessiz hata) Lütfen Yardım - > Hata Raporu Gönder seçeneğini kullanarak rapor edin.</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 kaydı hatalı (FreeImage returned blank handle) Lütfen Yardım - > Hata Raporu Gönder seçeneğini kullanarak rapor edin.</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 kaydı hatalı. Lütfen Yardım - > Hata Raporu Gönder seçeneğini kullanarak rapor edin.</translation>
 </phrase>
 
 <phrase>
@@ -1762,7 +1757,7 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 <translation>FreeImage kütüphanesi olmadan kayıt tamamlanamaz.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1791,7 +1786,7 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 <translation>Görsel tamamlanıyor</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -10093,11 +10088,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>draft</original>
 <translation></translation>
 </phrase>
@@ -10112,7 +10102,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -13678,10 +13668,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5366 phrases. -->
-<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 11911 total words. -->
+<!-- As of this build, PhotoDemon contains 5363 phrases. -->
+<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11847 total words. -->
 
 </pdData>

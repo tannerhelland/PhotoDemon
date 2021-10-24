@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.110</langversion>
+<langversion>8.2.111</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1735,13 +1735,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 保存失败（FreeImage_SaveEx 失败）。请报告此错误使用帮助->提交错误报告。</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 保存失败（FreeImage返回空白处理）。请报告此错误使用帮助->提交错误报告。</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 保存失败。请报告此错误使用帮助->提交错误报告。</translation>
 </phrase>
 
 <phrase>
@@ -1758,7 +1753,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>由于缺失 FreeImage 库，没有保存成功</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1787,7 +1782,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>正在完成图像</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -10121,11 +10116,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>打印预览需要FreeImage的插件，它无法找到这台计算机上。要启用预览，请去编辑 - “检查在程序启动缺少插件”>首选项，然后选择下一次当你加载PhotoDemon，它会提供下载这个插件为您服务。</translation>
-</phrase>
-
-<phrase>
 <original>draft</original>
 <translation>草稿</translation>
 </phrase>
@@ -10140,7 +10130,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>景观</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -13718,10 +13708,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5366 phrases. -->
-<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 11911 total words. -->
+<!-- As of this build, PhotoDemon contains 5363 phrases. -->
+<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11847 total words. -->
 
 </pdData>

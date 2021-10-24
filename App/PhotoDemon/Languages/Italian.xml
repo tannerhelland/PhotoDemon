@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.63</langversion>
+<langversion>8.0.64</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -1737,13 +1737,8 @@ Questa immagine contiene %2 valori unici di colore + opacità (RGBA).</translati
 </phrase>
 
 <phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 salvataggio fallito (FreeImage_SaveEx ha fallito silenziosamente). Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 salvataggio fallito (FreeImage ha restituito un handle vuoto). Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 salvataggio fallito. Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
 </phrase>
 
 <phrase>
@@ -1760,7 +1755,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1789,7 +1784,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Finalizzare l'immagine</translation>
 </phrase>
 
-<!-- ImageFormats_GIF.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -10133,11 +10128,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>L'anteprima di stampa richiede il plugin FreeImage, il quale non può essere localizzato in questo computer. Per attivare l'anteprima, per favore vai in Modifica -> Preferenze e seleziona "controlla i plugin mancanti all'avvio del programma".  La prossima volta che avvierai PhotoDemon, lui si offrirà di scaricare i plugin per te.</translation>
-</phrase>
-
-<phrase>
 <original>draft</original>
 <translation>bozza</translation>
 </phrase>
@@ -10152,7 +10142,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>paesaggio</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -13737,10 +13727,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5366 phrases. -->
-<!-- 2769 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 11911 total words. -->
+<!-- As of this build, PhotoDemon contains 5363 phrases. -->
+<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11847 total words. -->
 
 </pdData>
