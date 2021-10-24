@@ -459,7 +459,8 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     If activeImageChanging Then
         
         'Release some temporary resources on the old image, if we can
-        PDImages.GetActiveImage.DeactivateImage
+        PDImages.GetActiveImage.DeactivateImage True
+        UIImages.FreeSharedCompressBuffer
         
         'Update the current form variable
         PDImages.SetActiveImageID imageID

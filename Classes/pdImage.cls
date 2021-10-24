@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2021 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 11/January/21
-'Last update: harden against potential errors when rapidly creating/deleting layers on-the-fly
+'Last updated: 24/October/21
+'Last update: new Suspend option, for reducing memory usage when a pdImage isn't active
 '
 'The pdImage class is used to store information on each image loaded by the user.
 ' One instance of this class exists for each loaded image.
@@ -739,6 +739,22 @@ Friend Sub ReverseLayerOrder()
     
 End Sub
 
+'Non-destructively suspend as many image resources as we can to either disk or memory.
+Friend Sub SuspendImage()
+    
+    'Start by suspending all layers
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        If (Not imgLayers(i) Is Nothing) Then imgLayers(i).SuspendLayer True
+    Next i
+    
+    'Suspend any other internal DIBs
+    If (Not m_ImageThumbnail Is Nothing) Then m_ImageThumbnail.SuspendDIB cf_Lz4, False
+    If (Not CompositeBuffer Is Nothing) Then CompositeBuffer.SuspendDIB cf_Lz4, False
+    If (Not CanvasBuffer Is Nothing) Then CanvasBuffer.SuspendDIB cf_Lz4, False
+    
+End Sub
+
 'Used by various layer movement functions.  Given two layer indices, swap them.
 Friend Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 
@@ -1166,14 +1182,21 @@ End Function
 'When the attached image object is deactivated (e.g. the user leaves it loaded, but switches to a
 ' different image), you can call this function to free up some internal memory caches and other objects.
 ' This can free a non-trivial amount of resources when system memory is tight.
-Friend Sub DeactivateImage()
+'
+'For even more resource reduction, ask for a full layer suspension too - this will ask all child layers
+' to suspend their DIBs to compressed buffers.
+Friend Sub DeactivateImage(Optional ByVal suspendLayersToo As Boolean = True)
 
     'Scratch layers aren't needed unless the image is actively being edited
     Set ScratchLayer = Nothing
     
     'Some internal selection caches are free-able
     If (Not MainSelection Is Nothing) Then MainSelection.FreeNonEssentialResources
-
+    
+    'Layer suspension is the biggest gain, but it also has a perf penalty so the caller may
+    ' choose to avoid this.
+    If suspendLayersToo Then Me.SuspendImage
+    
 End Sub
 
 'When the attached image object is closed, we can deactivate a ton of items to save on resources.

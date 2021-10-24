@@ -2297,6 +2297,26 @@ Friend Sub ResetLayerParameters()
     
 End Sub
 
+'Non-destructively suspend as many layer resources as we can to either disk or memory.
+Friend Sub SuspendLayer(Optional ByVal suspendViewportToo As Boolean = False)
+    
+    'Layer DIB is the most obvious target for memory reduction
+    If (Not layerDIB Is Nothing) Then layerDIB.SuspendDIB cf_Lz4, False
+    
+    'Thumbnail is an easy target too (since it's small, suspending is roughly instantaneous)
+    If (Not m_LayerThumbnail Is Nothing) Then m_LayerThumbnail.SuspendDIB cf_Lz4, False
+    
+    'Finally, lodDIBs can be suspended too, but be careful with these because there are meaningful
+    ' perf implications for viewport rendering if these have to be swapped back in frequently.
+    If suspendViewportToo Then
+        Dim i As Long
+        For i = LBound(lodDIB) To UBound(lodDIB)
+            If (Not lodDIB(i) Is Nothing) Then lodDIB(i).SuspendDIB cf_Lz4, False
+        Next i
+    End If
+    
+End Sub
+
 'If something needs to access the layer DIB directly (like PD's central compositor), this function should first be called for
 ' any vector layers.  If the DIB is already synched, there is no penalty to calling this function, but if it is *not* synched,
 ' this will guarantee the DIB is ready for access.

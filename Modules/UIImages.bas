@@ -63,6 +63,14 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     
 End Function
 
+'Free the shared compression buffer for UI images.  This carries a ripple effect for PD's internal
+' suspend-to-memory operations, so do this only if the memory savings are large.
+Public Sub FreeSharedCompressBuffer()
+    PDDebug.LogAction "Freeing shared memory buffer (size " & Files.GetFormattedFileSize(m_CompressBufferSize) & ")"
+    Erase m_TempCompressBuffer
+    m_CompressBufferSize = 0
+End Sub
+
 'Return a standalone DIB of a given sprite.  Do *not* use this more than absolutely necessary,
 ' as it is expensive to initialize sprites (and it sort of defeats the purpose of using a
 ' sprite sheet in the first place!)
