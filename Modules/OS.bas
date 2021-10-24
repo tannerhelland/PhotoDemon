@@ -937,7 +937,6 @@ Public Sub SetRestartRestoreBehavior(ByVal allowToRestore As Boolean)
         Const RESTART_NO_HANG As Long = 2   'Do not restart the process if it terminates due to the application not responding.
         'Const RESTART_NO_PATCH As Long = 4  'Do not restart the process if it terminates due to the installation of an update.
         'Const RESTART_NO_REBOOT As Long = 8 'Do not restart the process if the computer is restarted as the result of an update.
-        Const RESTART_NONE As Long = &HF&   'All the above; used to disable restarts completely after previously requesting them
         
         'This function can also pass command-line parameters; we use an internal flag that bypasses
         ' the AutoSave Recovery prompt.

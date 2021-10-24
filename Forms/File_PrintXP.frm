@@ -159,16 +159,6 @@ Begin VB.Form FormPrint
       TabStop         =   0   'False
       Top             =   360
       Width           =   3300
-      Begin PhotoDemon.pdLabel lblWarning 
-         Height          =   3015
-         Left            =   120
-         Top             =   480
-         Visible         =   0   'False
-         Width           =   3015
-         _ExtentX        =   0
-         _ExtentY        =   0
-         ForeColor       =   12582912
-      End
    End
    Begin PhotoDemon.pdLabel lblPaperSize 
       Height          =   375
@@ -299,16 +289,7 @@ Private Sub Form_Load()
 
     On Error GoTo PrinterLoadError
     
-    'Though it's not really necessary, I'm only enabling print preview if FreeImage is Enabled (we use FreeImage to perform
-    ' fast, high-quality rotations of images).  I anticipate that pretty much no one will ever use this printing option, so
-    ' I don't mind ignoring a VB-only fallback for such a peripheral feature.
-    If ImageFormats.IsFreeImageEnabled() Then
-        RebuildPreview
-        lblWarning.Visible = False
-    Else
-        lblWarning.Caption = g_Language.TranslateMessage("Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select ""check for missing plugins on program start.""  The next time you load PhotoDemon, it will offer to download this plugin for you.")
-        lblWarning.Visible = True
-    End If
+    RebuildPreview
     
     Dim x As Long
     
@@ -426,8 +407,6 @@ Private Sub UpdatePrintPreview()
     
     On Error GoTo PrintPreviewError
     
-    If (Not ImageFormats.IsFreeImageEnabled()) Then Exit Sub
-    
     'If the fit-to-page option is selected (which it is by default) this routine is very simple:
     If (cbOrientation.ListIndex = 0) Then
         iSrc.Picture = picThumb.Picture
@@ -443,45 +422,40 @@ End Sub
 
 'This is called whenever the dimensions of the preview window change (for example, in response to a change in paper size)
 Private Sub RebuildPreview()
-    
-    'FreeImage is used to rotate the image; if it's not installed, previewing is automatically disabled
-    If ImageFormats.IsFreeImageEnabled() Then
-    
-        'We're now going to create two temporary buffers; one contains the image resized to fit the "sheet of paper" preview
-        ' on the left.  This is portrait mode.  The second buffer will contain the same thing, but rotated 90 degrees -
-        ' e.g. landscape mode.  If the user clicks between those options, we can simply copy the buffers to the foreground
-        ' picture box.
-        
-        'First is the easy one - Portrait Mode
-        picThumb.Picture = LoadPicture(vbNullString)
-        picThumb.Width = iSrc.Width
-        picThumb.Height = iSrc.Height
-        DrawPreviewImage picThumb, True
-        
-        'Now we need to get the source image at the size expected post-rotation
-        picThumb90.Picture = LoadPicture(vbNullString)
-        picThumbFinal.Picture = LoadPicture(vbNullString)
-        picThumb90.Width = iSrc.Height
-        picThumb90.Height = iSrc.Width
-        picThumbFinal.Width = iSrc.Width
-        picThumbFinal.Height = iSrc.Height
 
-        DrawPreviewImage picThumb90, True
-        
-        'Now comes the rotation itself.
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.CreateFromDC picThumb90.hDC, 0, 0, picThumb90.ScaleWidth, picThumb90.ScaleHeight, 32, True
-        
-        Dim dstDIB As pdDIB
-        Set dstDIB = New pdDIB
-        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, dstDIB, GP_RF_90FlipNone
-        dstDIB.RenderToPictureBox picThumbFinal, False, False, True
-        
-        'Initiate a redraw of the preview according to the print settings currently specified by the user
-        UpdatePrintPreview
-        
-    End If
+    'We're now going to create two temporary buffers; one contains the image resized to fit the "sheet of paper" preview
+    ' on the left.  This is portrait mode.  The second buffer will contain the same thing, but rotated 90 degrees -
+    ' e.g. landscape mode.  If the user clicks between those options, we can simply copy the buffers to the foreground
+    ' picture box.
+    
+    'First is the easy one - Portrait Mode
+    picThumb.Picture = LoadPicture(vbNullString)
+    picThumb.Width = iSrc.Width
+    picThumb.Height = iSrc.Height
+    DrawPreviewImage picThumb, True
+    
+    'Now we need to get the source image at the size expected post-rotation
+    picThumb90.Picture = LoadPicture(vbNullString)
+    picThumbFinal.Picture = LoadPicture(vbNullString)
+    picThumb90.Width = iSrc.Height
+    picThumb90.Height = iSrc.Width
+    picThumbFinal.Width = iSrc.Width
+    picThumbFinal.Height = iSrc.Height
+
+    DrawPreviewImage picThumb90, True
+    
+    'Now comes the rotation itself.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateFromDC picThumb90.hDC, 0, 0, picThumb90.ScaleWidth, picThumb90.ScaleHeight, 32, True
+    
+    Dim dstDIB As pdDIB
+    Set dstDIB = New pdDIB
+    GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, dstDIB, GP_RF_90FlipNone
+    dstDIB.RenderToPictureBox picThumbFinal, False, False, True
+    
+    'Initiate a redraw of the preview according to the print settings currently specified by the user
+    UpdatePrintPreview
         
 End Sub
 

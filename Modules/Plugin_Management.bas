@@ -698,9 +698,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_EZTwain
             initializationSuccessful = Plugin_EZTwain.InitializeEZTwain()
         
-        'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
+        'FreeImage is loaded on-demand.  This initial check only checks to see if the file exists;
+        ' once a FreeImage function is actually called, we'll load the full library.
         Case CCP_FreeImage
-            initializationSuccessful = Plugin_FreeImage.InitializeFreeImage()
+            initializationSuccessful = Plugin_FreeImage.InitializeFreeImage(False)
         
         'libdeflate maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_libdeflate, CCP_lz4, CCP_zstd
@@ -799,10 +800,6 @@ Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
         Case CCP_EZTwain
             FormMain.MnuFileImport(2).Enabled = pluginState
             FormMain.MnuFileImport(3).Enabled = pluginState
-            
-        'On successful initialization, PD supplies a callback to FreeImage for detailed error messages.
-        Case CCP_FreeImage
-            If pluginState Then Plugin_FreeImage.InitializeFICallback
             
         Case Else
         

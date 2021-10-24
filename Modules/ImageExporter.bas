@@ -690,14 +690,16 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If (fi_DIB <> 0) Then
-                ExportBMP = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_BMP, BMPflags, outputColorDepth, , , , , True)
+                ExportBMP = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_BMP, BMPflags, outputColorDepth, True)
                 If ExportBMP Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
-                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                    PDDebug.LogAction "WARNING: FreeImage_SaveEx silent fail"
+                    Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
                 End If
             Else
-                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
                 ExportBMP = False
             End If
             
@@ -778,11 +780,13 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             If ExportJP2 Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportJP2 = False
         End If
     Else
@@ -903,15 +907,17 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             FreeImage_SetResolutionX fi_DIB, srcPDImage.GetDPI
             FreeImage_SetResolutionY fi_DIB, srcPDImage.GetDPI
             
-            ExportJPEG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
+            ExportJPEG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_JPEG, jpegFlags, outputColorDepth, True)
             If ExportJPEG Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_SaveEx silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportJPEG = False
         End If
     
@@ -983,11 +989,13 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             If ExportJXR Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportJXR = False
         End If
     Else
@@ -1098,7 +1106,8 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 If ExportHDR Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
-                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                    PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                    Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
                 End If
                 
                 FreeImage_Unload fi_FloatDIB
@@ -1109,7 +1118,8 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
                 
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportHDR = False
         End If
         
@@ -1526,11 +1536,13 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
             If ExportPNM Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportPNM = False
         End If
         
@@ -1762,11 +1774,13 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             If ExportTGA Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportTGA = False
         End If
     Else
@@ -2025,7 +2039,8 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         If ExportTIFF Then
             ExportDebugMsg "Export to " & sFileType & " appears successful."
         Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage mystery fail"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
         End If
         
         'FreeImage unloads the multipage bitmap automatically when it is closed; this is different from single-page bitmaps,
@@ -2134,10 +2149,12 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 If ExportTIFF Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
-                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                    PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                    Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
                 End If
             Else
-                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
                 ExportTIFF = False
             End If
             
@@ -2272,11 +2289,13 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             If ExportWebP Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
+                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
             
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
+            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             ExportWebP = False
         End If
     Else

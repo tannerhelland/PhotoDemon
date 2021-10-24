@@ -149,15 +149,6 @@ Option Explicit
 ' is enabled).  Thus I prefer this constant set to TRUE in production code.
 Private Const ALLOW_GDIPLUS_RESIZE As Boolean = True
 
-'Internal flag to use/not use the 3rd-party FreeImage library's resize functions (if available).
-' FreeImage's functions are marginally faster than our internal PD resampler (and I mean *barely* marginal,
-' especially when comparing against PD's integer-based engine) but the biggest disadvantage is that they
-' require extra memory due to FreeImage needing its own container for pixel data (e.g. we can't just wrap
-' FreeImage around our own containers - FreeImage needs to make a local duplicate, which we then copy).
-' Because of these limitations, my personal preference is that FreeImage's resize engine should be ignored
-' in production code - so for now, set this to FALSE.
-Private Const ALLOW_FREEIMAGE_RESIZE As Boolean = False
-
 'Internal flag to report performance.  Very helpful while debugging; not helpful in production.
 Private Const REPORT_PREVIEW_PERF As Boolean = False
 
@@ -389,56 +380,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Resize an image using the FreeImage library.  Very fast.
-Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal iHeight As Long, ByVal interpolationMethod As FREE_IMAGE_FILTER)
-    
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    
-    'Double-check that FreeImage exists
-    If ImageFormats.IsFreeImageEnabled() Then
-        
-        'If srcDIB.GetAlphaPremultiplication Then srcDIB.SetAlphaPremultiplication False
-        
-        'Convert the current image to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, False)
-        
-        'Use that handle to request an image resize
-        If (fi_DIB <> 0) Then
-            
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
-            
-            'Resize the destination DIB in preparation for the transfer
-            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-            If (dstDIB.GetDIBWidth <> iWidth) Or (dstDIB.GetDIBHeight <> iHeight) Then
-                dstDIB.CreateBlank iWidth, iHeight, srcDIB.GetDIBColorDepth
-            Else
-                dstDIB.ResetDIB 0
-            End If
-            
-            'Copy the bits from the FreeImage DIB to our DIB
-            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, iWidth, iHeight
-            
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
-            
-        End If
-        
-        'If the original image is 32bpp, mark correct premultiplication state now
-        'If (srcDIB.GetDIBColorDepth = 32) Then dstDIB.SetInitialAlphaPremultiplicationState True
-        
-        'We now need to do something weird - because certain interpolation methods can cause
-        ' "ringing" artifacts that don't obey alpha premultiplication rules (e.g. the alpha data
-        ' is no longer guaranteed to be in sync with RGB values), we need to un-premultiply the
-        ' current results, then re-premultiply them again.
-        dstDIB.SetAlphaPremultiplication False, True
-        dstDIB.SetAlphaPremultiplication True, True
-        
-    End If
-    
-End Sub
-
 'Resize an image using our own internal algorithms.  Slower, but better quality.
 Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter, ByVal allowApproximation As Boolean, ByVal displayProgress As Boolean) As Boolean
     
@@ -631,31 +572,16 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
-            'Some sampling methods can use our internal methods *or* FreeImage's equivalents (with minor differences)
-            Case rf_Mitchell
-                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
-                Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
-                End If
-            
-            Case rf_CatmullRom
-                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
-                Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
-                End If
-            
-            'Lanczos is a weird outlier because at r=3 we can use FreeImage, but for other radii we must
-            ' implement it ourselves.
-            Case rf_Lanczos
-                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation And (Resampling.GetLanczosRadius() = 3)) Then
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
-                Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
-                End If
-                
             'All remaining methods rely on our own internal resampling engine
+            Case rf_Mitchell
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                
+            Case rf_CatmullRom
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                
+            Case rf_Lanczos
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                
             Case rf_Cosine
                 InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 

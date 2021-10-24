@@ -205,11 +205,6 @@ Private Const DIB_RGB_COLORS As Long = 0
 
 'FREEIMAGE
 
-' Version information
-'Private Const FREEIMAGE_MAJOR_VERSION As Long = 3
-'Private Const FREEIMAGE_MINOR_VERSION As Long = 18
-'Private Const FREEIMAGE_RELEASE_SERIAL As Long = 0
-
 ' Load / Save flag constants
 Public Const FIF_LOAD_NOPIXELS = &H8000              ' load the image header only (not supported by all plugins)
 
@@ -224,7 +219,6 @@ Public Const EXR_PXR24 As Long = &H10                ' save with lossy 24-bit fl
 Public Const EXR_B44 As Long = &H20                  ' save with lossy 44% float compression - goes to 22% when combined with EXR_LC
 Public Const EXR_LC As Long = &H40                   ' save images with one luminance and two chroma channels, rather than as RGB (lossy compression)
 Public Const GIF_DEFAULT As Long = 0
-Public Const GIF_LOAD256 As Long = 1                 ' Load the image as a 256 color image with ununsed palette entries, if it's 16 or 2 color
 Public Const GIF_PLAYBACK As Long = 2                ''Play' the GIF to generate each frame (as 32bpp) instead of returning raw frame data when loading
 Public Const JPEG_DEFAULT As Long = 0                ' loading (see JPEG_FAST); saving (see JPEG_QUALITYGOOD|JPEG_SUBSAMPLING_420)
 Public Const JPEG_FAST As Long = &H1                 ' load the file as fast as possible, sacrificing some quality
@@ -270,7 +264,6 @@ Public Const TIFF_CCITTFAX4 As Long = &H2000         ' save using CCITT Group 4 
 Public Const TIFF_LZW As Long = &H4000               ' save using LZW compression
 Public Const TIFF_JPEG As Long = &H8000              ' save using JPEG compression
 Public Const TIFF_LOGLUV As Long = &H10000           ' save using LogLuv compression
-Public Const WEBP_LOSSLESS As Long = &H100           ' save in lossless mode
 
 Public Enum FREE_IMAGE_FORMAT
    FIF_UNKNOWN = -1
@@ -324,7 +317,6 @@ Public Enum FREE_IMAGE_LOAD_OPTIONS
    FILO_LOAD_NOPIXELS = FIF_LOAD_NOPIXELS         ' load the image header only (not supported by all plugins)
    FILO_LOAD_DEFAULT = 0
    FILO_GIF_DEFAULT = GIF_DEFAULT
-   FILO_GIF_LOAD256 = GIF_LOAD256                 ' load the image as a 256 color image with ununsed palette entries, if it's 16 or 2 color
    FILO_GIF_PLAYBACK = GIF_PLAYBACK               ' 'play' the GIF to generate each frame (as 32bpp) instead of returning raw frame data when loading
    FILO_JPEG_DEFAULT = JPEG_DEFAULT               ' for loading this is a synonym for FILO_JPEG_FAST
    FILO_JPEG_FAST = JPEG_FAST                     ' load the file as fast as possible, sacrificing some quality
@@ -347,7 +339,6 @@ End Enum
    Const FILO_LOAD_NOPIXELS = &H8000
    Const FILO_LOAD_DEFAULT = 0
    Const FILO_GIF_DEFAULT = GIF_DEFAULT
-   Const FILO_GIF_LOAD256 = GIF_LOAD256
    Const FILO_GIF_PLAYBACK = GIF_PLAYBACK
    Const FILO_JPEG_DEFAULT = JPEG_DEFAULT
    Const FILO_JPEG_FAST = JPEG_FAST
@@ -402,7 +393,6 @@ Public Enum FREE_IMAGE_SAVE_OPTIONS
    FISO_TIFF_LZW = TIFF_LZW                       ' save using LZW compression
    FISO_TIFF_JPEG = TIFF_JPEG                     ' save using JPEG compression
    FISO_TIFF_LOGLUV = TIFF_LOGLUV                 ' save using LogLuv compression
-   FISO_WEBP_LOSSLESS = WEBP_LOSSLESS             ' save in lossless mode
    FISO_JXR_LOSSLESS = JXR_LOSSLESS               ' save lossless
    FISP_JXR_PROGRESSIVE = JXR_PROGRESSIVE         ' save as a progressive-JXR (use | to combine with other save flags)
 End Enum
@@ -435,7 +425,6 @@ End Enum
    Const FISO_TIFF_CCITTFAX4 = TIFF_CCITTFAX4
    Const FISO_TIFF_LZW = TIFF_LZW
    Const FISO_TIFF_JPEG = TIFF_JPEG
-   Const FISO_WEBP_LOSSLESS = WEBP_LOSSLESS
    Const FISO_JXR_LOSSLESS = JXR_LOSSLESS
    Const FISP_JXR_PROGRESSIVE = JXR_PROGRESSIVE
 #End If
@@ -533,61 +522,6 @@ End Enum
    Const FILTER_LANCZOS3 = 5
 #End If
 
-Public Enum FREE_IMAGE_MDTYPE
-   FIDT_NOTYPE = 0           ' placeholder
-   FIDT_BYTE = 1             ' 8-bit unsigned integer
-   FIDT_ASCII = 2            ' 8-bit bytes w/ last byte null
-   FIDT_SHORT = 3            ' 16-bit unsigned integer
-   FIDT_LONG = 4             ' 32-bit unsigned integer
-   FIDT_RATIONAL = 5         ' 64-bit unsigned fraction
-   FIDT_SBYTE = 6            ' 8-bit signed integer
-   FIDT_UNDEFINED = 7        ' 8-bit untyped data
-   FIDT_SSHORT = 8           ' 16-bit signed integer
-   FIDT_SLONG = 9            ' 32-bit signed integer
-   FIDT_SRATIONAL = 10       ' 64-bit signed fraction
-   FIDT_FLOAT = 11           ' 32-bit IEEE floating point
-   FIDT_DOUBLE = 12          ' 64-bit IEEE floating point
-   FIDT_IFD = 13             ' 32-bit unsigned integer (offset)
-   FIDT_PALETTE = 14         ' 32-bit RGBQUAD
-End Enum
-#If False Then
-   Const FIDT_NOTYPE = 0
-   Const FIDT_BYTE = 1
-   Const FIDT_ASCII = 2
-   Const FIDT_SHORT = 3
-   Const FIDT_LONG = 4
-   Const FIDT_RATIONAL = 5
-   Const FIDT_SBYTE = 6
-   Const FIDT_UNDEFINED = 7
-   Const FIDT_SSHORT = 8
-   Const FIDT_SLONG = 9
-   Const FIDT_SRATIONAL = 10
-   Const FIDT_FLOAT = 11
-   Const FIDT_DOUBLE = 12
-   Const FIDT_IFD = 13
-   Const FIDT_PALETTE = 14
-#End If
-
-Public Enum FREE_IMAGE_MDMODEL
-   FIMD_NODATA = -1          '
-   FIMD_COMMENTS = 0         ' single comment or keywords
-   FIMD_EXIF_MAIN = 1        ' Exif-TIFF metadata
-   FIMD_EXIF_EXIF = 2        ' Exif-specific metadata
-   FIMD_EXIF_GPS = 3         ' Exif GPS metadata
-   FIMD_EXIF_MAKERNOTE = 4   ' Exif maker note metadata
-   FIMD_EXIF_INTEROP = 5     ' Exif interoperability metadata
-   FIMD_IPTC = 6             ' IPTC/NAA metadata
-   FIMD_XMP = 7              ' Abobe XMP metadata
-   FIMD_GEOTIFF = 8          ' GeoTIFF metadata
-   FIMD_ANIMATION = 9        ' Animation metadata
-   FIMD_CUSTOM = 10          ' Used to attach other metadata types to a dib
-   FIMD_EXIF_RAW = 11        ' Exif metadata as a raw buffer
-End Enum
-#If False Then
-   Private Const FIMD_NODATA = -1, FIMD_COMMENTS = 0, FIMD_EXIF_MAIN = 1, FIMD_EXIF_EXIF = 2, FIMD_EXIF_GPS = 3, FIMD_EXIF_MAKERNOTE = 4, FIMD_EXIF_INTEROP = 5, FIMD_IPTC = 6, FIMD_XMP = 7, FIMD_GEOTIFF = 8, FIMD_ANIMATION = 9
-   Private Const FIMD_CUSTOM = 10, FIMD_EXIF_RAW = 11
-#End If
-
 ' the next enums are only used by derived functions of the
 ' FreeImage 3 VB wrapper
 Public Enum FREE_IMAGE_CONVERSION_FLAGS
@@ -656,36 +590,6 @@ Public Type FIICCPROFILE
    Data As Long
 End Type
 
-Public Type FITAG
-   Key As Long
-   Description As Long
-   Id As Integer
-   Type As Integer
-   Count As Long
-   Length As Long
-   Value As Long
-End Type
-
-Public Type FIRATIONAL
-   numerator As Variant
-   denominator As Variant
-End Type
-
-Public Type FREE_IMAGE_TAG
-   Model As FREE_IMAGE_MDMODEL
-   tagPtr As Long
-   Key As String
-   Description As String
-   Id As Long
-   Type As FREE_IMAGE_MDTYPE
-   Count As Long
-   Length As Long
-   StringValue As String
-   Palette() As RGBQuad
-   RationalValue() As FIRATIONAL
-   Value As Variant
-End Type
-
 '--------------------------------------------------------------------------------
 ' FreeImage 3 function declarations
 '--------------------------------------------------------------------------------
@@ -697,9 +601,6 @@ End Type
 '--------------------------------------------------------------------------------
 ' Bitmap functions
 '--------------------------------------------------------------------------------
-
-' General functions
-Private Declare Function FreeImage_GetVersionInt Lib "FreeImage.dll" Alias "_FreeImage_GetVersion@0" () As Long
 
 ' Bitmap management functions
 Public Declare Function FreeImage_Allocate Lib "FreeImage.dll" Alias "_FreeImage_Allocate@24" ( _
@@ -1006,86 +907,12 @@ Public Declare Function FreeImage_ZLibUncompress Lib "FreeImage.dll" Alias "_Fre
            ByVal TargetSize As Long, _
            ByVal SourcePtr As Long, _
            ByVal SourceSize As Long) As Long
-           
-'--------------------------------------------------------------------------------
-' Metadata functions
-'--------------------------------------------------------------------------------
-
-' tag creation / destruction
-Private Declare Function FreeImage_CreateTag Lib "FreeImage.dll" Alias "_FreeImage_CreateTag@0" () As Long
-
-Private Declare Sub FreeImage_DeleteTag Lib "FreeImage.dll" Alias "_FreeImage_DeleteTag@4" ( _
-           ByVal Tag As Long)
-
-' tag getters and setters (only those actually needed by wrapper functions)
-Private Declare Function FreeImage_SetTagKey Lib "FreeImage.dll" Alias "_FreeImage_SetTagKey@8" ( _
-           ByVal Tag As Long, _
-           ByVal Key As String) As Long
-
-Private Declare Function FreeImage_SetTagValue Lib "FreeImage.dll" Alias "_FreeImage_SetTagValue@8" ( _
-           ByVal Tag As Long, _
-           ByVal ValuePtr As Long) As Long
-
-'Added by Tanner
-Private Declare Function FreeImage_SetTagID Lib "FreeImage.dll" Alias "_FreeImage_SetTagID@8" ( _
-           ByVal Tag As Long, _
-           ByVal newValue As Integer) As Long
-           
-Private Declare Function FreeImage_SetTagType Lib "FreeImage.dll" Alias "_FreeImage_SetTagType@8" ( _
-           ByVal Tag As Long, _
-           ByVal newValue As Integer) As Long
-
-Private Declare Function FreeImage_SetTagCount Lib "FreeImage.dll" Alias "_FreeImage_SetTagCount@8" ( _
-           ByVal Tag As Long, _
-           ByVal newValue As Long) As Long
-           
-Private Declare Function FreeImage_SetTagLength Lib "FreeImage.dll" Alias "_FreeImage_SetTagLength@8" ( _
-           ByVal Tag As Long, _
-           ByVal newValue As Long) As Long
-
-' metadata setters and getters
-Public Declare Function FreeImage_SetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_SetMetadata@16" ( _
-           ByVal Model As Long, _
-           ByVal Bitmap As Long, _
-           ByVal Key As String, _
-           ByVal Tag As Long) As Long
-
-Private Declare Function FreeImage_GetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_GetMetadata@16" ( _
-           ByVal Model As Long, _
-           ByVal Bitmap As Long, _
-           ByVal Key As String, _
-           ByRef Tag As Long) As Long
-
-' tag to string conversion functions
-Private Declare Function FreeImage_TagToStringInt Lib "FreeImage.dll" Alias "_FreeImage_TagToString@12" ( _
-           ByVal Model As Long, _
-           ByVal Tag As Long, _
-  Optional ByVal Make As String = vbNullString) As Long
-
 
 '--------------------------------------------------------------------------------
 ' Toolkit functions
 '--------------------------------------------------------------------------------
 
 ' Rotating and flipping
-' EDIT BY TANNER: this function was deprecated in the 3.18 release
-'Public Declare Function FreeImage_RotateClassic Lib "FreeImage.dll" Alias "_FreeImage_RotateClassic@12" ( _
-           ByVal Bitmap As Long, _
-           ByVal Angle As Double) As Long
-
-Public Declare Function FreeImage_Rotate Lib "FreeImage.dll" Alias "_FreeImage_Rotate@16" ( _
-           ByVal Bitmap As Long, _
-           ByVal Angle As Double, _
-  Optional ByRef Color As Any = 0) As Long
-
-Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeImage_RotateEx@48" ( _
-           ByVal Bitmap As Long, _
-           ByVal Angle As Double, _
-           ByVal ShiftX As Double, _
-           ByVal ShiftY As Double, _
-           ByVal originX As Double, _
-           ByVal originY As Double, _
-           ByVal UseMask As Long) As Long
 
 Private Declare Function FreeImage_FlipHorizontal Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" (ByVal FIBITMAP As Long) As Long
 Private Declare Function FreeImage_FlipVertical Lib "FreeImage.dll" Alias "_FreeImage_FlipVertical@4" (ByVal FIBITMAP As Long) As Long
@@ -1111,243 +938,11 @@ Public Declare Function FreeImage_Composite Lib "FreeImage.dll" Alias "_FreeImag
 
 Private Declare Function FreeImage_PreMultiplyWithAlphaInt Lib "FreeImage.dll" Alias "_FreeImage_PreMultiplyWithAlpha@4" ( _
            ByVal Bitmap As Long) As Long
-           
-
-
-'--------------------------------------------------------------------------------
-' Line converting functions
-'--------------------------------------------------------------------------------
-
-' convert to 4 bpp
-Public Declare Sub FreeImage_ConvertLine1To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To4@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-           
-Public Declare Sub FreeImage_ConvertLine8To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To8@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-           
-Public Declare Sub FreeImage_ConvertLine16To4_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To4_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-                     
-Public Declare Sub FreeImage_ConvertLine16To4_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To4_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-           
-Public Declare Sub FreeImage_ConvertLine24To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To24@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-           
-Public Declare Sub FreeImage_ConvertLine32To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To4@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-
-' convert to 8 bpp
-Public Declare Sub FreeImage_ConvertLine1To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To8@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine4To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To8@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To8_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To8_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To8_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To8_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine24To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To8@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine32To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To8@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-           
-
-' convert to 16 bpp
-Public Declare Sub FreeImage_ConvertLine1To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To16_555@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine4To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To16_555@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine8To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To16_555@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine16_565_To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16_565_To16_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine24To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To16_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine32To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To16_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine1To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To16_565@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine4To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To16_565@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine8To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To16_565@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine16_555_To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16_555_To16_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine24To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To16_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine32To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To16_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-
-' convert to 24 bpp
-Public Declare Sub FreeImage_ConvertLine1To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To24@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine4To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To24@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine8To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To24@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To24_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To24_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To24_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To24_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine32To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To24@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-
-' convert to 32 bpp
-Public Declare Sub FreeImage_ConvertLine1To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To32@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine4To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To32@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine8To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To32@16" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long, _
-           ByVal PalettePtr As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To32_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To32_555@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine16To32_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To32_565@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-
-Public Declare Sub FreeImage_ConvertLine24To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To32@12" ( _
-           ByVal targetPtr As Long, _
-           ByVal SourcePtr As Long, _
-           ByVal WidthInPixels As Long)
-          
-          
-
-'--------------------------------------------------------------------------------
-' Initialization functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_IsAvailable(Optional ByRef Version As String) As Boolean
-
-   On Error Resume Next
-   Version = FreeImage_GetVersion()
-   FreeImage_IsAvailable = (Err.Number = ERROR_SUCCESS)
-   On Error GoTo 0
-
-End Function
 
 '--------------------------------------------------------------------------------
 ' String returning functions wrappers
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_GetVersion() As String
-
-   ' This function returns the version of the FreeImage 3 library
-   ' as VB String. Read paragraph 2 of the "General notes on implementation
-   ' and design" section to learn more about that technique.
-   
-   FreeImage_GetVersion = pGetStringFromPointerA(FreeImage_GetVersionInt)
-
-End Function
 
 Public Function FreeImage_GetFormatFromFIF(ByVal imgFormat As FREE_IMAGE_FORMAT) As String
 
@@ -1392,6 +987,9 @@ Public Function FreeImage_Save(ByVal imgFormat As FREE_IMAGE_FORMAT, _
                                ByVal Bitmap As Long, _
                                ByVal srcFilename As String, _
                       Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
+
+    'Added by Tanner: ensure library is available before proceeding
+    Plugin_FreeImage.InitializeFreeImage True
 
    ' Thin wrapper function returning a real VB Boolean value
 
@@ -1520,18 +1118,6 @@ Dim lApplyChanges As Long
    Call FreeImage_UnlockPageInt(Bitmap, PageBitmap, lApplyChanges)
 
 End Sub
-
-Public Function FreeImage_RotateEx(ByVal Bitmap As Long, _
-                                   ByVal Angle As Double, _
-                          Optional ByVal ShiftX As Double, _
-                          Optional ByVal ShiftY As Double, _
-                          Optional ByVal originX As Double, _
-                          Optional ByVal originY As Double, _
-                          Optional ByVal UseMask As Boolean) As Long
-    Dim lUseMask As Long
-    If UseMask Then lUseMask = 1 Else lUseMask = 0
-    FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, originX, originY, lUseMask)
-End Function
 
 Public Function FreeImage_MakeThumbnail(ByVal Bitmap As Long, _
                                         ByVal MaxPixelSize As Long, _
@@ -1757,62 +1343,9 @@ Dim lSizeInBytes As Long
 
 End Function
 
-Private Function FreeImage_UnsignedLong(ByVal Value As Long) As Variant
-
-   ' This function converts a signed long (VB's Long data type) into
-   ' an unsigned long (not really supported by VB).
-   
-   ' Basically, this function checks, whether the positive range of
-   ' a signed long is sufficient to hold the value (indeed, it checks
-   ' the value since the range is obviously constant). If yes,
-   ' it returns a Variant with subtype Long ('Variant/Long' in VB's
-   ' watch window). In this case, the function did not make any real
-   ' changes at all. If not, the value is stored in a Currency variable,
-   ' which is able to store the whole range of an unsigned long. Then,
-   ' the function returns a Variant with subtype Currency
-   ' ('Variant/Currency' in VB's watch window).
-   
-   If (Value < 0) Then
-      Dim curTemp As Currency
-      Call CopyMemory(curTemp, Value, 4)
-      FreeImage_UnsignedLong = curTemp * 10000
-   Else
-      FreeImage_UnsignedLong = Value
-   End If
-
-End Function
-
-Private Function FreeImage_UnsignedShort(ByVal Value As Integer) As Variant
-
-   ' This function converts a signed short (VB's Integer data type) into
-   ' an unsigned short (not really supported by VB).
-   
-   ' Basically, this function checks, whether the positive range of
-   ' a signed short is sufficient to hold the value (indeed, it checks
-   ' the value since the range is obviously constant). If yes,
-   ' it returns a Variant with subtype Integer ('Variant/Integer' in VB's
-   ' watch window). In this case, the function did not make any real
-   ' changes at all. If not, the value is stored in a Long variable,
-   ' which is able to store the whole range of an unsigned short. Then,
-   ' the function returns a Variant with subtype Long
-   ' ('Variant/Long' in VB's watch window).
-   
-   If (Value < 0) Then
-      Dim lTemp As Long
-      Call CopyMemory(lTemp, Value, 2)
-      FreeImage_UnsignedShort = lTemp
-   Else
-      FreeImage_UnsignedShort = Value
-   End If
-
-End Function
-
-
-
 '--------------------------------------------------------------------------------
 ' Derived and hopefully useful functions
 '--------------------------------------------------------------------------------
-
 
 ' Bitmap resolution functions
 
@@ -2410,24 +1943,11 @@ Dim hDIBNew As Long
                      
 End Function
 
-Public Function FreeImage_RescaleByPixel(ByVal Bitmap As Long, _
-                                Optional ByVal WidthInPixels As Long, _
-                                Optional ByVal HeightInPixels As Long, _
-                                Optional ByVal UnloadSource As Boolean, _
-                                Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                Optional ByVal ForceCloneCreation As Boolean) As Long
-                                
-   ' Thin wrapper for function 'FreeImage_RescaleEx' for removing method
-   ' overload fake. This function rescales the image directly to the size
-   ' specified by the 'WidthInPixels' and 'HeightInPixels' parameters.
-
-   FreeImage_RescaleByPixel = FreeImage_RescaleEx(Bitmap, WidthInPixels, HeightInPixels, False, _
-         UnloadSource, Filter, ForceCloneCreation)
-
-End Function
-
 Public Function FreeImage_CreateFromDC(ByVal hDC As Long, _
                               Optional ByRef hBitmap As Long) As Long
+
+    'Added by Tanner: ensure library is available before proceeding
+    Plugin_FreeImage.InitializeFreeImage True
 
 Dim tBM As Bitmap_API
 Dim hDIB As Long
@@ -2501,14 +2021,11 @@ Public Function FreeImage_SaveEx(ByVal Bitmap As Long, _
                         Optional ByVal imgFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
                         Optional ByVal colorDepth As FREE_IMAGE_COLOR_DEPTH, _
-                        Optional ByVal Width As Variant, _
-                        Optional ByVal Height As Variant, _
-                        Optional ByVal InPercent As Boolean, _
-                        Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
                         Optional ByVal UnloadSource As Boolean) As Boolean
-                     
-Dim hDIBRescale As Long
-Dim bConvertedOnRescale As Boolean
+
+    'Added by Tanner: ensure library is available before proceeding
+    Plugin_FreeImage.InitializeFreeImage True
+    
 Dim bIsNewDIB As Boolean
 Dim lBPP As Long
 Dim lBPPOrg As Long
@@ -2548,13 +2065,6 @@ Dim strExtension As String
    ' To learn more about the "primary" extension, read the documentation for
    ' the 'FreeImage_GetPrimaryExtensionFromFIF' function.
    
-   ' The parameters 'Width', 'Height', 'InPercent' and 'Filter' make it possible
-   ' to save the image in a resized version. 'Width', 'Height' specify the desired
-   ' width and height, 'Filter' determines, what image filter should be used
-   ' on the resizing process. Since FreeImage_SaveEx relies on FreeImage_RescaleEx,
-   ' please refer to the documentation of FreeImage_RescaleEx to learn more
-   ' about these four parameters.
-   
    ' The optional 'UnloadSource' parameter is for unloading the saved image, so
    ' you can save and unload an image with this function in one operation.
    ' CAUTION: at current, the image is unloaded, even if the image was not
@@ -2566,16 +2076,6 @@ Dim strExtension As String
       If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to save 'header-only' bitmaps.")
-      End If
-   
-      If ((Not IsMissing(Width)) Or _
-          (Not IsMissing(Height))) Then
-          
-         lBPP = FreeImage_GetBPP(Bitmap)
-         hDIBRescale = FreeImage_RescaleEx(Bitmap, Width, Height, InPercent, UnloadSource, Filter)
-         bIsNewDIB = (hDIBRescale <> Bitmap)
-         Bitmap = hDIBRescale
-         bConvertedOnRescale = (lBPP <> FreeImage_GetBPP(Bitmap))
       End If
       
       If (imgFormat = FIF_UNKNOWN) Then
@@ -2634,11 +2134,6 @@ Dim strExtension As String
                      bIsNewDIB = True
                   End If
                
-               ElseIf (bConvertedOnRescale) Then
-                  ' restore original color depth
-                  ' always unload current DIB here, since 'bIsNewDIB' is True
-                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, lBPP, True)
-                  
                End If
             End If
             
@@ -2925,889 +2420,3 @@ End Function
 Public Function FreeImage_FlipVertically(ByVal fi_DIB As Long) As Boolean
     FreeImage_FlipVertically = (FreeImage_FlipVertical(fi_DIB) <> 0)
 End Function
-
-'Metadata functions
-Public Function FreeImage_CreateTagEx(ByVal Model As FREE_IMAGE_MDMODEL, _
-                             Optional ByVal Key As String, _
-                             Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _
-                             Optional ByRef Value As Variant, _
-                             Optional ByRef Count As Long, _
-                             Optional ByVal Id As Long) As FREE_IMAGE_TAG
-                             
-   ' This function is a wrapper for FreeImage_CreateTag() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. So, the return value is
-   ' not a pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' In contrast to FreeImage's original FreeImage_CreateTag() function, the
-   ' parameter 'Model' must be specified, the parameters 'Key', 'TagType',
-   ' 'Value', 'Count' and 'Id' my be specified.
-   
-   ' The 'Model' is needed, since each FREE_IMAGE_TAG structure needs a
-   ' valid 'Model' member.
-   
-   ' All other parameters are optional and enable the caller to specify the tag's
-   ' values upon tag creation. Any parameter specified, is set to it's corresponding
-   ' member in the FREE_IMAGE_TAG structure.
-   
-   ' The caller should check the returned FREE_IMAGE_TAG structure's 'TagPtr' member.
-   ' If this function succeeded, the 'TagPtr' member is non zero. A value of zero
-   ' indicates an error condition sourced from FreeImage_CreateTag().
-   
-   With FreeImage_CreateTagEx
-      .tagPtr = FreeImage_CreateTag()
-      If (.tagPtr <> 0) Then
-         .Model = Model
-         If (LenB(Key) > 0) Then
-            .Key = Key
-         End If
-         .Type = TagType
-         .Count = Count
-         .Id = Id
-         If (Not IsMissing(Value)) Then
-            .Value = Value
-         End If
-         Call pTagToTagPtr(FreeImage_CreateTagEx)
-         FreeImage_CreateTagEx = pGetTagFromTagPtr(Model, .tagPtr)
-      End If
-   End With
-
-End Function
-
-'Smarter tag creator, which allows for specialized types like palettes
-Public Function FreeImage_CreateTagTanner(ByVal fiDIB As Long, ByVal Model As FREE_IMAGE_MDMODEL, _
-                             Optional ByVal Key As String, _
-                             Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _
-                             Optional ByVal dataPtr As Long, _
-                             Optional ByVal dataCount As Long, _
-                             Optional ByVal dataLength As Long, _
-                             Optional ByVal dataID As Long) As Boolean
-                                 
-    Dim tagPtr As Long
-    tagPtr = FreeImage_CreateTag()
-    
-    FreeImage_SetTagKey tagPtr, Key
-    FreeImage_SetTagID tagPtr, dataID
-    FreeImage_SetTagType tagPtr, TagType
-    FreeImage_SetTagLength tagPtr, dataLength
-    FreeImage_SetTagCount tagPtr, dataCount
-    FreeImage_SetTagValue tagPtr, dataPtr
-    
-    FreeImage_CreateTagTanner = (FreeImage_SetMetadataInt(Model, fiDIB, Key, tagPtr) <> 0)
-    FreeImage_DeleteTag tagPtr
-    
-End Function
-
-Public Function FreeImage_SetMetadataEx(ByVal Bitmap As Long, _
-                                        ByRef Tag As FREE_IMAGE_TAG, _
-                               Optional ByVal Key As String, _
-                               Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA, _
-                               Optional ByVal RefreshTag As Boolean) As Boolean
-                               
-   ' This function is a wrapper for FreeImage_SetMetadata() using the wrapper's
-   ' VB friendly FREE_IMAGE_TAG structure as an replacement for the original
-   ' function's pointer to a FITAG structure.
-   
-   ' All parameters 'Bitmap', 'Tag', 'Key' and 'Model' as the function's return value
-   ' work according to the FreeImage API documentation expect that Tag is not a
-   ' pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' As with FreeImage_SetMetadata(), this function sould only be called with
-   ' new tags, created with FreeImage_CreateTagEx(), a wrapper function for
-   ' FreeImage_CreateTag() working with the VB friendly FREE_IMAGE_TAG structure.
-   
-   ' Normally, after a newly created tag must be deleted/freed with a call to
-   ' FreeImage_DeleteTagEx(), a wrapper function for FreeImage_DeleteTag() working
-   ' with the VB friendly FREE_IMAGE_TAG structure (bored already?), after
-   ' the tag was appended to an image's metadata model with
-   ' FreeImage_SetMetadataEx(). But...
-   
-   ' There is a wrapper specific additional boolean parameter 'RefreshTag', that
-   ' is similar to the parameter 'UnloadSource' found in many wrapper functions.
-   ' When 'RefreshTag' is True upon entry, the tag specified in the 'Tag'
-   ' parameter is deleted (the underlaying FITAG structure is deleted with
-   ' FreeImage_DeteleTag() and all other members of the FREE_IMAGE_TAG structure
-   ' are set to null values) and is reassigned with the tag, that is now part
-   ' of the image's metadata model. The tag now referenced in the 'Tag'
-   ' parameter must NOT be deleted any more by the caller of this function, since
-   ' this tag refers to the actual tag data stored with the image. This is like
-   ' a FREE_IMAGE_TAG structure obtained from FreeImage_GetMetadata() or
-   ' FreeImage_FindFirst/NextMetadata(). Any changes made to this FREE_IMAGE_TAG
-   ' structure may be applied to the image with a later call to
-   ' FreeImage_UpdateMetadata().
-   
-   
-   With Tag
-      If (Model = FIMD_NODATA) Then
-         Model = .Model
-      End If
-      If (LenB(Key) = 0) Then
-         Key = .Key
-      End If
-      If (FreeImage_SetMetadataInt(Model, Bitmap, Key, .tagPtr) <> 0) Then
-         FreeImage_SetMetadataEx = True
-      End If
-      If (RefreshTag) Then
-         Call FreeImage_DeleteTagEx(Tag)
-         Call FreeImage_GetMetadataEx(Model, Bitmap, Key, Tag)
-      End If
-   End With
-
-End Function
-
-Public Function FreeImage_GetMetadataEx(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                        ByVal Bitmap As Long, _
-                                        ByVal Key As String, _
-                                        ByRef Tag As FREE_IMAGE_TAG) As Boolean
-   
-   ' This function is a wrapper for FreeImage_GetMetadata() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. All parameters 'Bitmap', 'Tag',
-   ' 'Key' and 'Model' as well as the function's return value work according
-   ' to the FreeImage API documentation expect that Tag is not a pointer to
-   ' a FITAG structure but to a FREE_IMAGE_TAG structure.
-   
-   ' Tags obtained from FreeImage_GetMetadataEx() must not be deleted with
-   ' FreeImage_DeleteTagEx().
-
-   With Tag
-      If (FreeImage_GetMetadataInt(Model, Bitmap, Key, .tagPtr) <> 0) Then
-         Tag = pGetTagFromTagPtr(Model, .tagPtr)
-         FreeImage_GetMetadataEx = True
-      End If
-   End With
-
-End Function
-
-Public Sub FreeImage_DeleteTagEx(ByRef Tag As FREE_IMAGE_TAG)
-
-   ' This function is a wrapper for FreeImage_DeleteTag() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. So, the parameter 'Tag'
-   ' is not a pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' This function deletes the underlaying FreeImage FITAG structure,
-   ' specified the the member 'TagPtr' of the FREE_IMAGE_TAG structure
-   ' and also sets all other members of Tag to a null value.
-   
-   ' Do not get confused with the wrapper functions FreeImage_RemoveTag()
-   ' and FreeImage_RemoveTagEx(). These functions remove a tag from an
-   ' image's metadata model. This function only deletes of frees (a better
-   ' name would be 'FreeImage_FreeTag') a tag created with
-   ' FreeImage_CreateTagEx(). Do not delete any tags obtained from any other
-   ' function.
-
-   With Tag
-      If (.tagPtr <> 0) Then
-         Call FreeImage_DeleteTag(.tagPtr)
-      End If
-      .tagPtr = 0
-      .Count = 0
-      .Description = vbNullString
-      .Id = 0
-      .Key = vbNullString
-      .Length = 0
-      .Model = FIMD_NODATA
-      Erase .Palette
-      Erase .RationalValue
-      .StringValue = vbNullString
-      .Type = FIDT_NOTYPE
-      .Value = Empty
-   End With
-
-End Sub
-
-Private Function pTagToTagPtr(ByRef Tag As FREE_IMAGE_TAG) As Boolean
-
-Dim tTagSave As FITAG
-Dim lpTag As Long
-Dim abValueBuffer() As Byte
-Dim lLength As Long
-Dim lCount As Long
-
-   ' This function converts tag data stored in a VB friendly structure
-   ' FREE_IMAGE_TAG into a real FreeImage tag pointer (FITAG **tag).
-   
-   ' This function is called, whenever tag data should be updated for an
-   ' image, since the FreeImage's tag pointer remains valid during the
-   ' whole lifetime of a DIB. So, changes written to that pointer (or
-   ' even better, the FITAG structure at the address, the pointer points
-   ' to), are real updates to the image's tag.
-
-   With Tag
-   
-      lpTag = pDeref(.tagPtr)
-      
-      ' save current (FITAG) tag for an optional 'undo' operation
-      ' invoked on failure
-      Call CopyMemory(tTagSave, ByVal lpTag, Len(tTagSave))
-      
-      ' set tag id
-      Call CopyMemory(ByVal lpTag + 8, .Id, 2)
-      ' set tag type
-      Call CopyMemory(ByVal lpTag + 10, .Type, 2)
-      ' set tag key (use native FreeImage function to handle
-      ' memory allocation)
-      Call FreeImage_SetTagKey(.tagPtr, .Key)
-      
-      ' here, we update the tag's value
-      ' generally, we create a plain byte buffer containing all the
-      ' value's data and use FreeImage_SetTagValue() with the
-      ' const void *value pointer set to the byte buffer's address.
-      
-      ' the variable abValueBuffer is our byte buffer that is,
-      ' depending on the FreeImage tag data type, allocated and filled
-      ' accordingly
-      ' The variables 'lLength' and 'lCount' are set up correctly for
-      ' each data type and will be filled into the FITAG structure
-      ' before calling FreeImage_SetTagValue(); after all, the VB
-      ' Tag structure's (FREE_IMAGE_TAG) 'Count' and 'Length' members
-      ' are updated with 'lLength' and 'lCount'.
-      
-      Select Case .Type
-      
-      Case FIDT_ASCII
-         ' use StrConv() to get an ASCII byte array from a VB String (BSTR)
-         abValueBuffer = StrConv(.Value, vbFromUnicode)
-         ' according to FreeImage's source code, both 'count' and 'length'
-         ' must be the length of the string
-         lCount = Len(.Value)
-         lLength = lCount
-         
-      Case FIDT_PALETTE
-         ' ensure, that there are at least 'Count' entries in the
-         ' palette array
-         lCount = .Count
-         If (UBound(.Palette) + 1 < lCount) Then
-            ' if not, adjust Count
-            lCount = UBound(.Palette) + 1
-         End If
-         ' 4 bytes per element
-         lLength = lCount * 4
-         ' allocate buffer and copy data from Palatte array
-         ReDim abValueBuffer(lLength - 1)
-         Call CopyMemory(abValueBuffer(0), .Palette(LBound(.Palette)), lLength)
-         
-      Case FIDT_RATIONAL, _
-           FIDT_SRATIONAL
-         ' we use a helper function to get a byte buffer for any type of
-         ' rational value
-         lCount = pGetRationalValueBuffer(.RationalValue, abValueBuffer)
-         If (lCount > .Count) Then
-            lCount = .Count
-         End If
-         ' eight bytes per element (2 longs)
-         lLength = lCount * 8
-         
-      Case Else
-         ' we use a helper function to get a byte buffer for any other type
-         lCount = pGetValueBuffer(.Value, .Type, lLength, abValueBuffer)
-         If (lCount > .Count) Then
-            lCount = .Count
-         End If
-         ' lLength was used as an OUT parameter when calling pGetValueBuffer
-         ' it now contains the size of one element in bytes so, multiply with
-         ' lCount to get the total length
-         lLength = lLength * lCount
-      
-      End Select
-      
-      ' set tag length
-      Call CopyMemory(ByVal lpTag + 16, lLength, 4)
-      ' set tag count
-      Call CopyMemory(ByVal lpTag + 12, lCount, 4)
-       
-      If (FreeImage_SetTagValue(.tagPtr, VarPtr(abValueBuffer(0))) <> 0) Then
-         
-         ' update Tag's members
-         ' update Count
-         .Count = lCount
-         ' update Length
-         .Length = lLength
-         ' update StringValue
-         .StringValue = FreeImage_TagToString(.Model, .tagPtr)
-         pTagToTagPtr = True
-      Else
-      
-         ' restore saved (FITAG) tag values on failure
-         Call CopyMemory(ByVal lpTag, tTagSave, Len(tTagSave))
-      End If
-   
-   End With
-
-End Function
-
-Public Function FreeImage_TagToString(ByVal Model As Long, _
-                                      ByVal Tag As Long, _
-                             Optional ByVal Make As String) As String
-
-   ' This function returns the result of the 'FreeImage_TagToString' function
-   ' as VB String.
-   
-   ' All parameters work according to the FreeImage 3 API documentation.
-
-   FreeImage_TagToString = pGetStringFromPointerA(FreeImage_TagToStringInt(Model, Tag, Make))
-
-End Function
-
-Private Function pGetValueBuffer(ByRef Value As Variant, _
-                                 ByVal MetaDataVarType As FREE_IMAGE_MDTYPE, _
-                                 ByRef ElementSize As Long, _
-                                 ByRef Buffer() As Byte) As Long
-                            
-Dim lElementCount As Long
-Dim bIsArray As Boolean
-Dim abValueBuffer(7) As Byte
-Dim cBytes As Long
-Dim i As Long
-
-   ' This function copies any value provided in the Variant 'Value'
-   ' parameter into the byte array Buffer. 'Value' may contain an
-   ' array as well. The values in the byte buffer are aligned to fit
-   ' the FreeImage data type for tag values specified in
-   ' 'MetaDataVarType'. For integer values, it does not matter, in
-   ' which VB data type the values are provided. For example, it is
-   ' possible to transform a provided byte array into a unsigned long
-   ' array.
-   
-   ' The parameter 'ElementSize' is an OUT value, providing the actual
-   ' size per element in the byte buffer in bytes to the caller.
-   
-   ' This function works for the types FIDT_BYTE, FIDT_SHORT, FIDT_LONG,
-   ' FIDT_SBYTE , FIDT_SSHORT, FIDT_SLONG, FIDT_FLOAT, FIDT_DOUBLE
-   ' and FIDT_IFD
-                            
-   ElementSize = pGetElementSize(MetaDataVarType)
-   If (Not IsArray(Value)) Then
-      lElementCount = 1
-   Else
-      On Error Resume Next
-      lElementCount = UBound(Value) - LBound(Value) + 1
-      On Error GoTo 0
-      bIsArray = True
-   End If
-   
-   If (lElementCount > 0) Then
-      ReDim Buffer((lElementCount * ElementSize) - 1)
-      
-      If (Not bIsArray) Then
-         cBytes = pGetVariantAsByteBuffer(Value, abValueBuffer)
-         If (cBytes > ElementSize) Then
-            cBytes = ElementSize
-         End If
-         Call CopyMemory(Buffer(0), abValueBuffer(0), cBytes)
-      Else
-         For i = LBound(Value) To UBound(Value)
-            cBytes = pGetVariantAsByteBuffer(Value(i), abValueBuffer)
-            If (cBytes > ElementSize) Then
-               cBytes = ElementSize
-            End If
-            Call CopyMemory(Buffer(0 + (i * ElementSize)), abValueBuffer(0), cBytes)
-         Next i
-      End If
-      
-      pGetValueBuffer = lElementCount
-   End If
-
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' Private metadata helper functions
-'--------------------------------------------------------------------------------
-
-Private Function pGetTagFromTagPtr(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                   ByVal tagPtr As Long) As FREE_IMAGE_TAG
-
-Dim tTag As FITAG
-Dim lTemp As Long
-Dim i As Long
-
-   ' This function converts data stored in a real FreeImage tag
-   ' pointer (FITAG **tag) into a VB friendly structure FREE_IMAGE_TAG.
-   
-   If (tagPtr <> 0) Then
-   
-      ' this is like (only like!) tTag tag = (FITAG) TagPtr; in C/C++
-      ' we copy Len(tTag) bytes from the address in TagPtr in to a
-      ' private FITAG structure tTag so we have easy access to all
-      ' FITAG members
-      Call CopyMemory(tTag, ByVal pDeref(tagPtr), Len(tTag))
-      
-      With pGetTagFromTagPtr
-      
-         ' first fill all members expect 'Value' in our
-         ' VB friendly FREE_IMAGE_TAG structure
-         
-         ' since we use this VB friendly FREE_IMAGE_TAG structure
-         ' for later tag modification too, we also need to store the
-         ' tag model and the pointer to the actual FreeImage FITAG
-         ' structure
-         .Model = Model
-         .tagPtr = tagPtr
-         
-         ' although FITAG's 'count' and 'length' members are
-         ' unsigned longs, we do not expect values greater
-         ' than 2,147,483,647, so we store them in normal VB
-         ' signed longs
-         .Count = tTag.Count
-         .Length = tTag.Length
-         
-         ' strings are stored as pointers to the actual string
-         ' data in FITAG
-         .Description = pGetStringFromPointerA(tTag.Description)
-         .Key = pGetStringFromPointerA(tTag.Key)
-         
-         ' FITAG's 'id' and 'type' members are unsigned shorts;
-         ' first of all 'id' may exceed the range of a signed
-         ' short (Integer data type in VB), so we store them in
-         ' signed longs and use CopyMemory for to keep the
-         ' unsigned bit layout
-         Call CopyMemory(.Id, tTag.Id, 2)
-         Call CopyMemory(.Type, tTag.Type, 2)
-         
-         ' StringValue is the result of FreeImage_TagToString(); we
-         ' also store this tag representation in our structure
-         .StringValue = FreeImage_TagToString(Model, tagPtr)
-         
-         ' now comes the hard part, getting the tag's value
-         
-         Select Case .Type
-         
-         Case FIDT_BYTE, _
-              FIDT_UNDEFINED
-            If (.Count > 1) Then
-               Dim abBytes() As Byte
-               ' for a byte array, just redim a VB Byte array and
-               ' copy Count bytes from the pointer
-               ReDim abBytes(.Count - 1)
-               Call CopyMemory(abBytes(0), ByVal tTag.Value, .Count)
-               .Value = abBytes
-            Else
-               ' copy a single byte into a Long and assign
-               ' with CByte()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-               .Value = CByte(lTemp)
-            End If
-         
-         Case FIDT_ASCII
-            ' for an ASCII string, 'value' is just a pointer to the
-            ' string's actual data
-            .Value = pGetStringFromPointerA(tTag.Value)
-            
-         Case FIDT_SHORT
-            Dim iTemp As Integer
-            If (.Count > 1) Then
-               ' for a unsigned long array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each value into a Long and
-                  ' assign with FreeImage_UnsignedShort() to the
-                  ' corresponding item in the (Variant) Value array
-                  Call CopyMemory(iTemp, ByVal tTag.Value + i * 2, 2)
-                  .Value(i) = FreeImage_UnsignedShort(iTemp)
-               Next i
-            Else
-               ' copy a single byte into a Long and assign
-               ' with FreeImgage_UnsignedShort()
-               Call CopyMemory(iTemp, ByVal tTag.Value, 2)
-               ' this works although FreeImage_UnsignedShort() takes
-               ' an Integer parameter since lTemp was 0 before and
-               ' we copied only 2 bytes so, VB's implicit conversion
-               ' to Integer will never produce an overflow
-               .Value = FreeImage_UnsignedShort(iTemp)
-            End If
-            
-         Case FIDT_LONG, _
-              FIDT_IFD
-            If (.Count > 1) Then
-               ' for a unsigned long array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each value into a (signed) Long and
-                  ' assign with FreeImage_UnsignedLong() to the
-                  ' corresponding item in the (Variant) Value array
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 4, 4)
-                  .Value(i) = FreeImage_UnsignedLong(lTemp)
-               Next i
-            Else
-               ' copy a single unsigned long into a (signed) Long and
-               ' assign with FreeImage_UnsignedLong()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 2)
-               .Value = FreeImage_UnsignedLong(lTemp)
-            End If
-            
-         Case FIDT_RATIONAL, _
-              FIDT_SRATIONAL
-            ' rational values are always stored in the FREE_IMAGE_TAG
-            ' structure's FIRATIONAL array 'RationalValue' so, allocate
-            ' enough space in both the 'Value' and 'RationalValue'
-            ' members to hold 'Count' items
-            ReDim .Value(.Count - 1)
-            ReDim .RationalValue(.Count - 1)
-            For i = 0 To .Count - 1
-               ' iterate over all items
-               With .RationalValue(i)
-                  ' for each item, copy both numerator and denominator
-                  ' into a (signed) Long and assign it to the corresponding
-                  ' member of the FIRATIONAL structure so, we first assume
-                  ' havinge a signed rational (FIDT_SRATIONAL) here
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 8, 4)
-                  .numerator = lTemp
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 8 + 4, 4)
-                  .denominator = lTemp
-               End With
-               ' if we have an unsigned rational (FIDT_RATIONAL), convert
-               ' numerator and denominator
-               If (.Type = FIDT_RATIONAL) Then
-                  ' convert with FreeImage_UnsignedLong()
-                  With .RationalValue(i)
-                     .numerator = FreeImage_UnsignedLong(.numerator)
-                     .denominator = FreeImage_UnsignedLong(.denominator)
-                  End With
-                  ' normalze the unsigned rational value
-                  Call pNormalizeRational(.RationalValue(i))
-               Else
-                  ' normalze the signed rational value
-                  Call pNormalizeSRational(.RationalValue(i))
-               End If
-               ' store the current fraction's value (maybe only approximated) in
-               ' the 'Value' member of the FREE_IMAGE_TAG structure, if the
-               ' denominator is not zero
-               If (.RationalValue(i).denominator <> 0) Then
-                  .Value(i) = .RationalValue(i).numerator / .RationalValue(i).denominator
-               End If
-            Next i
-            
-         Case FIDT_SBYTE
-            If (.Count > 1) Then
-               ' for a signed byte array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each signed byte value into a Long and
-                  ' check, whether it is negative (bit 7 set)
-                  Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-                  If (lTemp And 128) Then
-                     ' if negative, calculate the negative value
-                     ' and store it in an Integer
-                     .Value(i) = CInt(-256 - (Not (lTemp - 1)))
-                  Else
-                     ' if positive, assign to Value as byte
-                     .Value(i) = CByte(lTemp)
-                  End If
-               Next i
-            Else
-               ' copy a single signed byte into a Long and
-               ' check, whether it is negative (bit 7 set)
-               Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-               If (lTemp And 128) Then
-                  ' if negative, calculate the negative value
-                  ' and store it in an Integer
-                  .Value = CInt(-256 - (Not (lTemp - 1)))
-               Else
-                  ' if positive, assign to Value as byte
-                  .Value = CByte(lTemp)
-               End If
-            End If
-            
-         Case FIDT_SSHORT
-            If (.Count > 1) Then
-               Dim aiSShorts() As Integer
-               ' for a signed short array, just redim a VB Integer array and
-               ' copy Count bytes from the pointer
-               ReDim aiSShorts(.Count - 1)
-               Call CopyMemory(aiSShorts(0), ByVal tTag.Value, .Count * 2)
-               .Value = aiSShorts
-            Else
-               ' copy a single signed short into a Long and assign
-               ' with CInt()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 2)
-               .Value = CInt(lTemp)
-            End If
-            
-         Case FIDT_SLONG
-            If (.Count > 1) Then
-               Dim alSLongs() As Long
-               ' for a signed long array, just redim a VB Long array and
-               ' copy Count bytes from the pointer
-               ReDim alSLongs(.Count - 1)
-               Call CopyMemory(alSLongs(0), ByVal tTag.Value, .Count * 4)
-               .Value = alSLongs
-            Else
-               ' copy a single signed long into a Long and assign
-               ' directly
-               Call CopyMemory(lTemp, ByVal tTag.Value, 4)
-               .Value = lTemp
-            End If
-            
-         Case FIDT_FLOAT
-            If (.Count > 1) Then
-               Dim asngFloats() As Single
-               ' for a float array, just redim a VB Single array and
-               ' copy Count bytes from the pointer
-               ReDim asngFloats(.Count - 1)
-               Call CopyMemory(asngFloats(0), ByVal tTag.Value, .Count * 4)
-               .Value = asngFloats
-            Else
-               Dim sngFloat As Single
-               ' copy a single float into a Single and assign
-               ' directly
-               Call CopyMemory(sngFloat, ByVal tTag.Value, 4)
-               .Value = sngFloat
-            End If
-            
-         Case FIDT_DOUBLE
-            If (.Count > 1) Then
-               Dim adblDoubles() As Double
-               ' for a double array, just redim a VB Double array and
-               ' copy Count bytes from the pointer
-               ReDim adblDoubles(.Count - 1)
-               Call CopyMemory(adblDoubles(0), ByVal tTag.Value, .Count * 8)
-               .Value = adblDoubles
-            Else
-               Dim dblDouble As Double
-               ' copy a single double into a Double and assign
-               ' directly
-               Call CopyMemory(dblDouble, ByVal tTag.Value, 8)
-               .Value = dblDouble
-            End If
-            
-         Case FIDT_PALETTE
-            ' copy 'Count' palette entries (RGBQUAD) form the value
-            ' pointer into the proper dimensioned array of RGBQUAD
-            ReDim .Palette(.Count - 1)
-            For i = 0 To .Count - 1
-               Call CopyMemory(.Palette(i), ByVal tTag.Value + i * 4, 4)
-            Next i
-         
-         End Select
-      
-      End With
-   End If
-
-End Function
-
-
-Private Function pGetRationalValueBuffer(ByRef RationalValues() As FIRATIONAL, _
-                                         ByRef Buffer() As Byte) As Long
-                                         
-Dim lElementCount As Long
-Dim abValueBuffer(7) As Byte
-Dim cBytes As Long
-Dim i As Long
-
-   ' This function copies a number of elements from the FIRATIONAL array
-   ' 'RationalValues' into the byte buffer 'Buffer'.
-   
-   ' From the caller's point of view, this function is the same as
-   ' 'pGetValueBuffer', except, it only works for arrays of FIRATIONAL.
-   
-   ' This function works for the types FIDT_RATIONAL and FIDT_SRATIONAL.
-   
-   lElementCount = UBound(RationalValues) - LBound(RationalValues) + 1
-   ReDim Buffer(lElementCount * 8 + 1)
-   
-   For i = LBound(RationalValues) To UBound(RationalValues)
-      cBytes = pGetVariantAsByteBuffer(RationalValues(i).numerator, abValueBuffer)
-      If (cBytes > 4) Then
-         cBytes = 4
-      End If
-      Call CopyMemory(Buffer(0 + (i * 8)), abValueBuffer(0), cBytes)
-      
-      cBytes = pGetVariantAsByteBuffer(RationalValues(i).denominator, abValueBuffer)
-      If (cBytes > 4) Then
-         cBytes = 4
-      End If
-      Call CopyMemory(Buffer(4 + (i * 8)), abValueBuffer(0), cBytes)
-   Next i
-   
-   pGetRationalValueBuffer = lElementCount
-                                         
-End Function
-
-Private Function pGetVariantAsByteBuffer(ByRef Value As Variant, _
-                                         ByRef Buffer() As Byte) As Long
-
-Dim lLength As Long
-
-   ' This function fills a byte buffer 'Buffer' with data taken
-   ' from a Variant parameter. Depending on the Variant's type and,
-   ' width, it copies N (lLength) bytes into the buffer starting
-   ' at the buffer's first byte at Buffer(0). The function returns
-   ' the number of bytes copied.
-   
-   ' It is much easier to assign the Variant to a variable of
-   ' the proper native type first, since gathering a Variant's
-   ' actual value is a hard job to implement for each subtype.
-   
-   Select Case VarType(Value)
-   
-   Case vbByte
-      Buffer(0) = Value
-      lLength = 1
-   
-   Case vbInteger
-      Dim iInteger As Integer
-      iInteger = Value
-      lLength = 2
-      Call CopyMemory(Buffer(0), iInteger, lLength)
-   
-   Case vbLong
-      Dim lLong As Long
-      lLong = Value
-      lLength = 4
-      Call CopyMemory(Buffer(0), lLong, lLength)
-   
-   Case vbCurrency
-      Dim cCurrency As Currency
-      ' since the Currency data type is a so called scaled
-      ' integer, we have to divide by 10.000 first to get the
-      ' proper bit layout.
-      cCurrency = Value / 10000
-      lLength = 8
-      Call CopyMemory(Buffer(0), cCurrency, lLength)
-   
-   Case vbSingle
-      Dim sSingle As Single
-      sSingle = Value
-      lLength = 4
-      Call CopyMemory(Buffer(0), sSingle, lLength)
-   
-   Case vbDouble
-      Dim dblDouble As Double
-      dblDouble = Value
-      lLength = 8
-      Call CopyMemory(Buffer(0), dblDouble, lLength)
-   
-   End Select
-   
-   pGetVariantAsByteBuffer = lLength
-                                         
-End Function
-
-Private Function pGetElementSize(ByVal vt As FREE_IMAGE_MDTYPE) As Long
-
-   ' This function returns the width in bytes for any of the
-   ' FreeImage metadata tag data types.
-
-   Select Case vt
-   
-   Case FIDT_BYTE, _
-        FIDT_SBYTE, _
-        FIDT_UNDEFINED, _
-        FIDT_ASCII
-      pGetElementSize = 1
-   
-   Case FIDT_SHORT, _
-        FIDT_SSHORT
-      pGetElementSize = 2
-
-   Case FIDT_LONG, _
-        FIDT_SLONG, _
-        FIDT_FLOAT, _
-        FIDT_PALETTE, _
-        FIDT_IFD
-      pGetElementSize = 4
-
-   Case Else
-      pGetElementSize = 8
-      
-   End Select
-
-End Function
-
-Private Sub pNormalizeRational(ByRef Value As FIRATIONAL)
-
-Dim vntCommon As Long
-
-   ' This function normalizes an unsigned fraction stored in a FIRATIONAL
-   ' structure by cancelling down the fraction. This is commonly done
-   ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd).
-   ' Does nothing if any of numerator and denominator is 1 or 0.
-
-   With Value
-      If ((.numerator <> 1) And (.denominator <> 1) And _
-          (.numerator <> 0) And (.denominator <> 0)) Then
-         vntCommon = gcd(.numerator, .denominator)
-         If (vntCommon <> 1) Then
-            ' convert values back to an unsigned long (may
-            ' result in a subtype Currency if the range of the
-            ' VB Long is insufficient for storing the value!)
-            .numerator = FreeImage_UnsignedLong(.numerator / vntCommon)
-            .denominator = FreeImage_UnsignedLong(.denominator / vntCommon)
-         End If
-      End If
-   End With
-
-End Sub
-
-Private Sub pNormalizeSRational(ByRef Value As FIRATIONAL)
-
-Dim lCommon As Long
-
-   ' This function normalizes a signed fraction stored in a FIRATIONAL
-   ' structure by cancelling down the fraction. This is commonly done
-   ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd).
-   ' Does nothing if any of numerator and denominator is 1 or 0.
-   
-   With Value
-      If ((.numerator <> 1) And (.denominator <> 1) And _
-          (.numerator <> 0) And (.denominator <> 0)) Then
-         lCommon = gcd(.numerator, .denominator)
-         If (lCommon <> 1) Then
-            ' using the CLng() function for not to get
-            ' a subtype Double here
-            .numerator = CLng(.numerator / lCommon)
-            .denominator = CLng(.denominator / lCommon)
-         End If
-      End If
-      
-      ' adjust the position of the negative sign if one is present:
-      ' it should preceed the numerator, not the denominator
-      If (.denominator < 0) Then
-         .denominator = -.denominator
-         .numerator = -.numerator
-      End If
-   End With
-
-End Sub
-
-Private Function gcd(ByVal a As Variant, ByVal b As Variant) As Variant
-
-Dim vntTemp As Variant
-
-   ' calculate greatest common divisor
-
-   Do While (b)
-      vntTemp = b
-      ' calculate b = a % b (modulo)
-      ' this could be just:
-      ' b = a Mod b
-      ' but VB's Mod operator fails for unsigned
-      ' long values stored in currency variables
-      ' so, we use the mathematical definition of
-      ' the modulo operator taken from Wikipedia.
-      b = a - floor(a / b) * b
-      a = vntTemp
-   Loop
-   gcd = a
-
-End Function
-
-Private Function floor(ByRef a As Variant) As Variant
-
-   ' This is a VB version of the floor() function.
-   If (a < 0) Then
-      floor = VBA.Int(a)
-   Else
-      floor = -VBA.Fix(-a)
-   End If
-
-End Function
-

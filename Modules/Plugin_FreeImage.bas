@@ -41,7 +41,6 @@ Private Type BITMAPINFO
 End Type
 
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
-Private Declare Function AlphaBlend Lib "gdi32" Alias "GdiAlphaBlend" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
 
 'A single FreeImage declare is used here, to supply a callback for errors and other output messages
 Private Declare Sub FreeImage_SetOutputMessage Lib "FreeImage" Alias "_FreeImage_SetOutputMessageStdCall@4" (ByVal pCallback As Long)
@@ -61,17 +60,32 @@ Private m_ExportPreviewDIB As pdDIB
 Private m_Errors As pdStringStack
 
 'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via the PluginManager module)
-Public Function InitializeFreeImage() As Boolean
+Public Function InitializeFreeImage(Optional ByVal actuallyLoadDLL As Boolean = True) As Boolean
     
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim fiPath As String
     fiPath = PluginManager.GetPluginPath & "FreeImage.dll"
-    m_FreeImageHandle = VBHacks.LoadLib(fiPath)
-    InitializeFreeImage = (m_FreeImageHandle <> 0)
-    
-    If (Not InitializeFreeImage) Then
-        FI_DebugMsg "WARNING!  LoadLibrary failed to load FreeImage.  Last DLL error: " & Err.LastDllError
-        FI_DebugMsg "(FYI, the attempted path was: " & fiPath & ")"
+    If actuallyLoadDLL Then
+        
+        'On successful initialization, PD supplies a callback to FreeImage for detailed error messages.
+        If (m_FreeImageHandle = 0) Then
+            PDDebug.LogAction "(Note: FreeImage is being loaded for the first time.)"
+            m_FreeImageHandle = VBHacks.LoadLib(fiPath)
+            If (m_FreeImageHandle <> 0) Then Plugin_FreeImage.InitializeFICallback
+        End If
+        
+        InitializeFreeImage = (m_FreeImageHandle <> 0)
+        
+        If (Not InitializeFreeImage) Then
+            FI_DebugMsg "WARNING!  LoadLibrary failed to load FreeImage.  Last DLL error: " & Err.LastDllError
+            FI_DebugMsg "(FYI, the attempted path was: " & fiPath & ")"
+        End If
+        
+    'At startup, we just do a quick check to ensure FreeImage exists - but we don't actually load it yet.
+    ' (It will be loaded on-demand if required.)
+    Else
+        InitializeFreeImage = Files.FileExists(fiPath)
+        If (Not InitializeFreeImage) Then FI_DebugMsg "WARNING!  FreeImage missing.  (FYI, the attempted path was: " & fiPath & ")"
     End If
     
 End Function
@@ -123,7 +137,10 @@ End Function
 
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
 Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False) As PD_OPERATION_OUTCOME
-
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     On Error GoTo FreeImageV5_Error
     
     '****************************************************************************
@@ -678,6 +695,9 @@ End Function
 ' destination object.
 Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As PD_OPERATION_OUTCOME
 
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Get a multipage handle to the source file
@@ -918,6 +938,9 @@ End Sub
 ' Returns: 0 if only one image is found.  Page (or frame) count if multiple images are found.
 Public Function IsMultiImage(ByRef srcFilename As String) As Long
 
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
@@ -1327,13 +1350,16 @@ Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB A
 
 End Function
 
-'Given a FreeImage handle, return a 24 or 32bpp pdDIB object, as relevant.  Note that this function does not modify premultiplication
-' status of 32bpp images.  The caller is responsible for applying that (as necessary).
+'Given a FreeImage handle, return a 24 or 32bpp pdDIB object, as relevant.  Note that this function does not modify
+' premultiplication status of 32bpp images.  The caller is responsible for applying that (as necessary).
 '
 'NOTE!  This function requires the FreeImage DIB to already be in 24 or 32bpp format.  It will fail if another bit-depth is used.
 'ALSO NOTE!  This function does not set alpha premultiplication.  It's assumed that the caller knows that value in advance.
 'ALSO NOTE!  This function does not free the incoming FreeImage handle, by design.
 Public Function GetPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     
     Dim fiHandleBackup As Long
     fiHandleBackup = srcFI_Handle
@@ -1399,13 +1425,21 @@ End Function
 'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
 Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal forciblyReverseScanlines As Boolean = False) As Long
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     With srcDIB
         GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetDIBPointer, FIT_BITMAP, .GetDIBWidth, .GetDIBHeight, .GetDIBStride, .GetDIBColorDepth, , , , forciblyReverseScanlines)
     End With
+    
 End Function
 
 'Paint a FreeImage DIB to an arbitrary clipping rect on some target pdDIB.  This does not free or otherwise modify the source FreeImage object
 Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As Boolean
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     
     If (Not dstDIB Is Nothing) And (fi_Handle <> 0) Then
         
@@ -1483,6 +1517,9 @@ End Function
 ' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
 ' absolutely necessary).
 Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByRef inputSettings As String) As Long
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     
     'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
     Dim fi_BPP As Long
@@ -2107,208 +2144,12 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     
 End Function
 
-'Use FreeImage to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
-' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
-' This function is also declared identically to PD's GDI+ equivalent, specifically GDIPlusResizeDIB.  This was done
-' so that the two functions can be used interchangeably.
-Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As FREE_IMAGE_FILTER, Optional ByVal destinationIsBlank As Boolean = False) As Boolean
-
-    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
-    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
-    ' have timing reports sent to the debug window.
-    'Dim profileTime As Double
-    'profileTime = Timer
-
-    FreeImageResizeDIB = True
-
-    'Double-check that FreeImage exists
-    If ImageFormats.IsFreeImageEnabled() Then
-                
-        'Create a temporary DIB at the size of the source image
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.CreateBlank srcWidth, srcHeight, srcDIB.GetDIBColorDepth, 0
-        
-        'Copy the relevant source portion of the image into the temporary DIB
-        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.GetDIBDC, srcX, srcY, vbSrcCopy
-        
-        'Create a FreeImage copy of the temporary DIB
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(tmpDIB)
-        
-        'Use that handle to request an image resize
-        If (fi_DIB <> 0) Then
-            
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
-                        
-            'Copy the bits from the FreeImage DIB to our DIB
-            tmpDIB.CreateBlank dstWidth, dstHeight, 32, 0
-            Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, dstWidth, dstHeight
-            
-            'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
-            ' onto the destination DIB; this shaves off a tiny bit of time.
-            If destinationIsBlank Then
-                GDI.BitBltWrapper dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-            Else
-                AlphaBlend dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
-            End If
-            
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
-            
-        End If
-                
-    Else
-        FreeImageResizeDIB = False
-    End If
-    
-    'Uncomment the line below to receive timing reports
-    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
-    
-End Function
-
-'Use FreeImage to resize a DIB, optimized against the use case where the full source image is being used.
-' (Basically, something closer to BitBlt than StretchBlt, but without sourceX/Y parameters for an extra boost.)
-Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal interpolationType As FREE_IMAGE_FILTER, Optional ByVal destinationIsBlank As Boolean = False) As Boolean
-
-    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
-    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
-    ' have timing reports sent to the debug window.
-    'Dim profileTime As Double
-    'profileTime = Timer
-
-    FreeImageResizeDIBFast = True
-
-    'Double-check that FreeImage exists
-    If ImageFormats.IsFreeImageEnabled() Then
-        
-        'Create a FreeImage copy of the source DIB
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
-        
-        'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
-            
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
-            
-            'If the destinationIsBlank flag is TRUE, we can copy the bits directly from the FreeImage bytes to the
-            ' destination bytes, skipping the need for an intermediary DIB.
-            If destinationIsBlank Then
-                Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, dstX, dstY, dstWidth, dstHeight
-            Else
-                Dim tmpDIB As pdDIB
-                Set tmpDIB = New pdDIB
-                tmpDIB.CreateBlank dstWidth, dstHeight, 32, 0
-                Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, dstWidth, dstHeight
-                AlphaBlend dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
-                Set tmpDIB = Nothing
-            End If
-            
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            
-        End If
-                
-    Else
-        FreeImageResizeDIBFast = False
-    End If
-    
-    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
-    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
-    
-    'Uncomment the line below to receive timing reports
-    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
-    
-End Function
-
-'Use FreeImage to rotate a DIB, optimized against the use case where the full source image is being used.
-Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef rotationAngle As Double, Optional ByVal enlargeCanvasToFit As Boolean = True, Optional ByVal applyPostAlphaPremultiplication As Boolean = True) As Boolean
-
-    'Uncomment the two lines below, and the reporting line at the end of the sub, to send timing reports to the debug window.
-    'Dim profileTime As Double
-    'profileTime = Timer
-    
-    'Double-check that FreeImage exists
-    If ImageFormats.IsFreeImageEnabled() Then
-    
-        'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
-        ' unintuitive for casual users.  PD reverses the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
-        rotationAngle = -rotationAngle
-        
-        'Rotation requires quite a few variables, including a number of handles for passing data back-and-forth with FreeImage.
-        Dim fi_DIB As Long, returnDIB As Long
-        Dim nWidth As Long, nHeight As Long
-        
-        'One of the FreeImage rotation variants requires an explicit center point; calculate one in advance.
-        Dim cx As Double, cy As Double
-        
-        cx = srcDIB.GetDIBWidth / 2
-        cy = srcDIB.GetDIBHeight / 2
-            
-        'Give FreeImage a handle to our temporary rotation image
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
-        
-        If fi_DIB <> 0 Then
-            
-            'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
-            ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
-            If enlargeCanvasToFit Then
-                
-                returnDIB = FreeImage_Rotate(fi_DIB, rotationAngle, 0)
-                nWidth = FreeImage_GetWidth(returnDIB)
-                nHeight = FreeImage_GetHeight(returnDIB)
-                
-            'Leave the canvas the same size
-            Else
-               
-               returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
-               nWidth = FreeImage_GetWidth(returnDIB)
-               nHeight = FreeImage_GetHeight(returnDIB)
-            
-            End If
-            
-            'Unload the original FreeImage source
-            FreeImage_UnloadEx fi_DIB
-            
-            If returnDIB <> 0 Then
-            
-                'Ask FreeImage to premultiply the image's alpha data, as necessary
-                If applyPostAlphaPremultiplication Then FreeImage_PreMultiplyWithAlpha returnDIB
-                
-                'Create a blank DIB to receive the rotated image from FreeImage
-                dstDIB.CreateBlank nWidth, nHeight, 32
-                            
-                'Copy the bits from the FreeImage DIB to our DIB
-                Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, nWidth, nHeight
-                
-                'With the transfer complete, release any remaining FreeImage DIBs and exit
-                FreeImage_UnloadEx returnDIB
-                FreeImageRotateDIBFast = True
-                
-            Else
-                FreeImageRotateDIBFast = False
-            End If
-            
-        Else
-            FreeImageRotateDIBFast = False
-        End If
-                
-    Else
-        FreeImageRotateDIBFast = False
-    End If
-    
-    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
-    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
-    
-    'Uncomment the line below to receive timing reports
-    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
-    
-End Function
-
 'FreeImage supports a user-defined callback for library errors.  We use this and store errors in a pdStringStack object.
 Public Sub InitializeFICallback()
+
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     Set m_Errors = New pdStringStack
     FreeImage_SetOutputMessage AddressOf FreeImage_ErrorHandler
 End Sub
@@ -2397,6 +2238,9 @@ End Function
 '
 'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong.
 Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal finalBackColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, Optional ByRef srcPalette As pdPalette = Nothing) As Long
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     
     'If FreeImage is not enabled, exit immediately
     If (Not ImageFormats.IsFreeImageEnabled()) Then
@@ -2981,6 +2825,9 @@ End Function
 '          0 if the source image is not 8bpp.
 Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette() As RGBQuad) As Long
     
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     'Make sure the source image is using a palette
     GetFreeImagePalette = FreeImage_GetColorsUsed(srcFIHandle)
     If (GetFreeImagePalette <> 0) Then
@@ -3007,6 +2854,9 @@ Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette(
 End Function
 
 Public Function GetFIDIB_8Bit(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal ptrToPixels As Long, ByVal ptrToPalette As Long, ByVal numPaletteColors As Long) As Long
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     
     'Allocate the base object
     GetFIDIB_8Bit = FreeImage_AllocateT(FIT_BITMAP, imgWidth, imgHeight, 8)
@@ -3095,6 +2945,9 @@ End Function
 ' relevant color depth, shaving previous ms off the actual export+import step.)
 Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PD_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0) As Boolean
     
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     Dim fi_Size As Long
     If FreeImage_SaveToMemoryEx(dstFormat, srcFI_Handle, m_ExportPreviewBytes, fi_SaveFlags, False, fi_Size) Then
         
@@ -3151,12 +3004,18 @@ End Function
 ' responsiveness of export dialogs.  When such a dialog is unloaded, you can call this function to forcibly reclaim the memory
 ' associated with that cache.
 Public Sub ReleasePreviewCache(Optional ByVal unloadThisFIHandleToo As Long = 0)
+    
+    'Ensure library is available before proceeding
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
+    
     Erase m_ExportPreviewBytes
     Set m_ExportPreviewDIB = Nothing
     If (unloadThisFIHandleToo <> 0) Then ReleaseFreeImageObject unloadThisFIHandleToo
+    
 End Sub
 
 Public Sub ReleaseFreeImageObject(ByVal srcFIHandle As Long)
+    If (m_FreeImageHandle = 0) Then InitializeFreeImage True
     FreeImage_Unload srcFIHandle
 End Sub
 
