@@ -65,9 +65,9 @@ Public Sub Main()
     
     m_ProgramStartupSuccessful = False
     
-    'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.  But just in case,
-    ' continue loading even if the common control module load fails.
-    On Error Resume Next
+    'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.
+    ' But just in case, continue loading even if the common control module load fails.
+    On Error GoTo DamnThisPCisOld
     
     'The following block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
     
@@ -86,7 +86,8 @@ Public Sub Main()
         .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
     End With
     InitCommonControlsEx iccex
-    
+
+DamnThisPCisOld:
     'If an error occurs, attempt to initiate the Win9x version, then reset error handling
     If Err Then
         InitCommonControls
@@ -100,6 +101,10 @@ Public Sub Main()
     ' - we manually track program run state.  See additional details at the top of this module,
     ' where m_IsProgramRunning is declared.
     m_IsProgramRunning = True
+    
+    'On Win 7+, manually enable DEP.  This may decrease issues with low-quality 3rd-party virus
+    ' and malware scanners, and PD works just fine with DEP enabled.
+    OS.EnableProcessDEP
     
     'FormMain can now be loaded.  (We load it first, because many initialization steps silently interact with it,
     ' like loading menu icons or prepping toolboxes.)  That said, the first step of FormMain's load process is calling

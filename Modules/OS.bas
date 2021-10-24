@@ -288,6 +288,7 @@ Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As 
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32FirstW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
 Private Declare Function ProcessNext Lib "kernel32" Alias "Process32NextW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
 Private Declare Function RegisterApplicationRestart Lib "kernel32" (ByVal pwzCommandline As Long, ByVal dwFlags As Long) As Long
+Private Declare Function SetProcessDEPPolicy Lib "kernel32" (ByVal dwFlags As Long) As Long
 Private Declare Function UnregisterApplicationRestart Lib "kernel32" () As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
@@ -627,6 +628,15 @@ Public Function CommandW(ByRef dstStringStack As pdStringStack, Optional ByVal r
     
     End If
     
+End Function
+
+'PD will attempt to forcibly enable DEP on Win 7+ (when compiled, obviously).
+' This may decrease issues with garbage 3rd-party virus and malware scanners.
+Public Function EnableProcessDEP() As Boolean
+    If (OS.IsWin7OrLater And OS.IsProgramCompiled) Then
+        Const PROCESS_DEP_ENABLE As Long = &H1&
+        SetProcessDEPPolicy PROCESS_DEP_ENABLE
+    End If
 End Function
 
 'Sometimes, a unique string is needed.  Use this function to retrieve an arbitrary GUID from WAPI.
