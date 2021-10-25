@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats_GIF"
 'Additional support functions for GIF support
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 24/October/21
-'Last update: switch static GIF encoder to new homebrew GIF encoder; FreeImage is no longer used for any GIF features!
+'Last updated: 25/October/21
+'Last update: migrate (lengthy) functions to pdGIF; this ensures better resource release after export
 'Dependencies: pdGIF (class), ImageFormats_GIF_LZW (module)
 '
 'Most image exporters exist in the ImageExporter module.  GIF is a weird exception because animated GIFs
