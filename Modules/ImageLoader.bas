@@ -1096,11 +1096,10 @@ LibAVIFDidntWork:
             If OS.IsWin7OrLater() Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
         End If
         
-        'Animated GIFs are also much faster via GDI+, but the Windows XP GIF importer has serious bugs,
-        ' so only defer to GDI+ for GIFs if we're on Win 7+.
-        If (Not tryGDIPlusFirst) Then
-            If OS.IsWin7OrLater() Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
-        End If
+        'GIFs are much faster via GDI+, but there are some known bugs parsing animated GIFs on XP.
+        ' For now, I'm not really willing to write an XP-specific workaround; hopefully animated GIFs
+        ' on XP is a rare use-case.
+        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
         
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
