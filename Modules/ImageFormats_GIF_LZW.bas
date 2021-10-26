@@ -74,7 +74,7 @@ Private Const MAX_CODE As Long = 4096       'Size of LZW dict
 Private Const EOF_CODE As Long = -1         'Internal marker for EOF
 Private Const TABLE_SIZE As Long = 5003     'Hash table needs prime size, aim for 80% occupancy (80% of 5003 = ~4096)
 
-'Name says it all Starts at 9 for 8-bpp data (because 8 bits are reserved for standard values [0-256])
+'Name says it all: starts at 9 for 8-bpp data (because 8 bits are reserved for standard values [0-255])
 ' and increases as table fills.  Smaller palettes start at the nearest power-of-two of their palette size.
 Private m_bitsPerCode As Long
 

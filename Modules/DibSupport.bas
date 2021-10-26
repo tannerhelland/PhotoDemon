@@ -884,6 +884,105 @@ Public Function ApplyAlphaCutoff_Ex(ByRef srcDIB As pdDIB, ByRef dstTransparency
     
 End Function
 
+'This function will calculate and apply an "alpha-cutoff" for a 32bpp image, using rules appropriate
+' for export to GIF format.  A transparency table is *not* required - work will be done directly on
+' the DIB itself.  (That makes this function destructive, obviously.)
+Public Function ApplyAlphaCutoff_Gif(ByRef srcDIB As pdDIB, Optional ByVal cutOff As Long = 127, Optional ByVal newBackgroundColor As Long = vbWhite) As Boolean
+    
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            Dim iData() As Byte, tmpSA As SafeArray1D
+            
+            'Premultiplied images can be processed more quickly
+            Dim alphaPremultiplied As Boolean: alphaPremultiplied = srcDIB.GetAlphaPremultiplication
+            
+            'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a LUT
+            ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+            Dim intToFloat(0 To 255) As Single
+            Dim i As Long
+            For i = 0 To 255
+                If alphaPremultiplied Then
+                    intToFloat(i) = 1 - (i / 255)
+                Else
+                    intToFloat(i) = i / 255
+                End If
+            Next i
+            
+            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
+            Dim tmpAlpha As Double
+            
+            'Retrieve RGB values from the new background color, which we'll use to composite
+            ' any semi-transparent pixels.
+            Dim backR As Long, backG As Long, backB As Long
+            backR = Colors.ExtractRed(newBackgroundColor)
+            backG = Colors.ExtractGreen(newBackgroundColor)
+            backB = Colors.ExtractBlue(newBackgroundColor)
+            
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+                srcDIB.WrapArrayAroundScanline iData, tmpSA, y
+            For x = 0 To finalX
+                
+                xLookup = x * 4
+                chkAlpha = iData(x * 4 + 3)
+                
+                'If this pixel is below the cutoff, erase it
+                If (chkAlpha < cutOff) Then
+                    iData(xLookup) = 0
+                    iData(xLookup + 1) = 0
+                    iData(xLookup + 2) = 0
+                    iData(xLookup + 3) = 0
+                
+                'Otherwise, make this pixel fully opaque and composite it against the specified backcolor
+                Else
+                    
+                    chkB = iData(xLookup)
+                    chkG = iData(xLookup + 1)
+                    chkR = iData(xLookup + 2)
+                    chkAlpha = iData(xLookup + 3)
+                    
+                    If (chkAlpha < 255) Then
+                        tmpAlpha = intToFloat(chkAlpha)
+                        
+                        If alphaPremultiplied Then
+                            iData(xLookup) = backB * tmpAlpha + chkB
+                            iData(xLookup + 1) = backG * tmpAlpha + chkG
+                            iData(xLookup + 2) = backR * tmpAlpha + chkR
+                        Else
+                            iData(xLookup) = Colors.BlendColors(backB, chkB, tmpAlpha)
+                            iData(xLookup + 1) = Colors.BlendColors(backG, chkG, tmpAlpha)
+                            iData(xLookup + 2) = Colors.BlendColors(backR, chkR, tmpAlpha)
+                        End If
+                        
+                        iData(xLookup + 3) = 255
+                        
+                    End If
+                    
+                End If
+                
+            Next x
+            Next y
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            srcDIB.UnwrapArrayFromDIB iData
+            
+            ApplyAlphaCutoff_Gif = True
+        
+        '/end DIB contains valid pixel data
+        End If
+    
+    '/end DIB is 32-bpp
+    End If
+    
+End Function
+
 'Given two DIBs and a pre-initialized transparency table, update the transparency table to make
 ' any duplicate pixels between the two images transparent.  This is used during GIF export to
 ' minimize file size, by retaining color data from the previous frame and making those pixels

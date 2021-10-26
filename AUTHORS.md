@@ -28,6 +28,7 @@ The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these
 * [FreeImage](https://freeimage.sourceforge.io/)
 * [libavif](https://github.com/AOMediaCodec/libavif)
 * [libdeflate](https://github.com/ebiggers/libdeflate)
+* [libwebp](https://developers.google.com/speed/webp)
 * [LittleCMS](http://www.littlecms.com)
 * [LZ4](https://lz4.github.io/lz4/)
 * [OptiPNG](http://optipng.sourceforge.net/)
@@ -102,6 +103,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Portablefreeware.com](http://www.portablefreeware.com/forums/viewtopic.php?t=21652)
 * [Raj Chaudhuri](https://github.com/rajch)
 * [Robert Rayment](http://rrprogs.com/)
+* [Ron van Tilburg](https://github.com/Planet-Source-Code/ron-van-tilburg-rvtvbimg__1-14210)
 * Roy K (rk)
 * Ryszard Cwenar
 * Shishi

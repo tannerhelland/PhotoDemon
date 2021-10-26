@@ -931,6 +931,18 @@ Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades
     
 End Sub
 
+'Given a palette with (potentially) one-or-more non-opaque pixels, return only the opaque colors.
+Public Function GetPalette_OpaqueColorsOnly(ByRef srcQuads() As RGBQuad) As Long
+    Dim i As Long, numOKColors As Long
+    For i = 0 To UBound(srcQuads)
+        If (srcQuads(i).Alpha = 255) Then
+            If (numOKColors < i) Then srcQuads(numOKColors) = srcQuads(i)
+            numOKColors = numOKColors + 1
+        End If
+    Next i
+    GetPalette_OpaqueColorsOnly = numOKColors
+End Function
+
 'Given an arbitrary source palette, apply said palette to the target image.  Dithering is *not* used.
 ' Colors are matched exhaustively, meaning this function slows significantly as palette size increases.
 Public Function ApplyPaletteToImage_Naive(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean

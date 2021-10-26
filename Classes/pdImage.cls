@@ -753,6 +753,15 @@ Friend Sub SuspendImage()
     If (Not CompositeBuffer Is Nothing) Then CompositeBuffer.SuspendDIB cf_Lz4, False
     If (Not CanvasBuffer Is Nothing) Then CanvasBuffer.SuspendDIB cf_Lz4, False
     
+    'After suspending everything, we're also going to release the shared compression buffer.
+    ' The main benefit of this is freeing memory - the shared compression buffer has to maintain
+    ' the worst-case post-compression size of any object that attempts to use it.  This is
+    ' usually the size of the object plus some trivial amount of bytes.  For an image-sized buffer,
+    ' this is a large ask, and while there may be a slight stutter the next time the buffer needs
+    ' to be compressed, that's a lesser usability evil than leaving behind a massive, momentarily
+    ' unnecessary memory chunk.
+    UIImages.FreeSharedCompressBuffer
+    
 End Sub
 
 'Used by various layer movement functions.  Given two layer indices, swap them.

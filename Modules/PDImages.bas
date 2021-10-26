@@ -295,5 +295,5 @@ End Sub
 ' (and the old image gets suspended), or opening a high-resource-usage tool and the background image won't be
 ' accessible for awhile.
 Public Sub SuspendImage(ByVal imgID As Long)
-    'if pdimages.IsImageNonNull(imgid) then
+    If PDImages.IsImageNonNull(imgID) Then m_PDImages(imgID).SuspendImage
 End Sub
