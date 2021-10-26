@@ -329,34 +329,9 @@ Friend Function SaveGIF_ToStream_Static(ByRef srcPDImage As pdImage, ByRef dstSt
         m_ImgPalette(0).Green = 0
         m_ImgPalette(0).Blue = 0
         
-        'This block is the "Graphics Control Extension".
-        ' It is a fixed-size struct; we only need it for describing transparency.
+        'A separate "Graphics Control Extension" writer handles this step for us.
+        SaveGIF_ToStream_Static = WriteGIF_GCE(dstStream, True, trnsIndex:=0)
         
-        'First three bytes are fixed ("introducer", "label", size)
-        dstStream.WriteByte &H21
-        dstStream.WriteByte &HF9
-        dstStream.WriteByte &H4
-        
-        'Next is an annoying packed field:
-        ' - 3 bits reserved (0)
-        ' - 3 bits disposal method (unused for static GIFs)
-        ' - 1 bit user-input flag (ignored)
-        ' - 1 bit transparent color flag
-        '
-        'For static GIFs, we only need the transparency flag
-        dstStream.WriteByte 1
-        
-        'Next is 2-byte delay time (unused in static GIFs)
-        dstStream.WriteIntU 0
-        
-        'Next is 1-byte transparent color index, which is always 0 in PD
-        dstStream.WriteByte 0
-        
-        'Next is 1-byte block terminator (always 0)
-        dstStream.WriteByte 0
-        
-        'Graphics Control Extension is done
-    
     End If
     
     'Next up is an "image descriptor", basically a frame header.
@@ -381,9 +356,8 @@ Friend Function SaveGIF_ToStream_Static(ByRef srcPDImage As pdImage, ByRef dstSt
     'All that's left are the pixel bits.  These are prefaced by a byte describing the
     ' minimum LZW code size.  This is a minimum of 2, a maximum of the power-of-2 size
     ' of the frame's palette (global or local).
-    Dim lzwCodeSize As Long, pow2forGP As Long
-    pow2forGP = Pow2FromColorCount(numColorsInPalette) - 1
-    lzwCodeSize = pow2forGP + 1
+    Dim lzwCodeSize As Long
+    lzwCodeSize = Pow2FromColorCount(numColorsInPalette)
     If (lzwCodeSize < 2) Then lzwCodeSize = 2
     dstStream.WriteByte lzwCodeSize
     
@@ -1392,7 +1366,7 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
     'For animated images, we now need to place a custom application extension (first used by Netscape)
     ' to declare the loop behavior of the GIF. See https://en.wikipedia.org/wiki/GIF#Animated_GIF for details.
     ' (There will be various magic numbers used here; the wiki page shares more details on them.)
-    ' Note that un-looping GIFs can skip this entirely.
+    ' Note that non-looping GIFs can skip this block entirely.
     Dim loopCount As Long
     loopCount = cParams.GetLong("animation-loop-count", 1)
     If (loopCount > 65536) Then loopCount = 65536
@@ -1435,50 +1409,29 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
             'All frames are preceded by a "Graphics Control Extension".
             ' This is a fixed-size struct describing things like frame delay, transparency presence, etc.
             
-            'First three bytes are fixed ("introducer", "label", size)
-            dstStream.WriteByte &H21
-            dstStream.WriteByte &HF9
-            dstStream.WriteByte &H4
-            
-            'Next is an annoying packed field:
-            ' - 3 bits reserved (0)
-            ' - 3 bits disposal method
-            ' - 1 bit user-input flag (ignored)
-            ' - 1 bit transparent color flag
-            Dim tmpBitField As Long
-            tmpBitField = 0
-            tmpBitField = tmpBitField Or (m_allFrames(i).frameDisposal * &H4&)
-            
-            Dim frameUsesAlpha As Boolean
+            'Precalculate some values before passing them off to the dedicated GCE writer
+            Dim frameUsesAlpha As Boolean, frameTrnsIndex As Long
             If m_allFrames(i).usesGlobalPalette Then
                 frameUsesAlpha = (m_GlobalTrnsIndex >= 0)
+                If frameUsesAlpha Then frameTrnsIndex = m_GlobalTrnsIndex
             Else
                 frameUsesAlpha = (m_allFrames(i).framePalette(0).Alpha = 0)
+                frameTrnsIndex = 0
             End If
-            If frameUsesAlpha Then tmpBitField = tmpBitField Or 1
             
-            dstStream.WriteByte tmpBitField
+            'giflib has an interesting convention where images without transparency always write the
+            ' transparent index as 255.  The GIF spec says nothing about this, but sort of warns against
+            ' it by stating "The index is present if and only if the Transparency Flag is set to 1."
+            ' I assume "present" means "non-zero" which makes giflib's behavior even stranger,
+            ' but regardless, PD just writes out a zero if the current frame doesn't use transparency.
             
-            'Next is 2-byte delay time, in centiseconds
+            'PD stores frame times as ms.  Convert to centiseconds as required by the GIF spec.
             Dim finalFrameTime As Long
             finalFrameTime = Int((m_allFrames(i).frameTime + 5) \ 10)
             If (finalFrameTime > 65535) Then finalFrameTime = 65535
-            dstStream.WriteIntU finalFrameTime
             
-            'Next is 1-byte transparent color index (always 0 in PD, but I've seen a convention in other software
-            ' to write this as 0xff when the frame isn't using alpha at all... not sure if that matters, but why not?)
-            If frameUsesAlpha Then
-                If m_allFrames(i).usesGlobalPalette Then
-                    dstStream.WriteByte m_GlobalTrnsIndex
-                Else
-                    dstStream.WriteByte 0
-                End If
-            Else
-                dstStream.WriteByte &HFF
-            End If
-            
-            'Next is 1-byte block terminator (always 0)
-            dstStream.WriteByte 0
+            'Pass final values to the writer
+            WriteOptimizedAGIFToFile_Internal = WriteGIF_GCE(dstStream, frameUsesAlpha, m_allFrames(i).frameDisposal, frameTrnsIndex, finalFrameTime)
             
             'Graphics Control Extension is done
             
@@ -1494,12 +1447,14 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
             dstStream.WriteIntU Int(m_allFrames(i).rectOfInterest.Height)
             
             'And my favorite, another packed bit-field!  (uuuuugh)
-            tmpBitField = 0
             ' - 1 bit local palette used (varies by frame)
             ' - 1 bit interlaced (PD never interlaces frames)
             ' - 1 bit sort flag (same as global table, PD can - and may - do this, but always writes 0 per giflib convention)
             ' - 2 bits reserved
             ' - 3 bits size of local color table N (describing 2 ^ n-1 colors in the palette)
+            Dim tmpBitField As Long
+            tmpBitField = 0
+            
             Dim pow2forLP As Long
             If (Not m_allFrames(i).usesGlobalPalette) Then
                 tmpBitField = tmpBitField Or &H80
@@ -1508,28 +1463,9 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
             End If
             dstStream.WriteByte tmpBitField
             
-            'There is no terminator here.  Instead, if a local palette is in use, we immediately write it
+            'There is no terminator here.  Instead, if a local palette is in use, we immediately write it.
             If (Not m_allFrames(i).usesGlobalPalette) Then
-                
-                'Ensure the local palette is a fixed power-of-2 size (we can reuse the calculation
-                ' from the bit-field, above)
-                Dim newPaletteSize As Long
-                newPaletteSize = 2 ^ (pow2forLP + 1)
-                If (m_allFrames(i).palNumColors < newPaletteSize) Then
-                    m_allFrames(i).palNumColors = newPaletteSize
-                    ReDim Preserve m_allFrames(i).framePalette(0 To newPaletteSize - 1) As RGBQuad
-                End If
-                
-                'Dump the palette to file, while swizzling to RGB order
-                Dim j As Long
-                For j = 0 To newPaletteSize - 1
-                    With m_allFrames(i).framePalette(j)
-                        dstStream.WriteByte .Red
-                        dstStream.WriteByte .Green
-                        dstStream.WriteByte .Blue
-                    End With
-                Next j
-                
+                WriteOptimizedAGIFToFile_Internal = WriteGIF_PaletteColors(dstStream, m_allFrames(i).palNumColors, m_allFrames(i).framePalette)
             End If
             
             'All that's left are the pixel bits.  These are prefaced by a byte describing the
@@ -1610,6 +1546,7 @@ Private Function WriteGIF_FileHeader(ByRef dstStream As pdStream, ByVal imgWidth
     WriteGIF_PaletteColors dstStream, gpColorCount, gpColors
     
     'The image header is now complete.
+    WriteGIF_FileHeader = True
 
 End Function
 
@@ -1629,6 +1566,7 @@ Private Function WriteGIF_PaletteColors(ByRef dstStream As pdStream, ByVal numCo
     ReDim rgbColors(0 To numColorsPadded * 3 - 1) As Byte
     
     'Iterate over all colors in the source palette (NOT the padded color count, which may be larger)
+    ' and swizzle them into the temp array.
     Dim i As Long
     For i = 0 To numColors - 1
         rgbColors(i * 3) = palColors(i).Red
@@ -1638,6 +1576,48 @@ Private Function WriteGIF_PaletteColors(ByRef dstStream As pdStream, ByVal numCo
     
     'Swizzle complete!  Dump the result to stream.
     dstStream.WriteBytesFromPointer VarPtr(rgbColors(0)), numColorsPadded * 3
+    WriteGIF_PaletteColors = True
+    
+End Function
+
+'Write an (optional) graphics control extension block.
+Private Function WriteGIF_GCE(ByRef dstStream As pdStream, ByVal transparencyActive As Boolean, Optional ByVal disposalOp As PD_GifDisposal = gd_Unknown, Optional ByVal trnsIndex As Long = 0, Optional ByVal delayTimeInCS As Long = 0) As Boolean
+
+    'This function writes an optional "Graphics Control Extension" block.
+    ' It is a fixed-size struct; we only need it for describing transparency or animation delay time.
+    ' If *NEITHER* animation delay time nor transparency are required, you do not need to write
+    ' this block.  (Skip it and save a few bytes!)
+    
+    'First three bytes are fixed ("introducer", "label", block size)
+    dstStream.WriteByte &H21
+    dstStream.WriteByte &HF9
+    dstStream.WriteByte 4
+    
+    'Next is an annoying packed field:
+    ' - 3 bits reserved (0)
+    ' - 3 bits disposal method (unused for static GIFs)
+    ' - 1 bit user-input flag (ignored)
+    ' - 1 bit transparent color flag
+    
+    'Place disposal op bits (note that this is just a value [0, 3] matching the corresponding GIF constants)
+    Dim bitField As Long
+    bitField = disposalOp * &H4&
+    
+    '...and merge transparency too
+    If transparencyActive Then bitField = bitField Or 1
+    dstStream.WriteByte bitField
+    
+    'Next is 2-byte delay time in centiseconds (uuuuugh, also this is obviously ignored by static GIFs)
+    dstStream.WriteIntU delayTimeInCS
+    
+    'Next is 1-byte transparent color index (almost always 0 in PD, but caller can specify otherwise)
+    dstStream.WriteByte trnsIndex
+    
+    'Next is 1-byte block terminator (always 0)
+    dstStream.WriteByte 0
+    
+    'This Graphics Control Extension block is complete.
+    WriteGIF_GCE = True
     
 End Function
 
