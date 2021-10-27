@@ -191,7 +191,7 @@ Private Sub cmdBar_OKClick()
                 
                 If ExportProcCallsToMacroFile(dstFile, finalMacro, 0, numMacros - 1) Then
                     Message "Macro saved successfully."
-                    Unload Me
+                    'Unload will occur automatically, c/o the command bar user control that raised this event
                 End If
                 
             End If
@@ -199,13 +199,11 @@ Private Sub cmdBar_OKClick()
         Else
             PDMsgBox "WARNING: this is not a valid macro.  You must include at least one action that modifies the image.", vbExclamation Or vbOKOnly Or vbApplicationModal, "Invalid macro"
             cmdBar.DoNotUnloadForm
-            Exit Sub
         End If
         
     Else
         PDMsgBox "WARNING: this is not a valid macro.  The last action cannot occur after the first action.", vbExclamation Or vbOKOnly Or vbApplicationModal, "Invalid macro"
         cmdBar.DoNotUnloadForm
-        Exit Sub
     End If
     
 End Sub
