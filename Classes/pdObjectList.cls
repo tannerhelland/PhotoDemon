@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PD Object List Manager
 'Copyright 2017-2021 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 07/October/20
-'Last update: new support for run-time resizing of any arbitrary child dialog, with full UI reflow
+'Last updated: 27/October/21
+'Last update: catch (and report) window maximize/restore events, in case we add availability to more tool windows
 '
 'This class is exclusively used by the NavKey module.  Look there for implementation details.
 '
@@ -574,64 +574,83 @@ Private Sub Class_Initialize()
     m_PreviewIndex = -1
 End Sub
 
-Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+'WM_EXITSIZEMOVE: set query-able flags upon resize start/finish so child controls can query it
+Private Function HandleMsg_WM_EXITSIZEMOVE(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long, ByRef eatMsg As Boolean) As Long
     
-    Dim eatMsg As Boolean: eatMsg = False
-    
-    'Enter and Escape are handled automatically
-    If (uiMsg = WM_KEYDOWN) Then
-    
-        'The only keypresses we currently care about are ENTER and ESCAPE
-        If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Then
+    Interface.SetDialogResizeFlag False
         
-            'See if this form 1) is a raised dialog, and 2) contains a command bar
-            If Interface.IsModalDialogActive() Then
-            
-                If Me.DoesTypeOfControlExist(pdct_CommandBar) Then
-                
-                    'It does!  Grab the hWnd and forward the relevant window message to it
-                    SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBar), WM_PD_DIALOG_NAVKEY, wParam, 0&
-                    ISubclass_WindowMsg = 0&
-                    eatMsg = True
-                
-                'If a command bar doesn't exist, look for a "mini command bar" instead
-                ElseIf Me.DoesTypeOfControlExist(pdct_CommandBarMini) Then
-                    SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBarMini), WM_PD_DIALOG_NAVKEY, wParam, 0&
-                    ISubclass_WindowMsg = 0&
-                    eatMsg = True
-                    
-                'No command bar exists on this form, which is fine - this could be a toolpanel, for example.
-                ' As such, there's nothing we need to do.
-                End If
-            
-            End If
-            
+    'Immediately notify the preview control, if any, of the finished resize event; it will use
+    ' this to immediately generate a new preview.
+    If (m_PreviewIndex >= 0) Then
+        
+        'If this is a normal preview control, send the message directly to it
+        If (m_SpecialPreviewHWnd = 0) Then
+            SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
+        
+        'Otherwise, we need to notify the arbitrary control specified by the user
+        Else
+            SendNotifyMessage m_SpecialPreviewHWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
         End If
-    
-    'Windows with auto-resizing are also handled specially
-    ElseIf (uiMsg = WM_SIZE) Then
-        If m_AutoResize Then
-            If IsWindowVisible(hWnd) Then PerformAutoResize
+        
+    End If
+        
+End Function
+
+'WM_GETMINMAXINFO: Windows with auto-resizing get "free" minimum size handling (we don't let users shrink
+' them below their original size, or 800x600, whichever is smaller).
+Private Function HandleMsg_WM_GETMINMAXINFO(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long, ByRef eatMsg As Boolean) As Long
+    If m_AutoResize Then
+        If IsWindowVisible(hWnd) Then
+            HandleMinMaxMsg lParam
+            HandleMsg_WM_GETMINMAXINFO = 0
+            eatMsg = True
         End If
+    End If
+End Function
+
+'WM_KEYDOWN: Enter and Escape are handled automatically
+Private Function HandleMsg_WM_KEYDOWN(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long, ByRef eatMsg As Boolean) As Long
+
+    'The only keypresses we currently care about are ENTER and ESCAPE
+    If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Then
     
-    'Windows with auto-resizing also get "free" minimum size handling (we don't let users shrink them below
-    ' their original size, or 800x600, whichever is smaller).
-    ElseIf (uiMsg = WM_GETMINMAXINFO) Then
-        If m_AutoResize Then
-            If IsWindowVisible(hWnd) Then
-                HandleMinMaxMsg lParam
-                ISubclass_WindowMsg = 0
+        'See if this form 1) is a raised dialog, and 2) contains a command bar
+        If Interface.IsModalDialogActive() Then
+        
+            If Me.DoesTypeOfControlExist(pdct_CommandBar) Then
+            
+                'It does!  Grab the hWnd and forward the relevant window message to it
+                SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBar), WM_PD_DIALOG_NAVKEY, wParam, 0&
+                HandleMsg_WM_KEYDOWN = 0&
                 eatMsg = True
+            
+            'If a command bar doesn't exist, look for a "mini command bar" instead
+            ElseIf Me.DoesTypeOfControlExist(pdct_CommandBarMini) Then
+                SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBarMini), WM_PD_DIALOG_NAVKEY, wParam, 0&
+                HandleMsg_WM_KEYDOWN = 0&
+                eatMsg = True
+                
+            'No command bar exists on this form, which is fine - this could be a toolpanel, for example.
+            ' As such, there's nothing we need to do.
             End If
+        
         End If
+        
+    End If
     
-    'Set query-able flags upon resize start/finish so our child controls can query it
-    ElseIf (uiMsg = WM_ENTERSIZEMOVE) Then
-        Interface.SetDialogResizeFlag True
-        
-    ElseIf (uiMsg = WM_EXITSIZEMOVE) Then
-        Interface.SetDialogResizeFlag False
-        
+End Function
+
+'WM_SIZE: Windows with auto-resizing are also handled specially
+Private Function HandleMsg_WM_SIZE(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long, ByRef eatMsg As Boolean) As Long
+
+    If m_AutoResize Then
+        If IsWindowVisible(hWnd) Then PerformAutoResize
+    End If
+    
+    'Maximize and Restore events also require special handling
+    Const SIZE_MAXIMIZED As Long = 2, SIZE_RESTORE As Long = 0
+    If (wParam = SIZE_MAXIMIZED) Or (wParam = SIZE_RESTORE) Then
+    
         'Immediately notify the preview control, if any, of the finished resize event; it will use
         ' this to immediately generate a new preview.
         If (m_PreviewIndex >= 0) Then
@@ -646,6 +665,34 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             End If
             
         End If
+        
+    End If
+    
+End Function
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+    
+    Dim eatMsg As Boolean: eatMsg = False
+    
+    'Enter and Escape are handled automatically
+    If (uiMsg = WM_KEYDOWN) Then
+        ISubclass_WindowMsg = HandleMsg_WM_KEYDOWN(hWnd, uiMsg, wParam, lParam, dwRefData, eatMsg)
+    
+    'Windows with auto-resizing are also handled specially
+    ElseIf (uiMsg = WM_SIZE) Then
+        ISubclass_WindowMsg = HandleMsg_WM_SIZE(hWnd, uiMsg, wParam, lParam, dwRefData, eatMsg)
+        
+    'Windows with auto-resizing also get "free" minimum size handling (we don't let users shrink them below
+    ' their original size, or 800x600, whichever is smaller).
+    ElseIf (uiMsg = WM_GETMINMAXINFO) Then
+        ISubclass_WindowMsg = HandleMsg_WM_GETMINMAXINFO(hWnd, uiMsg, wParam, lParam, dwRefData, eatMsg)
+        
+    'Set query-able flags upon resize start/finish so our child controls can query it
+    ElseIf (uiMsg = WM_ENTERSIZEMOVE) Then
+        Interface.SetDialogResizeFlag True
+        
+    ElseIf (uiMsg = WM_EXITSIZEMOVE) Then
+        ISubclass_WindowMsg = HandleMsg_WM_EXITSIZEMOVE(hWnd, uiMsg, wParam, lParam, dwRefData, eatMsg)
      
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then

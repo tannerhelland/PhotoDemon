@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form FormAnimation 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animation options"
    ClientHeight    =   6300
    ClientLeft      =   120
@@ -20,12 +19,10 @@ Begin VB.Form FormAnimation
    EndProperty
    HasDC           =   0   'False
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   420
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsAnimated 
       Height          =   975
       Left            =   6240
