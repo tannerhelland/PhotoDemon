@@ -3,12 +3,12 @@ Attribute VB_Name = "Macros"
 'PhotoDemon Macro Interface
 'Copyright 2001-2021 by Tanner Helland
 'Created: 10/21/01
-'Last updated: 21/June/18
-'Last update: better segregate functionality into discrete chunks; this lets us reuse things like the
-'             XML exporter in other places (e.g. the new "Create macro from history" tool)
+'Last updated: 27/October/21
+'Last update: merge all validation into one place, and add an explicit check for "Original image state"
+'             process ID (see https://github.com/tannerhelland/PhotoDemon/issues/377)
 '
 'This (relatively small) sub handles all macro-related operations.  Macros are simply a recorded list
-' of program operations, which can be "played back" to automate complex lists of image processing actions.
+' of program operations, which can be "played back" to automate complex image processing actions.
 '
 'To create a macro, the user current has two options:
 ' 1) They can "record" themselves applying a series of actions to an image.
@@ -21,10 +21,11 @@ Attribute VB_Name = "Macros"
 ' of actions can be applied to any combination of images automatically.  This is a trademark feature of
 ' the program.
 '
-'As of 2014, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's new
-' string-based param design, and all macro settings are saved as XML files.  This makes them human-readable
-' and human-editable, but it also means that old macro files are no longer supported.  Users of old macro
-' files are automatically warned of this change if they try to load an outdated macro file.
+'As of 2014, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's
+' new string-based parameter design, and all macro settings are saved as XML files.  This makes them
+' human-readable and human-editable, but it also means that old macro files are no longer supported.
+' Users of old macro files are automatically warned of this change if they try to load an outdated
+' macro file.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -88,18 +89,14 @@ Public Sub StopMacro()
     numOfValidProcesses = 0
     
     For i = 0 To m_ProcessCount
-        With m_Processes(i)
-            If (Len(.pcID) <> 0) And (Not .pcRaiseDialog) And .pcRecorded Then
-                numOfValidProcesses = numOfValidProcesses + 1
-            End If
-        End With
+        If IsActionOKForMacro(m_Processes(i)) Then numOfValidProcesses = numOfValidProcesses + 1
     Next i
     
-    If (numOfValidProcesses = 0) Then
+    If (numOfValidProcesses <= 0) Then
     
         'Warn the user that this macro won't be saved unless they keep recording
         Dim msgReturn As VbMsgBoxResult
-        msgReturn = Interface.PDMsgBox("This macro does not contain any recordable actions.  Are you sure you want to stop recording?" & vbCrLf & vbCrLf & "(Press No to continue recording.)", vbExclamation Or vbYesNo, "Warning: invalid macro")
+        msgReturn = Interface.PDMsgBox("This macro does not contain any recordable actions.  Are you sure you want to stop recording?" & vbCrLf & vbCrLf & "(Press No to continue recording.)", vbExclamation Or vbYesNo, "Warning")
         
         If (msgReturn = vbYes) Then
             
@@ -109,7 +106,7 @@ Public Sub StopMacro()
             'Reset the macro engine and exit
             Macros.SetMacroStatus MacroSTOP
             m_ProcessCount = 0
-            Message "Macro abandoned."
+            Message "Macro canceled."
             Exit Sub
         
         'If the user clicks anything but "yes", exit without making changes (e.g. let them continue recording).
@@ -137,7 +134,7 @@ SaveMacroAgain:
         msgReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbExclamation Or vbYesNo, "Warning: last chance to save macro")
         If (msgReturn = vbNo) Then GoTo SaveMacroAgain
         
-        Message "Macro abandoned."
+        Message "Macro canceled."
         
     End If
             
@@ -153,7 +150,7 @@ Public Function DisplayMacroSaveDialog(Optional ByRef srcFilename As String = vb
     cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
     
     Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Save macro data")
+    cdTitle = g_Language.TranslateMessage("Save macro")
     
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
@@ -189,11 +186,7 @@ Public Function ExportProcCallsToMacroFile(ByRef dstFilename As String, ByRef sr
     
     Dim i As Long
     For i = startIndex To endIndex
-        With srcProcCalls(i)
-            If (LenB(.pcID) <> 0) And (Not .pcRaiseDialog) And .pcRecorded Then
-                numValidActions = numValidActions + 1
-            End If
-        End With
+        If IsActionOKForMacro(srcProcCalls(i)) Then numValidActions = numValidActions + 1
     Next i
     
     'Due to the previous check at the top of this function, we already know how many valid functions are in the process list,
@@ -208,11 +201,10 @@ Public Function ExportProcCallsToMacroFile(ByRef dstFilename As String, ByRef sr
     
     For i = startIndex To endIndex
         
-        With srcProcCalls(i)
-        
-            'We only want to write out valid processes, using the same criteria as the validation loop above.
-            If (LenB(.pcID) <> 0) And (Not .pcRaiseDialog) And .pcRecorded Then
-        
+        If IsActionOKForMacro(srcProcCalls(i)) Then
+            
+            With srcProcCalls(i)
+            
                 numValidActions = numValidActions + 1
                 
                 'Start each process entry with a unique identifier
@@ -232,10 +224,10 @@ Public Function ExportProcCallsToMacroFile(ByRef dstFilename As String, ByRef sr
                 xmlEngine.CloseTag "processEntry"
                 xmlEngine.WriteBlankLine
                 
-            End If
+            End With
             
-        End With
-        
+        End If
+            
     Next i
     
     'With all tags successfully written, we can now close the XML data and write it out to file.
@@ -244,6 +236,32 @@ Public Function ExportProcCallsToMacroFile(ByRef dstFilename As String, ByRef sr
     'Update the Recent Macros list
     If addToRecentMacroList Then g_RecentMacros.MRU_AddNewFile dstFilename
     
+End Function
+
+'PD validates all macro actions at record-time and playback-time, to try and avoid
+' storing/playing any actions that will break the application.
+Private Function IsActionOKForMacro(ByRef srcProcCall As PD_ProcessCall) As Boolean
+    
+    IsActionOKForMacro = False
+    
+    With srcProcCall
+        
+        'To be considered valid, a process must...
+        ' 1) have a valid ID
+        IsActionOKForMacro = (LenB(.pcID) <> 0)
+        
+        ' 2) not have raised a dialog (those can't interrupt macro playback)
+        IsActionOKForMacro = IsActionOKForMacro And (Not .pcRaiseDialog)
+        
+        ' 3) have explicitly been marked as "recordable"
+        IsActionOKForMacro = IsActionOKForMacro And .pcRecorded
+        
+        ' 4) not have a name matching several special IDs which are specifically disallowed
+        '    (e.g. "Original image", which is used to set the first save point for an image)
+        IsActionOKForMacro = IsActionOKForMacro And (Not Strings.StringsEqual(.pcID, "Original image", True))
+        
+    End With
+        
 End Function
 
 'All macro-related UI instructions should be placed here, as PD can terminate a macro recording session for any number of reasons,
@@ -283,13 +301,13 @@ Public Sub PlayMacro()
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Open Macro File")
+    cdTitle = g_Language.TranslateMessage("Open macro")
         
     'If we get a path, load that file
     Dim sFile As String
     If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
-        Message "Loading macro data..."
+        Message "Loading macro..."
         
         'Save this macro's folder as the default macro path
         UserPrefs.SetMacroPath sFile
@@ -297,7 +315,7 @@ Public Sub PlayMacro()
         Macros.PlayMacroFromFile sFile
         
     Else
-        Message "Macro load canceled."
+        Message "Macro canceled."
     End If
     
     'Re-enable user input
@@ -358,7 +376,7 @@ Public Function PlayMacroFromFile(ByRef srcMacroPath As String) As Boolean
                             End With
                             
                         Else
-                            Debug.Print "Expected macro entry could not be found!"
+                            PDDebug.LogAction "Expected macro entry could not be found!"
                         End If
                     
                     Next i
@@ -376,7 +394,7 @@ Public Function PlayMacroFromFile(ByRef srcMacroPath As String) As Boolean
                 End If
             
             Case Else
-                Message "Incompatible macro version found.  Macro playback abandoned."
+                Message "Incompatible macro found.  Macro canceled."
                 PlayMacroFromFile = False
                 Exit Function
         
@@ -386,22 +404,25 @@ Public Function PlayMacroFromFile(ByRef srcMacroPath As String) As Boolean
         PlayMacroFromFile = True
         
     Else
-    
-        PDMsgBox "Unfortunately, this macro file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch." & vbCrLf & vbCrLf & "(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbExclamation Or vbOKOnly, "Unsupported macro file"
+        Message "Incompatible macro found.  Macro canceled."
         PlayMacroFromFile = False
         Exit Function
-        
     End If
     
     'Now we run a loop through the macro structure, calling the software processor with all the necessary information for each action
-    Message "Processing macro data..."
+    Message "Playing macro..."
     
     If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroPLAYBACK
     
     For i = 0 To m_ProcessCount - 1
-        With m_Processes(i)
-            Processor.Process .pcID, .pcRaiseDialog, .pcParameters, .pcUndoType, .pcTool, .pcRecorded
-        End With
+        
+        'Perform quick post-validation on the macro action, "just in case"
+        If IsActionOKForMacro(m_Processes(i)) Then
+            With m_Processes(i)
+                Processor.Process .pcID, .pcRaiseDialog, .pcParameters, .pcUndoType, .pcTool, .pcRecorded
+            End With
+        End If
+        
     Next i
     
     If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroSTOP
