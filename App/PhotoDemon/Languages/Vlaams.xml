@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.59</langversion>
+<langversion>8.0.60</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -1768,23 +1768,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Optimalisatie van het animatieframe %1 van %2</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Besparing van het animatieframe %1 van %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Afrondend beeld</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3636,6 +3619,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Optimalisatie van het animatieframe %1 van %2</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Besparing van het animatieframe %1 van %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Afrondend beeld</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>Nieuwe laag</translation>
 </phrase>
@@ -5430,8 +5430,8 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>Normale knoppen</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>

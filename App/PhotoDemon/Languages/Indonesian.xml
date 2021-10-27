@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.512</langversion>
+<langversion>6.6.513</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1771,23 +1771,6 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation></translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3637,6 +3620,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation></translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>lapisan baru</translation>
 </phrase>
@@ -5430,8 +5430,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>tombol normal</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>

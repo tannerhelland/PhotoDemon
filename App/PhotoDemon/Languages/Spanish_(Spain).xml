@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.71</langversion>
+<langversion>8.0.72</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -1768,23 +1768,6 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Optimizando el cuadro de animación %1 de %2</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Guardando el cuadro de la animación %1 de %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Imagen final</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3636,6 +3619,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Optimizando el cuadro de animación %1 de %2</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Guardando el cuadro de la animación %1 de %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Imagen final</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>Nueva capa</translation>
 </phrase>
@@ -5430,8 +5430,8 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>Botones estándar</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.73</langversion>
+<langversion>8.0.74</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -1768,23 +1768,6 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Optymalizacja klatki animacji %1 z %2</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Zapisywanie animacji klatki %1 z %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Komletowanie obrazu</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3630,6 +3613,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Optymalizacja klatki animacji %1 z %2</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Zapisywanie animacji klatki %1 z %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Komletowanie obrazu</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>Nowa warstwa</translation>
 </phrase>
@@ -5424,8 +5424,8 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>Normalne przyciski</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>

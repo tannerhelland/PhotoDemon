@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.64</langversion>
+<langversion>8.0.65</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -1768,23 +1768,6 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Ottimizzazione del fotogramma di animazione %1 di %2</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Salvataggio del fotogramma di animazione %1 di %2</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Finalizzare l'immagine</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3635,6 +3618,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Ottimizzazione del fotogramma di animazione %1 di %2</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Salvataggio del fotogramma di animazione %1 di %2</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Finalizzare l'immagine</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>Nuovo livello</translation>
 </phrase>
@@ -5428,8 +5428,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>Pulsanti normali</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.45</langversion>
+<langversion>1.0.46</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1770,23 +1770,6 @@ Bu görsel formatı için desteği etkinleştirmek için, FreeImage.dll dosyası
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>%2 animasyon karesinden %1. kaydediliyor</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Görsel tamamlanıyor</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3609,6 +3592,23 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>%2 animasyon karesinden %1. kaydediliyor</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Görsel tamamlanıyor</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation></translation>
 </phrase>
@@ -5402,7 +5402,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
+<original>Medium buttons</original>
 <translation></translation>
 </phrase>
 

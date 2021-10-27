@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.939</langversion>
+<langversion>9.0.940</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1768,23 +1768,6 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 </phrase>
 
 <!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>Optimizing animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird optimiert</translation>
-</phrase>
-
-<phrase>
-<original>Saving animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image</original>
-<translation>Bild wird finalisiert</translation>
-</phrase>
-
-<!-- ImageFormats_GIF.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -3638,6 +3621,23 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation>Animations-Frame %1 von %2 wird optimiert</translation>
+</phrase>
+
+<phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation>Bild wird finalisiert</translation>
+</phrase>
+
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>Neuer Layer</translation>
 </phrase>
@@ -5432,8 +5432,8 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Normal buttons</original>
-<translation>Normale Buttons</translation>
+<original>Medium buttons</original>
+<translation></translation>
 </phrase>
 
 <phrase>
