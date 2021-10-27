@@ -298,21 +298,19 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             processFound = True
         
         'Non-destructive layer header modifications are handled by their own specialized non-destructive processor (below).
-        ' The only way this case will ever be triggered in *this function* is during macro playback.  If encountered, all
-        ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
-        ' ID, and the second is a layer setting value.
-        ElseIf Strings.StringsEqual(processID, "Modify layer", True) Then
+        ' The only way this case will ever be triggered in *this function* is during macro playback.
+        ElseIf Strings.StringsEqualLeft(processID, "Modify layer", True) Then
             If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
-                PDImages.GetActiveImage.GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+                MiniProcess_NDFX_MacroPlayback thisProcData, False 'Forward the command to a dedicated processor
             End If
             processFound = True
         
         'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
         ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
         ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
-        ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
+        ElseIf Strings.StringsEqualLeft(processID, "Modify text layer", True) Then
             If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
-                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+                MiniProcess_NDFX_MacroPlayback thisProcData, True 'Forward the command to a dedicated processor
             End If
             processFound = True
                     
@@ -656,6 +654,30 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'Mark the processor as ready
     m_Processing = False
+    
+End Sub
+
+Private Sub MiniProcess_NDFX_MacroPlayback(ByRef srcProcData As PD_ProcessCall, Optional ByVal useTextMode As Boolean = False)
+    
+    'Retrieve any associated parameters from the macro
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString srcProcData.pcParameters
+    
+    'Action ID may be a generic layer property OR a text layer property (it doesn't matter)
+    Dim actionID As Long, defParamValue As Variant
+    actionID = cParams.GetLong("id", nameGuaranteedXMLSafe:=True)
+    defParamValue = cParams.GetVariant("value")
+    
+    Dim idxLayer As Long
+    idxLayer = PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'The layers module handles everything from here
+    If (useTextMode And PDImages.GetActiveImage.GetLayerByIndex(idxLayer).IsLayerText()) Then
+        PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty actionID, defParamValue
+    Else
+        Layers.SetGenericLayerProperty actionID, defParamValue, idxLayer
+    End If
     
 End Sub
 

@@ -27,6 +27,34 @@ End Enum
     Const PDL_Image = 0, PDL_TextBasic = 1, PDL_TextAdvanced = 2, PDL_Adjustment = 3
 #End If
 
+'This class supports getting/setting layer properties via generic Get/SetGenericLayerProperty functions.  This enum is
+' used to differentiate between layer properties, and any additions to LayerData, above, should be mirrored here.
+Public Enum PD_LayerGenericProperty
+    pgp_Name = 0
+    pgp_GroupID = 1
+    pgp_Opacity = 2
+    pgp_BlendMode = 3
+    pgp_OffsetX = 4
+    pgp_OffsetY = 5
+    pgp_CanvasXModifier = 6
+    pgp_CanvasYModifier = 7
+    pgp_Angle = 8
+    pgp_Visibility = 9
+    pgp_NonDestructiveFXActive = 10
+    pgp_ResizeQuality = 11
+    pgp_ShearX = 12
+    pgp_ShearY = 13
+    pgp_AlphaMode = 14
+    pgp_RotateCenterX = 15
+    pgp_RotateCenterY = 16
+    pgp_FrameTime = 17
+End Enum
+
+#If False Then
+    Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
+    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16, pgp_FrameTime = 17
+#End If
+
 'Layer resize quality is defined different from other resampling options in the project.
 ' (Only a subset of options are exposed, for performance reasons.)
 Public Enum PD_LayerResizeQuality
@@ -41,8 +69,8 @@ End Enum
 
 'Used when converting layers to standalone images and vice-versa
 Private Type LayerConvertCache
-    Id As Long
-    MustConvert As Boolean
+    id As Long
+    mustConvert As Boolean
     srcLayerName As String
     srcImageWidth As Long
     srcImageHeight As Long
@@ -889,12 +917,12 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
         
         For i = 0 To .GetNumOfLayers - 1
             
-            listOfLayers(i).Id = .GetLayerByIndex(i).GetLayerID
+            listOfLayers(i).id = .GetLayerByIndex(i).GetLayerID
             
             If (targetIndex = -1) Then
-                listOfLayers(i).MustConvert = True
+                listOfLayers(i).mustConvert = True
             Else
-                listOfLayers(i).MustConvert = (i = targetIndex)
+                listOfLayers(i).mustConvert = (i = targetIndex)
             End If
             
         Next i
@@ -906,9 +934,9 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
     ' split it into a separate image, then remove it from the image.
     For i = 0 To UBound(listOfLayers)
     
-        If listOfLayers(i).MustConvert Then
+        If listOfLayers(i).mustConvert Then
             
-            Message "Copying layer ""%1"" to standalone image...", srcImage.GetLayerByID(listOfLayers(i).Id).GetLayerName()
+            Message "Copying layer ""%1"" to standalone image...", srcImage.GetLayerByID(listOfLayers(i).id).GetLayerName()
             
             'Load said layer as a separate image
             Dim tmpLayerFile As String
@@ -920,7 +948,7 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
             Dim newLayerID As Long
             newLayerID = tmpImage.CreateBlankLayer
-            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id)
+            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).id)
             
             'Force the layer to visible
             tmpImage.GetLayerByID(newLayerID).SetLayerVisibility True
@@ -936,7 +964,7 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             'Construct a title (name) for the new image, and insert the original layer index.
             ' (This is helpful if the user decides to reconstruct the layers into an image later.)
             Dim sTitle As String
-            sTitle = srcImage.GetLayerByID(listOfLayers(i).Id).GetLayerName()
+            sTitle = srcImage.GetLayerByID(listOfLayers(i).id).GetLayerName()
             If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
             
             'We can now use the standard image load routine to import the temporary file
@@ -1071,15 +1099,15 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
     For i = 0 To UBound(listOfImages)
         
         'We want to convert all images *except* the currently active one
-        listOfImages(i).MustConvert = (PDImages.GetImageByID(openImageIDs.GetInt(i)).imageID <> PDImages.GetActiveImageID)
+        listOfImages(i).mustConvert = (PDImages.GetImageByID(openImageIDs.GetInt(i)).imageID <> PDImages.GetActiveImageID)
         
         'For each image-to-be-converted...
-        If listOfImages(i).MustConvert Then
+        If listOfImages(i).mustConvert Then
             
             'Make a note of the image's ID and size
-            listOfImages(i).Id = openImageIDs.GetInt(i)
-            listOfImages(i).srcImageWidth = PDImages.GetImageByID(listOfImages(i).Id).Width
-            listOfImages(i).srcImageHeight = PDImages.GetImageByID(listOfImages(i).Id).Height
+            listOfImages(i).id = openImageIDs.GetInt(i)
+            listOfImages(i).srcImageWidth = PDImages.GetImageByID(listOfImages(i).id).Width
+            listOfImages(i).srcImageHeight = PDImages.GetImageByID(listOfImages(i).id).Height
             
             'Track max width/height; we may need these to resize the image
             If (listOfImages(i).srcImageWidth > maxWidth) Then maxWidth = listOfImages(i).srcImageWidth
@@ -1087,7 +1115,7 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
             
             'Next, pull the name of the base layer.  This is the layer name we want to match
             ' against the layer names in our existing image, to try and identify matches.
-            listOfImages(i).srcLayerName = PDImages.GetImageByID(listOfImages(i).Id).GetLayerByIndex(0).GetLayerName()
+            listOfImages(i).srcLayerName = PDImages.GetImageByID(listOfImages(i).id).GetLayerByIndex(0).GetLayerName()
             
         End If
         
@@ -1132,14 +1160,14 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
     ' to this image - as a unique layer - in turn.
     For i = 0 To UBound(listOfImages)
         
-        If listOfImages(i).MustConvert Then
+        If listOfImages(i).mustConvert Then
             
             Message "Adding image ""%1"" as layer...", listOfImages(i).srcLayerName
             
             'Ask the target file to write itself out to a temp PDI file
             Dim tmpLayerFile As String
             tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
-            If Saving.SavePDI_Image(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
+            If Saving.SavePDI_Image(PDImages.GetImageByID(listOfImages(i).id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
                 
                 'We now want to load the resulting image as a standalone layer.  We use a convenient
                 ' wrapper function that ensures the image is loaded as a single layer, even if it
@@ -1277,15 +1305,15 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
         
         For i = 0 To UBound(listOfImages)
         
-            If listOfImages(i).MustConvert Then
+            If listOfImages(i).mustConvert Then
             
                 'Prompt before closing
                 If (unloadSourceImages = 1) Then
-                    CanvasManager.FullPDImageUnload listOfImages(i).Id
+                    CanvasManager.FullPDImageUnload listOfImages(i).id
                 
                 'Close without prompting
                 ElseIf (unloadSourceImages = 2) Then
-                    CanvasManager.UnloadPDImage listOfImages(i).Id
+                    CanvasManager.UnloadPDImage listOfImages(i).id
                     
                 End If
             
@@ -2097,5 +2125,19 @@ Public Sub TrimEmptyBorders(ByRef srcImage As pdImage, Optional ByVal srcLayerIn
     'Make sure the layer is null-padded before trimming
     PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height, True
     PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).CropNullPaddedLayer
+    
+End Sub
+
+Public Sub SetGenericLayerProperty(ByVal propID As PD_LayerGenericProperty, ByVal propValue As Variant, Optional ByVal srcLayerIndex As Long = -1)
+    
+    'Failsafe checks
+    If (Not PDImages.IsImageNonNull(PDImages.GetActiveImageID)) Then Exit Sub
+    
+    'Validate layer index and translate into a fixed ID >= 0
+    If (srcLayerIndex < 0) Then srcLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    If (srcLayerIndex >= PDImages.GetActiveImage.GetNumOfLayers()) Then srcLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'Apply the new property.  (It's up to the layer object to validate any inputs.)
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetGenericLayerProperty propID, propValue
     
 End Sub

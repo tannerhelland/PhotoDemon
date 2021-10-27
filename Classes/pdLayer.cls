@@ -89,34 +89,6 @@ End Type
 'Local instance of layer data for this layer
 Private myLayerData As PD_LayerData
 
-'This class supports getting/setting layer properties via generic Get/SetGenericLayerProperty functions.  This enum is
-' used to differentiate between layer properties, and any additions to LayerData, above, should be mirrored here.
-Public Enum PD_LayerGenericProperty
-    pgp_Name = 0
-    pgp_GroupID = 1
-    pgp_Opacity = 2
-    pgp_BlendMode = 3
-    pgp_OffsetX = 4
-    pgp_OffsetY = 5
-    pgp_CanvasXModifier = 6
-    pgp_CanvasYModifier = 7
-    pgp_Angle = 8
-    pgp_Visibility = 9
-    pgp_NonDestructiveFXActive = 10
-    pgp_ResizeQuality = 11
-    pgp_ShearX = 12
-    pgp_ShearY = 13
-    pgp_AlphaMode = 14
-    pgp_RotateCenterX = 15
-    pgp_RotateCenterY = 16
-    pgp_FrameTime = 17
-End Enum
-
-#If False Then
-    Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
-    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16, pgp_FrameTime = 17
-#End If
-
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
 ' stored in this struct.
 Private Type GenericVectorData
