@@ -59,7 +59,7 @@ Private m_Toolboxes() As PD_Toolbox_Data
 
 'hWnd and window bits are stored using basic key/value pairs.  We must reset these before exiting the program
 ' or VB will crash.
-Private m_WindowBits As pdDictionary
+Private m_windowBits As pdDictionary
 
 'Before loading any toolboxes, call this sub to populate the initial toolbox data.  Among other thing, this loads the previous toolbox
 ' sizes from the user's preferences file.
@@ -149,7 +149,7 @@ Private Sub FillDefaultToolboxValues()
             Select Case i
             
                 Case PDT_LeftToolbox
-                    .DefaultSize = FixDPI(144)
+                    .DefaultSize = FixDPI(98)
                     .MinSize = FixDPI(48)
                     .MaxSize = FixDPI(188)
                 
@@ -240,8 +240,8 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
     
     'Cache default VB6 window bits (only the first time!), then set new window bits matching the
     ' parent/child relationship we just established.
-    If (m_WindowBits Is Nothing) Then Set m_WindowBits = New pdDictionary
-    If (Not m_WindowBits.DoesKeyExist(toolboxHWnd)) Then m_WindowBits.AddEntry toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE)
+    If (m_windowBits Is Nothing) Then Set m_windowBits = New pdDictionary
+    If (Not m_windowBits.DoesKeyExist(toolboxHWnd)) Then m_windowBits.AddEntry toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE)
     SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) Or WS_CHILD
     SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) And (Not WS_POPUP)
             
@@ -364,7 +364,7 @@ Public Sub ResetAllToolboxSettings()
     
     'Reset all left toolbar settings
     toolbar_Toolbox.ToggleToolCategoryLabels PD_BOOL_TRUE
-    toolbar_Toolbox.UpdateButtonSize 1
+    toolbar_Toolbox.UpdateButtonSize tbs_Small
     
     'The left-side toolbox is a little finicky because it auto-locks its width to match precise intervals
     ' of its current button size. To simplify the process of resetting its settings, forcibly set its
@@ -399,10 +399,10 @@ End Sub
 
 'Before unloading a toolbox, call this function to unload it.  (If you don't do this, VB will crash!)
 Public Sub ReleaseToolbox(ByVal toolboxHWnd As Long)
-    If (Not m_WindowBits Is Nothing) Then
-        If m_WindowBits.DoesKeyExist(toolboxHWnd) Then
-            SetWindowLong toolboxHWnd, GWL_STYLE, m_WindowBits.GetEntry_Long(toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE))
-            m_WindowBits.DeleteEntry toolboxHWnd
+    If (Not m_windowBits Is Nothing) Then
+        If m_windowBits.DoesKeyExist(toolboxHWnd) Then
+            SetWindowLong toolboxHWnd, GWL_STYLE, m_windowBits.GetEntry_Long(toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE))
+            m_windowBits.DeleteEntry toolboxHWnd
         End If
     End If
 End Sub

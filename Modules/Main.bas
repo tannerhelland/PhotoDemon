@@ -586,7 +586,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'The primary toolbox has some options of its own.  Load them now.
     FormMain.MnuWindowToolbox(2).Checked = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    toolbar_Toolbox.UpdateButtonSize UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1), True
+    toolbar_Toolbox.UpdateButtonSize UserPrefs.GetPref_Long("Core", "Toolbox Button Size", tbs_Small), True
     
     
     '*************************************************************************************************************************************

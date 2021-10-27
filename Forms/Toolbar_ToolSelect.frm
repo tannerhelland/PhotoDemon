@@ -617,7 +617,7 @@ Private Sub Form_Load()
     
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1)
+    m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", tbs_Small)
     
     'Ensure our tool name and action stacks exist
     Set m_ToolNames = New pdStringStack

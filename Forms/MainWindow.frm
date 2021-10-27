@@ -1695,11 +1695,11 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuWindowToolbox 
             Caption         =   "Small buttons"
+            Checked         =   -1  'True
             Index           =   4
          End
          Begin VB.Menu MnuWindowToolbox 
-            Caption         =   "Normal buttons"
-            Checked         =   -1  'True
+            Caption         =   "Medium buttons"
             Index           =   5
          End
          Begin VB.Menu MnuWindowToolbox 
@@ -3793,7 +3793,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
         Case 4
             Actions.LaunchAction_ByName "window_smalltoolbuttons"
         Case 5
-            Actions.LaunchAction_ByName "window_normaltoolbuttons"
+            Actions.LaunchAction_ByName "window_mediumtoolbuttons"
         Case 6
             Actions.LaunchAction_ByName "window_largetoolbuttons"
     End Select

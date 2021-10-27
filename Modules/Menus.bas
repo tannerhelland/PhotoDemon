@@ -581,7 +581,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Display tool category titles", "window_displaytoolcategories", 9, 0, 2
         AddMenuItem "-", "-", 9, 0, 3
         AddMenuItem "Small buttons", "window_smalltoolbuttons", 9, 0, 4
-        AddMenuItem "Normal buttons", "window_normaltoolbuttons", 9, 0, 5
+        AddMenuItem "Medium buttons", "window_mediumtoolbuttons", 9, 0, 5
         AddMenuItem "Large buttons", "window_largetoolbuttons", 9, 0, 6
     AddMenuItem "Tool options", "window_tooloptions", 9, 1
     AddMenuItem "Layers", "window_layers", 9, 2

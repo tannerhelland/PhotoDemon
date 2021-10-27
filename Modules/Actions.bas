@@ -1281,7 +1281,7 @@ Private Function Launch_ByName_MenuWindow(ByRef srcMenuName As String, Optional 
             Case "window_smalltoolbuttons"
                 toolbar_Toolbox.UpdateButtonSize tbs_Small
                 
-            Case "window_normaltoolbuttons"
+            Case "window_mediumtoolbuttons"
                 toolbar_Toolbox.UpdateButtonSize tbs_Medium
                 
             Case "window_largetoolbuttons"
