@@ -89,6 +89,14 @@ Begin VB.Form FormBatchWizard
       Width           =   9855
       _ExtentX        =   17383
       _ExtentY        =   11959
+      Begin PhotoDemon.pdPictureBox picPreview 
+         Height          =   2925
+         Left            =   6600
+         Top             =   465
+         Width           =   3135
+         _ExtentX        =   0
+         _ExtentY        =   0
+      End
       Begin PhotoDemon.pdLabel lblCurrentFile 
          Height          =   285
          Left            =   330
@@ -113,7 +121,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdListBox lstFiles 
          Height          =   3405
          Left            =   120
-         TabIndex        =   42
+         TabIndex        =   6
          Top             =   0
          Width           =   6465
          _ExtentX        =   11404
@@ -171,29 +179,6 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   1085
          Caption         =   "add individual images..."
       End
-      Begin VB.PictureBox picPreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00808080&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FFFFFF&
-         Height          =   2925
-         Left            =   6600
-         ScaleHeight     =   193
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   207
-         TabIndex        =   6
-         Top             =   465
-         Width           =   3135
-      End
       Begin PhotoDemon.pdCheckBox chkEnablePreview 
          Height          =   330
          Left            =   6600
@@ -240,7 +225,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdAddFolders 
          Height          =   615
          Left            =   240
-         TabIndex        =   41
+         TabIndex        =   36
          Top             =   4995
          Width           =   3135
          _ExtentX        =   5530
@@ -596,20 +581,13 @@ Begin VB.Form FormBatchWizard
          Width           =   9735
          _ExtentX        =   17171
          _ExtentY        =   9525
-         Begin VB.PictureBox picResizeDemo 
-            Appearance      =   0  'Flat
-            AutoRedraw      =   -1  'True
-            BackColor       =   &H80000005&
-            BorderStyle     =   0  'None
-            ForeColor       =   &H80000008&
+         Begin PhotoDemon.pdPictureBox picResizeDemo 
             Height          =   750
             Left            =   6720
-            ScaleHeight     =   50
-            ScaleMode       =   3  'Pixel
-            ScaleWidth      =   191
-            TabIndex        =   36
             Top             =   2880
             Width           =   2865
+            _ExtentX        =   0
+            _ExtentY        =   0
          End
          Begin PhotoDemon.pdDropDown cmbResizeFit 
             Height          =   615
@@ -769,19 +747,13 @@ End Sub
 'Enable/disable previewing the currently selected image.  (This is helpful for camera folders full of names like "DSC1234".)
 Private Sub chkEnablePreview_Click()
     
-    picPreview.Picture = LoadPicture(vbNullString)
-        
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     If chkEnablePreview.Value Then
         If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex), True
         
     'If the user is disabling previews, clear the picture box and display a notice
     Else
-        Dim strToPrint As String
-        strToPrint = g_Language.TranslateMessage("previews disabled")
-        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
-        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
-        picPreview.Print strToPrint
+        picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 10!, False, True
     End If
     
 End Sub
@@ -809,8 +781,12 @@ Private Sub cmbOutputFormat_Click()
     
 End Sub
 
-'Show a sample of the non-intuitive "how to fit resized image in canvas" option
+'Show a sample for the unintuitive "how to fit resized image in canvas" option
 Private Sub cmbResizeFit_Click()
+    UpdateResizeSample
+End Sub
+
+Private Sub UpdateResizeSample()
     
     'Display a sample image of the selected resize method
     Dim tmpDIB As pdDIB
@@ -834,9 +810,7 @@ Private Sub cmbResizeFit_Click()
     End Select
     
     'Paint the sample image to the screen
-    picResizeDemo.Picture = LoadPicture(vbNullString)
-    tmpDIB.AlphaBlendToDC picResizeDemo.hDC
-    picResizeDemo.Picture = picResizeDemo.Image
+    picResizeDemo.CopyDIB tmpDIB, suspendTransparencyGrid:=True, useNeutralBackground:=True, drawBorderAroundImage:=True
 
 End Sub
 
@@ -938,7 +912,7 @@ Private Function AllowedToExit() As Boolean
             If (lstFiles.ListCount > 0) Then
             
                 Dim msgReturn As VbMsgBoxResult
-                msgReturn = PDMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbExclamation Or vbYesNoCancel, "Unsaved image list")
+                msgReturn = PDMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbExclamation Or vbYesNoCancel, "Unsaved changes")
                 
                 Select Case msgReturn
                     Case vbYes
@@ -1426,7 +1400,7 @@ Private Sub cmdSelectMacro_Click()
     tempPathString = UserPrefs.GetPref_String("Paths", "Macro", vbNullString)
     
     Dim cdFilter As String
-    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
+    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     'Prepare a common dialog object
@@ -1436,7 +1410,7 @@ Private Sub cmdSelectMacro_Click()
     Dim sFile As String
    
     'If the user provides a valid macro file, use that as part of the batch process
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, g_Language.TranslateMessage("Open macro"), "." & MACRO_EXT, Me.hWnd) Then
         
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = Files.FileGetPath(sFile)
@@ -1481,12 +1455,12 @@ Private Sub Form_Load()
         UpdatePhotoOpVisibility
             
         'Resize fit types
-        If PDMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
         cmbResizeFit.Clear
         cmbResizeFit.AddItem "stretching to fit", 0
         cmbResizeFit.AddItem "fit inclusively", 1
         cmbResizeFit.AddItem "fit exclusively", 2
         cmbResizeFit.ListIndex = 0
+        UpdateResizeSample
         
         'For convenience, change the default resize width and height to the current screen resolution
         If (Not g_Displays Is Nothing) Then
@@ -1524,7 +1498,7 @@ Private Sub Form_Load()
     cmbOutputOptions.AddItem "Original filenames"
     cmbOutputOptions.AddItem "Ascending numbers (1, 2, 3, etc.)"
     cmbOutputOptions.ListIndex = 0
-        
+    
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
     Dim btnIconSize As Long
     btnIconSize = Interface.FixDPI(32)
@@ -1647,14 +1621,9 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then
-            tmpDIB.RenderToPictureBox picPreview
+            picPreview.CopyDIB tmpDIB
         Else
-            picPreview.Picture = LoadPicture(vbNullString)
-            Dim strToPrint As String
-            strToPrint = g_Language.TranslateMessage("preview not available")
-            picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
-            picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
-            picPreview.Print strToPrint
+            picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 10!, False
         End If
         
         'Remember the name of the current preview; this saves us having to reload the preview any more than
@@ -1994,3 +1963,10 @@ Private Sub UpdatePhotoOpVisibility()
     picPhotoEdits.Visible = (btsPhotoOps.ListIndex <> 0)
 End Sub
 
+Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not chkEnablePreview.Value) Then picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 10!, False, True
+End Sub
+
+Private Sub picResizeDemo_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    UpdateResizeSample
+End Sub

@@ -152,7 +152,7 @@ End Sub
 
 'Sometimes (typically failure cases), PD needs to simply throw a warning message onto a picture box.
 ' This function makes it trivial.
-Public Sub PaintText(ByRef srcString As String, Optional ByVal FontSize As Single = 12!, Optional ByVal isBold As Boolean = False)
+Public Sub PaintText(ByRef srcString As String, Optional ByVal FontSize As Single = 12!, Optional ByVal isBold As Boolean = False, Optional ByVal refreshImmediately As Boolean = False)
 
     Dim dstDC As Long, dstWidth As Long, dstHeight As Long
     dstDC = ucSupport.GetBackBufferDC(True)
@@ -177,6 +177,8 @@ Public Sub PaintText(ByRef srcString As String, Optional ByVal FontSize As Singl
     tmpFont.ReleaseFromDC
     
     Set tmpFont = Nothing
+    
+    If refreshImmediately Then ucSupport.RequestRepaint True
     
 End Sub
 
