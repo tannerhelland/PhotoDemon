@@ -33,7 +33,7 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdButtonStrip btsSampleMerged 
       Height          =   465
       Left            =   240
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   915
       Width           =   2940
       _ExtentX        =   5186
@@ -49,19 +49,13 @@ Begin VB.Form toolpanel_ColorPicker
       _ExtentY        =   661
       Caption         =   "after clicking, return to previous tool"
    End
-   Begin VB.PictureBox picSample 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picSample 
       Height          =   1335
       Left            =   3480
-      ScaleHeight     =   87
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   63
-      TabIndex        =   2
       Top             =   60
       Width           =   975
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
@@ -283,8 +277,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Color-Picker Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 27/September/17
-'Last update: finish repurposing the UI for the new color picker
+'Last updated: 28/October/21
+'Last update: replace old VB picture box with pdPictureBox
 '
 'Color pickers are pretty straightforward tools: sample pixels from the image, and reflect the results on-screen.
 ' The main purpose of this tool is to "stay out of the damn way", I think!
@@ -579,32 +573,35 @@ Private Sub UpdateUIText()
             curCategory = cboColorSpace(i).ListIndex
             If (curCategory < 0) Then curCategory = 0
             
+            Dim idxLabel As Long
+            idxLabel = i * 4
+            
             Select Case curCategory
                 
                 Case cps_RGBA
                     
                     'Color values are easy in RGB!
-                    lblValue(i * 4).Caption = Int(m_Red)
-                    lblValue(i * 4 + 1).Caption = Int(m_Green)
-                    lblValue(i * 4 + 2).Caption = Int(m_Blue)
-                    lblValue(i * 4 + 3).Caption = Int(m_Alpha)
+                    lblValue(idxLabel).Caption = Int(m_Red)
+                    lblValue(idxLabel + 1).Caption = Int(m_Green)
+                    lblValue(idxLabel + 2).Caption = Int(m_Blue)
+                    lblValue(idxLabel + 3).Caption = Int(m_Alpha)
                     
                 Case cps_RGBAPercent
                 
-                    lblValue(i * 4).Caption = Format$(m_Red / 255#, "00.0%")
-                    lblValue(i * 4 + 1).Caption = Format$(m_Green / 255#, "00.0%")
-                    lblValue(i * 4 + 2).Caption = Format$(m_Blue / 255#, "00.0%")
-                    lblValue(i * 4 + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
+                    lblValue(idxLabel).Caption = Format$(m_Red / 255#, "00.0%")
+                    lblValue(idxLabel + 1).Caption = Format$(m_Green / 255#, "00.0%")
+                    lblValue(idxLabel + 2).Caption = Format$(m_Blue / 255#, "00.0%")
+                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
                     
                 Case cps_HSV
                 
                     Dim cHue As Double, cSat As Double, cVal As Double
                     Colors.fRGBtoHSV m_Red / 255#, m_Green / 255#, m_Blue / 255#, cHue, cSat, cVal
                     
-                    lblValue(i * 4).Caption = Format$((cHue * 360#), "#0.0") & ChrW$(&HB0&)
-                    lblValue(i * 4 + 1).Caption = Format$(cSat, "00.0%")
-                    lblValue(i * 4 + 2).Caption = Format$(cVal, "00.0%")
-                    lblValue(i * 4 + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
+                    lblValue(idxLabel).Caption = Format$((cHue * 360#), "#0.0") & ChrW$(&HB0&)
+                    lblValue(idxLabel + 1).Caption = Format$(cSat, "00.0%")
+                    lblValue(idxLabel + 2).Caption = Format$(cVal, "00.0%")
+                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
                     
                 Case cps_CMYK
                     
@@ -626,10 +623,10 @@ Private Sub UpdateUIText()
                         yK = 0#
                     End If
                     
-                    lblValue(i * 4).Caption = Format$(cK, "0.0%")
-                    lblValue(i * 4 + 1).Caption = Format$(mK, "0.0%")
-                    lblValue(i * 4 + 2).Caption = Format$(yK, "0.0%")
-                    lblValue(i * 4 + 3).Caption = Format$(bK, "0.0%")
+                    lblValue(idxLabel).Caption = Format$(cK, "0.0%")
+                    lblValue(idxLabel + 1).Caption = Format$(mK, "0.0%")
+                    lblValue(idxLabel + 2).Caption = Format$(yK, "0.0%")
+                    lblValue(idxLabel + 3).Caption = Format$(bK, "0.0%")
                     
             End Select
         
@@ -637,18 +634,16 @@ Private Sub UpdateUIText()
         
     End If
     
-    'To ensure immediate redraws, forcibly refresh all labels
-    'For i = cboColorSpace.lBound To cboColorSpace.UBound
-    '    For j = 0 To 3
-    '        lblColor(j + i * 4).RequestRefresh
-    '        lblValue(j + i * 4).RequestRefresh
-    '    Next j
-    'Next i
-    
     'Finally, paint the new color preview
+    RegenerateColorSampleBox
+    
+End Sub
+
+Private Sub RegenerateColorSampleBox(Optional ByVal redrawImmediately As Boolean = True)
+
     Dim sampleWidth As Long, sampleHeight As Long
-    sampleWidth = picSample.ScaleWidth
-    sampleHeight = picSample.ScaleHeight
+    sampleWidth = picSample.GetWidth
+    sampleHeight = picSample.GetHeight
     
     If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
     If (m_PreviewDIB.GetDIBWidth <> sampleWidth) Or (m_PreviewDIB.GetDIBHeight <> sampleHeight) Then
@@ -676,13 +671,25 @@ Private Sub UpdateUIText()
         Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), 100#
         PD2D.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight \ 2
         
+        'Finally, draw a neutral-color border around the control
+        If (Not g_Themer Is Nothing) Then
+            Dim tmpPen As pd2DPen: Set tmpPen = New pd2DPen
+            tmpPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+            tmpPen.SetPenLineJoin P2_LJ_Miter
+            PD2D.DrawRectangleI tmpSurface, tmpPen, 0, 0, sampleWidth - 1, sampleHeight - 1
+        End If
+        
     End If
     
     'Free our pd2D objects and flip the buffer to the screen
     Set tmpBrush = Nothing: Set tmpSurface = Nothing
-    GDI.BitBltWrapper picSample.hDC, 0, 0, sampleWidth, sampleHeight, m_PreviewDIB.GetDIBDC, 0, 0, vbSrcCopy
-    picSample.Picture = picSample.Image
-    picSample.Refresh
+    
+    If redrawImmediately Then
+        Dim pichDC As Long
+        picSample.StartPaint pichDC, sampleWidth, sampleHeight
+        GDI.BitBltWrapper pichDC, 0, 0, sampleWidth, sampleHeight, m_PreviewDIB.GetDIBDC, 0, 0, vbSrcCopy
+        picSample.EndPaint True
+    End If
     
 End Sub
 
@@ -769,4 +776,9 @@ Public Sub UpdateAgainstCurrentTheme()
     'As language settings may have changed, we now need to redraw the current UI text
     UpdateUIText
 
+End Sub
+
+Private Sub picSample_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (m_PreviewDIB Is Nothing) Then RegenerateColorSampleBox
+    GDI.BitBltWrapper targetDC, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, m_PreviewDIB.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
