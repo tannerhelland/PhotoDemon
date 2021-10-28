@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.113</langversion>
+<langversion>8.2.114</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -9414,6 +9414,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>设置此格式的导出设置</translation>
 </phrase>
@@ -9426,6 +9431,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>convert all images to a new format</original>
 <translation>所有的图像转换为新的格式</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9484,11 +9494,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 Would you like to save your batch list before exiting?</original>
 <translation>如果你现在退出，你批处理列表（图像处理列表）将丢失。节省您的列表，你可以很容易地恢复这一批操作在稍后的日期。
 您要在退出前保存您的批名单吗？</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>未保存的图像列表</translation>
 </phrase>
 
 <phrase>
@@ -9697,16 +9702,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>宏数据</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>打开宏文件</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>否</translation>
 </phrase>
@@ -9791,7 +9786,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13690,10 +13685,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.75</langversion>
+<langversion>8.0.76</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -9413,6 +9413,11 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Zastosuj ustawienia eksportu dla tego formatu</translation>
 </phrase>
@@ -9425,6 +9430,11 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 <phrase>
 <original>convert all images to a new format</original>
 <translation>Konwertuj wszystkie obrazy do nowego formatu</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9484,11 +9494,6 @@ Would you like to save your batch list before exiting?</original>
 <translation>Jeśli wyjdziesz teraz, Twoja lista wsadowa (lista obrazów przeznaczonych do przetworzenia) zostaną utracone. Zapisując swoją listę, można łatwo wznowić tę operację wsadowego przetwarzania w późniejszym czasie.
 
 Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>Niezapisana lista obrazów</translation>
 </phrase>
 
 <phrase>
@@ -9697,16 +9702,6 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>Dane makro</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Otwórz plik makro</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>Nie</translation>
 </phrase>
@@ -9791,7 +9786,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>Szacowany pozostały czas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13693,10 +13688,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>
