@@ -635,8 +635,10 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     End If
 End Sub
 
+'Do not update animation settings during click-drag resizing - wait until *after* the user releases the
+' mouse to resize all animation frames.  (This makes resizing much more fluid.)
 Private Sub picPreview_WindowResizeDetected()
-    UpdateAnimationSettings
+    If (Not Interface.GetDialogResizeFlag) Then UpdateAnimationSettings
 End Sub
 
 Private Sub sldFrame_Change()
