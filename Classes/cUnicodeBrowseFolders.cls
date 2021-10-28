@@ -113,6 +113,9 @@ Private m_InitPath As String    ' startup path for the dialog, either string or 
 
 Public Function ShowBrowseForFolder(ByVal ownerHwnd As Long, Optional releasePIDL As Boolean = True) As Boolean
     
+    'Added by Tanner: notify the UI subsystem that an OS-owned dialog is active
+    Interface.NotifySystemDialogState True
+    
     ' Depending on what flags you set, you may get a returned path and/or file name or nothing.
     ' If the user makes a selection to a virtual path/object, you will not get a path returned.
     
@@ -173,6 +176,9 @@ Public Function ShowBrowseForFolder(ByVal ownerHwnd As Long, Optional releasePID
         obif.lpCallbackData = 0&
         obif.lpfnCallback = 0&
     End If
+    
+    'Added by Tanner: notify the UI subsystem that an OS-owned dialog is inactive
+    Interface.NotifySystemDialogState False
     
 End Function
 

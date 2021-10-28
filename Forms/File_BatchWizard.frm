@@ -490,6 +490,16 @@ Begin VB.Form FormBatchWizard
       Width           =   9855
       _ExtentX        =   17383
       _ExtentY        =   11959
+      Begin PhotoDemon.pdCheckBox chkExportAnimation 
+         Height          =   375
+         Left            =   720
+         TabIndex        =   42
+         Top             =   3240
+         Width           =   9015
+         _ExtentX        =   15901
+         _ExtentY        =   661
+         Caption         =   "auto-detect animated images"
+      End
       Begin PhotoDemon.pdButton cmdExportSettings 
          Height          =   735
          Left            =   720
@@ -542,6 +552,16 @@ Begin VB.Form FormBatchWizard
          Caption         =   ""
          ForeColor       =   4210752
          Layout          =   1
+      End
+      Begin PhotoDemon.pdButton cmdExportSettingsAnimated 
+         Height          =   735
+         Left            =   720
+         TabIndex        =   41
+         Top             =   3720
+         Width           =   8895
+         _ExtentX        =   15690
+         _ExtentY        =   1296
+         Caption         =   "set export settings for animated images..."
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -679,8 +699,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright 2007-2021 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 09/September/16
-'Last update: complete overhaul of UI and underlying logic
+'Last updated: 28/October/21
+'Last update: add support for auto-detecting (and exporting correctly) animated images
 '
 'PhotoDemon's batch process wizard is one of its most unique features.  It integrates tightly with PD's
 ' macro recorder, which allows any combination of actions to be applied to any set of images.  Neat stuff!
@@ -736,6 +756,10 @@ Private m_ListBusy As Boolean
 ' save functions.  To make sure the user actually sets export settings before progressing, we use this tracker.
 Private m_ExportSettingsSet As Boolean, m_ExportSettingsFormat As String, m_ExportSettingsMetadata As String
 
+'As of 9.0, formats that support animation can also be batch-processed, and the user can set export settings
+' generically, just like they do for static formats.
+Private m_ExportSettingsSetAnimation As Boolean, m_ExportSettingsFormatAnimation As String
+
 'This dialog interacts with a lot of file-system bits.  This module-level pdFSO object is initialized at Form_Load(),
 ' and can be used wherever convenient.
 Private m_FSO As pdFSO
@@ -765,7 +789,10 @@ End Sub
 
 'Set output image format
 Private Sub cmbOutputFormat_Click()
-    
+        
+    'Automatically switch the option for "use fixed export format" to TRUE
+    optFormat(1).Value = True
+        
     'If this format doesn't support export settings, hide the "set export settings" button
     If ImageFormats.IsExportDialogSupported(ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)) Then
         m_ExportSettingsSet = False
@@ -777,6 +804,19 @@ Private Sub cmbOutputFormat_Click()
         m_ExportSettingsFormat = vbNullString
         m_ExportSettingsMetadata = vbNullString
         cmdExportSettings.Visible = False
+    End If
+    
+    'Same for animation settings
+    If ImageFormats.IsAnimationSupported(ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)) Then
+        chkExportAnimation.Visible = True
+        cmdExportSettingsAnimated.Visible = True
+        m_ExportSettingsSetAnimation = False
+        m_ExportSettingsFormatAnimation = vbNullString
+    Else
+        chkExportAnimation.Visible = False
+        cmdExportSettingsAnimated.Visible = False
+        m_ExportSettingsSetAnimation = False
+        m_ExportSettingsFormatAnimation = vbNullString
     End If
     
 End Sub
@@ -941,7 +981,7 @@ Private Sub cmdExportSettings_Click()
         
         'The saving module will now raise a dialog specific to the selected format.  If successful, it will fill
         ' the passed settings and metadata strings with XML data describing the user's settings.
-        m_ExportSettingsSet = Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata)
+        m_ExportSettingsSet = Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata, False)
         
         'If the user cancels the dialog, exit immediately
         If (Not m_ExportSettingsSet) Then
@@ -955,6 +995,35 @@ Private Sub cmdExportSettings_Click()
         m_ExportSettingsSet = True
         m_ExportSettingsFormat = vbNullString
         m_ExportSettingsMetadata = vbNullString
+    End If
+    
+End Sub
+
+'Same as normal export settings, but an animation-centric export dialog is used instead
+Private Sub cmdExportSettingsAnimated_Click()
+
+    'Convert the current dropdown index into a PD format constant
+    Dim saveFormat As PD_IMAGE_FORMAT
+    saveFormat = ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+    
+    'See if this format even supports animation dialogs...
+    If ImageFormats.IsExportDialogSupported(saveFormat) And ImageFormats.IsAnimationSupported(saveFormat) Then
+        
+        'The saving module will now raise a dialog specific to the selected format.  If successful, it will fill
+        ' the passed settings and metadata strings with XML data describing the user's settings.
+        m_ExportSettingsSetAnimation = Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormatAnimation, m_ExportSettingsMetadata, True)
+        
+        'If the user cancels the dialog, note it so we can prompt them again if they try to
+        ' proceed with batch processing
+        If (Not m_ExportSettingsSetAnimation) Then
+            m_ExportSettingsSetAnimation = False
+            m_ExportSettingsFormatAnimation = vbNullString
+        End If
+    
+    'Formats that do not support export settings do not need to raise a dialog at all
+    Else
+        m_ExportSettingsSetAnimation = True
+        m_ExportSettingsFormatAnimation = vbNullString
     End If
     
 End Sub
@@ -985,72 +1054,82 @@ Private Sub cmdLoadList_Click()
         listPath = Files.FileGetPath(sFile)
         UserPrefs.SetPref_String "Batch Process", "List Folder", listPath
         
+        Dim listOK As Boolean
+        listOK = False
+        
         'Load the file using pdFSO, which is Unicode-compatible
         Dim fileContents As String
-        If Files.FileLoadAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf, vbBinaryCompare) > 0) Then
+        If Files.FileLoadAsString(sFile, fileContents) Then
             
-            'The file was originally delimited by vbCrLf.  Parse it now.
-            Dim fileLines() As String
-            fileLines = Split(fileContents, vbCrLf, , vbBinaryCompare)
+            'Ensure multiple lines (there should be at least 3 - header, 1+ files, footer)
+            If (InStr(1, fileContents, vbCrLf, vbBinaryCompare) > 0) Then
             
-            If (UBound(fileLines) > 0) Then
+                'The file was originally delimited by vbCrLf.  Parse it now.
+                Dim fileLines() As String
+                fileLines = Split(fileContents, vbCrLf, , vbBinaryCompare)
                 
-                'Validate the first line of the file
-                If Strings.StringsEqual(fileLines(0), "<PHOTODEMON BATCH CONVERSION LIST>", True) Then
+                If (UBound(fileLines) > 0) Then
                     
-                    'If the user has already created a list of files to process, ask if they want to replace or append
-                    ' the loaded entries to their current list.
-                    If (lstFiles.ListCount > 0) Then
-                        Dim msgReturn As VbMsgBoxResult
-                        msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel Or vbInformation, "Batch process notification")
-                        If (msgReturn = vbCancel) Then Exit Sub
-                    End If
-                                
-                    Screen.MousePointer = vbHourglass
-                
-                    'Now that everything is in place, load the entries from the previously saved file
-                    Dim numOfEntries As Long
-                    numOfEntries = CLng(fileLines(1))
-                    
-                    lstFiles.SetAutomaticRedraws False
-                    
-                    Dim i As Long
-                    For i = 2 To numOfEntries + 1
-                        If Files.FileExists(fileLines(i)) Then lstFiles.AddItem fileLines(i)
-                    Next i
-                    
-                    lstFiles.SetAutomaticRedraws True, True
-                    
-                    'Note that the current list has NOT been saved
-                    m_ImageListSaved = False
-        
-                    'Enable the "remove all images" button if at least one image exists in the processing list
-                    If (lstFiles.ListCount > 0) Then
-                        If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
-                        If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
-                    End If
-                    
-                    UpdateBatchListCount
-                    
-                    Screen.MousePointer = vbDefault
+                    'Validate the first line of the file
+                    If Strings.StringsEqual(fileLines(0), "<PHOTODEMON BATCH CONVERSION LIST>", True) Then
                         
-                Else
-                    PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
-                    Exit Sub
-                End If
-                
-            Else
-                PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
-                Exit Sub
-            End If
+                        listOK = True
+                        
+                        'If the user has already created a list of files to process, ask if they want to replace or append
+                        ' the loaded entries to their current list.
+                        If (lstFiles.ListCount > 0) Then
+                            Dim msgReturn As VbMsgBoxResult
+                            msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel Or vbInformation, "Batch process notification")
+                            If (msgReturn = vbCancel) Then Exit Sub
+                        End If
+                                    
+                        Screen.MousePointer = vbHourglass
+                    
+                        'Now that everything is in place, load the entries from the previously saved file
+                        Dim numOfEntries As Long
+                        numOfEntries = CLng(fileLines(1))
+                        
+                        lstFiles.SetAutomaticRedraws False
+                        
+                        Dim i As Long
+                        For i = 2 To numOfEntries + 1
+                            If Files.FileExists(fileLines(i)) Then lstFiles.AddItem fileLines(i)
+                        Next i
+                        
+                        lstFiles.SetAutomaticRedraws True, True
+                        
+                        'Note that the current list has NOT been saved
+                        m_ImageListSaved = False
             
-        Else
+                        'Enable the "remove all images" button if at least one image exists in the processing list
+                        If (lstFiles.ListCount > 0) Then
+                            If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
+                            If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
+                        End If
+                        
+                        UpdateBatchListCount
+                        
+                        Screen.MousePointer = vbDefault
+                        
+                    '/bad header
+                    End If
+                
+                '/no lines
+                End If
+            
+            '/no vbCrLf
+            End If
+        
+        '/failed initial load
+        End If
+        
+        If (Not listOK) Then
             PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
             Exit Sub
         End If
         
-        'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in its
-        ' current state so close enough!)
+        'Note that the current list has been saved (technically it hasn't, I realize,
+        ' but it exists in a file in its current state so close enough!)
         m_ImageListSaved = True
         
     End If
@@ -1113,12 +1192,20 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         Case 2
             
             'If the user has asked us to convert all images to a new format, make sure they clicked the
-            ' "set export options" button (to define what export settings we'll use).
+            ' "set export options" button (to define what export settings we'll use).  There are technically
+            ' two states to check here - regular format settings, and if the format supports animations and
+            ' the "auto-detect animated images" checkbox is set, animation settings too.
             
             ' contains all of the user's selected image format options (JPEG quality, etc)
             If (optFormat(1) And moveForward) Then
-            
-                If (Not m_ExportSettingsSet) Then
+                
+                Dim showWarning As Boolean, showWarningAnimated As Boolean
+                showWarning = (Not m_ExportSettingsSet)
+                showWarningAnimated = (chkExportAnimation.Value And chkExportAnimation.Visible And (Not m_ExportSettingsSetAnimation))
+                
+                'If the user clicks one box but not the other, that's okay - they probably only care about
+                ' that particular type of image.  But if they haven't clicked *either* box, warn them.
+                If (showWarning And showWarningAnimated) Then
                     PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation Or vbOKOnly, "Export settings required"
                     Exit Sub
                 End If
@@ -1719,136 +1806,35 @@ Private Sub PrepareForBatchConversion()
         'As a failsafe, check to make sure the current input file exists before attempting to load it
         If Files.FileExists(tmpFilename) Then
             
-            'Check to see if the image file is a multipage file
-            Dim howManyPages As Long
-            howManyPages = Plugin_FreeImage.IsMultiImage(tmpFilename)
-            
-            'TODO: integrate this with full multipage support.  At present, to avoid complications,
-            ' PD only loads the first page/frame of multipage files during conversion.
-            
             'Load the current image
-            If Loading.LoadFileAsNewImage(tmpFilename, , False, True, False) Then
+            If Loading.LoadFileAsNewImage(tmpFilename, vbNullString, False, True, False) Then
                 
                 'Manually activate the just-loaded image
                 Dim tmpStack As pdStack
                 Set tmpStack = Nothing
                 PDImages.GetListOfActiveImageIDs tmpStack
-                CanvasManager.ActivatePDImage tmpStack.GetInt(tmpStack.GetNumOfInts - 1), , , , True
+                CanvasManager.ActivatePDImage tmpStack.GetInt(tmpStack.GetNumOfInts - 1), newImageJustLoaded:=True
                 
                 'With the image loaded, it is time to apply any requested photo editing actions.
-                If (btsPhotoOps.ListIndex = 1) Then
+                If (btsPhotoOps.ListIndex = 1) Then ApplyEditOperations
                 
-                    'If the user has requested automatic lighting fixes, apply it now
-                    If chkActions(0).Value Then Process "Auto correct", , , UNDO_Layer
-                    
-                    'If the user has requested an image resize, apply it now
-                    If chkActions(1).Value Then
-                        
-                        'Generate a compatible list of options for PD's resampling engine
-                        Dim resizeParams As pdSerialize
-                        Set resizeParams = New pdSerialize
-                        With resizeParams
-                            .SetParamVersion 3#
-                            .AddParam "width", ucResize.ResizeWidth
-                            .AddParam "height", ucResize.ResizeHeight
-                            .AddParam "unit", ucResize.UnitOfMeasurement
-                            .AddParam "ppi", ucResize.ResizeDPIAsPPI
-                            .AddParam "resample", Resampling.GetResamplerName(rf_Automatic)
-                            .AddParam "approximations-ok", True
-                            .AddParam "fit", cmbResizeFit.ListIndex
-                            .AddParam "fillcolor", vbWhite
-                            .AddParam "target", pdat_Image
-                        End With
-                        
-                        Process "Resize image", , resizeParams.GetParamString
-                        
-                    End If
-                    
-                    'If the user has requested a macro, play it now
-                    If chkActions(2).Value Then Macros.PlayMacroFromFile txtMacro
-                    
-                End If
+                'With the macro complete, prepare the file for saving.  (This function will determine both
+                ' a final filename and a proper file extension.)
+                '
+                'TODO: preserve subfolders needs to be handled here
+                tmpFilename = GetFinalFilename(lstFiles.List(curBatchFile), outputPath, curBatchFile)
                 
-                'With the macro complete, prepare the file for saving
-                tmpFilename = Files.FileGetName(lstFiles.List(curBatchFile), True)
-                
-                'Build a full file path using the options the user specified
-                If (cmbOutputOptions.ListIndex = 0) Then
-                    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-                    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
-                Else
-                    tmpFilename = curBatchFile + 1
-                    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-                    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
-                End If
-                
-                'If requested, remove any specified text from the filename
-                If chkRenameRemove.Value And (LenB(txtRenameRemove) <> 0) Then
-                
-                    'Use case-sensitive or case-insensitive matching as requested
-                    If chkRenameCaseSensitive.Value Then
-                        If InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) Then
-                            tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
-                        End If
-                    Else
-                        If InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) Then
-                            tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbTextCompare)
-                        End If
-                    End If
-                    
-                End If
-                
-                'Replace spaces with underscores if requested
-                If chkRenameSpaces.Value Then
-                    If (InStr(1, tmpFilename, " ") <> 0) Then tmpFilename = Replace$(tmpFilename, " ", "_")
-                End If
-                
-                'Change the full filename's case if requested
-                If chkRenameCase.Value Then
-                    If optCase(0).Value Then tmpFilename = LCase$(tmpFilename) Else tmpFilename = UCase$(tmpFilename)
-                End If
-                
-                'Attach a proper image format file extension and save format ID number based off the user's
-                ' requested output format
-                
-                'Possibility 1: use original file format
-                If optFormat(0).Value Then
-                    
-                    'See if this image's file format is supported by the export engine
-                    If (ImageFormats.GetIndexOfOutputPDIF(PDImages.GetActiveImage.GetCurrentFileFormat) = -1) Then
-                        
-                        'The current format isn't supported.  Use PNG as it's the best compromise of
-                        ' lossless, well-supported, and reasonably well-compressed.
-                        tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
-                        PDImages.GetActiveImage.SetCurrentFileFormat PDIF_PNG
-                        
-                    Else
-                        
-                        'This format IS supported, so use the default extension
-                        tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDImages.GetActiveImage.GetCurrentFileFormat)
-                    
-                    End If
-                    
-                'Possibility 2: force all images to a single file format
-                Else
-                    tmpFileExtension = ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
-                    PDImages.GetActiveImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
-                End If
-                
-                'If the user has requested lower- or upper-case, we now need to convert the extension as well
-                If chkRenameCase.Value Then
-                    If optCase(0).Value Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
-                End If
-                
-                'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
-                ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
-                ' drive and directory structure.
-                tmpFilename = outputPath & Files.IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
-                                
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
-                ' on the matching wizard panel.
+                ' on the matching wizard panel.  Note that we need to silently swap-in animation parameters instead of
+                ' static ones, if the source image is animated.
+                Dim finalSaveParams As String
+                finalSaveParams = m_ExportSettingsFormat
+                If (PDImages.GetActiveImage.IsAnimated() And chkExportAnimation.Value) Then finalSaveParams = m_ExportSettingsFormatAnimation
+                Debug.Print "finalSaveParams", finalSaveParams
+                
+                ' TODO: metadata for animated images
                 ' TODO: track success/fail results and collate any failures into a list that we can report to the user
-                Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), tmpFilename, PDImages.GetActiveImage.GetCurrentFileFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
+                Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), tmpFilename, PDImages.GetActiveImage.GetCurrentFileFormat, finalSaveParams, m_ExportSettingsMetadata
                 
                 'Unload the finished image
                 CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()
@@ -1900,6 +1886,124 @@ MacroCanceled:
     m_ImageListSaved = True
     
 End Sub
+
+'Apply all selected photo editing operations to the image
+Private Sub ApplyEditOperations()
+
+    'If the user has requested automatic lighting fixes, apply it now
+    If chkActions(0).Value Then Process "Auto correct", , , UNDO_Layer
+    
+    'If the user has requested an image resize, apply it now
+    If chkActions(1).Value Then
+        
+        'Generate a compatible list of options for PD's resampling engine
+        Dim resizeParams As pdSerialize
+        Set resizeParams = New pdSerialize
+        With resizeParams
+            .SetParamVersion 3#
+            .AddParam "width", ucResize.ResizeWidth
+            .AddParam "height", ucResize.ResizeHeight
+            .AddParam "unit", ucResize.UnitOfMeasurement
+            .AddParam "ppi", ucResize.ResizeDPIAsPPI
+            .AddParam "resample", Resampling.GetResamplerName(rf_Automatic)
+            .AddParam "approximations-ok", True
+            .AddParam "fit", cmbResizeFit.ListIndex
+            .AddParam "fillcolor", vbWhite
+            .AddParam "target", pdat_Image
+        End With
+        
+        Process "Resize image", , resizeParams.GetParamString
+        
+    End If
+    
+    'If the user has requested a macro, play it now
+    If chkActions(2).Value Then Macros.PlayMacroFromFile txtMacro
+    
+End Sub
+
+Private Function GetFinalFilename(ByRef originalFilename As String, ByRef outputPath As String, ByVal curBatchFile As Long) As String
+    
+    Dim tmpFilename As String
+    tmpFilename = Files.FileGetName(originalFilename, True)
+    
+    'Build a full file path using the options the user specified
+    If (cmbOutputOptions.ListIndex = 0) Then
+        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+    Else
+        tmpFilename = curBatchFile + 1
+        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+    End If
+    
+    'If requested, remove any specified text from the filename
+    If chkRenameRemove.Value And (LenB(txtRenameRemove) <> 0) Then
+    
+        'Use case-sensitive or case-insensitive matching as requested
+        If chkRenameCaseSensitive.Value Then
+            If (InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) <> 0) Then
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
+            End If
+        Else
+            If (InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) <> 0) Then
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbTextCompare)
+            End If
+        End If
+        
+    End If
+    
+    'Replace spaces with underscores if requested
+    If chkRenameSpaces.Value Then
+        If (InStr(1, tmpFilename, " ") <> 0) Then tmpFilename = Replace$(tmpFilename, " ", "_")
+    End If
+    
+    'Change the full filename's case if requested
+    If chkRenameCase.Value Then
+        If optCase(0).Value Then tmpFilename = LCase$(tmpFilename) Else tmpFilename = UCase$(tmpFilename)
+    End If
+    
+    'Attach a proper image format file extension and save format ID number based off the user's
+    ' requested output format
+    Dim tmpFileExtension As String
+    
+    'Possibility 1: use original file format
+    If optFormat(0).Value Then
+        
+        'See if this image's file format is supported by the export engine.
+        If (ImageFormats.GetIndexOfOutputPDIF(PDImages.GetActiveImage.GetCurrentFileFormat) = -1) Then
+            
+            'The current format isn't supported.  Use PNG as it's the best compromise of
+            ' lossless, well-supported, and reasonably well-compressed.
+            tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
+            PDImages.GetActiveImage.SetCurrentFileFormat PDIF_PNG
+            
+        Else
+            
+            'This format IS supported, so use the default extension
+            tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDImages.GetActiveImage.GetCurrentFileFormat)
+        
+        End If
+        
+    'Possibility 2: force all images to a single file format
+    Else
+        tmpFileExtension = ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
+        PDImages.GetActiveImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+    End If
+    
+    'If the user has requested lower- or upper-case, we now need to convert the extension as well
+    If chkRenameCase.Value Then
+        If optCase(0).Value Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
+    End If
+    
+    'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
+    ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
+    ' drive and directory structure.
+    tmpFilename = outputPath & Files.IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
+    
+    'Return the final result
+    GetFinalFilename = tmpFilename
+    
+End Function
 
 'Update the current "time remaining" estimate
 Private Function UpdateTimeEstimate(ByRef dstMessage As String, ByVal numFilesProcessed As Long, ByVal numFilesRemaining As Long, ByVal timeStarted As Currency, ByRef lastTimeCalculation As Long, ByRef numFilesTimeNotUpdated As Long) As Boolean

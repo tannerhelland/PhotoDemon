@@ -120,7 +120,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         
         'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
-        If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters) Then
+        Dim useAnimationDialog As Boolean
+        If (Not srcImage Is Nothing) Then useAnimationDialog = srcImage.IsAnimated Else useAnimationDialog = False
+        If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters, useAnimationDialog) Then
             srcImage.ImgStorage.AddEntry "MetadataSettings", metadataParameters
             
         'If the user cancels the dialog, exit immediately
@@ -325,7 +327,7 @@ End Sub
 ' returned from the associated format-specific dialog.
 '
 'Returns: TRUE if dialog was closed via OK button; FALSE otherwise.
-Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String) As Boolean
+Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String, Optional ByVal displayAnimationVersion As Boolean = False) As Boolean
     
     'As a failsafe, make sure the requested format even *has* an export dialog!
     If ImageFormats.IsExportDialogSupported(outputPDIF) Then
@@ -339,12 +341,8 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_GIF
-                If (Not srcImage Is Nothing) Then
-                    If srcImage.IsAnimated Then
-                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedGIF(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    Else
-                        GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    End If
+                If displayAnimationVersion Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedGIF(srcImage, dstParamString, dstMetadataString) = vbOK)
                 Else
                     GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 End If
@@ -362,12 +360,8 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
         
             Case PDIF_PNG
-                If (Not srcImage Is Nothing) Then
-                    If srcImage.IsAnimated Then
-                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    Else
-                        GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    End If
+                If displayAnimationVersion Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
                 Else
                     GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 End If
@@ -385,12 +379,8 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_WEBP
-                If (Not srcImage Is Nothing) Then
-                    If srcImage.IsAnimated Then
-                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedWebP(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    Else
-                        GetExportParamsFromDialog = (Dialogs.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-                    End If
+                If displayAnimationVersion Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedWebP(srcImage, dstParamString, dstMetadataString) = vbOK)
                 Else
                     GetExportParamsFromDialog = (Dialogs.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 End If

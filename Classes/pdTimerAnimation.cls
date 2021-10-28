@@ -78,7 +78,7 @@ End Function
 Friend Sub NotifyFrameCount(ByVal newFrameCount As Long)
     
     m_FrameCount = newFrameCount
-    ReDim m_FrameTimesMS(0 To m_FrameCount - 1) As Long
+    If (m_FrameCount > 0) Then ReDim m_FrameTimesMS(0 To m_FrameCount - 1) As Long
     
     'Reset frame time trackers (debug only)
     m_FramesDisplayed = 0

@@ -618,7 +618,7 @@ End Function
 'Save a pdImage (with animation data) to an animated WebP file
 Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
     
-    Const FUNC_NAME As String = "SaveWebP_ToFile"
+    Const FUNC_NAME As String = "SaveAnimatedWebP_ToFile"
     SaveAnimatedWebP_ToFile = False
     
     'Basic input validation
@@ -630,6 +630,7 @@ Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOpti
     'Before doing anything else, make sure the source image has multiple layers.  (If it doesn't,
     ' we'll silently forward it to the single-frame saver.)
     If (srcImage.GetNumOfLayers < 2) Then
+        PDDebug.LogAction "single frame file found - rerouting to static exporter"
         SaveAnimatedWebP_ToFile = Me.SaveWebP_ToFile(srcImage, srcOptions, dstFile)
         Exit Function
     End If
@@ -1471,7 +1472,7 @@ Private Sub InternalError(ByVal funcName As String, Optional ByRef errString As 
     If (libReturn <> VP8_STATUS_OK) Then
         PDDebug.LogAction funcName & "returned error #" & libReturn & "(" & errString & ")", PDM_External_Lib
     Else
-        PDDebug.LogAction funcName & " error:" & errString, PDM_External_Lib
+        PDDebug.LogAction funcName & "error: " & errString, PDM_External_Lib
     End If
 End Sub
 

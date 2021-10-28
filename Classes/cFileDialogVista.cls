@@ -365,7 +365,10 @@ End Function
 Public Function DialogShow(ByVal ownerHwnd As Long, _
                             Optional ByVal Mode As FileDialogModeEnum = FDLG_FILEOPEN, _
                             Optional dialogTitle As String) As Long
-
+    
+    'Added by Tanner: notify the UI subsystem that an OS-owned dialog is active
+    Interface.NotifySystemDialogState True
+    
     ' The user-selected item(s) are passed via the Result property of this class
     '   Results are in the form of an IShellItem object passed to you
     '       There are a few IShell_[xxx] methods provided so that you can get
@@ -536,6 +539,9 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
     Set m_FDlg = Nothing
     Call Me.Clear
     If pReturn Then Set m_Result = pvPointerToIUnknown(pReturn, True)
+    
+    'Added by Tanner: notify the UI subsystem that an OS-owned dialog is inactive
+    Interface.NotifySystemDialogState False
     
 End Function
 '--------------------------------------------------------------------------------------------------

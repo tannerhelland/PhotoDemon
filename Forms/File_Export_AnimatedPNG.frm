@@ -164,8 +164,8 @@ Attribute VB_Exposed = False
 'Animated PNG export dialog
 'Copyright 2012-2021 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 06/September/19
-'Last update: separate from original animated GIF export dialog, as the two exporters have different needs
+'Last updated: 28/October/21
+'Last update: prep dialog for compatibility with batch processor
 '
 'In v8.0, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
 ' export parameters to the user.
@@ -272,6 +272,9 @@ End Sub
 
 Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
+    'Failsafe check for batch process mode (which won't supply a source image)
+    If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
+    
     Select Case Index
     
         'Play/pause
@@ -332,7 +335,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     
     'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
     ' default to a "fixed" frame time suggestion
-    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+    If m_FrameTimesUndefined And (Not m_SrcImage Is Nothing) Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
     
 End Sub
 
@@ -355,7 +358,7 @@ Private Sub cmdBar_ResetClick()
     
     'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
     ' default to a "fixed" frame time suggestion
-    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+    If m_FrameTimesUndefined And (Not m_SrcImage Is Nothing) Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
     
 End Sub
 
@@ -440,7 +443,9 @@ Private Sub UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
-
+    
+    If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
+    
     'Render the current frame
     RenderAnimationFrame
     
@@ -455,7 +460,7 @@ End Sub
 ' like frame delay times)
 Private Sub UpdateAnimationSettings()
     
-    If (m_SrcImage Is Nothing) Then Exit Sub
+    If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
 
     'Suspend automatic control-based updates while we get everything synchronized
     m_DoNotUpdate = True
@@ -549,6 +554,7 @@ Private Sub RenderAnimationFrame()
     
     If m_DoNotUpdate Then Exit Sub
     If (m_AniFrame Is Nothing) Then Exit Sub
+    If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
     
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()

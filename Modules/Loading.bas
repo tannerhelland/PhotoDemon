@@ -307,10 +307,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         PDDebug.LogAction "Finalizing image details..."
         
-        'The finalized pdImage object is finally worthy of being added to the master PD collection.  Note that this function will
-        ' automatically update PDImages.GetActiveImageID() to point to the new image.
+        'The finalized pdImage object is finally worthy of being added to the master PD collection.
+        ' (Note that this function will automatically update PDImages.GetActiveImageID() to point
+        ' at the new image.)
         PDImages.AddImageToMasterCollection targetImage
         
+        'The UI needs a *lot* of changes to reflect the state of the newly loaded image
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
