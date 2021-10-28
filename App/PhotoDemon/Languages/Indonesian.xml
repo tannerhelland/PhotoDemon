@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.513</langversion>
+<langversion>6.6.514</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2292,13 +2292,13 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 </phrase>
 
 <phrase>
-<original>Warning: invalid macro</original>
-<translation>Peringatan: makro tidak valid</translation>
+<original>Warning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Makro terbengkalai.</translation>
+<original>Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2326,8 +2326,8 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 </phrase>
 
 <phrase>
-<original>Save macro data</original>
-<translation>Menyimpan data makro</translation>
+<original>Save macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2341,18 +2341,13 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 </phrase>
 
 <phrase>
-<original>Open Macro File</original>
-<translation>Buka berkas Makro</translation>
+<original>Open macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Loading macro data</original>
-<translation>Memuatkan data makro</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>muat makro dibatalkan.</translation>
+<original>Loading macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2361,34 +2356,16 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 </phrase>
 
 <phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Tidak di temukan Versi Serasi makro. Main makro terbengkalai.</translation>
+<original>Incompatible macro found.  Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Sayangnya, Berkas makro ini tidak lagi Di Dukung oleh penyunting versi PhotoDemon.
-
-Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung ciri-ciri baru, meningkatkan prestasi, dan menyelesaikan beberapa isu Dipercaya. Sayangnya, ini bermakna bahawa makro direkodkan sebelum versi 6.0 tidak lagi serasi. Anda perlu Menggores Makro Ini.
-
--rekod semula (Perhatikan bahwa mana-mana Berkas makro lama masih akan bekerja di versi lama PhotoDemon, jika anda benar-benar perlu untuk mengaksesnya.)</translation>
+<original>Playing macro</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Unsupported macro file</original>
-<translation>Berkas makro yang tidak Di Dukung</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Memproses data makro</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -9735,6 +9712,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>Open Macro File</original>
+<translation>Buka berkas Makro</translation>
+</phrase>
+
+<phrase>
 <original>no</original>
 <translation>tidak</translation>
 </phrase>
@@ -9819,7 +9801,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Menganggarkan masa yang tinggal</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13720,10 +13702,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11847 total words. -->
+<!-- As of this build, PhotoDemon contains 5362 phrases. -->
+<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11762 total words. -->
 
 </pdData>

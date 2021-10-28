@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.940</langversion>
+<langversion>9.0.941</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2289,13 +2289,13 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 </phrase>
 
 <phrase>
-<original>Warning: invalid macro</original>
-<translation>Warnung: Ungültiges Makro</translation>
+<original>Warning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Makro abgebrochen.</translation>
+<original>Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2323,8 +2323,8 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 </phrase>
 
 <phrase>
-<original>Save macro data</original>
-<translation>Makrodaten speichern</translation>
+<original>Save macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2338,18 +2338,13 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 </phrase>
 
 <phrase>
-<original>Open Macro File</original>
-<translation>Makrodatei öffnen</translation>
+<original>Open macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Loading macro data</original>
-<translation>Laden der Makrodaten</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>Laden des Makros abgebrochen.</translation>
+<original>Loading macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2358,34 +2353,16 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 </phrase>
 
 <phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Inkompatible Makro-Version gefunden. Makro-Playback abgebrochen.</translation>
+<original>Incompatible macro found.  Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Leider wird diese Makrodatei nicht länger von der aktuellen Version von PhotoDemon unterstützt.
-
-In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgezeichnete Makros nicht länger kompatibel sind. Sie werden diese Makros von Grund auf neu aufzeichnen müssen.
-
-(Beachten Sie, dass beliebige alte Makrodateien immer noch in alten Versionen von PhotoDemon funktionieren werden, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
+<original>Playing macro</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Unsupported macro file</original>
-<translation>Nicht unterstützte Makrodatei</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Verarbeitung der Makrodaten</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -9735,6 +9712,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>Open Macro File</original>
+<translation>Makrodatei öffnen</translation>
+</phrase>
+
+<phrase>
 <original>no</original>
 <translation>Nein</translation>
 </phrase>
@@ -9819,7 +9801,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Verbleibende Zeit wird geschätzt</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13720,10 +13702,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11847 total words. -->
+<!-- As of this build, PhotoDemon contains 5362 phrases. -->
+<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11762 total words. -->
 
 </pdData>

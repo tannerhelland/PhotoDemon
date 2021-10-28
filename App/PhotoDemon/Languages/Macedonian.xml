@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.367</langversion>
+<langversion>1.0.368</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2286,13 +2286,13 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Warning: invalid macro</original>
-<translation>ПРЕДУПРЕДУВАЊЕ: невалиден макро</translation>
+<original>Warning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Макро напуштени.</translation>
+<original>Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2320,8 +2320,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Save macro data</original>
-<translation>Зачувај макро податоци</translation>
+<original>Save macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2335,18 +2335,13 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Open Macro File</original>
-<translation>Отворен макро датотеката</translation>
+<original>Open macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Loading macro data</original>
-<translation>Loading макро податоци</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>Макро товар откажани.</translation>
+<original>Loading macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2355,34 +2350,16 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Некомпатибилните макро верзија најде. напуштени макро репродукција.</translation>
+<original>Incompatible macro found.  Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>За жал, ова макро датотеката веќе не е поддржан од страна на актуелната верзија на PhotoDemon.
-
-In верзија 6.0, PhotoDemon макро документи беа редизајнирани за поддршка на нови функции, подобрување на ефикасноста, како и решавање на некои долгогодишна прашања сигурност. За жал, тоа значи дека макроа снимен пред верзија 6.0 повеќе не се компатибилни. Ќе треба да повторно да снимите овие макроа од scratch.
-
- (Забележете дека секој стар макро документи се уште ќе работат во стари верзии на PhotoDemon, ако сте апсолутно треба да им пристапите.)</translation>
+<original>Playing macro</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Unsupported macro file</original>
-<translation>Неподдржан макро датотеката</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Обработка на макро податоци</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -9729,6 +9706,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>Open Macro File</original>
+<translation>Отворен макро датотеката</translation>
+</phrase>
+
+<phrase>
 <original>no</original>
 <translation>нема</translation>
 </phrase>
@@ -9813,7 +9795,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13714,10 +13696,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11847 total words. -->
+<!-- As of this build, PhotoDemon contains 5362 phrases. -->
+<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11762 total words. -->
 
 </pdData>

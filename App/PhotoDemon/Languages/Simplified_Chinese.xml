@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.112</langversion>
+<langversion>8.2.113</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2283,13 +2283,13 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Warning: invalid macro</original>
-<translation>警告：无效的宏</translation>
+<original>Warning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>放弃宏。</translation>
+<original>Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2316,8 +2316,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Save macro data</original>
-<translation>保存宏</translation>
+<original>Save macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2331,18 +2331,13 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Open Macro File</original>
-<translation>打开宏文件</translation>
+<original>Open macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Loading macro data</original>
-<translation>加载宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>取消加载宏文件</translation>
+<original>Loading macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2351,34 +2346,16 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>不兼容的宏版本，宏回放放弃。</translation>
+<original>Incompatible macro found.  Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>该宏文件不再被PhotoDemon的当前版本支持。
-
-在6.0版本中，PhotoDemon宏文件进行了重新设计，以支持新的功能，提高性能，并解决了一些长期存在的可靠性问题。这意味着之前的版本6.0宏不再兼容。您将需要重新记录这些宏。
-
-（请注意，任何旧的宏文件仍然可以工作在旧版本PhotoDemon的，如果你确实需要访问它们。）</translation>
+<original>Playing macro</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Unsupported macro file</original>
-<translation>不支持的宏文件</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>处理宏数据</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -9725,6 +9702,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Open Macro File</original>
+<translation>打开宏文件</translation>
+</phrase>
+
+<phrase>
 <original>no</original>
 <translation>否</translation>
 </phrase>
@@ -9809,7 +9791,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13708,10 +13690,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11847 total words. -->
+<!-- As of this build, PhotoDemon contains 5362 phrases. -->
+<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11762 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.65</langversion>
+<langversion>8.0.66</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -2289,13 +2289,13 @@ Please verificare che queste immagini esistano e che utilizzino un formato immag
 </phrase>
 
 <phrase>
-<original>Warning: invalid macro</original>
-<translation>Attenzione: macro non valida</translation>
+<original>Warning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Macro abbandonata.</translation>
+<original>Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2323,8 +2323,8 @@ Please verificare che queste immagini esistano e che utilizzino un formato immag
 </phrase>
 
 <phrase>
-<original>Save macro data</original>
-<translation>Salva i dati della Macro</translation>
+<original>Save macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2338,18 +2338,13 @@ Please verificare che queste immagini esistano e che utilizzino un formato immag
 </phrase>
 
 <phrase>
-<original>Open Macro File</original>
-<translation>Apri un file Macro</translation>
+<original>Open macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Loading macro data</original>
-<translation>Caricamento dati della Macro</translation>
-</phrase>
-
-<phrase>
-<original>Macro load canceled.</original>
-<translation>Caricamento della Macro annullato.</translation>
+<original>Loading macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2358,34 +2353,16 @@ Please verificare che queste immagini esistano e che utilizzino un formato immag
 </phrase>
 
 <phrase>
-<original>Incompatible macro version found.  Macro playback abandoned.</original>
-<translation>Trovata versione macro incompatibile.  Riproduzione macro abbandonata.</translation>
+<original>Incompatible macro found.  Macro canceled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
-
-In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
-
-(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Purtroppo, questo file di macro non è più supportato dalla versione corrente di PhotoDemon.
-
-Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per supportare nuove funzionalità, migliorare le prestazioni e risolvere alcuni problemi di affidabilità di lunga data.  Purtroppo, questo significa che le macro registrate prima della versione 6.0 non sono più compatibili.  Avrete bisogno di ri-registrare le macro da zero.
-
-(Si noti che tutti i file macro vecchi continueranno a funzionare nelle vecchie versioni di PhotoDemon se avete assolutamente bisogno di accedere ad essi.)</translation>
+<original>Playing macro</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Unsupported macro file</original>
-<translation>File macro non supportato</translation>
-</phrase>
-
-<phrase>
-<original>Processing macro data</original>
-<translation>Elaborazione dati della Macro</translation>
-</phrase>
-
-<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -9737,6 +9714,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>Open Macro File</original>
+<translation>Apri un file Macro</translation>
+</phrase>
+
+<phrase>
 <original>no</original>
 <translation>no</translation>
 </phrase>
@@ -9821,7 +9803,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Tempo stimato rimanente</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13727,10 +13709,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2768 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11847 total words. -->
+<!-- As of this build, PhotoDemon contains 5362 phrases. -->
+<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11762 total words. -->
 
 </pdData>
