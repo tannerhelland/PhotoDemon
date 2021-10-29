@@ -495,13 +495,14 @@ End Sub
 ' like frame delay times)
 Private Sub UpdateAnimationSettings()
     
-    If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
+    If (m_SrcImage Is Nothing) Then Exit Sub
 
     'Suspend automatic control-based updates while we get everything synchronized
     m_DoNotUpdate = True
     
     'Load all animation frames.
     m_FrameCount = m_SrcImage.GetNumOfLayers
+    If (m_FrameCount <= 0) Then Exit Sub
     ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
     
     m_Thumbs.ResetCache
