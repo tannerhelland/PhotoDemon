@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.74</langversion>
+<langversion>8.0.75</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -9357,6 +9357,11 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Seleccione una carpeta de destino</translation>
 </phrase>
@@ -9790,7 +9795,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13691,10 +13696,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 11763 total words. -->
+<!-- As of this build, PhotoDemon contains 5364 phrases. -->
+<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11767 total words. -->
 
 </pdData>

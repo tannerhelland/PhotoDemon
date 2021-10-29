@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.515</langversion>
+<langversion>6.6.516</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -9363,6 +9363,11 @@ R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki t
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Pilih folder destinasi</translation>
 </phrase>
@@ -9796,7 +9801,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Menganggarkan masa yang tinggal</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13697,10 +13702,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 11763 total words. -->
+<!-- As of this build, PhotoDemon contains 5364 phrases. -->
+<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- These 2593 phrases contain approximately 11767 total words. -->
 
 </pdData>
