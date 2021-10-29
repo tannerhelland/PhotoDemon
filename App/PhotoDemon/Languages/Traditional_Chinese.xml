@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.242</langversion>
+<langversion>7.0.243</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -9379,6 +9379,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation></translation>
 </phrase>
@@ -9391,6 +9396,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>convert all images to a new format</original>
 <translation>轉換所有影像為新的格式</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9448,11 +9458,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 Would you like to save your batch list before exiting?</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>尚未儲存影像列表</translation>
 </phrase>
 
 <phrase>
@@ -9661,16 +9666,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>巨集資料</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>開啟巨集檔案</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>否</translation>
 </phrase>
@@ -9755,7 +9750,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>預估剩餘時間</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13648,10 +13643,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

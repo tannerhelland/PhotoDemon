@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.368</langversion>
+<langversion>1.0.369</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -9417,6 +9417,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>поставете поставки за извоз за овој формат</translation>
 </phrase>
@@ -9429,6 +9434,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>convert all images to a new format</original>
 <translation>конвертирате сите слики во нов формат</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9488,11 +9498,6 @@ Would you like to save your batch list before exiting?</original>
 <translation>Ако излезете сега, вашата листа серија (листата на сликите да бидат обработени) ќе бидат изгубени. Со заштеда на вашата листа, можете лесно може да продолжи оваа серија операција во подоцнежна date.
 
 Would сакате да ги зачувате вашата листа серија пред излегување?</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>Незачувани листа на сликата</translation>
 </phrase>
 
 <phrase>
@@ -9701,16 +9706,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>макро податоци</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Отворен макро датотеката</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>нема</translation>
 </phrase>
@@ -9795,7 +9790,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13696,10 +13691,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

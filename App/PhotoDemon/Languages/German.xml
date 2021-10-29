@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.941</langversion>
+<langversion>9.0.991</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -605,7 +605,7 @@
 
 <phrase>
 <original>Erase selected area</original>
-<translation>Ausgewählten Bereich löschen</translation>
+<translation>Selektierten Bereich löschen</translation>
 </phrase>
 
 <phrase>
@@ -620,7 +620,7 @@
 
 <phrase>
 <original>Export selected area as image</original>
-<translation>Ausgewählten Bereich als Bild exportieren</translation>
+<translation>Selektierten Bereich als Bild exportieren</translation>
 </phrase>
 
 <phrase>
@@ -1250,7 +1250,7 @@
 
 <phrase>
 <original>Play macro</original>
-<translation>Makro abspielen</translation>
+<translation>Makro wiedergeben</translation>
 </phrase>
 
 <phrase>
@@ -1374,7 +1374,7 @@
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>Die Tag-Datenbank handhabt technische Details der 20.000+ durch PhotoDemon unterstützten Metadaten-Tags. Die Erstellung der Datenbank dauert 10-15 Sekunden. Sie muss nur einmal erstellt werden, wenn der Metadaten-Editor zum ersten Mal verwendet wird.</translation>
+<translation>Die Tag-Datenbank handhabt technische Details der 20.000+ durch PhotoDemon unterstützten Metadaten-Tags. Die Erstellung der Datenbank dauert 10 bis 15 Sekunden. Sie muss nur einmal erstellt werden, wenn der Metadaten-Editor zum ersten Mal verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -2290,12 +2290,12 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Warning</original>
-<translation></translation>
+<translation>Warnung</translation>
 </phrase>
 
 <phrase>
 <original>Macro canceled.</original>
-<translation></translation>
+<translation>Makro abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -2324,7 +2324,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Save macro</original>
-<translation></translation>
+<translation>Makro speichern</translation>
 </phrase>
 
 <phrase>
@@ -2339,12 +2339,12 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Open macro</original>
-<translation></translation>
+<translation>Makro öffnen</translation>
 </phrase>
 
 <phrase>
 <original>Loading macro</original>
-<translation></translation>
+<translation>Laden des Makros</translation>
 </phrase>
 
 <phrase>
@@ -2354,12 +2354,12 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation></translation>
+<translation>Inkompatibles Makro gefunden. Makro abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>Playing macro</original>
-<translation></translation>
+<translation>Makro wird wiedergegeben</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -2536,7 +2536,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>The selected scanner or digital camera isn't responding.
 
 Please make sure the device is turned on and ready for use.</original>
-<translation>Der ausgewählte Scanner oder die ausgewählte Digitalkamera reagieren nicht.
+<translation>Der selektierte Scanner oder die selektierte Digitalkamera reagiert nicht.
 
 Bitte achten Sie darauf, dass das Gerät eingeschaltet und einsatzbereit ist.</translation>
 </phrase>
@@ -3934,7 +3934,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an ausgewählten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an selektierten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -4339,7 +4339,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Zuvor gespeicherte Presets können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neues Preset speichern, durch Klick auf den Button "Preset speichern" rechts.</translation>
+<translation>Zuvor gespeicherte Presets können hier selektiert werden. Sie können die aktuellen Einstellungen als neues Preset speichern, durch Klick auf den Button "Preset speichern" rechts.</translation>
 </phrase>
 
 <!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
@@ -5095,7 +5095,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Selected area as image</original>
-<translation>Ausgewählten Bereich als Bild</translation>
+<translation>Selektierten Bereich als Bild</translation>
 </phrase>
 
 <phrase>
@@ -5410,7 +5410,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Medium buttons</original>
-<translation></translation>
+<translation>Mittelgroße Buttons</translation>
 </phrase>
 
 <phrase>
@@ -9319,7 +9319,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>remove selected image</original>
-<translation>Ausgewähltes Bild entfernen</translation>
+<translation>Selektiertes Bild entfernen</translation>
 </phrase>
 
 <phrase>
@@ -9384,7 +9384,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>remove the following text (if found) from each filename</original>
-<translation>Den folgenden Text (falls vorhanden) aus jedem Dateiname entfernen</translation>
+<translation>Den folgenden Text (wenn gefunden) aus jedem Dateiname entfernen</translation>
 </phrase>
 
 <phrase>
@@ -9423,6 +9423,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Exporteinstellungen für dieses Format festlegen</translation>
 </phrase>
@@ -9435,6 +9440,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>convert all images to a new format</original>
 <translation>Alle Bilder in ein neues Format konvertieren</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9497,11 +9507,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Unsaved image list</original>
-<translation>Ungesicherte Bildliste</translation>
-</phrase>
-
-<phrase>
 <original>Batch Image List</original>
 <translation>Batch-Bildliste</translation>
 </phrase>
@@ -9533,27 +9538,27 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>no macro selected</original>
-<translation>Kein Makro ausgewählt</translation>
+<translation>Kein Makro selektiert</translation>
 </phrase>
 
 <phrase>
 <original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, aber es ist kein Makro ausgewählt worden. Bitte selektieren Sie eine gültige Makrodatei.</translation>
+<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, aber es ist kein Makro selektiert worden. Bitte selektieren Sie eine gültige Makrodatei.</translation>
 </phrase>
 
 <phrase>
 <original>No macro file selected</original>
-<translation>Keine Makrodatei ausgewählt</translation>
+<translation>Keine Makrodatei selektiert</translation>
 </phrase>
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation>Sie haben keine Bilder zum Verarbeiten ausgewählt! Bitte fügen Sie ein oder mehrere Bilder der Batchliste hinzu.</translation>
+<translation>Sie haben keine Bilder zum Verarbeiten selektiert! Bitte fügen Sie ein oder mehrere Bilder der Batchliste hinzu.</translation>
 </phrase>
 
 <phrase>
 <original>No images selected</original>
-<translation>Keine Bilder ausgewählt</translation>
+<translation>Keine Bilder selektiert</translation>
 </phrase>
 
 <phrase>
@@ -9588,7 +9593,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.</original>
-<translation>Beginnen Sie, indem Sie die Fotobearbeitungsaktion(en) auswählen, die Sie anwenden wollen. Wenn multiple Aktionen ausgewählt sind, werden sie in der auf dieser Seite erscheinenden Reihenfolge angewandt.</translation>
+<translation>Beginnen Sie, indem Sie die Fotobearbeitungsaktion(en) auswählen, die Sie anwenden wollen. Wenn multiple Aktionen selektiert sind, werden sie in der auf dieser Seite erscheinenden Reihenfolge angewandt.</translation>
 </phrase>
 
 <phrase>
@@ -9618,7 +9623,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) innerhalb des Ordners (oder den Unterordnern, falls ausgewählt) werden automatisch identifiziert.</translation>
+<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) innerhalb des Ordners (oder der Unterordner, falls selektiert) werden automatisch identifiziert.</translation>
 </phrase>
 
 <phrase>
@@ -9638,12 +9643,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Original-Format behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standard-Format (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Original-Format behalten" selektiert ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standard-Format (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie sich dafür entscheiden, Bilder in einem neuen Format zu speichern, achten Sie bitte darauf, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie sich dafür entscheiden, Bilder in einem neuen Format zu speichern, achten Sie bitte darauf, dass das von Ihnen selektierte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -9668,7 +9673,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateiname haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien beim Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Original-Dateiname (2)").</translation>
+<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateiname haben und die Option "Original-Dateinamen" selektiert ist, werden solchen Dateien beim Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Original-Dateiname (2)").</translation>
 </phrase>
 
 <phrase>
@@ -9698,22 +9703,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-<translation>Sie haben keine Bilddateien ausgewählt. Bitte fügen Sie vor dem Speichern eine oder mehrere Dateien der Batchliste hinzu.</translation>
+<translation>Sie haben keine Bilddateien selektiert. Bitte fügen Sie vor dem Speichern eine oder mehrere Dateien der Batchliste hinzu.</translation>
 </phrase>
 
 <phrase>
 <original>Empty image list</original>
 <translation>Leere Bildliste</translation>
-</phrase>
-
-<phrase>
-<original>Macro Data</original>
-<translation>Makrodaten</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Makrodatei öffnen</translation>
 </phrase>
 
 <phrase>
@@ -9801,7 +9796,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Verbleibende Zeit wird geschätzt</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -11541,7 +11536,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Diese Option wird ein blankes Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder können Sie im Menü "Datei > Importieren" finden.</translation>
+<translation>Diese Option wird ein blankes Bild erstellen. Andere Möglichkeiten, neue Bilder zu erstellen, können im Menü "Datei > Importieren" gefunden werden.</translation>
 </phrase>
 
 <phrase>
@@ -11551,7 +11546,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>Eine andere Möglichkeit zum Öffnen von Bildern ist: Ziehen Sie diese vom Desktop oder Windows-Explorer und legen sie im PhotoDemon-Fenster ab (per Drag und Drop).</translation>
+<translation>Eine andere Möglichkeit, Bilder zu öffnen, ist, diese von Ihrem Desktop oder aus dem Windows-Explorer zu ziehen und sie auf PhotoDemon abzulegen (per Drag und Drop).</translation>
 </phrase>
 
 <phrase>
@@ -12412,7 +12407,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Delete selected language file</original>
-<translation>Ausgewählte Sprachdatei löschen</translation>
+<translation>Selektierte Sprachdatei löschen</translation>
 </phrase>
 
 <phrase>
@@ -12547,7 +12542,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die vorhandene Arbeit ist autom. gespeichert worden.</translation>
+<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt reagiert nicht mehr). Die vorhandene Arbeit ist autom. gespeichert worden.</translation>
 </phrase>
 
 <phrase>
@@ -12673,7 +12668,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.</original>
-<translation>Bitte beginnen Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, werden Sie in der Lage sein, jegliche vorhandene Übersetzungen zu bearbeiten sowie Übersetzungen hinzuzufügen, die eventuell fehlen.</translation>
+<translation>Bitte beginnen Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die selektierte Datei bereits Übersetzungsdaten enthält, werden Sie in der Lage sein, jegliche vorhandene Übersetzungen zu bearbeiten sowie Übersetzungen hinzuzufügen, die eventuell fehlen.</translation>
 </phrase>
 
 <phrase>
@@ -12683,7 +12678,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.</original>
-<translation>Beim Klick auf "Weiter" wird die ausgewählte Datei automatisch validiert und geparst. In Abhängigkeit von der Anzahl der vorhandenen Übersetzungen kann dieser Prozess einige Sekunden dauern.</translation>
+<translation>Beim Klick auf "Weiter" wird die selektierte Datei automatisch validiert und geparst. In Abhängigkeit von der Anzahl der vorhandenen Übersetzungen kann dieser Prozess einige Sekunden dauern.</translation>
 </phrase>
 
 <phrase>
@@ -13702,10 +13697,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

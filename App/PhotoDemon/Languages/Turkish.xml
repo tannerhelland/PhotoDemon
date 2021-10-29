@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.47</langversion>
+<langversion>1.0.48</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -9391,6 +9391,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation></translation>
 </phrase>
@@ -9402,6 +9407,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>convert all images to a new format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
 <translation></translation>
 </phrase>
 
@@ -9459,11 +9469,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
 <translation></translation>
 </phrase>
 
@@ -9673,16 +9678,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation></translation>
 </phrase>
@@ -9767,7 +9762,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13654,10 +13649,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

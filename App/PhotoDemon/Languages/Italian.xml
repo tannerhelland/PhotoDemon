@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.66</langversion>
+<langversion>8.0.67</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -9425,6 +9425,11 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>impostare le impostazioni di esportazione per questo formato</translation>
 </phrase>
@@ -9437,6 +9442,11 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 <phrase>
 <original>convert all images to a new format</original>
 <translation>converti tutte le immagini in un nuovo formato</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9496,11 +9506,6 @@ Would you like to save your batch list before exiting?</original>
 <translation>Se esci ora, la tua lista (la lista delle immagini da processare) sarà persa.  Salvando la tua lista, puoi semplicemente riutilizzarla in un altro momento.
 
 Vuoi salvare la tua lista prima di uscire?</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>Lista delle immagini non salvate</translation>
 </phrase>
 
 <phrase>
@@ -9709,16 +9714,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>Dati della Macro</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Apri un file Macro</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>no</translation>
 </phrase>
@@ -9803,7 +9798,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Tempo stimato rimanente</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13709,10 +13704,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

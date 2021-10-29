@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.556</langversion>
+<langversion>6.7.557</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -9423,6 +9423,11 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>définir les paramètres d'exportation pour ce format</translation>
 </phrase>
@@ -9435,6 +9440,11 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 <phrase>
 <original>convert all images to a new format</original>
 <translation>convertir toutes les images dans un nouveau format</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9494,11 +9504,6 @@ Would you like to save your batch list before exiting?</original>
 <translation>Si vous quittez maintenant, votre liste de lots (la liste des images à traiter) sera perdue. En enregistrant votre liste, vous pouvez facilement poursuivre cette opération à une date ultérieure.
 
 Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>Liste des images non enregistrée</translation>
 </phrase>
 
 <phrase>
@@ -9707,16 +9712,6 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>Données Macro</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Ouverture d'un fichier de Macro</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>non</translation>
 </phrase>
@@ -9801,7 +9796,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>Estimation du temps restant</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13717,10 +13712,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>

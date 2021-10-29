@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.73</langversion>
+<langversion>8.0.74</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -9423,6 +9423,11 @@ Los archivos reparados se han guardado en la carpeta destino. Los archivos sin r
 </phrase>
 
 <phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Establecer los ajustes de exportación para este formato</translation>
 </phrase>
@@ -9435,6 +9440,11 @@ Los archivos reparados se han guardado en la carpeta destino. Los archivos sin r
 <phrase>
 <original>convert all images to a new format</original>
 <translation>Convertir todas las imágenes a un formato nuevo</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9494,11 +9504,6 @@ Would you like to save your batch list before exiting?</original>
 <translation>Si decide salir ahora, se perderá su lista de lotes (la lista de imágenes a procesar). Guardando la lista, podrá reanudar fácilmente esta operación por lotes en un momento posterior.
 
 ¿Desea guardar su lista de lotes antes de salir?</translation>
-</phrase>
-
-<phrase>
-<original>Unsaved image list</original>
-<translation>No se guardó la lista de imágenes</translation>
 </phrase>
 
 <phrase>
@@ -9707,16 +9712,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>Datos de macro</translation>
-</phrase>
-
-<phrase>
-<original>Open Macro File</original>
-<translation>Abrir archivo de macro</translation>
-</phrase>
-
-<phrase>
 <original>no</original>
 <translation>No</translation>
 </phrase>
@@ -9801,7 +9796,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Estimando tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13702,10 +13697,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5362 phrases. -->
-<!-- 2769 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11762 total words. -->
+<!-- 2770 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 11763 total words. -->
 
 </pdData>
