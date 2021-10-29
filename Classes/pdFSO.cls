@@ -207,7 +207,10 @@ Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByV
 Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
+Private Declare Function PathCommonPrefixW Lib "shlwapi" (ByVal pszFile1 As Long, ByVal pszFile2 As Long, ByVal achPath As Long) As Long
 Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
+Private Declare Function PathSkipRootW Lib "shlwapi" (ByVal pszPath As Long) As Long
+Private Declare Function PathStripToRootW Lib "shlwapi" (ByVal pszPath As Long) As Long
 
 Private Declare Function GetFileVersionInfoW Lib "Version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long
 Private Declare Function GetFileVersionInfoSizeW Lib "Version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
@@ -1589,6 +1592,20 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
     
 End Function
 
+'Common prefix (if any) between two path strings.  Returns TRUE if a common prefix exists; FALSE otherwise.
+' If FALSE is returned, do not use the contents of dstCommonPrefix - its value is not guaranteed to be null.
+Friend Function PathCommonPrefix(ByRef srcPath1 As String, ByRef srcPath2 As String, ByRef dstCommonPrefix As String) As Boolean
+    
+    dstCommonPrefix = String$(MAX_PATH, 0)
+    
+    Dim lenResult As Long
+    lenResult = PathCommonPrefixW(StrPtr(srcPath1), StrPtr(srcPath2), StrPtr(dstCommonPrefix))
+    
+    PathCommonPrefix = (lenResult > 0)
+    If (lenResult > 0) Then dstCommonPrefix = Strings.TrimNull(Left$(dstCommonPrefix, lenResult))
+    
+End Function
+
 Friend Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Long) As String
     
     'Limit length to MAX_PATH
@@ -1740,6 +1757,136 @@ Friend Function PathExists(ByRef fullPath As String, Optional ByVal checkWriteAc
     Else
         PathExists = chkExistence
     End If
+    
+End Function
+
+'Given a list of paths, return the largest common prefix between *all* paths.  This is useful for establishing
+' folder structure for a large set of files during batch processing.  The function returns TRUE if the files
+' share a common prefix; FALSE if they do not.  (FALSE means the files come from different drives, typically.)
+' Also, network shares and locations work just fine.
+'
+'If FALSE is returned, do not use dstCommonPrefix; its value is not guaranteed to be correct.
+Friend Function PathGetLargestCommonPrefix(ByRef listOfPaths As pdStringStack, ByRef dstCommonPrefix As String) As Boolean
+
+    'Failsafe validation
+    If (listOfPaths Is Nothing) Then Exit Function
+    If (listOfPaths.GetNumOfStrings < 2) Then Exit Function
+    
+    Dim numOfStrings As Long
+    numOfStrings = listOfPaths.GetNumOfStrings
+    
+    'Check the first two paths.  If they do not share a common prefix, we can exit immediately.
+    Dim newLargestShare As String
+    PathGetLargestCommonPrefix = Me.PathCommonPrefix(listOfPaths.GetString(0), listOfPaths.GetString(1), dstCommonPrefix)
+    If (Not PathGetLargestCommonPrefix) Or (numOfStrings <= 2) Then Exit Function
+    
+    'Iterate through the rest of the list, comparing each string [i] to the current largest common prefix.
+    ' If the two strings share a prefix, and that prefix is *shorter* than the current common prefix,
+    ' store the new shared prefix as the "largest common" one.
+    '
+    'Also, if any comparison fails, exit immediately
+    Dim i As Long
+    For i = 2 To numOfStrings - 1
+        
+        'Check for any common prefix...
+        PathGetLargestCommonPrefix = Me.PathCommonPrefix(listOfPaths.GetString(i), dstCommonPrefix, newLargestShare)
+        If PathGetLargestCommonPrefix Then
+            
+            'Update the current common prefix with the new one (if they differ; due to the way VB
+            ' allocates strings, we try to avoid new allocations if we can)
+            If Strings.StringsNotEqual(dstCommonPrefix, newLargestShare) Then dstCommonPrefix = newLargestShare
+            
+        'No common prefix; exit immediately
+        Else
+            dstCommonPrefix = vbNullString
+            Exit Function
+        End If
+        
+    Next i
+
+End Function
+
+'Given a list of paths, rebase all paths against a new base folder.  Paths will automatically be stripped
+' down to their largest shared common prefix before rebasing.  If input paths do not share a common prefix,
+' drives/network roots will be stripped and all remaining folders will be rebased against the new base path.
+' Note that this has some potential for exceeding MAX_PATH - so be careful with the paths you supply!
+'
+'PD uses this function to retain folder structure during batch processing.  It is assumed (but not required)
+' that input files will already share a base folder.  This function works correctly regardless.
+'
+'If FALSE is returned, something went catastrophically wrong (possibly a MAX_PATH violation).  Do not use
+' dstListOfRebasedPaths if this happens - its contents are not guaranteed to be valid.
+Friend Function PathRebaseListOnNewPath(ByRef srcListOfPaths As pdStringStack, ByRef dstListOfRebasedPaths As pdStringStack, ByRef newBasePath As String) As Boolean
+
+    'Failsafe validation
+    If (srcListOfPaths Is Nothing) Then Exit Function
+    If (LenB(newBasePath) <= 0) Then Exit Function
+    
+    'Initialization
+    Dim numOfStrings As Long
+    numOfStrings = srcListOfPaths.GetNumOfStrings
+    
+    Set dstListOfRebasedPaths = New pdStringStack
+    
+    'PD convention is to pass paths with a trailing backslash, but that breaks this particular
+    ' function due to the way Windows calculates shared prefixes.  If a trailing backslash exists,
+    ' remove it.
+    If (Right$(newBasePath, 1) = "\") Or (Right$(newBasePath, 1) = "/") Then newBasePath = Left$(newBasePath, Len(newBasePath) - 1)
+    
+    'Find the largest shared prefix path on the input list.  All input paths will be stripped of this prefix,
+    ' then rebased accordingly against the destination path.
+    Dim srcCommonPrefix As String, commonRootExists As Boolean
+    commonRootExists = Me.PathGetLargestCommonPrefix(srcListOfPaths, srcCommonPrefix)
+    
+    'We now want to build the destination path collection in one of two ways.
+    Dim i As Long, tmpPath As String
+    For i = 0 To numOfStrings - 1
+        
+        tmpPath = srcListOfPaths.GetString(i)
+        
+        'If a common root exists between all input paths, we will simply strip this path from the inputs,
+        ' then prepend the new base path in its place.
+        If commonRootExists Then
+            tmpPath = Right$(tmpPath, Len(tmpPath) - Len(srcCommonPrefix))
+            
+        'If the input paths do not share a common prefix, we must strip just the root from all
+        ' source paths.
+        Else
+            
+            'Note that I did a little testing and confirmed you could also PathSkipRootW here -
+            ' just remember that that function works off pointer offsets, so you need to calculate
+            ' a pointer different then DIVIDE BY 2 (because of wchars).
+            
+            'Anyway, we just use PathStripToRootW because it's a little more straightforward.
+            
+            'Start by expanding the input path to MAX_PATH
+            Dim tmpMaxPath As String
+            tmpMaxPath = String$(MAX_PATH, 0)
+            CopyMemoryStrict StrPtr(tmpMaxPath), StrPtr(tmpPath), LenB(tmpPath)
+            
+            If (PathStripToRootW(StrPtr(tmpMaxPath)) <> 0) Then
+                Dim rootLen As Long
+                rootLen = Len(Strings.TrimNull(tmpMaxPath))
+                tmpPath = Right$(tmpPath, Len(tmpPath) - rootLen)
+            
+            'Catastrophic failure - maybe a relative path was passed?
+            Else
+                PathRebaseListOnNewPath = False
+                Exit Function
+            End If
+            
+        End If
+        
+        'Ensure a leading backslash, because the different path calculation APIs don't always
+        ' guarantee that one will be present.
+        If (Left$(tmpPath, 1) <> "\") Then tmpPath = "\" & tmpPath
+        
+        'Merge base path to the calculated relative path
+        dstListOfRebasedPaths.AddString newBasePath & tmpPath
+    
+    Next i
+    
+    PathRebaseListOnNewPath = True
     
 End Function
 

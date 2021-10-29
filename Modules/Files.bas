@@ -343,6 +343,10 @@ Public Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
     If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHwnd, initFolder, dialogTitleText)
 End Function
 
+Public Function PathCommonPrefix(ByRef srcPath1 As String, ByRef srcPath2 As String, ByRef dstCommonPrefix As String) As Boolean
+    If InitializeFSO Then PathCommonPrefix = m_FSO.PathCommonPrefix(srcPath1, srcPath2, dstCommonPrefix)
+End Function
+
 Public Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Long) As String
     If InitializeFSO Then PathCompact = m_FSO.PathCompact(srcString, newMaxLength)
 End Function
@@ -353,6 +357,14 @@ End Function
 
 Public Function PathExists(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
     If InitializeFSO Then PathExists = m_FSO.PathExists(fullPath, checkWriteAccessAsWell)
+End Function
+
+Public Function PathGetLargestCommonPrefix(ByRef listOfPaths As pdStringStack, ByRef dstCommonPrefix As String) As Boolean
+    If InitializeFSO Then PathGetLargestCommonPrefix = m_FSO.PathGetLargestCommonPrefix(listOfPaths, dstCommonPrefix)
+End Function
+
+Public Function PathRebaseListOnNewPath(ByRef srcListOfPaths As pdStringStack, ByRef dstListOfRebasedPaths As pdStringStack, ByRef newBasePath As String) As Boolean
+    If InitializeFSO Then PathRebaseListOnNewPath = m_FSO.PathRebaseListOnNewPath(srcListOfPaths, dstListOfRebasedPaths, newBasePath)
 End Function
 
 Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean

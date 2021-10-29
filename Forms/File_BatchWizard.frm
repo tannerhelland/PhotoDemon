@@ -304,6 +304,17 @@ Begin VB.Form FormBatchWizard
       Width           =   9855
       _ExtentX        =   17383
       _ExtentY        =   11959
+      Begin PhotoDemon.pdCheckBox chkOutputPreserveFolders 
+         Height          =   345
+         Left            =   480
+         TabIndex        =   43
+         Top             =   750
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   609
+         Caption         =   "preserve input folder structure"
+         Value           =   0   'False
+      End
       Begin PhotoDemon.pdDropDown cmbOutputOptions 
          Height          =   375
          Left            =   480
@@ -314,13 +325,13 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdButton cmdSelectOutputPath 
-         Height          =   615
+         Height          =   735
          Left            =   6600
          TabIndex        =   26
          Top             =   330
          Width           =   3135
          _ExtentX        =   5530
-         _ExtentY        =   1085
+         _ExtentY        =   1296
          Caption         =   "Select destination folder..."
          FontSize        =   9
       End
@@ -328,16 +339,16 @@ Begin VB.Form FormBatchWizard
          Height          =   315
          Left            =   840
          TabIndex        =   27
-         Top             =   4440
-         Width           =   4695
-         _ExtentX        =   8281
+         Top             =   3960
+         Width           =   4095
+         _ExtentX        =   7223
          _ExtentY        =   556
       End
       Begin PhotoDemon.pdTextBox txtAppendBack 
          Height          =   315
          Left            =   5640
          TabIndex        =   28
-         Top             =   3360
+         Top             =   3000
          Width           =   4095
          _ExtentX        =   7223
          _ExtentY        =   556
@@ -346,7 +357,7 @@ Begin VB.Form FormBatchWizard
          Height          =   315
          Left            =   840
          TabIndex        =   29
-         Top             =   3360
+         Top             =   3000
          Width           =   4095
          _ExtentX        =   7223
          _ExtentY        =   556
@@ -356,7 +367,7 @@ Begin VB.Form FormBatchWizard
          Height          =   315
          Left            =   480
          TabIndex        =   30
-         Top             =   480
+         Top             =   360
          Width           =   6015
          _ExtentX        =   10610
          _ExtentY        =   556
@@ -367,7 +378,7 @@ Begin VB.Form FormBatchWizard
          Index           =   0
          Left            =   840
          TabIndex        =   15
-         Top             =   5520
+         Top             =   4920
          Width           =   2250
          _ExtentX        =   3969
          _ExtentY        =   582
@@ -378,7 +389,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Left            =   480
          TabIndex        =   11
-         Top             =   2880
+         Top             =   2640
          Width           =   4365
          _ExtentX        =   7699
          _ExtentY        =   582
@@ -389,7 +400,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Left            =   5280
          TabIndex        =   12
-         Top             =   2880
+         Top             =   2640
          Width           =   4530
          _ExtentX        =   7990
          _ExtentY        =   582
@@ -400,7 +411,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Left            =   480
          TabIndex        =   13
-         Top             =   3960
+         Top             =   3600
          Width           =   9225
          _ExtentX        =   16272
          _ExtentY        =   582
@@ -411,7 +422,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Left            =   480
          TabIndex        =   14
-         Top             =   5040
+         Top             =   4560
          Width           =   9165
          _ExtentX        =   16166
          _ExtentY        =   582
@@ -423,7 +434,7 @@ Begin VB.Form FormBatchWizard
          Index           =   1
          Left            =   3240
          TabIndex        =   16
-         Top             =   5520
+         Top             =   4920
          Width           =   2625
          _ExtentX        =   4630
          _ExtentY        =   582
@@ -433,20 +444,20 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Left            =   480
          TabIndex        =   17
-         Top             =   6060
-         Width           =   7965
-         _ExtentX        =   14049
+         Top             =   5520
+         Width           =   9165
+         _ExtentX        =   16166
          _ExtentY        =   582
          Caption         =   "replace spaces in filenames with underscores"
          Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
          Height          =   330
-         Left            =   5760
+         Left            =   5280
          TabIndex        =   18
-         Top             =   4440
-         Width           =   3885
-         _ExtentX        =   6853
+         Top             =   3960
+         Width           =   4365
+         _ExtentX        =   7699
          _ExtentY        =   582
          Caption         =   "use case-sensitive matching"
          Value           =   0   'False
@@ -454,7 +465,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdLabel lblDstFilename 
          Height          =   285
          Left            =   120
-         Top             =   1200
+         Top             =   1320
          Width           =   9555
          _ExtentX        =   16854
          _ExtentY        =   503
@@ -464,7 +475,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdLabel lblOptionalText 
          Height          =   285
          Left            =   120
-         Top             =   2400
+         Top             =   2280
          Width           =   9600
          _ExtentX        =   16933
          _ExtentY        =   503
@@ -1197,11 +1208,15 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
             ' the "auto-detect animated images" checkbox is set, animation settings too.
             
             ' contains all of the user's selected image format options (JPEG quality, etc)
-            If (optFormat(1) And moveForward) Then
+            If (optFormat(1).Value And moveForward) Then
                 
                 Dim showWarning As Boolean, showWarningAnimated As Boolean
                 showWarning = (Not m_ExportSettingsSet)
-                showWarningAnimated = (chkExportAnimation.Value And chkExportAnimation.Visible And (Not m_ExportSettingsSetAnimation))
+                If chkExportAnimation.Visible Then
+                    showWarningAnimated = chkExportAnimation.Value And (Not m_ExportSettingsSetAnimation)
+                Else
+                    showWarningAnimated = True
+                End If
                 
                 'If the user clicks one box but not the other, that's okay - they probably only care about
                 ' that particular type of image.  But if they haven't clicked *either* box, warn them.
@@ -1761,7 +1776,7 @@ Private Sub PrepareForBatchConversion()
     Macros.SetMacroStatus MacroBATCH
     
     Dim curBatchFile As Long
-    Dim tmpFilename As String, tmpFileExtension As String
+    Dim srcFilename As String, dstFilename As String
     
     Dim totalNumOfFiles As Long
     totalNumOfFiles = lstFiles.ListCount
@@ -1789,25 +1804,58 @@ Private Sub PrepareForBatchConversion()
     
     Dim numFilesTimeNotUpdated As Long
     
+    'We're now gonna build two stacks of strings:
+    ' 1) all input files
+    ' 2) all output files
+    '
+    'Note that (2) won't include *all* the correct filename information yet (because the user can
+    ' set a ton of optional output filename settings in the final wizard panel) - but it will include
+    ' each image's final path, including all subfolders, with the original filename tacked on (with its
+    ' original file extension).
+    '
+    'A later function will handle applying all the optional output filename settings from the final
+    ' wizard page, but we need the correct folder structure established beforehand, so we can create
+    ' any intermediary subfolders.
+    Dim srcListFiles As pdStringStack, dstListFiles As pdStringStack
+    Set srcListFiles = New pdStringStack
+    
+    'Dim i As Long
+    For i = 0 To lstFiles.ListCount - 1
+        srcListFiles.AddString lstFiles.List(i)
+    Next i
+    
+    'Create a matching list of destination files
+    If chkOutputPreserveFolders.Value Then
+        
+        'Make sure we can create valid destination paths for each output image.  (This is not expected
+        ' to fail, but combining paths is complicated and difficult to test exhaustively.)
+        If (Not Files.PathRebaseListOnNewPath(srcListFiles, dstListFiles, outputPath)) Then
+            
+            'Path merging failed.  Fall back to "do not preserve output subfolders" mode.
+            chkOutputPreserveFolders.Value = False
+            
+        End If
+        
+    End If
+    
     'This is where the fun begins.  Loop through every file in the list, and process them one-by-one using the options requested
     ' by the user.
-    For curBatchFile = 0 To totalNumOfFiles
+    For curBatchFile = 0 To totalNumOfFiles - 1
     
         'Pause for keypresses - this allows the user to press "Escape" to cancel the operation
         DoEvents
         If (Macros.GetMacroStatus = MacroCANCEL) Then GoTo MacroCanceled
-    
-        tmpFilename = lstFiles.List(curBatchFile)
         
         'Give the user a progress update
         BatchConvertMessage g_Language.TranslateMessage("Processing image # %1 of %2", (curBatchFile + 1), totalNumOfFiles)
         pbBatch.Value = curBatchFile
         
-        'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If Files.FileExists(tmpFilename) Then
+        'Retrieve the source file and validate it
+        srcFilename = srcListFiles.GetString(curBatchFile)
+        If Files.FileExists(srcFilename) Then
             
-            'Load the current image
-            If Loading.LoadFileAsNewImage(tmpFilename, vbNullString, False, True, False) Then
+            'Load the target image
+            If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, True, False) Then
                 
                 'Manually activate the just-loaded image
                 Dim tmpStack As pdStack
@@ -1820,9 +1868,7 @@ Private Sub PrepareForBatchConversion()
                 
                 'With the macro complete, prepare the file for saving.  (This function will determine both
                 ' a final filename and a proper file extension.)
-                '
-                'TODO: preserve subfolders needs to be handled here
-                tmpFilename = GetFinalFilename(lstFiles.List(curBatchFile), outputPath, curBatchFile)
+                dstFilename = GetFinalFilename(srcFilename, outputPath, dstListFiles, curBatchFile)
                 
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
                 ' on the matching wizard panel.  Note that we need to silently swap-in animation parameters instead of
@@ -1830,11 +1876,10 @@ Private Sub PrepareForBatchConversion()
                 Dim finalSaveParams As String
                 finalSaveParams = m_ExportSettingsFormat
                 If (PDImages.GetActiveImage.IsAnimated() And chkExportAnimation.Value) Then finalSaveParams = m_ExportSettingsFormatAnimation
-                Debug.Print "finalSaveParams", finalSaveParams
                 
                 ' TODO: metadata for animated images
                 ' TODO: track success/fail results and collate any failures into a list that we can report to the user
-                Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), tmpFilename, PDImages.GetActiveImage.GetCurrentFileFormat, finalSaveParams, m_ExportSettingsMetadata
+                Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), dstFilename, PDImages.GetActiveImage.GetCurrentFileFormat, finalSaveParams, m_ExportSettingsMetadata
                 
                 'Unload the finished image
                 CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()
@@ -1921,12 +1966,17 @@ Private Sub ApplyEditOperations()
     
 End Sub
 
-Private Function GetFinalFilename(ByRef originalFilename As String, ByRef outputPath As String, ByVal curBatchFile As Long) As String
+'Do not pass invalid files or paths to this function.  It does not validate inputs.
+Private Function GetFinalFilename(ByRef originalFilename As String, ByVal outputPath As String, ByRef dstListFiles As pdStringStack, ByVal curBatchFile As Long) As String
     
+    'Before we even think about output path, start by stripping the incoming filename
+    ' down to just its filename.
     Dim tmpFilename As String
     tmpFilename = Files.FileGetName(originalFilename, True)
     
-    'Build a full file path using the options the user specified
+    'Start working on building a filename that matches the user's output settings.
+    
+    'First, append any prefix/suffix text
     If (cmbOutputOptions.ListIndex = 0) Then
         If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
         If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
@@ -1995,9 +2045,24 @@ Private Function GetFinalFilename(ByRef originalFilename As String, ByRef output
         If optCase(0).Value Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
     End If
     
+    'We now have a finished filename, but we still need to deal with output path.
+    
+    'The base output path we use varies depending on the "preserve subfolders" option
+    If chkOutputPreserveFolders.Value Then
+        
+        'The user wants output folders preserved.  Silently replace the passed output path with the one
+        ' calculated by PD's path-matcher.
+        outputPath = Files.FileGetPath(dstListFiles.GetString(curBatchFile))
+        
+        'Ensure all folders in this output path exist.
+        Files.PathCreate outputPath, True
+    
+    'No /Else branch required - the outputPath string already contains the flat path all images are being saved to.
+    End If
+    
     'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
     ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
-    ' drive and directory structure.
+    ' drive and directory structure determined by the previous step.
     tmpFilename = outputPath & Files.IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
     
     'Return the final result
