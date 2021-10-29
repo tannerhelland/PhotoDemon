@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.991</langversion>
+<langversion>9.0.1004</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -720,7 +720,7 @@
 
 <phrase>
 <original>Tint</original>
-<translation>Farbton</translation>
+<translation>Tönung</translation>
 </phrase>
 
 <phrase>
@@ -750,7 +750,7 @@
 
 <phrase>
 <original>Split toning</original>
-<translation>Split-Tönung</translation>
+<translation>Split-Toning</translation>
 </phrase>
 
 <phrase>
@@ -1289,7 +1289,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Autosave konnte nicht vollständig rekonstruiert werden. Stattdessen teilweise Rekonstruktion versucht.</translation>
+<translation>Autosave konnte nicht vollständig rekonstruiert werden. Stattdessen partielle Rekonstruktion versucht.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1301,7 +1301,7 @@
 
 <phrase>
 <original>Closing image</original>
-<translation>Schließen von Bild</translation>
+<translation>Schließen des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -1461,7 +1461,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation>Farben und Beleuchtung werden autom. korrigiert</translation>
+<translation>Automatische Korrektur von Farben und Beleuchtung</translation>
 </phrase>
 
 <phrase>
@@ -1496,7 +1496,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Auto-enhancing color and lighting</original>
-<translation>Farbe und Beleuchtung werden autom. verbessert</translation>
+<translation>Automatische Verbesserung von Farbe und Beleuchtung</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -2120,7 +2120,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Are you sure you want to continue?</original>
-<translation>Sind Sie sicher, dass Sie fortfahren wollen?</translation>
+<translation>Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
@@ -2285,7 +2285,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 (Press No to continue recording.)</original>
 <translation>Dieses Makro enthält keine aufzeichenbaren Aktionen. Sind Sie sicher, dass Sie die Aufzeichnung stoppen wollen? 
 
-(Drücken Sie "Nein", um Aufzeichnung fortzusetzen.)</translation>
+("Nein" drücken, um Aufzeichnung fortzusetzen.)</translation>
 </phrase>
 
 <phrase>
@@ -5800,7 +5800,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Colorizing image</original>
-<translation>Bild wird eingefärbt</translation>
+<translation>Kolorieren des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -5817,7 +5817,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>number of gray shades</original>
-<translation>Anzahl der Grautöne</translation>
+<translation>Anzahl der Grauschattierungen</translation>
 </phrase>
 
 <phrase>
@@ -6019,12 +6019,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>tint</original>
-<translation>Farbton</translation>
+<translation>Tönung</translation>
 </phrase>
 
 <phrase>
 <original>Re-tinting image</original>
-<translation>Bild neu einfärben</translation>
+<translation>Neu-Tönung des Bildes</translation>
 </phrase>
 
 <!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6443,12 +6443,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>toning strength</original>
-<translation>Tönungsstärke</translation>
+<translation>Toning-Stärke</translation>
 </phrase>
 
 <phrase>
 <original>Split-toning image</original>
-<translation>Split-Tönungsbild</translation>
+<translation>Split-Toning von Bild</translation>
 </phrase>
 
 <!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -7081,7 +7081,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Proceeding with tone mapping</original>
-<translation>Mit Tone-Mapping wird fortgefahren</translation>
+<translation>Fortfahren mit Tone-Mapping</translation>
 </phrase>
 
 <phrase>
@@ -9424,7 +9424,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation></translation>
+<translation>Automatische Erkennung von animierten Bildern</translation>
 </phrase>
 
 <phrase>
@@ -9444,7 +9444,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation></translation>
+<translation>Exporteinstellungen für animierte Bilder festlegen</translation>
 </phrase>
 
 <phrase>
@@ -9501,7 +9501,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verloren sein. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt problemlos fortsetzen.
+<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verloren sein. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt problemlos wieder aufnehmen.
 
 Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
@@ -9563,7 +9563,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>Bevor Sie fortfahren, müssen Sie auf den Button "Exporteinstellungen für dieses Format festlegen" klicken, um zu spezifizieren, welche Exporteinstellungen Sie verwenden wollen.</translation>
+<translation>Vor dem Fortfahren müssen Sie auf den Button "Exporteinstellungen für dieses Format festlegen" klicken, um zu spezifizieren, welche Exporteinstellungen Sie verwenden wollen.</translation>
 </phrase>
 
 <phrase>
@@ -10788,7 +10788,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>comparison image and layer</original>
-<translation>Vergleich von Bild und Layer</translation>
+<translation>Vergleichsbild und -Layer</translation>
 </phrase>
 
 <phrase>
@@ -12030,7 +12030,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei Auto-Aktivierung von Layern ignorieren</translation>
+<translation>Transparente Pixel bei automaischer Aktivierung von Layern ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -12482,47 +12482,47 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Save this translation and proceed to the next phrase</original>
-<translation>Diese Übersetzung speichern und zur nächsten Textpassage weitergehen</translation>
+<translation>Diese Übersetzung speichern und mit der nächsten Phrase fortfahren</translation>
 </phrase>
 
 <phrase>
 <original>use an online service to estimate missing translations</original>
-<translation>Einen Online-Dienst verwenden, um fehlende Übersetzungen abzuschätzen</translation>
+<translation>Einen Onlineservice zur Schätzung fehlender Übersetzungen verwenden</translation>
 </phrase>
 
 <phrase>
 <original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
-<translation>STRG+ENTER speichert automatisch und geht zur nächsten Textpassage weiter</translation>
+<translation>STRG+ENTER speichert automatisch und fährt mit der nächsten Phrase fort</translation>
 </phrase>
 
 <phrase>
 <original>translated phrase</original>
-<translation>Übersetzte Textpassage</translation>
+<translation>Übersetzte Phrase</translation>
 </phrase>
 
 <phrase>
 <original>original phrase</original>
-<translation>Original-Textpassage</translation>
+<translation>Original-Phrase</translation>
 </phrase>
 
 <phrase>
 <original>phrases to display</original>
-<translation>Anzuzeigende Textpassagen</translation>
+<translation>Anzuzeigende Phrasen</translation>
 </phrase>
 
 <phrase>
 <original>list of phrases (%1 items)</original>
-<translation>Liste der Textpassagen (%1 Items)</translation>
+<translation>Liste der Phrasen (%1 Items)</translation>
 </phrase>
 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
-<translation>Automatische Übersetzung aller fehlenden Textpassagen initiieren</translation>
+<translation>Automatische Übersetzung aller fehlenden Phrasen initiieren</translation>
 </phrase>
 
 <phrase>
 <original>This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?</original>
-<translation>Diese Aktion kann zum Abschließen eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Sind Sie sicher, dass Sie fortfahren wollen?</translation>
+<translation>Diese Aktion kann zum Abschließen eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
@@ -12532,7 +12532,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>Verarbeitung der Textpassage %1 von %2</translation>
+<translation>Verarbeitung der Phrase %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -12614,7 +12614,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht lokalisiert werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, aber möglicherweise nicht in Development- oder Beta-Builds.
 
-Um eine neue Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
+Um eine neue Übersetzung zu beginnen, laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
@@ -12628,7 +12628,7 @@ Um eine neue Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte diese Sprachdatei nicht geladen werden. Es ist möglich, dass das Exemplar auf diesem PC veraltet ist.
 
-Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unter photodemon.org.</translation>
+Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
@@ -12713,7 +12713,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>translate all phrases</original>
-<translation>Alle Textpassagen übersetzen</translation>
+<translation>Alle Phrasen übersetzen</translation>
 </phrase>
 
 <phrase>
@@ -12723,12 +12723,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im Benutzersprachen-Ordner von PhotoDemon erstellt. Dies bedeutet, Sie können das Programm zu jeder Zeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
+<translation>Jedes Mal, wenn eine Phrase modifiziert wird, wird automatisch ein Autosave im Benutzersprachen-Ordner von PhotoDemon erstellt. Dies bedeutet, Sie können das Programm zu jeder Zeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
 </phrase>
 
 <phrase>
 <original>When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)</original>
-<translation>Wenn Sie die Übersetzung fertigge- stellt haben, können Sie den Button "Speichern und Beenden" verwenden, um Ihre Arbeit in einer Datei Ihrer Wahl zu speichern. (Beachten Sie, dass Autosave-Daten so oder so erhalten werden.)</translation>
+<translation>Wenn Sie die Übersetzung fertiggestellt haben, können Sie den Button "Speichern und Beenden" verwenden, um Ihre Arbeit in einer Datei Ihrer Wahl zu speichern. (Beachten Sie, dass Autosave-Daten so oder so erhalten werden.)</translation>
 </phrase>
 
 <phrase>
@@ -12738,22 +12738,22 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!</original>
-<translation>So können wir besprecheen, ob Ihre Übersetzung der offiziellen Liste der unterstützten Sprachen hinzugefügt wird. Selbst Teilübersetzungen sind hilfreich!</translation>
+<translation>So können wir besprecheen, ob Ihre Übersetzung der offiziellen Liste der unterstützten Sprachen (Languages) hinzugefügt wird. Selbst partielle Übersetzungen sind hilfreich!</translation>
 </phrase>
 
 <phrase>
 <original>All phrases</original>
-<translation>Alle Textpassagen</translation>
+<translation>Alle Phrasen</translation>
 </phrase>
 
 <phrase>
 <original>Translated phrases</original>
-<translation>Übersetzte Textpassagen</translation>
+<translation>Übersetzte Phrasen</translation>
 </phrase>
 
 <phrase>
 <original>Untranslated phrases</original>
-<translation>Nicht übersetzte Textpassagen</translation>
+<translation>Nicht übersetzte Phrasen</translation>
 </phrase>
 
 <phrase>
@@ -12902,7 +12902,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation>Original-JPEG-Qualitätseinstellungen abschätzen</translation>
+<translation>Schätzung der Original-JPEG-Qualitätseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -13151,7 +13151,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 Are you sure you want to continue?</original>
 <translation>Alle Einstellungen werden auf deren Defaultwerte zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.
  
-Sind Sie sicher, dass Sie fortfahren wollen?</translation>
+Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
