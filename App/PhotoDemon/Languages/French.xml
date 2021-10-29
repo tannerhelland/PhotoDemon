@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.557</langversion>
+<langversion>6.7.555</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -90,7 +90,7 @@
 
 <phrase>
 <original>Export animated WebP</original>
-<translation></translation>
+<translation>Export du WebP animé</translation>
 </phrase>
 
 <phrase>
@@ -355,17 +355,17 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Remplacement du calque par le contenu du presse paier</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Remplacer le calque par le fichier</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Remplacer le calque par les calques visibles</translation>
 </phrase>
 
 <phrase>
@@ -780,7 +780,7 @@
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Desembrumer</translation>
 </phrase>
 
 <phrase>
@@ -910,7 +910,7 @@
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Droste</translation>
 </phrase>
 
 <phrase>
@@ -2085,7 +2085,7 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation></translation>
+<translation>Calque mis a jour avec succès.</translation>
 </phrase>
 
 <phrase>
@@ -4743,7 +4743,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Animated WebP</original>
-<translation></translation>
+<translation>WebP animé</translation>
 </phrase>
 
 <phrase>
@@ -4918,7 +4918,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Replace</original>
-<translation></translation>
+<translation>Remplacer</translation>
 </phrase>
 
 <phrase>
@@ -6244,7 +6244,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>foreground</original>
-<translation></translation>
+<translation>Premier Plan</translation>
 </phrase>
 
 <phrase>
@@ -6254,7 +6254,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Removing haze from image</original>
-<translation></translation>
+<translation>Retrait de la brume de l'image.</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8054,22 +8054,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>swap order</original>
-<translation></translation>
+<translation>inverser l'ordre</translation>
 </phrase>
 
 <phrase>
 <original>inner radius</original>
-<translation></translation>
+<translation>rayon interne</translation>
 </phrase>
 
 <phrase>
 <original>outer radius</original>
-<translation></translation>
+<translation>rayon externe</translation>
 </phrase>
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation></translation>
+<translation>M.C Escher à la rescousse</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8946,7 +8946,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>neural network</original>
-<translation></translation>
+<translation>réseau neuronal</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>balanced</original>
-<translation></translation>
+<translation>équilibré</translation>
 </phrase>
 
 <phrase>
 <original>best</original>
-<translation></translation>
+<translation>meilleur</translation>
 </phrase>
 
 <!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10655,37 +10655,37 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>image type</original>
-<translation></translation>
+<translation>type d'image</translation>
 </phrase>
 
 <phrase>
 <original>generic</original>
-<translation></translation>
+<translation>générique</translation>
 </phrase>
 
 <phrase>
 <original>indoor photo</original>
-<translation></translation>
+<translation>photo en intérieur</translation>
 </phrase>
 
 <phrase>
 <original>outdoor photo</original>
-<translation></translation>
+<translation>photo en extérieur</translation>
 </phrase>
 
 <phrase>
 <original>chart</original>
-<translation></translation>
+<translation>charte</translation>
 </phrase>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation></translation>
+<translation>dessin ( ou autre style d'oeuvre)</translation>
 </phrase>
 
 <phrase>
 <original>icon</original>
-<translation></translation>
+<translation>icône</translation>
 </phrase>
 
 <!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12928,12 +12928,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>session restore</original>
-<translation></translation>
+<translation>restaurer la session</translation>
 </phrase>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation></translation>
+<translation>restaurer automatiquement les sessions interrompues par les mises a jour ou reboot du système</translation>
 </phrase>
 
 <phrase>
@@ -13277,7 +13277,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation></translation>
+<translation>si votre PC reboote pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
 </phrase>
 
 <phrase>
@@ -13695,7 +13695,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>save directly to image file</original>
-<translation></translation>
+<translation>sauver directement en fichier image</translation>
 </phrase>
 
 <phrase>
