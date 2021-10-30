@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2021 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 10/June/19
-'Last update: new functions for detailed memory-mapped file behavior
+'Last updated: 29/October/21
+'Last update: new functions for path analysis and merging
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '              Strings module (handles lots of Unicode-related transforms)
 '
@@ -209,7 +209,8 @@ Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal pt
 
 Private Declare Function PathCommonPrefixW Lib "shlwapi" (ByVal pszFile1 As Long, ByVal pszFile2 As Long, ByVal achPath As Long) As Long
 Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
-Private Declare Function PathSkipRootW Lib "shlwapi" (ByVal pszPath As Long) As Long
+'These next two APIs are approximately interchangeable for our purposes; Ctrl+F to see comments on their usage here
+'Private Declare Function PathSkipRootW Lib "shlwapi" (ByVal pszPath As Long) As Long
 Private Declare Function PathStripToRootW Lib "shlwapi" (ByVal pszPath As Long) As Long
 
 Private Declare Function GetFileVersionInfoW Lib "Version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long

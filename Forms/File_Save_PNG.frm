@@ -3,7 +3,7 @@ Begin VB.Form dialog_ExportPNG
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   ClientHeight    =   8595
+   ClientHeight    =   7500
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   13110
@@ -21,45 +21,34 @@ Begin VB.Form dialog_ExportPNG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   573
+   ScaleHeight     =   500
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsMasterType 
-      Height          =   1095
-      Left            =   5880
-      TabIndex        =   2
-      Top             =   120
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   1931
-      Caption         =   "PNG type"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   7845
+      Top             =   6750
       Width           =   13110
       _ExtentX        =   23125
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   7575
+      Height          =   6495
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   13361
+      _ExtentY        =   11456
    End
    Begin PhotoDemon.pdContainer picCategory 
       Height          =   6495
       Index           =   0
       Left            =   5880
-      Top             =   1320
+      Top             =   120
       Width           =   7095
       _ExtentX        =   12515
       _ExtentY        =   11245
@@ -67,7 +56,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   0
          Width           =   6975
          _ExtentX        =   12303
@@ -80,7 +69,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   360
          Width           =   6975
          _ExtentX        =   12303
@@ -94,7 +83,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   2
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   720
          Width           =   6975
          _ExtentX        =   12303
@@ -116,7 +105,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdDropDown cboOptimize 
             Height          =   855
             Left            =   360
-            TabIndex        =   7
+            TabIndex        =   6
             Top             =   1080
             Width           =   6615
             _ExtentX        =   11668
@@ -138,7 +127,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdSlider sldCompression 
             Height          =   735
             Left            =   360
-            TabIndex        =   8
+            TabIndex        =   7
             Top             =   0
             Width           =   6615
             _ExtentX        =   11668
@@ -153,7 +142,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdColorSelector clsBackground 
             Height          =   375
             Left            =   5400
-            TabIndex        =   9
+            TabIndex        =   8
             Top             =   2040
             Width           =   1455
             _ExtentX        =   2566
@@ -164,7 +153,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdCheckBox chkEmbedBackground 
             Height          =   375
             Left            =   360
-            TabIndex        =   10
+            TabIndex        =   9
             Top             =   2070
             Width           =   4935
             _ExtentX        =   8705
@@ -198,7 +187,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdColorDepth clrDepth 
             Height          =   5055
             Left            =   360
-            TabIndex        =   11
+            TabIndex        =   10
             Top             =   0
             Width           =   6615
             _ExtentX        =   11668
@@ -217,197 +206,12 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdMetadataExport mtdManager 
             Height          =   3255
             Left            =   360
-            TabIndex        =   6
+            TabIndex        =   5
             Top             =   0
             Width           =   6495
             _ExtentX        =   11456
             _ExtentY        =   5741
          End
-      End
-   End
-   Begin PhotoDemon.pdContainer picCategory 
-      Height          =   6495
-      Index           =   1
-      Left            =   5880
-      Top             =   1320
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   11245
-      Begin PhotoDemon.pdHyperlink hypWebOptimized 
-         Height          =   255
-         Index           =   0
-         Left            =   0
-         Top             =   4110
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "lossy optimization is provided by pngquant"
-         FontSize        =   9
-         URL             =   "https://pngquant.org/"
-      End
-      Begin PhotoDemon.pdButton cmdUpdateLossyPreview 
-         Height          =   615
-         Left            =   360
-         TabIndex        =   19
-         Top             =   3360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1085
-         Caption         =   "click to generate a new preview image"
-      End
-      Begin PhotoDemon.pdTitle ttlWebOptimize 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   17
-         Top             =   120
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   661
-         Caption         =   "lossy optimization options"
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdCheckBox chkOptimizeDither 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   15
-         Top             =   1005
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   661
-         Caption         =   "use dithering to improve quality"
-      End
-      Begin PhotoDemon.pdSlider sltTargetQuality 
-         Height          =   735
-         Left            =   360
-         TabIndex        =   13
-         Top             =   1440
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1296
-         Caption         =   "target quality"
-         FontSizeCaption =   10
-         Max             =   100
-         Value           =   80
-         NotchPosition   =   2
-         NotchValueCustom=   80
-      End
-      Begin PhotoDemon.pdCheckBox chkOptimizeLossy 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   630
-         Width           =   6735
-         _ExtentX        =   12515
-         _ExtentY        =   661
-         Caption         =   "apply lossy optimizations"
-      End
-      Begin PhotoDemon.pdSlider sltLossyPerformance 
-         Height          =   735
-         Left            =   360
-         TabIndex        =   14
-         Top             =   2190
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1296
-         Caption         =   "optimization level"
-         FontSizeCaption =   10
-         Value           =   8
-         NotchPosition   =   2
-         NotchValueCustom=   8
-      End
-      Begin PhotoDemon.pdSlider sltLosslessPerformance 
-         Height          =   735
-         Left            =   360
-         TabIndex        =   16
-         Top             =   5160
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1296
-         Caption         =   "optimization level"
-         FontSizeCaption =   10
-         Max             =   7
-         Value           =   2
-         NotchPosition   =   2
-         NotchValueCustom=   2
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   2
-         Left            =   510
-         Top             =   2970
-         Width           =   2580
-         _ExtentX        =   4551
-         _ExtentY        =   450
-         Caption         =   "fast, larger file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   3
-         Left            =   3180
-         Top             =   2970
-         Width           =   2655
-         _ExtentX        =   4683
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "slow, smaller file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   4
-         Left            =   525
-         Top             =   5910
-         Width           =   2580
-         _ExtentX        =   4551
-         _ExtentY        =   450
-         Caption         =   "fast, larger file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   5
-         Left            =   3180
-         Top             =   5910
-         Width           =   2655
-         _ExtentX        =   4683
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "slow, smaller file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdTitle ttlWebOptimize 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   18
-         Top             =   4680
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   661
-         Caption         =   "lossless optimization options"
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdHyperlink hypWebOptimized 
-         Height          =   255
-         Index           =   1
-         Left            =   0
-         Top             =   6240
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "lossless optimization is provided by OptiPNG"
-         FontSize        =   9
-         URL             =   "http://optipng.sourceforge.net/"
       End
    End
 End
@@ -420,8 +224,15 @@ Attribute VB_Exposed = False
 'PNG export dialog
 'Copyright 2012-2021 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 24/April/19
-'Last update: remove any remaining dependence on FreeImage; all PNG duties are now handled by our homebrew PNG engine
+'Last updated: 29/October/21
+'Last update: remove "web-optimized PNG" panel; instead, we're gonna do a full-blown Save for Web tool
+'
+'PhotoDemon ships with a custom-built PNG encoder capable of better performance and compression than
+' standard libraries like libPNG.  This means that we can expose a lot of extra options for pro users,
+' without having to hack up an external library to support all those options.
+'
+'Old versions of PD divided this dialog into two panels: "standard" PNGs and "web-optimized" PNGs.
+' This has since been retired in favor of a full Save for Web tool.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -463,51 +274,12 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
-Private Sub UpdateMasterPanelVisibility()
-    Dim i As Long
-    For i = picCategory.lBound To picCategory.UBound
-        picCategory(i).Visible = (btsMasterType.ListIndex = i)
-    Next i
-End Sub
-
-Private Sub btsMasterType_Click(ByVal buttonIndex As Long)
-    UpdateMasterPanelVisibility
-End Sub
-
 Private Sub chkEmbedBackground_Click()
     UpdateBkgdColorVisibility
 End Sub
 
 Private Sub UpdateBkgdColorVisibility()
     clsBackground.Visible = chkEmbedBackground.Value
-End Sub
-
-Private Sub chkOptimizeDither_Click()
-    UpdatePreviewButtonText
-End Sub
-
-Private Sub chkOptimizeLossy_Click()
-    EnableLossyOptimizationOptions
-End Sub
-
-Private Sub EnableLossyOptimizationOptions()
-    
-    Dim enabledState As Boolean
-    enabledState = chkOptimizeLossy.Value
-    
-    chkOptimizeDither.Enabled = enabledState
-    sltTargetQuality.Enabled = enabledState
-    sltLossyPerformance.Enabled = enabledState
-    lblHint(2).Enabled = enabledState
-    lblHint(3).Enabled = enabledState
-    cmdUpdateLossyPreview.Enabled = enabledState
-    
-End Sub
-
-Private Sub UpdatePreviewButtonText()
-    If Strings.StringsNotEqual(cmdUpdateLossyPreview.Caption, g_Language.TranslateMessage("click to generate a new preview image"), False) Then
-        cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("click to generate a new preview image")
-    End If
 End Sub
 
 Private Sub clrDepth_Change()
@@ -534,24 +306,10 @@ Private Sub cmdBar_CancelClick()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    
     m_FormatParamString = GetExportParamString
-    
-    If (btsMasterType.ListIndex = 0) Then
-        m_MetadataParamString = mtdManager.GetMetadataSettings
-    
-    'While in web optimization mode, we forcibly request no metadata writing
-    Else
-        m_MetadataParamString = mtdManager.GetNullMetadataSettings
-    End If
-    
+    m_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
     Me.Visible = False
-    
-End Sub
-
-Private Sub cmdBar_ReadCustomPresetData()
-    ReflowWebOptimizePanel
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -578,13 +336,6 @@ Private Sub cmdBar_ResetClick()
         chkEmbedBackground.Value = False
     End If
     
-    'Web-optimized settings
-    chkOptimizeLossy.Value = True
-    sltTargetQuality.Value = sltTargetQuality.NotchValueCustom
-    sltLossyPerformance.Value = sltLossyPerformance.NotchValueCustom
-    chkOptimizeDither.Value = True
-    sltLosslessPerformance.Value = sltLosslessPerformance.NotchValueCustom
-    
     'Metadata settings
     mtdManager.Reset
     
@@ -600,11 +351,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     m_UserDialogAnswer = vbCancel
     
     Message "Waiting for user to specify export options... "
-    
-    'PNG has two master panels: standard PNGs, and web-optimized PNGs
-    btsMasterType.AddItem "standard PNG", 0
-    btsMasterType.AddItem "web-optimized PNG", 1
-    btsMasterType.ListIndex = 0
     
     'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
     ' is allowed open at a time.
@@ -637,9 +383,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     cboOptimize.ListIndex = 0
     cboOptimize.SetAutomaticRedraws True, True
     
-    'Populate web-optimized options
-    EnableLossyOptimizationOptions
-    
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
     If (Not m_SrcImage Is Nothing) Then
@@ -669,72 +412,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PNG")
     
     'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
-    UpdateMasterPanelVisibility
     UpdateStandardPanelVisibility
-    ReflowWebOptimizePanel
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
-End Sub
-
-'Lossy previews are time-consuming to generate, so we cannot provide them "on-demand".  Instead, the user must
-' manually compress them via button click.
-Private Sub cmdUpdateLossyPreview_Click()
-
-    cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("please wait while a new preview image is created...")
-    
-    Dim updateSuccess As Boolean
-    updateSuccess = False
-    
-    'Make sure a composite image was created successfully
-    If (Not m_CompositedImage Is Nothing) Then
-        
-        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
-        ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SafeArray2D
-        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
-        
-        'Write the image out to a temporary file
-        Dim tmpFilename As String
-        tmpFilename = Files.RequestTempFile() & ".png"
-        
-        Dim cPNG As pdPNG
-        Set cPNG = New pdPNG
-        If (cPNG.SavePNG_ToFile(tmpFilename, workingDIB, Nothing, png_TruecolorAlpha, 8, 0) < png_Failure) Then
-            
-            'Retrieve the size of the base PNG file
-            Dim oldFileSize As Long
-            oldFileSize = Files.FileLenW(tmpFilename)
-            
-            'Next, request optimization from pngquant
-            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, chkOptimizeDither.Value, False) Then
-                
-                Dim newFileSize As Long
-                newFileSize = Files.FileLenW(tmpFilename)
-                
-                'If successful, pngquant will overwrite the original file with its optimized copy.  Retrieve it now.
-                If Loading.QuickLoadImageToDIB(tmpFilename, workingDIB, False) Then
-                    EffectPrep.FinalizeNonstandardPreview Me.pdFxPreview, False
-                    updateSuccess = True
-                End If
-                
-            Else
-                PDDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
-            End If
-            
-            Files.FileDeleteIfExists tmpFilename
-            
-        End If
-        
-    End If
-    
-    If updateSuccess Then
-        cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("These lossy optimization settings reduced file size by %1.", Format$((1 - (newFileSize / oldFileSize)) * 100, "0.0") & "%")
-    Else
-        UpdatePreviewButtonText
-    End If
-    
 End Sub
 
 Private Sub Form_Activate()
@@ -751,36 +433,15 @@ Private Function GetExportParamString() As String
 
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
+
+    'Start with the standard PNG settings, which are consistent across all standard PNG types
+    If sldCompression.IsValid Then cParams.AddParam "png-compression-level", sldCompression.Value Else cParams.AddParam "png-compression-level", sldCompression.NotchValueCustom
+    cParams.AddParam "png-background-color", clsBackground.Color
+    cParams.AddParam "png-create-bkgd", chkEmbedBackground.Value
+    cParams.AddParam "png-filter-strategy", cboOptimize.ListIndex
     
-    'The parameters this function returns vary based on the current PNG mode (standard vs web-optimized).
-    cParams.AddParam "png-web-optimized", (btsMasterType.ListIndex = 1)
-    
-    'Standard parameters are the more complicated ones, if you can believe it
-    If (btsMasterType.ListIndex = 0) Then
-    
-        'Start with the standard PNG settings, which are consistent across all standard PNG types
-        If sldCompression.IsValid Then cParams.AddParam "png-compression-level", sldCompression.Value Else cParams.AddParam "png-compression-level", sldCompression.NotchValueCustom
-        cParams.AddParam "png-background-color", clsBackground.Color
-        cParams.AddParam "png-create-bkgd", chkEmbedBackground.Value
-        cParams.AddParam "png-filter-strategy", cboOptimize.ListIndex
-        
-        'Next come all the messy color-depth possibilities
-        cParams.AddParam "png-color-depth", clrDepth.GetAllSettings
-        
-    'Remember: web-optimized parameters must not use any UI elements from the "normal" settings panel!
-    Else
-    
-        cParams.AddParam "png-optimize-lossy", chkOptimizeLossy.Value
-        cParams.AddParam "png-lossy-quality", sltTargetQuality.Value
-        
-        'pngquant accepts this value on a 1-11 scale, with 1 being slowest and 11 being fastest.  We show the user a
-        ' [0, 10] scale where [10] is slowest (like the other settings on the form); reset to the proper range now.
-        cParams.AddParam "png-lossy-performance", 11 - sltLossyPerformance.Value
-        cParams.AddParam "png-lossy-dithering", chkOptimizeDither.Value
-        
-        cParams.AddParam "png-optimize-lossless-perf", sltLosslessPerformance.Value
-        
-    End If
+    'Next come all the messy color-depth possibilities
+    cParams.AddParam "png-color-depth", clrDepth.GetAllSettings
     
     GetExportParamString = cParams.GetParamString()
     
@@ -935,14 +596,6 @@ Private Sub UpdatePreview()
     
 End Sub
 
-Private Sub sltLossyPerformance_Change()
-    UpdatePreviewButtonText
-End Sub
-
-Private Sub sltTargetQuality_Change()
-    UpdatePreviewButtonText
-End Sub
-
 Private Sub ttlStandard_Click(Index As Integer, ByVal newState As Boolean)
     
     If newState Then m_ActiveTitleBar = Index
@@ -1000,55 +653,5 @@ Private Sub UpdateStandardPanelVisibility()
         End If
         
     Next i
-    
-End Sub
-
-Private Sub ttlWebOptimize_Click(Index As Integer, ByVal newState As Boolean)
-    ReflowWebOptimizePanel
-End Sub
-
-'The web optimization panel supports a couple different collapsible sections
-Private Sub ReflowWebOptimizePanel()
-    
-    Dim offsetY As Long
-    Dim isVisible As Boolean
-    
-    'Show/hide the lossy compression options
-    isVisible = ttlWebOptimize(0).Value
-    
-    chkOptimizeLossy.Visible = isVisible
-    sltTargetQuality.Visible = isVisible
-    sltLossyPerformance.Visible = isVisible
-    lblHint(2).Visible = isVisible
-    lblHint(3).Visible = isVisible
-    chkOptimizeDither.Visible = isVisible
-    cmdUpdateLossyPreview.Visible = isVisible
-    hypWebOptimized(0).Visible = isVisible
-    
-    'Determine a vertical offset for the bottom part of the panel, contingent on the top panel being open or shut
-    If isVisible Then
-        offsetY = hypWebOptimized(0).GetTop + hypWebOptimized(0).GetHeight + Interface.FixDPI(16)
-    Else
-        offsetY = ttlWebOptimize(0).GetTop + ttlWebOptimize(0).GetHeight + Interface.FixDPI(16)
-    End If
-    
-    'Show/hide the lossless compression options
-    ttlWebOptimize(1).SetTop offsetY
-    isVisible = ttlWebOptimize(1).Value
-    
-    If isVisible Then
-        offsetY = ttlWebOptimize(1).GetTop + ttlWebOptimize(1).GetHeight + Interface.FixDPI(6)
-        sltLosslessPerformance.SetTop offsetY
-        offsetY = sltLosslessPerformance.GetTop + sltLosslessPerformance.GetHeight + Interface.FixDPI(3)
-        lblHint(4).SetTop offsetY
-        lblHint(5).SetTop offsetY
-        offsetY = offsetY + lblHint(5).GetHeight + Interface.FixDPI(8)
-        hypWebOptimized(1).SetTop offsetY
-    End If
-    
-    sltLosslessPerformance.Visible = isVisible
-    lblHint(4).Visible = isVisible
-    lblHint(5).Visible = isVisible
-    hypWebOptimized(1).Visible = isVisible
     
 End Sub

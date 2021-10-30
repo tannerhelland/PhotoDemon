@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2021 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 22/September/21
-'Last update: integrate libwebp as a permanent plugin
+'Last updated: 29/October/21
+'Last update: remove optipng and pngquant, since we can create even smaller PNGs using nothing but pdPNG!
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' A number of third-party libraries are required for correct program operation.
@@ -26,7 +26,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST update this.  PD iterates plugins in order, so if
 ' you do not update this, the plugin at the end of the chain (probably zstd) won't get
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 14
+Private Const CORE_PLUGIN_COUNT As Long = 12
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
@@ -41,15 +41,13 @@ Public Enum CORE_PLUGINS
     CCP_libwebp
     CCP_LittleCMS
     CCP_lz4
-    CCP_OptiPNG
-    CCP_PNGQuant
     CCP_pspiHost
     CCP_zstd
 End Enum
 
 #If False Then
     Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_zstd = 0
+    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -63,8 +61,6 @@ Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.8"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.12.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10903"
-Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
-Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_WEBP_VERSION As String = "1.2.1"
 Private Const EXPECTED_ZSTD_VERSION As String = "10500"
@@ -82,7 +78,7 @@ Private m_CompressorsInitialized As Boolean
 'For high-performance code paths, we specifically track a few plugin states.
 Private m_avifExportEnabled As Boolean, m_avifImportEnabled As Boolean
 Private m_ExifToolEnabled As Boolean, m_LCMSEnabled As Boolean
-Private m_lz4Enabled As Boolean, m_OptiPNGEnabled As Boolean, m_LibDeflateEnabled As Boolean
+Private m_lz4Enabled As Boolean, m_LibDeflateEnabled As Boolean
 Private m_ZstdEnabled As Boolean
 
 'Path to plugin folder.  For security reasons, this is forcibly constructed as an absolute path
@@ -208,10 +204,6 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
             GetPluginFilename = "liblz4.dll"
-        Case CCP_OptiPNG
-            GetPluginFilename = "optipng.exe"
-        Case CCP_PNGQuant
-            GetPluginFilename = "pngquant.exe"
         Case CCP_pspiHost
             GetPluginFilename = "pspiHost.dll"
         Case CCP_libwebp
@@ -241,10 +233,6 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "LittleCMS"
         Case CCP_lz4
             GetPluginName = "LZ4"
-        Case CCP_OptiPNG
-            GetPluginName = "OptiPNG"
-        Case CCP_PNGQuant
-            GetPluginName = "PNGQuant"
         Case CCP_pspiHost
             GetPluginName = "pspiHost"
         Case CCP_libwebp
@@ -299,14 +287,6 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_lz4
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_lz4.GetLz4Version()
             
-        'OptiPNG can write its version number to stdout
-        Case CCP_OptiPNG
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_OptiPNG.GetOptiPNGVersion()
-            
-        'PNGQuant can write its version number to stdout
-        Case CCP_PNGQuant
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant.GetPngQuantVersion()
-        
         'pspiHost returns a 3-char version string
         Case CCP_pspiHost
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
@@ -368,12 +348,6 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_lz4
             dstStringStack.AddString "liblz4-LICENSE.txt"
         
-        Case CCP_OptiPNG
-            dstStringStack.AddString "optipng-LICENSE.txt"
-            
-        Case CCP_PNGQuant
-            dstStringStack.AddString "pngquant-README.txt"
-        
         Case CCP_pspiHost
             dstStringStack.AddString "pspiHost-LICENSE.txt"
             
@@ -425,10 +399,6 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
             IsPluginCurrentlyEnabled = m_lz4Enabled
-        Case CCP_OptiPNG
-            IsPluginCurrentlyEnabled = m_OptiPNGEnabled
-        Case CCP_PNGQuant
-            IsPluginCurrentlyEnabled = ImageFormats.IsPngQuantEnabled()
         Case CCP_pspiHost
             IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
         Case CCP_libwebp
@@ -461,10 +431,6 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             m_LCMSEnabled = newEnabledState
         Case CCP_lz4
             m_lz4Enabled = newEnabledState
-        Case CCP_OptiPNG
-            m_OptiPNGEnabled = newEnabledState
-        Case CCP_PNGQuant
-            ImageFormats.SetPngQuantEnabled newEnabledState
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability newEnabledState
         Case CCP_libwebp
@@ -503,10 +469,6 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = True
         Case CCP_lz4
             IsPluginHighPriority = True
-        Case CCP_OptiPNG
-            IsPluginHighPriority = False
-        Case CCP_PNGQuant
-            IsPluginHighPriority = False
         Case CCP_pspiHost
             IsPluginHighPriority = False
         Case CCP_libwebp
@@ -538,10 +500,6 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
         Case CCP_lz4
             ExpectedPluginVersion = EXPECTED_LZ4_VERSION
-        Case CCP_OptiPNG
-            ExpectedPluginVersion = EXPECTED_OPTIPNG_VERSION
-        Case CCP_PNGQuant
-            ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
         Case CCP_pspiHost
             ExpectedPluginVersion = EXPECTED_PSPI_VERSION
         Case CCP_libwebp
@@ -572,10 +530,6 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "http://www.littlecms.com"
         Case CCP_lz4
             GetPluginHomepage = "https://lz4.github.io/lz4/"
-        Case CCP_OptiPNG
-            GetPluginHomepage = "http://optipng.sourceforge.net/"
-        Case CCP_PNGQuant
-            GetPluginHomepage = "https://pngquant.org"
         Case CCP_pspiHost
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
         Case CCP_libwebp
@@ -606,10 +560,6 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_lz4
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
-        Case CCP_OptiPNG
-            GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
-        Case CCP_PNGQuant
-            GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
         Case CCP_pspiHost
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_libwebp
@@ -640,10 +590,6 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
         Case CCP_lz4
             GetPluginLicenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE"
-        Case CCP_OptiPNG
-            GetPluginLicenseURL = "http://optipng.sourceforge.net/license.txt"
-        Case CCP_PNGQuant
-            GetPluginLicenseURL = "https://github.com/pornel/pngquant/blob/master/COPYRIGHT"
         Case CCP_pspiHost
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
         Case CCP_libwebp
@@ -716,13 +662,6 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
             
-        'OptiPNG and PNGQuant are loaded on-demand, as they may not be used in every session
-        Case CCP_OptiPNG
-            initializationSuccessful = True
-            
-        Case CCP_PNGQuant
-            initializationSuccessful = True
-            
         Case CCP_libwebp
             initializationSuccessful = Plugin_WebP.InitializeEngine(PluginManager.GetPluginPath)
             
@@ -767,12 +706,6 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_lz4
             m_lz4Enabled = pluginState
-        
-        Case CCP_OptiPNG
-            m_OptiPNGEnabled = pluginState
-        
-        Case CCP_PNGQuant
-            ImageFormats.SetPngQuantEnabled pluginState
             
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability pluginState
@@ -884,11 +817,13 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     
 End Function
 
-'Convenience wrapper for mass plugin termination.  This function *will* release each plugin's handle, making them unavailable
-' for further use.  As such, do not call this until PD is shutting down (and even then, be careful about timing).
+'Convenience wrapper for mass plugin termination.  This function *will* release each plugin's handle,
+' making them unavailable for further use.  As such, do not call this until PD is shutting down
+' (and even then, be careful about timing).
 '
-'Note also that some plugins don't need to be released this way; for example, pngquant and OptiPNG are initialized
-' conditionally, if the user needs them, and they are immediately freed after use.
+'Note also that some plugins don't need to be released this way; for example, any plugins that are
+' initialized conditionally (if/when the user needs them) are typically freed after use, so we don't
+' need to deal with them here.
 Public Sub TerminateAllPlugins()
     
     'Plugins are released in the order of "how much do we use them", with the most-used plugins being saved for last.

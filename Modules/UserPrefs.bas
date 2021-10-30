@@ -747,8 +747,6 @@ Private Sub CreateNewPreferencesFile()
             .WriteTag "ForceLibDeflateDisable", "False"
             .WriteTag "ForceLittleCMSDisable", "False"
             .WriteTag "ForceLz4Disable", "False"
-            .WriteTag "ForceOptiPNGDisable", "False"
-            .WriteTag "ForcePngQuantDisable", "False"
             .WriteTag "ForcepspiHostDisable", "False"
             .WriteTag "ForceZstdDisable", "False"
             .WriteTag "LastPluginPreferencesPage", "0"

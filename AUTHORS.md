@@ -31,8 +31,6 @@ The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these
 * [libwebp](https://developers.google.com/speed/webp)
 * [LittleCMS](http://www.littlecms.com)
 * [LZ4](https://lz4.github.io/lz4/)
-* [OptiPNG](http://optipng.sourceforge.net/)
-* [Pngquant](https://pngquant.org/)
 * [Photoshop-Plugin-Host](https://github.com/spetric/Photoshop-Plugin-Host)
 * [ZStandard](https://github.com/facebook/zstd)
 

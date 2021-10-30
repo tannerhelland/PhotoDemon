@@ -33,9 +33,6 @@ Option Explicit
 'Is the FreeImage DLL available?
 Private m_FreeImageEnabled As Boolean
 
-'Is pngQuant available?
-Private m_pngQuantEnabled As Boolean
-
 'Number of available input, output formats
 Private numOfInputFormats As Long, numOfOutputFormats As Long
 
@@ -828,14 +825,6 @@ End Function
 
 Public Sub SetFreeImageEnabled(ByVal newState As Boolean)
     m_FreeImageEnabled = newState
-End Sub
-
-Public Function IsPngQuantEnabled() As Boolean
-    IsPngQuantEnabled = m_pngQuantEnabled
-End Function
-
-Public Sub SetPngQuantEnabled(ByVal newState As Boolean)
-    m_pngQuantEnabled = newState
 End Sub
 
 'When the active language changes, we need to calculate new translations for text like "All Compatible Images"
