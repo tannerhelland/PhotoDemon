@@ -241,18 +241,21 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
     Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
     dstSurface.WrapSurfaceAroundDC dstDC
     dstSurface.SetSurfaceAntialiasing P2_AA_None
-    dstSurface.SetSurfacePixelOffset P2_PO_Normal
-    If (Not suspendTransparencyGrid) Then PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, previewX, previewY, dWidth, dHeight
+    dstSurface.SetSurfacePixelOffset P2_PO_Half
+    If (Not suspendTransparencyGrid) Then PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(previewX), Int(previewY), Int(dWidth + 0.99999999), Int(dHeight + 0.99999999)
     
     'Finally, paint the image itself
     Dim srcSurface As pd2DSurface: Set srcSurface = New pd2DSurface
     srcSurface.WrapSurfaceAroundPDDIB srcDIB
     dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
-    PD2D.DrawSurfaceResizedCroppedI dstSurface, previewX, previewY, dWidth, dHeight, srcSurface, 0, 0, srcWidth, srcHeight
+    PD2D.DrawSurfaceResizedCroppedI dstSurface, Int(previewX), Int(previewY), Int(dWidth + 0.99999999), Int(dHeight + 0.99999999), srcSurface, 0, 0, srcWidth, srcHeight
     
     'Free the source DIB from its DC, as a convenience
     Set srcSurface = Nothing
     srcDIB.FreeFromDC
+    
+    'Remaining drawing operations require strict integer coordinates
+    dstSurface.SetSurfacePixelOffset P2_PO_Normal
     
     'Remaining operations require a RectF; populate one now
     Dim tmpRectF As RectF
