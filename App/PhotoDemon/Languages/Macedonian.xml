@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.371</langversion>
+<langversion>1.0.372</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -13505,11 +13505,31 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
+<original>not installed, but available on-demand</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>missing</original>
 <translation>недостасува</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 20 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<phrase>
+<original>an AVIF image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This library does not ship with PhotoDemon.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -13592,10 +13612,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2573</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5330 phrases. -->
-<!-- 2757 are duplicates, so only 2573 unique phrases have been written to file. -->
-<!-- These 2573 phrases contain approximately 11662 total words. -->
+<!-- As of this build, PhotoDemon contains 5337 phrases. -->
+<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 11692 total words. -->
 
 </pdData>
