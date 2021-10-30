@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.63</langversion>
+<langversion>8.0.64</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -2620,35 +2620,6 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation>OptiPNG gebruiken om het PNG bestand te optimaliseren. Dit kan een tijdje duren.</translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation>OptiPNG optimalisatie succesvol!</translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation>Pngquant gebruiken om het PNG bestand te optimaliseren. Dit kan een tijdje duren.</translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation>pngquant optimalisatie succesvol!</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant kon geen bestand schrijven. Standaard 32bpp afbeelding is in plaats daarvan opgeslagen.</translation>
-</phrase>
-
-<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
 <original>BSD license</original>
 <translation>BSD licentie</translation>
 </phrase>
@@ -2673,12 +2644,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <translation>MIT licentie</translation>
 </phrase>
 
-<phrase>
-<original>zLib license</original>
-<translation>zlib licentie</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -10476,11 +10442,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>PNG type</original>
-<translation>PNG type</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>basisinstellingen</translation>
 </phrase>
@@ -10508,61 +10469,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <phrase>
 <original>slow, smaller file</original>
 <translation>traag, kleiner bestand</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization is provided by pngquant</original>
-<translation>De verlieslatende optimalisatie wordt verzorgd door pngquant</translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation>klik om een afbeeldingsvoorbeeld te genereren</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation>verliesgevende optimalisatie opties</translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation>gebruik rastering om de kwaliteit te verbeteren</translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation>doel-kwaliteit</translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation>uitvoeren verliesgevende optimalisatie</translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation>optimalisatie niveau</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation>verliesloze optimalisatie opties</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization is provided by OptiPNG</original>
-<translation>OptiPNG zorgt voor een verliesvrije optimalisatie.</translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation>standaard PNG</translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
-<translation>web-geoptimaliseerde PNG</translation>
 </phrase>
 
 <phrase>
@@ -10605,17 +10511,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>PNG-Bestanden ondersteunen verschillende compressiestrategieën (de zogenaamde "filters").  Slimme filterkeuze zorgt voor een betere compressie.  Gebruik de automatische instelling om PhotoDemon meerdere strategieën te laten testen, en selecteer automatisch degene die de beste compressie oplevert.</translation>
 </phrase>
 
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation>wacht even terwijl een nieuwe afbeelding aangamaakt wordt</translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation>Deze verliesgevende optimalisatie instellingen verminderen bestandsgrootte per% 1.</translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13702,10 +13598,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11767 total words. -->
+<!-- As of this build, PhotoDemon contains 5330 phrases. -->
+<!-- 2757 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 11662 total words. -->
 
 </pdData>

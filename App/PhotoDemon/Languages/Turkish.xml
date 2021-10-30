@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.49</langversion>
+<langversion>1.0.50</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -2616,35 +2616,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
 <original>BSD license</original>
 <translation></translation>
 </phrase>
@@ -2669,12 +2640,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>zLib license</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -10442,11 +10408,6 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>PNG type</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation></translation>
 </phrase>
@@ -10473,61 +10434,6 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization is provided by pngquant</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization is provided by OptiPNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
 <translation></translation>
 </phrase>
 
@@ -10571,17 +10477,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13654,10 +13550,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11767 total words. -->
+<!-- As of this build, PhotoDemon contains 5330 phrases. -->
+<!-- 2757 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 11662 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.370</langversion>
+<langversion>1.0.371</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2617,35 +2617,6 @@ To овозможи поддршка скенер, молам копирајте
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation>Користење OptiPNG да се оптимизира на PNG датотеки. Ова може да се земе еден миг</translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation>OptiPNG оптимизација успешна!</translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation>Користење pngquant да се оптимизира на PNG датотеки. Ова може да се земе еден миг</translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation>pngquant оптимизација успешна!</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant не може да ја запишам датотеката. Аватарот на 32bpp слика е зачувана, наместо.</translation>
-</phrase>
-
-<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
 <original>BSD license</original>
 <translation>BSD лиценца</translation>
 </phrase>
@@ -2670,12 +2641,7 @@ To овозможи поддршка скенер, молам копирајте
 <translation>лиценца МИТ</translation>
 </phrase>
 
-<phrase>
-<original>zLib license</original>
-<translation>лиценца zlib</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -10470,11 +10436,6 @@ Would сакате да ги зачувате вашата листа сериј
 <!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>PNG type</original>
-<translation>Тип PNG</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>основни прилагодувања</translation>
 </phrase>
@@ -10502,61 +10463,6 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>slow, smaller file</original>
 <translation>бавно, помала датотека</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization is provided by pngquant</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation>кликни за да се генерира нов преглед на слики</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation>внесува загуби опции за оптимизација</translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation>Разтреперана користат да се подобри квалитетот</translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation>квалитет на целните</translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation>применуваат внесува загуби оптимизации</translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation>ниво оптимизација</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation>опции lossless оптимизација</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization is provided by OptiPNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation>стандард PNG</translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
-<translation>веб-оптимизиран PNG</translation>
 </phrase>
 
 <phrase>
@@ -10599,17 +10505,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation>Ве молиме почекајте додека прегледот на сликата е создадена</translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation>Овие внесува загуби поставувања оптимизација намали големината на датотеката %1.</translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13696,10 +13592,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11767 total words. -->
+<!-- As of this build, PhotoDemon contains 5330 phrases. -->
+<!-- 2757 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 11662 total words. -->
 
 </pdData>

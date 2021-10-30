@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.115</langversion>
+<langversion>8.2.116</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2613,35 +2613,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation>通过使用OptiPNG优化PNG文件。这可能需要一些时间</translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation>使用OptiPNG优化成功！</translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation>使用pngquant优化PNG文件。这可能需要一些时间</translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation>pngquant优化成功！</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>pngquant无法写入文件，默认32bpp图像已经保存。</translation>
-</phrase>
-
-<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<phrase>
 <original>BSD license</original>
 <translation>BSD许可证</translation>
 </phrase>
@@ -2666,12 +2637,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>MIT许可证</translation>
 </phrase>
 
-<phrase>
-<original>zLib license</original>
-<translation>Zlib许可证</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -10466,11 +10432,6 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>PNG type</original>
-<translation>PNG类型</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>基本设置</translation>
 </phrase>
@@ -10498,61 +10459,6 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>slow, smaller file</original>
 <translation>慢，较小的文件</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization is provided by pngquant</original>
-<translation>损耗优化由pngquant提供</translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation>单击以生成新的预览图像</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation>有损优化选项</translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation>使用抖动提高质量</translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation>目标质量</translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation>适用于有损优化</translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation>优化级别</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation>无损优化选项</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization is provided by OptiPNG</original>
-<translation>OptiPNG 提供无损优化</translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation>标准PNG</translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
-<translation>网站优化PNG</translation>
 </phrase>
 
 <phrase>
@@ -10597,17 +10503,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>PNG文件支持不同的压缩策略（称为“过滤器”）。 智能滤波器选择产生更好的压缩 使用自动设置让PhotoDemon测试多种策略，并自动选择产生最佳压缩的策略。</translation>
 </phrase>
 
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation>请稍候正在创建一个新的预览图像</translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation>这些有损优化设置减少了 %1 的文件大小。</translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13690,10 +13586,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5364 phrases. -->
-<!-- 2771 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 11767 total words. -->
+<!-- As of this build, PhotoDemon contains 5330 phrases. -->
+<!-- 2757 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 11662 total words. -->
 
 </pdData>
