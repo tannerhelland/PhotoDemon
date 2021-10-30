@@ -129,6 +129,16 @@ Begin VB.Form FormPluginManager
       Width           =   7695
       _ExtentX        =   13573
       _ExtentY        =   10821
+      Begin PhotoDemon.pdLabel lblAdditionalInfo 
+         Height          =   1935
+         Left            =   480
+         Top             =   3960
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   3413
+         Caption         =   ""
+         Layout          =   1
+      End
       Begin PhotoDemon.pdButtonStrip btsDisablePlugin 
          Height          =   1095
          Left            =   360
@@ -261,8 +271,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 19/July/21
-'Last update: revamp UI to allow for more 3rd-party libraries in the future
+'Last updated: 30/October/21
+'Last update: allow libraries to be missing but OK, like libavif (which is downloaded on-demand)
 '
 'I've considered merging this form with the main Tools > Options dialog, but that dialog
 ' is already cluttered, and I really prefer that users don't mess around with 3rd-party libraries.
@@ -576,11 +586,22 @@ Private Function CheckLibraryStateUI(ByVal pluginID As CORE_PLUGINS, Optional By
             CheckLibraryStateUI = False
         End If
         
-    'Plugin is not present on the machine
+    'Plugin is not present on the machine.  For some libraries, this is problematic (e.g. critical libraries like lcms).
+    ' For optional libraries (like libavif) this is fine - the plugin will be downloaded if a user performs an action
+    ' that requires it.
     Else
+        
         dstStateString = g_Language.TranslateMessage("not installed")
-        dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
-        CheckLibraryStateUI = False
+        
+        'If this plugin doesn't ship with PD, leave it marked as OK
+        If IsPluginAvailableOnDemand(pluginID) Then
+            dstStateUIColor = m_Colors.RetrieveColor(PDPM_GoodText)
+            CheckLibraryStateUI = True
+        Else
+            dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
+            CheckLibraryStateUI = False
+        End If
+        
     End If
     
 End Function
@@ -607,12 +628,12 @@ Private Sub lstOverview_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     
     If (bufferDC = 0) Then Exit Sub
     
-    Dim itemRect As RectF
-    CopyMemoryStrict VarPtr(itemRect), ptrToRectF, 16
+    Dim ItemRect As RectF
+    CopyMemoryStrict VarPtr(ItemRect), ptrToRectF, 16
     
     Dim xPadding As Long, yPadding As Long
-    xPadding = itemRect.Left + Interface.FixDPI(8)
-    yPadding = itemRect.Top + Interface.FixDPI(4)
+    xPadding = ItemRect.Left + Interface.FixDPI(8)
+    yPadding = ItemRect.Top + Interface.FixDPI(4)
     
     'Always paint the plugin name in standard colors
     m_ListBoxFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextReadOnly)
@@ -660,14 +681,44 @@ Private Sub LibraryChanged()
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
             End If
         Else
-            lblPluginVersion.Caption = g_Language.TranslateMessage("missing")
-            lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
+            
+            'On-demand libraries are not a problem if they simply haven't been installed yet
+            If IsPluginAvailableOnDemand(pluginIndex) Then
+                lblPluginVersion.Caption = g_Language.TranslateMessage("not installed, but available on-demand")
+                lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
+            Else
+                lblPluginVersion.Caption = g_Language.TranslateMessage("missing")
+                lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
+            End If
+            
         End If
         
         hypHomepage.Caption = PluginManager.GetPluginHomepage(pluginIndex)
         hypHomepage.URL = PluginManager.GetPluginHomepage(pluginIndex)
         hypLicense.Caption = PluginManager.GetPluginLicenseName(pluginIndex)
         hypLicense.URL = PluginManager.GetPluginLicenseURL(pluginIndex)
+        
+        'Some plugins support optional explanation text.
+        If IsPluginAvailableOnDemand(pluginIndex) And (Not PluginManager.IsPluginCurrentlyInstalled(pluginIndex)) Then
+            
+            Dim actionTarget As String
+            If (pluginIndex = CCP_AvifExport) Or (pluginIndex = CCP_AvifImport) Then
+                actionTarget = g_Language.TranslateMessage("an AVIF image")
+            End If
+            
+            Dim additionalInfo As pdString
+            Set additionalInfo = New pdString
+            
+            additionalInfo.AppendLine g_Language.TranslateMessage("This library does not ship with PhotoDemon.")
+            additionalInfo.AppendLineBreak
+            additionalInfo.Append g_Language.TranslateMessage("If you interact with %1, PhotoDemon will offer to download and configure this library for you.", actionTarget)
+            lblAdditionalInfo.Caption = additionalInfo.ToString()
+            
+            lblAdditionalInfo.Visible = True
+            
+        Else
+            lblAdditionalInfo.Visible = False
+        End If
         
         m_IgnoreButtonStripEvents = True
         If m_LibraryEnabled(pluginIndex) Then btsDisablePlugin.ListIndex = 0 Else btsDisablePlugin.ListIndex = 1
@@ -676,3 +727,20 @@ Private Sub LibraryChanged()
     End If
     
 End Sub
+
+'Some libraries are available on-demand (like libavif, which is enormous and most users won't need it).
+' It's OK if these libraries are missing on a default install - it just means the user hasn't triggered
+' any actions that prompt their download.
+Private Function IsPluginAvailableOnDemand(ByVal pluginID As CORE_PLUGINS) As Boolean
+
+    Select Case pluginID
+    
+        Case CCP_AvifExport, CCP_AvifImport
+            IsPluginAvailableOnDemand = True
+            
+        Case Else
+            IsPluginAvailableOnDemand = False
+    
+    End Select
+
+End Function
