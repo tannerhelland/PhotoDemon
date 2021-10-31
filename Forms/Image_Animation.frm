@@ -540,6 +540,7 @@ Private Sub UpdateAnimationSettings()
             m_Frames(i).afHeight = thumbImageHeight
             
             m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, PDMath.Max2Int(thumbImageWidth, thumbImageHeight), False, VarPtr(m_AniThumbBounds)
+            m_SrcImage.GetLayerByIndex(i).SuspendLayer True
             m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbImageWidth))
             
             'Retrieve layer frame times and relay them to the animation object
