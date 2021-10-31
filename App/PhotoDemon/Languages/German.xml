@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1016</langversion>
+<langversion>9.0.1017</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2482,7 +2482,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation>AVIF ist ein modernes Bildformat, das von der Alliance for Open Media entwickelt wurde. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das die AVIF-Unterstützung permanent aktiviert.</translation>
+<translation>AVIF ist ein modernes Bildformat, entwickelt von der Alliance for Open Media. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das die AVIF-Unterstützung permanent aktiviert.</translation>
 </phrase>
 
 <phrase>
@@ -2969,7 +2969,7 @@ Deskription: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat die Bug-Bericht-Webseite automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Bug-Bericht" aus. Beantworten Sie die Fragen so gut Sie können und beziehen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
+<translation>PhotoDemon hat die Bug-Bericht-Webseite für Sie automatisch geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Bug-Bericht" aus. Beantworten Sie die Fragen so gut Sie können und beziehen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
 
 Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</translation>
 </phrase>
@@ -13147,7 +13147,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Ältere Kameras und Fotobearbeitungssoftware können möglicherweise Metadaten nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann doppelte Einträge (Duplikate) automatisch für Sie lösen.</translation>
+<translation>Ältere Kameras und Fotobearbeitungssoftware können möglicherweise Metadaten nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann doppelte Einträge (Duplikate) für Sie automatisch auflösen.</translation>
 </phrase>
 
 <phrase>
@@ -13512,7 +13512,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>not installed, but available on-demand</original>
-<translation></translation>
+<translation>Nicht installiert, aber On-Demand verfügbar</translation>
 </phrase>
 
 <phrase>
@@ -13522,17 +13522,17 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>an AVIF image</original>
-<translation></translation>
+<translation>einem AVIF-Bild</translation>
 </phrase>
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation></translation>
+<translation>Diese Bibliothek wird nicht mit PhotoDemon ausgeliefert.</translation>
 </phrase>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation></translation>
+<translation>Wenn Sie mit %1 interagieren, wird PhotoDemon anbieten, diese Bibliothek für Sie herunterzuladen und zu konfigurieren.</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
