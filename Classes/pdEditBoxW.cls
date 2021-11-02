@@ -813,6 +813,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Raise a matching notification
         If (Not m_HasFocus) Then
             m_HasFocus = True
+            UserControls.PDControlReceivedFocus hWnd
             RaiseEvent GotFocusAPI
         End If
         
@@ -829,6 +830,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Raise a matching notification
         If m_HasFocus Then
             m_HasFocus = False
+            UserControls.PDControlLostFocus hWnd
             RaiseEvent LostFocusAPI
         End If
             

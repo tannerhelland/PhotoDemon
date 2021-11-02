@@ -847,36 +847,28 @@ Public Sub HideOpenFlyouts(Optional ByVal hWndResponsible As Long = 0&)
             Dim targetSharesParentOrOwner As Boolean
             If (hWndResponsible <> 0) Then
                 
-                'Start by testing the owner; after that, we'll test the parent in a loop
+                'Start testing parent controls of the control that now has focus and the flyout.
+                ' (If they have the same parent, we'll leave the flyout open.)
                 Dim testhWnd As Long
-                testhWnd = GetWindow(hWndResponsible, GW_OWNER)
-                If (testhWnd <> GetWindow(m_CurrentFlyoutPanelHWnd, GW_OWNER)) Then
+                testhWnd = GetParent(hWndResponsible)
+                Do While (testhWnd <> 0) And (testhWnd <> hWndResponsible)
                     
-                    'The responsible hWnd has a different owner than the flyout.  Check parent controls next.
-                    testhWnd = GetParent(hWndResponsible)
-                    Do While (testhWnd <> 0) And (testhWnd <> hWndResponsible)
-                        
-                        'Found a match!  Flag and exit.
-                        If (testhWnd = m_CurrentFlyoutPanelHWnd) Or (testhWnd = m_CurrentFlyoutParentHWnd) Then
-                            targetSharesParentOrOwner = True
-                            Exit Do
-                        End If
-                        
-                        'No parent listed; either the target has no parent or its parent is the desktop.
-                        If (testhWnd = 0) Or (testhWnd = GetDesktopWindow()) Then
-                            targetSharesParentOrOwner = False
-                            Exit Do
-                        End If
-                        
-                        'No failure but no match; find the next parent in line
-                        testhWnd = GetParent(testhWnd)
-                        
-                    Loop
-                
-                'Same owner; do not collapse the flyout
-                Else
-                    targetSharesParentOrOwner = True
-                End If
+                    'Found a match!  Flag and exit.
+                    If (testhWnd = m_CurrentFlyoutPanelHWnd) Or (testhWnd = m_CurrentFlyoutParentHWnd) Then
+                        targetSharesParentOrOwner = True
+                        Exit Do
+                    End If
+                    
+                    'No parent listed; either the target has no parent or its parent is the desktop.
+                    If (testhWnd = 0) Or (testhWnd = GetDesktopWindow()) Then
+                        targetSharesParentOrOwner = False
+                        Exit Do
+                    End If
+                    
+                    'No failure but no match; find the next parent in line
+                    testhWnd = GetParent(testhWnd)
+                    
+                Loop
                 
             'Skip ahead immediately; we need to hide the flyout regardless
             Else
@@ -901,9 +893,11 @@ Public Sub HideOpenFlyouts(Optional ByVal hWndResponsible As Long = 0&)
                 m_CurrentFlyoutParentHWnd = 0
                 
             End If
-            
+        
+        '/new focus target is flyout panel or flyout panel parent
         End If
     
+    '/no flyout hWnd tracked
     End If
     
 End Sub

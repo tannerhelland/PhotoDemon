@@ -361,7 +361,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Flyout manager
-Private m_Flyout As pdFlyout
+Private WithEvents m_Flyout As pdFlyout
 
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
@@ -599,6 +599,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
     Set m_Flyout = Nothing
     
+End Sub
+
+Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
+    If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
 
 'Because this tool synchronizes the vast majority of its properties to the active layer

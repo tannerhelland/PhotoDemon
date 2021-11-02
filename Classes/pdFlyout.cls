@@ -13,11 +13,17 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+Public Event FlyoutClosed(ByRef origTriggerObject As Control)
+
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can
 ' position things correctly in the screen's coordinate space (even on high-DPI displays)
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
@@ -41,6 +47,10 @@ Private m_WindowStyleHasBeenSet As Boolean
 'Window styles are blindly cached before we modify them; this allows us to restore whatever was
 ' originally present when the flyout is released
 Private m_OriginalWindowBits As Long, m_OriginalWindowBitsEx As Long
+
+'Soft reference to the original trigger object.  We don't actually touch this, but we return it
+' when the flyout closes (so the parent can reset the state of the object as necessary)
+Private m_OrigTriggerObject As Control
 
 'If something forces us to release our subclass while in the midst of the subclass proc, we want to delay the request until
 ' the subclass exits.  If we don't do this, PD will crash.
@@ -69,18 +79,19 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     ' (We need this to know how to position the listbox element.)
     Dim origObjRect As RectL
     GetWindowRect originatingObject.hWnd, origObjRect
+    Set m_OrigTriggerObject = originatingObject
     
     'We now want to determine idealized coordinates for the flyout.  In the future, I think the caller
     ' should be able to suggest this (using up/down/right/left hints, for example).
-    Dim flyoutRect As RectF
+    Dim flyoutRect As RectL
     
     'To construct this rect, we start by calculating the position using the window rect of the
     ' originating object.
     With flyoutRect
         .Left = origObjRect.Left
         .Top = origObjRect.Bottom
-        .Width = flyoutPanel.GetWidth
-        .Height = flyoutPanel.GetHeight
+        .Right = .Left + flyoutPanel.GetWidth
+        .Bottom = .Top + flyoutPanel.GetHeight
     End With
     
     'We now want to make sure the flyout won't lie off-screen.  Check each dimension in turn.
@@ -121,23 +132,18 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
         m_OriginalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_FlyoutHWnd, True)
     End If
     
-    'Now we are ready to display the flyout.  Make it a top-level window (SetParent null) and apply
-    ' any other relevant window styles.  The top-level window is especially important, as it allows
-    ' the flhyout to be positioned outside the boundary rect of its owner.
-    SetParent m_FlyoutHWnd, 0&
-    g_WindowManager.SetWindowLongWrapper m_FlyoutHWnd, WS_EX_PALETTEWINDOW, False, True
+    'Now we are ready to display the flyout.  Make it a child of the main parent window (not this one),
+    ' and apply any other relevant window styles.  (Switching parents allows us to display the window
+    ' outside the boundaries of this toolbox, but with the window still disappearing if events like PD
+    ' losing focus occur.)
+    SetParent m_FlyoutHWnd, FormMain.hWnd
+    Const WS_CHILD As Long = &H40000000
+    Const WS_POPUP As Long = &H80000000
+    Const GWL_STYLE As Long = (-16)
     
-    'Normally, you need to reset the popup and child flags when you make a window top-level.  Unfortunately, this breaks
-    ' the window terribly, and I'm not sure why; it's probably an internal VB thing.  At any rate, the current solution
-    ' seems to work, so we ignore this for now.
-    'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_CHILD, True, False
-    'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_POPUP, False, False
-    
-    'Move the flyout into position *but do not display it*
-    'flyoutPanel.Visible = False
-    With flyoutRect
-        SetWindowPos m_FlyoutHWnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
-    End With
+    'g_WindowManager.SetWindowLongWrapper m_FlyoutHWnd, WS_EX_PALETTEWINDOW, False, True
+    SetWindowLong m_FlyoutHWnd, GWL_STYLE, GetWindowLong(m_FlyoutHWnd, GWL_STYLE) Or WS_CHILD
+    SetWindowLong m_FlyoutHWnd, GWL_STYLE, GetWindowLong(m_FlyoutHWnd, GWL_STYLE) And (Not WS_POPUP)
     
     'We also need to cache the flyout rect's position; when the flyout is closed, we will
     ' manually invalidate windows beneath it (only on certain OS + theme combinations;
@@ -145,13 +151,22 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     With m_FlyoutRectCopy
         .Left = flyoutRect.Left
         .Top = flyoutRect.Top
-        .Right = flyoutRect.Left + flyoutRect.Width
-        .Bottom = flyoutRect.Top + flyoutRect.Height
+        .Right = flyoutRect.Right
+        .Bottom = flyoutRect.Bottom
     End With
     
-    'Now we can show the flyout; we also notify the window of its changed window style bits
+    'Move the flyout into position *but do not display it*
+    
+    
+    
+    'Translate the flyout position to main window coordinate space (child windows are always positioned
+    ' relative to parent client area).
+    'if (not g_windowmanager is nothing) then g_windowmanager.GetScreenToClient
+    MapWindowPoints GetDesktopWindow(), FormMain.hWnd, VarPtr(flyoutRect), 2
+    
+    'Now we can show the flyout; we also notify the window of its changed window style bits.
     With flyoutRect
-        SetWindowPos m_FlyoutHWnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_FRAMECHANGED
+        SetWindowPos m_FlyoutHWnd, 0&, .Left, .Top, .Right - .Left, .Bottom - .Top, SWP_SHOWWINDOW Or SWP_FRAMECHANGED
     End With
     
     'One last thing: because this is a (fairly? mostly? extremely?) hackish way to produce a flyout panel,
@@ -217,6 +232,8 @@ Friend Sub HideFlyout()
         ' to continue; the subclasser will handle clean-up automatically.
         SafelyRemoveSubclass
         
+        RaiseEvent FlyoutClosed(m_OrigTriggerObject)
+        
     End If
     
 End Sub
@@ -240,7 +257,11 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             VBHacks.StopSubclassing hWnd, Me
             m_ParentHWnd = 0
         End If
+        
     End If
+    
+    'Const WM_COMMAND As Long = &H111
+    'If (uiMsg = WM_COMMAND) Then Debug.Print "WM_COMMAND", uiMsg
     
     'Never eat parent window messages; just peek at them
     ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)

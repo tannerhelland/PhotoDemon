@@ -246,7 +246,7 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
     If (Not m_windowBits.DoesKeyExist(toolboxHWnd)) Then m_windowBits.AddEntry toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE)
     SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) Or WS_CHILD
     SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) And (Not WS_POPUP)
-            
+    
     With m_Toolboxes(toolID)
         
         If (.hWnd <> toolboxHWnd) Then
