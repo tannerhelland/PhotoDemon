@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_MoveSize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   4005
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   16650
@@ -25,11 +25,38 @@ Begin VB.Form toolpanel_MoveSize
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   267
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2175
+      Left            =   720
+      Top             =   1680
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   3836
+      Begin PhotoDemon.pdCheckBox chkPopoutTest 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   18
+         Top             =   1080
+         Width           =   4935
+         _ExtentX        =   8705
+         _ExtentY        =   661
+         Caption         =   ""
+      End
+      Begin PhotoDemon.pdSlider sldPopoutTest 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   17
+         Top             =   120
+         Width           =   5055
+         _ExtentX        =   8916
+         _ExtentY        =   1296
+      End
+   End
    Begin PhotoDemon.pdButtonStripVertical btsMoveOptions 
       Height          =   1320
       Left            =   120
@@ -47,24 +74,35 @@ Begin VB.Form toolpanel_MoveSize
       Width           =   14055
       _ExtentX        =   0
       _ExtentY        =   0
+      Begin PhotoDemon.pdTitle ttlTest 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   19
+         Top             =   960
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   661
+         Caption         =   "test flyout"
+         Value           =   0   'False
+      End
       Begin PhotoDemon.pdCheckBox chkAspectRatio 
          Height          =   375
-         Left            =   5265
+         Left            =   3960
          TabIndex        =   16
-         Top             =   885
-         Width           =   3135
-         _ExtentX        =   5530
+         Top             =   810
+         Width           =   2655
+         _ExtentX        =   4683
          _ExtentY        =   661
          Caption         =   "lock aspect ratio"
          Value           =   0   'False
       End
       Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
          Height          =   690
-         Left            =   5190
+         Left            =   3960
          TabIndex        =   2
-         Top             =   60
-         Width           =   2775
-         _ExtentX        =   4895
+         Top             =   15
+         Width           =   2655
+         _ExtentX        =   4683
          _ExtentY        =   1217
          Caption         =   "transform quality"
          FontSizeCaption =   10
@@ -75,29 +113,29 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   240
          TabIndex        =   3
          Top             =   420
-         Width           =   1935
-         _ExtentX        =   3413
+         Width           =   1455
+         _ExtentX        =   2566
          _ExtentY        =   609
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   9
          Left            =   135
-         Top             =   75
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer position (x, y)"
+         Top             =   30
+         Width           =   1650
+         _ExtentX        =   2910
+         _ExtentY        =   423
+         Caption         =   "position (x, y)"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   10
-         Left            =   2655
-         Top             =   75
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer size (w, h)"
+         Left            =   2040
+         Top             =   30
+         Width           =   1650
+         _ExtentX        =   2910
+         _ExtentY        =   423
+         Caption         =   "size (w, h)"
       End
       Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
@@ -105,36 +143,36 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   240
          TabIndex        =   4
          Top             =   840
-         Width           =   1935
-         _ExtentX        =   3413
+         Width           =   1455
+         _ExtentX        =   2566
          _ExtentY        =   609
       End
       Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   2
-         Left            =   2760
+         Left            =   2160
          TabIndex        =   5
          Top             =   420
-         Width           =   1935
-         _ExtentX        =   3413
+         Width           =   1455
+         _ExtentX        =   2566
          _ExtentY        =   609
       End
       Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   3
-         Left            =   2760
+         Left            =   2160
          TabIndex        =   6
          Top             =   840
-         Width           =   1935
-         _ExtentX        =   3413
+         Width           =   1455
+         _ExtentX        =   2566
          _ExtentY        =   609
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
          Height          =   570
          Index           =   0
-         Left            =   8520
+         Left            =   6960
          TabIndex        =   7
-         Top             =   420
+         Top             =   360
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
@@ -143,8 +181,8 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   12
-         Left            =   8400
-         Top             =   60
+         Left            =   6840
+         Top             =   30
          Width           =   3360
          _ExtentX        =   5927
          _ExtentY        =   503
@@ -321,6 +359,9 @@ Attribute VB_Exposed = False
 
 
 Option Explicit
+
+'Flyout manager
+Private m_Flyout As pdFlyout
 
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
@@ -513,7 +554,7 @@ Private Sub Form_Load()
     Tools.SetToolBusyState True
     
     'Initialize move tool panels
-    btsMoveOptions.AddItem "size and position", 0
+    btsMoveOptions.AddItem "position and size", 0
     btsMoveOptions.AddItem "angle and shear", 1
     btsMoveOptions.AddItem "tool settings", 2
     btsMoveOptions.ListIndex = 0
@@ -553,6 +594,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SaveAllControlValues True
         m_lastUsedSettings.SetParentForm Nothing
     End If
+    
+    'Failsafe only
+    If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
+    Set m_Flyout = Nothing
     
 End Sub
 
@@ -722,6 +767,17 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     Else
         If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = btsMoveOptions.hWnd
     End If
+End Sub
+
+Private Sub ttlTest_Click(ByVal newState As Boolean)
+    
+    If newState Then
+        If (m_Flyout Is Nothing) Then Set m_Flyout = New pdFlyout
+        m_Flyout.ShowFlyout Me, ttlTest, cntrPopOut
+    Else
+        If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
+    End If
+
 End Sub
 
 Private Sub tudLayerMove_Change(Index As Integer)

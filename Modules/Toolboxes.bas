@@ -185,32 +185,22 @@ End Function
 ' Also, return the (subsequent) position rect that's left over, which is where the primary canvas control will go!
 ' IMPORTANT NOTE: *both* rects passed to this function will potentially be modified, so make backups if you need them!
 Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef dstCanvasRect As winRect)
-
-    'It sounds weird, but we actually calculate the bottom toolbox's rect first, since it gets positioning preference.
-    If m_Toolboxes(PDT_BottomToolbox).IsVisibleNow Then
-        With m_Toolboxes(PDT_BottomToolbox)
-            .toolRect.x1 = mainFormClientRect.x1
-            .toolRect.x2 = mainFormClientRect.x2
-            .toolRect.y2 = mainFormClientRect.y2
-            .toolRect.y1 = mainFormClientRect.y2 - .ConstrainingSize
-            
-            'As each toolbar is positioned, we update the client rect we received to reflect the new positions.
-            mainFormClientRect.y2 = .toolRect.y1
-        End With
-    End If
     
-    'Left and right toolboxes use basically identical code, and their size algorithms should be self-explanatory.  The key thing
-    ' to remember is that the *bottom* of these toolbars is determined by the *top* of the bottom toolbar.
+    'Left toolbox is calculated first.  It always fills all available vertical space, regardless of layout.
+    ' (This greatly simplifies rendering.)
     If m_Toolboxes(PDT_LeftToolbox).IsVisibleNow Then
         With m_Toolboxes(PDT_LeftToolbox)
             .toolRect.x1 = mainFormClientRect.x1
             .toolRect.x2 = .toolRect.x1 + .ConstrainingSize
             .toolRect.y1 = mainFormClientRect.y1
             .toolRect.y2 = mainFormClientRect.y2
+            
+            'As each toolbar is positioned, we update the client rect we received to reflect the new positions.
             mainFormClientRect.x1 = .toolRect.x2
         End With
     End If
     
+    'Right toolbox next.  It also fills all vertical space.
     If m_Toolboxes(PDT_RightToolbox).IsVisibleNow Then
         With m_Toolboxes(PDT_RightToolbox)
             .toolRect.x1 = mainFormClientRect.x2 - .ConstrainingSize
@@ -221,8 +211,20 @@ Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef d
         End With
     End If
     
-    'Add 1-pixel's worth of padding to all affected sides of the canvas rect (e.g. the top can stay where it is,
-    ' as there is no neighboring toolbox).
+    'Top toolbox goes next.  It is sandwiched between the other two toolboxes.
+    If m_Toolboxes(PDT_BottomToolbox).IsVisibleNow Then
+        With m_Toolboxes(PDT_BottomToolbox)
+            .toolRect.x1 = mainFormClientRect.x1
+            .toolRect.x2 = mainFormClientRect.x2
+            .toolRect.y1 = mainFormClientRect.y1
+            .toolRect.y2 = mainFormClientRect.y1 + .ConstrainingSize
+            
+            'Shift the main client area down
+            mainFormClientRect.y1 = .toolRect.y2
+        End With
+    End If
+    
+    'Reflect the final calculations back to the main canvas
     With dstCanvasRect
         .x1 = mainFormClientRect.x1
         .x2 = mainFormClientRect.x2

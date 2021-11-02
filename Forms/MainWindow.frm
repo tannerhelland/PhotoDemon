@@ -2116,6 +2116,7 @@ End Sub
 Private Sub Form_Resize()
     If (Not g_WindowManager Is Nothing) Then
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
+        If (Not OS.IsProgramCompiled()) Then Message "Window size: " & g_WindowManager.GetClientWidth(Me.hWnd) & "x" & g_WindowManager.GetClientHeight(Me.hWnd)
     Else
         UpdateMainLayout
     End If
