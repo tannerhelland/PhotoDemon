@@ -153,10 +153,15 @@ Private Sub FillDefaultToolboxValues()
                     .MinSize = FixDPI(48)
                     .MaxSize = FixDPI(188)
                 
+                'The bottom toolbox is unique in not being user-sizable.  It is a fixed height with individual
+                ' drop-down panels that can extend portions of the toolbox vertically.  This base height could
+                ' theoretically vary by tool, but for now it is fixed to ensure a more aesthetically pleasing
+                ' layout (and simpler UI design).
                 Case PDT_BottomToolbox
-                    .DefaultSize = FixDPI(100)
-                    .MinSize = FixDPI(100)      'The bottom toolbox is unique in not being user-sizable.  It is autosized according
-                    .MaxSize = FixDPI(100)      ' to the requirements of each tool, so these are basically just dummy values.
+                    Const BOTTOM_TOOLBOX_HEIGHT As Long = 59
+                    .DefaultSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
+                    .MinSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
+                    .MaxSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
                 
                 Case PDT_RightToolbox
                     .DefaultSize = FixDPI(190)

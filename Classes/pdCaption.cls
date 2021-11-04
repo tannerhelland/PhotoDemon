@@ -372,9 +372,10 @@ Friend Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     
 End Sub
 
-'When all font and caption settings are ready, use this to actually render the caption onto a target DC.  Clipping to the
-' destination area will occur automatically, with ellipses applied according to the useEllipses parameter.  Note that you
-' can also request to use the original font size, instead of the auto-fit size.
+'When all font and caption settings are ready, use this to actually render the caption onto a target DC.
+' Clipping to the destination area will occur automatically, with ellipses applied according to the
+' useEllipses parameter.  Note that you can also request to use the original font size, instead of the
+' auto-fit size.
 Friend Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
@@ -403,9 +404,9 @@ Friend Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
         
         tmpFont.AttachToDC dstDC
         
-        'NOTE: pdFont.SetTextAlignment does not actually set text alignment as a property inside the target DC.  Instead, it uses
-        '      DrawText flags to enforce alignment.  This leaves the target DC untouched, so previously set text flags won't be
-        '      modified by calls to pdFont, by design.
+        'NOTE: pdFont.SetTextAlignment does not actually set text alignment as a property inside the target DC.
+        '      Instead, it uses DrawText flags to enforce alignment.  This leaves the target DC untouched,
+        '      so previously set text flags won't be modified by calls to pdFont, by design.
         tmpFont.SetTextAlignment m_Alignment
         
         If m_WordWrapAllowed Then

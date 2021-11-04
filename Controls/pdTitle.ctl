@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Collapsible Title Label+Button control
 'Copyright 2014-2021 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 22/February/18
-'Last update: new "Draggable" property will render a left-side gripper on the titlebar
+'Last updated: 02/November/21
+'Last update: changes to accommodate new toolbar design
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -157,6 +157,7 @@ End Property
 
 Public Property Let Draggable(ByVal newSetting As Boolean)
     m_Draggable = newSetting
+    PropertyChanged "Draggable"
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -216,7 +217,7 @@ Public Function GetLeft() As Long
 End Function
 
 Public Sub SetLeft(ByVal newLeft As Long)
-    ucSupport.RequestNewPosition newLeft, , True
+    ucSupport.RequestNewPosition newLeft, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Function GetTop() As Long
@@ -232,7 +233,7 @@ Public Function GetWidth() As Long
 End Function
 
 Public Sub SetWidth(ByVal newWidth As Long)
-    ucSupport.RequestNewSize newWidth, , True
+    ucSupport.RequestNewSize newWidth, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Function GetHeight() As Long
@@ -463,7 +464,7 @@ Private Sub UpdateControlLayout()
         
         'Let's start by determining how much horizontal space is available for the caption.
         Dim maxCaptionWidth As Long
-        maxCaptionWidth = bWidth - (FixDPI(hTextPadding) * 2) - bHeight
+        maxCaptionWidth = bWidth - (Interface.FixDPI(hTextPadding) * 2) - bHeight
         
         'If the control is draggable, we need to account for some extra left-side space to render a gripper
         If m_Draggable Then maxCaptionWidth = maxCaptionWidth - Interface.FixDPI(GRIPPER_PADDING)
@@ -476,8 +477,8 @@ Private Sub UpdateControlLayout()
         ' to auto-size this control accordingly.
         If (fontWidth <= maxCaptionWidth) Then
         
-            If (tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2 <> bHeight) Then
-                bHeight = tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2
+            If (tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
+                bHeight = tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2
                 ucSupport.RequestNewSize bWidth, bHeight, False
             End If
             
@@ -492,8 +493,8 @@ Private Sub UpdateControlLayout()
             Set tmpFont = Fonts.GetMatchingUIFont(tmpFontSize, Me.FontBold)
             
             'Use that font's height to calculate a new height for this control
-            If (tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2 <> bHeight) Then
-                bHeight = tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2
+            If (tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
+                bHeight = tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2
                 ucSupport.RequestNewSize bWidth, bHeight, False
             End If
             
@@ -506,12 +507,13 @@ Private Sub UpdateControlLayout()
         'For caption rendering purposes, we need to determine a target rectangle for the caption itself.  The ucSupport class
         ' will automatically fit the caption within this area, regardless of the currently selected font size.
         With m_CaptionRect
-            .Left = FixDPI(hTextPadding)
+            .Left = Interface.FixDPI(hTextPadding)
             If m_Draggable Then .Left = .Left + Interface.FixDPI(GRIPPER_PADDING)
-            .Top = FixDPI(vTextPadding)
-            .Bottom = bHeight - FixDPI(vTextPadding)
+            .Top = Interface.FixDPI(vTextPadding)
+            .Bottom = bHeight - Interface.FixDPI(vTextPadding)
             
-            'The right measurement is the only complicated one, as it requires padding so we have room to render the drop-down arrow.
+            'The right measurement is the only complicated one, as it requires padding so we have room
+            ' to render the drop-down arrow.
             .Right = bWidth - FixDPI(hTextPadding) * 2 - bHeight
             If m_Draggable Then .Right = .Right - Interface.FixDPI(GRIPPER_PADDING)
             If (.Right < .Left) Then .Right = .Left + 1
@@ -547,12 +549,13 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     End If
 End Sub
 
-'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
-' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
+'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally
+' expensive compared to just flipping the existing buffer to the screen, so only redraw the backbuffer
+' if the control state has actually changed.
 Private Sub RedrawBackBuffer()
     
     Dim ctlFillColor As Long
-    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, , ucSupport.IsMouseInside)
+    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, hoverState:=ucSupport.IsMouseInside)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -568,6 +571,7 @@ Private Sub RedrawBackBuffer()
     ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
     txtColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
     
+    'The ucSupport class will paint our caption for us, using the rect we supplied in a previous step
     If ucSupport.IsCaptionActive Then
         ucSupport.SetCaptionCustomColor txtColor
         ucSupport.PaintCaptionManually
@@ -647,7 +651,8 @@ Private Sub RedrawBackBuffer()
         PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
         PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
         
-        'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
+        'Finally, frame the control.  At present, this consists of two gradient lines -
+        ' one across the top, the other down the right side.
         Dim ctlRect As RectF
         With ctlRect
             .Left = 0#
@@ -655,6 +660,7 @@ Private Sub RedrawBackBuffer()
             .Width = bWidth
             .Height = bHeight
         End With
+        
         Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
         cPen.SetPenWidth 1#
         cPen.CreatePenFromBrush cBrush

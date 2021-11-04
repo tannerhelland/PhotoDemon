@@ -378,7 +378,6 @@ Public Sub SyncUI_CurrentLayerSettings()
     Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
     
     If (g_CurrentTool = NAV_MOVE) Then
-        toolpanel_MoveSize.cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     End If
     
@@ -516,7 +515,6 @@ Private Sub SetUIMode_NoImages()
     
     'Disable various layer-related toolbox options as well
     If (g_CurrentTool = NAV_MOVE) Then
-        toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
     End If
     
