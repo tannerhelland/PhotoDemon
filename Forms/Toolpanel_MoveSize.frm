@@ -114,7 +114,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   330
          Left            =   120
          TabIndex        =   2
-         Top             =   720
+         Top             =   750
          Width           =   3450
          _ExtentX        =   6085
          _ExtentY        =   582
@@ -124,7 +124,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   330
          Left            =   120
          TabIndex        =   0
-         Top             =   1080
+         Top             =   1140
          Width           =   3450
          _ExtentX        =   6085
          _ExtentY        =   582
@@ -134,7 +134,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   240
          Index           =   1
          Left            =   120
-         Top             =   435
+         Top             =   420
          Width           =   3360
          _ExtentX        =   5927
          _ExtentY        =   423
@@ -144,7 +144,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   330
          Left            =   120
          TabIndex        =   3
-         Top             =   1440
+         Top             =   1530
          Width           =   3450
          _ExtentX        =   6085
          _ExtentY        =   582
@@ -154,7 +154,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   240
          Index           =   0
          Left            =   120
-         Top             =   1920
+         Top             =   1950
          Width           =   3465
          _ExtentX        =   6112
          _ExtentY        =   423
@@ -164,7 +164,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   570
          Left            =   120
          TabIndex        =   14
-         Top             =   2280
+         Top             =   2250
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
@@ -296,8 +296,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 09/November/20
-'Last update: add a dedicated lock for layer aspect ratio (see https://github.com/tannerhelland/PhotoDemon/issues/342)
+'Last updated: 05/November/21
+'Last update: overhaul UI to use the new flyout panel design for toolbox options
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -406,7 +406,15 @@ Private Sub chkAutoActivateLayer_GotFocusAPI()
 End Sub
 
 Private Sub chkAutoActivateLayer_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Not shiftTabWasPressed) Then newTargetHwnd = chkIgnoreTransparent.hWnd
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltLayerShearY.hWndSpinner
+    Else
+        newTargetHwnd = chkIgnoreTransparent.hWnd
+    End If
+End Sub
+
+Private Sub chkIgnoreTransparent_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub chkIgnoreTransparent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -423,6 +431,10 @@ Private Sub chkLayerBorder_Click()
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkLayerBorder_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = chkIgnoreTransparent.hWnd
@@ -435,6 +447,10 @@ End Sub
 Private Sub chkLayerNodes_Click()
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
+
+Private Sub chkLayerNodes_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -450,8 +466,16 @@ Private Sub chkRotateNode_Click()
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkRotateNode_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = chkLayerNodes.hWnd
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkLayerNodes.hWnd
+    Else
+        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.tudLayerMove(0).hWnd
+    End If
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
@@ -461,10 +485,9 @@ End Sub
 
 Private Sub cmdLayerAffinePermanent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = sltLayerShearY.hWndSpinner
+        newTargetHwnd = Me.chkRotateNode.hWnd
     Else
-        'TODO!
-        'newTargetHwnd = btsMoveOptions.hWnd
+        newTargetHwnd = Me.tudLayerMove(0).hWnd
     End If
 End Sub
 
@@ -598,6 +621,14 @@ Private Sub sltLayerAngle_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_Angle, sltLayerAngle.Value
 End Sub
 
+Private Sub sltLayerAngle_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboLayerResizeQuality.hWnd
+    Else
+        newTargetHwnd = Me.sltLayerShearX.hWnd
+    End If
+End Sub
+
 Private Sub sltLayerShearX_Change()
     
     'If tool changes are not allowed, exit.
@@ -626,6 +657,7 @@ Private Sub sltLayerShearX_FinalChange()
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -635,7 +667,11 @@ Private Sub sltLayerShearX_LostFocusAPI()
 End Sub
 
 Private Sub sltLayerShearX_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Not shiftTabWasPressed) Then newTargetHwnd = sltLayerShearY.hWndSlider
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltLayerAngle.hWndSpinner
+    Else
+        newTargetHwnd = Me.sltLayerShearY.hWndSlider
+    End If
 End Sub
 
 Private Sub sltLayerShearY_Change()
@@ -666,6 +702,7 @@ Private Sub sltLayerShearY_FinalChange()
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -678,8 +715,7 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     If shiftTabWasPressed Then
         newTargetHwnd = sltLayerShearX.hWndSpinner
     Else
-        'TODO!
-        'If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = btsMoveOptions.hWnd
+        newTargetHwnd = chkAutoActivateLayer.hWnd
     End If
 End Sub
 
@@ -833,7 +869,7 @@ Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasP
         If (Index > 0) Then
             newTargetHwnd = tudLayerMove(Index - 1).hWnd
         Else
-            newTargetHwnd = Me.cmdLayerAffinePermanent
+            If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
         End If
     Else
         If (Index < 3) Then
