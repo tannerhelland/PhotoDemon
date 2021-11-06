@@ -397,6 +397,7 @@ Private Sub Form_Load()
     GenerateContributor "Sinisa Petric", "https://github.com/spetric/Photoshop-Plugin-Host"
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
+    GenerateContributor "TyraVex", "https://github.com/TyraVex"
     GenerateContributor "Vatterspun", "https://github.com/vatterspun"
     GenerateContributor "Vladimir Vissoultchev", "https://github.com/wqweto"
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
