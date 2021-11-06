@@ -1633,8 +1633,16 @@ Public Sub EnableUserInput()
     
     '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
-    'VBHacks.DoEvents_SingleHwnd OS.ThunderMainHWnd
-    VBHacks.PurgeInputMessages 0&
+    VBHacks.DoEvents_SingleHwnd OS.ThunderMainHWnd
+    
+    'The line below has been a source of some frustration.  The original goal was to halt any input
+    ' actions that may have triggered while PD was busy, to try and resolve some difficult-to-track-down
+    ' bugs that occur when users click buttons while PD is already processing something.  This creates
+    ' new problems of its own, however, like eating WM_MOUSEUP events for controls that already received
+    ' WM_MOUSEDOWN (so they think they still have mouse down behavior).  I am leaving this line here
+    ' for now (as of Nov 2020, TODO: revisit before v9.0 ships to ensure this is what we want) pending
+    ' further testing.
+    'VBHacks.PurgeInputMessages OS.ThunderMainHWnd
     
     'Re-enable the main form
     FormMain.Enabled = True
