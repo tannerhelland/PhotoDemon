@@ -33,7 +33,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   375
       Index           =   0
       Left            =   1440
-      TabIndex        =   35
+      TabIndex        =   28
       Top             =   840
       Width           =   1125
       _ExtentX        =   1931
@@ -47,7 +47,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   375
       Index           =   1
       Left            =   1440
-      TabIndex        =   36
+      TabIndex        =   29
       Top             =   840
       Width           =   1125
       _ExtentX        =   1931
@@ -105,7 +105,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   330
       Index           =   1
       Left            =   225
-      TabIndex        =   37
+      TabIndex        =   30
       Top             =   840
       Width           =   1140
       _ExtentX        =   2011
@@ -114,7 +114,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   0
-      Left            =   5340
+      Left            =   7920
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -136,7 +136,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   1
          Left            =   5520
-         TabIndex        =   34
+         TabIndex        =   27
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -148,7 +148,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   0
          Left            =   2760
-         TabIndex        =   38
+         TabIndex        =   31
          Top             =   30
          Width           =   3135
          _ExtentX        =   6376
@@ -240,7 +240,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   1
-      Left            =   5340
+      Left            =   7920
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -249,7 +249,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   1
          Left            =   120
-         TabIndex        =   32
+         TabIndex        =   25
          Top             =   30
          Width           =   2415
          _ExtentX        =   4260
@@ -262,7 +262,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   405
          Index           =   1
          Left            =   120
-         TabIndex        =   33
+         TabIndex        =   26
          Top             =   840
          Width           =   2550
          _ExtentX        =   4498
@@ -327,7 +327,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   2
          Left            =   3960
-         TabIndex        =   31
+         TabIndex        =   24
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -352,7 +352,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   2
-      Left            =   5340
+      Left            =   7920
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -360,132 +360,6 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   2
-         Left            =   120
-         TabIndex        =   24
-         Top             =   30
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   1296
-         Caption         =   "area"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSlider sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   2
-         Left            =   120
-         TabIndex        =   25
-         Top             =   840
-         Width           =   2550
-         _ExtentX        =   4498
-         _ExtentY        =   714
-         Min             =   1
-         Max             =   1000
-         ScaleStyle      =   2
-         Value           =   1
-         DefaultValue    =   1
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   4
-         Left            =   2820
-         TabIndex        =   26
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   5
-         Left            =   2820
-         TabIndex        =   27
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   6
-         Left            =   4380
-         TabIndex        =   28
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   7
-         Left            =   4380
-         TabIndex        =   29
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSlider sltSelectionLineWidth 
-         CausesValidation=   0   'False
-         Height          =   735
-         Left            =   5880
-         TabIndex        =   30
-         Top             =   30
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   1296
-         Caption         =   "line width"
-         FontSizeCaption =   10
-         Min             =   1
-         Max             =   1000
-         ScaleStyle      =   2
-         Value           =   1
-         DefaultValue    =   1
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   5
-         Left            =   4350
-         Top             =   45
-         Width           =   1425
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "2nd point (x, y)"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   4
-         Left            =   2790
-         Top             =   45
-         Width           =   1485
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "1st point (x, y)"
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   1470
-      Index           =   3
-      Left            =   5340
-      Top             =   0
-      Width           =   9975
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboSelArea 
-         Height          =   735
-         Index           =   3
          Left            =   120
          TabIndex        =   20
          Top             =   30
@@ -498,7 +372,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
-         Index           =   3
+         Index           =   2
          Left            =   120
          TabIndex        =   21
          Top             =   840
@@ -528,15 +402,15 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
-      Index           =   4
-      Left            =   5340
+      Index           =   3
+      Left            =   7920
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
-         Index           =   4
+         Index           =   3
          Left            =   120
          TabIndex        =   16
          Top             =   30
@@ -549,7 +423,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
-         Index           =   4
+         Index           =   3
          Left            =   120
          TabIndex        =   17
          Top             =   840
@@ -580,8 +454,8 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
-      Index           =   5
-      Left            =   5340
+      Index           =   4
+      Left            =   7920
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -635,6 +509,17 @@ Begin VB.Form toolpanel_Selections
          FontSizeCaption =   10
       End
    End
+   Begin PhotoDemon.pdDropDown cboSelCombine 
+      Height          =   735
+      Left            =   5400
+      TabIndex        =   32
+      Top             =   30
+      Width           =   2415
+      _ExtentX        =   4260
+      _ExtentY        =   1296
+      Caption         =   "combine"
+      FontSizeCaption =   10
+   End
 End
 Attribute VB_Name = "toolpanel_Selections"
 Attribute VB_GlobalNameSpace = False
@@ -664,7 +549,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandSearchMode, buttonIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -674,7 +559,7 @@ End Sub
 Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandSampleMerged, buttonIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -686,9 +571,19 @@ Private Sub cboSelArea_Click(Index As Integer)
     sltSelectionBorder(Index).Visible = (cboSelArea(Index).ListIndex = sa_Border)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Area, cboSelArea(Index).ListIndex
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
+    
+End Sub
+
+Private Sub cboSelCombine_Click()
+
+    'If a selection is already active, we may need to calculate a new combined area
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
+        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, cboSelCombine.ListIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
     
@@ -705,7 +600,7 @@ Private Sub cboSelRender_Click()
     spnOpacity(1).Visible = (cboSelRender.ListIndex = PDSR_Lightbox)
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
+    SelectionUI.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
@@ -726,7 +621,7 @@ Private Sub cboSelSmoothing_Click()
 End Sub
 
 Private Sub cboSize_Click(Index As Integer)
-    Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+    SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 End Sub
 
 Private Sub cboWandCompare_Click()
@@ -735,7 +630,7 @@ Private Sub cboWandCompare_Click()
     If (cboWandCompare.ListIndex > 1) Then sltWandTolerance.SigDigits = 0 Else sltWandTolerance.SigDigits = 1
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandCompareMethod, cboWandCompare.ListIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -746,7 +641,7 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'Ignore lock actions unless a selection is active, *and* the current selection tool matches the currently
     ' active selection.
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         
         Dim lockedValue As Variant
         
@@ -797,9 +692,9 @@ End Sub
 Private Sub csSelection_ColorChanged(Index As Integer)
     
     If (Index = 0) Then
-        Selections.NotifySelectionRenderChange pdsr_HighlightColor, csSelection(Index).Color
+        SelectionUI.NotifySelectionRenderChange pdsr_HighlightColor, csSelection(Index).Color
     ElseIf (Index = 1) Then
-        Selections.NotifySelectionRenderChange pdsr_LightboxColor, csSelection(Index).Color
+        SelectionUI.NotifySelectionRenderChange pdsr_LightboxColor, csSelection(Index).Color
     End If
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -838,6 +733,16 @@ Private Sub Form_Load()
     csSelection(1).Visible = False
     spnOpacity(1).Value = 50
     spnOpacity(1).Visible = False
+    
+    'Selection combine modes
+    cboSelCombine.SetAutomaticRedraws False
+    cboSelCombine.Clear
+    cboSelCombine.AddItem "replace", 0
+    cboSelCombine.AddItem "add", 1
+    cboSelCombine.AddItem "subtract", 2
+    cboSelCombine.AddItem "intersect", 3
+    cboSelCombine.ListIndex = 0
+    cboSelCombine.SetAutomaticRedraws True, True
     
     'Selection smoothing (currently none, antialiased, fully feathered)
     cboSelSmoothing.SetAutomaticRedraws False
@@ -889,7 +794,7 @@ Private Sub Form_Load()
     
     'If a selection is already active, synchronize all UI elements to match
     If suspendActive Then
-        If PDImages.GetActiveImage.IsSelectionActive Then Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+        If PDImages.GetActiveImage.IsSelectionActive Then SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     End If
     
     Viewport.EnableRendering
@@ -919,31 +824,31 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     
     'Pull certain universal selection settings from PD's main preferences file
     If UserPrefs.IsReady Then
-        cboSelRender.ListIndex = Selections.GetSelectionRenderMode()
-        csSelection(0).Color = Selections.GetSelectionColor_Highlight()
-        spnOpacity(0).Value = Selections.GetSelectionOpacity_Highlight()
-        csSelection(1).Color = Selections.GetSelectionColor_Lightbox()
-        spnOpacity(1).Value = Selections.GetSelectionOpacity_Lightbox()
+        cboSelRender.ListIndex = SelectionUI.GetSelectionRenderMode()
+        csSelection(0).Color = SelectionUI.GetSelectionColor_Highlight()
+        spnOpacity(0).Value = SelectionUI.GetSelectionOpacity_Highlight()
+        csSelection(1).Color = SelectionUI.GetSelectionColor_Lightbox()
+        spnOpacity(1).Value = SelectionUI.GetSelectionOpacity_Lightbox()
     End If
     
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_PolygonCurvature, sltPolygonCurvature.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change(Index As Integer)
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -956,13 +861,6 @@ Private Sub sltSelectionFeathering_Change()
     End If
 End Sub
 
-Private Sub sltSelectionLineWidth_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_LineWidth, sltSelectionLineWidth.Value
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    End If
-End Sub
-
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
 ' panel concise and clean, we move other controls up or down depending on what controls are visible.
 Public Sub UpdateSelectionPanelLayout()
@@ -971,21 +869,21 @@ Public Sub UpdateSelectionPanelLayout()
     sltSelectionFeathering.Visible = (cboSelSmoothing.ListIndex = es_FullyFeathered)
     
     'Display the border slider as necessary
-    If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then
-        sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
+    If (SelectionUI.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (SelectionUI.GetSelectionSubPanelFromCurrentTool > 0) Then
+        sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(SelectionUI.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
     End If
     
 End Sub
 
 Private Sub sltSmoothStroke_Change()
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_SmoothStroke, sltSmoothStroke.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandTolerance, sltWandTolerance.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -994,9 +892,9 @@ End Sub
 Private Sub spnOpacity_Change(Index As Integer)
 
     If (Index = 0) Then
-        Selections.NotifySelectionRenderChange pdsr_HighlightOpacity, spnOpacity(Index).Value
+        SelectionUI.NotifySelectionRenderChange pdsr_HighlightOpacity, spnOpacity(Index).Value
     ElseIf (Index = 1) Then
-        Selections.NotifySelectionRenderChange pdsr_LightboxOpacity, spnOpacity(Index).Value
+        SelectionUI.NotifySelectionRenderChange pdsr_LightboxOpacity, spnOpacity(Index).Value
     End If
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -1012,7 +910,7 @@ End Sub
 ' matches the current selection tool.
 Private Sub UpdateSelectionsValuesViaText(ByVal Index As Integer)
     If SelectionsAllowed(True) Then
-        If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+        If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
             PDImages.GetActiveImage.MainSelection.UpdateViaTextBox Index
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
@@ -1052,7 +950,6 @@ Public Sub UpdateAgainstCurrentTheme()
     
     sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
     sltCornerRounding.AssignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-    sltSelectionLineWidth.AssignTooltip "This option adjusts the width of a line selection."
     
     sltPolygonCurvature.AssignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
     sltSmoothStroke.AssignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
