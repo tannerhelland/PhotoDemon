@@ -63,6 +63,7 @@ Public Event Click(ByVal newState As Boolean)
 Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseDrag(ByVal xChange As Long, ByVal yChange As Long)
 Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -268,8 +269,8 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     markEventHandled = False
     
-    'When space is released, redraw the button to match
-    If (vkCode = VK_SPACE) Then
+    'When space/enter is pressed, toggle state
+    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
 
         If Me.Enabled Then
             m_TitleState = Not m_TitleState
@@ -369,6 +370,10 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
+End Sub
+
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     m_TitleState = Not m_TitleState
     RaiseEvent Click(m_TitleState)
@@ -382,7 +387,7 @@ Private Sub UserControl_Initialize()
     
     'Request any control-specific functionality
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_SPACE
+    ucSupport.SpecifyRequiredKeys VK_SPACE, VK_RETURN
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
@@ -555,7 +560,7 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     Dim ctlFillColor As Long
-    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, hoverState:=ucSupport.IsMouseInside)
+    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, hoverState:=ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -567,9 +572,9 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     Dim txtColor As Long, arrowColor As Long, ctlTopLineColor As Long
-    arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside)
+    arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
     ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
-    txtColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
+    txtColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
     
     'The ucSupport class will paint our caption for us, using the rect we supplied in a previous step
     If ucSupport.IsCaptionActive Then
