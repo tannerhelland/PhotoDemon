@@ -71,7 +71,7 @@ Begin VB.Form toolpanel_MoveSize
       End
       Begin PhotoDemon.pdCheckBox chkAspectRatio 
          Height          =   375
-         Left            =   120
+         Left            =   90
          TabIndex        =   8
          Top             =   840
          Width           =   3375
@@ -84,7 +84,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   690
          Left            =   0
          TabIndex        =   9
-         Top             =   1260
+         Top             =   1230
          Width           =   3375
          _ExtentX        =   5953
          _ExtentY        =   1217
@@ -218,11 +218,11 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   1455
       Index           =   1
-      Left            =   3840
+      Left            =   3720
       Top             =   960
       Visible         =   0   'False
-      Width           =   3510
-      _ExtentX        =   6191
+      Width           =   3615
+      _ExtentX        =   6376
       _ExtentY        =   2566
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
@@ -253,7 +253,7 @@ Begin VB.Form toolpanel_MoveSize
    End
    Begin PhotoDemon.pdSlider sltLayerAngle 
       Height          =   405
-      Left            =   3960
+      Left            =   3840
       TabIndex        =   10
       Top             =   420
       Width           =   3375
@@ -350,7 +350,7 @@ Private Sub cboLayerResizeQuality_SetCustomTabTarget(ByVal shiftTabWasPressed As
     If shiftTabWasPressed Then
         newTargetHwnd = chkAspectRatio.hWnd
     Else
-        newTargetHwnd = sltLayerAngle.hWnd
+        newTargetHwnd = Me.ttlMoveSize(1).hWnd
     End If
 End Sub
 
@@ -390,7 +390,7 @@ End Sub
 
 Private Sub chkAspectRatio_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = tudLayerMove(3).hWnd
+        If tudLayerMove(3).Enabled Then newTargetHwnd = tudLayerMove(3).hWnd Else newTargetHwnd = Me.ttlMoveSize(0).hWnd
     Else
         newTargetHwnd = cboLayerResizeQuality.hWnd
     End If
@@ -407,7 +407,7 @@ End Sub
 
 Private Sub chkAutoActivateLayer_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.sltLayerShearY.hWndSpinner
+        newTargetHwnd = Me.ttlMoveSize(2).hWnd
     Else
         newTargetHwnd = chkIgnoreTransparent.hWnd
     End If
@@ -474,7 +474,7 @@ Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean
     If shiftTabWasPressed Then
         newTargetHwnd = chkLayerNodes.hWnd
     Else
-        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.tudLayerMove(0).hWnd
+        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.ttlMoveSize(0).hWnd
     End If
 End Sub
 
@@ -623,7 +623,7 @@ End Sub
 
 Private Sub sltLayerAngle_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.cboLayerResizeQuality.hWnd
+        newTargetHwnd = Me.ttlMoveSize(1).hWnd
     Else
         newTargetHwnd = Me.sltLayerShearX.hWnd
     End If
@@ -715,12 +715,34 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     If shiftTabWasPressed Then
         newTargetHwnd = sltLayerShearX.hWndSpinner
     Else
-        newTargetHwnd = chkAutoActivateLayer.hWnd
+        newTargetHwnd = Me.ttlMoveSize(2).hWnd
     End If
 End Sub
 
 Private Sub ttlMoveSize_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlMoveSize_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        Select Case Index
+            Case 0
+                If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
+            Case 1
+                newTargetHwnd = Me.cboLayerResizeQuality.hWnd
+            Case 2
+                newTargetHwnd = Me.sltLayerShearY.hWndSpinner
+        End Select
+    Else
+        Select Case Index
+            Case 0
+                If Me.tudLayerMove(0).Enabled Then newTargetHwnd = Me.tudLayerMove(0).hWnd Else newTargetHwnd = Me.chkAspectRatio.hWnd
+            Case 1
+                newTargetHwnd = Me.sltLayerAngle.hWndSlider
+            Case 2
+                newTargetHwnd = Me.chkAutoActivateLayer.hWnd
+        End Select
+    End If
 End Sub
 
 Private Sub tudLayerMove_Change(Index As Integer)
@@ -841,7 +863,7 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If

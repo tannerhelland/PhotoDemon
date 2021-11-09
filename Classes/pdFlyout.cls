@@ -104,7 +104,7 @@ Private Const WM_ENTERSIZEMOVE As Long = &H231
 Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 Implements ISubclass
 
-Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Control, ByRef flyoutPanel As pdContainer, Optional ByVal flyoutTrackerID As Long = 0)
+Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Control, ByRef flyoutPanel As pdContainer, Optional ByVal flyoutTrackerID As Long = 0, Optional ByVal xOffset As Long = 0&)
     
     On Error GoTo UnexpectedTrouble
     
@@ -134,7 +134,7 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     'To construct this rect, we start by calculating the position using the window rect of the
     ' originating object.
     With flyoutRect
-        .Left = origObjRect.Left
+        .Left = origObjRect.Left + xOffset
         .Top = ownerFormRect.Bottom - 2
         .Right = .Left + flyoutPanel.GetWidth
         .Bottom = .Top + flyoutPanel.GetHeight
