@@ -1459,6 +1459,9 @@ End Sub
 'You *must* call this function before shutdown.  This function will forcibly free cached toolbox windows.
 Public Sub FreeAllToolpanels()
     
+    'If a flyout panel is open on the current toolbar, close it
+    UserControls.HideOpenFlyouts
+    
     'The active toolpanel (if one exists) has had its window bits manually modified so that we can
     ' embed it at the bottom of the main window.  Make certain those window bits are reset before
     ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
