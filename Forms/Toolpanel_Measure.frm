@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_Measure
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   3435
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   14235
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,233 +25,283 @@ Begin VB.Form toolpanel_Measure
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   229
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   949
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkShare 
-      Height          =   375
-      Left            =   45
-      TabIndex        =   3
-      Top             =   1080
-      Width           =   3855
-      _ExtentX        =   6800
-      _ExtentY        =   661
-      Caption         =   "share measurements between images"
-      Value           =   0   'False
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2055
+      Index           =   0
+      Left            =   0
+      Top             =   1200
+      Width           =   4095
+      _ExtentX        =   7223
+      _ExtentY        =   3625
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         Top             =   90
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   661
+         Caption         =   "modify measurement"
+      End
+      Begin PhotoDemon.pdCheckBox chkShare 
+         Height          =   375
+         Left            =   0
+         TabIndex        =   3
+         Top             =   1560
+         Width           =   3855
+         _ExtentX        =   6800
+         _ExtentY        =   661
+         Caption         =   "share measurements between images"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdButton cmdAction 
+         Height          =   450
+         Index           =   0
+         Left            =   2025
+         TabIndex        =   4
+         Top             =   480
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   794
+         Caption         =   "swap points"
+      End
+      Begin PhotoDemon.pdButton cmdAction 
+         Height          =   450
+         Index           =   3
+         Left            =   0
+         TabIndex        =   5
+         Top             =   960
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   794
+         Caption         =   "rotate 90"
+      End
+      Begin PhotoDemon.pdButton cmdAction 
+         Height          =   450
+         Index           =   4
+         Left            =   0
+         TabIndex        =   6
+         Top             =   480
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   794
+         Caption         =   "clear points"
+      End
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   0
+      Left            =   4080
+      Top             =   30
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "distance:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   1
+      Left            =   6600
+      Top             =   30
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "angle:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   2
+      Left            =   9120
+      Top             =   30
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "width:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   3
+      Left            =   11640
+      Top             =   30
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "height:"
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   0
+      Left            =   5640
+      Top             =   30
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   1
+      Left            =   8040
+      Top             =   30
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   2
+      Left            =   10680
+      Top             =   30
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   3
+      Left            =   13200
+      Top             =   30
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   4
+      Left            =   4080
+      Top             =   480
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "distance:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   5
+      Left            =   6600
+      Top             =   480
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "angle:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   6
+      Left            =   9120
+      Top             =   480
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "width:"
+   End
+   Begin PhotoDemon.pdLabel lblMeasure 
+      Height          =   255
+      Index           =   7
+      Left            =   11640
+      Top             =   480
+      Width           =   1380
+      _ExtentX        =   2434
+      _ExtentY        =   450
+      Alignment       =   1
+      Caption         =   "height:"
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   4
+      Left            =   5640
+      Top             =   480
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   5
+      Left            =   8040
+      Top             =   480
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   6
+      Left            =   10680
+      Top             =   480
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblValue 
+      Height          =   255
+      Index           =   7
+      Left            =   13200
+      Top             =   480
+      Width           =   810
+      _ExtentX        =   1429
+      _ExtentY        =   450
+      Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdButton cmdAction 
-      Height          =   495
-      Index           =   0
-      Left            =   75
+      Height          =   450
+      Index           =   1
+      Left            =   0
       TabIndex        =   0
-      Top             =   0
+      Top             =   375
       Width           =   1935
       _ExtentX        =   3413
-      _ExtentY        =   873
-      Caption         =   "swap points"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   0
-      Left            =   4080
-      Top             =   30
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "distance:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   1
-      Left            =   4080
-      Top             =   390
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "angle:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   2
-      Left            =   4080
-      Top             =   750
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "width:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   3
-      Left            =   4080
-      Top             =   1110
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "height:"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   0
-      Left            =   5640
-      Top             =   30
-      Width           =   1620
-      _ExtentX        =   2858
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   1
-      Left            =   5640
-      Top             =   390
-      Width           =   1620
-      _ExtentX        =   2858
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   2
-      Left            =   5640
-      Top             =   750
-      Width           =   1620
-      _ExtentX        =   2858
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   3
-      Left            =   5640
-      Top             =   1110
-      Width           =   1620
-      _ExtentX        =   2858
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   4
-      Left            =   7440
-      Top             =   30
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "distance:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   5
-      Left            =   7440
-      Top             =   390
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "angle:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   6
-      Left            =   7440
-      Top             =   750
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "width:"
-   End
-   Begin PhotoDemon.pdLabel lblMeasure 
-      Height          =   255
-      Index           =   7
-      Left            =   7440
-      Top             =   1110
-      Width           =   1380
-      _ExtentX        =   2434
-      _ExtentY        =   450
-      Alignment       =   1
-      Caption         =   "height:"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   4
-      Left            =   9000
-      Top             =   30
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   5
-      Left            =   9000
-      Top             =   390
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   6
-      Left            =   9000
-      Top             =   750
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdLabel lblValue 
-      Height          =   255
-      Index           =   7
-      Left            =   9000
-      Top             =   1110
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   450
-      Caption         =   "0"
-   End
-   Begin PhotoDemon.pdButton cmdAction 
-      Height          =   495
-      Index           =   1
-      Left            =   2025
-      TabIndex        =   1
-      Top             =   0
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   873
+      _ExtentY        =   794
       Caption         =   "straighten image"
    End
    Begin PhotoDemon.pdButton cmdAction 
-      Height          =   495
+      Height          =   450
       Index           =   2
       Left            =   2025
-      TabIndex        =   2
-      Top             =   510
+      TabIndex        =   1
+      Top             =   375
       Width           =   1935
       _ExtentX        =   3413
-      _ExtentY        =   873
+      _ExtentY        =   794
       Caption         =   "straighten layer"
    End
-   Begin PhotoDemon.pdButton cmdAction 
-      Height          =   495
-      Index           =   3
-      Left            =   75
-      TabIndex        =   4
-      Top             =   510
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   873
-      Caption         =   "rotate 90"
+   Begin PhotoDemon.pdTitle ttlMoveSize 
+      Height          =   360
+      Index           =   0
+      Left            =   0
+      TabIndex        =   2
+      Top             =   0
+      Width           =   3975
+      _ExtentX        =   7011
+      _ExtentY        =   635
+      Caption         =   "use measurement to"
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "toolpanel_Measure"
@@ -263,8 +313,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Measurement Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 11/July/18
-'Last updated: 13/July/18
-'Last update: wrap up initial build
+'Last updated: 09/November/21
+'Last update: convert to new flyout-driven UI
 '
 'PD's measurement tool is pretty straightforward: measure the distance and angle between two points,
 ' and relay those values to the user.  Can't beat that for simplicity!
@@ -272,7 +322,7 @@ Attribute VB_Exposed = False
 'As an added convenience to the user, we also provide options for auto-straightening the image to
 ' match the current measurement angle.  This is great for visually aligning horizontal or vertical
 ' elements in a photo.  (And yes - it works for both horizontal *and* vertical lines, and it solves
-' for this automagically!)
+' for this automagically.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -283,6 +333,10 @@ Option Explicit
 
 'Localized text is cached once, at theming time
 Private m_NullTextString As String, m_StringsInitialized As Boolean
+
+'Flyout manager
+Private WithEvents m_Flyout As pdFlyout
+Attribute m_Flyout.VB_VarHelpID = -1
 
 'The value of all controls on this form are saved and loaded to file by this class
 ' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
@@ -296,8 +350,9 @@ Public Sub UpdateUIText()
     
     Dim i As Long
     Dim firstPoint As PointFloat, secondPoint As PointFloat
+    
     Dim measurementUnitText As String
-    measurementUnitText = Units.GetNameOfUnit(mu_Pixels)
+    measurementUnitText = Units.GetNameOfUnit(mu_Pixels, True)
     
     If Tools_Measure.GetFirstPoint(firstPoint) And Tools_Measure.GetSecondPoint(secondPoint) Then
         
@@ -308,9 +363,14 @@ Public Sub UpdateUIText()
         PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-x2", secondPoint.x
         PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-y2", secondPoint.y
         
-        'Allow point swapping and rotation
+        'Allow point clearing, swapping, and rotation.  (These index values are weird because
+        ' this toolbox used a different UI layout in old versions.)
         cmdAction(0).Enabled = True
         cmdAction(3).Enabled = True
+        cmdAction(4).Enabled = True
+        
+        'Next, we want to update all text.  After doing this, we will reflow the UI accordingly
+        ' (based on the size of the new captions).
         
         'Distance
         Dim measureValue As Double
@@ -345,7 +405,7 @@ Public Sub UpdateUIText()
             
             Dim newUnit As PD_MeasurementUnit
             newUnit = FormMain.MainCanvas(0).GetRulerUnit()
-            measurementUnitText = Units.GetNameOfUnit(newUnit)
+            measurementUnitText = Units.GetNameOfUnit(newUnit, True)
             
             'Ensure the display elements are visible
             If (Not lblValue(4).Visible) Then
@@ -408,6 +468,60 @@ Public Sub UpdateUIText()
         
     End If
     
+    'With all captions and visibility set, we can now iterate through all labels and calculate ideal positioning.
+    Dim maxWidth As Long, testWidth As Long
+    
+    'Use a pdFont object for string measuring
+    Dim cFont As pdFont, cFontBold As pdFont
+    Set cFont = New pdFont: Set cFontBold = New pdFont
+    cFont.SetFontSize 10!: cFontBold.SetFontSize 10!
+    cFont.SetFontBold False
+    cFontBold.SetFontBold True
+    
+    'Calculate padding constants and initial offset (for the first label)
+    Dim xPadding As Long, xOffset As Long
+    xPadding = Interface.FixDPI(8)
+    xOffset = ttlMoveSize(0).GetLeft + ttlMoveSize(0).GetWidth + xPadding * 2
+    
+    'Y position also needs to be set differently depending on whether one or two rows of measurements are visible.
+    Dim yOffset As Long, yOffset2 As Long
+    If (Not g_WindowManager Is Nothing) Then
+        If lblValue(4).Visible Then
+            yOffset = Interface.FixDPI(6)
+            yOffset2 = yOffset + Interface.FixDPI(8) + cFont.GetHeightOfString("|y")
+        Else
+            yOffset = (g_WindowManager.GetClientHeight(Me.hWnd) - cFont.GetHeightOfString("|y")) \ 2
+        End If
+    End If
+    
+    For i = 0 To 3
+        
+        'Find the largest of the two visible title strings
+        maxWidth = cFont.GetWidthOfString(lblMeasure(i).Caption)
+        If lblMeasure(i + 4).Visible Then testWidth = cFont.GetWidthOfString(lblMeasure(i + 4).Caption)
+        If (testWidth > maxWidth) Then maxWidth = testWidth
+        maxWidth = maxWidth + 2 'safety margin for antialiasing and hinting
+        
+        'Move the labels into position and apply the max width (e.g. width of the larger caption)
+        lblMeasure(i).SetPositionAndSize xOffset, yOffset, maxWidth, lblMeasure(i).GetHeight
+        If lblMeasure(i + 4).Visible Then lblMeasure(i + 4).SetPositionAndSize xOffset, yOffset2, maxWidth, lblMeasure(i + 4).GetHeight
+        
+        'Increment offset and repeat for the value label(s), noting that we need to use the bolded
+        ' font measurer (because those labels use a bold font).
+        xOffset = xOffset + lblMeasure(i).GetWidth + xPadding
+        
+        maxWidth = cFontBold.GetWidthOfString(lblValue(i).Caption)
+        If lblValue(i + 4).Visible Then testWidth = cFontBold.GetWidthOfString(lblValue(i + 4).Caption)
+        If (testWidth > maxWidth) Then maxWidth = testWidth
+        
+        lblValue(i).SetPositionAndSize xOffset, yOffset, maxWidth, lblValue(i).GetHeight
+        If lblValue(i + 4).Visible Then lblValue(i + 4).SetPositionAndSize xOffset, yOffset2, maxWidth, lblValue(i + 4).GetHeight
+        
+        xOffset = xOffset + lblValue(i).GetWidth + xPadding * 2
+        
+    Next i
+    
+    
 End Sub
 
 'The measurement tool has two settings: it can either share measurements across images
@@ -443,6 +557,10 @@ Public Sub NotifyActiveImageChanged()
     
 End Sub
 
+Private Sub chkShare_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
 Private Sub cmdAction_Click(Index As Integer)
 
     Select Case Index
@@ -462,9 +580,17 @@ Private Sub cmdAction_Click(Index As Integer)
         'Rotate 90
         Case 3
             Tools_Measure.Rotate2ndPoint90Degrees
+            
+        'Clear points
+        Case 4
+            Tools_Measure.ResetPoints
         
     End Select
 
+End Sub
+
+Private Sub cmdAction_GotFocusAPI(Index As Integer)
+    UpdateFlyout 0, True
 End Sub
 
 Private Sub Form_Load()
@@ -487,7 +613,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SaveAllControlValues
         m_lastUsedSettings.SetParentForm Nothing
     End If
-
+    
+    'Failsafe only
+    If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
+    Set m_Flyout = Nothing
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -508,4 +638,46 @@ Public Sub UpdateAgainstCurrentTheme()
     'As language settings may have changed, we now need to redraw the current UI text
     Me.UpdateUIText
 
+End Sub
+
+'Whenever an active flyout panel is closed, we need to reset the matching titlebar to "closed" state
+Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
+    If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
+End Sub
+
+'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically
+' hide any other open flyouts, as necessary.
+Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As Boolean = True)
+    
+    'Ensure we have a flyout manager
+    If (m_Flyout Is Nothing) Then Set m_Flyout = New pdFlyout
+    
+    'Exit if we're already in the process of synchronizing
+    If m_Flyout.GetFlyoutSyncState() Then Exit Sub
+    m_Flyout.SetFlyoutSyncState True
+    
+    'Ensure we have a flyout manager, then raise the corresponding panel
+    If newState Then
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
+    Else
+        If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
+    End If
+    
+    'Update titlebar state(s) to match
+    Dim i As Long
+    For i = ttlMoveSize.lBound To ttlMoveSize.UBound
+        If (i = m_Flyout.GetFlyoutTrackerID()) Then
+            If (Not ttlMoveSize(i).Value) Then ttlMoveSize(i).Value = True
+        Else
+            If ttlMoveSize(i).Value Then ttlMoveSize(i).Value = False
+        End If
+    Next i
+    
+    'Clear the synchronization flag before exiting
+    m_Flyout.SetFlyoutSyncState False
+    
+End Sub
+
+Private Sub ttlMoveSize_Click(Index As Integer, ByVal newState As Boolean)
+    UpdateFlyout Index, newState
 End Sub

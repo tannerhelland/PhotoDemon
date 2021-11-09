@@ -837,6 +837,7 @@ Private Sub NewToolSelected()
         'Measure tool
         Case ND_MEASURE
             Tools_Measure.InitializeMeasureTool
+            Tools_Measure.ResetPoints True
         
         'Selection tools
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
