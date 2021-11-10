@@ -83,6 +83,24 @@ End Enum
     Private Const pdct_StatusBar = 50, pdct_Strip = 51, pdct_TextBox = 52, pdct_Title = 53
 #End If
 
+'User control text *THAT IS DISPLAYED TO THE USER* needs to be translated.  This module provides a helper
+' function that caches shared control text, and returns it based on this enum.  This provides a nice
+' perf boost for users in other locales, but this should only be used for text that is inherent to PD's
+' user controls, and will appear multiple times in the same session.  (There is a fixed startup cost
+' for generating these translations, and if a translation is unlikely to be used *every* session,
+' translate it locally - not here.)
+Public Enum PD_UserControlText
+    pduct_AnimationRepeatToggle
+    pduct_CommandBarPresetList
+    pduct_CommandBarRandom
+    pduct_CommandBarRedo
+    pduct_CommandBarReset
+    pduct_CommandBarSavePreset
+    pduct_CommandBarUndo
+    pduct_FlyoutLockTooltip
+    pduct_Randomize
+End Enum
+
 Public Type PD_LISTITEM
     textEn As String
     textTranslated As String
@@ -173,6 +191,10 @@ Private m_APIWindowsCreated As Long, m_APIWindowsDestroyed As Long
 
 'Same goes for timers and certain other object types
 Private m_TimersCreated As Long, m_TimersDestroyed As Long
+
+'Common control text shared across multiple instances can be cached in this dictionary, and accessed
+' via the related public function (GetCommonTranslation).
+Private m_CommonTranslations As pdDictionary
 
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
@@ -644,6 +666,56 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
         Next i
     End If
 
+End Sub
+
+'You can cache common (shared) translations here.  There is no separate Set function - just call this
+' function to retrieve common translations, and it will automatically translate and store novel requests.
+' (Note that you still need to use a dummy translation line somewhere to ensure the translated text is
+' caught by PD's translation file generator.)
+Public Function GetCommonTranslation(ByVal textKey As PD_UserControlText) As String
+    
+    If (m_CommonTranslations Is Nothing) Then GenerateCommonTranslations
+    If m_CommonTranslations.DoesKeyExist(textKey) Then
+        GetCommonTranslation = m_CommonTranslations.GetEntry_String(textKey)
+    
+    'Failsafe only; translations should never go missing!
+    Else
+        PDDebug.LogAction "WARNING: shared translation missing #" & textKey
+    End If
+    
+End Function
+
+'NOTE: this function should only be called once, on-demand, if a common translation is missing.
+' It will auto-generate all common translations and cache them in a pdDictionary object.
+Private Sub GenerateCommonTranslations()
+    
+    'Reset the shared translation object
+    Set m_CommonTranslations = New pdDictionary
+    
+    'Generate all common translations
+    
+    'Animation controls appear many places now
+    m_CommonTranslations.AddEntry pduct_AnimationRepeatToggle, g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    
+    'Command bars have a lot of tooltip text, owing to their ubiquity
+    m_CommonTranslations.AddEntry pduct_CommandBarPresetList, g_Language.TranslateMessage("Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.")
+    m_CommonTranslations.AddEntry pduct_CommandBarRandom, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
+    m_CommonTranslations.AddEntry pduct_CommandBarRedo, g_Language.TranslateMessage("Redo (fast-forward to a later state)")
+    m_CommonTranslations.AddEntry pduct_CommandBarReset, g_Language.TranslateMessage("Reset all settings to their default values.")
+    m_CommonTranslations.AddEntry pduct_CommandBarSavePreset, g_Language.TranslateMessage("Save the current settings as a new preset.")
+    m_CommonTranslations.AddEntry pduct_CommandBarUndo, g_Language.TranslateMessage("Undo (rewind to an earlier state)")
+    
+    'Flyout panels share a common "lock this panel" explanation tooltip
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Click here to lock this panel.  A locked panel will remain visible until another panel is opened, or a new tool is selected.")
+    
+    'PD's built-in "randomize" control displays a tooltip for its "dice" button
+    m_CommonTranslations.AddEntry pduct_Randomize, g_Language.TranslateMessage("Generate a new random number seed.")
+    
+End Sub
+
+'If the active language changes, call this function to reset any shared translations
+Public Sub ResetCommonTranslations()
+    Set m_CommonTranslations = Nothing
 End Sub
 
 Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String

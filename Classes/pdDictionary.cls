@@ -312,8 +312,8 @@ Friend Function DoesKeyExist(ByVal entryKey As String) As Boolean
     DoesKeyExist = (GetIndexOfEntry(entryKey) >= 0)
 End Function
 
-'This helper function is used to retrieve dictionary indices, using the requested key.  If a key cannot be found,
-' this function will return -1.
+'This helper function is used to retrieve dictionary indices, using the requested key.
+' If a key cannot be found, this function will return -1.
 Private Function GetIndexOfEntry(ByRef entryKey As String) As Long
     
     'Search the dictionary array, looking for a match

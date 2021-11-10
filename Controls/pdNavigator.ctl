@@ -446,7 +446,7 @@ Private Sub UpdateButtonTooltips()
     '    btnPlay(0).AssignTooltip "Play the current animation"
     'End If
     
-    btnPlay(1).AssignTooltip "Toggle between 1x and repeating previews"
+    btnPlay(1).AssignTooltip UserControls.GetCommonTranslation(pduct_AnimationRepeatToggle)
     
 End Sub
 

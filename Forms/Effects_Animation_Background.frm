@@ -702,9 +702,7 @@ Private Sub UpdateAgainstCurrentTheme()
     ' *not* rely on the neighboring looping setting.  (I have mixed feelings about the
     ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
     ' animation as a loop without actually committing to it... idk, I may revisit.)
-    Dim tText As String
-    tText = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
-    btnPlay(1).AssignTooltip tText
+    btnPlay(1).AssignTooltip UserControls.GetCommonTranslation(pduct_AnimationRepeatToggle)
     
     'Some captions also vary based on background/foreground mode
     If (Not g_Language Is Nothing) And (Not g_WindowManager Is Nothing) Then

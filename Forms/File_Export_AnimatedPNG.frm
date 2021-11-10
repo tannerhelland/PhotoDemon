@@ -435,10 +435,9 @@ Private Sub UpdateAgainstCurrentTheme()
     ' *not* rely on the looping setting to the right.  (I have mixed feelings about the
     ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
     ' animation as a loop without actually committing to it... idk, I may revisit.)
-    Dim tTitle As String, tText As String
-    tTitle = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    Dim tText As String
     tText = g_Language.TranslateMessage("This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.")
-    btnPlay(1).AssignTooltip tText, tTitle
+    btnPlay(1).AssignTooltip tText, UserControls.GetCommonTranslation(pduct_AnimationRepeatToggle)
     
 End Sub
 

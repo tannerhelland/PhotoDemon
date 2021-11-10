@@ -3157,6 +3157,8 @@ Private Sub mnuLanguages_Click(Index As Integer)
     g_Language.UndoTranslations toolbar_Toolbox
     g_Language.UndoTranslations toolbar_Options
     g_Language.UndoTranslations toolbar_Layers
+    
+    'That may have taken a second or two, so display the reverted text so the user knows what's happening
     DoEvents
     
     'Apply the new translation
