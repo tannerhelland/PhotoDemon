@@ -1446,7 +1446,7 @@ End Sub
 Public Sub FreeAllToolpanels()
     
     'If a flyout panel is open on the current toolbar, close it
-    UserControls.HideOpenFlyouts
+    UserControls.HideOpenFlyouts 0&
     
     'The active toolpanel (if one exists) has had its window bits manually modified so that we can
     ' embed it at the bottom of the main window.  Make certain those window bits are reset before

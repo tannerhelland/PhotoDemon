@@ -97,6 +97,7 @@ Public Enum PD_UserControlText
     pduct_CommandBarReset
     pduct_CommandBarSavePreset
     pduct_CommandBarUndo
+    pduct_FlyoutLockTitle
     pduct_FlyoutLockTooltip
     pduct_Randomize
 End Enum
@@ -706,7 +707,8 @@ Private Sub GenerateCommonTranslations()
     m_CommonTranslations.AddEntry pduct_CommandBarUndo, g_Language.TranslateMessage("Undo (rewind to an earlier state)")
     
     'Flyout panels share a common "lock this panel" explanation tooltip
-    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Click here to lock this panel.  A locked panel will remain visible until another panel is opened, or a new tool is selected.")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Lock this panel to keep it open")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels hide automatically when you stop interacting with them, but you can lock a panel to keep it open.  (Locked panels still hide when a new panel is opened or a new tool is selected.)")
     
     'PD's built-in "randomize" control displays a tooltip for its "dice" button
     m_CommonTranslations.AddEntry pduct_Randomize, g_Language.TranslateMessage("Generate a new random number seed.")
@@ -949,6 +951,13 @@ Public Sub HideOpenFlyouts(Optional ByVal hWndResponsible As Long = 0&)
             
             'If the new focused object does not share the same parent or owner as the current flyout, hide the flyout
             If (Not targetSharesParentOrOwner) Then
+                
+                'Normally, when a flyout panel's parent toolbox loses focus, we deactivate the flyout.
+                ' However, the user can choose to "lock" a flyout in the open position.  In this state,
+                ' we only hide the flyout for mandatory cases (like unloading the toolbox).
+                If (Not m_FlyoutRef Is Nothing) Then
+                    If (m_CurrentFlyoutPanelHWnd = m_FlyoutRef.GetLockedHWnd()) And (hWndResponsible <> 0) Then Exit Sub
+                End If
                 
                 'If we have a reference to a flyout object, let it handle closure
                 If (Not m_FlyoutRef Is Nothing) Then

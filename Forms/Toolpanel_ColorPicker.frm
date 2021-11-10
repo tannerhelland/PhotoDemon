@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_ColorPicker
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   3195
+   ClientHeight    =   4065
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   14265
@@ -25,20 +25,20 @@ Begin VB.Form toolpanel_ColorPicker
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   213
+   ScaleHeight     =   271
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   951
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1935
+      Height          =   2295
       Index           =   0
       Left            =   1440
       Top             =   960
       Visible         =   0   'False
-      Width           =   3300
-      _ExtentX        =   5821
-      _ExtentY        =   3413
+      Width           =   3240
+      _ExtentX        =   5715
+      _ExtentY        =   4048
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   255
          Index           =   0
@@ -61,14 +61,26 @@ Begin VB.Form toolpanel_ColorPicker
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdCheckBox chkAfter 
-         Height          =   375
+         Height          =   345
          Left            =   210
          TabIndex        =   4
          Top             =   1440
          Width           =   2895
          _ExtentX        =   5106
-         _ExtentY        =   661
+         _ExtentY        =   609
          Caption         =   "return to previous tool"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   2760
+         TabIndex        =   6
+         Top             =   1800
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
       End
    End
    Begin PhotoDemon.pdPictureBox picSample 
@@ -531,7 +543,7 @@ Private Sub FindAverageValues()
 
     If (m_SampleDIB Is Nothing) Then Exit Sub
     
-    Dim x As Long, y As Long, xFinal As Long, yFinal As Long
+    Dim X As Long, Y As Long, xFinal As Long, yFinal As Long
     xFinal = (m_SampleDIB.GetDIBWidth - 1) * 4
     yFinal = m_SampleDIB.GetDIBHeight - 1
     
@@ -544,15 +556,15 @@ Private Sub FindAverageValues()
     
     Dim rTotal As Long, gTotal As Long, bTotal As Long, aTotal As Long
     
-    For y = y To yFinal
-        tmpSA.pvData = pxPtr + y * pxWidth
-    For x = 0 To xFinal Step 4
-        bTotal = bTotal + lineOfPixels(x)
-        gTotal = gTotal + lineOfPixels(x + 1)
-        rTotal = rTotal + lineOfPixels(x + 2)
-        aTotal = aTotal + lineOfPixels(x + 3)
-    Next x
-    Next y
+    For Y = Y To yFinal
+        tmpSA.pvData = pxPtr + Y * pxWidth
+    For X = 0 To xFinal Step 4
+        bTotal = bTotal + lineOfPixels(X)
+        gTotal = gTotal + lineOfPixels(X + 1)
+        rTotal = rTotal + lineOfPixels(X + 2)
+        aTotal = aTotal + lineOfPixels(X + 3)
+    Next X
+    Next Y
     
     m_SampleDIB.UnwrapArrayFromDIB lineOfPixels
     
@@ -802,7 +814,7 @@ End Sub
 Private Sub cboColorSpace_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         If (Index = 0) Then
-            newTargetHwnd = Me.chkAfter.hWnd
+            newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
         Else
             newTargetHwnd = Me.cboColorSpace(0).hWnd
         End If
@@ -823,8 +835,20 @@ Private Sub chkAfter_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, new
     If shiftTabWasPressed Then
         newTargetHwnd = Me.btsSampleMerged.hWnd
     Else
-        newTargetHwnd = Me.cboColorSpace(0).hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
     End If
+End Sub
+
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.chkAfter.hWnd Else newTargetHwnd = Me.cboColorSpace(0).hWnd
 End Sub
 
 Private Sub Form_Load()
@@ -902,6 +926,18 @@ Public Sub UpdateAgainstCurrentTheme()
     
     m_NullTextString = g_Language.TranslateMessage("n/a")
     m_StringsInitialized = True
+    
+    'Flyout lock controls use the same behavior across all instances
+    Dim buttonSize As Long
+    buttonSize = Interface.FixDPI(16)
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

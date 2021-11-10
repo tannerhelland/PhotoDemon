@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Measure
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   3435
+   ClientHeight    =   3855
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   14235
@@ -25,19 +25,19 @@ Begin VB.Form toolpanel_Measure
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   229
+   ScaleHeight     =   257
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   949
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2055
+      Height          =   2415
       Index           =   0
       Left            =   0
-      Top             =   1200
+      Top             =   1080
       Width           =   4095
       _ExtentX        =   7223
-      _ExtentY        =   3625
+      _ExtentY        =   4260
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   375
          Index           =   0
@@ -49,13 +49,13 @@ Begin VB.Form toolpanel_Measure
          Caption         =   "modify measurement"
       End
       Begin PhotoDemon.pdCheckBox chkShare 
-         Height          =   375
+         Height          =   345
          Left            =   0
          TabIndex        =   3
          Top             =   1560
-         Width           =   3855
-         _ExtentX        =   6800
-         _ExtentY        =   661
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   609
          Caption         =   "share measurements between images"
          Value           =   0   'False
       End
@@ -91,6 +91,18 @@ Begin VB.Form toolpanel_Measure
          _ExtentX        =   3413
          _ExtentY        =   794
          Caption         =   "clear points"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   3600
+         TabIndex        =   7
+         Top             =   1920
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
       End
    End
    Begin PhotoDemon.pdLabel lblMeasure 
@@ -593,6 +605,14 @@ Private Sub cmdAction_GotFocusAPI(Index As Integer)
     UpdateFlyout 0, True
 End Sub
 
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
 Private Sub Form_Load()
 
     Tools.SetToolBusyState True
@@ -631,7 +651,18 @@ Public Sub UpdateAgainstCurrentTheme()
     m_NullTextString = g_Language.TranslateMessage("n/a")
     m_StringsInitialized = True
     
-    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    'Flyout lock controls use the same behavior across all instances
+    Dim buttonSize As Long
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
+    
+    'Redraw the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
     

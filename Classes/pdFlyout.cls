@@ -74,11 +74,11 @@ Private m_flyoutHWnd As Long, m_ParentHWnd As Long
 Private m_flyoutRectCopy As RectL
 
 'Window styles only need to be set once
-Private m_WindowStyleHasBeenSet As Boolean
+Private m_windowStyleHasBeenSet As Boolean
 
 'Window styles are blindly cached before we modify them; this allows us to restore whatever was
 ' originally present when the flyout is released
-Private m_OriginalWindowBits As Long, m_OriginalWindowBitsEx As Long
+Private m_originalWindowBits As Long, m_originalWindowBitsEx As Long
 
 'Soft reference to the original trigger object.  We don't actually touch this, but we return it
 ' when the flyout closes (so the parent can reset the state of the object as necessary)
@@ -90,6 +90,17 @@ Private m_flyoutTrackerID As Long
 'Another convenience function for owner panels.  They can set this flag prior to initiating a
 ' series of synchronizations, then query the state during synchronization to avoid infinite loops.
 Private m_flyoutSyncState As Boolean
+
+'If a flyout is LOCKED, this value will be set to its hWnd value.  (A null value means
+' "no flyout is locked right now".)  A locked flyout is not closed unless...
+' 1) The user forcibly closes it using its associated titlebar
+' 2) The flyout is unlocked (and then a normal close state triggers)
+' 3) The associated toolbar is unloaded or hidden
+' 4) Another flyout is opened.  (Flyouts often share space, and may overlap if two are open simultaneously.)
+'
+'The second value is a reference to the control (always a pdButtonToolbox instance) that initiated the lock.
+' When the lock is released, this button needs to be reset to a FALSE state.
+Private m_flyoutLockedHWnd As Long, m_flyoutLockedButton As pdButtonToolbox
 
 'If something forces us to release our subclass while in the midst of the subclass proc, we want to delay the request until
 ' the subclass exits.  If we don't do this, PD will crash.
@@ -103,6 +114,79 @@ Attribute m_SubclassReleaseTimer.VB_VarHelpID = -1
 Private Const WM_ENTERSIZEMOVE As Long = &H231
 Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 Implements ISubclass
+
+'These functions have no internal purpose.  They exist purely as a convenience for callers,
+' so each toolbox doesn't have to maintain its own local synchronization flag.
+Friend Function GetFlyoutSyncState() As Boolean
+    GetFlyoutSyncState = m_flyoutSyncState
+End Function
+
+Friend Sub SetFlyoutSyncState(ByVal newState As Boolean)
+    m_flyoutSyncState = newState
+End Sub
+
+Friend Function GetFlyoutTrackerID() As Long
+    GetFlyoutTrackerID = m_flyoutTrackerID
+End Function
+
+Friend Function GetLockedHWnd() As Long
+    GetLockedHWnd = m_flyoutLockedHWnd
+End Function
+
+Friend Sub UpdateLockStatus(ByVal srcHwnd As Long, ByVal newState As Boolean, ByRef srcButton As pdButtonToolbox)
+    If newState Then
+        m_flyoutLockedHWnd = srcHwnd
+        Set m_flyoutLockedButton = srcButton
+    Else
+        m_flyoutLockedHWnd = 0
+        Set m_flyoutLockedButton = Nothing
+    End If
+End Sub
+
+'The core Show/Hide flyout pair of functions.
+Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
+
+    If m_flyoutVisible And (m_flyoutHWnd <> 0) Then
+        
+        'If the current flyout is locked, and we're allowed to leave a locked flyout open,
+        ' close it now.
+        If okToLeaveIfLocked Then
+            If (m_flyoutLockedHWnd = m_flyoutHWnd) Then Exit Sub
+        End If
+        
+        'Notify the master UserControl tracker that our flyout is now inactive.
+        UserControls.NotifyFlyoutChangeState m_ParentHWnd, m_flyoutHWnd, Me, False
+        
+        m_flyoutVisible = False
+        SetParent m_flyoutHWnd, m_ParentHWnd
+        If (m_originalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_originalWindowBits, , , True
+        If (m_originalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_originalWindowBits, , True, True
+        g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, False
+        
+        'Reset any internal trackers
+        m_flyoutHWnd = 0
+        m_flyoutLockedHWnd = 0
+        On Error GoTo SkipButtonUnlock
+        If (Not m_flyoutLockedButton Is Nothing) Then m_flyoutLockedButton.Value = False
+SkipButtonUnlock:
+        Set m_flyoutLockedButton = Nothing
+        m_flyoutTrackerID = -1
+        
+        'If Aero theming is not active, hiding the flyout may cause windows beneath the current one
+        ' to render incorrectly.
+        If (OS.IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
+            InvalidateRect 0&, VarPtr(m_flyoutRectCopy), 0&
+        End If
+        
+        'Note that termination may result in the client site not being available.  If this happens, we simply want
+        ' to continue; the subclasser will handle clean-up automatically.
+        SafelyRemoveSubclass
+        
+        RaiseEvent FlyoutClosed(m_origTriggerObject)
+        
+    End If
+    
+End Sub
 
 Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Control, ByRef flyoutPanel As pdContainer, Optional ByVal flyoutTrackerID As Long = 0, Optional ByVal xOffset As Long = 0&)
     
@@ -148,10 +232,10 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     ' may crash.)
     m_flyoutHWnd = flyoutPanel.hWnd
     m_ParentHWnd = ownerForm.hWnd
-    If (Not m_WindowStyleHasBeenSet) Then
-        m_WindowStyleHasBeenSet = True
-        m_OriginalWindowBits = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd)
-        m_OriginalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd, True)
+    If (Not m_windowStyleHasBeenSet) Then
+        m_windowStyleHasBeenSet = True
+        m_originalWindowBits = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd)
+        m_originalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd, True)
     End If
     
     'Now we are ready to display the flyout.  Make it a child of the main parent window (not this one),
@@ -224,53 +308,6 @@ UnexpectedTrouble:
     
 End Sub
 
-'These functions have no internal purpose.  They exist purely as a convenience for callers,
-' so each toolbox doesn't have to maintain its own local synchronization flag.
-Friend Function GetFlyoutSyncState() As Boolean
-    GetFlyoutSyncState = m_flyoutSyncState
-End Function
-
-Friend Sub SetFlyoutSyncState(ByVal newState As Boolean)
-    m_flyoutSyncState = newState
-End Sub
-
-Friend Function GetFlyoutTrackerID() As Long
-    GetFlyoutTrackerID = m_flyoutTrackerID
-End Function
-
-Friend Sub HideFlyout()
-
-    If m_flyoutVisible And (m_flyoutHWnd <> 0) Then
-        
-        'Notify the master UserControl tracker that our flyout is now inactive.
-        UserControls.NotifyFlyoutChangeState m_ParentHWnd, m_flyoutHWnd, Me, False
-        
-        m_flyoutVisible = False
-        SetParent m_flyoutHWnd, m_ParentHWnd
-        If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , , True
-        If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , True, True
-        g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, False
-        
-        'Reset any internal trackers
-        m_flyoutHWnd = 0
-        m_flyoutTrackerID = -1
-        
-        'If Aero theming is not active, hiding the flyout may cause windows beneath the current one
-        ' to render incorrectly.
-        If (OS.IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
-            InvalidateRect 0&, VarPtr(m_flyoutRectCopy), 0&
-        End If
-        
-        'Note that termination may result in the client site not being available.  If this happens, we simply want
-        ' to continue; the subclasser will handle clean-up automatically.
-        SafelyRemoveSubclass
-        
-        RaiseEvent FlyoutClosed(m_origTriggerObject)
-        
-    End If
-    
-End Sub
-
 Private Sub Class_Initialize()
     'Initialize the ID to a sub-zero value (PD internal IDs always start at 0+, so this is a safe flag
     ' for indicating "no flyout ID has been set")
@@ -286,7 +323,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
     m_InSubclassNow = True
     
-    'If certain events occur in our parent window, and our list box is visible, release it
+    'If certain events occur in our parent window, and a flyout is visible, release it
     If m_flyoutVisible Then
         If (uiMsg = WM_ENTERSIZEMOVE) Or (uiMsg = WM_WINDOWPOSCHANGING) Then
             HideFlyout
@@ -298,9 +335,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         End If
         
     End If
-    
-    'Const WM_COMMAND As Long = &H111
-    'If (uiMsg = WM_COMMAND) Then Debug.Print "WM_COMMAND", uiMsg
     
     'Never eat parent window messages; just peek at them
     ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)

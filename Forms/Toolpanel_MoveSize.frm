@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_MoveSize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4005
+   ClientHeight    =   4650
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12075
@@ -25,13 +25,13 @@ Begin VB.Form toolpanel_MoveSize
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   267
+   ScaleHeight     =   310
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2055
+      Height          =   2535
       Index           =   0
       Left            =   0
       Top             =   960
@@ -90,6 +90,18 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   1217
          Caption         =   "transform quality"
          FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   3000
+         TabIndex        =   18
+         Top             =   2040
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -170,6 +182,18 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   1005
          AutoToggle      =   -1  'True
       End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   2
+         Left            =   3240
+         TabIndex        =   20
+         Top             =   2400
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
+      End
    End
    Begin PhotoDemon.pdTitle ttlMoveSize 
       Height          =   375
@@ -216,7 +240,7 @@ Begin VB.Form toolpanel_MoveSize
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1455
+      Height          =   1815
       Index           =   1
       Left            =   3720
       Top             =   960
@@ -249,6 +273,18 @@ Begin VB.Form toolpanel_MoveSize
          Min             =   -5
          Max             =   5
          SigDigits       =   2
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   1
+         Left            =   3120
+         TabIndex        =   19
+         Top             =   1320
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
       End
    End
    Begin PhotoDemon.pdSlider sltLayerAngle 
@@ -350,7 +386,7 @@ Private Sub cboLayerResizeQuality_SetCustomTabTarget(ByVal shiftTabWasPressed As
     If shiftTabWasPressed Then
         newTargetHwnd = chkAspectRatio.hWnd
     Else
-        newTargetHwnd = Me.ttlMoveSize(1).hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
     End If
 End Sub
 
@@ -474,8 +510,31 @@ Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean
     If shiftTabWasPressed Then
         newTargetHwnd = chkLayerNodes.hWnd
     Else
-        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.ttlMoveSize(0).hWnd
+        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
     End If
+End Sub
+
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then newTargetHwnd = Me.cboLayerResizeQuality.hWnd Else newTargetHwnd = Me.ttlMoveSize(1).hWnd
+        Case 1
+            If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlMoveSize(2).hWnd
+        Case 2
+            If shiftTabWasPressed Then
+                If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
+            Else
+                newTargetHwnd = Me.ttlMoveSize(0).hWnd
+            End If
+    End Select
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
@@ -483,11 +542,15 @@ Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
     Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
 End Sub
 
+Private Sub cmdLayerAffinePermanent_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub cmdLayerAffinePermanent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = Me.chkRotateNode.hWnd
     Else
-        newTargetHwnd = Me.tudLayerMove(0).hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
     End If
 End Sub
 
@@ -715,7 +778,7 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     If shiftTabWasPressed Then
         newTargetHwnd = sltLayerShearX.hWndSpinner
     Else
-        newTargetHwnd = Me.ttlMoveSize(2).hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
     End If
 End Sub
 
@@ -727,11 +790,11 @@ Private Sub ttlMoveSize_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPr
     If shiftTabWasPressed Then
         Select Case Index
             Case 0
-                If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
+                newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
             Case 1
-                newTargetHwnd = Me.cboLayerResizeQuality.hWnd
+                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
             Case 2
-                newTargetHwnd = Me.sltLayerShearY.hWndSpinner
+                newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
         End Select
     Else
         Select Case Index
@@ -846,6 +909,17 @@ Public Sub UpdateAgainstCurrentTheme()
     buttonSize = Interface.FixDPI(32)
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     
+    'Flyout lock controls use the same behavior across all instances
+    buttonSize = Interface.FixDPI(16)
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
+    
     Interface.ApplyThemeAndTranslations Me
     
 End Sub
@@ -891,7 +965,7 @@ Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasP
         If (Index > 0) Then
             newTargetHwnd = tudLayerMove(Index - 1).hWnd
         Else
-            If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
+            newTargetHwnd = Me.ttlMoveSize(0).hWnd
         End If
     Else
         If (Index < 3) Then
