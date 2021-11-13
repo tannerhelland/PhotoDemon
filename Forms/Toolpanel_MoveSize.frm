@@ -100,7 +100,6 @@ Begin VB.Form toolpanel_MoveSize
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
-         DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
    End
@@ -191,7 +190,6 @@ Begin VB.Form toolpanel_MoveSize
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
-         DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
    End
@@ -283,7 +281,6 @@ Begin VB.Form toolpanel_MoveSize
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
-         DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
    End
@@ -914,8 +911,8 @@ Public Sub UpdateAgainstCurrentTheme()
     
     Dim i As Long
     For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
         cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
         cmdFlyoutLock(i).Value = False
     Next i

@@ -707,8 +707,8 @@ Private Sub GenerateCommonTranslations()
     m_CommonTranslations.AddEntry pduct_CommandBarUndo, g_Language.TranslateMessage("Undo (rewind to an earlier state)")
     
     'Flyout panels share a common "lock this panel" explanation tooltip
-    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Lock this panel to keep it open")
-    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels hide automatically when you stop interacting with them, but you can lock a panel to keep it open.  (Locked panels still hide when a new panel is opened or a new tool is selected.)")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Keep this panel open")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels close automatically, but you can click here to keep this panel open.  (This panel will still close if the current tool is deactivated or a different panel is opened.)")
     
     'PD's built-in "randomize" control displays a tooltip for its "dice" button
     m_CommonTranslations.AddEntry pduct_Randomize, g_Language.TranslateMessage("Generate a new random number seed.")

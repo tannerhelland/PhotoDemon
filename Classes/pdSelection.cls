@@ -993,6 +993,10 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         
         End Select
         
+        'Ask the selection toolbar to display a flyout with (potentially) useful information
+        'TODO: need to repeat this across other selections, potentially
+        toolpanel_Selections.RequestDefaultFlyout False, (m_CurrentPOI <> poi_Interior), (m_CurrentPOI = poi_Interior)
+        
     'Polygons can be both moved and resized (by click-dragging individual points)
     ElseIf (m_SelectionShape = ss_Polygon) Then
     

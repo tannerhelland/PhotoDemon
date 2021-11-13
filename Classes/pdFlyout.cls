@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2021-2021 by Tanner Helland
 'Created: 01/November/21
-'Last updated: 05/November/21
-'Last update: initial build (and testing on the Move/Size panel) looks good!  Time to try another tool...
+'Last updated: 11/November/21
+'Last update: continue improving positioning behavior across tools
 '
 'Controller for flyout panels from PD's (many) toolboxes.
 '
@@ -74,11 +74,11 @@ Private m_flyoutHWnd As Long, m_ParentHWnd As Long
 Private m_flyoutRectCopy As RectL
 
 'Window styles only need to be set once
-Private m_windowStyleHasBeenSet As Boolean
+Private m_WindowStyleHasBeenSet As Boolean
 
 'Window styles are blindly cached before we modify them; this allows us to restore whatever was
 ' originally present when the flyout is released
-Private m_originalWindowBits As Long, m_originalWindowBitsEx As Long
+Private m_OriginalWindowBits As Long, m_OriginalWindowBitsEx As Long
 
 'Soft reference to the original trigger object.  We don't actually touch this, but we return it
 ' when the flyout closes (so the parent can reset the state of the object as necessary)
@@ -159,8 +159,8 @@ Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
         
         m_flyoutVisible = False
         SetParent m_flyoutHWnd, m_ParentHWnd
-        If (m_originalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_originalWindowBits, , , True
-        If (m_originalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_originalWindowBits, , True, True
+        If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , , True
+        If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , True, True
         g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, False
         
         'Reset any internal trackers
@@ -224,36 +224,38 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
         .Bottom = .Top + flyoutPanel.GetHeight
     End With
     
-    'We now want to make sure the flyout won't lie off-screen.  Check each dimension in turn.
-    ' TODO!
+    'We now want to make sure the flyout is nicely positioned inside the main window's canvas area.
+    ' Vertical positioning is not important - the flyout always appears safely beneath the top
+    ' tool options panel - but left/right positioning needs to ensure it lies inside the canvas area,
+    ' and *not* over neighboring toolboxes (if any).
+    If (flyoutRect.Left < 0) Then flyoutRect.Left = 0
+    If (flyoutRect.Right > ownerFormRect.Right) Then flyoutRect.Left = flyoutRect.Left - (flyoutRect.Right - ownerFormRect.Right)
     
     'The flyout is now ready to go.  The first time we raise the flyout, we want to cache its current
     ' window longs as whatever VB has set.  (These need to be restored when we hide the flyout, or VB
     ' may crash.)
     m_flyoutHWnd = flyoutPanel.hWnd
     m_ParentHWnd = ownerForm.hWnd
-    If (Not m_windowStyleHasBeenSet) Then
-        m_windowStyleHasBeenSet = True
-        m_originalWindowBits = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd)
-        m_originalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd, True)
+    If (Not m_WindowStyleHasBeenSet) Then
+        m_WindowStyleHasBeenSet = True
+        m_OriginalWindowBits = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd)
+        m_OriginalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_flyoutHWnd, True)
     End If
     
-    'Now we are ready to display the flyout.  Make it a child of the main parent window (not this one),
-    ' and apply any other relevant window styles.  (Switching parents allows us to display the window
-    ' outside the boundaries of this toolbox, but with the window still disappearing if events like PD
-    ' losing focus occur.)
+    'Now we are ready to display the flyout.  Make it a child of the main parent window - *NOT* its
+    ' design-time form - because we need it to extend *outside* its design-time form's boundaries.
+    ' As an additional failsafe, ensure the child window bit is set and mark it as *not* a popup.
     SetParent m_flyoutHWnd, FormMain.hWnd
-    Const WS_CHILD As Long = &H40000000
-    Const WS_POPUP As Long = &H80000000
+    Const WS_CHILD As Long = &H40000000, WS_POPUP As Long = &H80000000
     Const GWL_STYLE As Long = (-16)
     
-    'g_WindowManager.SetWindowLongWrapper m_FlyoutHWnd, WS_EX_PALETTEWINDOW, False, True
     SetWindowLong m_flyoutHWnd, GWL_STYLE, GetWindowLong(m_flyoutHWnd, GWL_STYLE) Or WS_CHILD
     SetWindowLong m_flyoutHWnd, GWL_STYLE, GetWindowLong(m_flyoutHWnd, GWL_STYLE) And (Not WS_POPUP)
     
     'We also need to cache the flyout rect's position; when the flyout is closed, we will
     ' manually invalidate windows beneath it (only on certain OS + theme combinations;
-    ' Aero handles this correctly).
+    ' Aero on Vista+ handles this correctly, but note that the user can select "classic" theme
+    ' on some OSes and those do *not* composite correctly).
     With m_flyoutRectCopy
         .Left = flyoutRect.Left
         .Top = flyoutRect.Top
@@ -309,14 +311,18 @@ UnexpectedTrouble:
 End Sub
 
 Private Sub Class_Initialize()
+    
     'Initialize the ID to a sub-zero value (PD internal IDs always start at 0+, so this is a safe flag
     ' for indicating "no flyout ID has been set")
     m_flyoutTrackerID = -1
+    
 End Sub
 
 Private Sub Class_Terminate()
-    'Failsafe only; this state should never occur
+    
+    'Failsafe only; the flyout should always have been hidden before this class is terminated
     HideFlyout
+    
 End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
@@ -326,9 +332,9 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     'If certain events occur in our parent window, and a flyout is visible, release it
     If m_flyoutVisible Then
         If (uiMsg = WM_ENTERSIZEMOVE) Or (uiMsg = WM_WINDOWPOSCHANGING) Then
-            HideFlyout
+            Me.HideFlyout
         ElseIf (uiMsg = WM_NCDESTROY) Then
-            HideFlyout
+            Me.HideFlyout
             Set m_SubclassReleaseTimer = Nothing
             VBHacks.StopSubclassing hWnd, Me
             m_ParentHWnd = 0
@@ -336,7 +342,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
     End If
     
-    'Never eat parent window messages; just peek at them
+    'Never eat parent window messages (just peek at them)
     ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     m_InSubclassNow = False

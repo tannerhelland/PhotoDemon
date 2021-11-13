@@ -79,7 +79,6 @@ Begin VB.Form toolpanel_ColorPicker
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
-         DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
    End
@@ -543,7 +542,7 @@ Private Sub FindAverageValues()
 
     If (m_SampleDIB Is Nothing) Then Exit Sub
     
-    Dim X As Long, Y As Long, xFinal As Long, yFinal As Long
+    Dim x As Long, y As Long, xFinal As Long, yFinal As Long
     xFinal = (m_SampleDIB.GetDIBWidth - 1) * 4
     yFinal = m_SampleDIB.GetDIBHeight - 1
     
@@ -556,15 +555,15 @@ Private Sub FindAverageValues()
     
     Dim rTotal As Long, gTotal As Long, bTotal As Long, aTotal As Long
     
-    For Y = Y To yFinal
-        tmpSA.pvData = pxPtr + Y * pxWidth
-    For X = 0 To xFinal Step 4
-        bTotal = bTotal + lineOfPixels(X)
-        gTotal = gTotal + lineOfPixels(X + 1)
-        rTotal = rTotal + lineOfPixels(X + 2)
-        aTotal = aTotal + lineOfPixels(X + 3)
-    Next X
-    Next Y
+    For y = 0 To yFinal
+        tmpSA.pvData = pxPtr + y * pxWidth
+    For x = 0 To xFinal Step 4
+        bTotal = bTotal + lineOfPixels(x)
+        gTotal = gTotal + lineOfPixels(x + 1)
+        rTotal = rTotal + lineOfPixels(x + 2)
+        aTotal = aTotal + lineOfPixels(x + 3)
+    Next x
+    Next y
     
     m_SampleDIB.UnwrapArrayFromDIB lineOfPixels
     
@@ -933,8 +932,8 @@ Public Sub UpdateAgainstCurrentTheme()
     
     Dim i As Long
     For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
         cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
         cmdFlyoutLock(i).Value = False
     Next i

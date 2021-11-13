@@ -130,9 +130,13 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     SetUIGroupState PDUI_Selections, True
     SetUIGroupState PDUI_SelectionTransforms, True
     
+    'Ask the selection toolbar to display a flyout with (potentially) useful information
+    'TODO: may need to change these bools based on current selection type
+    toolpanel_Selections.RequestDefaultFlyout True, True, False
+    
     'Redraw the screen
     Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-                        
+    
 End Sub
 
 'Are selections currently allowed?  Program states like "no open images" prevent selections from being created,

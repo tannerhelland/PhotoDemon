@@ -101,7 +101,6 @@ Begin VB.Form toolpanel_Measure
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
-         DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
    End
@@ -656,8 +655,8 @@ Public Sub UpdateAgainstCurrentTheme()
     
     Dim i As Long
     For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
         cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
         cmdFlyoutLock(i).Value = False
     Next i
@@ -689,7 +688,7 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
