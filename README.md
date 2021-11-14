@@ -2,9 +2,9 @@
 
 | Stable (8.4) | Nightly (9.0-a) | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v8.4/PhotoDemon-8.4.zip) | [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
+| [Download ZIP (13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v8.4/PhotoDemon-8.4.zip) | [Download ZIP (14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
-## About PhotoDemon 8.4
+## About PhotoDemon
 
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
@@ -18,17 +18,17 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  It runs just fine from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
 You can support PhotoDemon's ongoing development [through Patreon](https://www.patreon.com/photodemon) or [with a one-time donation](https://photodemon.org/donate/).
 
-New contributions from coders, designers, translators, and enthusiasts are always welcome.
+New contributions from translators, coders, designers, and enthusiasts are always welcome.
 
 * For information on the latest stable release, visit https://photodemon.org
-* To download the program's source code, visit https://github.com/tannerhelland/PhotoDemon
-* To download a nightly build of the latest source code, visit https://photodemon.org/download/
+* To download a nightly build (built from the latest source code), visit https://photodemon.org/download/
+* To download PhotoDemon's source code, visit https://github.com/tannerhelland/PhotoDemon
 
 ## What makes PhotoDemon unique?
 
@@ -42,17 +42,18 @@ Complex editing actions can be recorded as macros (similar to Office software). 
 Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop (PSD) images and all major camera RAW formats
+* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), and all major camera RAW formats
 * Color-managed workflow, including full support for embedded ICC profiles
 * Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
 * On-canvas tools: digital paintbrushes, clone and pattern brushes, interactive gradients, and more
-* Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, Wratten filters, and many more
-* Filters and effects: perspective correction, edge detection, noise removal, real-time content-aware blur, unsharp masking, green screen, lens diffraction, vignetting, and many more
+* Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, and many more
+* Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, green screen, lens diffraction, vignetting, and many more
 * More than 200 tools are provided in the current build.
 
 ### Limitations
 
-* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
+* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on macOS, Linux, or BSD systems, but program stability and performance may suffer.
+* Due to its portable nature, PhotoDemon is only available as a 32-bit application.  (This means it cannot load or save images larger than ~2 GB in size.)
 
 ## What's new in nightly builds
 
@@ -63,8 +64,9 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### File formats
 
 - Comprehensive import and export support for [Corel Paintshop Pro (psp, pspimage) images](https://en.wikipedia.org/wiki/PaintShop_Pro), including many text and vector layer features.
+- Comprehensive import and export support for the brand-new [AVIF file format](https://en.wikipedia.org/wiki/AV1#AV1_Image_File_Format_(AVIF)), c/o the [open-source libavif library](https://github.com/AOMediaCodec/libavif).  AVIF file support is incredibly complex (the stock encoder+decoder apps are almost 3x larger than PhotoDemon!) and they are only available for 64-bit systems, so PhotoDemon does not ship these libraries by default.  If you attempt to open or save an AVIF file, PhotoDemon will offer to download a local copy of libavif for you.  
 - Comprehensive import and export support for [animated WebP images](https://developers.google.com/speed/webp), including direct export to animated WebP from PhotoDemon's built-in screen recorder tool (`Tools > Animated screen capture`)
-- Comprehensive import and export support for the brand-new [AVIF file format](https://en.wikipedia.org/wiki/AV1#AV1_Image_File_Format_(AVIF)), c/o the [open-source libavif library](https://github.com/AOMediaCodec/libavif).  AVIF file support is incredibly complex (the stock encoder+decoder apps are almost 3x larger than PhotoDemon!) and they are only available for 64-bit systems, so PhotoDemon does not ship these libraries by default.  If you attempt to open or save an AVIF file, PhotoDemon will offer to download a local copy of libavif for you.  (This is done in a fully portable manner, and simply involves downloading the latest avifenc.exe and avifdec.exe files from GitHub, which PhotoDemon will do for you if you allow it.)  
+- All-new [GIF import and export engines](https://github.com/tannerhelland/PhotoDemon/commit/cfee72e569721a71efe4a5bc8b8858a5f8501517), including a new [best-in-class GIF optimizer](https://github.com/tannerhelland/PhotoDemon/commit/aaab70c06a0697b56d0336e22477782b9af59093).
 - Comprehensive import support for [lossless JPEG (JPEG-LS) images](https://en.wikipedia.org/wiki/Lossless_JPEG), c/o the [open-source CharLS library](https://github.com/team-charls/charls)
 - Comprehensive import support for [Comic Book Archive (CBZ) images](https://en.wikipedia.org/wiki/Comic_book_archive).
 - Comprehensive import support for [Symbian (mbm, aif) images](https://en.wikipedia.org/wiki/MBM_(file_format))
@@ -94,20 +96,27 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Overhauled [`Image > Crop` tool](https://github.com/tannerhelland/PhotoDemon/commit/6bfe841f282ae9ec9d75b4cd29065eee11c7e9f2), including new support for retaining editable text layers after cropping (instead of rasterizing them).
 - New [lock aspect ratio](https://github.com/tannerhelland/PhotoDemon/commit/3b74576eb425c5ff80a4b05615f94a86faabf261) toggle on the Move/Size tool
 
+### Batch processor
+- New support for [preserving folder structure](https://github.com/tannerhelland/PhotoDemon/commit/4c6e7040440e5f2424485670d04d618a7fe211bd) when batch processing images from a complex folder tree
+- New support for batch processing [animated image formats (GIF, PNG, WebP)](https://github.com/tannerhelland/PhotoDemon/commit/647927e3130eaeaac4d58376c5b0f20463fbf57b)
+
 ### User interface 
 
 - Adjustment and Effect dialogs are no longer fixed-size - [you can resize every last one of them at run-time](https://github.com/tannerhelland/PhotoDemon/commit/ab5363a885aec5529a81c28255defe77a516b285)!
 - Adjustment and Effect tools now have [built-in Undo/Redo on each dialog](https://github.com/tannerhelland/PhotoDemon/commit/9d7adda0ab158f00d2f0ac393bc19ef800b31b30)
 - [Faster app startup time](https://github.com/tannerhelland/PhotoDemon/commit/a56af482d262f6dab1ff016f111a0e909d9bfb98), particularly on Windows 10
+- PhotoDemon can now [automatically restore your previous session](https://github.com/tannerhelland/PhotoDemon/commit/735ba00b2f8da59356fab95c8486cda54b915939) if a system reboot interrupts your work.
 - [Improved clipboard support](https://github.com/tannerhelland/PhotoDemon/commit/84f84be77b7a1f52cb1151eeef8e5df1bbec5fad) when copy/pasting to/from Google Chrome
-- New [run-time resource minimizer](https://github.com/tannerhelland/PhotoDemon/commit/f00f0a81bf9f8fbff0a2c125b774884111de82e3) makes PhotoDemon - already among the lightest photo editors - even lighter on system resources.
+- New [background image compressor](https://github.com/tannerhelland/PhotoDemon/commit/dbac890b93ec10b36fd2e63aecf96d5e92904c6f) greatly reduces memory usage when working with multiple images at once
+- Similarly, a new [run-time resource minimizer](https://github.com/tannerhelland/PhotoDemon/commit/f00f0a81bf9f8fbff0a2c125b774884111de82e3) specifically designed for UI elements makes PhotoDemon - already among the lightest photo editors - even lighter on system resources.
 - PhotoDemon's `Window` menu now displays a [list of open images](https://github.com/tannerhelland/PhotoDemon/commit/009721ddc60246c803ee32ffe4c4376937a09bb4) for immediate access to any open image (even if you've disabled the image tabstrip).
 - [Expanded "convenience" buttons in the Layer Toolbox](https://github.com/tannerhelland/PhotoDemon/commit/a421afaaddfee746e1769768503f300cf4849616), including new Shift+Click behavior (see button tooltips)
 - [Additional hotkeys have been implemented](https://github.com/tannerhelland/PhotoDemon/commit/08b2ad83e2e1fc89e2aa69f219a1da9d036098ce) to better match other photo editing software
+- [Recent image and macro files](https://github.com/tannerhelland/PhotoDemon/commit/e2c17eaeda95abb2e27fd9bc036a6cf5047a184b) will now appear in search results from PhotoDemon's built-in search tool (Ctrl+F)
 
 ### Other
 
-For a full list of recent changes, [check the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
+For a full list of changes, [check the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
 
 ## Contributing
 
