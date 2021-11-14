@@ -68,7 +68,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   661
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdTitle ttlMoveSize 
+      Begin PhotoDemon.pdTitle ttlPanel 
          Height          =   375
          Index           =   2
          Left            =   0
@@ -379,7 +379,7 @@ Begin VB.Form toolpanel_Selections
       Enabled         =   0   'False
       FontSizeCaption =   10
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   0
       Left            =   0
@@ -446,17 +446,6 @@ Begin VB.Form toolpanel_Selections
       Width           =   2535
       _ExtentX        =   4471
       _ExtentY        =   1852
-      Begin PhotoDemon.pdLabel lblNoOptions 
-         Height          =   375
-         Index           =   0
-         Left            =   0
-         Top             =   120
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   661
-         Alignment       =   2
-         Caption         =   "(no additional options)"
-      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
@@ -515,6 +504,17 @@ Begin VB.Form toolpanel_Selections
          Width           =   1140
          _ExtentX        =   2011
          _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdLabel lblNoOptions 
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         Top             =   120
+         Width           =   2535
+         _ExtentX        =   4471
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   "(no additional options)"
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -650,7 +650,7 @@ Begin VB.Form toolpanel_Selections
          StickyToggle    =   -1  'True
       End
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   1
       Left            =   4080
@@ -767,6 +767,36 @@ Private Sub cboSelRender_GotFocusAPI()
     UpdateFlyout 0, True
 End Sub
 
+Private Sub cboSelRender_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = ttlPanel(0).hWnd
+    Else
+        
+        'Only highlight and lightbox currently have additdional appearance settings.
+        ' (This could change in the future.)
+        Select Case cboSelRender.ListIndex
+             
+             'Highlight
+             Case 0
+                newTargetHwnd = csSelection(0).hWnd
+                
+             'Lightbox
+             Case 1
+                newTargetHwnd = csSelection(1).hWnd
+             
+             'Ants and outline do not have additional options right now
+             Case 2, 3
+                If Me.cmdFlyoutLock(0).Enabled Then
+                    newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+                Else
+                    newTargetHwnd = Me.ttlPanel(1).hWnd
+                End If
+                
+        End Select
+        
+    End If
+End Sub
+
 'Selection smoothing is handled universally, even if the current selection shape does not match the active
 ' selection tool.  (This is done because antialiasing/feathering are universally supported across all types.)
 Private Sub cboSelSmoothing_Click()
@@ -808,11 +838,31 @@ Private Sub cboWandCompare_Click()
 End Sub
 
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
-    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+    If (Not m_Flyout Is Nothing) Then
+        m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+    End If
 End Sub
 
 Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
     UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If Me.spnOpacity(0).Visible Then
+            newTargetHwnd = Me.spnOpacity(0).hWnd
+        ElseIf Me.spnOpacity(1).Visible Then
+            newTargetHwnd = Me.spnOpacity(1).hWnd
+        Else
+            newTargetHwnd = cboSelRender.hWnd
+        End If
+    Else
+        If Me.cboSelCombine.Enabled Then
+            newTargetHwnd = Me.cboSelCombine.hWnd
+        Else
+            newTargetHwnd = Me.ttlPanel(1).hWnd
+        End If
+    End If
 End Sub
 
 Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -1097,13 +1147,44 @@ Private Sub spnOpacity_Change(Index As Integer)
     
 End Sub
 
-Private Sub ttlMoveSize_Click(Index As Integer, ByVal newState As Boolean)
+Private Sub spnOpacity_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    'Shift-tab is handled OK by natural form layout
+    If (Not shiftTabWasPressed) Then newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+    
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     
     'Normally, clicking the title bar exposes a flyout panel... but this one is a little strange,
     ' because not all appearance options have additional options!  What might be nice is to
     ' *give* them options (like marching ant speed and outline color), but in the meantime,
     ' we just display a blank flyout if options are not available.
     UpdateFlyout Index, newState
+    
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    Select Case Index
+    
+        'First titlebar: "appearance"
+        Case 0
+    
+            If shiftTabWasPressed Then
+                
+                'Target hWnd varies by current subtool panel
+                If (g_CurrentTool = SELECT_RECT) Then
+                    newTargetHwnd = sltCornerRounding.hWndSpinner
+                Else
+                    'TODO
+                End If
+                
+            Else
+                newTargetHwnd = cboSelRender.hWnd
+            End If
+            
+    End Select
     
 End Sub
 
@@ -1195,18 +1276,18 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, xOffset
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, xOffset
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
     
     'Update titlebar state(s) to match
     Dim i As Long
-    For i = ttlMoveSize.lBound To ttlMoveSize.UBound
+    For i = ttlPanel.lBound To ttlPanel.UBound
         If (i = m_Flyout.GetFlyoutTrackerID()) Then
-            If (Not ttlMoveSize(i).Value) Then ttlMoveSize(i).Value = True
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
         Else
-            If ttlMoveSize(i).Value Then ttlMoveSize(i).Value = False
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
         End If
     Next i
     
@@ -1221,6 +1302,22 @@ Private Sub tudSel_GotFocusAPI(Index As Integer)
     Else
         'TODO
     End If
+End Sub
+
+'Some selection flyouts are auto-raised when the user performs a selection action relevant to that flyout.
+' The RequestDefaultFlyout sub, below, forwards requests here; this function raises the flyout AND locks
+' it in the open position (so it doesn't instantly close due to the user interacting elsewhere).
+Private Sub RaiseAndLockFlyout(ByVal flyoutIndex As Long)
+    
+    UpdateFlyout flyoutIndex, True
+    
+    'By design, pdButtonToolbox controls do not trigger events when their value is set programmatically
+    ' (this has to do with the way they were originally designed for the left toolbox only, which is
+    ' constantly turning buttons on/off as the user switches between tools).  So we need to manually
+    ' set lock status after setting the correct button value.
+    cmdFlyoutLock(flyoutIndex).Value = True
+    m_Flyout.UpdateLockStatus Me.cntrPopOut(flyoutIndex).hWnd, cmdFlyoutLock(flyoutIndex).Value, cmdFlyoutLock(flyoutIndex)
+    
 End Sub
 
 'Some selection tools are more useful if we allow their flyout to display automatically.  Obviously the
@@ -1242,13 +1339,16 @@ Public Sub RequestDefaultFlyout(Optional ByVal selectionBeingCreated As Boolean 
         ' the current action.
         If (Not m_Flyout Is Nothing) Then okToRaiseFlyout = okToRaiseFlyout Or (m_Flyout.GetFlyoutTrackerID = 2)
         If okToRaiseFlyout Then
-            UpdateFlyout 2, True
-            cmdFlyoutLock(2).Value = True
+            
             If (selectionBeingCreated Or selectionBeingResized) Then
                 If (Me.cboSize(0).ListIndex < 1) Then Me.cboSize(0).ListIndex = 1
             ElseIf selectionBeingMoved Then
                 If (Me.cboSize(0).ListIndex > 0) Then Me.cboSize(0).ListIndex = 0
             End If
+            
+            'With all UI settings synced, we can display and lock the corresponding flyout
+            RaiseAndLockFlyout 2
+            
         End If
         
     Else
