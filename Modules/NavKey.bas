@@ -3,8 +3,9 @@ Attribute VB_Name = "NavKey"
 'Navigation Key Handler (including automated tab order handling)
 'Copyright 2017-2021 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 25/August/21
-'Last update: fix potential crash when unloading Options dialog
+'Last updated: 14/November/21
+'Last update: fix nav key tracking across toolboxes (which are no longer unloaded after switching away
+'             from them, but are kept in-memory for faster subsequent access)
 '
 'In a project as complex as PD, tab order is difficult to keep straight.  VB orders controls in the order
 ' they're added, and there's no easy way to modify this short of manually setting TabOrder across all forms.
@@ -40,17 +41,16 @@ Private m_NumOfForms As Long, m_LastForm As Long
 'Before loading individual controls, notify this module of the parent form preceding the loop.  (This improves
 ' performance because we don't have to look-up the form in our table for subsequent calls.)
 Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
-
+    
     'At present, PD guarantees that *most* forms will not be double-loaded - e.g. only one instance
     ' is allowed for effect and adjustment dialogs.
     '
-    'One weird exception to this rule is the main form, who may be re-themed more than once if the
-    ' user does something like change the active language at run-time (which requires a re-theme
-    ' because UI layout may change dramatically).  Its child forms may be re-themed as part of the
-    ' process (e.g. toolbars).
+    'Some exceptions to this rule are the main form (which may be re-themed more than once if the
+    ' user does something like change the active language at run-time) and various toolbox panels
+    ' (which are not unloaded after switching away from them, for performance reasons).
     '
-    'As such, we do need to perform a failsafe check for the specified form in our table, even though
-    ' 99.9% of the time such a check is unnecessary.
+    'As such, we do need to perform a failsafe check for the specified form in our table.  If we've
+    ' already loaded a given form (and not unloaded it), we don't need to initialize a new object tracker.
     If (Not parentForm Is Nothing) Then
         
         'Make sure we have room for this form (expanding the collection is harmless, even if we
@@ -62,14 +62,18 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As
         End If
         
         'Perform a quick failsafe check for the current form existing in the collection.
+        Dim targetAlreadyExists As Boolean
+        targetAlreadyExists = False
+        
         Dim targetIndex As Long
-        If (m_NumOfForms <> 0) Then
+        If (m_NumOfForms > 0) Then
             
             Dim i As Long
             For i = 0 To m_NumOfForms - 1
                 If (Not m_Forms(i) Is Nothing) Then
                     If (m_Forms(i).GetParentHWnd = parentForm.hWnd) Then
                         targetIndex = i
+                        targetAlreadyExists = True
                         Exit For
                     End If
                 End If
@@ -79,18 +83,21 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As
             targetIndex = m_NumOfForms
         End If
         
-        Set m_Forms(targetIndex) = New pdObjectList
-        m_Forms(targetIndex).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
+        If (Not targetAlreadyExists) Then
+            targetIndex = m_NumOfForms
+            Set m_Forms(targetIndex) = New pdObjectList
+            m_Forms(targetIndex).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
+        End If
         
         m_LastForm = targetIndex
-        If (targetIndex = m_NumOfForms) Then m_NumOfForms = m_NumOfForms + 1
+        If (Not targetAlreadyExists) Then m_NumOfForms = m_NumOfForms + 1
         
     End If
 
 End Sub
 
 Public Sub NotifyFormUnloading(ByRef parentForm As Form)
-
+    
     'Find the matching form in our object list
     If (m_NumOfForms > 0) Then
         
@@ -98,6 +105,8 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
         targetHWnd = parentForm.hWnd
         
         Dim i As Long, indexOfForm As Long
+        indexOfForm = -1
+        
         For i = 0 To m_NumOfForms - 1
             If (Not m_Forms(i) Is Nothing) Then
                 If (m_Forms(i).GetParentHWnd = targetHWnd) Then
@@ -114,7 +123,7 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
         Next i
         
         'If we removed this from the middle of the list, shift subsequent entries down
-        If (indexOfForm < m_NumOfForms - 1) Then
+        If (indexOfForm >= 0) And (indexOfForm < m_NumOfForms - 1) Then
             m_NumOfForms = m_NumOfForms - 1
             For i = indexOfForm To m_NumOfForms - 1
                 Set m_Forms(i) = m_Forms(i + 1)
