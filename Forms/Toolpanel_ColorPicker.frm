@@ -299,7 +299,7 @@ Begin VB.Form toolpanel_ColorPicker
       Caption         =   "0"
       FontBold        =   -1  'True
    End
-   Begin PhotoDemon.pdTitle ttlTool 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   0
       Left            =   1440
@@ -821,7 +821,7 @@ Private Sub cboColorSpace_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
         If (Index = 0) Then
             newTargetHwnd = Me.cboColorSpace(1).hWnd
         Else
-            newTargetHwnd = Me.ttlTool(0).hWnd
+            newTargetHwnd = Me.ttlPanel(0).hWnd
         End If
     End If
 End Sub
@@ -962,13 +962,13 @@ End Sub
 
 Private Sub sldRadius_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.ttlTool(0).hWnd
+        newTargetHwnd = Me.ttlPanel(0).hWnd
     Else
         newTargetHwnd = Me.btsSampleMerged.hWnd
     End If
 End Sub
 
-Private Sub ttlTool_Click(Index As Integer, ByVal newState As Boolean)
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
 End Sub
 
@@ -985,18 +985,18 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlTool(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, Interface.FixDPI(-8)
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, Interface.FixDPI(-8)
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
     
     'Update titlebar state(s) to match
     Dim i As Long
-    For i = ttlTool.lBound To ttlTool.UBound
+    For i = ttlPanel.lBound To ttlPanel.UBound
         If (i = m_Flyout.GetFlyoutTrackerID()) Then
-            If (Not ttlTool(i).Value) Then ttlTool(i).Value = True
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
         Else
-            If ttlTool(i).Value Then ttlTool(i).Value = False
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
         End If
     Next i
     
@@ -1005,7 +1005,7 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
 End Sub
 
-Private Sub ttlTool_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = Me.cboColorSpace(1).hWnd
     Else

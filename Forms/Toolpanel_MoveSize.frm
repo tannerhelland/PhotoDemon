@@ -193,7 +193,7 @@ Begin VB.Form toolpanel_MoveSize
          StickyToggle    =   -1  'True
       End
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   0
       Left            =   0
@@ -225,7 +225,7 @@ Begin VB.Form toolpanel_MoveSize
       _ExtentX        =   2566
       _ExtentY        =   609
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   1
       Left            =   3840
@@ -297,7 +297,7 @@ Begin VB.Form toolpanel_MoveSize
       Max             =   360
       SigDigits       =   2
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   2
       Left            =   7680
@@ -423,7 +423,7 @@ End Sub
 
 Private Sub chkAspectRatio_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        If tudLayerMove(3).Enabled Then newTargetHwnd = tudLayerMove(3).hWnd Else newTargetHwnd = Me.ttlMoveSize(0).hWnd
+        If tudLayerMove(3).Enabled Then newTargetHwnd = tudLayerMove(3).hWnd Else newTargetHwnd = Me.ttlPanel(0).hWnd
     Else
         newTargetHwnd = cboLayerResizeQuality.hWnd
     End If
@@ -440,7 +440,7 @@ End Sub
 
 Private Sub chkAutoActivateLayer_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.ttlMoveSize(2).hWnd
+        newTargetHwnd = Me.ttlPanel(2).hWnd
     Else
         newTargetHwnd = chkIgnoreTransparent.hWnd
     End If
@@ -522,14 +522,14 @@ End Sub
 Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
         Case 0
-            If shiftTabWasPressed Then newTargetHwnd = Me.cboLayerResizeQuality.hWnd Else newTargetHwnd = Me.ttlMoveSize(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.cboLayerResizeQuality.hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
         Case 1
-            If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlMoveSize(2).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlPanel(2).hWnd
         Case 2
             If shiftTabWasPressed Then
                 If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
             Else
-                newTargetHwnd = Me.ttlMoveSize(0).hWnd
+                newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
     End Select
 End Sub
@@ -683,7 +683,7 @@ End Sub
 
 Private Sub sltLayerAngle_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.ttlMoveSize(1).hWnd
+        newTargetHwnd = Me.ttlPanel(1).hWnd
     Else
         newTargetHwnd = Me.sltLayerShearX.hWnd
     End If
@@ -779,11 +779,11 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     End If
 End Sub
 
-Private Sub ttlMoveSize_Click(Index As Integer, ByVal newState As Boolean)
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
 End Sub
 
-Private Sub ttlMoveSize_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         Select Case Index
             Case 0
@@ -934,18 +934,18 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
     
     'Update titlebar state(s) to match
     Dim i As Long
-    For i = ttlMoveSize.lBound To ttlMoveSize.UBound
+    For i = ttlPanel.lBound To ttlPanel.UBound
         If (i = m_Flyout.GetFlyoutTrackerID()) Then
-            If (Not ttlMoveSize(i).Value) Then ttlMoveSize(i).Value = True
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
         Else
-            If ttlMoveSize(i).Value Then ttlMoveSize(i).Value = False
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
         End If
     Next i
     
@@ -962,7 +962,7 @@ Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasP
         If (Index > 0) Then
             newTargetHwnd = tudLayerMove(Index - 1).hWnd
         Else
-            newTargetHwnd = Me.ttlMoveSize(0).hWnd
+            newTargetHwnd = Me.ttlPanel(0).hWnd
         End If
     Else
         If (Index < 3) Then

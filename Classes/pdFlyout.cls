@@ -145,7 +145,7 @@ End Sub
 
 'The core Show/Hide flyout pair of functions.
 Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
-
+    
     If m_flyoutVisible And (m_flyoutHWnd <> 0) Then
         
         'If the current flyout is locked, and we're allowed to leave a locked flyout open,

@@ -302,7 +302,7 @@ Begin VB.Form toolpanel_Measure
       _ExtentY        =   794
       Caption         =   "straighten layer"
    End
-   Begin PhotoDemon.pdTitle ttlMoveSize 
+   Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   360
       Index           =   0
       Left            =   0
@@ -492,7 +492,7 @@ Public Sub UpdateUIText()
     'Calculate padding constants and initial offset (for the first label)
     Dim xPadding As Long, xOffset As Long
     xPadding = Interface.FixDPI(8)
-    xOffset = ttlMoveSize(0).GetLeft + ttlMoveSize(0).GetWidth + xPadding * 2
+    xOffset = ttlPanel(0).GetLeft + ttlPanel(0).GetWidth + xPadding * 2
     
     'Y position also needs to be set differently depending on whether one or two rows of measurements are visible.
     Dim yOffset As Long, yOffset2 As Long
@@ -688,18 +688,18 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlMoveSize(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
     
     'Update titlebar state(s) to match
     Dim i As Long
-    For i = ttlMoveSize.lBound To ttlMoveSize.UBound
+    For i = ttlPanel.lBound To ttlPanel.UBound
         If (i = m_Flyout.GetFlyoutTrackerID()) Then
-            If (Not ttlMoveSize(i).Value) Then ttlMoveSize(i).Value = True
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
         Else
-            If ttlMoveSize(i).Value Then ttlMoveSize(i).Value = False
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
         End If
     Next i
     
@@ -708,6 +708,6 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
 End Sub
 
-Private Sub ttlMoveSize_Click(Index As Integer, ByVal newState As Boolean)
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
 End Sub

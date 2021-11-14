@@ -236,8 +236,9 @@ End Property
 
 Public Property Let Value(ByVal newValue As Boolean)
     
-    'Update our internal value tracker, but only if autotoggle is not active.  (Autotoggle causes the button to behave like
-    ' a normal button, so there's no concept of a persistent "value".)
+    'Update our internal value tracker, but only if autotoggle is not active.
+    ' (Autotoggle causes the button to behave like a normal command button,
+    ' so there's no concept of a persistent "value".)
     If (m_ButtonState <> newValue) And (Not m_AutoToggle) Then
     
         m_ButtonState = newValue
@@ -245,11 +246,13 @@ Public Property Let Value(ByVal newValue As Boolean)
         'Redraw the control to match the new state
         RedrawBackBuffer
         
-        'Note that we don't raise a Click event here.  This is by design.  The toolbox handles all toggle code for these buttons,
-        ' and it's more efficient to let it handle this, as it already has a detailed notion of things like program state, which
-        ' affects whether buttons are clickable, etc.
-        
-        'As such, the Click event is not raised for Value changes alone - only for actions initiated by actual user input.
+        'Note that we don't raise a Click event here.  This is by design.  The toolbox handles all
+        ' toggle code for these buttons, and it's more efficient to let it handle this, as it already
+        ' has a detailed notion of things like program state, which affects whether buttons are clickable, etc.
+        '
+        'As such, the Click event is not raised for Value changes alone - only for actions initiated by actual
+        ' user input.  (If you use this control anywhere *other* than the toolbox, you'll need to plan
+        ' accordingly for this behavior.)
         
     End If
     

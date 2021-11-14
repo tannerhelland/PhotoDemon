@@ -66,9 +66,11 @@ End Function
 'Free the shared compression buffer for UI images.  This carries a ripple effect for PD's internal
 ' suspend-to-memory operations, so do this only if the memory savings are large.
 Public Sub FreeSharedCompressBuffer()
-    PDDebug.LogAction "Freeing shared memory buffer (size " & Files.GetFormattedFileSize(m_CompressBufferSize) & ")"
-    Erase m_TempCompressBuffer
-    m_CompressBufferSize = 0
+    If (m_CompressBufferSize <> 0) Then
+        PDDebug.LogAction "Freeing shared memory buffer (size " & Files.GetFormattedFileSize(m_CompressBufferSize) & ")"
+        Erase m_TempCompressBuffer
+        m_CompressBufferSize = 0
+    End If
 End Sub
 
 'Return a standalone DIB of a given sprite.  Do *not* use this more than absolutely necessary,
