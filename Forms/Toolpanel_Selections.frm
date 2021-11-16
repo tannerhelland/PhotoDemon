@@ -736,6 +736,25 @@ Private Sub cboSelArea_GotFocusAPI(Index As Integer)
     End If
 End Sub
 
+Private Sub cboSelArea_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                If (Me.cmdLock(1).Visible And Me.cmdLock(1).Enabled) Then
+                    newTargetHwnd = Me.cmdLock(1).hWnd
+                Else
+                    If Me.tudSel(1).Enabled Then
+                        newTargetHwnd = Me.tudSel(1).hWnd
+                    Else
+                        newTargetHwnd = Me.cboSize(0).hWnd
+                    End If
+                End If
+            Else
+                If Me.sltSelectionBorder(0).Visible Then newTargetHwnd = Me.sltSelectionBorder(0).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+            End If
+    End Select
+End Sub
+
 Private Sub cboSelCombine_Click()
 
     'If a selection is already active, we may need to calculate a new combined area
@@ -744,6 +763,10 @@ Private Sub cboSelCombine_Click()
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
     
+End Sub
+
+Private Sub cboSelCombine_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.cmdFlyoutLock(0).hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
 End Sub
 
 'The "selection rendering technique" dropdown always receives event processing, even if the current selection
@@ -816,12 +839,35 @@ Private Sub cboSelSmoothing_GotFocusAPI()
     UpdateFlyout 1, True
 End Sub
 
+Private Sub cboSelSmoothing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(1).hWnd
+    Else
+        
+        'Feathered selections display a radius slider
+        If (Me.cboSelSmoothing.ListIndex = 2) Then
+            newTargetHwnd = Me.sltSelectionFeathering.hWndSlider
+        Else
+            newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+        End If
+        
+    End If
+End Sub
+
 Private Sub cboSize_Click(Index As Integer)
     SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 End Sub
 
 Private Sub cboSize_GotFocusAPI(Index As Integer)
     UpdateFlyout 2, True
+End Sub
+
+Private Sub cboSize_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(2).hWnd
+    Else
+        If Me.tudSel(0).Enabled Then newTargetHwnd = Me.tudSel(0).hWnd Else newTargetHwnd = Me.cboSelArea(0).hWnd
+    End If
 End Sub
 
 Private Sub cboWandCompare_Click()
@@ -848,21 +894,58 @@ Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        If Me.spnOpacity(0).Visible Then
-            newTargetHwnd = Me.spnOpacity(0).hWnd
-        ElseIf Me.spnOpacity(1).Visible Then
-            newTargetHwnd = Me.spnOpacity(1).hWnd
-        Else
-            newTargetHwnd = cboSelRender.hWnd
-        End If
-    Else
-        If Me.cboSelCombine.Enabled Then
-            newTargetHwnd = Me.cboSelCombine.hWnd
-        Else
-            newTargetHwnd = Me.ttlPanel(1).hWnd
-        End If
-    End If
+    
+    Select Case Index
+        
+        Case 0
+        
+            If shiftTabWasPressed Then
+                If Me.spnOpacity(0).Visible Then
+                    newTargetHwnd = Me.spnOpacity(0).hWnd
+                ElseIf Me.spnOpacity(1).Visible Then
+                    newTargetHwnd = Me.spnOpacity(1).hWnd
+                Else
+                    newTargetHwnd = cboSelRender.hWnd
+                End If
+            Else
+                If Me.cboSelCombine.Enabled Then
+                    newTargetHwnd = Me.cboSelCombine.hWnd
+                Else
+                    newTargetHwnd = Me.ttlPanel(1).hWnd
+                End If
+            End If
+            
+        Case 1
+            If shiftTabWasPressed Then
+                If Me.sltSelectionFeathering.Visible Then
+                    newTargetHwnd = Me.sltSelectionFeathering.hWndSpinner
+                Else
+                    newTargetHwnd = Me.cboSelSmoothing.hWnd
+                End If
+            Else
+                
+                'Next control varies by selection type
+                If (g_CurrentTool = SELECT_RECT) Then
+                    newTargetHwnd = Me.ttlPanel(2).hWnd
+                Else
+                    'TODO
+                End If
+                
+            End If
+            
+        Case 2
+            If shiftTabWasPressed Then
+                If Me.sltSelectionBorder(0).Visible Then
+                    newTargetHwnd = Me.sltSelectionBorder(0).hWnd
+                Else
+                    newTargetHwnd = Me.cboSelArea(0).hWnd
+                End If
+            Else
+                newTargetHwnd = Me.sltCornerRounding.hWnd
+            End If
+    
+    End Select
+    
 End Sub
 
 Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -925,6 +1008,18 @@ Private Sub cmdLock_GotFocusAPI(Index As Integer)
     End If
 End Sub
 
+Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.tudSel(Index).hWnd
+    Else
+        If (Index = 0) Or (Index = 2) Then
+            newTargetHwnd = Me.tudSel(Index + 1).hWnd
+        Else
+            If (Index = 1) Then newTargetHwnd = cboSelArea(0).hWnd 'else 'TODO
+        End If
+    End If
+End Sub
+
 Private Sub csSelection_ColorChanged(Index As Integer)
     
     If (Index = 0) Then
@@ -934,6 +1029,20 @@ Private Sub csSelection_ColorChanged(Index As Integer)
     End If
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub csSelection_GotFocusAPI(Index As Integer)
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub csSelection_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboSelRender.hWnd
+    Else
+        newTargetHwnd = Me.spnOpacity(Index).hWnd
+    End If
     
 End Sub
 
@@ -1085,6 +1194,14 @@ Private Sub sltCornerRounding_Change()
     End If
 End Sub
 
+Private Sub sltCornerRounding_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    Else
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    End If
+End Sub
+
 Private Sub sltPolygonCurvature_Change()
     If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_PolygonCurvature, sltPolygonCurvature.Value
@@ -1097,6 +1214,25 @@ Private Sub sltSelectionBorder_Change(Index As Integer)
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
+End Sub
+
+Private Sub sltSelectionBorder_GotFocusAPI(Index As Integer)
+    If (Index = 0) Then
+        UpdateFlyout 2, True
+    Else
+        'TODO
+    End If
+End Sub
+
+Private Sub sltSelectionBorder_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cboSelArea(0).hWnd
+            Else
+                newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+            End If
+    End Select
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
@@ -1119,6 +1255,14 @@ Public Sub UpdateSelectionPanelLayout()
         sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(SelectionUI.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
     End If
     
+End Sub
+
+Private Sub sltSelectionFeathering_GotFocusAPI()
+    UpdateFlyout 1, True
+End Sub
+
+Private Sub sltSelectionFeathering_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.ttlPanel(1).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
 End Sub
 
 Private Sub sltSmoothStroke_Change()
@@ -1145,6 +1289,10 @@ Private Sub spnOpacity_Change(Index As Integer)
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
+End Sub
+
+Private Sub spnOpacity_GotFocusAPI(Index As Integer)
+    UpdateFlyout 0, True
 End Sub
 
 Private Sub spnOpacity_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -1183,6 +1331,24 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
             Else
                 newTargetHwnd = cboSelRender.hWnd
             End If
+        
+        'Second titlebar: "smoothing"
+        Case 1
+            
+            If shiftTabWasPressed Then
+                If Me.cboSelCombine.Enabled Then newTargetHwnd = Me.cboSelCombine.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+            Else
+                newTargetHwnd = Me.cboSelSmoothing.hWnd
+            End If
+            
+        'Third titlebar: rectangular selections, "size and position"
+        Case 2
+        
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+            Else
+                newTargetHwnd = Me.cboSize(0).hWnd
+            End If
             
     End Select
     
@@ -1191,6 +1357,50 @@ End Sub
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub tudSel_Change(Index As Integer)
     UpdateSelectionsValuesViaText Index
+End Sub
+
+Private Sub tudSel_GotFocusAPI(Index As Integer)
+    If (Index = 0) Or (Index = 1) Then
+        UpdateFlyout 2, True
+    Else
+        'TODO
+    End If
+End Sub
+
+Private Sub tudSel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cboSize(0).hWnd
+            Else
+                If Me.cmdLock(0).Visible Then
+                    newTargetHwnd = Me.cmdLock(0).hWnd
+                Else
+                    newTargetHwnd = Me.tudSel(1).hWnd
+                End If
+            End If
+        
+        Case 1
+            If shiftTabWasPressed Then
+                If Me.cmdLock(0).Visible Then
+                    newTargetHwnd = Me.cmdLock(0).hWnd
+                Else
+                    newTargetHwnd = Me.tudSel(0).hWnd
+                End If
+            Else
+                If Me.cmdLock(1).Visible Then
+                    newTargetHwnd = Me.cmdLock(1).hWnd
+                Else
+                    newTargetHwnd = Me.cboSelArea(0).hWnd
+                End If
+            End If
+        
+        Case 2
+        
+        Case 3
+        
+    End Select
 End Sub
 
 'All text boxes wrap this function.  Note that text box changes are not relayed unless the current selection shape
@@ -1294,14 +1504,6 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     'Clear the synchronization flag before exiting
     m_Flyout.SetFlyoutSyncState False
     
-End Sub
-
-Private Sub tudSel_GotFocusAPI(Index As Integer)
-    If (Index = 0) Or (Index = 1) Then
-        UpdateFlyout 2, True
-    Else
-        'TODO
-    End If
 End Sub
 
 'Some selection flyouts are auto-raised when the user performs a selection action relevant to that flyout.
