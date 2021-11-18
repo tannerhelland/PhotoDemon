@@ -2163,18 +2163,51 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
+    'In Nov 2021 an alternate option was provided for export: lossy optimization a la pngquant, but for
+    ' animated PNGs.  When this setting is TRUE, PD skips automatic heuristics and instead forcibly
+    ' converts the output image to palettized mode (but with PNG's variable alpha support, obviously).
+    '
+    'This option can greatly reduce file size, but obviously it may incur a significant quality penalty
+    ' depending on the input image.  On basic animations that just require variable alpha - like logos or
+    ' anything with simple transparency effects, like drop-shadows - the quality difference will be
+    ' minimal and you can save a ton of space with this setting.  With complex, varied images like
+    ' photo-derived animations or 3D-rendered scenes full of gradients, the quality loss will likely be
+    ' unacceptable.  For this reason, I have currently marked this feature as EXPERIMENTAL and may not
+    ' enable it in production builds pending further testing.
+    '
+    'TODO: create a UI that exposes this setting to users
+    Const ALLOW_LOSSY_APNG_OPTIMIZATION As Boolean = False
+    
+    Dim lossyProgressBarOffset As Long
+    If ALLOW_LOSSY_APNG_OPTIMIZATION Then lossyProgressBarOffset = srcPDImage.GetNumOfLayers Else lossyProgressBarOffset = 0
+    
     'Initialize a progress bar
-    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 3
+    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 3 + lossyProgressBarOffset
     
     'Unlike static PNGs, PD always enforces strict automatic output color model analysis for APNGs.
     ' (This is a necessity for producing optimized APNGs; user settings can't achieve the same results as
     ' automatic heuristics, alas.)  This value must be set early in the save process, as we will use its
     ' results to determine what animation properties we can/can't use.
-    
+    '
     'Note that this stage is fairly time-consuming, as all frames may need to be iterated.
     If (outColorType = png_AutoColorType) Or (outBitsPerChannel = 0) Or (LenB(fullParamString) <> 0) Then
         SetupExportSettings_APNG srcPDImage, outColorType, outBitsPerChannel, fullParamString
         PDDebug.LogAction "Color type: " & outColorType & ", bpc: " & outBitsPerChannel
+    End If
+    
+    If ALLOW_LOSSY_APNG_OPTIMIZATION Then
+    
+        'Lossy optimization is only relevant if the output image intends to use full 32-bpp mode.
+        ' (If the image is already going to use 8-bpp mode, it means the incoming data is 8-bpp
+        '  and a lossy translation is unnecessary.)
+        If ((outColorType = png_Truecolor) Or (outColorType = png_TruecolorAlpha)) And (outBitsPerChannel >= 8) Then
+        
+            'The PNG is going to be 32-bpp.  Generate a master palette for *all* frames (yes *all* frames)
+            ' and store it at module-level, while also setting all relevant flags.
+            SetupExportSettings_APNG_Lossy srcPDImage, outColorType, outBitsPerChannel, fullParamString
+        
+        End If
+    
     End If
     
     'If you want to simplify debugging, you can force all frames to output as full 32-bpp RGBA.
@@ -2365,7 +2398,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     For i = 0 To numFrames
         
         'This stage can be time-consuming, so we provide UI feedback
-        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() + i
+        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() + i + lossyProgressBarOffset
         Message "Optimizing animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         With allFrames(i)
@@ -2729,7 +2762,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     For i = 0 To numFrames
         
         'Again, this step takes time - keep the UI active and relaying updates
-        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() * 2 + i
+        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() * 2 + i + lossyProgressBarOffset
         Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         'Skip all frames marked as duplicates
@@ -4545,6 +4578,52 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
     
     '/End alpha output mode checks
     End If
+    
+End Sub
+
+'New, experimental "lossy" APNG optimization.  This will reduce output frames to 8-bpp (meaning one shared
+' palette for *all* frames) which can greatly reduce file size, but may incur unacceptable quality loss.
+Private Sub SetupExportSettings_APNG_Lossy(ByRef srcPDImage As pdImage, ByRef outColorType As PD_PNGColorType, ByRef outBitsPerChannel As Long, ByRef fullParamString As String)
+    
+    'Before proceeding, forcibly set all meaningful output settings
+    outColorType = png_Indexed
+    
+    '(This may need to change if the user is allowed to set output palette size)
+    outBitsPerChannel = 8
+    
+    'We now want to produce a 255 color palette + 1 transparent index.  (Since the whole point of this
+    ' exercise is to minimize APNG size, we want a transparent index available so pixel blanking is
+    ' available as a size optimization strategy.)
+    
+    'What makes this a little weird is that we need to generate a unique palette across *all* incoming
+    ' frames.  The only way to do this is to sample from each frame!
+    
+    'Because of the performance constraints, we're going to use a median cut algorithm instead of a
+    ' neural network one.  (Random sampling from every input frame could work okay with a neural network,
+    ' but I'd need to write a completely different class interface and I don't want to do that right now.)
+    If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "Analyzing all layers for lossy PNG palettization..."
+    
+    'The palette module can produce a full-image palette for us.
+    Palettes.GetOptimizedPaletteIncAlpha_AllLayers srcPDImage, m_ImgPalette, 256, suppressMessages:=False, modifyProgBarMax:=ProgressBars.GetProgBarMax(), modifyProgBarOffset:=srcPDImage.GetNumOfLayers()
+    
+    m_ImgColorCount = 256
+    m_ImgMaxColorCount = m_ImgColorCount
+    m_ImgPaletteSafe = True
+    
+    'Make sure a tRNS chunk gets written, as the frames themselves require it!
+    m_apngTrnsAvailable = True
+    m_WriteTrns = True
+    
+    'Fill any other module-level values from the param string
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString fullParamString
+    
+    'Background color and chunk creation need to be detected up front, as they must be added to the PNG file
+    ' in a specific order ("After PLTE; before IDAT" per the spec)
+    m_BkgdColor = cParams.GetLong("png-background-color", vbWhite)
+    m_CompositingColor = m_BkgdColor
+    m_EmbedBkgdColor = cParams.GetBool("png-create-bkgd", False)
     
 End Sub
 
