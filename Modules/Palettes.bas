@@ -3,8 +3,9 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Master Palette Interface
 'Copyright 2017-2021 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 21/September/21
-'Last update: wrap up work on new neural-network quantizer
+'Last updated: 18/November/21
+'Last update: new GetOptimizedPaletteIncAlpha_AllLayers() function, which builds a palette across
+'             multiple image layers (used by an experimental lossy APNG encoder)
 '
 'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary
 ' source images, and also applying arbitrary palettes to images.
@@ -743,6 +744,212 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     cPaletteSorter.FindAndRemoveDuplicates
     cPaletteSorter.CopyRGBQuadsToArray dstPalette
     
+End Function
+
+'Given a source pdImage, an (empty) destination palette array, and a color count, return an optimized palette using
+' all source layers from the source pdImage as the reference.  A modified median-cut system is used, and it achieves
+' a nice combination of performance, low memory usage, and high-quality output.
+'
+'Because palette generation is a time-consuming task, I'll probably want to add some element of random sampling to
+' this function (or reduce each layer to some subset of its original size).  There's not a lot of research on the
+' ideal values to use here, so any existing code is based on my best guesses rather than an empirical study.
+Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Failsafe checks
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Do not request less than two colors in the final palette!
+    If (numOfColors < 2) Then numOfColors = 2
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax srcImage.GetNumOfLayers Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    Dim tmpDIB As pdDIB
+    
+    Const MAX_PIXELS_PER_LAYER As Long = 50000
+    
+    'PD has several different tools for generating palettes.  A median-cut approach is fast, even for this
+    ' multi-layer approach.
+    Dim pxStack() As pdMedianCut
+    ReDim pxStack(0 To numOfColors - 1) As pdMedianCut
+    Set pxStack(0) = New pdMedianCut
+    
+    'Note that PD actually supports quite a few different quantization methods.  At present, we use a technique
+    ' that's a good compromise between performance and quality.
+    pxStack(0).SetQuantizeMode quantMode
+    
+    'Add all pixels from every layer to a base color stack
+    Dim i As Long
+    For i = 0 To srcImage.GetNumOfLayers - 1
+    
+        'Limit the size of the source layer to MAX_PIXELS_PER_LAYER
+        If DIBs.ResizeDIBByPixelCount(srcImage.GetLayerByIndex(i).layerDIB, tmpDIB, MAX_PIXELS_PER_LAYER) Then
+        
+            'Wrap an array around the temporary DIB copy
+            tmpDIB.WrapArrayAroundDIB_1D srcPixels, tmpSA
+            
+            Dim numBytes As Long
+            numBytes = tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight
+            
+            Dim r As Long, g As Long, b As Long, a As Long
+            
+            'Load all pixels into the median cut object
+            Dim x As Long
+            For x = 0 To (numBytes - 1) Step 4
+                
+                b = srcPixels(x)
+                g = srcPixels(x + 1)
+                r = srcPixels(x + 2)
+                a = srcPixels(x + 3)
+                
+                'If you want to apply any heuristics to pre-reduce RGBA complexity, this is the place to do it.
+                ' At present, we primarily reduce the complexity of alpha bytes; they tend to not influence
+                ' final image appearance nearly as much as RGB data, so we can pre-filter alpha into set
+                ' groups to minimize how much it impacts color tree complexity.
+                
+                'Reduce very low-opacity values to zero, and note that we must supply premultiplied values
+                ' as RGBA matching works *way* better with premultiplied data
+                If (a < 8) Then
+                    r = 0
+                    g = 0
+                    b = 0
+                    a = 0
+                End If
+                
+                pxStack(0).AddColor_RGBA r, g, b, a
+                
+            Next x
+            
+            'Ensure we safely unwrap the array wrapper from each layer
+            tmpDIB.UnwrapArrayFromDIB srcPixels
+            
+        End If
+    
+        'Update progress bar on each completed layer
+        If (Not suppressMessages) Then
+            If (i And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                ProgressBars.SetProgBarVal i + modifyProgBarOffset
+            End If
+        End If
+        
+    Next i
+    
+    'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
+    If (pxStack(0).GetNumOfColors > numOfColors) Then
+        
+        Dim stackCount As Long
+        stackCount = 1
+        
+        Dim maxVariance As Single, mvIndex As Long
+        Dim rVariance As Single, gVariance As Single, bVariance As Single, aVariance As Single, netVariance As Single
+        
+        'With the initial stack constructed, we can now start partitioning it into smaller stacks based on variance
+        Do
+        
+            'Reset maximum variance (because we need to calculate it anew)
+            maxVariance = 0!
+            
+            'Find the largest total variance in the current stack collection
+            For i = 0 To stackCount - 1
+            
+                pxStack(i).GetVariance_Alpha rVariance, gVariance, bVariance, aVariance
+                
+                netVariance = rVariance + gVariance + bVariance + aVariance
+                If (netVariance > maxVariance) Then
+                    mvIndex = i
+                    maxVariance = netVariance
+                End If
+                
+            Next i
+            
+            'Ask the stack with the largest net variance to split itself in half.  (Note that the stack object
+            ' itself decides which axis is most appropriate for splitting; typically this is the axis - channel -
+            ' with the largest variance.)
+            'Debug.Print "Largest variance was " & maxVariance & ", found in stack #" & mvIndex & " (total stack count is " & stackCount & ")"
+            If (maxVariance > 0!) Then
+                pxStack(mvIndex).SplitIncludingAlpha pxStack(stackCount)
+                stackCount = stackCount + 1
+            
+            'All current stacks only contain a single color, meaning this image contains fewer unique colors
+            ' than the target number of colors the user requested.  That's okay!  Exit now, and use the colors
+            ' we've discovered as the optimal palette.
+            Else
+                numOfColors = stackCount
+                Exit Do
+            End If
+            
+            'If we're still splitting colors, and we're at one less than the target color count,
+            ' stop and look for a fully transparent color in the palette.  We need this for pixel-blanking
+            ' when optimizing animated images, and if we don't have one yet, it's easiest to just manually
+            ' add one now.
+            If (stackCount = numOfColors - 1) Then
+                
+                Dim trnsFound As Boolean: trnsFound = False
+                
+                For x = 0 To stackCount - 1
+                    pxStack(i).GetAverageColorAndAlpha r, g, b, a
+                    If (r = 0) And (g = 0) And (b = 0) And (a = 0) Then
+                        trnsFound = True
+                        Exit For
+                    End If
+                Next x
+                
+                'If we didn't find transparency, add it now.
+                If (Not trnsFound) Then
+                    Set pxStack(stackCount) = New pdMedianCut
+                    pxStack(stackCount).AddColor_RGBA 0, 0, 0, 0
+                    stackCount = stackCount + 1
+                End If
+                
+            End If
+            
+        'Continue splitting stacks until we arrive at the desired number of colors.  (Each stack represents
+        ' one color in the final palette.)
+        Loop While (stackCount < numOfColors)
+        
+        'We now have [numOfColors] unique color stacks.  Each of these represents a set of similar colors.
+        ' Generate a final palette by requesting the weighted average of each stack.  (As an alternate solution,
+        ' you could also request the most "populous" color; this would preserve precise tones from the image,
+        ' but rarely-appearing colors would never influence the final output.  Trade-offs!
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        ReDim dstPalette(0 To numOfColors - 1) As RGBQuad
+        For i = 0 To numOfColors - 1
+            pxStack(i).GetAverageColorAndAlpha newR, newG, newB, newA
+            dstPalette(i).Red = newR
+            dstPalette(i).Green = newG
+            dstPalette(i).Blue = newB
+            dstPalette(i).Alpha = newA
+        Next i
+        
+        GetOptimizedPaletteIncAlpha_AllLayers = True
+        
+    'If there are less than [numOfColors] unique colors in the image, simply copy the existing stack into a palette
+    Else
+        pxStack(0).CopyStackToRGBQuad dstPalette, True
+        GetOptimizedPaletteIncAlpha_AllLayers = True
+    End If
+    
+    'If the palette retrieval process was successful, sort the palette from "least alpha" to "most alpha";
+    ' this typically produces a slightly smaller final file size (as PNG, for example, only requires you to
+    ' write non-255 values to its transparency segment; any unspecified values are assumed to be opaque).
+    ' (Note that this step is not required; a "default order" palette is perfectly valid.)
+    Dim cPaletteSorter As pdPaletteChild
+    Set cPaletteSorter = New pdPaletteChild
+    cPaletteSorter.CreateFromRGBQuads dstPalette
+    cPaletteSorter.SortByChannel 3                  '0 = red, 1 = green, 2 = blue, 3 = alpha
+    
+    'Failsafe; it's fast and easy to remove duplicates, just in case weirdness happened during quantization.
+    ' (This is really only needed if there are less than [requested numOfColors] colors in the image, because
+    ' the "split" step never go ta chance to merge duplicate pixels.)
+    cPaletteSorter.FindAndRemoveDuplicates
+    cPaletteSorter.CopyRGBQuadsToArray dstPalette
     
 End Function
 

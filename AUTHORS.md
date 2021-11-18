@@ -107,6 +107,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Shishi
 * [Steve McMahon](http://www.vbaccelerator.com/home/VB/index.asp)
 * [Tom Loos](http://www.designedbyinstinct.com)
+* [TyraVex](https://github.com/TyraVex)
 * [Vatterspun](https://github.com/vatterspun)
 * [Vladimir Vissoultchev](https://github.com/wqweto)
 * [Will Stampfer](https://github.com/epmatsw)
