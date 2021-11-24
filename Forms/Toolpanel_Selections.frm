@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_Selections
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   6615
+   ClientHeight    =   6855
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   13515
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,18 +24,18 @@ Begin VB.Form toolpanel_Selections
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   441
+   ScaleHeight     =   457
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   901
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboSelSmoothing 
       Height          =   375
-      Left            =   4200
+      Left            =   4320
       TabIndex        =   0
       Top             =   375
-      Width           =   1710
-      _ExtentX        =   3016
+      Width           =   2175
+      _ExtentX        =   3836
       _ExtentY        =   661
       FontSizeCaption =   10
    End
@@ -49,114 +49,10 @@ Begin VB.Form toolpanel_Selections
       _ExtentY        =   661
       FontSizeCaption =   10
    End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   855
-      Index           =   3
-      Left            =   6120
-      Top             =   0
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   1508
-      Begin PhotoDemon.pdDropDown cboSelArea 
-         Height          =   360
-         Index           =   3
-         Left            =   120
-         TabIndex        =   6
-         Top             =   375
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSlider sltSmoothStroke 
-         CausesValidation=   0   'False
-         Height          =   735
-         Left            =   2760
-         TabIndex        =   7
-         Top             =   30
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   1296
-         Caption         =   "stroke smoothing"
-         FontSizeCaption =   10
-         Max             =   1
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdTitle ttlPanel 
-         Height          =   375
-         Index           =   5
-         Left            =   0
-         TabIndex        =   44
-         Top             =   0
-         Width           =   2505
-         _ExtentX        =   4419
-         _ExtentY        =   661
-         Caption         =   "area"
-         Value           =   0   'False
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   1470
-      Index           =   4
-      Left            =   9360
-      Top             =   -120
-      Width           =   9975
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboWandCompare 
-         Height          =   375
-         Left            =   3300
-         TabIndex        =   2
-         Top             =   825
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButtonStrip btsWandArea 
-         Height          =   1185
-         Left            =   120
-         TabIndex        =   3
-         Top             =   30
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   2090
-         Caption         =   "area"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSlider sltWandTolerance 
-         CausesValidation=   0   'False
-         Height          =   675
-         Left            =   3240
-         TabIndex        =   4
-         Top             =   30
-         Width           =   2550
-         _ExtentX        =   4498
-         _ExtentY        =   1191
-         Caption         =   "tolerance"
-         FontSizeCaption =   10
-         Max             =   100
-         SigDigits       =   1
-         ScaleStyle      =   1
-         Value           =   15
-         DefaultValue    =   15
-      End
-      Begin PhotoDemon.pdButtonStrip btsWandMerge 
-         Height          =   1185
-         Left            =   6120
-         TabIndex        =   5
-         Top             =   30
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   2090
-         Caption         =   "sampling area"
-         FontSizeCaption =   10
-      End
-   End
    Begin PhotoDemon.pdDropDown cboSelCombine 
       Height          =   735
-      Left            =   2100
-      TabIndex        =   10
+      Left            =   2160
+      TabIndex        =   7
       Top             =   0
       Width           =   1800
       _ExtentX        =   3175
@@ -169,7 +65,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   375
       Index           =   0
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   0
       Width           =   1890
       _ExtentX        =   3334
@@ -190,7 +86,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   390
          Index           =   1
          Left            =   2160
-         TabIndex        =   12
+         TabIndex        =   9
          Top             =   840
          Width           =   390
          _ExtentX        =   1111
@@ -201,7 +97,7 @@ Begin VB.Form toolpanel_Selections
          CausesValidation=   0   'False
          Height          =   765
          Left            =   150
-         TabIndex        =   20
+         TabIndex        =   17
          Top             =   0
          Visible         =   0   'False
          Width           =   2415
@@ -236,7 +132,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   390
          Index           =   0
          Left            =   2070
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   540
          Width           =   390
          _ExtentX        =   1111
@@ -247,7 +143,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   375
          Index           =   0
          Left            =   1335
-         TabIndex        =   15
+         TabIndex        =   12
          Top             =   120
          Width           =   1125
          _ExtentX        =   1931
@@ -261,7 +157,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   330
          Index           =   0
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   13
          Top             =   120
          Width           =   1140
          _ExtentX        =   2011
@@ -271,7 +167,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   375
          Index           =   1
          Left            =   1335
-         TabIndex        =   17
+         TabIndex        =   14
          Top             =   120
          Width           =   1125
          _ExtentX        =   1931
@@ -285,7 +181,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   330
          Index           =   1
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   15
          Top             =   120
          Width           =   1140
          _ExtentX        =   2011
@@ -304,20 +200,20 @@ Begin VB.Form toolpanel_Selections
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1695
+      Height          =   2535
       Index           =   2
-      Left            =   6000
-      Top             =   1560
+      Left            =   6120
+      Top             =   960
       Visible         =   0   'False
       Width           =   3375
       _ExtentX        =   5953
-      _ExtentY        =   2990
+      _ExtentY        =   4471
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
          Left            =   2880
-         TabIndex        =   14
-         Top             =   1200
+         TabIndex        =   11
+         Top             =   2040
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -327,7 +223,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   0
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   18
          Top             =   420
          Width           =   2655
          _ExtentX        =   4683
@@ -339,11 +235,11 @@ Begin VB.Form toolpanel_Selections
          CausesValidation=   0   'False
          Height          =   405
          Index           =   0
-         Left            =   180
-         TabIndex        =   22
+         Left            =   120
+         TabIndex        =   19
          Top             =   1200
-         Width           =   2520
-         _ExtentX        =   4445
+         Width           =   2640
+         _ExtentX        =   4657
          _ExtentY        =   714
          Min             =   1
          Max             =   1000
@@ -368,6 +264,44 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   1
          Left            =   2895
+         TabIndex        =   21
+         Top             =   0
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   635
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdSpinner tudSel 
+         Height          =   345
+         Index           =   0
+         Left            =   240
+         TabIndex        =   22
+         Top             =   15
+         Width           =   1080
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdSpinner tudSel 
+         Height          =   345
+         Index           =   1
+         Left            =   1815
+         TabIndex        =   23
+         Top             =   15
+         Width           =   1080
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLock 
+         Height          =   360
+         Index           =   0
+         Left            =   1335
          TabIndex        =   24
          Top             =   0
          Width           =   375
@@ -376,53 +310,29 @@ Begin VB.Form toolpanel_Selections
          DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
       End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   0
-         Left            =   240
-         TabIndex        =   25
-         Top             =   15
-         Width           =   1080
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   1
-         Left            =   1815
-         TabIndex        =   26
-         Top             =   15
-         Width           =   1080
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLock 
-         Height          =   360
-         Index           =   0
-         Left            =   1335
-         TabIndex        =   27
-         Top             =   0
-         Width           =   375
-         _ExtentX        =   661
-         _ExtentY        =   635
-         DontHighlightDownState=   -1  'True
-         StickyToggle    =   -1  'True
+      Begin PhotoDemon.pdSlider sltCornerRounding 
+         CausesValidation=   0   'False
+         Height          =   735
+         Left            =   120
+         TabIndex        =   46
+         Top             =   1680
+         Width           =   2655
+         _ExtentX        =   4683
+         _ExtentY        =   1296
+         Caption         =   "round corners"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
       End
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   1
-      Left            =   4080
-      TabIndex        =   19
+      Left            =   4200
+      TabIndex        =   16
       Top             =   0
-      Width           =   1830
-      _ExtentX        =   3228
+      Width           =   2295
+      _ExtentX        =   4048
       _ExtentY        =   661
       Caption         =   "smoothing"
       Value           =   0   'False
@@ -430,8 +340,8 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   1695
       Index           =   3
-      Left            =   6000
-      Top             =   3360
+      Left            =   6120
+      Top             =   3600
       Visible         =   0   'False
       Width           =   3375
       _ExtentX        =   5953
@@ -440,7 +350,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   390
          Index           =   3
          Left            =   2880
-         TabIndex        =   29
+         TabIndex        =   25
          Top             =   1200
          Width           =   390
          _ExtentX        =   1111
@@ -451,7 +361,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   1
          Left            =   120
-         TabIndex        =   30
+         TabIndex        =   26
          Top             =   420
          Width           =   2655
          _ExtentX        =   4683
@@ -464,7 +374,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   405
          Index           =   1
          Left            =   180
-         TabIndex        =   31
+         TabIndex        =   27
          Top             =   1200
          Width           =   2520
          _ExtentX        =   4445
@@ -492,7 +402,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   3
          Left            =   2895
-         TabIndex        =   32
+         TabIndex        =   28
          Top             =   0
          Width           =   375
          _ExtentX        =   661
@@ -504,7 +414,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   345
          Index           =   2
          Left            =   240
-         TabIndex        =   33
+         TabIndex        =   29
          Top             =   15
          Width           =   1080
          _ExtentX        =   2328
@@ -517,7 +427,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   345
          Index           =   3
          Left            =   1815
-         TabIndex        =   34
+         TabIndex        =   30
          Top             =   15
          Width           =   1080
          _ExtentX        =   2328
@@ -530,91 +440,13 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   2
          Left            =   1335
-         TabIndex        =   35
+         TabIndex        =   31
          Top             =   0
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
          DontHighlightDownState=   -1  'True
          StickyToggle    =   -1  'True
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   855
-      Index           =   1
-      Left            =   6120
-      Top             =   0
-      Width           =   6495
-      _ExtentX        =   11456
-      _ExtentY        =   1508
-      Begin PhotoDemon.pdDropDown cboSize 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   36
-         Top             =   375
-         Width           =   2385
-         _ExtentX        =   4207
-         _ExtentY        =   661
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdTitle ttlPanel 
-         Height          =   375
-         Index           =   3
-         Left            =   0
-         TabIndex        =   37
-         Top             =   0
-         Width           =   2505
-         _ExtentX        =   4419
-         _ExtentY        =   661
-         Caption         =   "dimensions"
-         Value           =   0   'False
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   855
-      Index           =   0
-      Left            =   6120
-      Top             =   0
-      Width           =   6495
-      _ExtentX        =   11456
-      _ExtentY        =   1508
-      Begin PhotoDemon.pdDropDown cboSize 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   375
-         Width           =   2385
-         _ExtentX        =   4207
-         _ExtentY        =   661
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdTitle ttlPanel 
-         Height          =   375
-         Index           =   2
-         Left            =   0
-         TabIndex        =   23
-         Top             =   0
-         Width           =   2505
-         _ExtentX        =   4419
-         _ExtentY        =   661
-         Caption         =   "dimensions"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdSlider sltCornerRounding 
-         CausesValidation=   0   'False
-         Height          =   735
-         Left            =   2760
-         TabIndex        =   28
-         Top             =   0
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   1296
-         Caption         =   "round corners"
-         FontSizeCaption =   10
-         Max             =   100
-         SigDigits       =   1
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -630,7 +462,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   390
          Index           =   4
          Left            =   2880
-         TabIndex        =   39
+         TabIndex        =   35
          Top             =   780
          Width           =   390
          _ExtentX        =   1111
@@ -641,7 +473,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   2
          Left            =   120
-         TabIndex        =   40
+         TabIndex        =   36
          Top             =   0
          Width           =   2655
          _ExtentX        =   4683
@@ -654,7 +486,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   405
          Index           =   2
          Left            =   180
-         TabIndex        =   41
+         TabIndex        =   37
          Top             =   780
          Width           =   2520
          _ExtentX        =   4445
@@ -679,7 +511,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   390
          Index           =   5
          Left            =   2880
-         TabIndex        =   42
+         TabIndex        =   38
          Top             =   0
          Width           =   390
          _ExtentX        =   1111
@@ -691,7 +523,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   405
          Index           =   3
          Left            =   180
-         TabIndex        =   43
+         TabIndex        =   39
          Top             =   0
          Width           =   2520
          _ExtentX        =   4445
@@ -714,22 +546,224 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "(no additional options)"
       End
    End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   3015
+      Index           =   6
+      Left            =   9720
+      Top             =   3480
+      Visible         =   0   'False
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   5318
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   6
+         Left            =   3120
+         TabIndex        =   41
+         Top             =   2520
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdDropDown cboWandCompare 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   42
+         Top             =   30
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1296
+         Caption         =   "compare pixels by"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonStrip btsWandArea 
+         Height          =   930
+         Left            =   120
+         TabIndex        =   43
+         Top             =   870
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1640
+         Caption         =   "mode"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonStrip btsWandMerge 
+         Height          =   930
+         Left            =   120
+         TabIndex        =   45
+         Top             =   1890
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1640
+         Caption         =   "sample from"
+         FontSizeCaption =   10
+      End
+   End
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
+      Height          =   855
+      Index           =   4
+      Left            =   6780
+      Top             =   0
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1508
+      Begin PhotoDemon.pdSlider sltWandTolerance 
+         CausesValidation=   0   'False
+         Height          =   420
+         Left            =   120
+         TabIndex        =   2
+         Top             =   375
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   741
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+         Value           =   15
+         DefaultValue    =   15
+      End
+      Begin PhotoDemon.pdTitle ttlPanel 
+         Height          =   375
+         Index           =   6
+         Left            =   0
+         TabIndex        =   44
+         Top             =   0
+         Width           =   2505
+         _ExtentX        =   4419
+         _ExtentY        =   661
+         Caption         =   "tolerance"
+         Value           =   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
+      Height          =   855
+      Index           =   3
+      Left            =   6780
+      Top             =   0
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1508
+      Begin PhotoDemon.pdDropDown cboSelArea 
+         Height          =   360
+         Index           =   3
+         Left            =   120
+         TabIndex        =   3
+         Top             =   375
+         Width           =   2385
+         _ExtentX        =   4207
+         _ExtentY        =   635
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdSlider sltSmoothStroke 
+         CausesValidation=   0   'False
+         Height          =   735
+         Left            =   2760
+         TabIndex        =   4
+         Top             =   30
+         Visible         =   0   'False
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   1296
+         Caption         =   "stroke smoothing"
+         FontSizeCaption =   10
+         Max             =   1
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdTitle ttlPanel 
+         Height          =   375
+         Index           =   5
+         Left            =   0
+         TabIndex        =   40
+         Top             =   0
+         Width           =   2505
+         _ExtentX        =   4419
+         _ExtentY        =   661
+         Caption         =   "area"
+         Value           =   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
+      Height          =   855
+      Index           =   1
+      Left            =   6780
+      Top             =   0
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1508
+      Begin PhotoDemon.pdDropDown cboSize 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   32
+         Top             =   375
+         Width           =   2385
+         _ExtentX        =   4207
+         _ExtentY        =   661
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdTitle ttlPanel 
+         Height          =   375
+         Index           =   3
+         Left            =   0
+         TabIndex        =   33
+         Top             =   0
+         Width           =   2505
+         _ExtentX        =   4419
+         _ExtentY        =   661
+         Caption         =   "dimensions"
+         Value           =   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
+      Height          =   855
+      Index           =   0
+      Left            =   6780
+      Top             =   0
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1508
+      Begin PhotoDemon.pdDropDown cboSize 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   6
+         Top             =   375
+         Width           =   2385
+         _ExtentX        =   4207
+         _ExtentY        =   661
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdTitle ttlPanel 
+         Height          =   375
+         Index           =   2
+         Left            =   0
+         TabIndex        =   20
+         Top             =   0
+         Width           =   2505
+         _ExtentX        =   4419
+         _ExtentY        =   661
+         Caption         =   "dimensions"
+         Value           =   0   'False
+      End
+   End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   855
       Index           =   2
-      Left            =   6120
+      Left            =   6780
       Top             =   0
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   6495
+      _ExtentX        =   11456
       _ExtentY        =   1508
       Begin PhotoDemon.pdSlider sltPolygonCurvature 
          CausesValidation=   0   'False
          Height          =   375
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   5
          Top             =   375
-         Width           =   2385
-         _ExtentX        =   4207
+         Width           =   2415
+         _ExtentX        =   4260
          _ExtentY        =   661
          FontSizeCaption =   10
          Max             =   1
@@ -739,7 +773,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   375
          Index           =   4
          Left            =   0
-         TabIndex        =   38
+         TabIndex        =   34
          Top             =   0
          Width           =   2505
          _ExtentX        =   4419
@@ -758,8 +792,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 18/November/21
-'Last update: continued work on new flyout panel design
+'Last updated: 24/November/21
+'Last update: finish migrating all selection toolpanels to new flyout panel UI
 '
 'This form includes all user-editable settings for PD's various selection tools.
 ' Yes, all selection tools share a single options panel.  (This decision was made
@@ -773,9 +807,9 @@ Attribute VB_Exposed = False
 ' constantly within a single panel).
 '
 'As such, the bulk of this dialog's code now deals specifically with UI handling.
-' In particular flyouts need to behave nicely, and tab order must always work
+' Flyouts in particular need to behave nicely, and tab order must always work
 ' intuitively regardless of flyout panel state.  I think the current result is
-' highly useable, but there's a lot of code to make that so!
+' highly useable, but a lot of code is necessary to make that work!
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -802,6 +836,18 @@ Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
 End Sub
 
+Private Sub btsWandArea_GotFocusAPI()
+    UpdateFlyout 6, True
+End Sub
+
+Private Sub btsWandArea_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboWandCompare.hWnd
+    Else
+        newTargetHwnd = Me.btsWandMerge.hWnd
+    End If
+End Sub
+
 Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
@@ -810,6 +856,18 @@ Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 
+End Sub
+
+Private Sub btsWandMerge_GotFocusAPI()
+    UpdateFlyout 6, True
+End Sub
+
+Private Sub btsWandMerge_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsWandArea.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(6).hWnd
+    End If
 End Sub
 
 Private Sub cboSelArea_Click(Index As Integer)
@@ -832,17 +890,7 @@ Private Sub cboSelArea_Click(Index As Integer)
 End Sub
 
 Private Sub cboSelArea_GotFocusAPI(Index As Integer)
-    If (Index = 0) Then
-        UpdateFlyout 2, True
-    ElseIf (Index = 1) Then
-        UpdateFlyout 3, True
-    ElseIf (Index = 2) Then
-        UpdateFlyout 4, True
-    ElseIf (Index = 3) Then
-        UpdateFlyout 5, True
-    Else
-        'TODO
-    End If
+    UpdateFlyout Index + 2, True
 End Sub
 
 Private Sub cboSelArea_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -859,7 +907,15 @@ Private Sub cboSelArea_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPre
                     End If
                 End If
             Else
-                If Me.sltSelectionBorder(Index).Visible Then newTargetHwnd = Me.sltSelectionBorder(Index).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
+                If Me.sltSelectionBorder(Index).Visible Then
+                    newTargetHwnd = Me.sltSelectionBorder(Index).hWnd
+                Else
+                    If (Index = 0) Then
+                        newTargetHwnd = Me.sltCornerRounding.hWndSlider
+                    Else
+                        newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
+                    End If
+                End If
             End If
         Case 2
             If shiftTabWasPressed Then
@@ -873,7 +929,6 @@ Private Sub cboSelArea_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPre
             Else
                 If Me.sltSelectionBorder(Index).Visible Then newTargetHwnd = Me.sltSelectionBorder(Index).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
             End If
-        'TODO
     End Select
 End Sub
 
@@ -1005,6 +1060,18 @@ Private Sub cboWandCompare_Click()
     
 End Sub
 
+Private Sub cboWandCompare_GotFocusAPI()
+    UpdateFlyout 6, True
+End Sub
+
+Private Sub cboWandCompare_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltWandTolerance.hWndSpinner
+    Else
+        newTargetHwnd = Me.btsWandArea.hWnd
+    End If
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then
         m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
@@ -1055,19 +1122,17 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
                     newTargetHwnd = Me.ttlPanel(4).hWnd
                 ElseIf (g_CurrentTool = SELECT_LASSO) Then
                     newTargetHwnd = Me.ttlPanel(5).hWnd
+                ElseIf (g_CurrentTool = SELECT_WAND) Then
+                    newTargetHwnd = Me.ttlPanel(6).hWnd
                 End If
                 
             End If
             
         Case 2
             If shiftTabWasPressed Then
-                If Me.sltSelectionBorder(0).Visible Then
-                    newTargetHwnd = Me.sltSelectionBorder(0).hWnd
-                Else
-                    newTargetHwnd = Me.cboSelArea(0).hWnd
-                End If
+                newTargetHwnd = Me.sltCornerRounding.hWndSpinner
             Else
-                newTargetHwnd = Me.sltCornerRounding.hWnd
+                newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
             
         Case 3
@@ -1099,6 +1164,13 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
                 Else
                     newTargetHwnd = Me.cboSelArea(3).hWnd
                 End If
+            Else
+                newTargetHwnd = Me.ttlPanel(0).hWnd
+            End If
+            
+        Case 6
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.btsWandMerge.hWnd
             Else
                 newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
@@ -1357,11 +1429,19 @@ Private Sub sltCornerRounding_Change()
     End If
 End Sub
 
+Private Sub sltCornerRounding_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub sltCornerRounding_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+        If Me.sltSelectionBorder(0).Visible Then
+            newTargetHwnd = Me.sltSelectionBorder(0).hWndSpinner
+        Else
+            newTargetHwnd = Me.cboSelArea(0).hWnd
+        End If
     Else
-        newTargetHwnd = Me.ttlPanel(0).hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
     End If
 End Sub
 
@@ -1392,30 +1472,19 @@ Private Sub sltSelectionBorder_Change(Index As Integer)
 End Sub
 
 Private Sub sltSelectionBorder_GotFocusAPI(Index As Integer)
-    If (Index = 0) Then
-        UpdateFlyout 2, True
-    ElseIf (Index = 1) Then
-        UpdateFlyout 3, True
-    ElseIf (Index = 2) Then
-        UpdateFlyout 4, True
-    ElseIf (Index = 3) Then
-        UpdateFlyout 5, True
-    Else
-        'TODO
-    End If
+    UpdateFlyout Index + 2, True
 End Sub
 
 Private Sub sltSelectionBorder_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    Select Case Index
-        Case 0, 1, 2, 3
-            If shiftTabWasPressed Then
-                newTargetHwnd = Me.cboSelArea(Index).hWnd
-            Else
-                newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
-            End If
-        Case Else
-            'TODO
-    End Select
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboSelArea(Index).hWnd
+    Else
+        If (Index = 0) Then
+            newTargetHwnd = Me.sltCornerRounding.hWndSlider
+        Else
+            newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
+        End If
+    End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
@@ -1430,7 +1499,7 @@ Private Sub sltSelectionFeathering_GotFocusAPI()
 End Sub
 
 Private Sub sltSelectionFeathering_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.ttlPanel(1).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    If shiftTabWasPressed Then newTargetHwnd = Me.cboSelSmoothing.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
 End Sub
 
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
@@ -1460,6 +1529,18 @@ Private Sub sltWandTolerance_Change()
     If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandTolerance, sltWandTolerance.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
+End Sub
+
+Private Sub sltWandTolerance_GotFocusAPI()
+    UpdateFlyout 6, True
+End Sub
+
+Private Sub sltWandTolerance_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(6).hWnd
+    Else
+        newTargetHwnd = Me.cboWandCompare.hWnd
     End If
 End Sub
 
@@ -1506,15 +1587,15 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
                 
                 'Target hWnd varies by current subtool panel
                 If (g_CurrentTool = SELECT_RECT) Then
-                    newTargetHwnd = Me.sltCornerRounding.hWndSpinner
+                    newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
                 ElseIf (g_CurrentTool = SELECT_CIRC) Then
                     newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
                 ElseIf (g_CurrentTool = SELECT_POLYGON) Then
                     newTargetHwnd = Me.cmdFlyoutLock(4).hWnd
                 ElseIf (g_CurrentTool = SELECT_LASSO) Then
                     newTargetHwnd = Me.cmdFlyoutLock(5).hWnd
-                Else
-                    'TODO
+                ElseIf (g_CurrentTool = SELECT_WAND) Then
+                    newTargetHwnd = Me.cmdFlyoutLock(6).hWnd
                 End If
                 
             Else
@@ -1559,6 +1640,14 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
                 newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
             Else
                 newTargetHwnd = Me.cboSelArea(3).hWnd
+            End If
+            
+        '7th titlebar: wand selections, "tolerance"
+        Case 6
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+            Else
+                newTargetHwnd = Me.sltWandTolerance.hWndSlider
             End If
             
     End Select
@@ -1807,6 +1896,8 @@ Public Sub RequestDefaultFlyout(Optional ByVal selectionBeingCreated As Boolean 
     ElseIf (g_CurrentTool = SELECT_POLYGON) Then
         'Flyout is not relevant here
     ElseIf (g_CurrentTool = SELECT_LASSO) Then
+        'Flyout is not relevant here
+    ElseIf (g_CurrentTool = SELECT_WAND) Then
         'Flyout is not relevant here
     End If
     
