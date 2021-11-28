@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2021-2021 by Tanner Helland
 'Created: 01/November/21
-'Last updated: 11/November/21
-'Last update: continue improving positioning behavior across tools
+'Last updated: 28/November/21
+'Last update: add basic support for flyout animation
 '
 'Controller for flyout panels from PD's (many) toolboxes.
 '
@@ -45,10 +45,18 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'I haven't entirely made up my mind on whether to animate flyouts or not.  AnimateWindow increases
+' testing burden significantly since it has quirks on various OSes going back to XP... but it also
+' makes flyouts look better.  I could of course mimic it manually, but ehhh that's a lot of work.
+' TODO: make a final decision before 9.0 releases
+Private Const ANIMATE_FLYOUTS As Boolean = True
+Private Const ANIMATE_TIME_IN_MS As Long = 100&
+
 Public Event FlyoutClosed(ByRef origTriggerObject As Control)
 
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can
 ' position things correctly in the screen's coordinate space (even on high-DPI displays)
+Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
@@ -62,9 +70,10 @@ Private Const WS_EX_TOOLWINDOW As Long = &H80&
 Private Const WS_EX_WINDOWEDGE As Long = &H100&
 Private Const WS_EX_TOPMOST As Long = &H8&
 Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
-Private Const SWP_SHOWWINDOW As Long = &H40
-Private Const SWP_NOACTIVATE As Long = &H10
-Private Const SWP_FRAMECHANGED As Long = &H20
+Private Const SWP_HIDEWINDOW As Long = &H80&
+Private Const SWP_SHOWWINDOW As Long = &H40&
+Private Const SWP_NOACTIVATE As Long = &H10&
+Private Const SWP_FRAMECHANGED As Long = &H20&
 
 'When a flyout is visible, this is set to TRUE.
 Private m_flyoutVisible As Boolean
@@ -157,11 +166,16 @@ Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
         'Notify the master UserControl tracker that our flyout is now inactive.
         UserControls.NotifyFlyoutChangeState m_ParentHWnd, m_flyoutHWnd, Me, False
         
+        If ANIMATE_FLYOUTS Then
+            AnimateWindow m_flyoutHWnd, ANIMATE_TIME_IN_MS, AW_HIDE Or AW_VER_NEGATIVE
+        Else
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, False
+        End If
+        
         m_flyoutVisible = False
         SetParent m_flyoutHWnd, m_ParentHWnd
         If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , , True
         If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_flyoutHWnd, m_OriginalWindowBits, , True, True
-        g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, False
         
         'Reset any internal trackers
         m_flyoutHWnd = 0
@@ -229,7 +243,10 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     ' tool options panel - but left/right positioning needs to ensure it lies inside the canvas area,
     ' and *not* over neighboring toolboxes (if any).
     If (flyoutRect.Left < 0) Then flyoutRect.Left = 0
-    If (flyoutRect.Right > ownerFormRect.Right) Then flyoutRect.Left = flyoutRect.Left - (flyoutRect.Right - ownerFormRect.Right)
+    If (flyoutRect.Right > ownerFormRect.Right) Then
+        flyoutRect.Left = ownerFormRect.Right - flyoutPanel.GetWidth()
+        flyoutRect.Right = ownerFormRect.Right
+    End If
     
     'The flyout is now ready to go.  The first time we raise the flyout, we want to cache its current
     ' window longs as whatever VB has set.  (These need to be restored when we hide the flyout, or VB
@@ -267,10 +284,17 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     ' relative to parent client area).
     MapWindowPoints GetDesktopWindow(), FormMain.hWnd, VarPtr(flyoutRect), 2
     
-    'Now we can show the flyout; we also need to notify it of changed window style bits.
+    'Move the window into position and notify it of changed window style bits.
     With flyoutRect
-        SetWindowPos m_flyoutHWnd, 0&, .Left, .Top, .Right - .Left, .Bottom - .Top, SWP_SHOWWINDOW Or SWP_FRAMECHANGED
+        SetWindowPos m_flyoutHWnd, 0&, .Left, .Top, .Right - .Left, .Bottom - .Top, SWP_HIDEWINDOW Or SWP_FRAMECHANGED
     End With
+    
+    'Depending on animation state, display the window
+    If ANIMATE_FLYOUTS Then
+        AnimateWindow m_flyoutHWnd, ANIMATE_TIME_IN_MS, AW_ACTIVATE Or AW_VER_POSITIVE
+    Else
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetVisibilityByHWnd m_flyoutHWnd, True, True
+    End If
     
     'One last thing: because this is a (fairly? mostly? extremely?) hackish way to produce a flyout panel,
     ' we need to cover the case where the user selects outside the flyout panel, but *not* on an object

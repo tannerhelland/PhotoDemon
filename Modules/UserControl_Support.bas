@@ -175,7 +175,23 @@ End Enum
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
-Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Public Enum AnimateWindowFlags
+    AW_ACTIVATE = &H20000   'Activates the window. Do not use this value with AW_HIDE.
+    AW_BLEND = &H80000      'Uses a fade effect. This flag can be used only if hwnd is a top-level window.
+    AW_CENTER = &H10&       'Makes the window appear to collapse inward if AW_HIDE is used or expand outward if the AW_HIDE is not used. The various direction flags have no effect.
+    AW_HIDE = &H10000       'Hides the window. By default, the window is shown.
+    AW_HOR_POSITIVE = &H1&  'Animates the window from left to right. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_HOR_NEGATIVE = &H2&  'Animates the window from right to left. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_SLIDE = &H40000      'Uses slide animation. By default, roll animation is used. This flag is ignored when used with AW_CENTER.
+    AW_VER_POSITIVE = &H4&  'Animates the window from top to bottom. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_VER_NEGATIVE = &H8&  'Animates the window from bottom to top. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+End Enum
+
+#If False Then
+    Private Const AW_ACTIVATE = &H20000, AW_BLEND = &H80000, AW_CENTER = &H10&, AW_HIDE = &H10000, AW_HOR_POSITIVE = &H1&, AW_HOR_NEGATIVE = &H2&, AW_SLIDE = &H40000, AW_VER_POSITIVE = &H4&, AW_VER_NEGATIVE = &H8&
+#End If
+
+Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal uCmd As Win32_GetWindowCmd) As Long
@@ -221,8 +237,7 @@ Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
 Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
 Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
-Private Const AW_BLEND As Long = &H80000
-Private Const AW_HIDE As Long = &H10000
+
 Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_NOMOVE As Long = &H2
