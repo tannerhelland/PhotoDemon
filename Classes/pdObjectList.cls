@@ -89,11 +89,11 @@ Private Const WM_SIZE As Long = &H5
 'We may not need to use a custom type for this - an hWnd may ultimately be enough - but during debugging,
 ' it's nice to store some extra bits of information
 Private Type PD_Control
-    hWnd As Long
-    ctlRectLoadTime As winRect
-    ctlName As String
-    ctlType As PD_ControlType
-    ctlCanGetFocus As Boolean
+    hWnd As Long                'Actual control hWnd
+    ctlRectLoadTime As winRect  'The control's rectangle *when it was loaded* (used to auto-calculate tab order)
+    ctlName As String           'Control name (helpful for debugging)
+    ctlType As PD_ControlType   'Internal PD user control enum
+    ctlCanGetFocus As Boolean   'Some controls register here but do *not* receive focus; we skip them when assigning tab order
 End Type
 
 Private m_Controls() As PD_Control

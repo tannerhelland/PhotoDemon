@@ -38,6 +38,43 @@ Private Const INIT_NUM_OF_FORMS As Long = 8
 Private m_Forms() As pdObjectList
 Private m_NumOfForms As Long, m_LastForm As Long
 
+'After calling NotifyFormLoading(), above, you can proceed to notify us of all child controls.
+Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFormhWnd As Long = 0, Optional ByVal canReceiveFocus As Boolean = True)
+    
+    'If no parent window handle is specified, assume the last form
+    If (hostFormhWnd = 0) Then
+        If (Not m_Forms(m_LastForm) Is Nothing) Then m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
+    
+    'The caller specified a parent window handle.  Find a matching object before continuing.
+    Else
+        
+        'Failsafe checks follow
+        If (m_NumOfForms > 0) And (m_LastForm < UBound(m_Forms)) Then
+            If (Not m_Forms(m_LastForm) Is Nothing) Then
+                
+                If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
+                    m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
+                Else
+                
+                    Dim i As Long
+                    For i = 0 To m_NumOfForms - 1
+                        If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
+                            m_Forms(i).NotifyChildControl childObject, canReceiveFocus
+                            Exit For
+                        End If
+                    Next i
+                
+                End If
+            
+            '/failsafe check for m_Forms(m_LastForm) Is Nothing
+            End If
+        '/failsafe check for form index exists in form array
+        End If
+    
+    End If
+    
+End Sub
+
 'Before loading individual controls, notify this module of the parent form preceding the loop.  (This improves
 ' performance because we don't have to look-up the form in our table for subsequent calls.)
 Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
@@ -132,45 +169,7 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
         End If
         
     End If
-    
 
-End Sub
-
-'After calling NotifyFormLoading(), above, you can proceed to notify us of all child controls.
-Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFormhWnd As Long = 0, Optional ByVal canReceiveFocus As Boolean = True)
-    
-    'If no parent window handle is specified, assume the last form
-    If (hostFormhWnd = 0) Then
-        If (Not m_Forms(m_LastForm) Is Nothing) Then m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
-    
-    'The caller specified a parent window handle.  Find a matching object before continuing.
-    Else
-        
-        'Failsafe checks follow
-        If (m_NumOfForms > 0) And (m_LastForm < UBound(m_Forms)) Then
-            If (Not m_Forms(m_LastForm) Is Nothing) Then
-                
-                If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
-                    m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
-                Else
-                
-                    Dim i As Long
-                    For i = 0 To m_NumOfForms - 1
-                        If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
-                            m_Forms(i).NotifyChildControl childObject, canReceiveFocus
-                            Exit For
-                        End If
-                    Next i
-                
-                End If
-            
-            '/failsafe check for m_Forms(m_LastForm) Is Nothing
-            End If
-        '/failsafe check for form index exists in form array
-        End If
-    
-    End If
-    
 End Sub
 
 'When a PD control receives a "navigation" keypress (Enter, Esc, Tab), relay it to this function to activate
@@ -180,45 +179,16 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
     
     NotifyNavKeypress = False
     
-    Dim formIndex As Long, childHwnd As Long
-    formIndex = -1
-    childHwnd = childObject.hWnd
+    Dim childHWnd As Long
+    childHWnd = childObject.hWnd
     
-    Dim targetHWnd As Long
-    
-    'First, search the LastForm object for a hit.  (In most cases, that form will be the currently active form,
-    ' and it shortcuts the search process to go there first.)
-    If (m_LastForm <> 0) Then
-        If (Not m_Forms(m_LastForm) Is Nothing) Then
-            If m_Forms(m_LastForm).DoesHWndExist(childHwnd) Then formIndex = m_LastForm
-        End If
-    End If
-    
-    'If we didn't find the hWnd in our last-activated form, try other forms until we get a hit
-    If (formIndex = -1) Then
-        
-        Dim i As Long
-        For i = 0 To m_NumOfForms - 1
-        
-            'Normally, we would never expect to encounter a null entry here, but as a failsafe against forms
-            ' unloading incorrectly (especially if we ever implement plugins), check for null objects
-            If (Not m_Forms(i) Is Nothing) Then
-            
-                'While we're here, update m_LastForm to match - it may improve performance on subsequent matches
-                If m_Forms(i).DoesHWndExist(childHwnd) Then
-                    formIndex = i
-                    m_LastForm = formIndex
-                    Exit For
-                End If
-                
-            End If
-            
-        Next i
-        
-    End If
+    Dim formIndex As Long
+    formIndex = GetFormIndex(childHWnd)
     
     'It should be physically impossible to *not* have a form index by now, but better safe than sorry.
     If (formIndex >= 0) Then
+        
+        Dim targetHWnd As Long
         
         'For Enter and Esc keypresses, we want to see if the target form contains a command bar.  If it does,
         ' we'll directly invoke the appropriate keypress.
@@ -252,7 +222,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         'The only other supported key (at this point) is TAB.  Tab keypresses are handled by the object list;
         ' it's responsible for figuring out which control is next in order.
         Else
-            m_Forms(formIndex).NotifyTabKey childHwnd, ((Shift And vbShiftMask) <> 0)
+            m_Forms(formIndex).NotifyTabKey childHWnd, ((Shift And vbShiftMask) <> 0)
             NotifyNavKeypress = True
         End If
         
@@ -262,3 +232,41 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
 
 End Function
 
+Private Function GetFormIndex(ByVal childHWnd As Long) As Long
+
+    GetFormIndex = -1
+    
+    Dim targetHWnd As Long
+    
+    'First, search the LastForm object for a hit.  (In most cases, that form will be the currently active form,
+    ' and it shortcuts the search process to go there first.)
+    If (m_LastForm <> 0) Then
+        If (Not m_Forms(m_LastForm) Is Nothing) Then
+            If m_Forms(m_LastForm).DoesHWndExist(childHWnd) Then GetFormIndex = m_LastForm
+        End If
+    End If
+    
+    'If we didn't find the hWnd in our last-activated form, try other forms until we get a hit
+    If (GetFormIndex < 0) Then
+        
+        Dim i As Long
+        For i = 0 To m_NumOfForms - 1
+        
+            'Normally, we would never expect to encounter a null entry here, but as a failsafe against forms
+            ' unloading incorrectly (especially if we ever implement plugins), check for null objects
+            If (Not m_Forms(i) Is Nothing) Then
+            
+                'While we're here, update m_LastForm to match - it may improve performance on subsequent matches
+                If m_Forms(i).DoesHWndExist(childHWnd) Then
+                    GetFormIndex = i
+                    m_LastForm = GetFormIndex
+                    Exit For
+                End If
+                
+            End If
+            
+        Next i
+        
+    End If
+    
+End Function

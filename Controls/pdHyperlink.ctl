@@ -71,6 +71,7 @@ Public Event Click()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'Rather than handle autosize and wordwrap separately, this control combines them into a single "Layout" property.
 ' All four possible layout approaches are covered by this enum.
@@ -325,6 +326,36 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    markEventHandled = False
+    
+    'When space is pressed, raise a click event.
+    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
+        
+        If Me.Enabled Then
+            
+            'If the user wants click events, raise one now
+            If m_RaiseClickEvents Then
+                RaiseEvent Click
+            
+            'In its default configuration, URLs are shelled automatically
+            Else
+                If (LenB(m_URL) <> 0) Then Web.OpenURL m_URL
+            End If
+            
+            markEventHandled = True
+            
+        End If
+        
+    End If
+    
+End Sub
+
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
     
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
@@ -332,6 +363,10 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     ' accepted the keypress, meaning we should forward the event down the line.)
     markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -349,13 +384,19 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
+End Sub
+
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
-    ucSupport.RequestExtraFunctionality True
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_SPACE, VK_RETURN
+    
     ucSupport.RequestCaptionSupport False
     ucSupport.SetCaptionAutomaticPainting False
     
@@ -580,7 +621,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'We also underline the control on mouse-over
-    If m_MouseInsideUC Then
+    If (m_MouseInsideUC Or ucSupport.DoIHaveFocus) Then
         ucSupport.SetCaptionFontUnderline True, True
     Else
         ucSupport.SetCaptionFontUnderline False, True

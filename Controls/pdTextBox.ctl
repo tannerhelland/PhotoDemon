@@ -71,6 +71,7 @@ Public Event KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef prev
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'The actual common control edit box is handled by a dedicated class
 Private WithEvents m_EditBox As pdEditBoxW
@@ -78,11 +79,6 @@ Attribute m_EditBox.VB_VarHelpID = -1
 
 'Some mouse states relative to the edit box are tracked, so we can render custom borders around the embedded box
 Private m_MouseOverEditBox As Boolean
-
-'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
-' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
-' Got/Lost focus events when the *entire control* loses focus (vs any one individual component).
-Private m_ControlHasFocus As Boolean
 
 'If the user resizes an edit box, the control's back buffer needs to be redrawn.  If we resize the edit box as part of an internal
 ' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
@@ -111,6 +107,10 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+'Focus forward timer
+Private WithEvents m_FocusTimer As pdTimer
+Attribute m_FocusTimer.VB_VarHelpID = -1
 
 'Padding distance (in px) between the user control edges and the edit box edges
 Private Const EDITBOX_BORDER_PADDING As Long = 2&
@@ -256,7 +256,10 @@ Private Sub m_EditBox_Change()
 End Sub
 
 Private Sub m_EditBox_GotFocusAPI()
-    ComponentGotFocus
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    RaiseEvent GotFocusAPI
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
 End Sub
 
 Private Sub m_EditBox_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
@@ -274,8 +277,14 @@ End Sub
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     'Enter/Esc/Tab keypresses receive special treatment
-    If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab)) And (Not m_EditBox.Multiline) Then
+    If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape)) And (Not m_EditBox.Multiline) Then
         If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(Shift, vKey, preventFurtherHandling)
+    
+    'Tab keys *are* currently used for navigation purposes (so you can't enter them into an
+    ' edit box... I may look at changing this in the future, if users need otherwise)
+    ElseIf (vKey = pdnk_Tab) Then
+        If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(Shift, vKey, preventFurtherHandling)
+    
     Else
         RaiseEvent KeyPress(Shift, vKey, preventFurtherHandling)
     End If
@@ -287,7 +296,10 @@ Private Sub m_EditBox_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, p
 End Sub
 
 Private Sub m_EditBox_LostFocusAPI()
-    ComponentLostFocus
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    RaiseEvent LostFocusAPI
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
 End Sub
 
 Private Sub m_EditBox_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -300,8 +312,47 @@ Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
+'Fire-once timer to forward focus to the API edit box
+Private Sub m_FocusTimer_Timer()
+    
+    m_EditBox.SetFocusToEditBox
+    m_EditBox.SelStart = Len(m_EditBox.Text)
+    
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
+    
+    'Once focus is assigned, do not fire the timer again
+    m_FocusTimer.StopTimer
+    
+End Sub
+
+'We never want this base window to have focus.  If we get focus, forward it to the edit box
+Private Sub ucSupport_GotFocusAPI()
+    
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    If (m_EditBox Is Nothing) Then Exit Sub
+    If m_EditBox.HasFocus() Then Exit Sub
+    
+    'The user control itself should never have focus.  Forward it to the API edit box as necessary.
+    ' (Note that we use a timer to do this because per MSDN, "While processing this message, do not
+    ' make any function calls that display or activate a window. This causes the thread to yield
+    ' control and can cause the application to stop responding to messages.")
+    Set m_FocusTimer = New pdTimer
+    m_FocusTimer.Interval = 16
+    m_FocusTimer.StartTimer
+    
+    'Immediately redraw the back buffer to reflect the new focus state
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
+    
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
@@ -357,49 +408,6 @@ Private Sub SynchronizeSizes()
     
 End Sub
 
-'When one of this control's components (either the underlying UC or the edit box) gets focus, call this function to update
-' trackers and UI accordingly.
-Private Sub ComponentGotFocus()
-    
-    If (Not PDMain.IsProgramRunning()) Then Exit Sub
-    
-    'If a component already had focus, ignore this step, as focus is just changing internally within the control
-    If (Not m_ControlHasFocus) Then
-        m_ControlHasFocus = True
-        RaiseEvent GotFocusAPI
-    End If
-    
-    'The user control itself should never have focus.  Forward it to the API edit box as necessary.
-    If (Not m_EditBox Is Nothing) Then
-        If (Not m_EditBox.HasFocus) Then m_EditBox.SetFocusToEditBox
-    End If
-    
-    'Regardless of component state, redraw the control "just in case"
-    RelayUpdatedColorsToEditBox
-    RedrawBackBuffer
-    
-End Sub
-
-'When one of this control's components (either the underlying UC or the edit box) loses focus, call this function to update
-' trackers and UI accordingly.
-Private Sub ComponentLostFocus()
-    
-    'If focus has simply moved to another component within the control, ignore this step
-    If m_ControlHasFocus And Not ucSupport.DoIHaveFocus Then
-        If (Not m_EditBox Is Nothing) Then
-            If (Not m_EditBox.HasFocus) Then
-                m_ControlHasFocus = False
-                RaiseEvent LostFocusAPI
-            End If
-        End If
-    End If
-    
-    'Regardless of component state, redraw the control "just in case"
-    RelayUpdatedColorsToEditBox
-    RedrawBackBuffer
-    
-End Sub
-
 Private Sub CalculateDesiredEditBoxRect(ByRef targetRect As winRect)
     With targetRect
         .x1 = EDITBOX_BORDER_PADDING
@@ -443,7 +451,7 @@ Private Sub CreateEditBoxAPIWindow()
         'Ask the edit box to create itself!
         m_EditBox.CreateEditBox UserControl.hWnd, tmpRect.x1, tmpRect.y1, tmpRect.x2 - tmpRect.x1, tmpRect.y2 - tmpRect.y1, False
         
-        'Because contrl sizes may have changed, we need to repaint everything
+        'Because control sizes may have changed, we need to repaint everything
         RedrawBackBuffer
         
         'Creating the edit box may have caused this control to resize itself, so as a failsafe, raise a
@@ -452,10 +460,6 @@ Private Sub CreateEditBoxAPIWindow()
     
     End If
     
-End Sub
-
-Private Sub UserControl_GotFocus()
-    ComponentGotFocus
 End Sub
 
 Private Sub UserControl_Hide()
@@ -529,9 +533,12 @@ End Sub
 ' that don't require a resize (e.g. gain/lose focus), this function should be used.
 Private Sub RedrawBackBuffer()
     
+    Dim ctrlHasFocus As Boolean
+    If (Not m_EditBox Is Nothing) Then ctrlHasFocus = m_EditBox.HasFocus()
+    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, ctrlHasFocus, m_MouseOverEditBox))
     If (bufferDC = 0) Then Exit Sub
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
@@ -564,7 +571,7 @@ Private Sub RedrawBackBuffer()
         
         Set cPen = New pd2DPen
         cPen.SetPenWidth borderWidth
-        cPen.SetPenColor m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        cPen.SetPenColor m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, ctrlHasFocus, m_MouseOverEditBox)
         cPen.SetPenLineJoin P2_LJ_Miter
         
         PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding
@@ -598,8 +605,8 @@ End Sub
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
     If (Not m_EditBox Is Nothing) Then
-        m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
-        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_EditBox.HasFocus(), m_MouseOverEditBox)
+        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_EditBox.HasFocus(), m_MouseOverEditBox)
     End If
 End Sub
 

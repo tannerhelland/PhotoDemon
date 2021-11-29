@@ -420,6 +420,24 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
 End Sub
 
+Private Sub btnFontStyles_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.sldTextFontSize.hWndSpinner
+            Case Else
+                newTargetHwnd = Me.btnFontStyles(Index - 1).hWnd
+        End Select
+    Else
+        Select Case Index
+            Case 0, 1, 2
+                newTargetHwnd = Me.btnFontStyles(Index + 1).hWnd
+            Case Else
+                newTargetHwnd = Me.cboTextRenderingHint.hWnd
+        End Select
+    End If
+End Sub
+
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -446,6 +464,14 @@ End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+End Sub
+
+Private Sub btsHAlignment_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.csTextFontColor.hWnd
+    Else
+        newTargetHwnd = Me.btsVAlignment.hWnd
+    End If
 End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
@@ -476,6 +502,14 @@ Private Sub btsVAlignment_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
+Private Sub btsVAlignment_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsHAlignment.hWnd
+    Else
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    End If
+End Sub
+
 Private Sub cboTextFontFace_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -503,6 +537,14 @@ End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+End Sub
+
+Private Sub cboTextFontFace_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(1).hWnd
+    Else
+        newTargetHwnd = Me.sldTextFontSize.hWndSlider
+    End If
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
@@ -542,12 +584,39 @@ Private Sub cboTextRenderingHint_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
+Private Sub cboTextRenderingHint_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btnFontStyles(3).hWnd
+    Else
+        newTargetHwnd = Me.sltTextClarity.hWndSlider
+    End If
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
 End Sub
 
 Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
     UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.txtTextTool.hWnd
+            Else
+                newTargetHwnd = Me.ttlPanel(1).hWnd
+            End If
+        Case 1
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.sltTextClarity.hWndSpinner
+            Else
+                newTargetHwnd = Me.csTextFontColor.hWnd
+            End If
+    End Select
+    
 End Sub
 
 Private Sub csTextFontColor_ColorChanged()
@@ -576,6 +645,14 @@ End Sub
 
 Private Sub csTextFontColor_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
+End Sub
+
+Private Sub csTextFontColor_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    Else
+        newTargetHwnd = Me.btsHAlignment.hWnd
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -647,6 +724,14 @@ Private Sub hypEditText_GotFocusAPI()
     UpdateFlyout 0, True
 End Sub
 
+Private Sub hypEditText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    Else
+        newTargetHwnd = Me.txtTextTool.hWnd
+    End If
+End Sub
+
 Private Sub cmdConvertLayer_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
@@ -693,6 +778,14 @@ Private Sub sldTextFontSize_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FontSize, sldTextFontSize.Value
 End Sub
 
+Private Sub sldTextFontSize_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboTextFontFace.hWnd
+    Else
+        newTargetHwnd = Me.btnFontStyles(0).hWnd
+    End If
+End Sub
+
 Private Sub sltTextClarity_Change()
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -722,8 +815,33 @@ Private Sub sltTextClarity_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
 End Sub
 
+Private Sub sltTextClarity_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboTextRenderingHint.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    End If
+End Sub
+
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.btsVAlignment.hWnd
+            Else
+                newTargetHwnd = Me.hypEditText.hWnd
+            End If
+        Case 1
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+            Else
+                newTargetHwnd = Me.cboTextFontFace.hWnd
+            End If
+    End Select
 End Sub
 
 Private Sub txtTextTool_Change()
@@ -742,16 +860,25 @@ Private Sub txtTextTool_Change()
     
     'Redraw the viewport
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-        
+    
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
+    UpdateFlyout 0, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+End Sub
+
+Private Sub txtTextTool_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+    End If
 End Sub
 
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a
@@ -896,4 +1023,3 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     m_Flyout.SetFlyoutSyncState False
     
 End Sub
-
