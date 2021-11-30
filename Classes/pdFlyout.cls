@@ -45,12 +45,13 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'I haven't entirely made up my mind on whether to animate flyouts or not.  AnimateWindow increases
-' testing burden significantly since it has quirks on various OSes going back to XP... but it also
-' makes flyouts look better.  I could of course mimic it manually, but ehhh that's a lot of work.
-' TODO: make a final decision before 9.0 releases
-Private Const ANIMATE_FLYOUTS As Boolean = True
-Private Const ANIMATE_TIME_IN_MS As Long = 100&
+'In a perfect world, I could just use the AnimateWindow API to make flyouts "slide" in and out
+' as they're de/activated.  Unfortunately, that API is synchronous (!!!) and produces incredibly
+' jerky, low-quality animations.  As such, I'll need to implement animations manually... *sigh*.
+' Until I have the time and bandwidth to tackle that, I'm simply deactivating animations for
+' flyouts, which is preferable in all ways to using AnimateWindow as a stopgap.
+Private Const ANIMATE_FLYOUTS As Boolean = False
+Private Const ANIMATE_TIME_IN_MS As Long = 80&
 
 Public Event FlyoutClosed(ByRef origTriggerObject As Control)
 

@@ -881,8 +881,8 @@ Private Sub txtTextTool_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, 
     End If
 End Sub
 
-'Outside functions can forcibly request an update against the current layer.  If the current layer is a
-' non-basic text layer, an option will be displayed to convert the layer.
+'Outside functions can forcibly request an update against the current layer.  If the current layer is
+' a non-basic text layer, an option will be displayed to convert the layer.
 Public Sub UpdateAgainstCurrentLayer()
     
     If PDImages.IsImageActive() Then

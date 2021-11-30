@@ -735,7 +735,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
-                    .chkHinting.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextHinting)
+                    If PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextHinting) Then .btsHinting.ListIndex = 1 Else .btsHinting.ListIndex = 0
                     .btnFontStyles(0).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
                     .btnFontStyles(1).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
                     .btnFontStyles(2).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
@@ -755,7 +755,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                     .tudMargin(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginRight)
                     .tudMargin(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginTop)
                     .tudMargin(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginBottom)
-                    .tudLineSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_LineSpacing)
+                    .sldLineSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_LineSpacing)
                     .sltCharInflation.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharInflation)
                     .tudJitter(0).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharJitterX)
                     .tudJitter(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharJitterY)
@@ -858,7 +858,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_FontFace, toolpanel_TextAdvanced.cboTextFontFace.List(toolpanel_TextAdvanced.cboTextFontFace.ListIndex)
                     .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.Value
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextAdvanced.cboTextRenderingHint.ListIndex
-                    .SetTextLayerProperty ptp_TextHinting, toolpanel_TextAdvanced.chkHinting.Value
+                    .SetTextLayerProperty ptp_TextHinting, (toolpanel_TextAdvanced.btsHinting.ListIndex = 1)
                     .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).Value
                     .SetTextLayerProperty ptp_FontItalic, toolpanel_TextAdvanced.btnFontStyles(1).Value
                     .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextAdvanced.btnFontStyles(2).Value
@@ -874,7 +874,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_TextAdvanced.bsTextBackground.Brush
                     .SetTextLayerProperty ptp_BackBorderActive, toolpanel_TextAdvanced.chkBackgroundBorder.Value
                     .SetTextLayerProperty ptp_BackBorderPen, toolpanel_TextAdvanced.psTextBackground.Pen
-                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_TextAdvanced.tudLineSpacing.Value
+                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_TextAdvanced.sldLineSpacing.Value
                     .SetTextLayerProperty ptp_MarginLeft, toolpanel_TextAdvanced.tudMargin(0).Value
                     .SetTextLayerProperty ptp_MarginRight, toolpanel_TextAdvanced.tudMargin(1).Value
                     .SetTextLayerProperty ptp_MarginTop, toolpanel_TextAdvanced.tudMargin(2).Value
