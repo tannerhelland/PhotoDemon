@@ -565,7 +565,7 @@ Begin VB.Form toolpanel_TextAdvanced
       Height          =   435
       Left            =   7950
       TabIndex        =   42
-      Top             =   360
+      Top             =   345
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   767
@@ -575,7 +575,7 @@ Begin VB.Form toolpanel_TextAdvanced
       Height          =   435
       Left            =   9510
       TabIndex        =   32
-      Top             =   360
+      Top             =   345
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   767

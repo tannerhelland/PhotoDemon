@@ -130,9 +130,9 @@ Begin VB.Form toolpanel_TextBasic
    End
    Begin PhotoDemon.pdButtonStrip btsHAlignment 
       Height          =   435
-      Left            =   7920
+      Left            =   7950
       TabIndex        =   4
-      Top             =   330
+      Top             =   345
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   767
@@ -140,9 +140,9 @@ Begin VB.Form toolpanel_TextBasic
    End
    Begin PhotoDemon.pdButtonStrip btsVAlignment 
       Height          =   435
-      Left            =   9480
+      Left            =   9510
       TabIndex        =   5
-      Top             =   330
+      Top             =   345
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   767
@@ -290,8 +290,8 @@ Begin VB.Form toolpanel_TextBasic
    Begin PhotoDemon.pdLabel lblText 
       Height          =   300
       Index           =   0
-      Left            =   7890
-      Top             =   0
+      Left            =   7950
+      Top             =   30
       Width           =   3165
       _ExtentX        =   5583
       _ExtentY        =   529

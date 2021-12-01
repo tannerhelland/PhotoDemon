@@ -864,7 +864,7 @@ Private Sub UpdateControlLayout()
         'The dropdown area is placed relative to the caption
         With m_ComboRect
             .Left = Interface.FixDPI(8)
-            .Top = ucSupport.GetCaptionBottom + 3
+            .Top = ucSupport.GetCaptionBottom + 2
             .Width = (bWidth - 2) - .Left
             .Height = (bHeight - 2) - .Top
         End With
