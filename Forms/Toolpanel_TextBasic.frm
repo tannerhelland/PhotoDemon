@@ -33,6 +33,7 @@ Begin VB.Form toolpanel_TextBasic
    Begin PhotoDemon.pdHyperlink hypEditText 
       Height          =   375
       Left            =   0
+      TabIndex        =   0
       Top             =   405
       Width           =   2295
       _ExtentX        =   4048
@@ -75,7 +76,7 @@ Begin VB.Form toolpanel_TextBasic
       Height          =   360
       Index           =   0
       Left            =   0
-      TabIndex        =   0
+      TabIndex        =   17
       Top             =   0
       Width           =   2295
       _ExtentX        =   4048
@@ -875,7 +876,7 @@ End Sub
 
 Private Sub txtTextTool_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.ttlPanel(0).hWnd
+        newTargetHwnd = Me.hypEditText.hWnd
     Else
         newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
     End If

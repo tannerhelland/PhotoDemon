@@ -1600,9 +1600,9 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
                 
                 ElseIf (uiMsg = WM_PD_SHIFT_TAB_KEY_TARGET) And (wParam = m_hWnd) Then
                     RaiseEvent SetCustomTabTarget(True, newHWnd)
-                    PutMem4 lParam, newHWnd
                     eatMessage = True
-                
+                    PutMem4 lParam, newHWnd
+                    
                 'Any other messages are up to the target control to deal with on their own.
                 Else
                     RaiseEvent CustomMessage(uiMsg, wParam, lParam, eatMessage, ISubclass_WindowMsg)

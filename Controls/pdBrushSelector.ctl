@@ -60,6 +60,7 @@ Public Event BrushChanged()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'The control's current brush settings; this string is how we actually create the brush
 Private m_curBrush As String
@@ -259,6 +260,10 @@ Private Sub RaiseBrushDialog()
     
     isDialogLive = False
     
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub UserControl_Initialize()

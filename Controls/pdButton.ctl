@@ -65,6 +65,7 @@ Public Event Click()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'As of Feb 2018, pdButton now offers an "owner-drawn" rendering mode.  This was required for the color selector
 ' panel on the main window, as the settings button is too short to support text display.
@@ -465,6 +466,10 @@ End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)

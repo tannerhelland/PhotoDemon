@@ -60,6 +60,7 @@ Public Event GradientChanged()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'The control's current gradient settings
 Private m_curGradient As String
@@ -317,6 +318,10 @@ Private Sub RaiseGradientDialog()
     
     isDialogLive = False
     
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub UserControl_Initialize()

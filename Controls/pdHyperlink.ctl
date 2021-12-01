@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.UserControl pdHyperlink 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   CanGetFocus     =   0   'False
    ClientHeight    =   690
    ClientLeft      =   0
    ClientTop       =   0
@@ -327,6 +326,7 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
+    RaiseEvent GotFocusAPI
     RedrawBackBuffer
 End Sub
 
@@ -366,6 +366,7 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    RaiseEvent LostFocusAPI
     RedrawBackBuffer
 End Sub
 

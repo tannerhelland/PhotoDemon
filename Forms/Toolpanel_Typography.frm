@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_TextAdvanced
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   6930
+   ClientHeight    =   7395
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18435
@@ -25,230 +25,16 @@ Begin VB.Form toolpanel_TextAdvanced
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   462
+   ScaleHeight     =   493
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1815
-      Index           =   3
-      Left            =   11040
-      Top             =   960
-      Visible         =   0   'False
-      Width           =   6735
-      _ExtentX        =   11880
-      _ExtentY        =   3201
-      Begin PhotoDemon.pdSlider sldLineSpacing 
-         Height          =   735
-         Left            =   120
-         TabIndex        =   35
-         Top             =   120
-         Width           =   3015
-         _ExtentX        =   5318
-         _ExtentY        =   1296
-         Caption         =   "line spacing"
-         FontSizeCaption =   10
-         Min             =   -10
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
-         Height          =   390
-         Index           =   3
-         Left            =   6240
-         TabIndex        =   34
-         Top             =   1305
-         Width           =   390
-         _ExtentX        =   1111
-         _ExtentY        =   1111
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.pdDropDown cboWordWrap 
-         Height          =   735
-         Left            =   120
-         TabIndex        =   36
-         Top             =   960
-         Width           =   3015
-         _ExtentX        =   5318
-         _ExtentY        =   1296
-         Caption         =   "line wrap"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   23
-         Left            =   3240
-         Top             =   120
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   423
-         Caption         =   "horizontal padding"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   24
-         Left            =   3240
-         Top             =   960
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   423
-         Caption         =   "vertical padding"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   0
-         Left            =   3360
-         TabIndex        =   37
-         Top             =   480
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   1
-         Left            =   4800
-         TabIndex        =   38
-         Top             =   480
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   2
-         Left            =   3360
-         TabIndex        =   39
-         Top             =   1320
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   3
-         Left            =   4800
-         TabIndex        =   40
-         Top             =   1320
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-   End
-   Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2655
-      Index           =   2
-      Left            =   120
-      Top             =   840
-      Visible         =   0   'False
-      Width           =   6855
-      _ExtentX        =   12091
-      _ExtentY        =   4683
-      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
-         Height          =   390
-         Index           =   2
-         Left            =   6360
-         TabIndex        =   22
-         Top             =   2160
-         Width           =   390
-         _ExtentX        =   1111
-         _ExtentY        =   1111
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.pdBrushSelector bsText 
-         Height          =   855
-         Left            =   360
-         TabIndex        =   23
-         Top             =   360
-         Width           =   2775
-         _ExtentX        =   3625
-         _ExtentY        =   1508
-      End
-      Begin PhotoDemon.pdCheckBox chkOutlineText 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   24
-         Top             =   1320
-         Width           =   3000
-         _ExtentX        =   5292
-         _ExtentY        =   582
-         Caption         =   "outline text"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdPenSelector psText 
-         Height          =   855
-         Left            =   360
-         TabIndex        =   25
-         Top             =   1680
-         Width           =   2775
-         _ExtentX        =   4260
-         _ExtentY        =   1508
-      End
-      Begin PhotoDemon.pdCheckBox chkBackground 
-         Height          =   330
-         Left            =   3240
-         TabIndex        =   26
-         Top             =   0
-         Width           =   3000
-         _ExtentX        =   5292
-         _ExtentY        =   582
-         Caption         =   "fill background"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdBrushSelector bsTextBackground 
-         Height          =   855
-         Left            =   3480
-         TabIndex        =   27
-         Top             =   360
-         Width           =   2775
-         _ExtentX        =   3625
-         _ExtentY        =   1508
-      End
-      Begin PhotoDemon.pdPenSelector psTextBackground 
-         Height          =   855
-         Left            =   3480
-         TabIndex        =   28
-         Top             =   1680
-         Width           =   2775
-         _ExtentX        =   3625
-         _ExtentY        =   1508
-      End
-      Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
-         Height          =   330
-         Left            =   3240
-         TabIndex        =   29
-         Top             =   1320
-         Width           =   3000
-         _ExtentX        =   5292
-         _ExtentY        =   582
-         Caption         =   "outline background"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkFillText 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   30
-         Top             =   0
-         Width           =   3000
-         _ExtentX        =   5292
-         _ExtentY        =   582
-         Caption         =   "fill text"
-      End
-   End
-   Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   4380
       Index           =   1
-      Left            =   7440
-      Top             =   840
+      Left            =   120
+      Top             =   3000
       Visible         =   0   'False
       Width           =   6255
       _ExtentX        =   11033
@@ -305,7 +91,7 @@ Begin VB.Form toolpanel_TextAdvanced
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   300
-         Index           =   2
+         Index           =   0
          Left            =   120
          Top             =   840
          Width           =   3045
@@ -412,7 +198,7 @@ Begin VB.Form toolpanel_TextAdvanced
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   270
-         Index           =   32
+         Index           =   3
          Left            =   120
          Top             =   3480
          Width           =   3045
@@ -460,39 +246,224 @@ Begin VB.Form toolpanel_TextAdvanced
          SigDigits       =   1
       End
    End
-   Begin PhotoDemon.pdContainer picConvertLayer 
-      Height          =   1695
-      Left            =   0
-      Top             =   5040
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   1815
+      Index           =   3
+      Left            =   8400
+      Top             =   3600
       Visible         =   0   'False
-      Width           =   11055
-      _ExtentX        =   23945
-      _ExtentY        =   2990
-      Begin PhotoDemon.pdButton cmdConvertLayer 
-         Height          =   615
-         Left            =   120
-         TabIndex        =   0
-         Top             =   240
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   1085
-         Caption         =   "yes"
-      End
-      Begin PhotoDemon.pdLabel lblConvertLayer 
+      Width           =   6735
+      _ExtentX        =   11880
+      _ExtentY        =   3201
+      Begin PhotoDemon.pdSlider sldLineSpacing 
          Height          =   735
-         Left            =   5280
+         Left            =   120
+         TabIndex        =   35
          Top             =   120
-         Width           =   5640
-         _ExtentX        =   19050
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1296
-         Alignment       =   2
-         Caption         =   "yes"
-         Layout          =   1
+         Caption         =   "line spacing"
+         FontSizeCaption =   10
+         Min             =   -10
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   3
+         Left            =   6240
+         TabIndex        =   34
+         Top             =   1305
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdDropDown cboWordWrap 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   36
+         Top             =   960
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   1296
+         Caption         =   "line wrap"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   1
+         Left            =   3240
+         Top             =   120
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   423
+         Caption         =   "horizontal padding"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   2
+         Left            =   3240
+         Top             =   960
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   423
+         Caption         =   "vertical padding"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdSpinner tudMargin 
+         Height          =   345
+         Index           =   0
+         Left            =   3360
+         TabIndex        =   37
+         Top             =   480
+         Width           =   1380
+         _ExtentX        =   2434
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.pdSpinner tudMargin 
+         Height          =   345
+         Index           =   1
+         Left            =   4800
+         TabIndex        =   38
+         Top             =   480
+         Width           =   1380
+         _ExtentX        =   2434
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.pdSpinner tudMargin 
+         Height          =   345
+         Index           =   2
+         Left            =   3360
+         TabIndex        =   39
+         Top             =   1320
+         Width           =   1380
+         _ExtentX        =   2434
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.pdSpinner tudMargin 
+         Height          =   345
+         Index           =   3
+         Left            =   4800
+         TabIndex        =   40
+         Top             =   1320
+         Width           =   1380
+         _ExtentX        =   2434
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2655
+      Index           =   2
+      Left            =   8400
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   6855
+      _ExtentX        =   12091
+      _ExtentY        =   4683
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   2
+         Left            =   6360
+         TabIndex        =   22
+         Top             =   2160
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdBrushSelector bsText 
+         Height          =   855
+         Left            =   360
+         TabIndex        =   23
+         Top             =   360
+         Width           =   2775
+         _ExtentX        =   3625
+         _ExtentY        =   1508
+      End
+      Begin PhotoDemon.pdCheckBox chkOutlineText 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   24
+         Top             =   1320
+         Width           =   3000
+         _ExtentX        =   5292
+         _ExtentY        =   582
+         Caption         =   "outline text"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdPenSelector psText 
+         Height          =   855
+         Left            =   360
+         TabIndex        =   25
+         Top             =   1680
+         Width           =   2775
+         _ExtentX        =   4260
+         _ExtentY        =   1508
+      End
+      Begin PhotoDemon.pdCheckBox chkBackground 
+         Height          =   330
+         Left            =   3240
+         TabIndex        =   26
+         Top             =   0
+         Width           =   3000
+         _ExtentX        =   5292
+         _ExtentY        =   582
+         Caption         =   "fill background"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdBrushSelector bsTextBackground 
+         Height          =   855
+         Left            =   3480
+         TabIndex        =   27
+         Top             =   360
+         Width           =   2775
+         _ExtentX        =   3625
+         _ExtentY        =   1508
+      End
+      Begin PhotoDemon.pdPenSelector psTextBackground 
+         Height          =   855
+         Left            =   3480
+         TabIndex        =   28
+         Top             =   1680
+         Width           =   2775
+         _ExtentX        =   3625
+         _ExtentY        =   1508
+      End
+      Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
+         Height          =   330
+         Left            =   3240
+         TabIndex        =   29
+         Top             =   1320
+         Width           =   3000
+         _ExtentX        =   5292
+         _ExtentY        =   582
+         Caption         =   "outline background"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkFillText 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   30
+         Top             =   0
+         Width           =   3000
+         _ExtentX        =   5292
+         _ExtentY        =   582
+         Caption         =   "fill text"
       End
    End
    Begin PhotoDemon.pdHyperlink hypEditText 
       Height          =   375
       Left            =   0
+      TabIndex        =   31
       Top             =   405
       Width           =   2295
       _ExtentX        =   4048
@@ -517,7 +488,7 @@ Begin VB.Form toolpanel_TextAdvanced
       Height          =   2055
       Index           =   0
       Left            =   0
-      Top             =   2760
+      Top             =   840
       Visible         =   0   'False
       Width           =   8295
       _ExtentX        =   14631
@@ -581,6 +552,7 @@ Begin VB.Form toolpanel_TextAdvanced
    Begin PhotoDemon.pdHyperlink hypEditStyles 
       Height          =   375
       Left            =   5640
+      TabIndex        =   41
       Top             =   405
       Width           =   2055
       _ExtentX        =   4048
@@ -592,7 +564,7 @@ Begin VB.Form toolpanel_TextAdvanced
    Begin PhotoDemon.pdButtonStrip btsHAlignment 
       Height          =   435
       Left            =   7950
-      TabIndex        =   31
+      TabIndex        =   42
       Top             =   360
       Width           =   1455
       _ExtentX        =   2566
@@ -620,6 +592,36 @@ Begin VB.Form toolpanel_TextAdvanced
       _ExtentY        =   635
       Caption         =   "alignment"
       Value           =   0   'False
+   End
+   Begin PhotoDemon.pdContainer picConvertLayer 
+      Height          =   1695
+      Left            =   0
+      Top             =   5040
+      Visible         =   0   'False
+      Width           =   11055
+      _ExtentX        =   23945
+      _ExtentY        =   2990
+      Begin PhotoDemon.pdButton cmdConvertLayer 
+         Height          =   615
+         Left            =   120
+         TabIndex        =   0
+         Top             =   240
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   1085
+         Caption         =   "yes"
+      End
+      Begin PhotoDemon.pdLabel lblConvertLayer 
+         Height          =   735
+         Left            =   5280
+         Top             =   120
+         Width           =   5640
+         _ExtentX        =   19050
+         _ExtentY        =   1296
+         Alignment       =   2
+         Caption         =   "yes"
+         Layout          =   1
+      End
    End
 End
 Attribute VB_Name = "toolpanel_TextAdvanced"
@@ -671,12 +673,21 @@ Private Sub bsText_BrushChanged()
 End Sub
 
 Private Sub bsText_GotFocusAPI()
+    UpdateFlyout 2, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub bsText_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
+End Sub
+
+Private Sub bsText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkFillText.hWnd
+    Else
+        newTargetHwnd = Me.chkOutlineText.hWnd
+    End If
 End Sub
 
 Private Sub bsTextBackground_BrushChanged()
@@ -699,12 +710,21 @@ Private Sub bsTextBackground_BrushChanged()
 End Sub
 
 Private Sub bsTextBackground_GotFocusAPI()
+    UpdateFlyout 2, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
+End Sub
+
+Private Sub bsTextBackground_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkBackground.hWnd
+    Else
+        newTargetHwnd = Me.chkBackgroundBorder.hWnd
+    End If
 End Sub
 
 Private Sub btnFontStyles_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -745,6 +765,8 @@ Private Sub btnFontStyles_Click(Index As Integer, ByVal Shift As ShiftConstants)
 End Sub
 
 Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
+    
+    UpdateFlyout 1, True
     
     'Non-destructive effects are obviously not tracked if no images are loaded
     If (Not PDImages.IsImageActive()) Then Exit Sub
@@ -797,6 +819,23 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
 End Sub
 
+Private Sub btnFontStyles_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        If (Index = 0) Then
+            newTargetHwnd = Me.sldTextFontSize.hWndSpinner
+        Else
+            newTargetHwnd = Me.btnFontStyles(Index - 1).hWnd
+        End If
+    Else
+        If (Index = 3) Then
+            newTargetHwnd = Me.sltCharSpacing.hWndSlider
+        Else
+            newTargetHwnd = Me.btnFontStyles(Index + 1).hWnd
+        End If
+    End If
+End Sub
+
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -817,12 +856,29 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
+    UpdateFlyout 3, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+End Sub
+
+Private Sub btsHAlignment_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(3).hWnd
+    Else
+        newTargetHwnd = Me.btsVAlignment.hWnd
+    End If
+End Sub
+
+Private Sub btsHinting_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboTextRenderingHint.hWnd
+    Else
+        newTargetHwnd = Me.cboCharCase.hWnd
+    End If
 End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
@@ -845,12 +901,21 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
+    UpdateFlyout 3, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+End Sub
+
+Private Sub btsVAlignment_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsHAlignment.hWnd
+    Else
+        newTargetHwnd = Me.sldLineSpacing.hWndSlider
+    End If
 End Sub
 
 Private Sub cboCharCase_Click()
@@ -873,12 +938,21 @@ Private Sub cboCharCase_Click()
 End Sub
 
 Private Sub cboCharCase_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
+End Sub
+
+Private Sub cboCharCase_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsHinting.hWnd
+    Else
+        newTargetHwnd = Me.cboCharMirror.hWnd
+    End If
 End Sub
 
 Private Sub cboCharMirror_Click()
@@ -901,12 +975,21 @@ Private Sub cboCharMirror_Click()
 End Sub
 
 Private Sub cboCharMirror_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
+End Sub
+
+Private Sub cboCharMirror_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboCharCase.hWnd
+    Else
+        newTargetHwnd = Me.sltCharInflation.hWnd
+    End If
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -929,12 +1012,21 @@ Private Sub cboTextFontFace_Click()
 End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+End Sub
+
+Private Sub cboTextFontFace_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(1).hWnd
+    Else
+        newTargetHwnd = Me.sldTextFontSize.hWndSlider
+    End If
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
@@ -957,12 +1049,21 @@ Private Sub cboTextRenderingHint_Click()
 End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+End Sub
+
+Private Sub cboTextRenderingHint_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.tudJitter(1).hWnd
+    Else
+        newTargetHwnd = Me.btsHinting.hWnd
+    End If
 End Sub
 
 Private Sub cboWordWrap_Click()
@@ -985,12 +1086,21 @@ Private Sub cboWordWrap_Click()
 End Sub
 
 Private Sub cboWordWrap_GotFocusAPI()
+    UpdateFlyout 3, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
+End Sub
+
+Private Sub cboWordWrap_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sldLineSpacing.hWndSpinner
+    Else
+        newTargetHwnd = Me.tudMargin(0).hWnd
+    End If
 End Sub
 
 Private Sub chkBackground_Click()
@@ -1021,6 +1131,14 @@ Private Sub chkBackground_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, chkBackground.Value
 End Sub
 
+Private Sub chkBackground_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.psText.hWnd
+    Else
+        newTargetHwnd = Me.bsTextBackground.hWnd
+    End If
+End Sub
+
 Private Sub chkBackgroundBorder_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -1047,6 +1165,14 @@ End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, chkBackgroundBorder.Value
+End Sub
+
+Private Sub chkBackgroundBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.bsTextBackground.hWnd
+    Else
+        newTargetHwnd = Me.psTextBackground.hWnd
+    End If
 End Sub
 
 Private Sub chkFillText_Click()
@@ -1097,12 +1223,21 @@ Private Sub btsHinting_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsHinting_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextHinting, (btsHinting.ListIndex = 1), PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsHinting_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_TextHinting, (btsHinting.ListIndex = 1)
+End Sub
+
+Private Sub chkFillText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.hypEditStyles.hWnd
+    Else
+        newTargetHwnd = Me.bsText.hWnd
+    End If
 End Sub
 
 Private Sub chkOutlineText_Click()
@@ -1133,8 +1268,59 @@ Private Sub chkOutlineText_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
 End Sub
 
+Private Sub chkOutlineText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.bsText.hWnd
+    Else
+        newTargetHwnd = Me.psText.hWnd
+    End If
+End Sub
+
+Private Sub cmdConvertLayer_Click()
+    
+    'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextAdvanced
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
+    Me.UpdateAgainstCurrentLayer
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Interface.SyncInterfaceToCurrentImage
+    
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.txtTextTool.hWnd
+            Case 1
+                newTargetHwnd = Me.sltCharInflation.hWndSpinner
+            Case 2
+                newTargetHwnd = Me.psTextBackground.hWnd
+            Case 3
+                newTargetHwnd = Me.tudMargin(3).hWnd
+        End Select
+        
+    Else
+        
+        Dim newIndex As Long
+        newIndex = Index + 1
+        If (newIndex > 3) Then newIndex = newIndex - 4
+        
+        newTargetHwnd = Me.ttlPanel(newIndex).hWnd
+        
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -1241,23 +1427,34 @@ Private Sub hypEditStyles_Click()
     UpdateFlyout 2, True
 End Sub
 
+Private Sub hypEditStyles_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub hypEditStyles_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(2).hWnd
+    Else
+        newTargetHwnd = Me.chkFillText.hWnd
+    End If
+End Sub
+
 Private Sub hypEditText_Click()
     UpdateFlyout 0, True
     Me.txtTextTool.SetFocus
     Me.txtTextTool.SelStart = Len(Me.txtTextTool.Text)
 End Sub
 
-Private Sub cmdConvertLayer_Click()
-    
-    'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
-    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextAdvanced
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    
-    'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
-    Me.UpdateAgainstCurrentLayer
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    Interface.SyncInterfaceToCurrentImage
-    
+Private Sub hypEditText_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub hypEditText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    Else
+        newTargetHwnd = Me.txtTextTool.hWnd
+    End If
 End Sub
 
 Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
@@ -1284,12 +1481,21 @@ Private Sub psText_PenChanged()
 End Sub
 
 Private Sub psText_GotFocusAPI()
+    UpdateFlyout 2, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub psText_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
+End Sub
+
+Private Sub psText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkOutlineText.hWnd
+    Else
+        newTargetHwnd = Me.chkBackground.hWnd
+    End If
 End Sub
 
 Private Sub psTextBackground_PenChanged()
@@ -1312,12 +1518,29 @@ Private Sub psTextBackground_PenChanged()
 End Sub
 
 Private Sub psTextBackground_GotFocusAPI()
+    UpdateFlyout 2, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
+End Sub
+
+Private Sub psTextBackground_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkBackgroundBorder.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    End If
+End Sub
+
+Private Sub sldLineSpacing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsVAlignment.hWnd
+    Else
+        newTargetHwnd = Me.cboWordWrap.hWnd
+    End If
 End Sub
 
 Private Sub sldTextFontSize_Change()
@@ -1340,12 +1563,21 @@ Private Sub sldTextFontSize_Change()
 End Sub
 
 Private Sub sldTextFontSize_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontSize, sldTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sldTextFontSize_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_FontSize, sldTextFontSize.Value
+End Sub
+
+Private Sub sldTextFontSize_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboTextFontFace.hWnd
+    Else
+        newTargetHwnd = Me.btnFontStyles(0).hWnd
+    End If
 End Sub
 
 Private Sub sltCharInflation_Change()
@@ -1368,12 +1600,21 @@ Private Sub sltCharInflation_Change()
 End Sub
 
 Private Sub sltCharInflation_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
+End Sub
+
+Private Sub sltCharInflation_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboCharMirror.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    End If
 End Sub
 
 Private Sub sltCharOrientation_Change()
@@ -1396,12 +1637,21 @@ Private Sub sltCharOrientation_Change()
 End Sub
 
 Private Sub sltCharOrientation_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
+End Sub
+
+Private Sub sltCharOrientation_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltCharSpacing.hWndSpinner
+    Else
+        newTargetHwnd = Me.tudJitter(0).hWnd
+    End If
 End Sub
 
 Private Sub sltCharSpacing_Change()
@@ -1424,6 +1674,7 @@ Private Sub sltCharSpacing_Change()
 End Sub
 
 Private Sub sltCharSpacing_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -1432,8 +1683,39 @@ Private Sub sltCharSpacing_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
 End Sub
 
+Private Sub sltCharSpacing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btnFontStyles(3).hWnd
+    Else
+        newTargetHwnd = Me.sltCharOrientation.hWndSlider
+    End If
+End Sub
+
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        
+        Dim newIndex As Long
+        newIndex = Index - 1
+        If (newIndex < 0) Then newIndex = newIndex + 4
+        
+        newTargetHwnd = Me.cmdFlyoutLock(newIndex).hWnd
+    
+    Else
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.hypEditText.hWnd
+            Case 1
+                newTargetHwnd = Me.cboTextFontFace.hWnd
+            Case 2
+                newTargetHwnd = Me.hypEditStyles.hWnd
+            Case 3
+                newTargetHwnd = Me.btsHAlignment.hWnd
+        End Select
+    End If
 End Sub
 
 Private Sub tudJitter_Change(Index As Integer)
@@ -1456,6 +1738,7 @@ Private Sub tudJitter_Change(Index As Integer)
 End Sub
 
 Private Sub tudJitter_GotFocusAPI(Index As Integer)
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -1484,12 +1767,29 @@ Private Sub sldLineSpacing_Change()
 End Sub
 
 Private Sub sldLineSpacing_GotFocusAPI()
+    UpdateFlyout 3, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_LineSpacing, sldLineSpacing.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sldLineSpacing_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_LineSpacing, sldLineSpacing.Value
+End Sub
+
+Private Sub tudJitter_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.sltCharOrientation.hWndSpinner
+        Else
+            newTargetHwnd = Me.tudJitter(1).hWnd
+        End If
+    Else
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.tudJitter(0).hWnd
+        Else
+            newTargetHwnd = Me.cboTextRenderingHint.hWnd
+        End If
+    End If
 End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
@@ -1526,7 +1826,8 @@ Private Sub tudMargin_Change(Index As Integer)
 End Sub
 
 Private Sub tudMargin_GotFocusAPI(Index As Integer)
-
+    
+    UpdateFlyout 3, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     
     Select Case Index
@@ -1567,6 +1868,22 @@ Private Sub tudMargin_LostFocusAPI(Index As Integer)
         
 End Sub
 
+Private Sub tudMargin_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If (Index = 0) Then
+            newTargetHwnd = Me.cboWordWrap.hWnd
+        Else
+            newTargetHwnd = Me.tudMargin(Index - 1).hWnd
+        End If
+    Else
+        If (Index = 3) Then
+            newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
+        Else
+            newTargetHwnd = Me.tudMargin(Index + 1).hWnd
+        End If
+    End If
+End Sub
+
 Private Sub txtTextTool_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -1587,12 +1904,21 @@ Private Sub txtTextTool_Change()
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
+    UpdateFlyout 0, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+End Sub
+
+Private Sub txtTextTool_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.hypEditText.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+    End If
 End Sub
 
 'Most objects on this form can avoid doing any work if the current layer is not a text layer.
@@ -1738,4 +2064,3 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     m_Flyout.SetFlyoutSyncState False
     
 End Sub
-
