@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_Pencil
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4365
+   ClientHeight    =   2325
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   9945
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +25,9 @@ Begin VB.Form toolpanel_Pencil
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   291
+   ScaleHeight     =   155
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   663
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdCheckBox chkAntialiasing 
@@ -55,12 +55,12 @@ Begin VB.Form toolpanel_Pencil
       CausesValidation=   0   'False
       Height          =   330
       Index           =   0
-      Left            =   120
+      Left            =   0
       TabIndex        =   0
       Top             =   360
-      Width           =   3000
-      _ExtentX        =   6615
-      _ExtentY        =   1217
+      Width           =   3120
+      _ExtentX        =   5503
+      _ExtentY        =   582
       FontSizeCaption =   10
       Min             =   1
       Max             =   2000
