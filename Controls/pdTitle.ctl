@@ -492,7 +492,7 @@ Private Sub UpdateControlLayout()
         Else
         
             Dim tmpFontSize As Single
-            tmpFontSize = Fonts.FindFontSizeSingleLine(Me.Caption, maxCaptionWidth, Me.FontSize, Me.FontBold, , , True)
+            tmpFontSize = Fonts.FindFontSizeSingleLine(Me.Caption, maxCaptionWidth, Me.FontSize, Me.FontBold, cacheIfNovel:=True)
             
             'Retrieve a new font object at the specified size.
             Set tmpFont = Fonts.GetMatchingUIFont(tmpFontSize, Me.FontBold)

@@ -261,8 +261,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Paintbrush Tool Panel
 'Copyright 2016-2021 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 04/Nov/16
-'Last update: ongoing work on initial build
+'Last updated: 01/December/21
+'Last update: migrate UI to new flyout design
 '
 'This form includes all user-editable settings for the "paintbrush" canvas tool.
 '

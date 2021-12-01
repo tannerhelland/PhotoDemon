@@ -590,14 +590,14 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As 
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
         ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS
         
-        'Copy this DIB into position #2, beneath the base DIB
+        'Copy this DIB into position 2, beneath the base DIB
         GDI.BitBltWrapper .btImages.GetDIBDC, 0, .btImageHeight, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
         tmpDIB.CreateFromExistingDIB srcDIB
         Filters_Layers.GrayscaleDIB tmpDIB
         
-        'Place it into position #3, beneath the previous two DIBs
+        'Place it into position 3, beneath the previous two DIBs
         GDI.BitBltWrapper .btImages.GetDIBDC, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
@@ -648,13 +648,13 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = vbNullString
-    ColorScheme = CM_DEFAULT
-    DontAutoReset = False
-    FontBold = False
-    FontSize = 10
-    FontSizeCaption = 12#
-    ListIndex = 0
+    Me.Caption = vbNullString
+    Me.ColorScheme = CM_DEFAULT
+    Me.DontAutoReset = False
+    Me.FontBold = False
+    Me.FontSize = 10
+    Me.FontSizeCaption = 12!
+    Me.ListIndex = 0
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -664,12 +664,12 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", vbNullString)
+        Me.Caption = .ReadProperty("Caption", vbNullString)
         m_ColoringMode = .ReadProperty("ColorScheme", CM_DEFAULT)
         m_DontAutoReset = .ReadProperty("DontAutoReset", False)
         m_FontBold = .ReadProperty("FontBold", False)
         m_FontSize = .ReadProperty("FontSize", 10)
-        FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
+        Me.FontSizeCaption = .ReadProperty("FontSizeCaption", 12!)
         m_ButtonIndex = .ReadProperty("ListIndex", 0)
     End With
 End Sub
@@ -681,13 +681,13 @@ End Sub
 'Store all associated properties
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
+        .WriteProperty "Caption", Me.Caption, vbNullString
         .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
         .WriteProperty "DontAutoReset", m_DontAutoReset, False
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10
-        .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12#
-        .WriteProperty "ListIndex", ListIndex, 0
+        .WriteProperty "FontSizeCaption", Me.FontSizeCaption, 12!
+        .WriteProperty "ListIndex", m_ButtonIndex, 0
     End With
 End Sub
 
@@ -749,7 +749,8 @@ Private Sub UpdateControlLayout(Optional ByVal forceUpdate As Boolean = False)
         For i = 0 To m_numOfButtons - 1
         
             With m_Buttons(i).btBounds
-                '.Left is calculated as: 1px left border, plus 1px border for any preceding buttons, plus preceding button widths
+                '.Left is calculated as: 1px left border, plus 1px border for any preceding buttons,
+                ' plus preceding button widths
                 .Left = m_ButtonStripRect.Left + 1 + i + (buttonWidth * i)
                 .Top = m_ButtonStripRect.Top + 1
                 .Bottom = .Top + buttonHeight
@@ -785,7 +786,7 @@ Private Sub UpdateControlLayout(Optional ByVal forceUpdate As Boolean = False)
             buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
             
             'Next, we are going to calculate all text metrics.  We can skip this step for buttons without captions.
-            If (Len(m_Buttons(i).btCaptionTranslated) <> 0) Then
+            If (LenB(m_Buttons(i).btCaptionTranslated) <> 0) Then
             
                 'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
                 ' remove the width of the image, plus padding, in advance.
@@ -1106,12 +1107,13 @@ Private Sub RedrawBackBuffer()
             
         End If
         
+        Set cSurface = Nothing
+        
     End If
-    
-    Set cSurface = Nothing
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
+    If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 

@@ -451,7 +451,7 @@ End Sub
 'Set default properties
 Private Sub UserControl_InitProperties()
     Caption = vbNullString
-    FontSizeCaption = 12#
+    FontSizeCaption = 12!
     ListIndex = 0
 End Sub
 
