@@ -577,10 +577,10 @@ Private Sub RaiseListBox()
     'To construct this rect, we start by calculating the position of the .ListIndex item itself
     With popupRect
         If ucSupport.IsCaptionActive Then
-            .Left = myRect.Left + FixDPI(8)
+            .Left = myRect.Left + Interface.FixDPI(8) - 2
             .Top = myRect.Top + (ucSupport.GetCaptionBottom + 2)
         Else
-            .Left = myRect.Left
+            .Left = myRect.Left - 1
             .Top = myRect.Top
         End If
         .Width = myRect.Right - .Left

@@ -349,7 +349,7 @@ Friend Function SetBrushTextureTransform(ByRef srcTransform As pd2DTransform) As
     
     'Warn the caller that setting a transform on a null-brush isn't technically allowed,
     ' but attempt to work around that by creating the brush for them anyway
-    If (m_BrushHandle <> 0) Then
+    If (m_BrushHandle = 0) Then
         InternalError "SetBrushTextureTransform", "Brush must exist before setting transform; creating now..."
         Me.CreateBrush
     End If
@@ -523,6 +523,7 @@ Friend Function CreateBrush() As Boolean
         Case P2_BM_Solid
             GetMem4 VarPtr(m_BrushRGBA), tmpLong
             CreateBrush = (GdipCreateSolidFill(tmpLong, m_BrushHandle) = GP_OK)
+            If CreateBrush Then CreateBrush = (m_BrushHandle <> 0)
             
         'Pattern fill
         Case P2_BM_Pattern
@@ -557,7 +558,6 @@ Friend Function CreateBrush() As Boolean
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If CreateBrush Then CreateBrush = (m_BrushHandle <> 0)
     If (CreateBrush And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyBrushCountChange True
     
 End Function

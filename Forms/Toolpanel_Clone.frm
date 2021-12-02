@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_Clone
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   7440
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   15345
+   ClientWidth     =   17040
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,58 +25,172 @@ Begin VB.Form toolpanel_Clone
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   496
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1023
+   ScaleWidth      =   1136
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Left            =   10380
-      Top             =   15
-      Width           =   4335
-      _ExtentX        =   7646
-      _ExtentY        =   556
-      Caption         =   "source settings"
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   1335
+      Index           =   3
+      Left            =   8280
+      Top             =   720
+      Visible         =   0   'False
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   2355
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   3
+         Left            =   2880
+         TabIndex        =   16
+         Top             =   825
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdDropDown cboBrushSetting 
+         Height          =   735
+         Index           =   2
+         Left            =   120
+         TabIndex        =   17
+         Top             =   480
+         Width           =   2655
+         _ExtentX        =   4683
+         _ExtentY        =   1296
+         Caption         =   "pattern mode"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkSampleMerged 
+         Height          =   345
+         Left            =   120
+         TabIndex        =   18
+         Top             =   0
+         Width           =   2640
+         _ExtentX        =   4657
+         _ExtentY        =   609
+         Caption         =   "sample all layers"
+      End
    End
-   Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   735
+   Begin PhotoDemon.pdCheckBox chkAligned 
+      Height          =   345
+      Left            =   8400
+      TabIndex        =   0
+      Top             =   420
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   609
+      Caption         =   "aligned"
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2415
       Index           =   2
-      Left            =   10380
-      TabIndex        =   7
-      Top             =   690
-      Width           =   3735
-      _ExtentX        =   6588
-      _ExtentY        =   1296
-      Caption         =   "pattern mode"
+      Left            =   5880
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   4260
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   2
+         Left            =   2880
+         TabIndex        =   1
+         Top             =   1815
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdSlider sltBrushSetting 
+         CausesValidation=   0   'False
+         Height          =   690
+         Index           =   3
+         Left            =   120
+         TabIndex        =   2
+         Top             =   0
+         Width           =   2700
+         _ExtentX        =   4763
+         _ExtentY        =   1217
+         Caption         =   "flow"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdSlider sldSpacing 
+         Height          =   495
+         Left            =   180
+         TabIndex        =   3
+         Top             =   1800
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   1000
+         ScaleStyle      =   1
+         ScaleExponent   =   5
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdButtonStrip btsSpacing 
+         Height          =   855
+         Left            =   120
+         TabIndex        =   4
+         Top             =   840
+         Width           =   2700
+         _ExtentX        =   4763
+         _ExtentY        =   1508
+         Caption         =   "spacing"
+         FontSizeCaption =   10
+      End
+   End
+   Begin PhotoDemon.pdSlider sltBrushSetting 
+      CausesValidation=   0   'False
+      Height          =   330
+      Index           =   2
+      Left            =   5520
+      TabIndex        =   5
+      Top             =   360
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   582
       FontSizeCaption =   10
+      Min             =   1
+      Max             =   100
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   735
+      Height          =   375
       Index           =   0
-      Left            =   7800
-      TabIndex        =   2
-      Top             =   0
+      Left            =   3000
+      TabIndex        =   6
+      Top             =   375
       Width           =   2295
       _ExtentX        =   4048
       _ExtentY        =   1296
-      Caption         =   "blend / alpha mode"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
       CausesValidation=   0   'False
-      Height          =   690
+      Height          =   330
       Index           =   0
-      Left            =   120
-      TabIndex        =   0
-      Top             =   0
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "size"
+      Left            =   0
+      TabIndex        =   7
+      Top             =   360
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   582
       FontSizeCaption =   10
       Min             =   1
-      Max             =   1000
+      Max             =   2000
       SigDigits       =   1
       ScaleStyle      =   1
       ScaleExponent   =   3
@@ -84,90 +198,123 @@ Begin VB.Form toolpanel_Clone
       NotchPosition   =   1
       DefaultValue    =   1
    End
-   Begin PhotoDemon.pdSlider sltBrushSetting 
-      CausesValidation=   0   'False
-      Height          =   690
-      Index           =   1
-      Left            =   120
-      TabIndex        =   1
-      Top             =   660
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "opacity"
-      FontSizeCaption =   10
-      Max             =   100
-      SigDigits       =   1
-      Value           =   100
-      DefaultValue    =   100
-   End
-   Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   375
-      Index           =   1
-      Left            =   7905
-      TabIndex        =   3
-      Top             =   900
-      Width           =   2190
-      _ExtentX        =   3863
-      _ExtentY        =   661
-      FontSizeCaption =   10
-   End
-   Begin PhotoDemon.pdSlider sltBrushSetting 
-      CausesValidation=   0   'False
-      Height          =   690
-      Index           =   2
-      Left            =   3960
-      TabIndex        =   4
-      Top             =   0
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "hardness"
-      FontSizeCaption =   10
-      Min             =   1
-      Max             =   100
-      SigDigits       =   1
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
-   Begin PhotoDemon.pdCheckBox chkSampleMerged 
-      Height          =   345
-      Left            =   12240
-      TabIndex        =   5
-      Top             =   345
-      Width           =   3000
-      _ExtentX        =   5292
-      _ExtentY        =   609
-      Caption         =   "sample all layers"
-   End
-   Begin PhotoDemon.pdCheckBox chkAligned 
-      Height          =   345
-      Left            =   10470
-      TabIndex        =   6
-      Top             =   345
-      Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   609
-      Caption         =   "aligned"
-   End
-   Begin PhotoDemon.pdSlider sltBrushSetting 
-      CausesValidation=   0   'False
-      Height          =   690
-      Index           =   3
-      Left            =   3960
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   360
+      Index           =   0
+      Left            =   0
       TabIndex        =   8
-      Top             =   660
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "flow"
-      FontSizeCaption =   10
-      Max             =   100
-      SigDigits       =   1
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
+      Top             =   0
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   635
+      Caption         =   "size"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   855
+      Index           =   0
+      Left            =   0
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   3255
+      _ExtentX        =   5741
+      _ExtentY        =   1508
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   2760
+         TabIndex        =   9
+         Top             =   330
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdSlider sltBrushSetting 
+         CausesValidation=   0   'False
+         Height          =   690
+         Index           =   1
+         Left            =   0
+         TabIndex        =   10
+         Top             =   0
+         Width           =   2700
+         _ExtentX        =   4763
+         _ExtentY        =   1217
+         Caption         =   "opacity"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         Value           =   100
+         DefaultValue    =   100
+      End
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   360
+      Index           =   1
+      Left            =   2880
+      TabIndex        =   11
+      Top             =   0
+      Width           =   2400
+      _ExtentX        =   5292
+      _ExtentY        =   635
+      Caption         =   "blend / alpha mode"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   360
+      Index           =   2
+      Left            =   5520
+      TabIndex        =   12
+      Top             =   0
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   635
+      Caption         =   "hardness"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   495
+      Index           =   1
+      Left            =   2640
+      Top             =   1800
+      Visible         =   0   'False
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   873
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   1
+         Left            =   2640
+         TabIndex        =   13
+         Top             =   0
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdDropDown cboBrushSetting 
+         Height          =   375
+         Index           =   1
+         Left            =   240
+         TabIndex        =   14
+         Top             =   0
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   661
+         FontSizeCaption =   10
+      End
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   360
+      Index           =   3
+      Left            =   8400
+      TabIndex        =   15
+      Top             =   0
+      Width           =   2700
+      _ExtentX        =   4763
+      _ExtentY        =   635
+      Caption         =   "source settings"
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "toolpanel_Clone"
@@ -179,15 +326,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Clone Stamp Tool Panel
 'Copyright 2016-2021 by Tanner Helland
 'Created: 31/October/16
-'Last updated: 16/September/19
-'Last update: split off from normal softbrush tool panel
+'Last updated: 01/December/21
+'Last update: update UI to new flyout design
 '
 'This form includes all user-editable settings for the "clone stamp" canvas tool.
-'
-'Some brush settings in this panel are currently commented out.  This is not a bug - these features
-' are already implemented in the tools_clone module, but PD's brush UI is being reworked to remove
-' some of these dedicated controls in favor of merging them into a separate brush UI (where the user
-' can pick brushes from a pre-built list or design their own, similar to the gradients dialog).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -196,14 +338,34 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Flyout manager
+Private WithEvents m_Flyout As pdFlyout
+Attribute m_Flyout.VB_VarHelpID = -1
+
 'The value of all controls on this form are saved and loaded to file by this class
 ' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
 Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
-'Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
-'    UpdateSpacingVisibility
-'End Sub
+Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
+    UpdateSpacingVisibility
+End Sub
+
+Private Sub btsSpacing_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub btsSpacing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltBrushSetting(3).hWndSpinner
+    Else
+        If Me.sldSpacing.Visible Then
+            newTargetHwnd = Me.sldSpacing.hWndSlider
+        Else
+            newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+        End If
+    End If
+End Sub
 
 Private Sub cboBrushSetting_Click(Index As Integer)
 
@@ -225,12 +387,99 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
 End Sub
 
+Private Sub cboBrushSetting_GotFocusAPI(Index As Integer)
+    If (Index < 2) Then
+        UpdateFlyout 1, True
+    Else
+        UpdateFlyout 3, True
+    End If
+End Sub
+
+Private Sub cboBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.ttlPanel(1).hWnd
+            Else
+                newTargetHwnd = Me.cboBrushSetting(1).hWnd
+            End If
+        Case 1
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cboBrushSetting(0).hWnd
+            Else
+                newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+            End If
+        Case 2
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.chkSampleMerged.hWnd
+            Else
+                newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
+            End If
+    End Select
+End Sub
+
 Private Sub chkAligned_Click()
     Tools_Clone.SetBrushAligned chkAligned.Value
 End Sub
 
+Private Sub chkAligned_GotFocusAPI()
+    UpdateFlyout 3, True
+End Sub
+
+Private Sub chkAligned_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(3).hWnd
+    Else
+        newTargetHwnd = Me.chkSampleMerged.hWnd
+    End If
+End Sub
+
 Private Sub chkSampleMerged_Click()
     Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
+End Sub
+
+Private Sub chkSampleMerged_GotFocusAPI()
+    UpdateFlyout 3, True
+End Sub
+
+Private Sub chkSampleMerged_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkAligned.hWnd
+    Else
+        newTargetHwnd = Me.cboBrushSetting(2).hWnd
+    End If
+End Sub
+
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.sltBrushSetting(1).hWndSpinner
+            Case 1
+                newTargetHwnd = Me.cboBrushSetting(1).hWnd
+            Case 2
+                If Me.sldSpacing.Visible Then
+                    newTargetHwnd = Me.sldSpacing.hWndSpinner
+                Else
+                    newTargetHwnd = Me.btsSpacing.hWnd
+                End If
+            Case 3
+                newTargetHwnd = Me.cboBrushSetting(2).hWnd
+        End Select
+    Else
+        Dim newIndex As Long
+        newIndex = Index + 1
+        If (newIndex > 3) Then newIndex = 0
+        newTargetHwnd = Me.ttlPanel(newIndex).hWnd
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -248,11 +497,11 @@ Private Sub Form_Load()
     cboBrushSetting(2).ListIndex = 0
     cboBrushSetting(2).SetAutomaticRedraws True, True
     
-    ''Populate any other list-style UI elements
-    'btsSpacing.AddItem "auto", 0
-    'btsSpacing.AddItem "manual", 1
-    'btsSpacing.ListIndex = 0
-    'UpdateSpacingVisibility
+    'Populate any other list-style UI elements
+    btsSpacing.AddItem "auto", 0
+    btsSpacing.AddItem "manual", 1
+    btsSpacing.ListIndex = 0
+    UpdateSpacingVisibility
     
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -271,23 +520,25 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
 End Sub
 
-'Updating against the current theme accomplishes a number of things:
-' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
-' 2) All tooltips and captions are translated according to the current language.
-' 3) ApplyThemeAndTranslations is called, which redraws the form itself according to any theme and/or system settings.
-'
-'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub UpdateAgainstCurrentTheme()
-
-    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
-    ' any common controls that may still exist in the program.)
-    ApplyThemeAndTranslations Me
-
+Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
+    If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
 
-'Private Sub sldSpacing_Change()
-'    Tools_Clone.SetBrushSpacing sldSpacing.Value
-'End Sub
+Private Sub sldSpacing_Change()
+    Tools_Clone.SetBrushSpacing sldSpacing.Value
+End Sub
+
+Private Sub sldSpacing_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub sldSpacing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsSpacing.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    End If
+End Sub
 
 Private Sub sltBrushSetting_Change(Index As Integer)
     
@@ -313,6 +564,97 @@ Private Sub sltBrushSetting_Change(Index As Integer)
     
 End Sub
 
+Private Sub sltBrushSetting_GotFocusAPI(Index As Integer)
+    Select Case Index
+        Case 0, 1
+            UpdateFlyout 0, True
+        Case Else
+            UpdateFlyout 2, True
+    End Select
+End Sub
+
+Private Sub sltBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.ttlPanel(0).hWnd
+            Else
+                newTargetHwnd = Me.sltBrushSetting(1).hWndSlider
+            End If
+        Case 1
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.sltBrushSetting(0).hWndSpinner
+            Else
+                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+            End If
+        Case 2
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.ttlPanel(2).hWnd
+            Else
+                newTargetHwnd = Me.sltBrushSetting(3).hWndSlider
+            End If
+        Case 3
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.sltBrushSetting(2).hWndSpinner
+            Else
+                newTargetHwnd = Me.btsSpacing.hWnd
+            End If
+    End Select
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    Dim newIndex As Long
+    
+    If shiftTabWasPressed Then
+        newIndex = Index - 1
+        If (newIndex < 0) Then newIndex = 3
+        newTargetHwnd = Me.cmdFlyoutLock(newIndex).hWnd
+    Else
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.sltBrushSetting(0).hWndSlider
+            Case 1
+                newTargetHwnd = Me.cboBrushSetting(0).hWnd
+            Case 2
+                newTargetHwnd = Me.sltBrushSetting(2).hWndSlider
+            Case 3
+                newTargetHwnd = Me.chkAligned.hWnd
+        End Select
+    End If
+    
+End Sub
+
+'Updating against the current theme accomplishes a number of things:
+' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 2) All tooltips and captions are translated according to the current language.
+' 3) ApplyThemeAndTranslations is called, which redraws the form itself according to any theme and/or system settings.
+'
+'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
+Public Sub UpdateAgainstCurrentTheme()
+
+    'Flyout lock controls use the same behavior across all instances
+    Dim buttonSize As Long
+    buttonSize = Interface.FixDPI(16)
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
+    
+    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    ' any common controls that may still exist in the program.)
+    ApplyThemeAndTranslations Me
+
+End Sub
+
 'If you want to set all paintbrush settings at once, use this function
 Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushSize sltBrushSetting(0).Value
@@ -324,7 +666,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushAligned chkAligned.Value
     Tools_Clone.SetBrushWrapMode GetWrapModeFromIndex(cboBrushSetting(2).ListIndex)
     Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
-    'If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
+    If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -338,12 +680,12 @@ Public Sub SyncUIToAllPaintbrushSettings()
     chkAligned.Value = Tools_Clone.GetBrushAligned()
     cboBrushSetting(2).ListIndex = GetIndexFromWrapMode(Tools_Clone.GetBrushWrapMode())
     sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
-    'If (Tools_Clone.GetBrushSpacing() = 0#) Then
-    '    btsSpacing.ListIndex = 0
-    'Else
-    '    btsSpacing.ListIndex = 1
-    '    sldSpacing.Value = Tools_Clone.GetBrushSpacing()
-    'End If
+    If (Tools_Clone.GetBrushSpacing() = 0#) Then
+        btsSpacing.ListIndex = 0
+    Else
+        btsSpacing.ListIndex = 1
+        sldSpacing.Value = Tools_Clone.GetBrushSpacing()
+    End If
 End Sub
 
 'Helper functions to translate between dropdown "pattern mode" index and PD_2D_WrapMode enum
@@ -387,12 +729,46 @@ Private Function GetIndexFromWrapMode(ByVal srcMode As PD_2D_WrapMode) As Long
 
 End Function
 
-'Private Sub UpdateSpacingVisibility()
-'    If (btsSpacing.ListIndex = 0) Then
-'        sldSpacing.Visible = False
-'        Tools_Clone.SetBrushSpacing 0#
-'    Else
-'        sldSpacing.Visible = True
-'        Tools_Clone.SetBrushSpacing sldSpacing.Value
-'    End If
-'End Sub
+'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically
+' hide any other open flyouts, as necessary.
+Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As Boolean = True)
+    
+    'Ensure we have a flyout manager
+    If (m_Flyout Is Nothing) Then Set m_Flyout = New pdFlyout
+    
+    'Exit if we're already in the process of synchronizing
+    If m_Flyout.GetFlyoutSyncState() Then Exit Sub
+    m_Flyout.SetFlyoutSyncState True
+    
+    'Ensure we have a flyout manager, then raise the corresponding panel
+    If newState Then
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 0, 0, Interface.FixDPI(-8))
+    Else
+        If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
+    End If
+    
+    'Update titlebar state(s) to match
+    Dim i As Long
+    For i = ttlPanel.lBound To ttlPanel.UBound
+        If (i = m_Flyout.GetFlyoutTrackerID()) Then
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
+        Else
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
+        End If
+    Next i
+    
+    'Clear the synchronization flag before exiting
+    m_Flyout.SetFlyoutSyncState False
+    
+End Sub
+
+Private Sub UpdateSpacingVisibility()
+    If (btsSpacing.ListIndex = 0) Then
+        sldSpacing.Visible = False
+        Tools_Paint.SetBrushSpacing 0#
+    Else
+        sldSpacing.Visible = True
+        Tools_Paint.SetBrushSpacing sldSpacing.Value
+    End If
+End Sub
+

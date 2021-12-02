@@ -634,8 +634,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             Dim sampleSA As SafeArray1D, dstSA As SafeArray1D
             
             Dim x As Long, y As Long, xStride As Long, tmpFloat As Single
-            Dim fLookup() As Single
-            ReDim fLookup(0 To 255) As Single
+            Dim fLookup(0 To 255) As Single
             
             For x = 0 To 255
                 fLookup(x) = CSng(x) / 255!
