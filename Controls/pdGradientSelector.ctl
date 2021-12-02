@@ -392,9 +392,9 @@ Private Sub UpdateControlLayout()
         'The clickable area is placed relative to the caption
         With m_ReverseRect
             .Top = ucSupport.GetCaptionBottom + 2
-            .Left = (bWidth - 2) - .Width
-            .Width = Interface.FixDPI(24)
             .Height = (bHeight - 2) - .Top
+            .Width = Interface.FixDPI(24)
+            .Left = (bWidth - 2) - .Width
         End With
         
         With m_GradientRect
@@ -411,7 +411,7 @@ Private Sub UpdateControlLayout()
             .Top = 1
             .Height = (bHeight - 2) - .Top
             .Width = Interface.FixDPI(24)
-            .Left = (bWidth - 2) - .Left
+            .Left = (bWidth - 2) - .Width
         End With
         
         With m_GradientRect
