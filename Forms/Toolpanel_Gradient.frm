@@ -97,13 +97,13 @@ Begin VB.Form toolpanel_Gradient
       Left            =   0
       Top             =   1080
       Visible         =   0   'False
-      Width           =   3375
-      _ExtentX        =   5953
+      Width           =   3255
+      _ExtentX        =   5741
       _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   2880
+         Left            =   2760
          TabIndex        =   5
          Top             =   330
          Width           =   390
@@ -118,8 +118,8 @@ Begin VB.Form toolpanel_Gradient
          Left            =   0
          TabIndex        =   6
          Top             =   0
-         Width           =   2775
-         _ExtentX        =   4895
+         Width           =   2730
+         _ExtentX        =   4815
          _ExtentY        =   1217
          Caption         =   "opacity"
          FontSizeCaption =   10
@@ -138,38 +138,39 @@ Begin VB.Form toolpanel_Gradient
       Width           =   2400
       _ExtentX        =   5292
       _ExtentY        =   635
-      Caption         =   "blend / alpha mode"
+      Caption         =   "blend mode"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   495
+      Height          =   855
       Index           =   1
       Left            =   3120
       Top             =   2160
       Visible         =   0   'False
       Width           =   3135
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      _ExtentX        =   5530
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   2640
          TabIndex        =   8
-         Top             =   0
+         Top             =   360
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdDropDown cboSetting 
-         Height          =   375
+         Height          =   735
          Index           =   1
-         Left            =   240
+         Left            =   120
          TabIndex        =   9
          Top             =   0
-         Width           =   2310
-         _ExtentX        =   3863
-         _ExtentY        =   661
+         Width           =   2430
+         _ExtentX        =   4286
+         _ExtentY        =   1296
+         Caption         =   "alpha mode"
          FontSizeCaption =   10
       End
    End

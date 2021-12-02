@@ -257,7 +257,7 @@ Begin VB.Form toolpanel_Clone
       Width           =   2400
       _ExtentX        =   5292
       _ExtentY        =   635
-      Caption         =   "blend / alpha mode"
+      Caption         =   "blend mode"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdTitle ttlPanel 
@@ -273,34 +273,35 @@ Begin VB.Form toolpanel_Clone
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   495
+      Height          =   855
       Index           =   1
       Left            =   2640
       Top             =   1800
       Visible         =   0   'False
       Width           =   3135
       _ExtentX        =   5530
-      _ExtentY        =   873
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   2640
          TabIndex        =   13
-         Top             =   0
+         Top             =   360
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdDropDown cboBrushSetting 
-         Height          =   375
+         Height          =   735
          Index           =   1
-         Left            =   240
+         Left            =   120
          TabIndex        =   14
          Top             =   0
-         Width           =   2295
-         _ExtentX        =   4048
-         _ExtentY        =   661
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   1296
+         Caption         =   "alpha mode"
          FontSizeCaption =   10
       End
    End

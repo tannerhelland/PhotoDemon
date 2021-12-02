@@ -106,7 +106,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   2895
       Index           =   2
-      Left            =   7680
+      Left            =   7440
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
@@ -228,7 +228,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   1
-      Left            =   3840
+      Left            =   3720
       TabIndex        =   16
       Top             =   0
       Width           =   3510
@@ -240,7 +240,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   1815
       Index           =   1
-      Left            =   3720
+      Left            =   3600
       Top             =   960
       Visible         =   0   'False
       Width           =   3615
@@ -286,7 +286,7 @@ Begin VB.Form toolpanel_MoveSize
    End
    Begin PhotoDemon.pdSlider sltLayerAngle 
       Height          =   405
-      Left            =   3840
+      Left            =   3720
       TabIndex        =   10
       Top             =   420
       Width           =   3375
@@ -300,7 +300,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   2
-      Left            =   7680
+      Left            =   7440
       TabIndex        =   17
       Top             =   0
       Width           =   3495
@@ -311,7 +311,7 @@ Begin VB.Form toolpanel_MoveSize
    End
    Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
       Height          =   330
-      Left            =   7800
+      Left            =   7560
       TabIndex        =   13
       Top             =   480
       Width           =   3450

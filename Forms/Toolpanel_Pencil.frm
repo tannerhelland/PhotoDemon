@@ -32,7 +32,7 @@ Begin VB.Form toolpanel_Pencil
    Visible         =   0   'False
    Begin PhotoDemon.pdCheckBox chkAntialiasing 
       Height          =   375
-      Left            =   6240
+      Left            =   5640
       TabIndex        =   2
       Top             =   240
       Width           =   3495
@@ -43,7 +43,7 @@ Begin VB.Form toolpanel_Pencil
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   375
       Index           =   0
-      Left            =   3480
+      Left            =   3000
       TabIndex        =   1
       Top             =   375
       Width           =   2295
@@ -58,8 +58,8 @@ Begin VB.Form toolpanel_Pencil
       Left            =   0
       TabIndex        =   0
       Top             =   360
-      Width           =   3120
-      _ExtentX        =   5503
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   582
       FontSizeCaption =   10
       Min             =   1
@@ -77,8 +77,8 @@ Begin VB.Form toolpanel_Pencil
       Left            =   0
       TabIndex        =   3
       Top             =   0
-      Width           =   3135
-      _ExtentX        =   4048
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "size"
       Value           =   0   'False
@@ -89,13 +89,13 @@ Begin VB.Form toolpanel_Pencil
       Left            =   0
       Top             =   1320
       Visible         =   0   'False
-      Width           =   3735
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      Width           =   3255
+      _ExtentX        =   5741
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   3240
+         Left            =   2760
          TabIndex        =   4
          Top             =   330
          Width           =   390
@@ -110,8 +110,8 @@ Begin VB.Form toolpanel_Pencil
          Left            =   0
          TabIndex        =   5
          Top             =   0
-         Width           =   3135
-         _ExtentX        =   5530
+         Width           =   2730
+         _ExtentX        =   4815
          _ExtentY        =   1217
          Caption         =   "opacity"
          FontSizeCaption =   10
@@ -124,44 +124,45 @@ Begin VB.Form toolpanel_Pencil
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   360
       Index           =   1
-      Left            =   3360
+      Left            =   2880
       TabIndex        =   6
       Top             =   0
       Width           =   2400
       _ExtentX        =   5292
       _ExtentY        =   635
-      Caption         =   "blend / alpha mode"
+      Caption         =   "blend mode"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   495
+      Height          =   855
       Index           =   1
       Left            =   3840
       Top             =   1320
       Visible         =   0   'False
       Width           =   3135
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      _ExtentX        =   5530
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   2640
          TabIndex        =   7
-         Top             =   0
+         Top             =   360
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdDropDown cboBrushSetting 
-         Height          =   375
+         Height          =   735
          Index           =   1
-         Left            =   240
+         Left            =   120
          TabIndex        =   8
          Top             =   0
-         Width           =   2310
-         _ExtentX        =   3863
-         _ExtentY        =   661
+         Width           =   2430
+         _ExtentX        =   4286
+         _ExtentY        =   1296
+         Caption         =   "alpha mode"
          FontSizeCaption =   10
       End
    End

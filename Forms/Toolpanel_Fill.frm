@@ -41,13 +41,13 @@ Begin VB.Form toolpanel_Fill
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdButtonStrip btsFillArea 
-      Height          =   480
+      Height          =   450
       Left            =   8280
       TabIndex        =   0
       Top             =   345
       Width           =   2655
       _ExtentX        =   4683
-      _ExtentY        =   847
+      _ExtentY        =   794
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sldFillTolerance 
@@ -145,37 +145,38 @@ Begin VB.Form toolpanel_Fill
       Width           =   2400
       _ExtentX        =   5292
       _ExtentY        =   635
-      Caption         =   "blend / alpha mode"
+      Caption         =   "blend mode"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   495
+      Height          =   855
       Index           =   1
       Left            =   3600
       Top             =   840
       Visible         =   0   'False
       Width           =   3135
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      _ExtentX        =   5530
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   2640
          TabIndex        =   8
-         Top             =   0
+         Top             =   360
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdDropDown cboFillAlphaMode 
-         Height          =   375
-         Left            =   240
+         Height          =   735
+         Left            =   120
          TabIndex        =   9
          Top             =   0
-         Width           =   2310
-         _ExtentX        =   3863
-         _ExtentY        =   661
+         Width           =   2430
+         _ExtentX        =   4286
+         _ExtentY        =   1296
+         Caption         =   "alpha mode"
          FontSizeCaption =   10
       End
    End
@@ -256,13 +257,13 @@ Begin VB.Form toolpanel_Fill
          StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdButtonStrip btsFillMerge 
-         Height          =   825
+         Height          =   810
          Left            =   120
          TabIndex        =   16
          Top             =   480
          Width           =   2775
-         _ExtentX        =   3625
-         _ExtentY        =   2302
+         _ExtentX        =   4895
+         _ExtentY        =   1429
          Caption         =   "sampling area"
          FontSizeCaption =   10
       End

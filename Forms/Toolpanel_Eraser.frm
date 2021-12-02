@@ -100,7 +100,7 @@ Begin VB.Form toolpanel_Eraser
       CausesValidation=   0   'False
       Height          =   330
       Index           =   2
-      Left            =   3360
+      Left            =   3000
       TabIndex        =   4
       Top             =   360
       Width           =   3135
@@ -121,8 +121,8 @@ Begin VB.Form toolpanel_Eraser
       Left            =   0
       TabIndex        =   5
       Top             =   360
-      Width           =   3120
-      _ExtentX        =   5503
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   582
       FontSizeCaption =   10
       Min             =   1
@@ -140,8 +140,8 @@ Begin VB.Form toolpanel_Eraser
       Left            =   0
       TabIndex        =   6
       Top             =   0
-      Width           =   3135
-      _ExtentX        =   4048
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "size"
       Value           =   0   'False
@@ -152,13 +152,13 @@ Begin VB.Form toolpanel_Eraser
       Left            =   0
       Top             =   840
       Visible         =   0   'False
-      Width           =   3735
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      Width           =   3255
+      _ExtentX        =   5741
+      _ExtentY        =   1508
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   3240
+         Left            =   2760
          TabIndex        =   7
          Top             =   330
          Width           =   390
@@ -173,8 +173,8 @@ Begin VB.Form toolpanel_Eraser
          Left            =   0
          TabIndex        =   8
          Top             =   0
-         Width           =   3135
-         _ExtentX        =   5530
+         Width           =   2730
+         _ExtentX        =   4815
          _ExtentY        =   1217
          Caption         =   "opacity"
          FontSizeCaption =   10
@@ -187,7 +187,7 @@ Begin VB.Form toolpanel_Eraser
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   360
       Index           =   1
-      Left            =   3360
+      Left            =   2880
       TabIndex        =   9
       Top             =   0
       Width           =   3135
