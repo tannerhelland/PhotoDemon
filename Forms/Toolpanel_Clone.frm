@@ -237,8 +237,8 @@ Begin VB.Form toolpanel_Clone
          Left            =   0
          TabIndex        =   10
          Top             =   0
-         Width           =   2700
-         _ExtentX        =   4763
+         Width           =   2730
+         _ExtentX        =   4815
          _ExtentY        =   1217
          Caption         =   "opacity"
          FontSizeCaption =   10
