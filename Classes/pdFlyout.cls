@@ -243,7 +243,7 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
     ' Vertical positioning is not important - the flyout always appears safely beneath the top
     ' tool options panel - but left/right positioning needs to ensure it lies inside the canvas area,
     ' and *not* over neighboring toolboxes (if any).
-    If (flyoutRect.Left < 0) Then flyoutRect.Left = 0
+    If (flyoutRect.Left < ownerFormRect.Left) Then flyoutRect.Left = ownerFormRect.Left
     If (flyoutRect.Right > ownerFormRect.Right) Then
         flyoutRect.Left = ownerFormRect.Right - flyoutPanel.GetWidth()
         flyoutRect.Right = ownerFormRect.Right

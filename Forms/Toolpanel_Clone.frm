@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_Clone
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   7440
+   ClientHeight    =   3420
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   17040
+   ClientWidth     =   11865
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +25,9 @@ Begin VB.Form toolpanel_Clone
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   496
+   ScaleHeight     =   228
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1136
+   ScaleWidth      =   791
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -640,12 +640,11 @@ Public Sub UpdateAgainstCurrentTheme()
 
     'Flyout lock controls use the same behavior across all instances
     Dim buttonSize As Long
-    buttonSize = Interface.FixDPI(16)
+    buttonSize = Interface.FixDPI(18)
     
     Dim i As Long
     For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignImage "push_pin", , buttonSize, buttonSize
         cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
         cmdFlyoutLock(i).Value = False
     Next i
@@ -772,4 +771,3 @@ Private Sub UpdateSpacingVisibility()
         Tools_Paint.SetBrushSpacing sldSpacing.Value
     End If
 End Sub
-
