@@ -467,7 +467,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         txtSeed.UpdateAgainstCurrentTheme
         cmdRandomize.UpdateAgainstCurrentTheme
-        cmdRandomize.AssignTooltip "Generate a new random number seed."
+        cmdRandomize.AssignTooltip UserControls.GetCommonTranslation(pduct_Randomize)
         
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage

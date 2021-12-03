@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.372</langversion>
+<langversion>1.0.374</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3086,6 +3086,16 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<translation>Оваа акција бара активна селекција. Ве молиме да се создаде избор пред да продолжите.</translation>
+</phrase>
+
+<phrase>
+<original>Export selection as image</original>
+<translation>избор на извозот, како на сликата</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon selection</original>
 <translation>избор PhotoDemon</translation>
 </phrase>
@@ -3125,15 +3135,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Непозната грешка. Изборот не е зачувана. Ве молиме обидете се повторно.</translation>
 </phrase>
 
-<phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Оваа акција бара активна селекција. Ве молиме да се создаде избор пред да продолжите.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>избор на извозот, како на сликата</translation>
-</phrase>
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3175,6 +3177,8 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Наоѓање на границата избор</translation>
 </phrase>
 
+<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Креирај избор</translation>
@@ -3200,7 +3204,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3409,6 +3413,58 @@ Please enter a numeric value.</original>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>Претходно зачувана мемории може да биде избран тука. Можете да ги снимите тековните поставувања како нова дефиниција со кликнување на копчето Зачувај Дефинирајте на десната страна.</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>Случајно изберете новите поставувања за оваа алатка. Ова е корисно за истражување на тоа како различни поставувања ќе имаат ефект на сликата.</translation>
+</phrase>
+
+<phrase>
+<original>Redo (fast-forward to a later state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>Ресетирање на сите поставки на стандардните вредности.</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Снимите тековните поставувања како нова дефиниција.</translation>
+</phrase>
+
+<phrase>
+<original>Undo (rewind to an earlier state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pin this panel open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation></translation>
+</phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -4271,37 +4327,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>Ресетирање на сите поставки на стандардните вредности.</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Случајно изберете новите поставувања за оваа алатка. Ова е корисно за истражување на тоа како различни поставувања ќе имаат ефект на сликата.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>Снимите тековните поставувања како нова дефиниција.</translation>
-</phrase>
-
-<phrase>
-<original>Undo (rewind to an earlier state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Redo (fast-foward to a later state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Претходно зачувана мемории може да биде избран тука. Можете да ги снимите тековните поставувања како нова дефиниција со кликнување на копчето Зачувај Дефинирајте на десната страна.</translation>
-</phrase>
-
-<!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4393,11 +4419,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
-<original>Toggle between 1x and repeating previews</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Current frame: %1 of %2</original>
 <translation></translation>
 </phrase>
@@ -4407,7 +4428,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4434,13 +4455,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>Generate a new random number seed.</original>
-<translation></translation>
-</phrase>
-
-<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -7442,7 +7456,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -9823,14 +9837,14 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>ниво на компресија</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -9847,7 +9861,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10662,7 +10676,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11535,11 +11549,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Line Selection</original>
-<translation>Избор линија</translation>
-</phrase>
-
-<phrase>
 <original>Polygon Selection</original>
 <translation>Избор полигон</translation>
 </phrase>
@@ -11620,11 +11629,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Line selection tool</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Polygon selection tool</original>
 <translation></translation>
 </phrase>
@@ -11674,26 +11678,11 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
-
-<phrase>
-<original>source settings</original>
-<translation></translation>
-</phrase>
+<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>blend / alpha mode</original>
-<translation>мешавина</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>цврстина</translation>
 </phrase>
 
 <phrase>
@@ -11709,6 +11698,21 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>flow</original>
 <translation>проток</translation>
+</phrase>
+
+<phrase>
+<original>spacing</original>
+<translation>проред</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>цврстина</translation>
+</phrase>
+
+<phrase>
+<original>source settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11731,10 +11735,20 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
-<original>after clicking, return to previous tool</original>
+<original>after clicking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>return to previous tool</original>
 <translation></translation>
 </phrase>
 
@@ -11758,14 +11772,9 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<phrase>
-<original>spacing</original>
-<translation>проред</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -11773,13 +11782,23 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>area</original>
-<translation>област</translation>
+<original>brush style</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
 <translation>толеранција</translation>
+</phrase>
+
+<phrase>
+<original>compare pixels by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11827,7 +11846,12 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Оваа опција контролира како се анализираат пикселите при додавање на нив до пополнување.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>center offset</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>linear</original>
@@ -11854,7 +11878,12 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>modify measurement</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>share measurements between images</original>
@@ -11863,6 +11892,16 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>swap points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clear points</original>
 <translation></translation>
 </phrase>
 
@@ -11877,11 +11916,16 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>rotate 90</original>
+<original>use measurement to</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Големина (Ш, ж)</translation>
+</phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -11894,38 +11938,8 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation>слој позиција (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>големина слој (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>layer angle</original>
-<translation>агол слој</translation>
-</phrase>
-
-<phrase>
-<original>layer shear (x, y)</original>
-<translation>слој смолкнување (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>опции интеракција</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>автоматски да го активира слој под глушецот</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>игнорираат транспарентни пиксели кога автоматско активирање слоеви</translation>
+<original>ignore transparent pixels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11949,23 +11963,28 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>make changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>позиција (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>shear (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto select layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer changes permanent</original>
 <translation>Направете промени слој постојан</translation>
-</phrase>
-
-<phrase>
-<original>size and position</original>
-<translation>големината и позицијата</translation>
-</phrase>
-
-<phrase>
-<original>angle and shear</original>
-<translation>агол и смолкнување</translation>
-</phrase>
-
-<phrase>
-<original>tool settings</original>
-<translation>поставки алатка</translation>
 </phrase>
 
 <phrase>
@@ -11973,30 +11992,25 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Направете тековната преобразува слој (големина, агол, и смолкнување) трајна. Оваа акција не е потребно, но ако гледиштето рендерирање е бавен, тоа може да се подобри перформанси.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>corner rounding</original>
-<translation>агол заокружување</translation>
+<original>(no additional options)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>line width</original>
-<translation>широчина на линија</translation>
+<original>area</original>
+<translation>област</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>2 (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1 (x, y)</translation>
+<original>round corners</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12020,6 +12034,26 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intersect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>feathered</original>
 <translation>пернат</translation>
 </phrase>
@@ -12037,16 +12071,6 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>border</original>
 <translation>граница</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>позиција (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>Големина (Ш, ж)</translation>
 </phrase>
 
 <phrase>
@@ -12085,11 +12109,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Оваа опција се прилагодува на ширината на избор линија.</translation>
-</phrase>
-
-<phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
 <translation>Оваа опција го подесува кривина, доколку ги има, на полигон селекции страни.</translation>
 </phrase>
@@ -12122,8 +12141,18 @@ Would сакате да ги зачувате вашата листа сериј
 <!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>font style</original>
-<translation>стил на фонтот</translation>
+<original>click to edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
+<translation>фонт</translation>
 </phrase>
 
 <phrase>
@@ -12161,16 +12190,11 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
 <translation>remap</translation>
-</phrase>
-
-<phrase>
-<original>jitter</original>
-<translation>нервнича</translation>
 </phrase>
 
 <phrase>
@@ -12179,23 +12203,13 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>fill background</original>
-<translation>пополни позадина</translation>
+<original>jitter (x, y)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>border style</original>
-<translation>границата стил</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>пополни текст</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>преглед на текст</translation>
+<original>inflate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12204,38 +12218,43 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>h. padding</original>
-<translation>h. Соочи</translation>
+<original>horizontal padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>v. padding</original>
-<translation>v. Соочи</translation>
+<original>vertical padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>character</original>
-<translation>карактер</translation>
+<original>outline text</original>
+<translation>преглед на текст</translation>
 </phrase>
 
 <phrase>
-<original>paragraph</original>
-<translation>став</translation>
+<original>fill background</original>
+<translation>пополни позадина</translation>
 </phrase>
 
 <phrase>
-<original>visual</original>
-<translation>визуелен</translation>
+<original>outline background</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>font</original>
-<translation>фонт</translation>
+<original>fill text</original>
+<translation>пополни текст</translation>
 </phrase>
 
 <phrase>
-<original>special</original>
-<translation>специјални</translation>
+<original>fill and outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to edit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12293,7 +12312,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13612,10 +13631,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5337 phrases. -->
-<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11692 total words. -->
+<!-- As of this build, PhotoDemon contains 5335 phrases. -->
+<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 11707 total words. -->
 
 </pdData>

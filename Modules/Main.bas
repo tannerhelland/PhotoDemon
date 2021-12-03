@@ -423,7 +423,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     Tools_Paint.InitializeBrushEngine
     Tools_Pencil.InitializeBrushEngine
     Tools_Clone.InitializeBrushEngine
-    Selections.InitializeSelectionRendering
+    SelectionUI.InitializeSelectionRendering
     
     '*************************************************************************************************************************************
     ' PhotoDemon works well with multiple monitors.  Check for such a situation now.

@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Drop Down control 2.0
 'Copyright 2016-2021 by Tanner Helland
 'Created: 24/February/16
-'Last updated: 29/April/20
-'Last update: migrate remainder of UI rendering to pd2D
+'Last updated: 01/November/21
+'Last update: new option for "compact" layout, to buy us more space in toolboxes
 '
 'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar in construction to
 ' the pdListBox object, including its reliance on a separate pdListSupport class for managing its data.
@@ -577,10 +577,10 @@ Private Sub RaiseListBox()
     'To construct this rect, we start by calculating the position of the .ListIndex item itself
     With popupRect
         If ucSupport.IsCaptionActive Then
-            .Left = myRect.Left + FixDPI(8)
+            .Left = myRect.Left + Interface.FixDPI(8) - 2
             .Top = myRect.Top + (ucSupport.GetCaptionBottom + 2)
         Else
-            .Left = myRect.Left
+            .Left = myRect.Left - 1
             .Top = myRect.Top
         End If
         .Width = myRect.Right - .Left
@@ -813,7 +813,7 @@ Private Sub HideListBox()
     
 End Sub
 
-'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
+'If a subclass exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the subclass proc.
 Private Sub RemoveSubclass()
     On Error GoTo UnsubclassUnnecessary
     If ((m_ParentHWnd <> 0) And m_SubclassActive) Then
@@ -824,8 +824,8 @@ Private Sub RemoveSubclass()
 UnsubclassUnnecessary:
 End Sub
 
-'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
-' release the hook as soon as the system allows.
+'Release the dropdown's subclass.  In some circumstances, we can't do this immediately, so we set a timer that will
+' release the subclass as soon as the system allows.
 Private Sub SafelyRemoveSubclass()
     If m_InSubclassNow Then
         If (m_SubclassReleaseTimer Is Nothing) Then Set m_SubclassReleaseTimer = New pdTimer
@@ -864,7 +864,7 @@ Private Sub UpdateControlLayout()
         'The dropdown area is placed relative to the caption
         With m_ComboRect
             .Left = Interface.FixDPI(8)
-            .Top = ucSupport.GetCaptionBottom + 3
+            .Top = ucSupport.GetCaptionBottom + 2
             .Width = (bWidth - 2) - .Left
             .Height = (bHeight - 2) - .Top
         End With

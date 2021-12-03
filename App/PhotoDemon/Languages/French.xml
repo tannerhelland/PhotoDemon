@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.558</langversion>
+<langversion>6.7.560</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3091,6 +3091,16 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<translation>Cette action nécessite une sélection active. Veuillez créer une sélection avant de poursuivre.</translation>
+</phrase>
+
+<phrase>
+<original>Export selection as image</original>
+<translation>Exporter la sélection en tant qu'image</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon selection</original>
 <translation>sélection Photodemon</translation>
 </phrase>
@@ -3130,15 +3140,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Une erreur inconnue s'est produite. Sélection non sauvegardée. Veuillez essayer de nouveau.</translation>
 </phrase>
 
-<phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Cette action nécessite une sélection active. Veuillez créer une sélection avant de poursuivre.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Exporter la sélection en tant qu'image</translation>
-</phrase>
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3180,6 +3182,8 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Recherche des contours de la sélection</translation>
 </phrase>
 
+<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Créer une sélection</translation>
@@ -3205,7 +3209,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Cliquez sur le premier point pour terminer la sélection polygonale</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3414,6 +3418,58 @@ Veuillez entrer une valeur numérique.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation>Basculer entre 1x et repéter les aperçus</translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>Les réglages précédemment enregistrés peuvent être sélectionnés ici. Vous pouvez enregistrer les paramètres actuels en tant que nouveau réglage prédéfini, en cliquant sur le bouton Enregistrer juste ici à droite.</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>Choisissez au hasard de nouveaux paramètres pour cet outil. Ceci est utile pour explorer comment les différents réglages affectent l'image.</translation>
+</phrase>
+
+<phrase>
+<original>Redo (fast-forward to a later state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>Réinitialiser tous les réglages à leurs valeurs par défaut.</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Enregistrer les paramètres actuels en tant que nouveau réglage prédéfini.</translation>
+</phrase>
+
+<phrase>
+<original>Undo (rewind to an earlier state)</original>
+<translation>Annuler (revenir à un état précédent)</translation>
+</phrase>
+
+<phrase>
+<original>Pin this panel open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation>Génération d'une nouvelle serie aléatoire de nombres.</translation>
+</phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -4276,37 +4332,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>derniers paramètres utilisés</translation>
 </phrase>
 
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>Réinitialiser tous les réglages à leurs valeurs par défaut.</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Choisissez au hasard de nouveaux paramètres pour cet outil. Ceci est utile pour explorer comment les différents réglages affectent l'image.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>Enregistrer les paramètres actuels en tant que nouveau réglage prédéfini.</translation>
-</phrase>
-
-<phrase>
-<original>Undo (rewind to an earlier state)</original>
-<translation>Annuler (revenir à un état précédent)</translation>
-</phrase>
-
-<phrase>
-<original>Redo (fast-foward to a later state)</original>
-<translation>Refaire (revenir à un état suivant)</translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Les réglages précédemment enregistrés peuvent être sélectionnés ici. Vous pouvez enregistrer les paramètres actuels en tant que nouveau réglage prédéfini, en cliquant sur le bouton Enregistrer juste ici à droite.</translation>
-</phrase>
-
-<!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4398,11 +4424,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
-<original>Toggle between 1x and repeating previews</original>
-<translation>Basculer entre 1x et repéter les aperçus</translation>
-</phrase>
-
-<phrase>
 <original>Current frame: %1 of %2</original>
 <translation>Image d'animation en cours : %1 sur %2</translation>
 </phrase>
@@ -4412,7 +4433,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>%1 sur %2</translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4439,13 +4460,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>Generate a new random number seed.</original>
-<translation>Génération d'une nouvelle serie aléatoire de nombres.</translation>
-</phrase>
-
-<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -7448,7 +7462,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>calque de premier plan</translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -9829,14 +9843,14 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>intervale d'image pour les calques non définis (en ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>Taux de compression</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -9853,7 +9867,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>meilleur</translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10668,7 +10682,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>activer l'animation  (nécessite 2 calques ou plus)</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11547,11 +11561,6 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>Line Selection</original>
-<translation>Sélection linéaire (ligne)</translation>
-</phrase>
-
-<phrase>
 <original>Polygon Selection</original>
 <translation>Sélection polygonale</translation>
 </phrase>
@@ -11632,11 +11641,6 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>Line selection tool</original>
-<translation>Sélection par ligne</translation>
-</phrase>
-
-<phrase>
 <original>Polygon selection tool</original>
 <translation>Sélection polygonale (par points)</translation>
 </phrase>
@@ -11686,26 +11690,11 @@ Vous pouvez alors si besoin
 <translation>Pot de peinture</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
-
-<phrase>
-<original>source settings</original>
-<translation>paramètres de l'outil</translation>
-</phrase>
+<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
 <translation>mode motif</translation>
-</phrase>
-
-<phrase>
-<original>blend / alpha mode</original>
-<translation>mélange / mode alpha</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>dureté</translation>
 </phrase>
 
 <phrase>
@@ -11721,6 +11710,21 @@ Vous pouvez alors si besoin
 <phrase>
 <original>flow</original>
 <translation>débit</translation>
+</phrase>
+
+<phrase>
+<original>spacing</original>
+<translation>espacement</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>dureté</translation>
+</phrase>
+
+<phrase>
+<original>source settings</original>
+<translation>paramètres de l'outil</translation>
 </phrase>
 
 <phrase>
@@ -11743,11 +11747,21 @@ Vous pouvez alors si besoin
 <translation>répartir et renverser dans les deux sens</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
-<original>after clicking, return to previous tool</original>
-<translation>au clic, revenir à l'outil précédent</translation>
+<original>after clicking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>return to previous tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11770,14 +11784,9 @@ Vous pouvez alors si besoin
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<phrase>
-<original>spacing</original>
-<translation>espacement</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -11785,13 +11794,23 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>area</original>
-<translation>région</translation>
+<original>brush style</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
 <translation>tolérance</translation>
+</phrase>
+
+<phrase>
+<original>compare pixels by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11839,7 +11858,12 @@ Vous pouvez alors si besoin
 <translation>Cette option contrôle la façon dont les pixels sont analysés lors de leur ajout au remplissage.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>center offset</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>linear</original>
@@ -11866,7 +11890,12 @@ Vous pouvez alors si besoin
 <translation>spirale</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>modify measurement</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>share measurements between images</original>
@@ -11876,6 +11905,16 @@ Vous pouvez alors si besoin
 <phrase>
 <original>swap points</original>
 <translation>points d'échange</translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation>rotation à 90°</translation>
+</phrase>
+
+<phrase>
+<original>clear points</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11889,11 +11928,16 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>rotate 90</original>
-<translation>rotation à 90°</translation>
+<original>use measurement to</original>
+<translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>size (w, h)</original>
+<translation>taille (w, h)</translation>
+</phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -11906,38 +11950,8 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation>position du calque (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>taille du calque (l, h)</translation>
-</phrase>
-
-<phrase>
-<original>layer angle</original>
-<translation>angle de calque</translation>
-</phrase>
-
-<phrase>
-<original>layer shear (x, y)</original>
-<translation>cisaillement du calque (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>possibilités d'interaction</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>activer automatiquement le calque sous le pointeur de la souris</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignorer les pixels transparents lors de l'autoactivation des calques</translation>
+<original>ignore transparent pixels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11961,23 +11975,28 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>make changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>position (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>shear (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto select layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer changes permanent</original>
 <translation>Rendre les changements de calque permanents</translation>
-</phrase>
-
-<phrase>
-<original>size and position</original>
-<translation>taille / position</translation>
-</phrase>
-
-<phrase>
-<original>angle and shear</original>
-<translation>inclinaison / cisaillement</translation>
-</phrase>
-
-<phrase>
-<original>tool settings</original>
-<translation>paramètres de l'outil</translation>
 </phrase>
 
 <phrase>
@@ -11985,30 +12004,25 @@ Vous pouvez alors si besoin
 <translation>Rendre les transformations de calque en cours (taille, angle et cisaillement) permanentes. Cette action n'est jamais requise, mais si le rendu de la fenêtre d'affichage est lent, cela peut améliorer les performances.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>corner rounding</original>
-<translation>coins arrondis</translation>
+<original>(no additional options)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>line width</original>
-<translation>largeur de ligne</translation>
+<original>area</original>
+<translation>région</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>2ème point (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1er point (x, y)</translation>
+<original>round corners</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12032,6 +12046,26 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intersect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>feathered</original>
 <translation>contours adoucis</translation>
 </phrase>
@@ -12049,16 +12083,6 @@ Vous pouvez alors si besoin
 <phrase>
 <original>border</original>
 <translation>contour</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>taille (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -12097,11 +12121,6 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Cette option permet de régler la largeur d'une sélection par ligne.</translation>
-</phrase>
-
-<phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
 <translation>Cette option permet d'ajuster la courbure, le cas échéant, des côtés d'une sélection polygonale</translation>
 </phrase>
@@ -12134,8 +12153,18 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>font style</original>
-<translation>style</translation>
+<original>click to edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
+<translation>typographie</translation>
 </phrase>
 
 <phrase>
@@ -12173,16 +12202,11 @@ Vous pouvez alors si besoin
 <translation>Cliquer ici pour convertir ce calque pour le texte basique.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
 <translation>redéfinir en</translation>
-</phrase>
-
-<phrase>
-<original>jitter</original>
-<translation>gigue</translation>
 </phrase>
 
 <phrase>
@@ -12191,23 +12215,13 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>fill background</original>
-<translation>remplir l'arrière plan</translation>
+<original>jitter (x, y)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>border style</original>
-<translation>style de contour</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>remplir le texte</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>contour du texte</translation>
+<original>inflate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12216,38 +12230,43 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>h. padding</original>
-<translation>écart Horizontal</translation>
+<original>horizontal padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>v. padding</original>
-<translation>écart Vertical</translation>
+<original>vertical padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>character</original>
-<translation>caractère</translation>
+<original>outline text</original>
+<translation>contour du texte</translation>
 </phrase>
 
 <phrase>
-<original>paragraph</original>
-<translation>paragraphe</translation>
+<original>fill background</original>
+<translation>remplir l'arrière plan</translation>
 </phrase>
 
 <phrase>
-<original>visual</original>
-<translation>aspect</translation>
+<original>outline background</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>font</original>
-<translation>typographie</translation>
+<original>fill text</original>
+<translation>remplir le texte</translation>
 </phrase>
 
 <phrase>
-<original>special</original>
-<translation>spécial</translation>
+<original>fill and outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to edit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12305,7 +12324,7 @@ Vous pouvez alors si besoin
 <translation>Cliquer ici pour convertir en calque de texte avancé</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13633,10 +13652,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5337 phrases. -->
-<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11692 total words. -->
+<!-- As of this build, PhotoDemon contains 5335 phrases. -->
+<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 11707 total words. -->
 
 </pdData>

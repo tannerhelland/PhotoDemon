@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_MoveSize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   4650
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   12075
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,279 +25,299 @@ Begin VB.Form toolpanel_MoveSize
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   310
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdButtonStripVertical btsMoveOptions 
-      Height          =   1320
-      Left            =   120
-      TabIndex        =   13
-      Top             =   60
-      Width           =   2295
-      _ExtentX        =   4048
-      _ExtentY        =   2328
-   End
-   Begin PhotoDemon.pdContainer ctlMoveContainer 
-      Height          =   1455
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2055
       Index           =   0
-      Left            =   2520
-      Top             =   0
-      Width           =   14055
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Left            =   0
+      Top             =   960
+      Visible         =   0   'False
+      Width           =   3975
+      _ExtentX        =   7011
+      _ExtentY        =   3625
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   10
+         Left            =   0
+         Top             =   0
+         Width           =   3450
+         _ExtentX        =   6085
+         _ExtentY        =   423
+         Caption         =   "size (w, h)"
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   2
+         Left            =   120
+         TabIndex        =   6
+         Top             =   390
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   3
+         Left            =   1680
+         TabIndex        =   7
+         Top             =   390
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   609
+      End
       Begin PhotoDemon.pdCheckBox chkAspectRatio 
          Height          =   375
-         Left            =   5265
-         TabIndex        =   16
-         Top             =   885
-         Width           =   3135
-         _ExtentX        =   5530
+         Left            =   90
+         TabIndex        =   8
+         Top             =   840
+         Width           =   3375
+         _ExtentX        =   5953
          _ExtentY        =   661
          Caption         =   "lock aspect ratio"
          Value           =   0   'False
       End
       Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
          Height          =   690
-         Left            =   5190
-         TabIndex        =   2
-         Top             =   60
-         Width           =   2775
-         _ExtentX        =   4895
+         Left            =   0
+         TabIndex        =   9
+         Top             =   1230
+         Width           =   3375
+         _ExtentX        =   5953
          _ExtentY        =   1217
          Caption         =   "transform quality"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
          Index           =   0
-         Left            =   240
-         TabIndex        =   3
-         Top             =   420
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   9
-         Left            =   135
-         Top             =   75
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer position (x, y)"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   10
-         Left            =   2655
-         Top             =   75
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer size (w, h)"
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   1
-         Left            =   240
-         TabIndex        =   4
-         Top             =   840
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   2
-         Left            =   2760
-         TabIndex        =   5
-         Top             =   420
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   3
-         Left            =   2760
-         TabIndex        =   6
-         Top             =   840
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   0
-         Left            =   8520
-         TabIndex        =   7
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   12
-         Left            =   8400
-         Top             =   60
-         Width           =   3360
-         _ExtentX        =   5927
-         _ExtentY        =   503
-         Caption         =   "other options"
+         Left            =   3480
+         TabIndex        =   18
+         Top             =   1590
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
       End
    End
-   Begin PhotoDemon.pdContainer ctlMoveContainer 
-      Height          =   1455
-      Index           =   1
-      Left            =   2520
-      Top             =   0
-      Width           =   14055
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltLayerAngle 
-         Height          =   765
-         Left            =   120
-         TabIndex        =   14
-         Top             =   60
-         Width           =   3495
-         _ExtentX        =   6165
-         _ExtentY        =   1349
-         Caption         =   "layer angle"
-         FontSizeCaption =   10
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdSlider sltLayerShearX 
-         Height          =   765
-         Left            =   4080
-         TabIndex        =   1
-         Top             =   60
-         Width           =   3495
-         _ExtentX        =   6165
-         _ExtentY        =   1349
-         Caption         =   "layer shear (x, y)"
-         FontSizeCaption =   10
-         Min             =   -5
-         Max             =   5
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
-         Height          =   570
-         Left            =   8040
-         TabIndex        =   8
-         Top             =   360
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdSlider sltLayerShearY 
-         Height          =   405
-         Left            =   4080
-         TabIndex        =   12
-         Top             =   840
-         Width           =   3495
-         _ExtentX        =   6165
-         _ExtentY        =   714
-         Min             =   -5
-         Max             =   5
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   4
-         Left            =   8040
-         Top             =   60
-         Width           =   3120
-         _ExtentX        =   5503
-         _ExtentY        =   503
-         Caption         =   "other options"
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlMoveContainer 
-      Height          =   1455
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2895
       Index           =   2
-      Left            =   2520
-      Top             =   0
-      Width           =   14055
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   0
-         Left            =   135
-         Top             =   75
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "interaction options"
-      End
-      Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   9
-         Top             =   360
-         Width           =   5250
-         _ExtentX        =   9260
-         _ExtentY        =   582
-         Caption         =   "automatically activate layer beneath mouse"
-      End
+      Left            =   8160
+      Top             =   960
+      Width           =   3705
+      _ExtentX        =   6535
+      _ExtentY        =   5106
       Begin PhotoDemon.pdCheckBox chkIgnoreTransparent 
          Height          =   330
-         Left            =   240
-         TabIndex        =   10
-         Top             =   720
-         Width           =   5250
-         _ExtentX        =   9260
+         Left            =   120
+         TabIndex        =   1
+         Top             =   0
+         Width           =   3450
+         _ExtentX        =   6085
          _ExtentY        =   582
-         Caption         =   "ignore transparent pixels when auto-activating layers"
+         Caption         =   "ignore transparent pixels"
       End
       Begin PhotoDemon.pdCheckBox chkLayerBorder 
          Height          =   330
-         Left            =   5760
-         TabIndex        =   11
-         Top             =   360
-         Width           =   5250
-         _ExtentX        =   9260
+         Left            =   120
+         TabIndex        =   2
+         Top             =   750
+         Width           =   3450
+         _ExtentX        =   6085
          _ExtentY        =   582
          Caption         =   "show layer borders"
       End
       Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
-         Left            =   5760
+         Left            =   120
          TabIndex        =   0
-         Top             =   720
-         Width           =   5250
-         _ExtentX        =   9260
+         Top             =   1140
+         Width           =   3450
+         _ExtentX        =   6085
          _ExtentY        =   582
          Caption         =   "show resize nodes"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   1
-         Left            =   5655
-         Top             =   75
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
+         Left            =   120
+         Top             =   420
+         Width           =   3360
+         _ExtentX        =   5927
+         _ExtentY        =   423
          Caption         =   "display options"
       End
       Begin PhotoDemon.pdCheckBox chkRotateNode 
          Height          =   330
-         Left            =   5760
-         TabIndex        =   15
-         Top             =   1080
-         Width           =   5250
-         _ExtentX        =   9260
+         Left            =   120
+         TabIndex        =   3
+         Top             =   1530
+         Width           =   3450
+         _ExtentX        =   6085
          _ExtentY        =   582
          Caption         =   "show rotate nodes"
       End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   0
+         Left            =   120
+         Top             =   1950
+         Width           =   3465
+         _ExtentX        =   6112
+         _ExtentY        =   423
+         Caption         =   "make changes permanent"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
+         Height          =   570
+         Left            =   120
+         TabIndex        =   14
+         Top             =   2250
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   2
+         Left            =   3240
+         TabIndex        =   20
+         Top             =   2400
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   0
+      Left            =   0
+      TabIndex        =   15
+      Top             =   0
+      Width           =   3510
+      _ExtentX        =   6191
+      _ExtentY        =   661
+      Caption         =   "position (x, y)"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner tudLayerMove 
+      Height          =   345
+      Index           =   0
+      Left            =   120
+      TabIndex        =   5
+      Top             =   450
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   609
+   End
+   Begin PhotoDemon.pdSpinner tudLayerMove 
+      Height          =   345
+      Index           =   1
+      Left            =   1680
+      TabIndex        =   4
+      Top             =   450
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   609
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   1
+      Left            =   3720
+      TabIndex        =   16
+      Top             =   0
+      Width           =   3510
+      _ExtentX        =   6191
+      _ExtentY        =   661
+      Caption         =   "angle"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   1335
+      Index           =   1
+      Left            =   3960
+      Top             =   960
+      Visible         =   0   'False
+      Width           =   4095
+      _ExtentX        =   7223
+      _ExtentY        =   2355
+      Begin PhotoDemon.pdSlider sltLayerShearX 
+         Height          =   765
+         Left            =   120
+         TabIndex        =   11
+         Top             =   0
+         Width           =   3375
+         _ExtentX        =   6165
+         _ExtentY        =   1349
+         Caption         =   "shear (x, y)"
+         FontSizeCaption =   10
+         Min             =   -5
+         Max             =   5
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdSlider sltLayerShearY 
+         Height          =   405
+         Left            =   120
+         TabIndex        =   12
+         Top             =   840
+         Width           =   3375
+         _ExtentX        =   6165
+         _ExtentY        =   714
+         Min             =   -5
+         Max             =   5
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   1
+         Left            =   3600
+         TabIndex        =   19
+         Top             =   842
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+   End
+   Begin PhotoDemon.pdSlider sltLayerAngle 
+      Height          =   405
+      Left            =   3720
+      TabIndex        =   10
+      Top             =   420
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   714
+      FontSizeCaption =   10
+      Min             =   -360
+      Max             =   360
+      SigDigits       =   2
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   2
+      Left            =   7440
+      TabIndex        =   17
+      Top             =   0
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   661
+      Caption         =   "other options"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
+      Height          =   330
+      Left            =   7560
+      TabIndex        =   13
+      Top             =   480
+      Width           =   3450
+      _ExtentX        =   6085
+      _ExtentY        =   582
+      Caption         =   "auto select layer"
    End
 End
 Attribute VB_Name = "toolpanel_MoveSize"
@@ -309,8 +329,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 09/November/20
-'Last update: add a dedicated lock for layer aspect ratio (see https://github.com/tannerhelland/PhotoDemon/issues/342)
+'Last updated: 05/November/21
+'Last update: overhaul UI to use the new flyout panel design for toolbox options
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -319,38 +339,15 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 
-
 Option Explicit
+
+'Flyout manager
+Private WithEvents m_Flyout As pdFlyout
+Attribute m_Flyout.VB_VarHelpID = -1
 
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
-
-'Two sub-panels are available on the "move options" panel
-Private Sub btsMoveOptions_Click(ByVal buttonIndex As Long)
-    UpdateSubpanel
-End Sub
-
-Private Sub UpdateSubpanel()
-    Dim i As Long
-    For i = 0 To ctlMoveContainer.UBound
-        ctlMoveContainer(i).Visible = (i = btsMoveOptions.ListIndex)
-    Next i
-End Sub
-
-Private Sub btsMoveOptions_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (btsMoveOptions.ListIndex = 0) Then
-        If shiftTabWasPressed Then
-            If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = cboLayerResizeQuality.hWnd
-        Else
-            If tudLayerMove(0).Enabled Then newTargetHwnd = tudLayerMove(0).hWnd Else newTargetHwnd = cboLayerResizeQuality.hWnd
-        End If
-    ElseIf (btsMoveOptions.ListIndex = 1) Then
-        If shiftTabWasPressed Then
-            If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = sltLayerShearY.hWndSpinner
-        End If
-    End If
-End Sub
 
 Private Sub cboLayerResizeQuality_Click()
     
@@ -373,6 +370,7 @@ Private Sub cboLayerResizeQuality_Click()
 End Sub
 
 Private Sub cboLayerResizeQuality_GotFocusAPI()
+    UpdateFlyout 0, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -383,9 +381,9 @@ End Sub
 
 Private Sub cboLayerResizeQuality_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = tudLayerMove(3).hWnd
+        newTargetHwnd = chkAspectRatio.hWnd
     Else
-        If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = btsMoveOptions.hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
     End If
 End Sub
 
@@ -409,11 +407,11 @@ Private Sub chkAspectRatio_Click()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-
+    
 End Sub
 
 Private Sub chkAspectRatio_GotFocusAPI()
+    UpdateFlyout 0, True
     If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(3).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -423,13 +421,33 @@ Private Sub chkAspectRatio_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(3).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
 End Sub
 
+Private Sub chkAspectRatio_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If tudLayerMove(3).Enabled Then newTargetHwnd = tudLayerMove(3).hWnd Else newTargetHwnd = Me.ttlPanel(0).hWnd
+    Else
+        newTargetHwnd = cboLayerResizeQuality.hWnd
+    End If
+End Sub
+
 'En/disable the "ignore transparent layer bits on click activations" setting if the auto-activate clicked layer setting changes
 Private Sub chkAutoActivateLayer_Click()
     chkIgnoreTransparent.Enabled = chkAutoActivateLayer
 End Sub
 
+Private Sub chkAutoActivateLayer_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub chkAutoActivateLayer_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Not shiftTabWasPressed) Then newTargetHwnd = chkIgnoreTransparent.hWnd
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(2).hWnd
+    Else
+        newTargetHwnd = chkIgnoreTransparent.hWnd
+    End If
+End Sub
+
+Private Sub chkIgnoreTransparent_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub chkIgnoreTransparent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -446,6 +464,10 @@ Private Sub chkLayerBorder_Click()
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkLayerBorder_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = chkIgnoreTransparent.hWnd
@@ -458,6 +480,10 @@ End Sub
 Private Sub chkLayerNodes_Click()
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
+
+Private Sub chkLayerNodes_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -473,8 +499,39 @@ Private Sub chkRotateNode_Click()
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkRotateNode_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = chkLayerNodes.hWnd
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkLayerNodes.hWnd
+    Else
+        If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    End If
+End Sub
+
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then newTargetHwnd = Me.cboLayerResizeQuality.hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
+        Case 1
+            If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlPanel(2).hWnd
+        Case 2
+            If shiftTabWasPressed Then
+                If Me.cmdLayerAffinePermanent.Enabled Then newTargetHwnd = Me.cmdLayerAffinePermanent.hWnd Else newTargetHwnd = Me.chkRotateNode.hWnd
+            Else
+                newTargetHwnd = Me.ttlPanel(0).hWnd
+            End If
+    End Select
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
@@ -482,45 +539,23 @@ Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
     Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
 End Sub
 
+Private Sub cmdLayerAffinePermanent_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
 Private Sub cmdLayerAffinePermanent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = sltLayerShearY.hWndSpinner
+        newTargetHwnd = Me.chkRotateNode.hWnd
     Else
-        newTargetHwnd = btsMoveOptions.hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
     End If
-End Sub
-
-Private Sub cmdLayerMove_Click(Index As Integer, ByVal Shift As ShiftConstants)
-    
-    If (Not PDImages.IsImageActive()) Then Exit Sub
-    
-    Select Case Index
-    
-        'Make non-destructive resize permanent
-        Case 0
-            Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
-    
-    End Select
-    
-End Sub
-
-Private Sub cmdLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Index = 0) And (Not shiftTabWasPressed) Then newTargetHwnd = btsMoveOptions.hWnd
 End Sub
 
 Private Sub Form_Load()
     
     Tools.SetToolBusyState True
     
-    'Initialize move tool panels
-    btsMoveOptions.AddItem "size and position", 0
-    btsMoveOptions.AddItem "angle and shear", 1
-    btsMoveOptions.AddItem "tool settings", 2
-    btsMoveOptions.ListIndex = 0
-    UpdateSubpanel
-    
-    'Several reset/apply buttons on this form have very similar purposes
-    cmdLayerMove(0).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    'Esoteric controls get tooltips
     cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cboLayerResizeQuality.SetAutomaticRedraws False
@@ -537,7 +572,6 @@ Private Sub Form_Load()
     Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
     
     'Load any last-used settings for this form
-    'NOTE: this is currently disabled, as all settings on this form are synched to the active layer
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
     m_lastUsedSettings.LoadAllControlValues True
@@ -554,6 +588,15 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SetParentForm Nothing
     End If
     
+    'Failsafe only
+    If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
+    Set m_Flyout = Nothing
+    
+End Sub
+
+'Whenever an active flyout panel is closed, we need to reset the matching titlebar to "closed" state
+Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
+    If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
 
 'Because this tool synchronizes the vast majority of its properties to the active layer
@@ -602,7 +645,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
 End Sub
 
 Private Sub sltLayerAngle_Change()
-    
+        
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
     If (Not Tools.CanvasToolsAllowed) Then Exit Sub
@@ -621,7 +664,6 @@ Private Sub sltLayerAngle_Change()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -630,12 +672,21 @@ Private Sub sltLayerAngle_FinalChange()
 End Sub
 
 Private Sub sltLayerAngle_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltLayerAngle_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_Angle, sltLayerAngle.Value
+End Sub
+
+Private Sub sltLayerAngle_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(1).hWnd
+    Else
+        newTargetHwnd = Me.sltLayerShearX.hWnd
+    End If
 End Sub
 
 Private Sub sltLayerShearX_Change()
@@ -658,7 +709,6 @@ Private Sub sltLayerShearX_Change()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -667,6 +717,7 @@ Private Sub sltLayerShearX_FinalChange()
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -676,7 +727,11 @@ Private Sub sltLayerShearX_LostFocusAPI()
 End Sub
 
 Private Sub sltLayerShearX_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Not shiftTabWasPressed) Then newTargetHwnd = sltLayerShearY.hWndSlider
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltLayerAngle.hWndSpinner
+    Else
+        newTargetHwnd = Me.sltLayerShearY.hWndSlider
+    End If
 End Sub
 
 Private Sub sltLayerShearY_Change()
@@ -699,7 +754,6 @@ Private Sub sltLayerShearY_Change()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -708,6 +762,7 @@ Private Sub sltLayerShearY_FinalChange()
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
+    UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
@@ -720,7 +775,33 @@ Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     If shiftTabWasPressed Then
         newTargetHwnd = sltLayerShearX.hWndSpinner
     Else
-        If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = btsMoveOptions.hWnd
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    End If
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        Select Case Index
+            Case 0
+                newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+            Case 1
+                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+            Case 2
+                newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+        End Select
+    Else
+        Select Case Index
+            Case 0
+                If Me.tudLayerMove(0).Enabled Then newTargetHwnd = Me.tudLayerMove(0).hWnd Else newTargetHwnd = Me.chkAspectRatio.hWnd
+            Case 1
+                newTargetHwnd = Me.sltLayerAngle.hWndSlider
+            Case 2
+                newTargetHwnd = Me.chkAutoActivateLayer.hWnd
+        End Select
     End If
 End Sub
 
@@ -769,8 +850,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
-
+    
 End Sub
 
 'Non-destructive resizing requires the synchronization of several menus, as well.  Because it's time-consuming to invoke
@@ -780,6 +860,7 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
 End Sub
 
 Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
+    UpdateFlyout 0, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
     If (Index = 0) Then
         Processor.FlagInitialNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
@@ -823,10 +904,45 @@ Public Sub UpdateAgainstCurrentTheme()
     'UI images must be updated against theme-specific colors
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(32)
-    cmdLayerMove(0).AssignImage "generic_commit", , buttonSize, buttonSize
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     
+    'Flyout lock controls use the same behavior across all instances
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
+    
     Interface.ApplyThemeAndTranslations Me
+    
+End Sub
+
+'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically
+' hide any other open flyouts, as necessary.
+Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As Boolean = True)
+    
+    'Ensure we have a flyout manager
+    If (m_Flyout Is Nothing) Then Set m_Flyout = New pdFlyout
+    
+    'Exit if we're already in the process of synchronizing
+    If m_Flyout.GetFlyoutSyncState() Then Exit Sub
+    m_Flyout.SetFlyoutSyncState True
+    
+    'Ensure we have a flyout manager, then raise the corresponding panel
+    If newState Then
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
+    Else
+        If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
+    End If
+    
+    'Update titlebar state(s) to match
+    Dim i As Long
+    For i = ttlPanel.lBound To ttlPanel.UBound
+        If (i = m_Flyout.GetFlyoutTrackerID()) Then
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
+        Else
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
+        End If
+    Next i
+    
+    'Clear the synchronization flag before exiting
+    m_Flyout.SetFlyoutSyncState False
     
 End Sub
 
@@ -838,13 +954,13 @@ Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasP
         If (Index > 0) Then
             newTargetHwnd = tudLayerMove(Index - 1).hWnd
         Else
-            newTargetHwnd = btsMoveOptions.hWnd
+            newTargetHwnd = Me.ttlPanel(0).hWnd
         End If
     Else
         If (Index < 3) Then
             newTargetHwnd = tudLayerMove(Index + 1).hWnd
         Else
-            newTargetHwnd = cboLayerResizeQuality.hWnd
+            newTargetHwnd = chkAspectRatio.hWnd
         End If
     End If
 

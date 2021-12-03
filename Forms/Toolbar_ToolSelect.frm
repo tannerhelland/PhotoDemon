@@ -35,7 +35,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   0
       Left            =   120
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   30
       Width           =   1815
       _ExtentX        =   3201
@@ -122,21 +122,11 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
-   Begin PhotoDemon.pdButtonToolbox cmdTools 
-      Height          =   600
-      Index           =   9
-      Left            =   1560
-      TabIndex        =   9
-      Top             =   5040
-      Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
-   End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
       Index           =   0
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -147,7 +137,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   1
       Left            =   840
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -158,7 +148,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   2
       Left            =   1560
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -169,7 +159,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   3
       Left            =   120
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -180,7 +170,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   4
       Left            =   840
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -191,7 +181,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   5
       Left            =   1560
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -202,7 +192,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   6
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   1920
       Width           =   720
       _ExtentX        =   1085
@@ -213,7 +203,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   7
       Left            =   840
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   1920
       Width           =   720
       _ExtentX        =   1085
@@ -222,8 +212,18 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   10
+      Index           =   9
       Left            =   120
+      TabIndex        =   17
+      Top             =   6000
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   10
+      Left            =   840
       TabIndex        =   18
       Top             =   6000
       Width           =   720
@@ -233,18 +233,8 @@ Begin VB.Form toolbar_Toolbox
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   11
-      Left            =   840
-      TabIndex        =   19
-      Top             =   6000
-      Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdButtonToolbox cmdTools 
-      Height          =   600
-      Index           =   12
       Left            =   120
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   7080
       Width           =   720
       _ExtentX        =   1270
@@ -254,7 +244,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   1
       Left            =   120
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   1620
       Width           =   1815
       _ExtentX        =   3201
@@ -265,7 +255,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   2
       Left            =   120
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   2580
       Width           =   1815
       _ExtentX        =   3201
@@ -276,7 +266,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   3
       Left            =   120
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   4140
       Width           =   1815
       _ExtentX        =   3201
@@ -287,7 +277,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   4
       Left            =   120
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   5700
       Width           =   1815
       _ExtentX        =   3201
@@ -298,7 +288,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   5
       Left            =   120
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   6720
       Width           =   1815
       _ExtentX        =   3201
@@ -307,7 +297,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   13
+      Index           =   12
       Left            =   840
       TabIndex        =   0
       Top             =   7080
@@ -329,9 +319,9 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   14
+      Index           =   13
       Left            =   1560
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   7080
       Width           =   720
       _ExtentX        =   1270
@@ -339,9 +329,9 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   15
+      Index           =   14
       Left            =   120
-      TabIndex        =   28
+      TabIndex        =   27
       Top             =   7680
       Width           =   720
       _ExtentX        =   1270
@@ -351,7 +341,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   3
       Left            =   120
-      TabIndex        =   29
+      TabIndex        =   28
       Top             =   3480
       Width           =   720
       _ExtentX        =   1270
@@ -359,9 +349,9 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   16
+      Index           =   15
       Left            =   840
-      TabIndex        =   30
+      TabIndex        =   29
       Top             =   7680
       Width           =   720
       _ExtentX        =   1270
@@ -369,9 +359,9 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   17
+      Index           =   16
       Left            =   1560
-      TabIndex        =   31
+      TabIndex        =   30
       Top             =   7680
       Width           =   720
       _ExtentX        =   1270
@@ -837,9 +827,10 @@ Private Sub NewToolSelected()
         'Measure tool
         Case ND_MEASURE
             Tools_Measure.InitializeMeasureTool
+            Tools_Measure.ResetPoints True
         
         'Selection tools
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+        Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
         
             'See if a selection is already active on the image
             If SelectionsAllowed(False) Then
@@ -848,7 +839,7 @@ Private Sub NewToolSelected()
 
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
-                If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+                If (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
                     SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable
 
                 'A selection is already active, and it doesn't match the current tool type!
@@ -860,11 +851,11 @@ Private Sub NewToolSelected()
                         
                         'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
                         ' against the current selection's settings.
-                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
                         
                     ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
                         PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
-                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 
                     End If
                     
@@ -997,7 +988,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Measure.hWnd
             
         'Rectangular, Elliptical, Line selections
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+        Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             Load toolpanel_Selections
             toolpanel_Selections.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Selections
@@ -1072,7 +1063,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     Dim activeSelectionSubpanel As Long
     If Tools.IsSelectionToolActive Then
     
-        activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool()
+        activeSelectionSubpanel = SelectionUI.GetSelectionSubPanelFromCurrentTool()
         
         For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
             toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = (i = activeSelectionSubpanel)
@@ -1296,7 +1287,6 @@ Public Sub UpdateAgainstCurrentTheme()
     
     cmdTools(SELECT_RECT).AssignImage "select_rect", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_CIRC).AssignImage "select_circle", , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_LINE).AssignImage "select_line", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_POLYGON).AssignImage "select_polygon", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_LASSO).AssignImage "select_lasso", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_WAND).AssignImage "select_wand", , buttonImageSize, buttonImageSize
@@ -1361,7 +1351,6 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(SELECT_RECT).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
     cmdTools(SELECT_CIRC).AssignTooltip shortcutText
-    cmdTools(SELECT_LINE).AssignTooltip "Line Selection"
     shortcutText = g_Language.TranslateMessage("Polygon Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
     cmdTools(SELECT_POLYGON).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
@@ -1411,9 +1400,6 @@ Public Sub UpdateAgainstCurrentTheme()
     m_ToolNames.AddString g_Language.TranslateMessage("Ellipse selection tool")
     m_ToolActions.AddString "tool_select_ellipse"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Line selection tool")
-    m_ToolActions.AddString "tool_select_line"
-    
     m_ToolNames.AddString g_Language.TranslateMessage("Polygon selection tool")
     m_ToolActions.AddString "tool_select_polygon"
     
@@ -1458,6 +1444,9 @@ End Sub
 
 'You *must* call this function before shutdown.  This function will forcibly free cached toolbox windows.
 Public Sub FreeAllToolpanels()
+    
+    'If a flyout panel is open on the current toolbar, close it
+    UserControls.HideOpenFlyouts 0&
     
     'The active toolpanel (if one exists) has had its window bits manually modified so that we can
     ' embed it at the bottom of the main window.  Make certain those window bits are reset before

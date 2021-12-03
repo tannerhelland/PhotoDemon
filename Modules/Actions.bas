@@ -1416,9 +1416,6 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_select_ellipse"
             toolbar_Toolbox.SelectNewTool SELECT_CIRC, (actionSource = pdas_Search), True
         
-        Case "tool_select_line"
-            toolbar_Toolbox.SelectNewTool SELECT_LINE, (actionSource = pdas_Search), True
-        
         Case "tool_select_polygon"
             toolbar_Toolbox.SelectNewTool SELECT_POLYGON, (actionSource = pdas_Search), True
         

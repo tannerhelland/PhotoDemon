@@ -222,7 +222,6 @@ Private Const WM_COMMAND As Long = &H111
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_CTLCOLORSTATIC As Long = &H138
 Private Const WM_DESTROY As Long = &H2
-
 Private Const EN_UPDATE As Long = &H400
 Private Const EM_GETSEL As Long = &HB0
 Private Const EM_SETSEL As Long = &HB1
@@ -813,6 +812,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Raise a matching notification
         If (Not m_HasFocus) Then
             m_HasFocus = True
+            UserControls.PDControlReceivedFocus hWnd
             RaiseEvent GotFocusAPI
         End If
         
@@ -829,6 +829,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Raise a matching notification
         If m_HasFocus Then
             m_HasFocus = False
+            UserControls.PDControlLostFocus hWnd
             RaiseEvent LostFocusAPI
         End If
             
@@ -842,7 +843,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             HandleEditBoxMsgs = 0
             msgEaten = True
         End If
-    
+        
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then
     
@@ -861,7 +862,7 @@ Private Function HandleParentMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
     'The parent receives this message for all kinds of things; we subclass it to track when the edit box's contents have changed.
     ' (And when we don't handle the message, it is *very important* that we forward it correctly!
     If (uiMsg = WM_COMMAND) Then
-            
+        
         'Make sure the command is relative to *our* edit box, and not another one
         If (lParam = m_EditBoxHwnd) Then
             
@@ -985,12 +986,12 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
                     msgEaten = True
                 End If
                 
-                'If the edit box is *not* multiline, check for tab presses and raise them manually
-                If (wParam = VK_TAB) And (Not m_Multiline) Then
-                    
+                'Check for tab presses and raise them manually.  (Note that this step may need to
+                ' be skipped in multiline edit boxes - for now, PD assumes TAB is always a navigation
+                ' command, but perhaps we'll want to use a property to toggle this in the future?)
+                If (wParam = VK_TAB) Then
                     RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
                     msgEaten = True
-                    
                 End If
             
             End If
@@ -1005,7 +1006,7 @@ Friend Function EditBoxKeyboardProc(ByVal nCode As Long, ByVal wParam As Long, B
     
     'If we've shut down our internal hook handling code, ignore this event completely if.
     If (m_HookID <> 0) Then
-
+        
         Dim msgEaten As Boolean: msgEaten = False
         
         'MSDN states that negative codes must be passed to the next hook, without processing

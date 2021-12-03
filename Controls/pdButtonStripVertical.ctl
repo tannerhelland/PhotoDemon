@@ -559,14 +559,14 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As 
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
         ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS
         
-        'Copy this DIB into position #2, beneath the base DIB
+        'Copy this DIB into position 2, beneath the base DIB
         GDI.BitBltWrapper .btImages.GetDIBDC, 0, .btImageHeight, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
         tmpDIB.CreateFromExistingDIB srcDIB
         Filters_Layers.GrayscaleDIB tmpDIB
         
-        'Place it into position #3, beneath the previous two DIBs
+        'Place it into position 3, beneath the previous two DIBs
         GDI.BitBltWrapper .btImages.GetDIBDC, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
@@ -625,7 +625,7 @@ Private Sub UserControl_InitProperties()
     Caption = vbNullString
     FontBold = False
     FontSize = 10
-    FontSizeCaption = 12#
+    FontSizeCaption = 12!
     ListIndex = 0
 End Sub
 
@@ -639,7 +639,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Caption = .ReadProperty("Caption", vbNullString)
         m_FontBold = .ReadProperty("FontBold", False)
         m_FontSize = .ReadProperty("FontSize", 10)
-        FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
+        FontSizeCaption = .ReadProperty("FontSizeCaption", 12!)
         m_ButtonIndex = .ReadProperty("ListIndex", 0)
     End With
 End Sub
@@ -654,7 +654,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10
-        .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12#
+        .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12!
         .WriteProperty "ListIndex", ListIndex, 0
     End With
 End Sub
@@ -726,16 +726,14 @@ Private Sub UpdateControlLayout(Optional ByVal forceUpdate As Boolean = False)
     'Now, we're going to do something odd.  To avoid truncation errors, we're going to dynamically calculate BOTTOM bounds
     ' by looping back through the array, and assigning bottom values to match the top value calculated for the next
     ' button in line.  The final button receives special consideration.
-    If m_numOfButtons > 0 Then
+    If (m_numOfButtons > 0) Then
     
         m_Buttons(m_numOfButtons - 1).btBounds.Bottom = m_ButtonStripRect.Bottom - 2
         
-        If m_numOfButtons > 1 Then
-        
+        If (m_numOfButtons > 1) Then
             For i = 1 To m_numOfButtons - 1
                 m_Buttons(i - 1).btBounds.Bottom = m_Buttons(i).btBounds.Top - 2
             Next i
-        
         End If
         
     End If
@@ -847,7 +845,7 @@ Private Sub RedrawBackBuffer()
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
-    
+
     'NOTE: if a title caption exists, it has already been drawn.  We just need to draw the clickable button portion.
     
     'To improve rendering performance, we cache all colors locally prior to rendering
@@ -878,12 +876,12 @@ Private Sub RedrawBackBuffer()
     fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
     fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
     
-    'This control doesn't maintain its own fonts; instead, it borrows it from the public PD font cache, as necessary
-    Dim tmpFont As pdFont
-    
-    'Next, each individual button is rendered in turn.
+    'Each individual button is rendered in turn.  (0-button strips are not currently supported.)
     If ((m_numOfButtons > 0) And PDMain.IsProgramRunning()) Then
-        
+    
+        'This control doesn't maintain its own fonts; instead, it borrows it from the public PD font cache, as necessary
+        Dim tmpFont As pdFont
+            
         'pd2D simplifies many rendering tasks
         Dim cSurface As pd2DSurface
         Set cSurface = New pd2DSurface

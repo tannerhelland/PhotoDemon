@@ -83,6 +83,25 @@ End Enum
     Private Const pdct_StatusBar = 50, pdct_Strip = 51, pdct_TextBox = 52, pdct_Title = 53
 #End If
 
+'User control text *THAT IS DISPLAYED TO THE USER* needs to be translated.  This module provides a helper
+' function that caches shared control text, and returns it based on this enum.  This provides a nice
+' perf boost for users in other locales, but this should only be used for text that is inherent to PD's
+' user controls, and will appear multiple times in the same session.  (There is a fixed startup cost
+' for generating these translations, and if a translation is unlikely to be used *every* session,
+' translate it locally - not here.)
+Public Enum PD_UserControlText
+    pduct_AnimationRepeatToggle
+    pduct_CommandBarPresetList
+    pduct_CommandBarRandom
+    pduct_CommandBarRedo
+    pduct_CommandBarReset
+    pduct_CommandBarSavePreset
+    pduct_CommandBarUndo
+    pduct_FlyoutLockTitle
+    pduct_FlyoutLockTooltip
+    pduct_Randomize
+End Enum
+
 Public Type PD_LISTITEM
     textEn As String
     textTranslated As String
@@ -139,24 +158,60 @@ Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
 ' figure out how many of the program's GDI objects are being used by UCs, and how many are being created and used elsewhere.
 Private m_PDControlCount As Long
 
-'Dropdown boxes are problematic, because we have to play some weird window ownership games to ensure that the dropdowns
-' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
-' and the hWnd is cached so we can kill that window as necessary.
+Private Enum Win32_GetWindowCmd
+    GW_HWNDFIRST = 0    'The retrieved handle identifies the window of the same type that is highest in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
+    GW_HWNDLAST = 1 'The retrieved handle identifies the window of the same type that is lowest in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
+    GW_HWNDNEXT = 2 'The retrieved handle identifies the window below the specified window in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
+    GW_HWNDPREV = 3 'The retrieved handle identifies the window above the specified window in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
+    GW_OWNER = 4    'The retrieved handle identifies the specified window's owner window, if any. For more information, see Owned Windows.
+    GW_CHILD = 5    'The retrieved handle identifies the child window at the top of the Z order, if the specified window is a parent window; otherwise, the retrieved handle is NULL. The function examines only child windows of the specified window. It does not examine descendant windows.
+    GW_ENABLEDPOPUP = 6 'The retrieved handle identifies the enabled popup window owned by the specified window (the search uses the first such window found using GW_HWNDNEXT); otherwise, if there are no enabled popup windows, the retrieved handle is that of the specified window.
+End Enum
+
+'Dropdown boxes (and similar controls, like flyout panels) are problematic, because we have to
+' play weird window ownership games to ensure that the dropdowns appear "above" or "outside"
+' VB windows, as necessary.  As such, this function is notified whenever a listbox (or flyout)
+' is raised, and the hWnd is cached so we can kill that window as necessary.
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
-Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Public Enum AnimateWindowFlags
+    AW_ACTIVATE = &H20000   'Activates the window. Do not use this value with AW_HIDE.
+    AW_BLEND = &H80000      'Uses a fade effect. This flag can be used only if hwnd is a top-level window.
+    AW_CENTER = &H10&       'Makes the window appear to collapse inward if AW_HIDE is used or expand outward if the AW_HIDE is not used. The various direction flags have no effect.
+    AW_HIDE = &H10000       'Hides the window. By default, the window is shown.
+    AW_HOR_POSITIVE = &H1&  'Animates the window from left to right. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_HOR_NEGATIVE = &H2&  'Animates the window from right to left. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_SLIDE = &H40000      'Uses slide animation. By default, roll animation is used. This flag is ignored when used with AW_CENTER.
+    AW_VER_POSITIVE = &H4&  'Animates the window from top to bottom. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+    AW_VER_NEGATIVE = &H8&  'Animates the window from bottom to top. This flag can be used with roll or slide animation. It is ignored when used with AW_CENTER or AW_BLEND.
+End Enum
+
+#If False Then
+    Private Const AW_ACTIVATE = &H20000, AW_BLEND = &H80000, AW_CENTER = &H10&, AW_HIDE = &H10000, AW_HOR_POSITIVE = &H1&, AW_HOR_NEGATIVE = &H2&, AW_SLIDE = &H40000, AW_VER_POSITIVE = &H4&, AW_VER_NEGATIVE = &H8&
+#End If
+
+Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal uCmd As Win32_GetWindowCmd) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
+Private m_CurrentFlyoutParentHWnd As Long, m_CurrentFlyoutPanelHWnd As Long
+Private m_FlyoutRef As pdFlyout
 
 'To better manage resources, we also track how many API windows we've created/destroyed during this session
 Private m_APIWindowsCreated As Long, m_APIWindowsDestroyed As Long
 
 'Same goes for timers and certain other object types
 Private m_TimersCreated As Long, m_TimersDestroyed As Long
+
+'Common control text shared across multiple instances can be cached in this dictionary, and accessed
+' via the related public function (GetCommonTranslation).
+Private m_CommonTranslations As pdDictionary
 
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
@@ -180,10 +235,9 @@ End Enum
 ' as necessary.
 Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
-Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
+Private Const PD_TT_MAX_WIDTH As Long = 450         'Tips larger than this will be word-wrapped to fit.
 Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
-Private Const AW_BLEND As Long = &H80000
-Private Const AW_HIDE As Long = &H10000
+
 Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_NOMOVE As Long = &H2
@@ -630,6 +684,72 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
 
 End Sub
 
+'You can cache common (shared) translations here.  There is no separate Set function - just call this
+' function to retrieve common translations, and it will automatically translate and store novel requests.
+' (Note that you still need to use a dummy translation line somewhere to ensure the translated text is
+' caught by PD's translation file generator.)
+Public Function GetCommonTranslation(ByVal textKey As PD_UserControlText) As String
+    
+    If (m_CommonTranslations Is Nothing) Then GenerateCommonTranslations
+    If m_CommonTranslations.DoesKeyExist(textKey) Then
+        GetCommonTranslation = m_CommonTranslations.GetEntry_String(textKey)
+    
+    'Failsafe only; translations should never go missing!
+    Else
+        PDDebug.LogAction "WARNING: shared translation missing #" & textKey
+    End If
+    
+End Function
+
+'NOTE: this function should only be called once, on-demand, if a common translation is missing.
+' It will auto-generate all common translations and cache them in a pdDictionary object.
+Private Sub GenerateCommonTranslations()
+    
+    'Reset the shared translation object
+    Set m_CommonTranslations = New pdDictionary
+    
+    'Generate all common translations
+    
+    'Animation controls appear many places now
+    m_CommonTranslations.AddEntry pduct_AnimationRepeatToggle, g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    
+    'Command bars have a lot of tooltip text, owing to their ubiquity
+    m_CommonTranslations.AddEntry pduct_CommandBarPresetList, g_Language.TranslateMessage("Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.")
+    m_CommonTranslations.AddEntry pduct_CommandBarRandom, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
+    m_CommonTranslations.AddEntry pduct_CommandBarRedo, g_Language.TranslateMessage("Redo (fast-forward to a later state)")
+    m_CommonTranslations.AddEntry pduct_CommandBarReset, g_Language.TranslateMessage("Reset all settings to their default values.")
+    m_CommonTranslations.AddEntry pduct_CommandBarSavePreset, g_Language.TranslateMessage("Save the current settings as a new preset.")
+    m_CommonTranslations.AddEntry pduct_CommandBarUndo, g_Language.TranslateMessage("Undo (rewind to an earlier state)")
+    
+    'Flyout panels share a common "lock this panel" explanation tooltip
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Pin this panel open")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)")
+    
+    'PD's built-in "randomize" control displays a tooltip for its "dice" button
+    m_CommonTranslations.AddEntry pduct_Randomize, g_Language.TranslateMessage("Generate a new random number seed.")
+    
+End Sub
+
+'If the active language changes, call this function to reset any shared translations
+Public Sub ResetCommonTranslations()
+    Set m_CommonTranslations = Nothing
+End Sub
+
+Public Sub ThemeFlyoutControls(ByRef cmdFlyoutLock As Variant)
+    
+    'Flyout lock controls use the same behavior across all instances
+    Dim buttonSize As Long
+    buttonSize = Interface.FixDPI(18)
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "push_pin", Nothing, buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
+    
+End Sub
+
 Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
     
     Select Case ctlType
@@ -761,8 +881,8 @@ Public Function GetPDControlCount() As Long
     GetPDControlCount = m_PDControlCount
 End Function
 
-'Whenever a dropdown raises its list box, call this function to set some program-wide flags.  Subsequent focus events
-' will also notify us, and we will kill the list box as necessary.
+'Whenever a dropdown raises its list box, call this function to set some program-wide flags.
+' Subsequent focus events will also notify us, and we will kill the list box as necessary.
 Public Sub NotifyDropDownChangeState(ByVal dropDownHWnd As Long, ByVal dropDownListHWnd As Long, ByVal newState As Boolean)
     
     If newState Then
@@ -775,11 +895,32 @@ Public Sub NotifyDropDownChangeState(ByVal dropDownHWnd As Long, ByVal dropDownL
 
 End Sub
 
+'Whenever a pdPanel object raises a flyout panel, call this function to set some program-wide flags.
+' Subsequent focus events will also notify us, and we will kill the flyout as necessary.
+Public Sub NotifyFlyoutChangeState(ByVal flyoutParentHWnd As Long, ByVal flyoutPanelHWnd As Long, ByRef flyoutManager As pdFlyout, ByVal newState As Boolean)
+    
+    If newState Then
+        m_CurrentFlyoutParentHWnd = flyoutParentHWnd
+        m_CurrentFlyoutPanelHWnd = flyoutPanelHWnd
+        Set m_FlyoutRef = flyoutManager
+    Else
+        m_CurrentFlyoutParentHWnd = 0
+        m_CurrentFlyoutPanelHWnd = 0
+        Set m_FlyoutRef = Nothing
+    End If
+
+End Sub
+
 'Whenever a PD control loses or receives focus, we receive a corresponding notification
 Public Sub PDControlReceivedFocus(ByVal controlHWnd As Long)
     
     'If a dropdown window is still active, hide it now
     HideOpenDropdowns controlHWnd
+    
+    'Do the same for flyout panels, but note that they're a little more complex because
+    ' a single panel can host multiple (nested) controls, so we only close the flyout if focus
+    ' has shifted to a control *not* hosted on the panel (or hosted on something hosted on the panel).
+    HideOpenFlyouts controlHWnd
     
 End Sub
 
@@ -796,7 +937,80 @@ Private Sub HideOpenDropdowns(Optional ByVal hWndResponsible As Long = 0)
         End If
     
     End If
+    
+End Sub
 
+Public Sub HideOpenFlyouts(Optional ByVal hWndResponsible As Long = 0&)
+
+    If (m_CurrentFlyoutParentHWnd <> 0) Or (m_CurrentFlyoutPanelHWnd <> 0) Then
+        
+        'Iterate the hWndResponsible and see if it *is* the panel or *shares* the panel parent.
+        If (m_CurrentFlyoutPanelHWnd <> hWndResponsible) And (m_CurrentFlyoutParentHWnd <> hWndResponsible) Then
+            
+            'If the responsible hWnd is 0, it means we must hide the flyout immediately
+            Dim targetSharesParentOrOwner As Boolean
+            If (hWndResponsible <> 0) Then
+                
+                'Start testing parent controls of the control that now has focus and the flyout.
+                ' (If they have the same parent, we'll leave the flyout open.)
+                Dim testhWnd As Long
+                testhWnd = GetParent(hWndResponsible)
+                Do While (testhWnd <> 0) And (testhWnd <> hWndResponsible)
+                    
+                    'Found a match!  Flag and exit.
+                    If (testhWnd = m_CurrentFlyoutPanelHWnd) Or (testhWnd = m_CurrentFlyoutParentHWnd) Then
+                        targetSharesParentOrOwner = True
+                        Exit Do
+                    End If
+                    
+                    'No parent listed; either the target has no parent or its parent is the desktop.
+                    If (testhWnd = 0) Or (testhWnd = GetDesktopWindow()) Then
+                        targetSharesParentOrOwner = False
+                        Exit Do
+                    End If
+                    
+                    'No failure but no match; find the next parent in line
+                    testhWnd = GetParent(testhWnd)
+                    
+                Loop
+                
+            'Skip ahead immediately; we need to hide the flyout regardless
+            Else
+                targetSharesParentOrOwner = False
+            End If
+            
+            'If the new focused object does not share the same parent or owner as the current flyout, hide the flyout
+            If (Not targetSharesParentOrOwner) Then
+                
+                'Normally, when a flyout panel's parent toolbox loses focus, we deactivate the flyout.
+                ' However, the user can choose to "lock" a flyout in the open position.  In this state,
+                ' we only hide the flyout for mandatory cases (like unloading the toolbox).
+                If (Not m_FlyoutRef Is Nothing) Then
+                    If (m_CurrentFlyoutPanelHWnd = m_FlyoutRef.GetLockedHWnd()) And (hWndResponsible <> 0) Then Exit Sub
+                End If
+                
+                'If we have a reference to a flyout object, let it handle closure
+                If (Not m_FlyoutRef Is Nothing) Then
+                    m_FlyoutRef.HideFlyout
+                
+                'If we don't have a reference, something went awry - hide the flyout manually
+                Else
+                    SetParent m_CurrentFlyoutPanelHWnd, m_CurrentFlyoutParentHWnd
+                    g_WindowManager.SetVisibilityByHWnd m_CurrentFlyoutPanelHWnd, False
+                End If
+                
+                Set m_FlyoutRef = Nothing
+                m_CurrentFlyoutPanelHWnd = 0
+                m_CurrentFlyoutParentHWnd = 0
+                
+            End If
+        
+        '/new focus target is flyout panel or flyout panel parent
+        End If
+    
+    '/no flyout hWnd tracked
+    End If
+    
 End Sub
 
 Public Sub PDControlLostFocus(ByVal controlHWnd As Long)

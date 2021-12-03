@@ -1526,18 +1526,22 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         End If
         
         'I've gone back and forth on whether these tooltips are useful.  My current $0.02 is that
-        ' they are not, and they just add visual clutter.
+        ' they are not, and they just add visual clutter.  (It's also complicated because their
+        ' meaning really varies by tool - e.g. some tools apply actions to the whole image,
+        ' other to just the active layer.)
         'cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
         'cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
-        cmdAction(0).AssignTooltip "Reset all settings to their default values."
-        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image."
-        cmdAction(2).AssignTooltip "Save the current settings as a new preset."
-        cmdAction(3).AssignTooltip "Undo (rewind to an earlier state)"
-        cmdAction(4).AssignTooltip "Redo (fast-foward to a later state)"
-        cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
-        'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
-        ' colors are loaded FIRST
+        'The other buttons on the command-bar do require some explanation.
+        cmdAction(0).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarReset)
+        cmdAction(1).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarRandom)
+        cmdAction(2).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarSavePreset)
+        cmdAction(3).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarUndo)
+        cmdAction(4).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarRedo)
+        cboPreset.AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarPresetList)
+        
+        'Because all controls on the command bar are synchronized against a non-standard backcolor,
+        ' we need to make sure any new colors are loaded FIRST
         UpdateColorList
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage

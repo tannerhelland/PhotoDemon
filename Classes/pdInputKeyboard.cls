@@ -165,31 +165,38 @@ Friend Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
             
             CreateKeyboardTracker = m_SubclassActive
             
-            'Key tracking is a nasty bit of business.  Let me just state that up front before breaking down how PD handles it.
+            'Key tracking is a nasty bit of business.  Let me just state that up front before
+            ' breaking down how PD handles it.
         
-            'Let's start by talking about something seemingly simple, like arrow keys.  By default, Windows typically handles arrow
-            ' keypresses for applications.  Depending on the context, arrow buttons may be used to navigate between command buttons,
-            ' or navigate within a text box or edit control, or interact with controls in some other standard way.
+            'Let's start by talking about something seemingly simple, like arrow keys.  By default,
+            ' Windows typically handles arrow keypresses for applications.  Depending on the context,
+            ' arrow keys may be used to navigate between command buttons, or navigate within a text
+            ' box or edit control, or interact with controls in some other standard way.
             
-            'This default behavior can be overridden by intercepting the WM_GETDLGCODE message and returning a value that specifies
-            ' what default behaviors you want to override.  Sounds easy, right?
+            'This default behavior can be overridden by intercepting the WM_GETDLGCODE message and
+            ' returning a value that specifies what default behaviors you want to override.
+            ' Sounds easy, right?
             
-            'In theory, it should be.  But in practice, it is anything but.  Some element of VB (who knows what) eats the WM_GETDLGCODE
-            ' message before it ever arrives at our wndProc.  It is possible that there's a way to override this behavior, or
-            ' somehow intercept it, but after a great deal of testing I have not found a reliable way to do it for any possible hWnd.
-            ' (This could be due to a whole bunch of factors, including the various window bits VB chooses to use, which I didn't want
-            ' to custom-handle as the goal here is to support custom tracking for *any* type of hWnd.)
+            'In theory, it should be.  But in practice, it is anything but.  Some element of VB
+            ' (who knows what) eats the WM_GETDLGCODE message before it ever arrives at our wndProc.
+            ' There's possibly a way to override this behavior, or somehow intercept it, but after a
+            ' great deal of testing I have not found a reliable way to do it for any possible hWnd.
+            ' (This could be due to a whole bunch of factors, including the various window bits VB
+            ' chooses to use, which I didn't want to custom-handle as the goal here is to support
+            ' custom tracking for *any* type of hWnd.)
             
-            'So, subclassing is out.  That leaves hooking, which is a more troublesome solution, especially in PD's main screen where
-            ' a whole bunch of windows are simultaneously present.
+            'So, subclassing is out.  That leaves hooking, which is a more troublesome solution,
+            ' especially in PD's main screen where a whole bunch of windows are simultaneously present.
             
-            'Because hooking is an energy-intensive project, we don't want to hook anything more than is absolutely necessary.  So
-            ' hooking is handled dynamically as any tracked window(s) gain or lose focus.  To accomplish this, key hooking requests
-            ' also generate some subclassing bits as well, so we can track focus of individual windows.
+            'Because hooking is an energy-intensive project, we don't want to hook anything more than
+            ' is absolutely necessary.  So hooking is handled dynamically as any tracked window(s)
+            ' gain or lose focus.  To accomplish this, key hooking requests also generate some
+            ' subclassing bits as well, so we can track focus of individual windows.
             
-            'We now want to copy the list of keycodes we have been passed.  If our hook encounters a keycode that was not specifically
-            ' requested, we're going to let the default window proc handle it.  This allows things like the Tab key to behave normally,
-            ' unless a control specifically requests otherwise.
+            'We now want to copy the list of keycodes we have been passed.  If our hook encounters a
+            ' keycode that was not specifically requested, we let the default window proc handle it.
+            ' This allows things like the Tab key to behave normally, unless a control specifically
+            ' requests otherwise.
             If (UBound(listOfKeys) >= LBound(listOfKeys)) Then
                 
                 'Resize our tracked keycode array

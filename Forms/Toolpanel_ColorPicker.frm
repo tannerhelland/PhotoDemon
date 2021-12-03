@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_ColorPicker
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   4065
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   14265
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,43 +25,76 @@ Begin VB.Form toolpanel_ColorPicker
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   271
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   951
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsSampleMerged 
-      Height          =   465
-      Left            =   240
-      TabIndex        =   2
-      Top             =   915
-      Width           =   2940
-      _ExtentX        =   5186
-      _ExtentY        =   820
-   End
-   Begin PhotoDemon.pdCheckBox chkAfter 
-      Height          =   375
-      Left            =   4650
-      TabIndex        =   4
-      Top             =   1035
-      Width           =   5415
-      _ExtentX        =   9551
-      _ExtentY        =   661
-      Caption         =   "after clicking, return to previous tool"
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   1935
+      Index           =   0
+      Left            =   1440
+      Top             =   960
+      Visible         =   0   'False
+      Width           =   3600
+      _ExtentX        =   6350
+      _ExtentY        =   3413
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         Top             =   1080
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   450
+         Caption         =   "after clicking"
+      End
+      Begin PhotoDemon.pdButtonStrip btsSampleMerged 
+         Height          =   945
+         Left            =   120
+         TabIndex        =   3
+         Top             =   0
+         Width           =   2985
+         _ExtentX        =   5265
+         _ExtentY        =   1667
+         Caption         =   "sample from"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkAfter 
+         Height          =   345
+         Left            =   210
+         TabIndex        =   4
+         Top             =   1440
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   609
+         Caption         =   "return to previous tool"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   3120
+         TabIndex        =   6
+         Top             =   1395
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
    End
    Begin PhotoDemon.pdPictureBox picSample 
-      Height          =   1335
-      Left            =   3480
-      Top             =   60
-      Width           =   975
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Height          =   810
+      Left            =   15
+      Top             =   15
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   1429
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   0
-      Left            =   6480
-      Top             =   105
+      Left            =   6120
+      Top             =   60
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -72,20 +105,19 @@ Begin VB.Form toolpanel_ColorPicker
       Index           =   0
       Left            =   4680
       TabIndex        =   1
-      Top             =   60
-      Width           =   1575
-      _ExtentX        =   2778
+      Top             =   0
+      Width           =   1215
+      _ExtentX        =   2143
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdSlider sldRadius 
-      Height          =   735
-      Left            =   120
+      Height          =   375
+      Left            =   1500
       TabIndex        =   0
-      Top             =   60
-      Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   1296
-      Caption         =   "sample radius"
+      Top             =   390
+      Width           =   2850
+      _ExtentX        =   5027
+      _ExtentY        =   661
       FontSizeCaption =   10
       Max             =   100
       ScaleStyle      =   1
@@ -94,8 +126,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   1
-      Left            =   8400
-      Top             =   105
+      Left            =   8040
+      Top             =   60
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -104,8 +136,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   2
-      Left            =   10320
-      Top             =   105
+      Left            =   9960
+      Top             =   60
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -114,8 +146,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   3
-      Left            =   12240
-      Top             =   105
+      Left            =   11880
+      Top             =   60
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -124,8 +156,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   0
-      Left            =   7560
-      Top             =   105
+      Left            =   7200
+      Top             =   60
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -136,8 +168,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   1
-      Left            =   9480
-      Top             =   105
+      Left            =   9120
+      Top             =   60
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -148,8 +180,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   2
-      Left            =   11400
-      Top             =   105
+      Left            =   11040
+      Top             =   60
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -160,8 +192,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   3
-      Left            =   13320
-      Top             =   105
+      Left            =   12960
+      Top             =   60
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -172,8 +204,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   4
-      Left            =   6480
-      Top             =   585
+      Left            =   6120
+      Top             =   495
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -183,17 +215,17 @@ Begin VB.Form toolpanel_ColorPicker
       Height          =   375
       Index           =   1
       Left            =   4680
-      TabIndex        =   3
-      Top             =   540
-      Width           =   1575
-      _ExtentX        =   2778
+      TabIndex        =   2
+      Top             =   435
+      Width           =   1215
+      _ExtentX        =   2143
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   5
-      Left            =   8400
-      Top             =   585
+      Left            =   8040
+      Top             =   495
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -202,8 +234,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   6
-      Left            =   10320
-      Top             =   585
+      Left            =   9960
+      Top             =   495
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -212,8 +244,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   7
-      Left            =   12240
-      Top             =   585
+      Left            =   11880
+      Top             =   495
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -222,8 +254,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   4
-      Left            =   7560
-      Top             =   585
+      Left            =   7200
+      Top             =   495
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -234,8 +266,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   5
-      Left            =   9480
-      Top             =   585
+      Left            =   9120
+      Top             =   495
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -246,8 +278,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   6
-      Left            =   11400
-      Top             =   585
+      Left            =   11040
+      Top             =   495
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
@@ -258,14 +290,26 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   7
-      Left            =   13320
-      Top             =   585
+      Left            =   12960
+      Top             =   495
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
       FontBold        =   -1  'True
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   0
+      Left            =   1440
+      TabIndex        =   5
+      Top             =   0
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   661
+      Caption         =   "sample radius"
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "toolpanel_ColorPicker"
@@ -277,8 +321,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Color-Picker Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 28/October/21
-'Last update: replace old VB picture box with pdPictureBox
+'Last updated: 07/November/21
+'Last update: migrate to new flyout-driven UI
 '
 'Color pickers are pretty straightforward tools: sample pixels from the image, and reflect the results on-screen.
 ' The main purpose of this tool is to "stay out of the damn way", I think!
@@ -331,6 +375,10 @@ Private m_SampleDIB As pdDIB
 
 'Preview DIB of the current color (displayed right there in the toolbox)
 Private m_PreviewDIB As pdDIB
+
+'Flyout manager
+Private WithEvents m_Flyout As pdFlyout
+Attribute m_Flyout.VB_VarHelpID = -1
 
 'The value of all controls on this form are saved and loaded to file by this class
 ' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
@@ -507,7 +555,7 @@ Private Sub FindAverageValues()
     
     Dim rTotal As Long, gTotal As Long, bTotal As Long, aTotal As Long
     
-    For y = y To yFinal
+    For y = 0 To yFinal
         tmpSA.pvData = pxPtr + y * pxWidth
     For x = 0 To xFinal Step 4
         bTotal = bTotal + lineOfPixels(x)
@@ -543,6 +591,7 @@ Private Sub UpdateUIText()
     If (Not m_StringsInitialized) Then Exit Sub
     
     Dim i As Long, j As Long, curCategory As Long
+    Dim textChanged As Boolean, atLeastOneTextChanged As Boolean
     
     'Regardless of color settings, we always start by filling the color name labels
     For i = cboColorSpace.lBound To cboColorSpace.UBound
@@ -551,12 +600,64 @@ Private Sub UpdateUIText()
         If (curCategory < 0) Then curCategory = 0
         
         For j = 0 To 3
-            lblColor(j + i * 4).Caption = m_ColorNames(curCategory, j) & ":"
+            textChanged = Strings.StringsNotEqual(lblColor(j + i * 4).Caption, m_ColorNames(curCategory, j) & ":")
+            If textChanged Then
+                lblColor(j + i * 4).Caption = m_ColorNames(curCategory, j) & ":"
+                atLeastOneTextChanged = True
+            End If
         Next j
         
     Next i
+    
+    'If captions were changed, reflow the layout horizontally.  (This produces a better UI because
+    ' the difference in width between captions like "red" and "saturation" can be huge, and there's
+    ' no good one-size-fits-all solution across all localizations.)
+    If atLeastOneTextChanged Then
+        
+        'Use a pdFont object for precise text measurements
+        Dim cFont As pdFont
+        Set cFont = New pdFont
+        cFont.SetFontSize 10    'Size is hard-coded to match "best-case" font size of these labels
+        cFont.SetFontBold False
+        
+        Dim xOffset As Long
+        xOffset = cboColorSpace(0).GetLeft + cboColorSpace(0).GetWidth + Interface.FixDPI(8)
+        
+        Dim padBetweenColors As Long
+        padBetweenColors = Interface.FixDPI(10)
+        
+        'Iterate through controls horizontally
+        For j = 0 To 3
+            
+            'Find the larger of the two columns and set horizontal width of *both* to match.
+            Dim maxWidth As Long, testWidth As Long
+            maxWidth = cFont.GetWidthOfString(m_ColorNames(IIf(cboColorSpace(0).ListIndex < 0, 0, cboColorSpace(0).ListIndex), j) & ":")
+            testWidth = cFont.GetWidthOfString(m_ColorNames(IIf(cboColorSpace(1).ListIndex < 0, 0, cboColorSpace(1).ListIndex), j) & ":")
+            If (testWidth > maxWidth) Then maxWidth = testWidth
+            
+            'Add a tiny bit of padding
+            maxWidth = maxWidth + 2
+            
+            'Reflow the title labels, while also fixing max width
+            lblColor(j).SetPositionAndSize xOffset, lblColor(j).GetTop, maxWidth, lblColor(j).GetHeight
+            lblColor(4 + j).SetPositionAndSize xOffset, lblColor(4 + j).GetTop, maxWidth, lblColor(4 + j).GetHeight
+            
+            'Reflow their matching value labels
+            xOffset = xOffset + maxWidth + Interface.FixDPI(2)
+            lblValue(j).SetLeft xOffset
+            lblValue(4 + j).SetLeft xOffset
+            testWidth = cFont.GetWidthOfString("100.0%") + 2
+            lblValue(j).SetWidth testWidth
+            lblValue(4 + j).SetWidth testWidth
+            
+            'Add padding before moving to the next entry
+            xOffset = xOffset + lblValue(j).GetWidth + padBetweenColors
+            
+        Next j
+        
+    End If
                     
-    'If a color isn't available, blank all dropdowns
+    'If a color isn't available, blank all labels
     If m_NoColorAvailable Then
         
         For i = cboColorSpace.lBound To cboColorSpace.UBound
@@ -588,10 +689,10 @@ Private Sub UpdateUIText()
                     
                 Case cps_RGBAPercent
                 
-                    lblValue(idxLabel).Caption = Format$(m_Red / 255#, "00.0%")
-                    lblValue(idxLabel + 1).Caption = Format$(m_Green / 255#, "00.0%")
-                    lblValue(idxLabel + 2).Caption = Format$(m_Blue / 255#, "00.0%")
-                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
+                    lblValue(idxLabel).Caption = Format$(m_Red / 255#, "0.0%")
+                    lblValue(idxLabel + 1).Caption = Format$(m_Green / 255#, "0.0%")
+                    lblValue(idxLabel + 2).Caption = Format$(m_Blue / 255#, "0.0%")
+                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "0.0%")
                     
                 Case cps_HSV
                 
@@ -599,9 +700,9 @@ Private Sub UpdateUIText()
                     Colors.fRGBtoHSV m_Red / 255#, m_Green / 255#, m_Blue / 255#, cHue, cSat, cVal
                     
                     lblValue(idxLabel).Caption = Format$((cHue * 360#), "#0.0") & ChrW$(&HB0&)
-                    lblValue(idxLabel + 1).Caption = Format$(cSat, "00.0%")
-                    lblValue(idxLabel + 2).Caption = Format$(cVal, "00.0%")
-                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "00.0%")
+                    lblValue(idxLabel + 1).Caption = Format$(cSat, "0.0%")
+                    lblValue(idxLabel + 2).Caption = Format$(cVal, "0.0%")
+                    lblValue(idxLabel + 3).Caption = Format$(m_Alpha / 255#, "0.0%")
                     
                 Case cps_CMYK
                     
@@ -693,8 +794,60 @@ Private Sub RegenerateColorSampleBox(Optional ByVal redrawImmediately As Boolean
     
 End Sub
 
+Private Sub btsSampleMerged_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub btsSampleMerged_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sldRadius.hWndSpinner
+    Else
+        newTargetHwnd = Me.chkAfter.hWnd
+    End If
+End Sub
+
 Private Sub cboColorSpace_Click(Index As Integer)
     UpdateUIText
+End Sub
+
+Private Sub cboColorSpace_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If (Index = 0) Then
+            newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+        Else
+            newTargetHwnd = Me.cboColorSpace(0).hWnd
+        End If
+    Else
+        If (Index = 0) Then
+            newTargetHwnd = Me.cboColorSpace(1).hWnd
+        Else
+            newTargetHwnd = Me.ttlPanel(0).hWnd
+        End If
+    End If
+End Sub
+
+Private Sub chkAfter_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub chkAfter_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsSampleMerged.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+    End If
+End Sub
+
+Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
+End Sub
+
+Private Sub cmdFlyoutLock_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.chkAfter.hWnd Else newTargetHwnd = Me.cboColorSpace(0).hWnd
 End Sub
 
 Private Sub Form_Load()
@@ -734,6 +887,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SetParentForm Nothing
     End If
 
+    'Failsafe only
+    If (Not m_Flyout Is Nothing) Then m_Flyout.HideFlyout
+    Set m_Flyout = Nothing
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -751,10 +908,10 @@ Public Sub UpdateAgainstCurrentTheme()
     m_ColorNames(cps_RGBA, 2) = g_Language.TranslateMessage("blue")
     m_ColorNames(cps_RGBA, 3) = g_Language.TranslateMessage("opacity")
     
-    m_ColorNames(cps_RGBAPercent, 0) = g_Language.TranslateMessage("red")
-    m_ColorNames(cps_RGBAPercent, 1) = g_Language.TranslateMessage("green")
-    m_ColorNames(cps_RGBAPercent, 2) = g_Language.TranslateMessage("blue")
-    m_ColorNames(cps_RGBAPercent, 3) = g_Language.TranslateMessage("opacity")
+    m_ColorNames(cps_RGBAPercent, 0) = m_ColorNames(cps_RGBA, 0)
+    m_ColorNames(cps_RGBAPercent, 1) = m_ColorNames(cps_RGBA, 1)
+    m_ColorNames(cps_RGBAPercent, 2) = m_ColorNames(cps_RGBA, 2)
+    m_ColorNames(cps_RGBAPercent, 3) = m_ColorNames(cps_RGBA, 3)
     
     m_ColorNames(cps_HSV, 0) = g_Language.TranslateMessage("hue")
     m_ColorNames(cps_HSV, 1) = g_Language.TranslateMessage("saturation")
@@ -769,6 +926,9 @@ Public Sub UpdateAgainstCurrentTheme()
     m_NullTextString = g_Language.TranslateMessage("n/a")
     m_StringsInitialized = True
     
+    'Flyout lock controls use the same behavior across all instances
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
+    
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
@@ -778,7 +938,68 @@ Public Sub UpdateAgainstCurrentTheme()
 
 End Sub
 
+Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
+    If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
+End Sub
+
 Private Sub picSample_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     If (m_PreviewDIB Is Nothing) Then RegenerateColorSampleBox
     GDI.BitBltWrapper targetDC, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, m_PreviewDIB.GetDIBDC, 0, 0, vbSrcCopy
+End Sub
+
+Private Sub sldRadius_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub sldRadius_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.ttlPanel(0).hWnd
+    Else
+        newTargetHwnd = Me.btsSampleMerged.hWnd
+    End If
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    UpdateFlyout Index, newState
+End Sub
+
+'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically
+' hide any other open flyouts, as necessary.
+Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As Boolean = True)
+    
+    'Ensure we have a flyout manager
+    If (m_Flyout Is Nothing) Then Set m_Flyout = New pdFlyout
+    
+    'Exit if we're already in the process of synchronizing
+    If m_Flyout.GetFlyoutSyncState() Then Exit Sub
+    m_Flyout.SetFlyoutSyncState True
+    
+    'Ensure we have a flyout manager, then raise the corresponding panel
+    If newState Then
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, Interface.FixDPI(-8)
+    Else
+        If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
+    End If
+    
+    'Update titlebar state(s) to match
+    Dim i As Long
+    For i = ttlPanel.lBound To ttlPanel.UBound
+        If (i = m_Flyout.GetFlyoutTrackerID()) Then
+            If (Not ttlPanel(i).Value) Then ttlPanel(i).Value = True
+        Else
+            If ttlPanel(i).Value Then ttlPanel(i).Value = False
+        End If
+    Next i
+    
+    'Clear the synchronization flag before exiting
+    m_Flyout.SetFlyoutSyncState False
+    
+End Sub
+
+Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.cboColorSpace(1).hWnd
+    Else
+        newTargetHwnd = Me.sldRadius.hWnd
+    End If
 End Sub

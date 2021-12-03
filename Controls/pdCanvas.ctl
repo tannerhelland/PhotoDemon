@@ -683,7 +683,7 @@ Private Sub CanvasView_DoubleClickCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     DisplayImageCoordinates x, y, PDImages.GetActiveImage(), Me, imgX, imgY
     
-    If (g_CurrentTool = SELECT_POLYGON) Then Selections.NotifySelectionMouseDblClick Me, imgX, imgY
+    If (g_CurrentTool = SELECT_POLYGON) Then SelectionUI.NotifySelectionMouseDblClick Me, imgX, imgY
     
 End Sub
 
@@ -895,8 +895,8 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 Tools_Move.NotifyKeyDown Shift, vkCode, markEventHandled
             
             'Selection tools use a universal handler
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                SelectionUI.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
             Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
@@ -945,8 +945,8 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
         Select Case g_CurrentTool
             
             'Selection tools use a universal handler
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                SelectionUI.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
             Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
@@ -1043,8 +1043,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 Tools_Measure.NotifyMouseDown FormMain.MainCanvas(0), imgX, imgY
             
             'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseDown Me, imgX, imgY
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                SelectionUI.NotifySelectionMouseDown Me, imgX, imgY
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
             Case TEXT_BASIC, TEXT_ADVANCED
@@ -1151,8 +1151,8 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     Select Case g_CurrentTool
         Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-            Selections.NotifySelectionMouseLeave Me
+        Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+            SelectionUI.NotifySelectionMouseLeave Me
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
@@ -1209,8 +1209,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
             
             'Selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                SelectionUI.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Text layers are identical to the move tool
             Case TEXT_BASIC, TEXT_ADVANCED
@@ -1268,8 +1268,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     Tools_Measure.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
                 
                 'Selection tools
-                Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                    Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
+                Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                    SelectionUI.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
                     
                 'Text tools
                 Case TEXT_BASIC, TEXT_ADVANCED
@@ -1348,8 +1348,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Tools_Measure.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements, clickEventAlsoFiring
                 
             'Selection tools have their own dedicated handler
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                SelectionUI.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
                 
             'Text layers
             Case TEXT_BASIC, TEXT_ADVANCED
@@ -2351,25 +2351,6 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Case poi_EdgeW
                     CanvasView.RequestCursor_System IDC_SIZEWE
                 Case poi_Interior
-                    CanvasView.RequestCursor_System IDC_SIZEALL
-            
-            End Select
-        
-        Case SELECT_LINE
-        
-            'When transforming selections, the cursor image depends on its proximity to a point of interest.
-            '
-            'For a line selection, the possible transform IDs are:
-            ' -1 - Cursor is not near an endpoint
-            ' 0 - Near x1/y1
-            ' 1 - Near x2/y2
-            Select Case IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
-            
-                Case poi_Undefined
-                    CanvasView.RequestCursor_System IDC_ARROW
-                Case 0
-                    CanvasView.RequestCursor_System IDC_SIZEALL
-                Case 1
                     CanvasView.RequestCursor_System IDC_SIZEALL
             
             End Select

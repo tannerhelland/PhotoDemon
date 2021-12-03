@@ -60,6 +60,7 @@ Public Event GradientChanged()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'The control's current gradient settings
 Private m_curGradient As String
@@ -319,6 +320,10 @@ Private Sub RaiseGradientDialog()
     
 End Sub
 
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
+End Sub
+
 Private Sub UserControl_Initialize()
     
     Set m_Brush = New pd2DBrush
@@ -387,9 +392,9 @@ Private Sub UpdateControlLayout()
         'The clickable area is placed relative to the caption
         With m_ReverseRect
             .Top = ucSupport.GetCaptionBottom + 2
-            .Left = (bWidth - 2) - .Width
-            .Width = Interface.FixDPI(24)
             .Height = (bHeight - 2) - .Top
+            .Width = Interface.FixDPI(24)
+            .Left = (bWidth - 2) - .Width
         End With
         
         With m_GradientRect
@@ -406,7 +411,7 @@ Private Sub UpdateControlLayout()
             .Top = 1
             .Height = (bHeight - 2) - .Top
             .Width = Interface.FixDPI(24)
-            .Left = (bWidth - 2) - .Left
+            .Left = (bWidth - 2) - .Width
         End With
         
         With m_GradientRect

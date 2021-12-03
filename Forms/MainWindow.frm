@@ -2115,7 +2115,16 @@ End Sub
 'When the main form is resized, we must re-align all toolboxes and the main canvas to match
 Private Sub Form_Resize()
     If (Not g_WindowManager Is Nothing) Then
+        
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
+        
+        'In the IDE it's helpful for me to test layouts against specific screen sizes
+        If (Not OS.IsProgramCompiled()) Then
+            Dim doNotLocalizeThis As String
+            doNotLocalizeThis = "Window size: "
+            Message doNotLocalizeThis & g_WindowManager.GetClientWidth(Me.hWnd) & "x" & g_WindowManager.GetClientHeight(Me.hWnd)
+        End If
+        
     Else
         UpdateMainLayout
     End If
@@ -3156,6 +3165,8 @@ Private Sub mnuLanguages_Click(Index As Integer)
     g_Language.UndoTranslations toolbar_Toolbox
     g_Language.UndoTranslations toolbar_Options
     g_Language.UndoTranslations toolbar_Layers
+    
+    'That may have taken a second or two, so display the reverted text so the user knows what's happening
     DoEvents
     
     'Apply the new translation

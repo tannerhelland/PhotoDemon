@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.117</langversion>
+<langversion>8.2.119</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3084,6 +3084,16 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<translation>此操作需要一个活动的选择。继续之前，请创建一个选择。</translation>
+</phrase>
+
+<phrase>
+<original>Export selection as image</original>
+<translation>图像输出选择</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon selection</original>
 <translation>PhotoDemon选择</translation>
 </phrase>
@@ -3123,15 +3133,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>未知错误，选择没有保存，请重试。</translation>
 </phrase>
 
-<phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>此操作需要一个活动的选择。继续之前，请创建一个选择。</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>图像输出选择</translation>
-</phrase>
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3173,6 +3175,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>寻找选区边界</translation>
 </phrase>
 
+<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>创建选区</translation>
@@ -3198,7 +3202,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>点击第一个点完成多边形选择</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3406,6 +3410,58 @@ Please enter a numeric value.</original>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation>在1x和重复预览之间切换</translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>以前保存的预设可以选择在这里。你可以保存当前设置为一个新的预设通过单击“保存预设右边的按钮。</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>随机选择该工具的新的设置。这有助于探索如何不同的设置会影响图像。</translation>
+</phrase>
+
+<phrase>
+<original>Redo (fast-forward to a later state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>重置所有设置为默认值。</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>保存当前设置新的预置。</translation>
+</phrase>
+
+<phrase>
+<original>Undo (rewind to an earlier state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pin this panel open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation>生成一个新的随机数种子。</translation>
+</phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -4268,37 +4324,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>最后使用的设置</translation>
 </phrase>
 
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>重置所有设置为默认值。</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>随机选择该工具的新的设置。这有助于探索如何不同的设置会影响图像。</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>保存当前设置新的预置。</translation>
-</phrase>
-
-<phrase>
-<original>Undo (rewind to an earlier state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Redo (fast-foward to a later state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>以前保存的预设可以选择在这里。你可以保存当前设置为一个新的预设通过单击“保存预设右边的按钮。</translation>
-</phrase>
-
-<!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4390,11 +4416,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
-<original>Toggle between 1x and repeating previews</original>
-<translation>在1x和重复预览之间切换</translation>
-</phrase>
-
-<phrase>
 <original>Current frame: %1 of %2</original>
 <translation>当前帧： %1 / %2</translation>
 </phrase>
@@ -4404,7 +4425,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>%1 / %2</translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4431,13 +4452,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>Generate a new random number seed.</original>
-<translation>生成一个新的随机数种子。</translation>
-</phrase>
-
-<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -7440,7 +7454,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -9819,14 +9833,14 @@ Would you like to save your batch list before exiting?</original>
 <translation>未定义图层的帧时间（以毫秒为单位）</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>压缩级别</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -9843,7 +9857,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10660,7 +10674,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>已为此图像启用动画</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11533,11 +11547,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Line Selection</original>
-<translation>点线</translation>
-</phrase>
-
-<phrase>
 <original>Polygon Selection</original>
 <translation>多边形</translation>
 </phrase>
@@ -11618,11 +11627,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Line selection tool</original>
-<translation>线条选择工具</translation>
-</phrase>
-
-<phrase>
 <original>Polygon selection tool</original>
 <translation>多边形选择工具</translation>
 </phrase>
@@ -11672,26 +11676,11 @@ Would you like to save your batch list before exiting?</original>
 <translation>油漆桶工具</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
-
-<phrase>
-<original>source settings</original>
-<translation>源设置</translation>
-</phrase>
+<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
 <translation>模型模式</translation>
-</phrase>
-
-<phrase>
-<original>blend / alpha mode</original>
-<translation>混合/ Alpha模式</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>硬度</translation>
 </phrase>
 
 <phrase>
@@ -11707,6 +11696,21 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>flow</original>
 <translation>连续性</translation>
+</phrase>
+
+<phrase>
+<original>spacing</original>
+<translation>间距</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>硬度</translation>
+</phrase>
+
+<phrase>
+<original>source settings</original>
+<translation>源设置</translation>
 </phrase>
 
 <phrase>
@@ -11729,11 +11733,21 @@ Would you like to save your batch list before exiting?</original>
 <translation>平铺+翻转</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
-<original>after clicking, return to previous tool</original>
-<translation>单击后，返回到上一个工具</translation>
+<original>after clicking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>return to previous tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11756,14 +11770,9 @@ Would you like to save your batch list before exiting?</original>
 <translation>N / A</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<phrase>
-<original>spacing</original>
-<translation>间距</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -11771,13 +11780,23 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>area</original>
-<translation>选择范围</translation>
+<original>brush style</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
 <translation>公差：</translation>
+</phrase>
+
+<phrase>
+<original>compare pixels by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11825,7 +11844,12 @@ Would you like to save your batch list before exiting?</original>
 <translation>此选项控制添加像素到填充时如何分析像素。</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>center offset</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>linear</original>
@@ -11852,7 +11876,12 @@ Would you like to save your batch list before exiting?</original>
 <translation>螺旋形</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>modify measurement</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>share measurements between images</original>
@@ -11862,6 +11891,16 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>swap points</original>
 <translation>交换点</translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation>旋转90度</translation>
+</phrase>
+
+<phrase>
+<original>clear points</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11875,11 +11914,16 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>rotate 90</original>
-<translation>旋转90度</translation>
+<original>use measurement to</original>
+<translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>size (w, h)</original>
+<translation>大小(w,h)</translation>
+</phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -11892,38 +11936,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation>层位置（X，Y）</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>层大小（W，H）</translation>
-</phrase>
-
-<phrase>
-<original>layer angle</original>
-<translation>层角度</translation>
-</phrase>
-
-<phrase>
-<original>layer shear (x, y)</original>
-<translation>层的剪切（X，Y）</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>互动选项</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>自动激活鼠标下方的层</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>透明像素时忽略自动激活层</translation>
+<original>ignore transparent pixels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11947,23 +11961,28 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>make changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>位置(x,y)</translation>
+</phrase>
+
+<phrase>
+<original>shear (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto select layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer changes permanent</original>
 <translation>使层改变永久</translation>
-</phrase>
-
-<phrase>
-<original>size and position</original>
-<translation>大小和位置</translation>
-</phrase>
-
-<phrase>
-<original>angle and shear</original>
-<translation>角度和剪切</translation>
-</phrase>
-
-<phrase>
-<original>tool settings</original>
-<translation>工具设置</translation>
 </phrase>
 
 <phrase>
@@ -11971,30 +11990,25 @@ Would you like to save your batch list before exiting?</original>
 <translation>使当前图层变换（大小，角度和剪切）永久性的。这个动作是从来没有必需的，但如果视渲染是呆滞，它可以提高性能。</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>corner rounding</original>
-<translation>圆角</translation>
+<original>(no additional options)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>line width</original>
-<translation>线宽</translation>
+<original>area</original>
+<translation>选择范围</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>第二点（x，y）</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>第一点（x，y）</translation>
+<original>round corners</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12018,6 +12032,26 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intersect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>feathered</original>
 <translation>羽化</translation>
 </phrase>
@@ -12035,16 +12069,6 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>border</original>
 <translation>边界</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>位置(x,y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>大小(w,h)</translation>
 </phrase>
 
 <phrase>
@@ -12083,11 +12107,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>此选项调整选线宽度。</translation>
-</phrase>
-
-<phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
 <translation>此选项调整曲率的多边形选择的边，如果有的话。</translation>
 </phrase>
@@ -12120,8 +12139,18 @@ Would you like to save your batch list before exiting?</original>
 <!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>font style</original>
-<translation>字体样式</translation>
+<original>click to edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
+<translation>字体</translation>
 </phrase>
 
 <phrase>
@@ -12159,16 +12188,11 @@ Would you like to save your batch list before exiting?</original>
 <translation>单击此处将此层转换为基本文本。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
 <translation>映射</translation>
-</phrase>
-
-<phrase>
-<original>jitter</original>
-<translation>抖动</translation>
 </phrase>
 
 <phrase>
@@ -12177,23 +12201,13 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>fill background</original>
-<translation>填充背景</translation>
+<original>jitter (x, y)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>border style</original>
-<translation>边框样式</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>填写文本</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>大纲文本</translation>
+<original>inflate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12202,38 +12216,43 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>h. padding</original>
-<translation>水平填充</translation>
+<original>horizontal padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>v. padding</original>
-<translation>垂直填充</translation>
+<original>vertical padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>character</original>
-<translation>字符</translation>
+<original>outline text</original>
+<translation>大纲文本</translation>
 </phrase>
 
 <phrase>
-<original>paragraph</original>
-<translation>段落</translation>
+<original>fill background</original>
+<translation>填充背景</translation>
 </phrase>
 
 <phrase>
-<original>visual</original>
-<translation>视觉</translation>
+<original>outline background</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>font</original>
-<translation>字体</translation>
+<original>fill text</original>
+<translation>填写文本</translation>
 </phrase>
 
 <phrase>
-<original>special</original>
-<translation>特效</translation>
+<original>fill and outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to edit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12291,7 +12310,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>单击此处将此层转换为高级文本。</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13606,10 +13625,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5337 phrases. -->
-<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11692 total words. -->
+<!-- As of this build, PhotoDemon contains 5335 phrases. -->
+<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 11707 total words. -->
 
 </pdData>

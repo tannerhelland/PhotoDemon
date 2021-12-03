@@ -284,10 +284,15 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
         FormMain.MnuLanguages(i).Checked = (m_currentLanguage = i)
     Next i
     
+    'If any objects cache translations, reset them now.
+    UserControls.ResetCommonTranslations
+    
     'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)
     If redrawMainUI Then Interface.RedrawEntireUI useDoEvents
     
-    'Some other esoteric areas may need their translations live-updated
+    'Some other esoteric areas may need their translations live-updated.  (Use this block only
+    ' for objects that do not have a persistent UI - those should have been updated *before* the
+    ' big .RedrawEntireUI call, above.)
     ImageFormats.NotifyLanguageChanged
     
 End Sub
