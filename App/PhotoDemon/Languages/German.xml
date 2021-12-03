@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1017</langversion>
+<langversion>9.0.1019</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3091,6 +3091,16 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<translation>Diese Aktion erfordert eine aktive Auswahl. Bitte erstellen Sie eine Auswahl, bevor Sie fortfahren.</translation>
+</phrase>
+
+<phrase>
+<original>Export selection as image</original>
+<translation>Auswahl als Bild exportieren</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon selection</original>
 <translation>PhotoDemon-Auswahl</translation>
 </phrase>
@@ -3130,15 +3140,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Bitte versuchen Sie es erneut.</translation>
 </phrase>
 
-<phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Diese Aktion erfordert eine aktive Auswahl. Bitte erstellen Sie eine Auswahl, bevor Sie fortfahren.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Auswahl als Bild exportieren</translation>
-</phrase>
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3180,6 +3182,8 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Feststellung des Auswahlrahmens</translation>
 </phrase>
 
+<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Auswahl erstellen</translation>
@@ -3205,7 +3209,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Klick auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3414,6 +3418,58 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation>Umschalten zwischen 1x und wiederholenden Previews</translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>Zuvor gespeicherte Presets können hier selektiert werden. Sie können die aktuellen Einstellungen als neues Preset speichern, durch Klick auf den Button "Preset speichern" rechts.</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>Neue Einstellungen für dieses Tool zufällig auswählen. Das hilft Ihnen herauszufinden, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
+</phrase>
+
+<phrase>
+<original>Redo (fast-forward to a later state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>Alle Einstellungen auf deren Defaultwerte zurücksetzen.</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Die aktuellen Einstellungen als neues Preset speichern.</translation>
+</phrase>
+
+<phrase>
+<original>Undo (rewind to an earlier state)</original>
+<translation>Rückgängig (zu einem früheren Zustand zurückspulen)</translation>
+</phrase>
+
+<phrase>
+<original>Pin this panel open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation>Einen neuen Zufallszahlen-Startwert generieren.</translation>
+</phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -4278,37 +4334,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <translation>Zuletzt-verwendete Einstellungen</translation>
 </phrase>
 
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>Alle Einstellungen auf deren Defaultwerte zurücksetzen.</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Neue Einstellungen für dieses Tool zufällig auswählen. Das hilft Ihnen herauszufinden, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>Die aktuellen Einstellungen als neues Preset speichern.</translation>
-</phrase>
-
-<phrase>
-<original>Undo (rewind to an earlier state)</original>
-<translation>Rückgängig (zu einem früheren Zustand zurückspulen)</translation>
-</phrase>
-
-<phrase>
-<original>Redo (fast-foward to a later state)</original>
-<translation>Wiederherstellen (zu einem späteren Zustand vorspulen)</translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Zuvor gespeicherte Presets können hier selektiert werden. Sie können die aktuellen Einstellungen als neues Preset speichern, durch Klick auf den Button "Preset speichern" rechts.</translation>
-</phrase>
-
-<!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4400,11 +4426,6 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
-<original>Toggle between 1x and repeating previews</original>
-<translation>Umschalten zwischen 1x und wiederholenden Previews</translation>
-</phrase>
-
-<phrase>
 <original>Current frame: %1 of %2</original>
 <translation>Aktuelles Frame: %1 von %2</translation>
 </phrase>
@@ -4414,7 +4435,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <translation>%1 von %2</translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4441,13 +4462,6 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>Generate a new random number seed.</original>
-<translation>Einen neuen Zufallszahlen-Startwert generieren.</translation>
-</phrase>
-
-<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -7450,7 +7464,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Vordergrund-Layer</translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -9829,14 +9843,14 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Frame-Zeit für undefinierte Layer (in ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>Kompressionslevel</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -9853,7 +9867,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Am besten</translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10668,7 +10682,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Animation aktiviert für dieses Bild</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11541,11 +11555,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Line Selection</original>
-<translation>Linien-Auswahl</translation>
-</phrase>
-
-<phrase>
 <original>Polygon Selection</original>
 <translation>Polygon-Auswahl</translation>
 </phrase>
@@ -11626,11 +11635,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Line selection tool</original>
-<translation>Linien-Auswahltool</translation>
-</phrase>
-
-<phrase>
 <original>Polygon selection tool</original>
 <translation>Polygon-Auswahltool</translation>
 </phrase>
@@ -11680,26 +11684,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Farbeimer-Tool</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
-
-<phrase>
-<original>source settings</original>
-<translation>Quelleinstellungen</translation>
-</phrase>
+<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
 <translation>Muster-Modus</translation>
-</phrase>
-
-<phrase>
-<original>blend / alpha mode</original>
-<translation>Überblendungs- / Alpha-Modus</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>Härte</translation>
 </phrase>
 
 <phrase>
@@ -11715,6 +11704,21 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>flow</original>
 <translation>Fluss</translation>
+</phrase>
+
+<phrase>
+<original>spacing</original>
+<translation>Abstand</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>Härte</translation>
+</phrase>
+
+<phrase>
+<original>source settings</original>
+<translation>Quelleinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -11737,11 +11741,21 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Kacheln + Beides spiegeln</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
-<original>after clicking, return to previous tool</original>
-<translation>Nach Klick zu vorherigem Tool zurückkehren</translation>
+<original>after clicking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>return to previous tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11764,14 +11778,9 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<phrase>
-<original>spacing</original>
-<translation>Abstand</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -11779,13 +11788,23 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>area</original>
-<translation>Bereich</translation>
+<original>brush style</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
 <translation>Toleranz</translation>
+</phrase>
+
+<phrase>
+<original>compare pixels by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11833,7 +11852,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Diese Option steuert, wie Pixel analysiert werden, wenn diese der Füllung hinzugefügt werden.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>center offset</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>linear</original>
@@ -11860,7 +11884,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Spirale</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>modify measurement</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>share measurements between images</original>
@@ -11870,6 +11899,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>swap points</original>
 <translation>Punkte tauschen</translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation>Drehen 90°</translation>
+</phrase>
+
+<phrase>
+<original>clear points</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11883,11 +11922,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>rotate 90</original>
-<translation>Drehen 90°</translation>
+<original>use measurement to</original>
+<translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Größe (B, H)</translation>
+</phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -11900,38 +11944,8 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation>Layer-Position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>Layer-Größe (B, H)</translation>
-</phrase>
-
-<phrase>
-<original>layer angle</original>
-<translation>Layer-Winkel</translation>
-</phrase>
-
-<phrase>
-<original>layer shear (x, y)</original>
-<translation>Layer-Scherung (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>Interaktionsoptionen</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>Layer unter Maus automatisch aktivieren</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei automatischer Aktivierung von Layern ignorieren</translation>
+<original>ignore transparent pixels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11955,23 +11969,28 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>make changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>Position (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>shear (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto select layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer changes permanent</original>
 <translation>Layer-Änderungen dauerhaft machen</translation>
-</phrase>
-
-<phrase>
-<original>size and position</original>
-<translation>Größe und Position</translation>
-</phrase>
-
-<phrase>
-<original>angle and shear</original>
-<translation>Winkel und Scherung</translation>
-</phrase>
-
-<phrase>
-<original>tool settings</original>
-<translation>Tooleinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -11979,30 +11998,25 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) dauerhaft machen. Diese Aktion ist nie erforderlich, aber wenn das Viewport-Rendering träge ist, kann es die Performance verbessern.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>corner rounding</original>
-<translation>Eckenrundung</translation>
+<original>(no additional options)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>line width</original>
-<translation>Linienbreite</translation>
+<original>area</original>
+<translation>Bereich</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>2. Punkt (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1. Punkt (x, y)</translation>
+<original>round corners</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12026,6 +12040,26 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intersect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>feathered</original>
 <translation>Mit weicher Kante</translation>
 </phrase>
@@ -12043,16 +12077,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>border</original>
 <translation>Rahmung</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>Position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>Größe (B, H)</translation>
 </phrase>
 
 <phrase>
@@ -12091,11 +12115,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Diese Option passt die Breite einer Linien-Auswahl an.</translation>
-</phrase>
-
-<phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
 <translation>Diese Option passt die Krümmung, falls vorhanden, der Seiten einer Polygon-Auswahl an.</translation>
 </phrase>
@@ -12128,8 +12147,18 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>font style</original>
-<translation>Fontstil</translation>
+<original>click to edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
+<translation>Font</translation>
 </phrase>
 
 <phrase>
@@ -12167,16 +12196,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in grundlegenden Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
 <translation>Neu abbilden</translation>
-</phrase>
-
-<phrase>
-<original>jitter</original>
-<translation>Jitter</translation>
 </phrase>
 
 <phrase>
@@ -12185,23 +12209,13 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>fill background</original>
-<translation>Hintergrund füllen</translation>
+<original>jitter (x, y)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>border style</original>
-<translation>Rahmungsstil</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>Text füllen</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>Text konturieren</translation>
+<original>inflate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12210,38 +12224,43 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>h. padding</original>
-<translation>Auffüllen horiz.</translation>
+<original>horizontal padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>v. padding</original>
-<translation>Auffüllen vert.</translation>
+<original>vertical padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>character</original>
-<translation>Zeichen</translation>
+<original>outline text</original>
+<translation>Text konturieren</translation>
 </phrase>
 
 <phrase>
-<original>paragraph</original>
-<translation>Absatz</translation>
+<original>fill background</original>
+<translation>Hintergrund füllen</translation>
 </phrase>
 
 <phrase>
-<original>visual</original>
-<translation>Visuell</translation>
+<original>outline background</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>font</original>
-<translation>Font</translation>
+<original>fill text</original>
+<translation>Text füllen</translation>
 </phrase>
 
 <phrase>
-<original>special</original>
-<translation>Special</translation>
+<original>fill and outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to edit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12299,7 +12318,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in erweiterten Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13618,10 +13637,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5337 phrases. -->
-<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11692 total words. -->
+<!-- As of this build, PhotoDemon contains 5335 phrases. -->
+<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 11707 total words. -->
 
 </pdData>

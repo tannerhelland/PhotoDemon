@@ -2115,8 +2115,16 @@ End Sub
 'When the main form is resized, we must re-align all toolboxes and the main canvas to match
 Private Sub Form_Resize()
     If (Not g_WindowManager Is Nothing) Then
+        
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
-        If (Not OS.IsProgramCompiled()) Then Message "Window size: " & g_WindowManager.GetClientWidth(Me.hWnd) & "x" & g_WindowManager.GetClientHeight(Me.hWnd)
+        
+        'In the IDE it's helpful for me to test layouts against specific screen sizes
+        If (Not OS.IsProgramCompiled()) Then
+            Dim doNotLocalizeThis As String
+            doNotLocalizeThis = "Window size: "
+            Message doNotLocalizeThis & g_WindowManager.GetClientWidth(Me.hWnd) & "x" & g_WindowManager.GetClientHeight(Me.hWnd)
+        End If
+        
     Else
         UpdateMainLayout
     End If

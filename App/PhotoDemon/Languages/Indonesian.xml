@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.518</langversion>
+<langversion>6.6.520</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -3092,6 +3092,16 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<translation>Tindakan ini memerlukan pemilihan yang aktif. Sila buat pilihan sebelum meneruskan.</translation>
+</phrase>
+
+<phrase>
+<original>Export selection as image</original>
+<translation>Pemilihan eksport sebagai imej</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon selection</original>
 <translation>pemilihan PhotoDemon</translation>
 </phrase>
@@ -3131,15 +3141,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Ralat tidak diketahui berlaku. Pemilihan tidak disimpan. Sila cuba sekali lagi.</translation>
 </phrase>
 
-<phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Tindakan ini memerlukan pemilihan yang aktif. Sila buat pilihan sebelum meneruskan.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Pemilihan eksport sebagai imej</translation>
-</phrase>
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3181,6 +3183,8 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Mencari pilihan sempadan</translation>
 </phrase>
 
+<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>membuat pilihan</translation>
@@ -3206,7 +3210,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3415,6 +3419,58 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>Sebelum ini disimpan pratetap boleh dipilih di sini. Anda boleh menyimpan tetapan semasa sebagai pratetap baru dengan mengklik butang Simpan Pratetap di sebelah kanan.</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>Secara rawak memilih tetapan baru untuk alat ini. Ini adalah berguna untuk meneroka bagaimana tetapan yang berbeza memberi kesan kepada imej.</translation>
+</phrase>
+
+<phrase>
+<original>Redo (fast-forward to a later state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>Tetapkan semula semua tetapan kepada nilai yang asal.</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Simpan tetapan semasa sebagai pratetap baru.</translation>
+</phrase>
+
+<phrase>
+<original>Undo (rewind to an earlier state)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pin this panel open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation></translation>
+</phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -4277,37 +4333,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>Tetapkan semula semua tetapan kepada nilai yang asal.</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Secara rawak memilih tetapan baru untuk alat ini. Ini adalah berguna untuk meneroka bagaimana tetapan yang berbeza memberi kesan kepada imej.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>Simpan tetapan semasa sebagai pratetap baru.</translation>
-</phrase>
-
-<phrase>
-<original>Undo (rewind to an earlier state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Redo (fast-foward to a later state)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Sebelum ini disimpan pratetap boleh dipilih di sini. Anda boleh menyimpan tetapan semasa sebagai pratetap baru dengan mengklik butang Simpan Pratetap di sebelah kanan.</translation>
-</phrase>
-
-<!-- pdCommandBar.ctl contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4399,11 +4425,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
-<original>Toggle between 1x and repeating previews</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Current frame: %1 of %2</original>
 <translation></translation>
 </phrase>
@@ -4413,7 +4434,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4440,13 +4461,6 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<phrase>
-<original>Generate a new random number seed.</original>
-<translation></translation>
-</phrase>
-
-<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -7448,7 +7462,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -9829,14 +9843,14 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>tingkat kompresi</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -9853,7 +9867,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10668,7 +10682,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11541,11 +11555,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Line Selection</original>
-<translation>Pemilihan talian</translation>
-</phrase>
-
-<phrase>
 <original>Polygon Selection</original>
 <translation>Polygon Pemilihan</translation>
 </phrase>
@@ -11626,11 +11635,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Line selection tool</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Polygon selection tool</original>
 <translation></translation>
 </phrase>
@@ -11680,26 +11684,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
-
-<phrase>
-<original>source settings</original>
-<translation></translation>
-</phrase>
+<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>blend / alpha mode</original>
-<translation>Campur</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>kekerasan</translation>
 </phrase>
 
 <phrase>
@@ -11715,6 +11704,21 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <phrase>
 <original>flow</original>
 <translation>mengalir</translation>
+</phrase>
+
+<phrase>
+<original>spacing</original>
+<translation>jarak</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>kekerasan</translation>
+</phrase>
+
+<phrase>
+<original>source settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11737,10 +11741,20 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
-<original>after clicking, return to previous tool</original>
+<original>after clicking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>return to previous tool</original>
 <translation></translation>
 </phrase>
 
@@ -11764,14 +11778,9 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<phrase>
-<original>spacing</original>
-<translation>jarak</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -11779,13 +11788,23 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>area</original>
-<translation>kawasan</translation>
+<original>brush style</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
 <translation>toleransi</translation>
+</phrase>
+
+<phrase>
+<original>compare pixels by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11833,7 +11852,12 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Opsi ini mengontrol bagaimana piksel dianalisis saat menambahkannya ke isi.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>center offset</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>linear</original>
@@ -11860,7 +11884,12 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>modify measurement</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>share measurements between images</original>
@@ -11869,6 +11898,16 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>swap points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clear points</original>
 <translation></translation>
 </phrase>
 
@@ -11883,11 +11922,16 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>rotate 90</original>
+<original>use measurement to</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>size (w, h)</original>
+<translation>saiz (w, h)</translation>
+</phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -11900,38 +11944,8 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation>posisi lapisan (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>ukuran lapisan (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>layer angle</original>
-<translation>sudut lapisan</translation>
-</phrase>
-
-<phrase>
-<original>layer shear (x, y)</original>
-<translation>lapisan geser (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>pilihan interaksi</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
+<original>ignore transparent pixels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11955,23 +11969,28 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>make changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>kedudukan (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>shear (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto select layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer changes permanent</original>
 <translation>Buat perubahan lapisan permanen</translation>
-</phrase>
-
-<phrase>
-<original>size and position</original>
-<translation>ukuran dan posisi</translation>
-</phrase>
-
-<phrase>
-<original>angle and shear</original>
-<translation>sudut dan geser</translation>
-</phrase>
-
-<phrase>
-<original>tool settings</original>
-<translation>pengaturan alat</translation>
 </phrase>
 
 <phrase>
@@ -11979,30 +11998,25 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Buat lapisan saat ini berubah (ukuran, sudut, dan geser) permanen. Tindakan ini tidak pernah diperlukan, namun jika viewport rendering lamban, ini bisa meningkatkan kinerja.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>corner rounding</original>
-<translation>sudut pembundaran</translation>
+<original>(no additional options)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>line width</original>
-<translation>lebar talian</translation>
+<original>area</original>
+<translation>kawasan</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>2 titik (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1 titik (x, y)</translation>
+<original>round corners</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12026,6 +12040,26 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intersect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>feathered</original>
 <translation>berbulu</translation>
 </phrase>
@@ -12043,16 +12077,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <phrase>
 <original>border</original>
 <translation>berbatasan</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>kedudukan (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>saiz (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -12091,11 +12115,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Pilihan ini menyesuaikan lebar pemilihan talian.</translation>
-</phrase>
-
-<phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
 <translation>Pilihan ini menyesuaikan kelengkungan, jika ada, sisi pilihan poligon ini.</translation>
 </phrase>
@@ -12128,8 +12147,18 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
-<original>font style</original>
-<translation>gaya tulisan</translation>
+<original>click to edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
+<translation>font</translation>
 </phrase>
 
 <phrase>
@@ -12167,16 +12196,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
 <translation>remap</translation>
-</phrase>
-
-<phrase>
-<original>jitter</original>
-<translation>naik opelet</translation>
 </phrase>
 
 <phrase>
@@ -12185,23 +12209,13 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>fill background</original>
-<translation>isi latar belakang</translation>
+<original>jitter (x, y)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>border style</original>
-<translation>gaya border</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>isi teks</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>garis besar teks</translation>
+<original>inflate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12210,38 +12224,43 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>h. padding</original>
-<translation>h. lapisan</translation>
+<original>horizontal padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>v. padding</original>
-<translation>v. padding</translation>
+<original>vertical padding</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>character</original>
-<translation>karakter</translation>
+<original>outline text</original>
+<translation>garis besar teks</translation>
 </phrase>
 
 <phrase>
-<original>paragraph</original>
-<translation>ayat</translation>
+<original>fill background</original>
+<translation>isi latar belakang</translation>
 </phrase>
 
 <phrase>
-<original>visual</original>
-<translation>visual</translation>
+<original>outline background</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>font</original>
-<translation>font</translation>
+<original>fill text</original>
+<translation>isi teks</translation>
 </phrase>
 
 <phrase>
-<original>special</original>
-<translation>khusus</translation>
+<original>fill and outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to edit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12299,7 +12318,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13618,10 +13637,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5337 phrases. -->
-<!-- 2760 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11692 total words. -->
+<!-- As of this build, PhotoDemon contains 5335 phrases. -->
+<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 11707 total words. -->
 
 </pdData>
