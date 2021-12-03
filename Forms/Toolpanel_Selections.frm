@@ -74,20 +74,20 @@ Begin VB.Form toolpanel_Selections
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1365
+      Height          =   885
       Index           =   1
-      Left            =   3360
-      Top             =   960
+      Left            =   1920
+      Top             =   1920
       Visible         =   0   'False
-      Width           =   2655
-      _ExtentX        =   4683
-      _ExtentY        =   2408
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   1561
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
-         Left            =   2160
+         Left            =   2640
          TabIndex        =   9
-         Top             =   840
+         Top             =   330
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -111,29 +111,29 @@ Begin VB.Form toolpanel_Selections
          Height          =   375
          Index           =   1
          Left            =   0
-         Top             =   120
-         Width           =   2655
-         _ExtentX        =   4683
+         Top             =   180
+         Width           =   2535
+         _ExtentX        =   4471
          _ExtentY        =   661
          Alignment       =   2
          Caption         =   "(no additional options)"
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1050
+      Height          =   690
       Index           =   0
       Left            =   0
       Top             =   960
       Visible         =   0   'False
-      Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   1852
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   1217
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   2070
+         Left            =   2640
          TabIndex        =   10
-         Top             =   540
+         Top             =   90
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -213,7 +213,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   2
          Left            =   2880
          TabIndex        =   11
-         Top             =   2040
+         Top             =   2010
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -351,7 +351,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   3
          Left            =   2880
          TabIndex        =   25
-         Top             =   1200
+         Top             =   1230
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -463,7 +463,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   4
          Left            =   2880
          TabIndex        =   35
-         Top             =   780
+         Top             =   810
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -512,7 +512,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   5
          Left            =   2880
          TabIndex        =   38
-         Top             =   0
+         Top             =   30
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -560,7 +560,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   6
          Left            =   3120
          TabIndex        =   41
-         Top             =   2520
+         Top             =   2430
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -1780,14 +1780,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
     
     'Flyout lock controls use the same behavior across all instances
-    buttonSize = Interface.FixDPI(16)
-    
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
 End Sub
 

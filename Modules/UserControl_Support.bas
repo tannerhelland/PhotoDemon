@@ -235,7 +235,7 @@ End Enum
 ' as necessary.
 Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
-Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
+Private Const PD_TT_MAX_WIDTH As Long = 450         'Tips larger than this will be word-wrapped to fit.
 Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
 
 Private Const SWP_FRAMECHANGED As Long = &H20
@@ -722,8 +722,8 @@ Private Sub GenerateCommonTranslations()
     m_CommonTranslations.AddEntry pduct_CommandBarUndo, g_Language.TranslateMessage("Undo (rewind to an earlier state)")
     
     'Flyout panels share a common "lock this panel" explanation tooltip
-    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Keep this panel open")
-    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels close automatically, but this button forces this panel to stay open.  (This panel will still close if the current tool is deactivated or a new panel is opened.)")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTitle, g_Language.TranslateMessage("Pin this panel open")
+    m_CommonTranslations.AddEntry pduct_FlyoutLockTooltip, g_Language.TranslateMessage("Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)")
     
     'PD's built-in "randomize" control displays a tooltip for its "dice" button
     m_CommonTranslations.AddEntry pduct_Randomize, g_Language.TranslateMessage("Generate a new random number seed.")
@@ -733,6 +733,21 @@ End Sub
 'If the active language changes, call this function to reset any shared translations
 Public Sub ResetCommonTranslations()
     Set m_CommonTranslations = Nothing
+End Sub
+
+Public Sub ThemeFlyoutControls(ByRef cmdFlyoutLock As Variant)
+    
+    'Flyout lock controls use the same behavior across all instances
+    Dim buttonSize As Long
+    buttonSize = Interface.FixDPI(18)
+    
+    Dim i As Long
+    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
+        cmdFlyoutLock(i).AssignImage "push_pin", Nothing, buttonSize, buttonSize
+        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
+        cmdFlyoutLock(i).Value = False
+    Next i
+    
 End Sub
 
 Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String

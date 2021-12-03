@@ -31,13 +31,13 @@ Begin VB.Form toolpanel_MoveSize
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2535
+      Height          =   2055
       Index           =   0
       Left            =   0
       Top             =   960
       Visible         =   0   'False
-      Width           =   3510
-      _ExtentX        =   6191
+      Width           =   3975
+      _ExtentX        =   7011
       _ExtentY        =   3625
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -94,9 +94,9 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   3000
+         Left            =   3480
          TabIndex        =   18
-         Top             =   2040
+         Top             =   1590
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -106,7 +106,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   2895
       Index           =   2
-      Left            =   7440
+      Left            =   8160
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
@@ -238,14 +238,14 @@ Begin VB.Form toolpanel_MoveSize
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1815
+      Height          =   1335
       Index           =   1
-      Left            =   3600
+      Left            =   3960
       Top             =   960
       Visible         =   0   'False
-      Width           =   3615
-      _ExtentX        =   6376
-      _ExtentY        =   2566
+      Width           =   4095
+      _ExtentX        =   7223
+      _ExtentY        =   2355
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
          Left            =   120
@@ -275,9 +275,9 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
-         Left            =   3120
+         Left            =   3600
          TabIndex        =   19
-         Top             =   1320
+         Top             =   842
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -907,15 +907,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     
     'Flyout lock controls use the same behavior across all instances
-    buttonSize = Interface.FixDPI(16)
-    
-    Dim i As Long
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
     Interface.ApplyThemeAndTranslations Me
     

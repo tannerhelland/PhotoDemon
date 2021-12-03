@@ -250,7 +250,7 @@ Begin VB.Form toolpanel_Fill
          Index           =   3
          Left            =   3000
          TabIndex        =   15
-         Top             =   960
+         Top             =   900
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -610,16 +610,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
 
     'Flyout lock controls use the same behavior across all instances
-    Dim buttonSize As Long
-    buttonSize = Interface.FixDPI(16)
-    
-    Dim i As Long
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
     ApplyThemeAndTranslations Me
     

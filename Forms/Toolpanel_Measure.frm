@@ -31,13 +31,13 @@ Begin VB.Form toolpanel_Measure
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2415
+      Height          =   2055
       Index           =   0
       Left            =   0
       Top             =   1080
-      Width           =   4095
-      _ExtentX        =   7223
-      _ExtentY        =   4260
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   3625
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   375
          Index           =   0
@@ -95,9 +95,9 @@ Begin VB.Form toolpanel_Measure
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   3600
+         Left            =   4080
          TabIndex        =   7
-         Top             =   1920
+         Top             =   1530
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -651,15 +651,7 @@ Public Sub UpdateAgainstCurrentTheme()
     m_StringsInitialized = True
     
     'Flyout lock controls use the same behavior across all instances
-    Dim buttonSize As Long
-    
-    Dim i As Long
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
     'Redraw the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

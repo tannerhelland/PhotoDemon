@@ -637,17 +637,8 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
-    'Flyout lock controls use the same behavior across all instances
-    Dim buttonSize As Long
-    buttonSize = Interface.FixDPI(18)
     
-    Dim i As Long
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "push_pin", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

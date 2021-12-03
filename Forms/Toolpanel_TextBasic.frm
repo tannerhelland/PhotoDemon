@@ -183,7 +183,7 @@ Begin VB.Form toolpanel_TextBasic
          Index           =   1
          Left            =   5640
          TabIndex        =   8
-         Top             =   1200
+         Top             =   1170
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -977,15 +977,7 @@ Public Sub UpdateAgainstCurrentTheme()
     btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize
     
     'Flyout lock controls use the same behavior across all instances
-    buttonSize = Interface.FixDPI(16)
-    
-    Dim i As Long
-    For i = cmdFlyoutLock.lBound To cmdFlyoutLock.UBound
-        cmdFlyoutLock(i).AssignImage "generic_invisible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignImage_Pressed "generic_visible", , buttonSize, buttonSize
-        cmdFlyoutLock(i).AssignTooltip UserControls.GetCommonTranslation(pduct_FlyoutLockTooltip), UserControls.GetCommonTranslation(pduct_FlyoutLockTitle)
-        cmdFlyoutLock(i).Value = False
-    Next i
+    UserControls.ThemeFlyoutControls cmdFlyoutLock
     
     'Finish redrawing the form according to current theme and translation settings
     Interface.ApplyThemeAndTranslations Me
