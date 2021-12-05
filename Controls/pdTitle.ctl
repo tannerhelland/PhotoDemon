@@ -294,38 +294,46 @@ End Sub
 
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
-    'Cache the current mouse position.  Importantly, note that we must translate these coordinates to
-    ' *screen* coordinates, as it's possible our parent control will move our window as a result of
-    ' this drag (which in turn causes mouse coords to go berserk).
-    If (Not g_WindowManager Is Nothing) Then
+    If Me.Enabled Then
         
-        Dim tmpPoint As PointAPI
-        tmpPoint.x = x
-        tmpPoint.y = y
-        g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
+        'Cache the current mouse position.  Importantly, note that we must translate these coordinates to
+        ' *screen* coordinates, as it's possible our parent control will move our window as a result of
+        ' this drag (which in turn causes mouse coords to go berserk).
+        If (Not g_WindowManager Is Nothing) Then
+            
+            Dim tmpPoint As PointAPI
+            tmpPoint.x = x
+            tmpPoint.y = y
+            g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
+            
+            m_InitMouseX = tmpPoint.x
+            m_InitMouseY = tmpPoint.y
+            
+            ucSupport.RequestAutoDropMouseMessages False
+            
+        End If
         
-        m_InitMouseX = tmpPoint.x
-        m_InitMouseY = tmpPoint.y
-        
-        ucSupport.RequestAutoDropMouseMessages False
+        RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
         
     End If
-    
-    RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
-    
+        
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    'Draggable titlebars display a hybrid hand+arrow cursor
-    If m_Draggable Then
-        ucSupport.RequestCursor_Resource "HAND-AND-RESIZE"
-    Else
-        ucSupport.RequestCursor IDC_HAND
+    If Me.Enabled Then
+        
+        'Draggable titlebars display a hybrid hand+arrow cursor
+        If m_Draggable Then
+            ucSupport.RequestCursor_Resource "HAND-AND-RESIZE"
+        Else
+            ucSupport.RequestCursor IDC_HAND
+        End If
+        
+        RedrawBackBuffer
+        
     End If
-    
-    RedrawBackBuffer
-    
+        
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
@@ -346,7 +354,7 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If the left mouse button is pressed, relay any changes in position to our parent control.
-    If (Button And pdLeftButton <> 0) And (Not g_WindowManager Is Nothing) Then
+    If ((Button And pdLeftButton) <> 0) And (Not g_WindowManager Is Nothing) And Me.Enabled Then
         
         'Convert the mouse coord to screen coordinates
         Dim tmpPoint As PointAPI
@@ -362,8 +370,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    ucSupport.RequestAutoDropMouseMessages True
-    RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
+    If Me.Enabled Then
+        ucSupport.RequestAutoDropMouseMessages True
+        RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
+    End If
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -375,8 +385,10 @@ Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ne
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
-    m_TitleState = Not m_TitleState
-    RaiseEvent Click(m_TitleState)
+    If Me.Enabled Then
+        m_TitleState = Not m_TitleState
+        RaiseEvent Click(m_TitleState)
+    End If
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -560,7 +572,7 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     Dim ctlFillColor As Long
-    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, hoverState:=ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
+    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, hoverState:=((ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus) And Me.Enabled))
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -571,10 +583,13 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
+    'This control uses disabled mode to appear as a simple caption (with no surrounding titlebar chrome).
+    ' Because of this, many coloring states depend on Enabled state *in addition to* things like
+    ' keyboard focus and mouse position.
     Dim txtColor As Long, arrowColor As Long, ctlTopLineColor As Long
-    arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
-    ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
-    txtColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
+    arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , (ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus) And Me.Enabled)
+    ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus And Me.Enabled, ucSupport.IsMouseInside And Me.Enabled)
+    txtColor = m_Colors.RetrieveColor(PDT_Caption, True, ucSupport.DoIHaveFocus And Me.Enabled, ucSupport.IsMouseInside And Me.Enabled)
     
     'The ucSupport class will paint our caption for us, using the rect we supplied in a previous step
     If ucSupport.IsCaptionActive Then
@@ -587,8 +602,10 @@ Private Sub RedrawBackBuffer()
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
-        'If this control instance is "draggable", let's render a gripper on its left-hand side
-        If m_Draggable Then
+        'If this control instance is both "draggable" and enabled, render a gripper on
+        ' the left-hand side.  (See the right toolbox on PD's main canvas for an example of
+        ' how this looks.)
+        If m_Draggable And Me.Enabled Then
             
             'Turn off antialiasing prior to drawing the gripper
             cSurface.SetSurfaceAntialiasing P2_AA_None
@@ -651,10 +668,12 @@ Private Sub RedrawBackBuffer()
         
         End If
         
-        'Draw the drop-down arrow
-        Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
-        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
-        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
+        'Draw the drop-down arrow *IF* enabled
+        If Me.Enabled Then
+            Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
+            PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
+            PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
+        End If
         
         'Finally, frame the control.  At present, this consists of two gradient lines -
         ' one across the top, the other down the right side.
@@ -666,21 +685,26 @@ Private Sub RedrawBackBuffer()
             .Height = bHeight
         End With
         
-        Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
-        cPen.SetPenWidth 1#
-        cPen.CreatePenFromBrush cBrush
-        PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
-        
-        'For convenience, you can uncomment this line to also paint the bottom boundary of the control.
-        ' I've used this while trying to perfect rendering layouts.
-        'PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
-        
-        ctlRect.Top = ctlRect.Top - 1
-        ctlRect.Width = ctlRect.Width - 1
-        Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, , , , 270#
-        cPen.CreatePenFromBrush cBrush
-        PD2D.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
-        
+        'Only draw chrome IF enabled
+        If Me.Enabled Then
+            
+            Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
+            cPen.SetPenWidth 1#
+            cPen.CreatePenFromBrush cBrush
+            PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
+            
+            'For convenience, you can uncomment this line to also paint the bottom boundary of the control.
+            ' I've used this while trying to perfect rendering layouts.
+            'PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
+            
+            ctlRect.Top = ctlRect.Top - 1
+            ctlRect.Width = ctlRect.Width - 1
+            Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, , , , 270#
+            cPen.CreatePenFromBrush cBrush
+            PD2D.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
+            
+        End If
+            
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
     End If

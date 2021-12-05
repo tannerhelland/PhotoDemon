@@ -175,6 +175,13 @@ Public Sub SetTop(ByVal newTop As Long)
     ucSupport.RequestNewPosition , newTop, True
 End Sub
 
+'This control also supports a unique "GetClickableWidth" property, which is the width of the checkbox
+' AND the caption (but no trailing dead space).  Checkboxes in PhotoDemon are typically made longer
+' than necessary for en-US text, because other locales may require more width for their caption.
+Public Function GetWidth_Clickable() As Long
+    GetWidth_Clickable = m_ClickableRect.Width
+End Function
+
 Public Function GetWidth() As Long
     GetWidth = ucSupport.GetControlWidth
 End Function
@@ -301,26 +308,26 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = "caption"
-    FontSize = 10
-    Value = True
+    Me.Caption = "caption"
+    Me.FontSize = 10
+    Me.Value = True
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not PDMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", vbNullString)
-        FontSize = .ReadProperty("FontSize", 10)
+        Me.Caption = .ReadProperty("Caption", vbNullString)
+        Me.FontSize = .ReadProperty("FontSize", 10)
         m_Value = .ReadProperty("Value", True)
     End With
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not PDMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
