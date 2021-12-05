@@ -792,8 +792,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 24/November/21
-'Last update: finish migrating all selection toolpanels to new flyout panel UI
+'Last updated: 05/December/21
+'Last update: auto-hide any auto-dropped flyout panels *if* the mouse crosses into its rectangle
+'             (see https://github.com/tannerhelland/PhotoDemon/issues/382)
 '
 'This form includes all user-editable settings for PD's various selection tools.
 ' Yes, all selection tools share a single options panel.  (This decision was made
@@ -1841,7 +1842,7 @@ End Sub
 ' panel ID varies by current selection tool.  The canvas control can request flyout behavior via this sub,
 ' and it can also pass "hints" about behavior (which may enable us to display more useful information in
 ' the relevant flyout).
-Public Sub RequestDefaultFlyout(Optional ByVal selectionBeingCreated As Boolean = False, Optional ByVal selectionBeingResized As Boolean = False, Optional ByVal selectionBeingMoved As Boolean = False)
+Public Sub RequestDefaultFlyout(ByVal xInScreenCoords As Long, ByVal yInScreenCoords As Long, Optional ByVal selectionBeingCreated As Boolean = False, Optional ByVal selectionBeingResized As Boolean = False, Optional ByVal selectionBeingMoved As Boolean = False)
     
     'Only raise a flyout if one isn't already visible.  (Regardless of current selection mode,
     ' we can always check for no flyouts being raised yet this session, or one having been raised
@@ -1857,6 +1858,25 @@ Public Sub RequestDefaultFlyout(Optional ByVal selectionBeingCreated As Boolean 
         If (Not m_Flyout Is Nothing) Then okToRaiseFlyout = okToRaiseFlyout Or (m_Flyout.GetFlyoutTrackerID = 2)
         If okToRaiseFlyout Then
             
+            'One last check - we need to compare the current flyout position (in screen coordinates) to
+            ' the current mouse position (in screen coordinates).  If they overlap, we want to *hide* the
+            ' flyout because it's impeding the user's view of the mouse cursor.
+            Dim hideFlyoutInstead As Boolean
+            If (Not m_Flyout Is Nothing) Then
+                
+                'Note that - by design - this call will retrieve the rect of the last flyout displayed
+                ' by the flyout manager.  For selection tools, this will be the auto-dropped panel
+                ' showing selection position and/or size.
+                Dim curFlyoutRect As RectL
+                m_Flyout.GetFlyoutRect curFlyoutRect
+                
+                'Manually check for overlap with the passed (x, y) coordinates
+                If (xInScreenCoords >= curFlyoutRect.Left) And (xInScreenCoords <= curFlyoutRect.Right) Then
+                    hideFlyoutInstead = (yInScreenCoords >= curFlyoutRect.Top) And (yInScreenCoords <= curFlyoutRect.Bottom)
+                End If
+                
+            End If
+            
             If (selectionBeingCreated Or selectionBeingResized) Then
                 If (Me.cboSize(0).ListIndex < 1) Then Me.cboSize(0).ListIndex = 1
             ElseIf selectionBeingMoved Then
@@ -1864,7 +1884,11 @@ Public Sub RequestDefaultFlyout(Optional ByVal selectionBeingCreated As Boolean 
             End If
             
             'With all UI settings synced, we can display and lock the corresponding flyout
-            RaiseAndLockFlyout 2
+            If hideFlyoutInstead Then
+                UserControls.HideOpenFlyouts 0&
+            Else
+                RaiseAndLockFlyout 2
+            End If
             
         End If
         

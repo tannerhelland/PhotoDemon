@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2021 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 01/September/21
-'Last update: continue work on multiple selections
+'Last updated: 05/December/21
+'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels
+'             while creating or transforming a selection
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
 ' currently implemented.  A selection brush is on my TODO list, pending the addition of selection unions.
@@ -993,9 +994,14 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         
         End Select
         
-        'Ask the selection toolbar to display a flyout with (potentially) useful information
+        'Ask the selection toolbar to display a flyout with (potentially) useful information.  Note that we
+        ' need to pass the current (x, y) coordinates of the mouse - translated into screen coordinate space -
+        ' so that the flyout is automatically hidden if the mouse is inside the flyout area.
+        Dim screenX As Long, screenY As Long
+        Drawing.ConvertImageCoordsToScreenCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y, screenX, screenY, False
+        
         'TODO: need to repeat this across other selections, potentially
-        toolpanel_Selections.RequestDefaultFlyout False, (m_CurrentPOI <> poi_Interior), (m_CurrentPOI = poi_Interior)
+        toolpanel_Selections.RequestDefaultFlyout screenX, screenY, False, (m_CurrentPOI <> poi_Interior), (m_CurrentPOI = poi_Interior)
         
     'Polygons can be both moved and resized (by click-dragging individual points)
     ElseIf (m_SelectionShape = ss_Polygon) Then
@@ -1224,7 +1230,8 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             'Polygon transforms consist of either moving an individual polygon point, or moving the entire polygon array
             Case ss_Polygon
             
-                'Ignore events if they happen too close together.  (This is part of a fix for https://github.com/tannerhelland/PhotoDemon/issues/284)
+                'Ignore events if they happen too close together.
+                ' (This is part of a fix for https://github.com/tannerhelland/PhotoDemon/issues/284)
                 If ((VBHacks.GetHighResTimeInMSEx() - m_LastTime) < 500) Then Exit Sub
             
                 'Based on the transform mode, set the initial points accordingly
@@ -1377,6 +1384,16 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     
     'Update the bounding rect for the selection as a whole, based on the new coordinates
     UpdateInternalCoords newMaskRequired
+    
+    'Finally, for certain selection types, relay the mouse coordinates to the selection UI handler.
+    ' (It may need to auto-hide certain on-screen elements to ensure the current selection action
+    ' around the mouse cursor is not hidden by a flyout panel.)
+    Select Case m_SelectionShape
+        Case ss_Rectangle, ss_Circle
+            Dim screenX As Long, screenY As Long
+            Drawing.ConvertImageCoordsToScreenCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y, screenX, screenY, False
+            toolpanel_Selections.RequestDefaultFlyout screenX, screenY, (Not m_TransformModeActive), m_TransformModeActive And (m_CurrentPOI <> poi_Interior), m_TransformModeActive And (m_CurrentPOI = poi_Interior)
+    End Select
     
 End Sub
 

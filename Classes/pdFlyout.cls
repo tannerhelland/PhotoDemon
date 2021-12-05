@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2021-2021 by Tanner Helland
 'Created: 01/November/21
-'Last updated: 28/November/21
-'Last update: add basic support for flyout animation
+'Last updated: 05/December/21
+'Last update: new support function to retrieve the flyout screen rectangle; selection tools use
+'             this to auto-hide flyout panels if they intersect with the current mouse position
 '
 'Controller for flyout panels from PD's (many) toolboxes.
 '
@@ -127,6 +128,10 @@ Implements ISubclass
 
 'These functions have no internal purpose.  They exist purely as a convenience for callers,
 ' so each toolbox doesn't have to maintain its own local synchronization flag.
+Friend Sub GetFlyoutRect(ByRef dstRect As RectL)
+    dstRect = m_flyoutRectCopy
+End Sub
+
 Friend Function GetFlyoutSyncState() As Boolean
     GetFlyoutSyncState = m_flyoutSyncState
 End Function
@@ -181,6 +186,7 @@ Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
         'Reset any internal trackers
         m_flyoutHWnd = 0
         m_flyoutLockedHWnd = 0
+        
         On Error GoTo SkipButtonUnlock
         If (Not m_flyoutLockedButton Is Nothing) Then m_flyoutLockedButton.Value = False
 SkipButtonUnlock:
