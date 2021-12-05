@@ -3,8 +3,9 @@ Attribute VB_Name = "Drawing"
 'PhotoDemon Drawing Routines
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/3/01
-'Last updated: 01/December/12
-'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog
+'Last updated: 05/December/21
+'Last update: new ConvertImageCoordsToScreenCoords() function, to simplify UI interactions between a canvas object
+'             and toolpanel windows (for auto-hiding flyout panels, for example)
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -463,6 +464,32 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     
     Next i
         
+End Sub
+
+'Given an (x,y) pair on the current image, convert the values to coordinates in the current display coordinate space.
+' (This is used for handling UI stuff as the user interacts with the canvas, and using image coordinates allows for a
+' generalized solution.)
+Public Sub ConvertImageCoordsToScreenCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef screenX As Long, ByRef screenY As Long, Optional ByVal forceInBounds As Boolean = False)
+    
+    'Start by converting image coordinates to canvas coordinates.
+    Dim canvasX As Double, canvasY As Double
+    Drawing.ConvertImageCoordsToCanvasCoords srcCanvas, srcImage, imgX, imgY, canvasX, canvasY, forceInBounds
+    
+    'We now need to map from canvas coordinate space to screen coordinate space
+    If (Not g_WindowManager Is Nothing) Then
+        
+        'Map using PD's internal window manager (which wraps MapWindowPoint)
+        Dim tmpPoint As PointAPI
+        tmpPoint.x = Int(canvasX + 0.5)
+        tmpPoint.y = Int(canvasY + 0.5)
+        g_WindowManager.GetClientToScreen_Universal srcCanvas.GetCanvasViewHWnd, VarPtr(tmpPoint)
+        
+        'Return the final values
+        screenX = tmpPoint.x
+        screenY = tmpPoint.y
+        
+    End If
+    
 End Sub
 
 'If you want to convert a position-agnostic size between image and canvas space, use these functions

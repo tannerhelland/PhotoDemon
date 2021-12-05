@@ -250,7 +250,11 @@ Private Sub chkAntialiasing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boole
     If shiftTabWasPressed Then
         newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
     Else
-        newTargetHwnd = Me.ttlPanel(0).hWnd
+        If Me.ttlPanel(0).Enabled Then
+            newTargetHwnd = Me.ttlPanel(0).hWnd
+        Else
+            newTargetHwnd = Me.sltBrushSetting(0).hWndSlider
+        End If
     End If
 End Sub
 
@@ -302,6 +306,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
 End Sub
 
+Private Sub Form_Resize()
+    ReflowUI
+End Sub
+
 Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
     If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
@@ -323,14 +331,18 @@ Private Sub sltBrushSetting_Change(Index As Integer)
 End Sub
 
 Private Sub sltBrushSetting_GotFocusAPI(Index As Integer)
-    UpdateFlyout 0, True
+    If Me.ttlPanel(0).Enabled Then UpdateFlyout 0, True
 End Sub
 
 Private Sub sltBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
         Case 0
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.ttlPanel(0).hWnd
+                If Me.ttlPanel(0).Enabled Then
+                    newTargetHwnd = Me.ttlPanel(0).hWnd
+                Else
+                    newTargetHwnd = Me.chkAntialiasing.hWnd
+                End If
             Else
                 newTargetHwnd = Me.sltBrushSetting(1).hWndSlider
             End If
@@ -338,7 +350,11 @@ Private Sub sltBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
             If shiftTabWasPressed Then
                 newTargetHwnd = Me.sltBrushSetting(0).hWndSpinner
             Else
-                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+                If Me.ttlPanel(0).Enabled Then
+                    newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+                Else
+                    newTargetHwnd = Me.ttlPanel(1).hWnd
+                End If
             End If
     End Select
 End Sub
@@ -357,11 +373,123 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
             End If
         Case 1
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+                If Me.ttlPanel(0).Enabled Then
+                    newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+                Else
+                    newTargetHwnd = Me.sltBrushSetting(1).hWndSpinner
+                End If
             Else
                 newTargetHwnd = Me.cboBrushSetting(0).hWnd
             End If
     End Select
+End Sub
+
+'When the form is resized, we can possibly move some controls out of their flyout panels and into
+' the main toolpanel area.
+Private Sub ReflowUI()
+    
+    'Skip reflow in designer mode
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    
+    'High-DPI displays cause trouble for measurements using internal VB layout properties.
+    ' Use WAPI or PD-specific layout properties (GetLeft, GetWidth etc) for correct measurements.
+    Dim parentWidth As Long
+    If (Not g_WindowManager Is Nothing) Then parentWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+    
+    'Solve for available width, plus standardized padding
+    Dim stdPadding As Long, stdPaddingTitle As Long
+    stdPadding = Interface.FixDPI(20)
+    stdPaddingTitle = Interface.FixDPI(8)
+    
+    'Determine if we're already in "wide screen mode" or "narrow screen mode"
+    Dim inWideModeNow As Boolean
+    inWideModeNow = (Not Me.ttlPanel(0).Enabled)
+    
+    'If we're already in "wide mode", we need to ensure the available space hasn't shrunk too far.
+    Dim useWideMode As Boolean
+    
+    Dim availablePixels As Long, minAvailableLeft As Long
+    If inWideModeNow Then
+        minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPaddingTitle
+        useWideMode = (minAvailableLeft < parentWidth)
+        
+    '...and if we're *not* in "wide mode", we need to see if we have enough room to activate wide mode.
+    Else
+        minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPadding + stdPaddingTitle
+        availablePixels = parentWidth - minAvailableLeft
+        useWideMode = (availablePixels > Me.sltBrushSetting(1).GetWidth)
+    End If
+    
+    Dim xOffset As Long
+    
+    'The first target control on this panel is: the Opacity slider.
+    If useWideMode Then
+        
+        'If we're already in "wide mode", we don't need to move anything!
+        If (Not inWideModeNow) Then
+            
+            'Before doing anything else, hide any open flyouts
+            UserControls.HideOpenFlyouts 0&
+            
+            'For this particular control, we can actually move the entire flyout panel into the toolpanel,
+            ' but we need to stick it immediately after the left-most control... which means we also need
+            ' to shift everything after it to the right.
+            
+            'Start by moving the panel into position, and note that we use the opacity slider's width
+            ' (*not* the panel's width, as it includes the panel flyout lock button).
+            xOffset = Me.ttlPanel(0).GetLeft + Me.ttlPanel(0).GetWidth + stdPadding
+            cntrPopOut(0).SetPosition xOffset, 0
+            xOffset = xOffset + Me.sltBrushSetting(1).GetWidth + stdPadding
+            
+            'Send the panel to the back of the zorder so we don't have to mess with resizing it.
+            cntrPopOut(0).ZOrder vbSendToBack
+            
+            'Repeat the above steps, but for all remaining controls on the panel.
+            Me.ttlPanel(1).SetLeft xOffset
+            Me.cboBrushSetting(0).SetLeft xOffset + stdPaddingTitle
+            xOffset = xOffset + ttlPanel(1).GetWidth + stdPadding
+            
+            Me.chkAntialiasing.SetLeft xOffset
+            
+            'Now forcibly disable (or enable) all associated controls, including the parent titlebar
+            ' of this flyout and the panel lock button on the flyout.
+            Me.cmdFlyoutLock(0).Visible = False
+            Me.cntrPopOut(0).Visible = True
+            Me.ttlPanel(0).Enabled = False
+            
+        End If
+        
+    'Not enough room; restore the flyout to its original position and/or state
+    Else
+        
+        'If we're already not in wide mode, we don't need to move anything!
+        If inWideModeNow Then
+            
+            'Before doing anything else, hide any open flyouts
+            UserControls.HideOpenFlyouts 0&
+            
+            'Reset all disabled/enabled states
+            Me.cmdFlyoutLock(0).Visible = True
+            Me.cntrPopOut(0).Visible = False
+            Me.ttlPanel(0).Enabled = True
+            
+            'Move the flyout panel off the parent toolpanel
+            cntrPopOut(0).SetPosition 0, Me.ScaleHeight + stdPadding
+            
+            'Reset the position of everything left on the parent toolpanel.
+            xOffset = Me.ttlPanel(0).GetLeft + Me.ttlPanel(0).GetWidth + stdPadding
+            
+            'Repeat the above steps, but for all remaining controls on the panel.
+            Me.ttlPanel(1).SetLeft xOffset
+            Me.cboBrushSetting(0).SetLeft xOffset + stdPaddingTitle
+            xOffset = xOffset + ttlPanel(1).GetWidth + stdPadding
+            
+            Me.chkAntialiasing.SetLeft xOffset
+            
+        End If
+            
+    End If
+    
 End Sub
 
 'If you want to set all paintbrush settings at once, use this function

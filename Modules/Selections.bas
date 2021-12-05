@@ -3,8 +3,9 @@ Attribute VB_Name = "Selections"
 'Selection Interface
 'Copyright 2013-2021 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 15/February/21
-'Last update: large selection tool overhaul to support multi-selection behavior
+'Last updated: 05/December/21
+'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels
+'             while creating or transforming a selection
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -130,9 +131,14 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     SetUIGroupState PDUI_Selections, True
     SetUIGroupState PDUI_SelectionTransforms, True
     
-    'Ask the selection toolbar to display a flyout with (potentially) useful information
-    'TODO: may need to change these bools based on current selection type
-    toolpanel_Selections.RequestDefaultFlyout True, True, False
+    'Ask the selection toolbar to display a flyout with (potentially) useful information.  Note that we
+    ' need to pass the current (x, y) coordinates of the mouse - translated into screen coordinate space -
+    ' so that the flyout is automatically hidden if the mouse is inside the flyout area.
+    Dim screenX As Long, screenY As Long
+    Drawing.ConvertImageCoordsToScreenCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y, screenX, screenY, False
+    
+    'TODO: may need to change selection state bools based on current selection type
+    toolpanel_Selections.RequestDefaultFlyout screenX, screenY, True, True, False
     
     'Redraw the screen
     Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
