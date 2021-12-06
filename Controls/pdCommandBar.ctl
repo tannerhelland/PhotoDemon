@@ -1107,7 +1107,10 @@ End Sub
 'Record the current value of all UI objects on our parent dialog, and return their combined value as an XML string.
 ' An optional preset name can be passed; note that this gets embedded in the XML, as well.
 Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "last-used settings") As String
-
+    
+    'Failsafe only; errors are not expected in this function
+    On Error GoTo SkipPreset
+    
     'Initialize a param handler and initialize it with the passed preset name
     If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
     m_Params.Reset
@@ -1219,6 +1222,8 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
     End If
     
     GetPresetParamString = m_Params.GetParamString()
+
+SkipPreset:
 
 End Function
 

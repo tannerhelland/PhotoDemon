@@ -369,7 +369,12 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
+    Set m_Timer = Nothing
     Set m_SrcImage = Nothing
     Set m_Thumbs = Nothing
     Set m_AniFrame = Nothing
