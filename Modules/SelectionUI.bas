@@ -1052,11 +1052,11 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
     
         'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
         ' To access their indicies properly, we must calculate an offset.
-        Dim subpanelOffset As Long, subpanelCtlOffset As Long
+        Dim subpanelOffset As Long
         subpanelOffset = SelectionUI.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))
-        subpanelCtlOffset = subpanelOffset * 2
         
-        'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
+        'Additional syncing is done if the selection is transformable.
+        ' (If it is not transformable, clear and lock the location text boxes.)
         If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
             
             Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
@@ -1067,75 +1067,59 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
                 'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
                 Case ss_Rectangle, ss_Circle
                     
-                    Dim sizeIndex As Long
-                    sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
-                    
-                    'Coordinates are allowed to be <= 0, but size and aspect ratio are not
-                    Dim allowedMin As Long
-                    If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
-                    If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
+                    'Indices for spin controls for rectangle selections are:
+                    ' 1) size [0, 1]
+                    ' 2) aspect ratio [2, 3]
+                    ' 3) position [4, 5]
+                    ' (add 6 to each value for ellipse selections)
+                    Dim baseSizeIndex As Long
+                    If (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape() = ss_Rectangle) Then
+                        baseSizeIndex = 0
+                    Else
+                        baseSizeIndex = 6
                     End If
                     
                     tmpRectF = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersLockedRect()
-                    If (sizeIndex = 0) Then
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
-                    ElseIf (sizeIndex = 1) Then
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
-                    ElseIf (sizeIndex = 2) Then
+                    
+                    toolpanel_Selections.tudSel(baseSizeIndex + 0).Value = tmpRectF.Width
+                    toolpanel_Selections.tudSel(baseSizeIndex + 1).Value = tmpRectF.Height
+                    
+                    'Failsafe DBZ check before calculating aspect ratio
+                    If (tmpRectF.Height > 0) Then
+                    
+                        Dim fracNumerator As Long, fracDenominator As Long
+                        PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
                         
-                        'Failsafe DBZ check
-                        If (tmpRectF.Height > 0) Then
-                        
-                            Dim fracNumerator As Long, fracDenominator As Long
-                            PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
-                            
-                            'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-                            If (fracDenominator = 5) Then
-                                fracNumerator = fracNumerator * 2
-                                fracDenominator = fracDenominator * 2
-                            End If
-                            
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
-                            
+                        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                        If (fracDenominator = 5) Then
+                            fracNumerator = fracNumerator * 2
+                            fracDenominator = fracDenominator * 2
                         End If
                         
+                        toolpanel_Selections.tudSel(baseSizeIndex + 2).Value = fracNumerator
+                        toolpanel_Selections.tudSel(baseSizeIndex + 3).Value = fracDenominator
+                        
                     End If
                     
-                    '"Lock" button visibility is a little complicated - basically, we only want to make it visible
-                    ' for width, height, and aspect ratio options.
-                    If (sizeIndex = 0) Then
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
-                        toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                    ElseIf (sizeIndex = 1) Then
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                        toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                    Else
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                        toolpanel_Selections.lblColon(subpanelOffset).Visible = True
-                    End If
+                    toolpanel_Selections.tudSel(baseSizeIndex + 4).Value = tmpRectF.Left
+                    toolpanel_Selections.tudSel(baseSizeIndex + 5).Value = tmpRectF.Top
                     
-                    'Also make sure the "lock" icon matches the current lock state
-                    If (sizeIndex = 1) Then
-                        toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
-                        toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
-                    ElseIf (sizeIndex = 2) Then
-                        toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
-                    End If
+                    'Also make sure the "lock" icon, if any, matches the current lock state
+                    baseSizeIndex = baseSizeIndex \ 2
+                    toolpanel_Selections.cmdLock(baseSizeIndex).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
+                    toolpanel_Selections.cmdLock(baseSizeIndex + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
+                    toolpanel_Selections.cmdLock(baseSizeIndex + 2).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
                     
             End Select
             
         Else
         
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+                If (toolpanel_Selections.tudSel(i).Min > 0) Then
+                    If (toolpanel_Selections.tudSel(i).Value <> toolpanel_Selections.tudSel(i).Min) Then toolpanel_Selections.tudSel(i).Value = toolpanel_Selections.tudSel(i).Min
+                Else
+                    If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+                End If
             Next i
             
         End If
@@ -1186,13 +1170,11 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         ' we need to disable some commands on the selection toolbar.
         If Tools.IsSelectionToolActive Then
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
-            Next i
-            For i = 0 To toolpanel_Selections.cmdLock.Count - 1
-                toolpanel_Selections.cmdLock(i).Visible = False
-            Next i
-            For i = 0 To toolpanel_Selections.lblColon.Count - 1
-                toolpanel_Selections.lblColon(i).Visible = False
+                If (toolpanel_Selections.tudSel(i).Min > 0) Then
+                    If (toolpanel_Selections.tudSel(i).Value <> toolpanel_Selections.tudSel(i).Min) Then toolpanel_Selections.tudSel(i).Value = toolpanel_Selections.tudSel(i).Min
+                Else
+                    If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+                End If
             Next i
         End If
         

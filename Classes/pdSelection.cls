@@ -1747,85 +1747,133 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
     If m_RejectRefreshRequests Then Exit Sub
     m_RejectRefreshRequests = True
     
-    Dim subpanelOffset As Long, subpanelCtlOffset As Long
+    Dim subpanelOffset As Long
     subpanelOffset = SelectionUI.GetSelectionSubPanelFromSelectionShape(PDImages.GetActiveImage())
-    subpanelCtlOffset = subpanelOffset * 2
-    
+                    
     'Check all text box entries for validity, then update the corresponding selection values.
     Select Case m_SelectionShape
     
         'Rectangles are currently getting experimental support for new features!
         Case ss_Rectangle, ss_Circle
+        
             m_IsMaskReady = False
             
-            'Modify position
-            If (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 0) Then
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
-                
-            'Modify size
-            ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 1) Then
+            'Indices for spin controls for rectangle selections are:
+            ' 1) size [0, 1]
+            ' 2) aspect ratio [2, 3]
+            ' 3) position [4, 5]
+            ' (add 6 to each value for ellipse selections)
+            Dim baseSizeIndex As Long
+            If (m_SelectionShape = ss_Rectangle) Then
+                baseSizeIndex = 0
+            Else
+                baseSizeIndex = 6
+            End If
             
-                'If aspect ratio is locked, we must cater to it during changes
-                If m_IsAspectLocked And (m_LockedAspectRatio > 0) Then
+            'We now branch handling by the index of the source control.
+            
+            'Selection position can be freely modified by any action (i.e. coordinates don't have a "lock" button)
+            ' (x coordinate)
+            If (indexOfSrcControl - baseSizeIndex = 4) Then
+                If toolpanel_Selections.tudSel(baseSizeIndex + 4).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(baseSizeIndex + 4)
+            
+            ' (y coordinate)
+            ElseIf (indexOfSrcControl - baseSizeIndex = 5) Then
+                If toolpanel_Selections.tudSel(baseSizeIndex + 5).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(baseSizeIndex + 5)
+                
+            'Anything else must be a size coordinate, and these *can* be locked (either via aspect ratio locks
+            ' or width/height locks).
+            Else
+                 
+                'Width/height changes
+                If (indexOfSrcControl - baseSizeIndex = 0) Or (indexOfSrcControl - baseSizeIndex = 1) Then
+                
+                    'Width/height are changing.  If aspect ratio is locked, we must use it to calculate new
+                    ' width/height values.
+                    If m_IsAspectLocked And (m_LockedAspectRatio > 0) Then
+                        
+                        'User is changing width
+                        If (indexOfSrcControl - baseSizeIndex = 0) Then
+                            If toolpanel_Selections.tudSel(baseSizeIndex + 0).IsValid(False) Then
+                                m_CornersLocked.Width = toolpanel_Selections.tudSel(baseSizeIndex + 0)
+                                m_CornersLocked.Height = m_CornersLocked.Width * (1# / m_LockedAspectRatio)
+                                toolpanel_Selections.tudSel(baseSizeIndex + 1) = m_CornersLocked.Height
+                            End If
+                            
+                        'User is changing height
+                        Else
+                            If toolpanel_Selections.tudSel(baseSizeIndex + 1).IsValid(False) Then
+                                m_CornersLocked.Height = toolpanel_Selections.tudSel(baseSizeIndex + 1)
+                                m_CornersLocked.Width = m_CornersLocked.Height * m_LockedAspectRatio
+                                toolpanel_Selections.tudSel(baseSizeIndex + 0) = m_CornersLocked.Width
+                            End If
+                        End If
                     
-                    'User is changing width
-                    If ((indexOfSrcControl And 1) = 0) Then
-                        If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then
-                            m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-                            m_CornersLocked.Height = m_CornersLocked.Width * (1# / m_LockedAspectRatio)
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1) = m_CornersLocked.Height
+                    'If aspect ratio is *not* locked, freely modify either value, and cache any locked values so they
+                    ' can be used elsewhere.
+                    Else
+                        
+                        If toolpanel_Selections.tudSel(baseSizeIndex + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(baseSizeIndex + 0)
+                        If toolpanel_Selections.tudSel(baseSizeIndex + 1).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(baseSizeIndex + 1)
+                        If m_IsWidthLocked Then m_LockedWidth = m_CornersLocked.Width
+                        If m_IsHeightLocked Then m_LockedHeight = m_CornersLocked.Height
+                        
+                        'Changes to width/height (with unlocked aspect ratio) will obviously change the
+                        ' current aspect ratio.  Re-calculate aspect ratio and update those spinners accordingly.
+                        Dim fracNumerator As Long, fracDenominator As Long
+                        PDMath.ConvertToFraction m_CornersLocked.Width / m_CornersLocked.Height, fracNumerator, fracDenominator, 0.005
+                        
+                        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                        If (fracDenominator = 5) Then
+                            fracNumerator = fracNumerator * 2
+                            fracDenominator = fracDenominator * 2
                         End If
                         
-                    'User is changing height
-                    Else
-                        If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then
-                            m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
-                            m_CornersLocked.Width = m_CornersLocked.Height * m_LockedAspectRatio
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0) = m_CornersLocked.Width
-                        End If
+                        toolpanel_Selections.tudSel(baseSizeIndex + 2).Value = fracNumerator
+                        toolpanel_Selections.tudSel(baseSizeIndex + 3).Value = fracDenominator
+                        
                     End If
                 
-                'If aspect ratio is *not* locked, freely modify either value, and cache any locked values so they
-                ' can be used elsewhere.
+                'Only remaining options are modifying aspect ratio
                 Else
-                    If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-                    If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
-                    If m_IsWidthLocked Then m_LockedWidth = m_CornersLocked.Width
-                    If m_IsHeightLocked Then m_LockedHeight = m_CornersLocked.Height
+                    
+                    'Because aspect ratio calculations involve division, ensure validity before continuing
+                    Dim aspW As Double, aspH As Double, aspFinal As Double
+                    If toolpanel_Selections.tudSel(baseSizeIndex + 2).IsValid(False) Then aspW = toolpanel_Selections.tudSel(baseSizeIndex + 2)
+                    If toolpanel_Selections.tudSel(baseSizeIndex + 3).IsValid(False) Then aspH = toolpanel_Selections.tudSel(baseSizeIndex + 3)
+                    If (aspW > 0#) And (aspH > 0#) Then
+                        
+                        'We preferentially change the width of the selection to match the new aspect ratio if...
+                        ' 1) The first aspect ratio parameter is changing (e.g. the 4 in 4:3)
+                        ' 2) The selection's width is *not* locked
+                        ' 3) The selection's height *is* locked
+                        '
+                        'Otherwise, we change height preferentially.
+                        If ((indexOfSrcControl - baseSizeIndex = 0) And (Not m_IsWidthLocked)) Or m_IsHeightLocked Then
+                            aspFinal = aspW / aspH
+                            m_CornersLocked.Width = m_CornersLocked.Height * aspFinal
+                        Else
+                            aspFinal = aspH / aspW
+                            m_CornersLocked.Height = m_CornersLocked.Width * aspFinal
+                        End If
+                        
+                        'Calculate aspect ratio and cache it; we need it in a variety of places
+                        If (m_CornersLocked.Width <> 0!) And (m_CornersLocked.Height <> 0!) Then m_LockedAspectRatio = m_CornersLocked.Width / m_CornersLocked.Height
+                        
+                        'Update width/height spinners to reflect the new aspect ratio
+                        toolpanel_Selections.tudSel(baseSizeIndex + 0).Value = m_CornersLocked.Width
+                        toolpanel_Selections.tudSel(baseSizeIndex + 1).Value = m_CornersLocked.Height
+                        
+                    End If
+                
+                '/branch according to width/height vs aspect ratio changes
                 End If
             
-            'Modify aspect ratio
-            ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 2) Then
-                
-                'Because aspect ratio calculations involve division, ensure validity before continuing
-                Dim aspW As Double, aspH As Double, aspFinal As Double
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then aspW = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then aspH = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
-                If (aspW > 0!) And (aspH > 0!) Then
-                    
-                    'We preferentially change the width of the selection to match the new aspect ratio if...
-                    ' 1) The first aspect ratio parameter is changing (e.g. the 4 in 4:3)
-                    ' 2) The selection's width is *not* locked
-                    ' 3) The selection's height *is* locked
-                    '
-                    'Otherwise, we change height preferentially.
-                    If (((indexOfSrcControl And 1) = 0) And (Not m_IsWidthLocked)) Or m_IsHeightLocked Then
-                        aspFinal = aspW / aspH
-                        m_CornersLocked.Width = m_CornersLocked.Height * aspFinal
-                    Else
-                        aspFinal = aspH / aspW
-                        m_CornersLocked.Height = m_CornersLocked.Width * aspFinal
-                    End If
-                    
-                    'Calculate aspect ratio and cache it; we need it in a variety of places
-                    If (m_CornersLocked.Width <> 0!) And (m_CornersLocked.Height <> 0!) Then m_LockedAspectRatio = m_CornersLocked.Width / m_CornersLocked.Height
-                    
-                End If
-                
+            '/branch according to position vs width/height/aspect ratio changes
             End If
             
         'I haven't decided if other selection types will support movement via text box...
+        ' (they currently do not)
         Case Else
         
     End Select
