@@ -200,20 +200,30 @@ Begin VB.Form toolpanel_Selections
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2535
+      Height          =   3015
       Index           =   2
-      Left            =   6120
-      Top             =   960
+      Left            =   960
+      Top             =   2880
       Visible         =   0   'False
       Width           =   3375
       _ExtentX        =   5953
       _ExtentY        =   4471
+      Begin PhotoDemon.pdCheckBox chkAutoDrop 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   47
+         Top             =   2550
+         Width           =   2655
+         _ExtentX        =   4683
+         _ExtentY        =   661
+         Caption         =   "open panel automatically"
+      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
          Left            =   2880
          TabIndex        =   11
-         Top             =   2010
+         Top             =   2520
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -1073,6 +1083,26 @@ Private Sub cboWandCompare_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     End If
 End Sub
 
+Private Sub chkAutoDrop_Click()
+    
+    'Clicking this checkbox prevents the "auto-open" behavior of the selection dropdown.
+    ' (This may prove to be a temporary fix since this panel is being redesigned in light of
+    ' new layout opportunities thanks to flyout panels, but I can easily remove this checkbox
+    ' if it proves superfluous in a new design.)
+    '
+    'Anyway, because a user is likely to click this after the panel has already auto-dropped,
+    ' as a convenience we'll also deactivate the pin button if it's active.  (This relationship
+    ' may not be intuitive to beginners, and I don't want to frustrate them by having them
+    ' unclick this button, then the flyout not disappearing.)
+    If (Not Me.chkAutoDrop.Value) Then
+        Me.cmdFlyoutLock(2).Value = False
+        If (Not m_Flyout Is Nothing) Then
+            m_Flyout.UpdateLockStatus Me.cntrPopOut(2).hWnd, False, cmdFlyoutLock(2)
+        End If
+    End If
+    
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then
         m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
@@ -1770,6 +1800,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
     sltCornerRounding.AssignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+    chkAutoDrop.AssignTooltip "This panel can open automatically while creating or editing a selection, to ensure the selection's position and size are visible.  (On small screens, however, this may risk obscuring your view of the selection.)"
     
     sltPolygonCurvature.AssignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
     sltSmoothStroke.AssignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
@@ -1826,15 +1857,19 @@ End Sub
 ' The RequestDefaultFlyout sub, below, forwards requests here; this function raises the flyout AND locks
 ' it in the open position (so it doesn't instantly close due to the user interacting elsewhere).
 Private Sub RaiseAndLockFlyout(ByVal flyoutIndex As Long)
+        
+    If chkAutoDrop.Value Then
+        
+        UpdateFlyout flyoutIndex, True
+        
+        'By design, pdButtonToolbox controls do not trigger events when their value is set programmatically
+        ' (this has to do with the way they were originally designed for the left toolbox only, which is
+        ' constantly turning buttons on/off as the user switches between tools).  So we need to manually
+        ' set lock status after setting the correct button value.
+        cmdFlyoutLock(flyoutIndex).Value = True
+        m_Flyout.UpdateLockStatus Me.cntrPopOut(flyoutIndex).hWnd, cmdFlyoutLock(flyoutIndex).Value, cmdFlyoutLock(flyoutIndex)
     
-    UpdateFlyout flyoutIndex, True
-    
-    'By design, pdButtonToolbox controls do not trigger events when their value is set programmatically
-    ' (this has to do with the way they were originally designed for the left toolbox only, which is
-    ' constantly turning buttons on/off as the user switches between tools).  So we need to manually
-    ' set lock status after setting the correct button value.
-    cmdFlyoutLock(flyoutIndex).Value = True
-    m_Flyout.UpdateLockStatus Me.cntrPopOut(flyoutIndex).hWnd, cmdFlyoutLock(flyoutIndex).Value, cmdFlyoutLock(flyoutIndex)
+    End If
     
 End Sub
 
