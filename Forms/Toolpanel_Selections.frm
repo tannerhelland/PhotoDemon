@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_Selections
    ClientHeight    =   6855
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   13515
+   ClientWidth     =   13740
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -26,7 +26,7 @@ Begin VB.Form toolpanel_Selections
    NegotiateMenus  =   0   'False
    ScaleHeight     =   457
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   901
+   ScaleWidth      =   916
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboSelSmoothing 
@@ -200,31 +200,31 @@ Begin VB.Form toolpanel_Selections
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2655
+      Height          =   2160
       Index           =   2
-      Left            =   3360
+      Left            =   3120
       Top             =   1320
       Visible         =   0   'False
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   4683
+      Width           =   6600
+      _ExtentX        =   11642
+      _ExtentY        =   3810
       Begin PhotoDemon.pdCheckBox chkAutoDrop 
          Height          =   375
          Index           =   0
-         Left            =   120
+         Left            =   210
          TabIndex        =   35
-         Top             =   2160
-         Width           =   5415
-         _ExtentX        =   9551
+         Top             =   1680
+         Width           =   3120
+         _ExtentX        =   5503
          _ExtentY        =   661
          Caption         =   "open panel automatically"
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
-         Left            =   5640
+         Left            =   6120
          TabIndex        =   10
-         Top             =   2160
+         Top             =   1650
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -235,7 +235,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   0
          Left            =   3360
          TabIndex        =   17
-         Top             =   0
+         Top             =   810
          Width           =   2655
          _ExtentX        =   4683
          _ExtentY        =   1296
@@ -248,7 +248,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   0
          Left            =   3360
          TabIndex        =   18
-         Top             =   840
+         Top             =   1635
          Width           =   2640
          _ExtentX        =   4657
          _ExtentY        =   714
@@ -262,8 +262,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   375
          Index           =   0
          Left            =   1320
-         Top             =   375
-         Visible         =   0   'False
+         Top             =   360
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   661
@@ -276,7 +275,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   2
          Left            =   2895
          TabIndex        =   19
-         Top             =   375
+         Top             =   360
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
@@ -317,7 +316,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Left            =   3360
          TabIndex        =   34
-         Top             =   1320
+         Top             =   0
          Width           =   2655
          _ExtentX        =   4683
          _ExtentY        =   1296
@@ -342,7 +341,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   5
-         Left            =   1800
+         Left            =   1815
          TabIndex        =   37
          Top             =   1215
          Width           =   1080
@@ -353,23 +352,23 @@ Begin VB.Form toolpanel_Selections
          ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdLabel lblNoOptions 
-         Height          =   375
+         Height          =   345
          Index           =   3
          Left            =   120
          Top             =   0
          Width           =   3135
          _ExtentX        =   5530
-         _ExtentY        =   661
+         _ExtentY        =   609
          Caption         =   "aspect ratio"
       End
       Begin PhotoDemon.pdLabel lblNoOptions 
-         Height          =   375
+         Height          =   345
          Index           =   4
          Left            =   120
          Top             =   840
          Width           =   3135
          _ExtentX        =   5530
-         _ExtentY        =   661
+         _ExtentY        =   609
          Caption         =   "position (x, y)"
       End
    End
@@ -388,7 +387,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   1335
       Index           =   4
-      Left            =   9600
+      Left            =   9960
       Top             =   1440
       Visible         =   0   'False
       Width           =   3375
@@ -437,7 +436,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   495
       Index           =   5
-      Left            =   9600
+      Left            =   10080
       Top             =   2880
       Visible         =   0   'False
       Width           =   3375
@@ -485,7 +484,7 @@ Begin VB.Form toolpanel_Selections
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   3015
       Index           =   6
-      Left            =   9720
+      Left            =   9960
       Top             =   3480
       Visible         =   0   'False
       Width           =   3615
@@ -537,31 +536,31 @@ Begin VB.Form toolpanel_Selections
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2175
+      Height          =   1800
       Index           =   3
-      Left            =   3360
+      Left            =   2520
       Top             =   4080
       Visible         =   0   'False
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   3836
+      Width           =   6600
+      _ExtentX        =   11642
+      _ExtentY        =   3175
       Begin PhotoDemon.pdCheckBox chkAutoDrop 
          Height          =   375
          Index           =   1
-         Left            =   120
+         Left            =   3435
          TabIndex        =   48
-         Top             =   1680
-         Width           =   5415
-         _ExtentX        =   9551
+         Top             =   1260
+         Width           =   2670
+         _ExtentX        =   4710
          _ExtentY        =   661
          Caption         =   "open panel automatically"
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   3
-         Left            =   5640
+         Left            =   6120
          TabIndex        =   49
-         Top             =   1680
+         Top             =   1230
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -583,11 +582,11 @@ Begin VB.Form toolpanel_Selections
          CausesValidation=   0   'False
          Height          =   405
          Index           =   1
-         Left            =   3360
+         Left            =   3480
          TabIndex        =   51
-         Top             =   840
-         Width           =   2640
-         _ExtentX        =   4657
+         Top             =   780
+         Width           =   2610
+         _ExtentX        =   4604
          _ExtentY        =   714
          Min             =   1
          Max             =   1000
@@ -600,7 +599,6 @@ Begin VB.Form toolpanel_Selections
          Index           =   1
          Left            =   1320
          Top             =   375
-         Visible         =   0   'False
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   661
@@ -665,7 +663,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   11
-         Left            =   1800
+         Left            =   1815
          TabIndex        =   56
          Top             =   1215
          Width           =   1080
@@ -721,7 +719,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   1
          Left            =   2775
          TabIndex        =   39
-         Top             =   375
+         Top             =   390
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
@@ -732,7 +730,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   0
          Left            =   120
          TabIndex        =   40
-         Top             =   375
+         Top             =   405
          Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -747,7 +745,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   1
          Left            =   1695
          TabIndex        =   41
-         Top             =   375
+         Top             =   405
          Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -762,7 +760,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   0
          Left            =   1200
          TabIndex        =   42
-         Top             =   375
+         Top             =   390
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
@@ -904,7 +902,7 @@ Begin VB.Form toolpanel_Selections
          Width           =   3195
          _ExtentX        =   5636
          _ExtentY        =   661
-         Caption         =   "size"
+         Caption         =   "size (w, h)"
          Value           =   0   'False
       End
       Begin PhotoDemon.pdButtonToolbox cmdLock 
@@ -912,7 +910,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   4
          Left            =   2775
          TabIndex        =   44
-         Top             =   375
+         Top             =   390
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
@@ -923,7 +921,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   6
          Left            =   120
          TabIndex        =   45
-         Top             =   375
+         Top             =   405
          Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -936,7 +934,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   7
          Left            =   1695
          TabIndex        =   46
-         Top             =   375
+         Top             =   405
          Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -949,7 +947,7 @@ Begin VB.Form toolpanel_Selections
          Index           =   3
          Left            =   1200
          TabIndex        =   47
-         Top             =   375
+         Top             =   390
          Width           =   375
          _ExtentX        =   661
          _ExtentY        =   635
@@ -966,9 +964,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection Tool Panel
 'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 05/December/21
-'Last update: auto-hide any auto-dropped flyout panels *if* the mouse crosses into its rectangle
-'             (see https://github.com/tannerhelland/PhotoDemon/issues/382)
+'Last updated: 06/December/21
+'Last update: break size/position/aspect-ratio settings out into their own dedicated controls,
+'             since I'm no longer limited by a fixed toolpanel size
 '
 'This form includes all user-editable settings for PD's various selection tools.
 ' Yes, all selection tools share a single options panel.  (This decision was made
@@ -1070,26 +1068,28 @@ End Sub
 
 Private Sub cboSelArea_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
-        Case 0, 1
+        Case 0
             If shiftTabWasPressed Then
-                If (Me.cmdLock(Index * 2 + 1).Visible And Me.cmdLock(Index * 2 + 1).Enabled) Then
-                    newTargetHwnd = Me.cmdLock(Index * 2 + 1).hWnd
+                newTargetHwnd = Me.sltCornerRounding.hWndSpinner
+            Else
+                If Me.sltSelectionBorder(0).Visible Then
+                    newTargetHwnd = Me.sltSelectionBorder(0).hWnd
                 Else
-                    If Me.tudSel(Index * 2 + 1).Enabled Then
-                        newTargetHwnd = Me.tudSel(Index * 2 + 1).hWnd
-                    Else
-                        'newTargetHwnd = Me.cboSize(Index).hWnd
-                    End If
+                    newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+                End If
+            End If
+        Case 1
+            If shiftTabWasPressed Then
+                If Me.tudSel(11).Enabled Then
+                    newTargetHwnd = Me.tudSel(11).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(5).hWnd
                 End If
             Else
-                If Me.sltSelectionBorder(Index).Visible Then
-                    newTargetHwnd = Me.sltSelectionBorder(Index).hWnd
+                If Me.sltSelectionBorder(1).Visible Then
+                    newTargetHwnd = Me.sltSelectionBorder(1).hWnd
                 Else
-                    If (Index = 0) Then
-                        newTargetHwnd = Me.sltCornerRounding.hWndSlider
-                    Else
-                        newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
-                    End If
+                    newTargetHwnd = Me.chkAutoDrop(1).hWnd
                 End If
             End If
         Case 2
@@ -1259,6 +1259,34 @@ Private Sub chkAutoDrop_Click(Index As Integer)
     
 End Sub
 
+Private Sub chkAutoDrop_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index + 2, True
+End Sub
+
+Private Sub chkAutoDrop_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then
+            If Me.tudSel(5).Enabled Then
+                newTargetHwnd = Me.tudSel(5).hWnd
+            Else
+                newTargetHwnd = Me.cmdLock(2).hWnd
+            End If
+        Else
+            newTargetHwnd = Me.sltCornerRounding.hWndSlider
+        End If
+    Else
+        If shiftTabWasPressed Then
+            If Me.sltSelectionBorder(1).Visible Then
+                newTargetHwnd = Me.sltSelectionBorder(1).hWnd
+            Else
+                newTargetHwnd = Me.cboSelArea(1).hWnd
+            End If
+        Else
+            newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
+        End If
+    End If
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then
         m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
@@ -1317,18 +1345,18 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
             
         Case 2
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.sltCornerRounding.hWndSpinner
+                If Me.sltSelectionBorder(0).Visible Then
+                    newTargetHwnd = Me.sltSelectionBorder(0).hWndSpinner
+                Else
+                    newTargetHwnd = Me.cboSelArea(0).hWnd
+                End If
             Else
                 newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
             
         Case 3
             If shiftTabWasPressed Then
-                If Me.sltSelectionBorder(1).Visible Then
-                    newTargetHwnd = Me.sltSelectionBorder(1).hWnd
-                Else
-                    newTargetHwnd = Me.cboSelArea(1).hWnd
-                End If
+                newTargetHwnd = Me.chkAutoDrop(1).hWnd
             Else
                 newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
@@ -1427,19 +1455,68 @@ Private Sub cmdLock_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        newTargetHwnd = Me.tudSel(Index).hWnd
-    Else
-        If (Index = 0) Or (Index = 2) Then
-            newTargetHwnd = Me.tudSel(Index + 1).hWnd
-        Else
-            If (Index = 1) Then
-                newTargetHwnd = cboSelArea(0).hWnd
-            ElseIf (Index = 3) Then
-                newTargetHwnd = cboSelArea(1).hWnd
+    
+    'Similar mappings can be used for both the rectangular and elliptical lock buttons
+    Dim baseIndex As Long
+    If (Index >= 3) Then baseIndex = 6 Else baseIndex = 0
+    
+    Select Case Index
+        
+        Case 0, 3
+            If shiftTabWasPressed Then
+                If Me.tudSel(baseIndex).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex).hWnd
+                Else
+                    If (g_CurrentTool = SELECT_RECT) Then
+                        newTargetHwnd = Me.ttlPanel(2).hWnd
+                    Else
+                        newTargetHwnd = Me.ttlPanel(3).hWnd
+                    End If
+                End If
+            Else
+                If Me.tudSel(baseIndex + 1).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex + 1).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(Index + 1).hWnd
+                End If
             End If
-        End If
-    End If
+            
+        Case 1, 4
+            If shiftTabWasPressed Then
+                If Me.tudSel(baseIndex + 1).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex + 1).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(Index - 1).hWnd
+                End If
+            Else
+                If Me.tudSel(baseIndex + 2).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex + 2).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(Index + 1).hWnd
+                End If
+            End If
+        
+        Case 2, 5
+            If shiftTabWasPressed Then
+                If Me.tudSel(baseIndex + 3).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex + 3).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(Index - 1).hWnd
+                End If
+            Else
+                If Me.tudSel(baseIndex + 4).Enabled Then
+                    newTargetHwnd = Me.tudSel(baseIndex + 4).hWnd
+                Else
+                    If (g_CurrentTool = SELECT_RECT) Then
+                        newTargetHwnd = Me.chkAutoDrop(0).hWnd
+                    Else
+                        newTargetHwnd = Me.cboSelArea(1).hWnd
+                    End If
+                End If
+            End If
+            
+    End Select
+    
 End Sub
 
 Private Sub csSelection_ColorChanged(Index As Integer)
@@ -1599,28 +1676,24 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
     
 End Sub
 
-'Private Sub sltCornerRounding_Change()
-'    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
-'        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
-'        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-'    End If
-'End Sub
-'
-'Private Sub sltCornerRounding_GotFocusAPI()
-'    UpdateFlyout 2, True
-'End Sub
-'
-'Private Sub sltCornerRounding_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-'    If shiftTabWasPressed Then
-'        If Me.sltSelectionBorder(0).Visible Then
-'            newTargetHwnd = Me.sltSelectionBorder(0).hWndSpinner
-'        Else
-'            newTargetHwnd = Me.cboSelArea(0).hWnd
-'        End If
-'    Else
-'        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
-'    End If
-'End Sub
+Private Sub sltCornerRounding_Change()
+    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
+        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
+End Sub
+
+Private Sub sltCornerRounding_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub sltCornerRounding_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkAutoDrop(0).hWnd
+    Else
+        newTargetHwnd = Me.cboSelArea(0).hWnd
+    End If
+End Sub
 
 Private Sub sltPolygonCurvature_Change()
     If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
@@ -1656,8 +1729,8 @@ Private Sub sltSelectionBorder_SetCustomTabTarget(Index As Integer, ByVal shiftT
     If shiftTabWasPressed Then
         newTargetHwnd = Me.cboSelArea(Index).hWnd
     Else
-        If (Index = 0) Then
-            newTargetHwnd = Me.sltCornerRounding.hWndSlider
+        If (Index = 1) Then
+            newTargetHwnd = Me.chkAutoDrop(1).hWnd
         Else
             newTargetHwnd = Me.cmdFlyoutLock(Index + 2).hWnd
         End If
@@ -1792,7 +1865,11 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
             If shiftTabWasPressed Then
                 newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
             Else
-                'newTargetHwnd = Me.cboSize(0).hWnd
+                If Me.tudSel(0).Enabled Then
+                    newTargetHwnd = Me.tudSel(0).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(0).hWnd
+                End If
             End If
         
         '4th titlebar: ellipse selections, "size and position"
@@ -1800,7 +1877,11 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
             If shiftTabWasPressed Then
                 newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
             Else
-                'newTargetHwnd = Me.cboSize(1).hWnd
+                If Me.tudSel(6).Enabled Then
+                    newTargetHwnd = Me.tudSel(6).hWnd
+                Else
+                    newTargetHwnd = Me.cmdLock(3).hWnd
+                End If
             End If
             
         '5th titlebar: polygon selections, "curvature"
@@ -1845,61 +1926,65 @@ Private Sub tudSel_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub tudSel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    'We can mirror the same tab order for both rectangular and elliptical selections, with some trickery.
+    Dim baseIndex As Long
+    If (Index >= 6) Then baseIndex = 6 Else baseIndex = 0
+    
     Select Case Index
-        
-        Case 0
+    
+        Case 0, 6
             If shiftTabWasPressed Then
-                'newTargetHwnd = Me.cboSize(0).hWnd
-            Else
-                If Me.cmdLock(0).Visible Then
-                    newTargetHwnd = Me.cmdLock(0).hWnd
+                If (Index = 0) Then
+                    newTargetHwnd = Me.ttlPanel(2).hWnd
                 Else
-                    newTargetHwnd = Me.tudSel(1).hWnd
+                    newTargetHwnd = Me.ttlPanel(3).hWnd
                 End If
+            Else
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 0).hWnd
             End If
         
-        Case 1
+        Case 1, 7
             If shiftTabWasPressed Then
-                If Me.cmdLock(0).Visible Then
-                    newTargetHwnd = Me.cmdLock(0).hWnd
-                Else
-                    newTargetHwnd = Me.tudSel(0).hWnd
-                End If
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 0).hWnd
             Else
-                If Me.cmdLock(1).Visible Then
-                    newTargetHwnd = Me.cmdLock(1).hWnd
-                Else
-                    newTargetHwnd = Me.cboSelArea(0).hWnd
-                End If
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 1).hWnd
             End If
         
-        Case 2
+        Case 2, 8
             If shiftTabWasPressed Then
-                'newTargetHwnd = Me.cboSize(1).hWnd
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 1).hWnd
             Else
-                If Me.cmdLock(2).Visible Then
-                    newTargetHwnd = Me.cmdLock(2).hWnd
-                Else
-                    newTargetHwnd = Me.tudSel(3).hWnd
-                End If
+                newTargetHwnd = Me.tudSel(baseIndex + 3).hWnd
             End If
         
-        Case 3
+        Case 3, 9
             If shiftTabWasPressed Then
-                If Me.cmdLock(2).Visible Then
-                    newTargetHwnd = Me.cmdLock(2).hWnd
-                Else
-                    newTargetHwnd = Me.tudSel(2).hWnd
-                End If
+                newTargetHwnd = Me.tudSel(baseIndex + 2).hWnd
             Else
-                If Me.cmdLock(3).Visible Then
-                    newTargetHwnd = Me.cmdLock(3).hWnd
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 2).hWnd
+            End If
+            
+        Case 4, 10
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.cmdLock(baseIndex \ 2 + 2).hWnd
+            Else
+                newTargetHwnd = Me.tudSel(Index + 1).hWnd
+            End If
+            
+        Case 5, 11
+            If shiftTabWasPressed Then
+                newTargetHwnd = Me.tudSel(Index - 1).hWnd
+            Else
+                If (Index = 5) Then
+                    newTargetHwnd = Me.chkAutoDrop(0).hWnd
                 Else
                     newTargetHwnd = Me.cboSelArea(1).hWnd
                 End If
             End If
         
     End Select
+    
 End Sub
 
 'All text boxes wrap this function.  Note that text box changes are not relayed unless the current selection shape
@@ -1936,28 +2021,28 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
     ' between two non-English languages at run-time.
-    cboSelRender.AssignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
-    cboSelSmoothing.AssignTooltip "This option controls how smoothly a selection blends with its surroundings."
+    cboSelRender.AssignTooltip "This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen."
+    cboSelSmoothing.AssignTooltip "This option controls how smoothly selection edges blend with their surroundings."
     
     For i = 0 To cboSelArea.Count - 1
-        cboSelArea(i).AssignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
+        cboSelArea(i).AssignTooltip "Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)"
         sltSelectionBorder(i).AssignTooltip "This option adjusts the width of the selection border."
     Next i
     
-    sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+    sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu."
     sltCornerRounding.AssignTooltip "This option adjusts the roundness of a rectangular selection's corners."
     For i = chkAutoDrop.lBound To chkAutoDrop.UBound
-        chkAutoDrop(i).AssignTooltip "This panel can open automatically while creating or editing a selection, to ensure the selection's position and size are visible.  (On small screens, however, this may risk obscuring your view of the selection.)"
+        chkAutoDrop(i).AssignTooltip "This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here."
     Next i
     
     sltPolygonCurvature.AssignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
     sltSmoothStroke.AssignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
-    sltWandTolerance.AssignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
+    sltWandTolerance.AssignTooltip "Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection."
     
-    btsWandMerge.AssignTooltip "The magic wand can operate on the entire image, or just the active layer."
-    btsWandArea.AssignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
+    btsWandMerge.AssignTooltip "The magic wand tool can operate on the entire image, or just the active layer."
+    btsWandArea.AssignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity."
     
-    cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
+    cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to compare pixels to the target color."
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
