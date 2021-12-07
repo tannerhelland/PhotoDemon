@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.67</langversion>
+<langversion>8.0.68</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -12010,6 +12010,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>open panel automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>gebied</translation>
 </phrase>
@@ -12085,17 +12090,17 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
 <translation>Klik hier om de wijze te veranderen waarop keuzes worden gemaakt op het canvas. Dit heeft geen invloed op de selectieinhoud - alleen de manier waarop ze worden weergegeven tijdens het bewerken.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Deze optie bepaalt hoe soepel een selectie mengt met zijn omgeving.</translation>
 </phrase>
 
 <phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
 <translation>Deze opties regelen het gebied beïnvloed door een selectie. De selectie kan op-canvas aangepast worden terwijl enige van deze instellingen actief zijn. Voor meer geavanceerde selectie aanpassingen gebruikt u het menu Selecteren.</translation>
 </phrase>
 
@@ -12105,13 +12110,18 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
 <translation>Dit bevederingsschuiver zorgt voor onmiddellijke aanpassingen van de bevedering. Vanwege de prestaties, is het beperkt tot kleine radiaties. Voor een grotere bevederingsradiatie, gebruik je het Selecteren -> bevedering menu.</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>Deze optie past de ronding aan van de hoeken van een geselecteerde rechthoekige selectie.</translation>
+</phrase>
+
+<phrase>
+<original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12125,26 +12135,26 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
 <translation>Tolerantie bepaalt hoe vergelijkbaar twee pixels moeten zijn voor ze toe te voegen aan een toverstaf selectie.</translation>
 </phrase>
 
 <phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<original>The magic wand tool can operate on the entire image, or just the active layer.</original>
 <translation>De toverstaf kan werken op de gehele afbeelding, of alleen de actieve laag.</translation>
 </phrase>
 
 <phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Normaliter, zal de toverstaf uitspreiden vanaf de doelpixel, met toevoeging van naburige pixels aan de selectie. Je kan dit alternatief instellen om de volledige afbeelding te doorzoeken, zonder bezwaren voor continüiteit. </translation>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
+<translation>Normaliter, zal de toverstaf uitspreiden vanaf de doelpixel, met toevoeging van naburige pixels aan de selectie. Je kan dit alternatief instellen om de volledige afbeelding te doorzoeken, zonder bezwaren voor continüiteit.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13637,10 +13647,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5335 phrases. -->
-<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 11707 total words. -->
+<!-- As of this build, PhotoDemon contains 5343 phrases. -->
+<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>

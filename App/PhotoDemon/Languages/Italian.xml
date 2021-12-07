@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.72</langversion>
+<langversion>8.0.73</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -12017,6 +12017,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>open panel automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>area</translation>
 </phrase>
@@ -12092,17 +12097,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
 <translation>Fare clic per cambiare il modo in cui le selezioni sono rese sulla tela dell'immagine.  Questo non influisce sul contenuto della selezione - solo il modo in cui appaiono durante la modifica.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Questa opzione controlla come agevolmente una selezione si fonde con l'ambiente circostante.</translation>
 </phrase>
 
 <phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
 <translation>Queste opzioni controllano la zona selezionata.  La selezione può essere modificata sulla tela mentre una qualsiasi di queste impostazioni sono attive.  Per le regolazioni della selezione più avanzate, utilizzare il menù Selezione.</translation>
 </phrase>
 
@@ -12112,13 +12117,18 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
 <translation>Questo cursore della sfumatura, consente aggiustamenti immediati.  Per motivi di prestazioni, viene limitata a piccoli raggi.  Per raggi più grandi di sfumatura, si prega di utilizzare il menù Seleziona -> Sfumatura.</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>Questa opzione consente di regolare la rotondità degli angoli di una selezione rettangolare.</translation>
+</phrase>
+
+<phrase>
+<original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12132,26 +12142,26 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
 <translation>La tolleranza controlla come due pixel simili devono essere prima di aggiungerli ad una selezione con bacchetta magica.</translation>
 </phrase>
 
 <phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<original>The magic wand tool can operate on the entire image, or just the active layer.</original>
 <translation>La bacchetta magica può operare su tutta l'immagine o solo sul livello attivo.</translation>
 </phrase>
 
 <phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
 <translation>Normalmente, la bacchetta magica si diffonderà fuori dal pixel di destinazione, aggiungendo pixel vicini alla selezione come vengono.  In alternativa, è possibile impostare la ricerca nell'intera immagine senza riguardo per la continuità.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
 <translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13644,10 +13654,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5335 phrases. -->
-<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 11707 total words. -->
+<!-- As of this build, PhotoDemon contains 5343 phrases. -->
+<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>

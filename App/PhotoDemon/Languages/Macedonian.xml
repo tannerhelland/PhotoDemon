@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.374</langversion>
+<langversion>1.0.375</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -12004,6 +12004,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>open panel automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>област</translation>
 </phrase>
@@ -12079,17 +12084,17 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
 <translation>Кликни за да се промени начинот на кој селекции се извршени врз платно на сликата. Ова нема никакво влијание врз содржината избор - само начинот на кој тие се појавуваат при уредување.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Оваа опција контролира како се изедначи избор за вклопување во околината.</translation>
 </phrase>
 
 <phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
 <translation>Овие опции ги контролираат подрачјето зафатено со избор. Изборот може да биде изменета на-платното додека било кој од овие поставки се активни. За понапредните прилагодувања избор, користете го одберете Мени.</translation>
 </phrase>
 
@@ -12099,13 +12104,18 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
 <translation>Овој лизгач ви овозможува перјата за итна корекција перјата. За вршење причини, таа е ограничена на мали радиуси. За поголеми перјата радиуси, ве молиме користете Изберете -> перјата мени.</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>Оваа опција го подесува заобленоста на правоаголна селекција агли.</translation>
+</phrase>
+
+<phrase>
+<original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12119,26 +12129,26 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
 <translation>Толеранција контролира колку се слични на две точки мора да биде пред да ги додавате во магија избор на стапче.</translation>
 </phrase>
 
 <phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<original>The magic wand tool can operate on the entire image, or just the active layer.</original>
 <translation>Магично стапче може да работи на целата слика, или само на активниот слој.</translation>
 </phrase>
 
 <phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
 <translation>Нормално, на магично стапче ќе се прошири надвор од цел пиксели, додавајќи соседните пиксели на изборот што оди. Вие алтернативно може да го постави за пребарување на целата слика, без почит за континуитет.</translation>
 </phrase>
 
 <phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
 <translation>Оваа опција определува кои критериуми магично стапче користи за да се утврди дали една точка треба да се додаде во тековната селекција.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13631,10 +13641,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5335 phrases. -->
-<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 11707 total words. -->
+<!-- As of this build, PhotoDemon contains 5343 phrases. -->
+<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>

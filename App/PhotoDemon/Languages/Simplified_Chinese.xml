@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.119</langversion>
+<langversion>8.2.120</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12002,6 +12002,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>open panel automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>选择范围</translation>
 </phrase>
@@ -12077,17 +12082,17 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
 <translation>单击更改选择呈现到画布的方式。这无关选择的内容只有他们的方式出现在编辑。</translation>
 </phrase>
 
 <phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>该选项控制选择与周围环境如何顺畅混合。</translation>
 </phrase>
 
 <phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
 <translation>这些选项控制受选择的区域。选择可以修改的画布上，而所有的这些设置是活动的。对于更高级的选择进行调整，使用选择菜单。</translation>
 </phrase>
 
@@ -12097,13 +12102,18 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
 <translation>此羽化滑块就可以立即羽化调整。由于性能的原因，它被限制为小半径。对于较大的羽化半径，请使用选择 - >羽化菜单。</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>此选项调整的一个矩形选区的边角的圆度。</translation>
+</phrase>
+
+<phrase>
+<original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12117,26 +12127,26 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
 <translation>公差控制在将它们添加到一个魔术棒的选择之前，必须将其相似的像素点控制。</translation>
 </phrase>
 
 <phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<original>The magic wand tool can operate on the entire image, or just the active layer.</original>
 <translation>魔法棒可以在整个图像上操作，或者仅仅是在活动层上。</translation>
 </phrase>
 
 <phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
 <translation>通常，魔术棒会从目标像素中扩散，在选择的情况下增加相邻像素。可以把它设置为搜索整个图像，而不考虑连续性。</translation>
 </phrase>
 
 <phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13625,10 +13635,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5335 phrases. -->
-<!-- 2755 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 11707 total words. -->
+<!-- As of this build, PhotoDemon contains 5343 phrases. -->
+<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>
