@@ -57,6 +57,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdHyperlink hypRecentFiles 
          Height          =   375
          Left            =   120
+         TabIndex        =   15
          Top             =   2400
          Width           =   3015
          _ExtentX        =   5318
@@ -403,6 +404,12 @@ End Sub
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     StatusBar.SetNetworkState newNetworkState
+End Sub
+
+'External functions can call this to set the current selection state
+' (which updates the status bar with a little selection size notification).
+Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
+    StatusBar.SetSelectionState newSelectionState
 End Sub
 
 'Use these functions to forcibly prevent the canvas from redrawing itself.

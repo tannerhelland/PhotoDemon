@@ -106,13 +106,30 @@ Begin VB.UserControl pdStatusBar
    End
    Begin PhotoDemon.pdLabel lblCoordinates 
       Height          =   210
-      Left            =   5160
+      Index           =   0
+      Left            =   4680
       Top             =   60
+      Visible         =   0   'False
       Width           =   345
       _ExtentX        =   609
       _ExtentY        =   370
       BackColor       =   -2147483626
-      Caption         =   "size:"
+      Caption         =   ""
+      FontSize        =   9
+      Layout          =   2
+      UseCustomBackColor=   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblCoordinates 
+      Height          =   210
+      Index           =   1
+      Left            =   5100
+      Top             =   60
+      Visible         =   0   'False
+      Width           =   345
+      _ExtentX        =   609
+      _ExtentY        =   370
+      BackColor       =   -2147483626
+      Caption         =   ""
       FontSize        =   9
       Layout          =   2
       UseCustomBackColor=   -1  'True
@@ -166,9 +183,9 @@ Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 'The current "unit of measurement" set by the status bar dropdown.
 Private m_UnitOfMeasurement As PD_MeasurementUnit
 
-'External functions can notify the status bar of PD's network access.  When PD is downloading various update bits, a relevant icon
-' will be displayed in the status bar.  As the canvas has no knowledge of network stuff, it's imperative that the caller notify
-' us of both TRUE and FALSE states.
+'External functions can notify the status bar of PD's network access.  When PD is downloading
+' update files, a relevant icon will be displayed in the status bar.  As the canvas has no knowledge
+' of network stuff, it's imperative that the caller notify us of both TRUE and FALSE states.
 Private m_NetworkAccessActive As Boolean
 
 'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).
@@ -285,28 +302,27 @@ End Sub
 Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Double, Optional ByVal clearCoords As Boolean = False)
     
     If clearCoords Then
-        lblCoordinates.Caption = vbNullString
-    
+        lblCoordinates(0).Caption = vbNullString
+        
     'The position displayed changes based on the current measurement unit (px, in, cm)
     Else
         If PDImages.IsImageActive() Then
             Select Case m_UnitOfMeasurement
                 Case mu_Pixels
-                    lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
+                    lblCoordinates(0).Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
                 Case mu_Inches, mu_Centimeters
-                    lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
+                    lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
                 Case mu_Millimeters, mu_Points, mu_Picas
-                    lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
+                    lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
             End Select
         End If
     End If
     
-    'Align the right-hand line control with the newly captioned label
-    m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + Interface.FixDPI(10)
+    lblCoordinates(0).Visible = (Not clearCoords)
     
     'Make the message area shrink to match the new coordinate display size
     FitMessageArea
-        
+    
 End Sub
 
 Public Sub DisplayCanvasMessage(ByRef cMessage As String)
@@ -396,12 +412,55 @@ Public Sub PopulateSizeUnits()
     
 End Sub
 
-'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
+'External functions can call this to set the current network state
+' (which in turn, draws a relevant icon to the status bar).
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     If (newNetworkState <> m_NetworkAccessActive) Then
         m_NetworkAccessActive = newNetworkState
         FitMessageArea
     End If
+End Sub
+
+'External functions can call this to set the current selection state
+' (which updates the status bar with a little selection size notification).
+Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
+    
+    'The position displayed changes based on the current measurement unit (px, in, cm)
+    If newSelectionState Then
+    
+        If PDImages.IsImageActive() Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                
+                'TODO: deal with units of measurement?
+                Dim selectRect As RectF
+                selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                
+                With selectRect
+                    lblCoordinates(1).Caption = Int(selectRect.Width) & " x " & Int(selectRect.Height)
+                End With
+                
+                'Select Case m_UnitOfMeasurement
+                '    Case mu_Pixels
+                '        lblCoordinates(0).Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
+                '    Case mu_Inches, mu_Centimeters
+                '        lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
+                '    Case mu_Millimeters, mu_Points, mu_Picas
+                '        lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
+                'End Select
+                
+            End If
+        End If
+        
+    End If
+    
+    lblCoordinates(1).Visible = newSelectionState
+    
+    'Align both the coordinates the right-hand line control with the newly captioned label
+    m_LinePositions(3) = lblCoordinates(0).GetLeft + lblCoordinates(0).GetWidth + Interface.FixDPI(10)
+    
+    'Make the message area shrink to match the new coordinate display size
+    FitMessageArea
+    
 End Sub
 
 Private Sub cmbSizeUnit_Click()
@@ -489,7 +548,7 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDStatusBar", colorCount
     If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
-    ReDim m_LinePositions(0 To 2) As Single
+    ReDim m_LinePositions(0 To 3) As Single
     m_UnitOfMeasurement = mu_Pixels
     
 End Sub
@@ -520,8 +579,8 @@ Public Sub ClearCanvas()
     ReflowStatusBar False
 End Sub
 
-'Reposition all status bar elements.  This is time-consuming, so only call it if a large-scale state change (like unloading
-' all images) requires us to do this.
+'Reposition all status bar elements.  This is time-consuming, so only call it if a large-scale state change
+' requires it (like unloading all images).
 Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
     
     'Note the enabled state at a module level, in case we need to internally refresh the status bar for some reason
@@ -547,7 +606,9 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
             cmdImgSize.Visible = True
             lblImgSize.Visible = True
             cmbSizeUnit.Visible = True
-            lblCoordinates.Visible = True
+            lblCoordinates(0).Visible = True
+            'Note that lblCoordinates(1), which describes the active selection region (if any), is not
+            ' forcibly made visible here - it needs to be manually activated by a caller.
         End If
         
         'Start with the "image size" button
@@ -562,11 +623,6 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         cmbSizeUnit.SetLeft lblImgSize.GetLeft + lblImgSize.GetWidth + Interface.FixDPI(10)
         m_LinePositions(1) = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + Interface.FixDPI(10)
         
-        'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
-        lblCoordinates.SetLeft m_LinePositions(1) + Interface.FixDPI(14) + Interface.FixDPI(16)
-        
-        m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + Interface.FixDPI(10)
-        
     'Images are not loaded.  Hide the lines and other items.
     Else
         m_LinePositions(1) = 0
@@ -578,7 +634,8 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         cmdImgSize.Visible = False
         lblImgSize.Visible = False
         cmbSizeUnit.Visible = False
-        lblCoordinates.Visible = False
+        lblCoordinates(0).Visible = False
+        lblCoordinates(1).Visible = False
         lblMessages.Caption = vbNullString
     End If
     
@@ -588,8 +645,7 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
     
 End Sub
 
-'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function
-' to do so.
+'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).
 Public Sub FitMessageArea()
     
     'Retrieve DPI-aware control dimensions from the support class
@@ -597,10 +653,29 @@ Public Sub FitMessageArea()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Move the message label into position (right-aligned, with a slight margin)
+    'Calculate the vertical separator line positions after the mouse coordinate area (if present)...
     Dim newLeft As Long
+    
+    If lblCoordinates(0).Visible Then
+        newLeft = m_LinePositions(1) + Interface.FixDPI(14) + Interface.FixDPI(16)
+        If (lblCoordinates(0).GetLeft <> newLeft) Then lblCoordinates(0).SetLeft newLeft
+        m_LinePositions(2) = newLeft + lblCoordinates(0).GetWidth + Interface.FixDPI(10)
+    Else
+        m_LinePositions(2) = m_LinePositions(1)
+    End If
+    
+    '...and the selection area (if present)
+    If lblCoordinates(1).Visible Then
+        newLeft = m_LinePositions(2) + Interface.FixDPI(14) + Interface.FixDPI(16)
+        If (lblCoordinates(1).GetLeft <> newLeft) Then lblCoordinates(1).SetLeft newLeft
+        m_LinePositions(3) = newLeft + lblCoordinates(1).GetWidth + Interface.FixDPI(10)
+    Else
+        m_LinePositions(3) = m_LinePositions(2)
+    End If
+    
+    'Move the message label into position (right-aligned, with a slight margin)
     If m_LastEnabledState Then
-        newLeft = m_LinePositions(2)
+        newLeft = m_LinePositions(3)
         If m_NetworkAccessActive Then newLeft = newLeft + Interface.FixDPI(28) Else newLeft = newLeft + Interface.FixDPI(7)
     Else
         If m_NetworkAccessActive Then newLeft = Interface.FixDPI(28) Else newLeft = 0
@@ -659,17 +734,14 @@ Private Sub RedrawBackBuffer()
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
-            If m_LastEnabledState Then
-                sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4)
-            Else
-                sbIconNetwork.AlphaBlendToDC bufferDC, , FixDPI(8), FixDPI(4)
-            End If
+            sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(3) + Interface.FixDPI(8), Interface.FixDPI(4)
         End If
         
         'When the control is enabled, render all separator lines and a few non-button icons
+        ' (like an arrow for the mouse coordinate region)
         If m_LastEnabledState Then
             
-            If (Not sbIconCoords Is Nothing) Then sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
+            If (Not sbIconCoords Is Nothing) And lblCoordinates(0).Visible Then sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
             
             Dim lineTop As Single, lineBottom As Single
             lineTop = Interface.FixDPI(1)
@@ -754,7 +826,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         sbBackColor = m_Colors.RetrieveColor(PDSB_Background, Me.Enabled)
         UserControl.BackColor = sbBackColor
         
-        lblCoordinates.BackColor = sbBackColor
+        lblCoordinates(0).BackColor = sbBackColor
+        lblCoordinates(1).BackColor = sbBackColor
         lblImgSize.BackColor = sbBackColor
         lblMessages.BackColor = sbBackColor
         
@@ -765,7 +838,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.BackgroundColor = sbBackColor
         cmbSizeUnit.BackgroundColor = sbBackColor
         
-        lblCoordinates.UpdateAgainstCurrentTheme
+        lblCoordinates(0).UpdateAgainstCurrentTheme
+        lblCoordinates(1).UpdateAgainstCurrentTheme
         lblImgSize.UpdateAgainstCurrentTheme
         lblMessages.UpdateAgainstCurrentTheme
         

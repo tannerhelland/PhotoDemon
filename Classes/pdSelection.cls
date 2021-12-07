@@ -128,8 +128,8 @@ Private m_CornersUnlocked As RectF_RB
 'When a selection is "locked in", the x and y values of corner points are converted to these values
 Private m_CornersLocked As RectF
 
-'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the bounding area of the
-' selection as a whole.  External functions need these values to determine how to handle the selection's data.
+'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the
+' bounding area of the selection as a whole.  External functions most likely want to access *this* rect.
 Private m_Bounds As RectF
 
 'Is this selection "locked in"?
