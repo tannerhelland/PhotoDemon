@@ -6,7 +6,7 @@
 
 ## About PhotoDemon
 
-**PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
+PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
 1. [Overview](#overview)
 2. [What makes PhotoDemon unique?](#what-makes-photodemon-unique)
@@ -18,7 +18,7 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -33,7 +33,7 @@ New contributions from translators, coders, designers, and enthusiasts are alway
 ## What makes PhotoDemon unique?
 
 ### Lightweight and completely portable
-No installer is provided or required.  Aside from a temporary folder – which you can specify from the Tools > Options menu – PhotoDemon leaves no trace on your hard drive.  Many users run PhotoDemon from a USB stick or portable drive.
+No installer is provided or required.  Aside from a temporary folder – which you can specify in the `Tools > Options` menu – PhotoDemon leaves no trace on your hard drive.  Many users run PhotoDemon from a USB stick or microSD card.
 
 ### Integrated macro recording and batch processing
 Complex editing actions can be recorded as macros (similar to Office software).  A built-in batch processor lets you apply macros to entire folders of images.
@@ -52,7 +52,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ### Limitations
 
-* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on macOS, Linux, or BSD systems, but program stability and performance may suffer.
+* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on macOS, Linux, or BSD systems, but these configurations are not officially supported.
 * Due to its portable nature, PhotoDemon is only available as a 32-bit application.  (This means it cannot load or save images larger than ~2 GB in size.)
 
 ## What's new in nightly builds
@@ -102,6 +102,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ### User interface 
 
+- A [new toolpanel design](https://github.com/tannerhelland/PhotoDemon/commit/471070d3b01b44261ba2289dc32095a9346990a0) takes up less space than ever before, while still providing one-click access to all of PhotoDemon's advanced on-canvas tool features.  (This also enables PhotoDemon to successfully work all the way down to 1024x768 screen resolutions - a rare case of supporting even *older* hardware than previous versions of the app!)
 - Adjustment and Effect dialogs are no longer fixed-size - [you can resize every last one of them at run-time](https://github.com/tannerhelland/PhotoDemon/commit/ab5363a885aec5529a81c28255defe77a516b285)!
 - Adjustment and Effect tools now have [built-in Undo/Redo on each dialog](https://github.com/tannerhelland/PhotoDemon/commit/9d7adda0ab158f00d2f0ac393bc19ef800b31b30)
 - [Faster app startup time](https://github.com/tannerhelland/PhotoDemon/commit/a56af482d262f6dab1ff016f111a0e909d9bfb98), particularly on Windows 10
