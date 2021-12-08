@@ -454,27 +454,58 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
                     End Select
                     
                 End If
-                
+                    
                 If newSelectionState Then
                     
-                    'TODO: deal with units of measurement?
+                    'The way we retrieve selection boundaries varies by selection type, and may also
+                    ' depend on whether the selection is locked in (i.e. "finished")
                     Dim selectRect As RectF
-                    selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                        
+                        'Rectangle and ellipse selections are *always* okay to display, because even while
+                        ' being drawn they have clear "boundary rects"
+                        Case ss_Rectangle, ss_Circle
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect()
+                        Case ss_Polygon
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                        Case ss_Lasso
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                        Case ss_Wand
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                        Case ss_Raster
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    End Select
                     
-                    With selectRect
-                        lblCoordinates(1).Caption = Int(selectRect.Width) & " x " & Int(selectRect.Height)
-                    End With
+                    'We're also going to assemble the final display string using a pdString instance
+                    Const LOWERCASE_X As String = " x "
+                    Dim cString As pdString
+                    Set cString = New pdString
+                    
+                    Select Case m_UnitOfMeasurement
+                        Case mu_Pixels
+                            cString.Append Int(selectRect.Width + 0.5)
+                            cString.Append LOWERCASE_X
+                            cString.Append Int(selectRect.Height + 0.5)
+                        Case mu_Inches, mu_Centimeters
+                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI()), "0.0##")
+                            cString.Append LOWERCASE_X
+                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI()), "0.0##")
+                        Case mu_Millimeters, mu_Points, mu_Picas
+                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI()), "0.0#")
+                            cString.Append LOWERCASE_X
+                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI()), "0.0#")
+                    End Select
+                    
+                    'Also append the selection's aspect ratio, in the form X : 1
+                    If (selectRect.Height <> 0!) Then
+                        cString.Append "  ("
+                        cString.Append Format$(selectRect.Width / selectRect.Height, "0.0#")
+                        cString.Append ":1)"
+                    End If
+                    
+                    lblCoordinates(1).Caption = cString.ToString()
                     
                 End If
-                
-                'Select Case m_UnitOfMeasurement
-                '    Case mu_Pixels
-                '        lblCoordinates(0).Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
-                '    Case mu_Inches, mu_Centimeters
-                '        lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
-                '    Case mu_Millimeters, mu_Points, mu_Picas
-                '        lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
-                'End Select
                 
             Else
                 newSelectionState = False
