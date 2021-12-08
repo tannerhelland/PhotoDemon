@@ -276,6 +276,7 @@ Option Explicit
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As PointAPI) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
 
@@ -1163,7 +1164,17 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
-    If (Not m_LMBDown) And (Not m_RMBDown) Then Interface.ClearImageCoordinatesDisplay
+    If (Not m_LMBDown) And (Not m_RMBDown) Then
+        
+        'MouseLeave events are sent by the OS if the canvas view is disabled (which happens
+        ' whenever an operation is processing in PD, to prevent click-through issues).
+        ' This can lead to unwanted flickering when an operation completes, so to avoid it,
+        ' we double-check that the mouse *has* actually left the canvas area.
+        Dim tmpPoint As PointAPI, needToClear As Boolean
+        If (GetCursorPos(tmpPoint) <> 0) Then needToClear = Not FormMain.MainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
+        If needToClear Then Interface.ClearImageCoordinatesDisplay
+        
+    End If
     
 End Sub
 

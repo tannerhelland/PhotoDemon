@@ -1033,7 +1033,7 @@ End Sub
 'Use this to populate the text boxes on the main form with the current selection values.
 ' (Note that this does not cause a screen refresh, by design.)
 Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
-
+    
     Dim i As Long
     
     'Only synchronize the text boxes if a selection is active
@@ -1049,7 +1049,7 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
     If selectionIsActive And selectionToolActive Then
         
         PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh True
-    
+        
         'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
         ' To access their indicies properly, we must calculate an offset.
         Dim subpanelOffset As Long
@@ -1179,5 +1179,8 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         End If
         
     End If
+    
+    'Update PD's central status bar as well
+    FormMain.MainCanvas(0).SetSelectionState selectionIsActive
     
 End Sub

@@ -737,24 +737,28 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'Selections in general
         Case PDUI_Selections
             
-            'If selections are not active, clear all the selection value textboxes.
-            ' (Note: as of 7.0, PD unloads tool panels when it's done using them.  That means that we only need to
-            '  update this information if the given panel is actually visible.)
+            'If selections are not active, clear all selection value spin controls.
+            ' (These used to be called text up/downs, per Windows convention, hence the tud- prefix.)
             If Tools.IsSelectionToolActive Then
-            
+
                 If (Not newState) Then
                     For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                        toolpanel_Selections.tudSel(i).Value = 0
+                        If (toolpanel_Selections.tudSel(i).Min > 0) Then
+                            toolpanel_Selections.tudSel(i).Value = toolpanel_Selections.tudSel(i).Min
+                        Else
+                            toolpanel_Selections.tudSel(i).Value = 0
+                        End If
                     Next i
                 End If
-                
-                'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
-                ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
-                ' draw a selection, it already has the attributes they want.
+
+                'Set selection text boxes to enable only when a selection is active.  Other selection
+                'vcontrols can remain active even without a selection present; this allows the user to
+                ' set certain parameters in advance, so when they actually draw a selection, it already
+                ' has the attributes they want - but spin controls are an exception to this.
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
                     toolpanel_Selections.tudSel(i).Enabled = newState
                 Next i
-                
+
             End If
             
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -793,9 +797,20 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
                 'Under certain circumstances, it is desirable to disable only the selection location boxes
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                    If (Not newState) Then toolpanel_Selections.tudSel(i).Value = 0
+                    
+                    If (Not newState) Then
+                        If (toolpanel_Selections.tudSel(i).Min > 0) Then
+                            toolpanel_Selections.tudSel(i).Value = toolpanel_Selections.tudSel(i).Min
+                        Else
+                            toolpanel_Selections.tudSel(i).Value = 0
+                        End If
+                    End If
+                    
                     toolpanel_Selections.tudSel(i).Enabled = newState
+                    
                 Next i
+                
+                If newState Then SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID
                 
             End If
                 
@@ -2053,6 +2068,9 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     
     'Ensure the list of open windows (on the main form > Window menu) is up-to-date
     Menus.UpdateSpecialMenu_WindowsOpen
+    
+    'Notify the new image that animations are allowed
+    PDImages.GetActiveImage.NotifyAnimationsAllowed True
     
 End Sub
 

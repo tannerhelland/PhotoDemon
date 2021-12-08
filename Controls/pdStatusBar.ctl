@@ -157,8 +157,8 @@ Attribute VB_Exposed = False
 'PhotoDemon primary canvas status bar control
 'Copyright 2002-2021 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 03/March/16
-'Last update: migrate status bar into its own dedicated control
+'Last updated: 07/December/21
+'Last update: new code to display selection size in status bar, even while editing a selection
 '
 'In PD, this control is never used on its own.  It is meant to be used as a component of the pdCanvas control,
 ' and it's split out here in an attempt to simplify the canvas's rendering code and input handling.
@@ -178,7 +178,7 @@ Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
-Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
+Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB, sbIconSelection As pdDIB
 
 'The current "unit of measurement" set by the status bar dropdown.
 Private m_UnitOfMeasurement As PD_MeasurementUnit
@@ -431,13 +431,41 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
         If PDImages.IsImageActive() Then
             If PDImages.GetActiveImage.IsSelectionActive() Then
                 
-                'TODO: deal with units of measurement?
-                Dim selectRect As RectF
-                selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                'Some rectangle selections are allowed to display "in-progress" measurements.
+                newSelectionState = PDImages.GetActiveImage.MainSelection.IsLockedIn()
                 
-                With selectRect
-                    lblCoordinates(1).Caption = Int(selectRect.Width) & " x " & Int(selectRect.Height)
-                End With
+                'If the selection is *not* locked in, we can still display a boundary rect under
+                ' certain conditions.
+                If (Not newSelectionState) Then
+                    Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                        
+                        'Rectangle and ellipse selections are *always* okay to display, because even while
+                        ' being drawn they have clear "boundary rects"
+                        Case ss_Rectangle, ss_Circle
+                            newSelectionState = True
+                        Case ss_Polygon
+                            newSelectionState = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState()
+                        Case ss_Lasso
+                            newSelectionState = PDImages.GetActiveImage.MainSelection.GetLassoClosedState()
+                        Case ss_Wand
+                            newSelectionState = True
+                        Case ss_Raster
+                            newSelectionState = True
+                    End Select
+                    
+                End If
+                
+                If newSelectionState Then
+                    
+                    'TODO: deal with units of measurement?
+                    Dim selectRect As RectF
+                    selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    
+                    With selectRect
+                        lblCoordinates(1).Caption = Int(selectRect.Width) & " x " & Int(selectRect.Height)
+                    End With
+                    
+                End If
                 
                 'Select Case m_UnitOfMeasurement
                 '    Case mu_Pixels
@@ -448,7 +476,11 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
                 '        lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
                 'End Select
                 
+            Else
+                newSelectionState = False
             End If
+        Else
+            newSelectionState = False
         End If
         
     End If
@@ -456,7 +488,11 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
     lblCoordinates(1).Visible = newSelectionState
     
     'Align both the coordinates the right-hand line control with the newly captioned label
-    m_LinePositions(3) = lblCoordinates(0).GetLeft + lblCoordinates(0).GetWidth + Interface.FixDPI(10)
+    If newSelectionState Then
+        m_LinePositions(3) = lblCoordinates(0).GetLeft + lblCoordinates(0).GetWidth + Interface.FixDPI(10)
+    Else
+        m_LinePositions(3) = m_LinePositions(2)
+    End If
     
     'Make the message area shrink to match the new coordinate display size
     FitMessageArea
@@ -710,8 +746,8 @@ Private Sub UpdateControlLayout()
     cmbZoom.SetTop (bHeight - cmbZoom.GetHeight) \ 2
     cmbSizeUnit.SetTop (bHeight - cmbSizeUnit.GetHeight) \ 2
 
-    'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
-    ' also realign all chrome elements, so we don't need a manual FitMessageArea call here.
+    'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.
+    ' Note that this will also realign all chrome elements, so we don't need a manual FitMessageArea call here.
     DisplayCanvasCoordinates 0, 0, False
     
     'No other special preparation is required for this control, so proceed with recreating the back buffer
@@ -734,14 +770,15 @@ Private Sub RedrawBackBuffer()
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
-            sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(3) + Interface.FixDPI(8), Interface.FixDPI(4)
+            sbIconNetwork.AlphaBlendToDC bufferDC, 255&, m_LinePositions(3) + Interface.FixDPI(8), Interface.FixDPI(4)
         End If
         
         'When the control is enabled, render all separator lines and a few non-button icons
         ' (like an arrow for the mouse coordinate region)
         If m_LastEnabledState Then
             
-            If (Not sbIconCoords Is Nothing) And lblCoordinates(0).Visible Then sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
+            If (Not sbIconCoords Is Nothing) And lblCoordinates(0).Visible Then sbIconCoords.AlphaBlendToDC bufferDC, 255&, m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
+            If (Not sbIconSelection Is Nothing) And lblCoordinates(1).Visible Then sbIconSelection.AlphaBlendToDC bufferDC, 255&, m_LinePositions(2) + FixDPI(8), FixDPI(4), sbIconSelection.GetDIBWidth, sbIconSelection.GetDIBHeight
             
             Dim lineTop As Single, lineBottom As Single
             lineTop = Interface.FixDPI(1)
@@ -795,8 +832,12 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             
             'Load various status bar icons from the resource file
             If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
-            If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
             LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
+            
+            If (sbIconSelection Is Nothing) Then Set sbIconSelection = New pdDIB
+            If (Not g_Themer Is Nothing) Then LoadResourceToDIB "select_all", sbIconSelection, buttonIconSize, buttonIconSize, useCustomColor:=g_Themer.GetGenericUIColor(UI_TextReadOnly)
+            
+            If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
             LoadResourceToDIB "generic_network", sbIconNetwork, buttonIconSize, buttonIconSize
             
         End If
