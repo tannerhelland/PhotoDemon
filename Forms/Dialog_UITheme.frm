@@ -4,7 +4,7 @@ Begin VB.Form dialog_UITheme
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme and language"
-   ClientHeight    =   6405
+   ClientHeight    =   7500
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   9045
@@ -22,10 +22,22 @@ Begin VB.Form dialog_UITheme
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   427
+   ScaleHeight     =   500
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   975
+      Index           =   0
+      Left            =   240
+      Top             =   5760
+      Width           =   8655
+      _ExtentX        =   15266
+      _ExtentY        =   1720
+      Alignment       =   2
+      Caption         =   ""
+      Layout          =   1
+   End
    Begin PhotoDemon.pdButtonStrip btsIcons 
       Height          =   1335
       Left            =   120
@@ -82,7 +94,7 @@ Begin VB.Form dialog_UITheme
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   5670
+      Top             =   6765
       Width           =   9045
       _ExtentX        =   15954
       _ExtentY        =   1296
@@ -238,7 +250,7 @@ Private Sub cboLanguage_Click()
     g_Language.ApplyLanguage False, False
     
     If (Not m_SuspendUpdates) Then
-        If (Len(m_AvailableLanguages(m_LangIndex).Author) <> 0) Then
+        If (LenB(m_AvailableLanguages(m_LangIndex).Author) <> 0) Then
             lblLangAuthor.Caption = g_Language.TranslateMessage("Translation by %1", m_AvailableLanguages(m_LangIndex).Author)
         Else
             lblLangAuthor.Caption = vbNullString
@@ -310,8 +322,29 @@ Private Sub LiveUpdateUITheme()
         g_Themer.SetNewTheme m_ThemeClass, m_ThemeAccent
         g_Themer.LoadDefaultPDTheme
         
-        'Normally, resources need to be reset after a theme change, but we deliberately suspend this inside this dialog
-        ' (because we don't want the "color" representation icon to be forced to monochrome)
+        'Let the user know these settings can be changed at any time, and there are many more
+        ' customization options available to them!
+        Dim cString As pdString
+        Set cString = New pdString
+        cString.Append g_Language.TranslateMessage("You can change language and theme settings at any time from the Tools menu.")
+        
+        Dim useLineBreak As Boolean: useLineBreak = True
+        If (Not g_Language Is Nothing) Then useLineBreak = Not g_Language.TranslationActive()
+        
+        Dim tmpString As String
+        tmpString = g_Language.TranslateMessage("Additional interface customatizations are available in the Window menu.")
+        If useLineBreak Then
+            cString.AppendLineBreak
+            cString.Append tmpString
+        Else
+            cString.Append "  "
+            cString.Append tmpString
+        End If
+        
+        lblExplanation(0).Caption = cString.ToString()
+        
+        'Normally, resources need to be reset after a theme change, but we deliberately suspend this
+        ' inside this dialog (because we don't want the "color" representation icon to be forced to monochrome)
         'g_Resources.NotifyThemeChange
         
         'Re-theme this dialog
