@@ -218,6 +218,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   5503
          _ExtentY        =   661
          Caption         =   "open panel automatically"
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
@@ -554,6 +555,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4710
          _ExtentY        =   661
          Caption         =   "open panel automatically"
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
