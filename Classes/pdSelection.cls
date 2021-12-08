@@ -1809,8 +1809,8 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
                             End If
                         End If
                     
-                    'If aspect ratio is *not* locked, freely modify either value, and cache any locked values so they
-                    ' can be used elsewhere.
+                    'If aspect ratio is *not* locked, freely modify either value, and cache any locked values
+                    ' so they can be used elsewhere.
                     Else
                         
                         If toolpanel_Selections.tudSel(baseSizeIndex + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(baseSizeIndex + 0)
@@ -1849,7 +1849,7 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
                         ' 3) The selection's height *is* locked
                         '
                         'Otherwise, we change height preferentially.
-                        If ((indexOfSrcControl - baseSizeIndex = 0) And (Not m_IsWidthLocked)) Or m_IsHeightLocked Then
+                        If ((indexOfSrcControl - baseSizeIndex = 2) And (Not m_IsWidthLocked)) Or m_IsHeightLocked Then
                             aspFinal = aspW / aspH
                             m_CornersLocked.Width = m_CornersLocked.Height * aspFinal
                         Else
