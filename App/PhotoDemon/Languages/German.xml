@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1020</langversion>
+<langversion>9.0.1021</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4656,7 +4656,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <translation>Die links von diesem Feld angezeigte Bildgrößeneinheit ändern</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -13649,8 +13649,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5343 phrases. -->
-<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5342 phrases. -->
+<!-- 2760 are duplicates, so only 2582 unique phrases have been written to file. -->
 <!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>

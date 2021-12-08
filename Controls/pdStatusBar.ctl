@@ -835,10 +835,12 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
             
             If (sbIconSelection Is Nothing) Then Set sbIconSelection = New pdDIB
-            If (Not g_Themer Is Nothing) Then LoadResourceToDIB "select_all", sbIconSelection, buttonIconSize, buttonIconSize, useCustomColor:=g_Themer.GetGenericUIColor(UI_TextReadOnly)
+            LoadResourceToDIB "generic_resize", sbIconSelection, buttonIconSize, buttonIconSize, resampleAlgorithm:=GP_IM_NearestNeighbor
+            sbIconSelection.SuspendDIB
             
             If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
             LoadResourceToDIB "generic_network", sbIconNetwork, buttonIconSize, buttonIconSize
+            sbIconNetwork.SuspendDIB
             
         End If
         

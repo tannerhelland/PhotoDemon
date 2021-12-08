@@ -644,7 +644,7 @@ Public Function RequestCustomCursor(ByRef resCursorName As String, Optional ByVa
 End Function
 
 'Given an image in the .exe's resource section (typically a 32-bpp image), load it to a pdDIB object.
-Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0, Optional ByVal useCustomColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
+Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0, Optional ByVal useCustomColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal usePDResamplerInstead As PD_ResamplingFilter = rf_Automatic) As Boolean
     
     'Some functions may call this before GDI+ has loaded; exit if that happens
     If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
@@ -652,7 +652,7 @@ Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDI
         'Make sure PD's resource manager is also active before attempting the load
         If (Not g_Resources Is Nothing) Then
             If g_Resources.AreResourcesAvailable Then
-                LoadResourceToDIB = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders, , useCustomColor, suspendMonochrome, resampleAlgorithm)
+                LoadResourceToDIB = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders, , useCustomColor, suspendMonochrome, resampleAlgorithm, usePDResamplerInstead)
             End If
         End If
         

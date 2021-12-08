@@ -327,7 +327,7 @@ End Function
 '
 'Optional padding and colors can also be specified, for places where icons are used in non-standard ways.  (Try to keep these to a minimum,
 ' as they are not guaranteed to work nicely with all themes.)
-Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
+Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal usePDResamplerInstead As PD_ResamplingFilter = rf_Automatic) As Boolean
     
     LoadImageResource = False
     
@@ -458,8 +458,16 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
             End If
             
             dstDIB.SetInitialAlphaPremultiplicationState True
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , resampleAlgorithm, , True, , True
-        
+            
+            If (usePDResamplerInstead = rf_Automatic) Then
+                GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , resampleAlgorithm, , True, , True
+            
+            'In a few special places, PD preferentially uses its own internal resampling engine.
+            ' Note that - critically - this feature does *not* support the input border parameters.
+            Else
+                Resampling.ResampleImageI dstDIB, m_tmpDIB, desiredWidth, desiredHeight, usePDResamplerInstead, False
+            End If
+            
             'Now, we use a hierarchy of settings to determine how to color this particular icon.
             
             'First: if the user wants monochrome icons, this overrides all other color settings.

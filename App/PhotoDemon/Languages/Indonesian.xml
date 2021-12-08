@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.521</langversion>
+<langversion>6.6.522</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -4654,7 +4654,7 @@ The final value must be between %3 and %4.</original>
 <translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -13649,8 +13649,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5343 phrases. -->
-<!-- 2761 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5342 phrases. -->
+<!-- 2760 are duplicates, so only 2582 unique phrases have been written to file. -->
 <!-- These 2582 phrases contain approximately 11735 total words. -->
 
 </pdData>
