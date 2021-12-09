@@ -393,8 +393,13 @@ Private Sub ReflowUI()
     
     'High-DPI displays cause trouble for measurements using internal VB layout properties.
     ' Use WAPI or PD-specific layout properties (GetLeft, GetWidth etc) for correct measurements.
-    Dim parentWidth As Long
-    If (Not g_WindowManager Is Nothing) Then parentWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+    Dim parentWidth As Long, parentHeight As Long
+    If (Not g_WindowManager Is Nothing) Then
+        parentWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+        parentHeight = g_WindowManager.GetClientHeight(Me.hWnd)
+    Else
+        Exit Sub
+    End If
     
     'Solve for available width, plus standardized padding
     Dim stdPadding As Long, stdPaddingTitle As Long
@@ -405,24 +410,40 @@ Private Sub ReflowUI()
     Dim inWideModeNow As Boolean
     inWideModeNow = (Not Me.ttlPanel(0).Enabled)
     
-    'If we're already in "wide mode", we need to ensure the available space hasn't shrunk too far.
+    'We now need to branch according to "already using wide toolbar layout"
+    ' 1) If we're already in "wide mode", we need to ensure the available space hasn't shrunk too far.
+    '    (Basically, see if the screen is too small and move stuff back into flyouts.)
+    ' 2) If we're not in "wide mode", we need to see if we have available space to expand the layout.
+    '    (Basically, is there room to stick flyout UI bits into the main toolpanel.)
     Dim useWideMode As Boolean
-    
     Dim availablePixels As Long, minAvailableLeft As Long
+    
+    'If in wide mode, see if the toolpanel has gotten too crammed
     If inWideModeNow Then
+        
+        'The minimum available left position needs to be calculated against the right-most control
+        ' in the toolpanel.  This must be custom-coded because that control varies by toolpanel,
+        ' and some controls (like checkboxes) will deliberately make themselves as wide as possible
+        ' to allow for long translations in non-US locales, so a special Width() function needs
+        ' to be called.
         minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPaddingTitle
         useWideMode = (minAvailableLeft < parentWidth)
         
-    '...and if we're *not* in "wide mode", we need to see if we have enough room to activate wide mode.
+    'If *not* in "wide mode", see if we have enough spare space to activate wide mode.
     Else
+    
         minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPadding + stdPaddingTitle
         availablePixels = parentWidth - minAvailableLeft
+        
+        'useWideMode needs to now be compared against the object we want to move into the toolpanel
+        ' (in this case, the brush opacity slider).
         useWideMode = (availablePixels > Me.sltBrushSetting(1).GetWidth)
+        
     End If
     
     Dim xOffset As Long
     
-    'The first target control on this panel is: the Opacity slider.
+    'We now need to compare "useWideMode" to "inWideModeNow", and ensure the two values are in sync.
     If useWideMode Then
         
         'If we're already in "wide mode", we don't need to move anything!
@@ -431,35 +452,42 @@ Private Sub ReflowUI()
             'Before doing anything else, hide any open flyouts
             UserControls.HideOpenFlyouts 0&
             
-            'For this particular control, we can actually move the entire flyout panel into the toolpanel,
-            ' but we need to stick it immediately after the left-most control... which means we also need
-            ' to shift everything after it to the right.
+            'In this run, we're targeting the Opacity slider for inclusion in the toolpanel.
             
-            'Start by moving the panel into position, and note that we use the opacity slider's width
-            ' (*not* the panel's width, as it includes the panel flyout lock button).
+            'For this particular control, we can actually move the entire flyout panel into the toolpanel,
+            ' but we are *not* sticking it at the end of the panel - instead, we're sticking it next to the
+            ' size slider, which is its natural position in the flyout order.  This means we need to shift
+            ' all controls after it to the right.
+            
+            'Start by moving the target control into position, and note that we use the opacity slider's
+            ' width here (*not* the panel's width, as it includes the panel flyout lock button).
             xOffset = Me.ttlPanel(0).GetLeft + Me.ttlPanel(0).GetWidth + stdPadding
             cntrPopOut(0).SetPosition xOffset, 0
             xOffset = xOffset + Me.sltBrushSetting(1).GetWidth + stdPadding
             
-            'Send the panel to the back of the zorder so we don't have to mess with resizing it.
+            'Send the flyout panel to the back of the zorder so we don't have to mess with resizing it.
             cntrPopOut(0).ZOrder vbSendToBack
             
-            'Repeat the above steps, but for all remaining controls on the panel.
+            'Shift everything past this control to the right.
+            ' (This step could probably be automated across windows, but it would require a *lot* more code.)
             Me.ttlPanel(1).SetLeft xOffset
             Me.cboBrushSetting(0).SetLeft xOffset + stdPaddingTitle
             xOffset = xOffset + ttlPanel(1).GetWidth + stdPadding
             
+            'Move the final control into position and stop calculating xOffset
             Me.chkAntialiasing.SetLeft xOffset
             
-            'Now forcibly disable (or enable) all associated controls, including the parent titlebar
-            ' of this flyout and the panel lock button on the flyout.
+            'Now forcibly disable (or enable) all controls associated with the old flyout,
+            ' including the parent titleba of the flyout and the panel lock button *on* the flyout.
             Me.cmdFlyoutLock(0).Visible = False
             Me.cntrPopOut(0).Visible = True
             Me.ttlPanel(0).Enabled = False
             
         End If
         
-    'Not enough room; restore the flyout to its original position and/or state
+    'Argh, there's not enough room to expand the toolpanel.  If we're currently using wide mode,
+    ' we must remove any embedded flyouts , while also re-enabling the flyout titlebar and flyout
+    ' lock button(s).
     Else
         
         'If we're already not in wide mode, we don't need to move anything!
@@ -479,11 +507,12 @@ Private Sub ReflowUI()
             'Reset the position of everything left on the parent toolpanel.
             xOffset = Me.ttlPanel(0).GetLeft + Me.ttlPanel(0).GetWidth + stdPadding
             
-            'Repeat the above steps, but for all remaining controls on the panel.
+            'Continue moving everything back into its original position
             Me.ttlPanel(1).SetLeft xOffset
             Me.cboBrushSetting(0).SetLeft xOffset + stdPaddingTitle
             xOffset = xOffset + ttlPanel(1).GetWidth + stdPadding
             
+            'Final control in the panel
             Me.chkAntialiasing.SetLeft xOffset
             
         End If
