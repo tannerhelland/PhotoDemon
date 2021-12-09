@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.121</langversion>
+<langversion>8.2.122</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -7150,7 +7150,17 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>翻译 %1</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<phrase>
+<original>You can change language and theme settings at any time from the Tools menu.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Additional interface customatizations are available in the Window menu.</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -13635,10 +13645,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5342 phrases. -->
-<!-- 2760 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11735 total words. -->
+<!-- As of this build, PhotoDemon contains 5346 phrases. -->
+<!-- 2762 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 11758 total words. -->
 
 </pdData>
