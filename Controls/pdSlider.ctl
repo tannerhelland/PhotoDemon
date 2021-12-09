@@ -49,30 +49,18 @@ Attribute VB_Exposed = False
 'PhotoDemon Slider+Spinner custom control
 'Copyright 2013-2021 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 06/November/17
-'Last update: add a FinalChange event, which gives us some breathing room on energy intensive canvas instances
+'Last updated: 09/December/21
+'Last update: new CaptionPadding property, so I can fix minor alignment annoyances on toolpanels
 '
-'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
-' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
-' make both large and small adjustments to a given parameter.
+'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable
+' by at least two mechanisms: direct text entry, and some kind of slider or scroll bar, which provides
+' quick input for both large and small adjustments.  This slider control provides this capability across
+' almost every dialog in the project.
 '
-'Historically, I accomplished this by providing a scroll bar and text box for every parameter in the program.
-' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
-' changes ever needed to be made, and custom code being required in every form to handle text / scroll syncing.
-'
-'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
-' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
-' the smart thing and built a custom text/scroll user control.  This effectively replaces all other text/scroll
-' combos in the program.
-'
-'In June 2014, I finally did what I should have done long ago and swapped out the scroll bar for a custom-drawn
-' slider.  That update also added support for some new features (like custom images on the background-track),
-' while helping prepare PD for full theming support.
-'
-'Anyway, as of today, this control handles the following things automatically:
+'Generally speaking, this control handles the following things automatically:
 ' 1) Syncing of text and scroll/slide values
 ' 2) Validation of text entries, including a function for external validation requests
-' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
+' 3) Locale handling (including comma/decimal translation across locales)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for integer or floating-point values via the "SigDigits" property
 ' 6) Several different drawing modes, including support for 2- or 3-point gradients
@@ -109,6 +97,10 @@ Public Event RenderTrackImage(ByRef dstDIB As pdDIB, ByVal leftBoundary As Singl
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private m_textBoxInitiated As Boolean
 
+'Added in 2021 to allow for minor tweaks in caption vs scrollbar padding; this helps me perfectly
+' align some tricky run-time elements in PhotoDemon's toolpanels.  (Can be negative.)
+Private m_captionPadding As Long
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -130,10 +122,8 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
-'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+'Caption is handled just like a label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
-' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
-'                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
     Caption = ucSupport.GetCaptionText
@@ -142,6 +132,16 @@ End Property
 Public Property Let Caption(ByRef newCaption As String)
     ucSupport.SetCaptionText newCaption
     PropertyChanged "Caption"
+End Property
+
+Public Property Get CaptionPadding() As Long
+    CaptionPadding = m_captionPadding
+End Property
+
+Public Property Let CaptionPadding(ByVal newPadding As Long)
+    m_captionPadding = newPadding
+    If PDMain.IsProgramRunning() Then UpdateControlLayout
+    PropertyChanged "CaptionPadding"
 End Property
 
 Public Property Get DefaultValue() As Double
@@ -503,6 +503,7 @@ Private Sub UserControl_InitProperties()
     FontSizeTUD = 10
     FontSizeCaption = 12
     Caption = vbNullString
+    CaptionPadding = 0
     
     Min = 0
     Max = 10
@@ -527,6 +528,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
+        CaptionPadding = .ReadProperty("CaptionPadding", 0)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
         FontSizeTUD = .ReadProperty("FontSizeTUD", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
@@ -565,6 +567,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     With PropBag
         .WriteProperty "Caption", Me.Caption, vbNullString
+        .WriteProperty "CaptionPadding", Me.CaptionPadding, 0
         .WriteProperty "FontSizeCaption", Me.FontSizeCaption, 12
         .WriteProperty "FontSizeTUD", Me.FontSizeTUD, 10
         .WriteProperty "Min", Me.Min, 0
@@ -615,17 +618,17 @@ Private Sub UpdateControlLayout()
         ' (height of text up/down) + (2 px padding around text up/down) + (height of caption) + (1 px padding around caption)
         Dim textHeight As Long
         textHeight = ucSupport.GetCaptionHeight
-        newControlHeight = tudPrimary.GetHeight + FixDPI(4) + textHeight + FixDPI(2)
+        newControlHeight = tudPrimary.GetHeight + Interface.FixDPI(4) + textHeight + Interface.FixDPI(2) + m_captionPadding
         
         'Calculate a new top position for the slider box (which will be vertically centered in the space below the caption)
-        newTop_Slider = ((newControlHeight - (textHeight + FixDPI(4))) - tudPrimary.GetHeight) \ 2
-        newTop_Slider = textHeight + FixDPI(4) + newTop_Slider
+        newTop_Slider = ((newControlHeight - (textHeight + Interface.FixDPI(4))) - tudPrimary.GetHeight) \ 2
+        newTop_Slider = textHeight + Interface.FixDPI(4) + newTop_Slider + m_captionPadding
         
     'When a slider lacks a caption, we hard-code its height to preset values
     Else
         
         'Start by setting the control height
-        newControlHeight = tudPrimary.GetHeight + FixDPI(4)
+        newControlHeight = tudPrimary.GetHeight + Interface.FixDPI(4)
         
         'Center the slider box inside the newly calculated height
         newTop_Slider = (newControlHeight - pdssPrimary.GetHeight) \ 2
@@ -639,10 +642,10 @@ Private Sub UpdateControlLayout()
     If (tudPrimary.Max >= 100000) Then tudPrimary.SetWidth Interface.FixDPI(92) Else tudPrimary.SetWidth Interface.FixDPI(84)
     
     'With height correctly set, we next want to left-align the spinner against the slider region
-    newLeft_TUD = ucSupport.GetControlWidth - (tudPrimary.GetWidth + FixDPI(2))
+    newLeft_TUD = ucSupport.GetControlWidth - (tudPrimary.GetWidth + Interface.FixDPI(2))
     
     'Because the slider width is contingent on the spinner position, calculate it next, then move it into place
-    newWidth_Slider = newLeft_TUD - FixDPI(6)
+    newWidth_Slider = newLeft_TUD - Interface.FixDPI(6)
     If (newTop_Slider <> pdssPrimary.GetTop) Then pdssPrimary.SetTop newTop_Slider
     If (newWidth_Slider > 0) And (newWidth_Slider <> pdssPrimary.GetWidth) Then pdssPrimary.SetWidth newWidth_Slider
     
