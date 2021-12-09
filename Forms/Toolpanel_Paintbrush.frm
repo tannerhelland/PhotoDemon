@@ -607,6 +607,10 @@ Private Sub ReflowUI()
             cntrPopOut(0).SetPosition xOffset, 0
             xOffset = xOffset + Me.sltBrushSetting(1).GetWidth + stdPadding
             
+            'Because the top panel uses a slightly taller layout (to account for taller controls),
+            ' we need to slightly increase padding of the new slider to make it align.
+            Me.sltBrushSetting(1).CaptionPadding = 2
+            
             'Send the flyout panel to the back of the zorder so we don't have to mess with resizing it.
             cntrPopOut(0).ZOrder vbSendToBack
             
@@ -645,6 +649,9 @@ Private Sub ReflowUI()
             
             'Move the flyout panel off the parent toolpanel
             cntrPopOut(0).SetPosition 0, Me.ScaleHeight + stdPadding
+            
+            'Restore original caption padding of the slider on the flyout
+            Me.sltBrushSetting(1).CaptionPadding = 0
             
             'Reset the position of everything left on the parent toolpanel.
             xOffset = Me.ttlPanel(0).GetLeft + Me.ttlPanel(0).GetWidth + stdPadding
