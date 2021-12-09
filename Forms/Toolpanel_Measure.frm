@@ -386,7 +386,7 @@ Public Sub UpdateUIText()
         'Distance
         Dim measureValue As Double
         If Tools_Measure.GetDistanceInPx(measureValue) Then
-            lblValue(0).Caption = Format$(measureValue, "#.0") & " " & measurementUnitText
+            lblValue(0).Caption = Format$(measureValue, "0.0") & " " & measurementUnitText
         Else
             lblValue(0).Caption = m_NullTextString
         End If
@@ -397,7 +397,7 @@ Public Sub UpdateUIText()
             cmdAction(1).Enabled = (measureValue > 0.001)
             cmdAction(2).Enabled = (measureValue > 0.001)
             If (measureValue > 90#) Then measureValue = (180# - measureValue)
-            lblValue(1).Caption = Format$(measureValue, "#.00") & " " & ChrW$(&HB0)
+            lblValue(1).Caption = Format$(measureValue, "0.0#") & " " & ChrW$(&HB0)
         Else
             cmdAction(1).Enabled = False
             cmdAction(2).Enabled = False
@@ -405,10 +405,10 @@ Public Sub UpdateUIText()
         End If
         
         'Width
-        lblValue(2).Caption = Format$(Abs(firstPoint.x - secondPoint.x), "#") & " " & measurementUnitText
+        lblValue(2).Caption = Format$(Abs(firstPoint.x - secondPoint.x), "0") & " " & measurementUnitText
         
         'Height
-        lblValue(3).Caption = Format$(Abs(firstPoint.y - secondPoint.y), "#") & " " & measurementUnitText
+        lblValue(3).Caption = Format$(Abs(firstPoint.y - secondPoint.y), "0") & " " & measurementUnitText
         
         'If the current statusbar/ruler unit is something *other* than pixels, display a second set of
         ' measurement values, in said unit.
@@ -429,7 +429,7 @@ Public Sub UpdateUIText()
             'Repeat the same steps that we used for pixels, but this time, perform an additional conversion
             ' into the target unit space
             If Tools_Measure.GetDistanceInPx(measureValue) Then
-                lblValue(4).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, measureValue, PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
+                lblValue(4).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, measureValue, PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
             Else
                 lblValue(4).Caption = m_NullTextString
             End If
@@ -438,16 +438,16 @@ Public Sub UpdateUIText()
             If Tools_Measure.GetAngleInDegrees(measureValue) Then
                 measureValue = Abs(measureValue)
                 If (measureValue > 90#) Then measureValue = (180# - measureValue)
-                lblValue(5).Caption = Format$(measureValue, "#.00") & " " & ChrW$(&HB0)
+                lblValue(5).Caption = Format$(measureValue, "0.0#") & " " & ChrW$(&HB0)
             Else
                 lblValue(5).Caption = m_NullTextString
             End If
             
             'Width
-            lblValue(6).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.x - secondPoint.x), PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
+            lblValue(6).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.x - secondPoint.x), PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
             
             'Height
-            lblValue(7).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.y - secondPoint.y), PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
+            lblValue(7).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.y - secondPoint.y), PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
         
         'If the current unit is "pixels", hide the extra info area
         Else
