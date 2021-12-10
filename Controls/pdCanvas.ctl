@@ -1011,10 +1011,6 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
-    
-    'Generate a default viewport parameter object
-    Dim tmpViewportParams As PD_ViewportParams
-    tmpViewportParams = Viewport.GetDefaultParamObject()
             
     'Check mouse button use
     If (Button = vbLeftButton) Then
@@ -1056,51 +1052,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
             Case TEXT_BASIC, TEXT_ADVANCED
+                Tools_Text.NotifyMouseDown Button, Shift, imgX, imgY
                 
-                'One of two things can happen when the mouse is clicked in text mode:
-                ' 1) The current layer is a text layer, and the user wants to edit it
-                '     (move it around, resize, etc)
-                ' 2) The user wants to add a new text layer, which they can do by clicking
-                '     anywhere on the image that isn't already occupied by a text layer.
-                
-                'Let's start by distinguishing between these two states.
-                Dim userIsEditingCurrentTextLayer As Boolean
-                userIsEditingCurrentTextLayer = PDImages.GetActiveImage.GetActiveLayer.IsLayerText And (m_CurPOI <> poi_Undefined)
-                
-                'If the user is editing the current text layer, we can switch directly into
-                ' layer transform mode.
-                If userIsEditingCurrentTextLayer Then
-                    
-                    'Initiate the layer transformation engine.  Note that nothing will happen
-                    ' until the user actually moves the mouse.
-                    Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
-                    
-                'The user is not editing a text layer.  Create a new text layer for them.
-                Else
-                    
-                    'Create a new text layer directly; note that we *do not* pass this command through the central processor,
-                    ' as we don't want the delay associated with full Undo/Redo creation.
-                    If (g_CurrentTool = TEXT_BASIC) Then
-                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextBasic, 0, 0, 0, True, vbNullString, imgX, imgY, True
-                    ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextAdvanced, 0, 0, 0, True, vbNullString, imgX, imgY, True
-                    End If
-                    
-                    'Use a special initialization command that basically copies all existing text properties into the newly created layer.
-                    Tools.SyncCurrentLayerToToolOptionsUI
-                    
-                    'Put the newly created layer into transform mode, with the bottom-right corner selected
-                    Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, poi_CornerSE
-                    
-                    'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
-                    Tools.SetCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
-                    
-                    'Redraw the viewport immediately
-                    tmpViewportParams.curPOI = poi_CornerSE
-                    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
-                    
-                End If
-            
             'Note for all paint tools: mouse interactions are disallowed if the active layer
             ' is locked or invisible.
             Case PAINT_PENCIL
@@ -1120,7 +1073,6 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'In the future, other tools can be handled here
             Case Else
-            
             
         End Select
     
@@ -1291,6 +1243,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     
                 'Text tools
                 Case TEXT_BASIC, TEXT_ADVANCED
+                    'Nothing at present; the viewport renderer handles this for us
                 
                 Case PAINT_PENCIL
                     Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
@@ -1371,80 +1324,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
             'Text layers
             Case TEXT_BASIC, TEXT_ADVANCED
+                Tools_Text.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements, clickEventAlsoFiring
                 
-                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-                
-                '(Note that this function branches according to two states: whether this click is creating a new text layer (which requires a full
-                ' image stack Undo/Redo), or whether we are simply modifying an existing layer.
-                If (Tools.GetCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER) Then
-                    
-                    'Mark the current tool as busy to prevent any unwanted UI syncing
-                    Tools.SetToolBusyState True
-                    
-                    'See if this was just a click (as it might be at creation time).
-                    If clickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth < 4) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight < 4) Then
-                        
-                        'Update the layer's size.  At present, we simply make it fill the current viewport.
-                        Dim curImageRectF As RectF
-                        PDImages.GetActiveImage.ImgViewport.GetIntersectRectImage curImageRectF
-                        
-                        With PDImages.GetActiveImage()
-                            .GetActiveLayer.SetLayerOffsetX Int(curImageRectF.Left + 0.5)
-                            .GetActiveLayer.SetLayerOffsetY Int(curImageRectF.Top + 0.5)
-                            .GetActiveLayer.SetLayerWidth Int(curImageRectF.Width + 0.5)
-                            .GetActiveLayer.SetLayerHeight Int(curImageRectF.Height + 0.5)
-                        End With
-                        
-                        'If the current text box is empty, set some new text to orient the user
-                        If (g_CurrentTool = TEXT_BASIC) Then
-                            If (LenB(toolpanel_TextBasic.txtTextTool.Text) = 0) Then toolpanel_TextBasic.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
-                        Else
-                            If (LenB(toolpanel_TextAdvanced.txtTextTool.Text) = 0) Then toolpanel_TextAdvanced.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
-                        End If
-                        
-                        'Manually synchronize the new size values against their on-screen UI elements
-                        Tools.SyncToolOptionsUIToCurrentLayer
-                        
-                        'Manually force a viewport redraw
-                        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-                        
-                    'If the user already specified a size, use their values to finalize the layer size
-                    Else
-                        Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
-                    End If
-                    
-                    'As a failsafe, ensure the layer has a proper rotational center point.  (If the user dragged the mouse so that
-                    ' the text box was 0x0 pixels at some size, the rotational center point math would have failed and become (0, 0)
-                    ' to match.)
-                    PDImages.GetActiveImage.GetActiveLayer.SetLayerRotateCenterX 0.5
-                    PDImages.GetActiveImage.GetActiveLayer.SetLayerRotateCenterY 0.5
-                    
-                    'Release the tool engine
-                    Tools.SetToolBusyState False
-                    
-                    'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
-                    ' has changed due to this new addition).
-                    With PDImages.GetActiveImage.GetActiveLayer
-                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML()), UNDO_Image_VectorSafe
-                    End With
-                    
-                    'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
-                    Interface.SyncInterfaceToCurrentImage
-                    
-                    'Finally, set focus to the text layer text entry box
-                    If (g_CurrentTool = TEXT_BASIC) Then toolpanel_TextBasic.txtTextTool.SelectAll Else toolpanel_TextAdvanced.txtTextTool.SelectAll
-                    
-                'The user is simply editing an existing layer.
-                Else
-                    
-                    'As a convenience to the user, ignore clicks that don't actually change layer settings
-                    If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
-                    
-                End If
-                
-                'Reset the generic tool mouse tracking function
-                Tools.TerminateGenericToolTracking
-            
             'Notify the brush engine of the final result, then permanently commit this round of brush work
             Case PAINT_PENCIL
                 If (Not m_IgnoreMouseActions) Then
