@@ -482,7 +482,7 @@ Private Sub ReflowUI()
             Me.chkAntialiasing.SetLeft xOffset
             
             'Now forcibly disable (or enable) all controls associated with the old flyout,
-            ' including the parent titleba of the flyout and the panel lock button *on* the flyout.
+            ' including the parent titlebar of the flyout and the panel lock button *on* the flyout.
             Me.cmdFlyoutLock(0).Visible = False
             Me.cntrPopOut(0).Visible = True
             Me.ttlPanel(0).Enabled = False
@@ -490,7 +490,7 @@ Private Sub ReflowUI()
         End If
         
     'Argh, there's not enough room to expand the toolpanel.  If we're currently using wide mode,
-    ' we must remove any embedded flyouts , while also re-enabling the flyout titlebar and flyout
+    ' we must remove any embedded flyouts, while also re-enabling the flyout titlebar and flyout
     ' lock button(s).
     Else
         

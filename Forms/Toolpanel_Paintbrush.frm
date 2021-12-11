@@ -624,7 +624,7 @@ Private Sub ReflowUI()
             Me.sltBrushSetting(2).SetLeft xOffset
             
             'Now forcibly disable (or enable) all controls associated with the old flyout,
-            ' including the parent titleba of the flyout and the panel lock button *on* the flyout.
+            ' including the parent titlebar of the flyout and the panel lock button *on* the flyout.
             Me.cmdFlyoutLock(0).Visible = False
             Me.cntrPopOut(0).Visible = True
             Me.ttlPanel(0).Enabled = False
