@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.1151</langversion>
+		<langversion>8.9.1155</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -3270,6 +3270,18 @@ Please enter a numeric value.</original>
 		<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 		<phrase>
+			<original>(enter text here)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>New text layer</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+		<phrase>
 			<original>px</original>
 			<translation></translation>
 		</phrase>
@@ -4030,16 +4042,6 @@ You will need to manually download this file using your Internet browser.</origi
 		</phrase>
 
 		<phrase>
-			<original>(enter text here)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>New text layer</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 			<translation></translation>
 		</phrase>
@@ -4064,7 +4066,7 @@ You will need to manually download this file using your Internet browser.</origi
 			<translation></translation>
 		</phrase>
 
-		<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 		<phrase>
 			<original>caption</original>

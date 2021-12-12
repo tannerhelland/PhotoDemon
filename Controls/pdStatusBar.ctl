@@ -856,21 +856,21 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             Dim buttonIconSize As Long
             buttonIconSize = Interface.FixDPI(16)
             
-            cmdZoomFit.AssignImage "zoom_fit", , buttonIconSize, buttonIconSize
-            cmdZoomIn.AssignImage "zoom_in", , buttonIconSize, buttonIconSize
-            cmdZoomOut.AssignImage "zoom_out", , buttonIconSize, buttonIconSize
-            cmdImgSize.AssignImage "generic_imageportrait", , buttonIconSize, buttonIconSize
+            cmdZoomFit.AssignImage "zoom_fit", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+            cmdZoomIn.AssignImage "zoom_in", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+            cmdZoomOut.AssignImage "zoom_out", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+            cmdImgSize.AssignImage "generic_imageportrait", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
             
             'Load various status bar icons from the resource file
             If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
-            LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
+            IconsAndCursors.LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
             
             If (sbIconSelection Is Nothing) Then Set sbIconSelection = New pdDIB
-            LoadResourceToDIB "generic_resize", sbIconSelection, buttonIconSize, buttonIconSize, resampleAlgorithm:=GP_IM_NearestNeighbor
+            IconsAndCursors.LoadResourceToDIB "generic_resize", sbIconSelection, buttonIconSize, buttonIconSize, resampleAlgorithm:=GP_IM_NearestNeighbor
             sbIconSelection.SuspendDIB
             
             If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
-            LoadResourceToDIB "generic_network", sbIconNetwork, buttonIconSize, buttonIconSize
+            IconsAndCursors.LoadResourceToDIB "generic_network", sbIconNetwork, buttonIconSize, buttonIconSize
             sbIconNetwork.SuspendDIB
             
         End If

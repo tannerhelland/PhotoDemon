@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.84</langversion>
+<langversion>8.0.85</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -3310,6 +3310,18 @@ Wprowadź wartość liczbową.</translation>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(wpisz tekst tutaj)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>Nowa warstwa tekstowa</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -4070,16 +4082,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(wpisz tekst tutaj)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>Nowa warstwa tekstowa</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Kółko (myszy) = przewijanie pionowe, Shift + kółko = przewijanie poziome, Ctrl + kółko = powiększenie</translation>
 </phrase>
@@ -4104,7 +4106,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>Wyśrodkuj obraz wewnątrz okna</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

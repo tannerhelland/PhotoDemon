@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.70</langversion>
+<langversion>8.0.71</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3316,6 +3316,18 @@ Geef een numerieke waarde.</translation>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(geeft tekst hier op)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>Nieuwe tekstlaag</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -4076,16 +4088,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(geeft tekst hier op)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>Nieuwe tekstlaag</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Muiswiel = VERTIKALE SCROLL, Shift + Wiel = HORIZONTALE SCROLL, Ctrl + Wiel = ZOOM</translation>
 </phrase>
@@ -4110,7 +4112,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>Centreer de afbeelding binnenin de viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

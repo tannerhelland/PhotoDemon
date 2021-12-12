@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.122</langversion>
+<langversion>8.2.123</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3308,6 +3308,18 @@ Please enter a numeric value.</original>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>（在此输入文字）</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>新的文字层</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>像素</translation>
 </phrase>
@@ -4068,16 +4080,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>（在此输入文字）</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>新的文字层</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>鼠标滚轮=垂直滚动，Shift键+滚轮=水平滚动，按Ctrl+滚轮=放大</translation>
 </phrase>
@@ -4102,7 +4104,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>居中在图像视窗内</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

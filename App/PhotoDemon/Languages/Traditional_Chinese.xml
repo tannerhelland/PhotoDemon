@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.251</langversion>
+<langversion>7.0.252</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3277,6 +3277,18 @@ Please enter a numeric value.</original>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(在此輸入文字)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>新增文字圖層</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>像素</translation>
 </phrase>
@@ -4037,16 +4049,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(在此輸入文字)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>新增文字圖層</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation></translation>
 </phrase>
@@ -4071,7 +4073,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

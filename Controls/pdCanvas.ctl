@@ -2487,10 +2487,14 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         Dim btnImageSize As Long
         btnImageSize = Interface.FixDPI(26)
         pnlNoImages.UpdateAgainstCurrentTheme
-        cmdStart(0).AssignImage "file_new", imgWidth:=btnImageSize, imgHeight:=btnImageSize
-        cmdStart(1).AssignImage "file_open", imgWidth:=btnImageSize, imgHeight:=btnImageSize
-        cmdStart(2).AssignImage "edit_paste", imgWidth:=btnImageSize, imgHeight:=btnImageSize
-        cmdStart(3).AssignImage "file_batch", imgWidth:=btnImageSize, imgHeight:=btnImageSize
+        cmdStart(0).AssignImage "file_new", imgWidth:=btnImageSize, imgHeight:=btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        cmdStart(1).AssignImage "file_open", imgWidth:=btnImageSize, imgHeight:=btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        cmdStart(2).AssignImage "edit_paste", imgWidth:=btnImageSize, imgHeight:=btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        
+        'Use a slightly larger icon size for the batch icon, as it has fine details that look
+        ' muddy at the size of the previous icons
+        btnImageSize = Interface.FixDPI(28)
+        cmdStart(3).AssignImage "file_batch", imgWidth:=btnImageSize, imgHeight:=btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
         
         Dim i As Long
         For i = cmdStart.lBound To cmdStart.UBound
@@ -2512,9 +2516,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         vRuler.UpdateAgainstCurrentTheme
         
         'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-        Dim centerButtonIconSize As Long
-        centerButtonIconSize = Interface.FixDPI(15)
-        cmdCenter.AssignImage "zoom_center", , centerButtonIconSize, centerButtonIconSize
+        btnImageSize = Interface.FixDPI(15)
+        cmdCenter.AssignImage "zoom_center", Nothing, btnImageSize, btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
         cmdCenter.AssignTooltip "Center the image inside the viewport"
         cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
         cmdCenter.UpdateAgainstCurrentTheme

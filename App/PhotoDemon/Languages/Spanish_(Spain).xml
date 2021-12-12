@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.82</langversion>
+<langversion>8.0.83</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -3316,6 +3316,18 @@ Por favor, introduzca un valor numérico válido.</translation>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(Introducir texto aquí)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>Nueva capa de texto</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -4076,16 +4088,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(Introducir texto aquí)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>Nueva capa de texto</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Rueda del ratón = DESPLAZAMIENTO VERTICAL; May + rueda = DESPLAZAMIENTO HORIZONTAL; Ctrl + Rueda = ZOOM</translation>
 </phrase>
@@ -4110,7 +4112,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>Centrar la imagen en el área de edición</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

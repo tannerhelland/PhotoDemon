@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.563</langversion>
+<langversion>6.7.564</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3316,6 +3316,18 @@ Veuillez entrer une valeur numérique.</translation>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(Insérez le texte ici)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>Nouveau calque de texte</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -4076,16 +4088,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(Insérez le texte ici)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>Nouveau calque de texte</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Molette de la souris = DÉFILEMENT VERTICAL, Maj + molette = DÉFILEMENT HORIZONTAL, Ctrl + molette = ZOOM </translation>
 </phrase>
@@ -4110,7 +4112,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>Centrer l'image à l'intérieur de la fenêtre</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

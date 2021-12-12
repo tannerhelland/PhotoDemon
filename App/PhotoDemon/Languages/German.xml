@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1022</langversion>
+<langversion>9.0.1023</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3316,6 +3316,18 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>(enter text here)</original>
+<translation>(Text hier eingeben)</translation>
+</phrase>
+
+<phrase>
+<original>New text layer</original>
+<translation>Neuer Text-Layer</translation>
+</phrase>
+
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -4078,16 +4090,6 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation>(Text hier eingeben)</translation>
-</phrase>
-
-<phrase>
-<original>New text layer</original>
-<translation>Neuer Text-Layer</translation>
-</phrase>
-
-<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Mausrad = VERTIKAL SCROLLEN,  Shift + Mausrad = HORIZONTAL SCROLLEN,  Strg + Mausrad = ZOOMEN</translation>
 </phrase>
@@ -4112,7 +4114,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <translation>Das Bild innerhalb des Viewport zentrieren</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>

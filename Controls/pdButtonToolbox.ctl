@@ -34,8 +34,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Toolbox Button control
 'Copyright 2014-2021 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 15/May/19
-'Last update: add "flashing" support, for drawing attention to a given button
+'Last updated: 12/December/21
+'Last update: allow caller to specify resampling method when assigning button images
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -273,12 +273,12 @@ End Property
 ' pass a unique resource ID.  The resource ID is used as part of the UI images cache, to ensure duplicate
 ' images are not cached twice.  (If loading an ID from the resource file, you can obviously skip passing
 ' the source DIB, however.)
-Public Sub AssignImage(ByRef resName As String, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+Public Sub AssignImage(ByRef resName As String, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal usePDResamplerInstead As PD_ResamplingFilter = rf_Automatic)
     
     If (Not PDMain.IsProgramRunning) Then Exit Sub
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
+    If (LenB(resName) <> 0) Then IconsAndCursors.LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny, resampleAlgorithm:=resampleAlgorithm, usePDResamplerInstead:=usePDResamplerInstead
     If (srcDIB Is Nothing) Then Exit Sub
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
@@ -308,12 +308,12 @@ End Sub
 'IMPORTANT NOTE!  To reduce resource usage, PD requires that this optional "pressed" image have
 ' identical dimensions to the primary image. This greatly simplifies layout and painting issues,
 ' so I do not expect to change it.
-Public Sub AssignImage_Pressed(ByRef resName As String, Optional ByRef srcDIB As pdDIB, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+Public Sub AssignImage_Pressed(ByRef resName As String, Optional ByRef srcDIB As pdDIB, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal usePDResamplerInstead As PD_ResamplingFilter = rf_Automatic)
     
     If (Not PDMain.IsProgramRunning) Then Exit Sub
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
+    If (LenB(resName) <> 0) Then IconsAndCursors.LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny, resampleAlgorithm:=resampleAlgorithm, usePDResamplerInstead:=rf_Automatic
     If (srcDIB Is Nothing) Then Exit Sub
     
     'The caller needs to have *already* assigned a default image to this button; that image is used for

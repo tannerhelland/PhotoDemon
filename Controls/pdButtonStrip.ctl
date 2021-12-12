@@ -560,12 +560,12 @@ Public Sub AddItem(ByRef srcString As String, Optional ByVal itemIndex As Long =
 End Sub
 
 'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
-Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal preventMonoIcons As Boolean = False)
+Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal preventMonoIcons As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal usePDResamplerInstead As PD_ResamplingFilter = rf_Automatic)
     
     'Load the requested resource DIB, as necessary
     If (imgWidth = 0) Then imgWidth = 32
     If (imgHeight = 0) Then imgHeight = 32
-    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , , preventMonoIcons
+    If (LenB(resName) <> 0) Then IconsAndCursors.LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, 0&, -1&, preventMonoIcons, resampleAlgorithm, usePDResamplerInstead
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
