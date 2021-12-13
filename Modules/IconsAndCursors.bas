@@ -356,7 +356,7 @@ Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenu
         If g_Resources.AreResourcesAvailable Then
             Dim tmpDIB As pdDIB
             If (desiredSize = 0) Then desiredSize = Interface.FixDPI(16)
-            loadedInternally = g_Resources.LoadImageResource(srcResID, tmpDIB, desiredSize, desiredSize, desiredPadding, True)
+            loadedInternally = g_Resources.LoadImageResource(srcResID, tmpDIB, desiredSize, desiredSize, desiredPadding, True, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic))
             If loadedInternally Then targetMenuObject.AddImageFromDIB tmpDIB
         End If
     End If

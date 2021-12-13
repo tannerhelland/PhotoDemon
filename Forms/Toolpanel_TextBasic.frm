@@ -963,18 +963,18 @@ Public Sub UpdateAgainstCurrentTheme()
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(24)
     
-    btnFontStyles(0).AssignImage "format_bold", , buttonSize, buttonSize
-    btnFontStyles(1).AssignImage "format_italic", , buttonSize, buttonSize
-    btnFontStyles(2).AssignImage "format_underline", , buttonSize, buttonSize
-    btnFontStyles(3).AssignImage "format_strikethrough", , buttonSize, buttonSize
+    btnFontStyles(0).AssignImage "format_bold", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btnFontStyles(1).AssignImage "format_italic", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btnFontStyles(2).AssignImage "format_underline", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btnFontStyles(3).AssignImage "format_strikethrough", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
-    btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize
-    btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize
-    btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize
+    btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
-    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize
-    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize
-    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize
+    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
+    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
+    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock

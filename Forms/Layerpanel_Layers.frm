@@ -554,11 +554,11 @@ Public Sub UpdateAgainstCurrentTheme()
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(26)
-    cmdLayerAction(LYR_BTN_ADD).AssignImage "layer_add", , buttonSize, buttonSize
-    cmdLayerAction(LYR_BTN_DELETE).AssignImage "layer_delete", , buttonSize, buttonSize
-    cmdLayerAction(LYR_BTN_MOVE_UP).AssignImage "layer_up", , buttonSize, buttonSize
-    cmdLayerAction(LYR_BTN_MOVE_DOWN).AssignImage "layer_down", , buttonSize, buttonSize
-    cmdLayerAction(LYR_BTN_DUPLICATE).AssignImage "layer_duplicate", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_ADD).AssignImage "layer_add", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    cmdLayerAction(LYR_BTN_DELETE).AssignImage "layer_delete", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    cmdLayerAction(LYR_BTN_MOVE_UP).AssignImage "layer_up", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    cmdLayerAction(LYR_BTN_MOVE_DOWN).AssignImage "layer_down", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    cmdLayerAction(LYR_BTN_DUPLICATE).AssignImage "layer_duplicate", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

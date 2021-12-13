@@ -1542,8 +1542,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         If PDMain.IsProgramRunning() Then
             Dim iconSize As Long
             iconSize = Interface.FixDPI(16)
-            LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
-            LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize
+            LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize, usePDResamplerInstead:=rf_Box
+            LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize, usePDResamplerInstead:=rf_Box
         End If
         
         UpdateColorList

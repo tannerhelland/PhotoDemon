@@ -1492,13 +1492,13 @@ Private Sub Form_Load()
         'Next, add images to each button
         Dim prefButtonSize As Long
         prefButtonSize = Interface.FixDPI(32)
-        .AssignImageToItem 0, "pref_interface", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 1, "pref_loading", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 2, "pref_saving", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 3, "pref_performance", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 4, "pref_colormanagement", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 5, "pref_updates", , prefButtonSize, prefButtonSize
-        .AssignImageToItem 6, "pref_advanced", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 0, "pref_interface", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 1, "pref_loading", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 2, "pref_saving", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 3, "pref_performance", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 4, "pref_colormanagement", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 5, "pref_updates", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
+        .AssignImageToItem 6, "pref_advanced", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=rf_Box
         
     End With
     

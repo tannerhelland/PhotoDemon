@@ -252,7 +252,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     ResampleImage = False
     Const FUNC_NAME As String = "ResampleImage"
-    If (Not REPORT_RESAMPLE_PERF) Then PDDebug.LogAction "Float resampler started."
+    If REPORT_RESAMPLE_PERF Then PDDebug.LogAction "Float resampler started."
     
     'Validate all inputs
     If (srcDIB Is Nothing) Then
@@ -698,7 +698,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     
     ResampleImageI = False
     Const FUNC_NAME As String = "ResampleImageI"
-    If (Not REPORT_RESAMPLE_PERF) Then PDDebug.LogAction "Integer resampler started."
+    If REPORT_RESAMPLE_PERF Then PDDebug.LogAction "Integer resampler started."
     
     'Validate all inputs
     If (srcDIB Is Nothing) Then
