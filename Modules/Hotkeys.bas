@@ -157,6 +157,7 @@ Public Sub InitializeDefaultHotkeys()
     
     'Tool hotkeys (e.g. keys not associated with menus)
     Hotkeys.AddHotkey vbKeyH, , "tool_hand"
+    Hotkeys.AddHotkey vbKeyZ, , "tool_zoom"
     Hotkeys.AddHotkey vbKeyM, , "tool_move"
     Hotkeys.AddHotkey vbKeyI, , "tool_colorselect"
     

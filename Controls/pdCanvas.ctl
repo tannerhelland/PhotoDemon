@@ -1033,7 +1033,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             'Drag-to-pan canvas
             Case NAV_DRAG
                 Tools.SetInitialCanvasScrollValues FormMain.MainCanvas(0)
-                
+            
+            'TODO!
+            Case NAV_ZOOM
+            
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyMouseDown Me, Shift, imgX, imgY
@@ -1164,6 +1167,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case NAV_DRAG
                 Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
+            'TODO!
+            Case NAV_ZOOM
+            
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
@@ -1224,6 +1230,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
                 'Drag-to-navigate
                 Case NAV_DRAG
+                
+                'TODO!
+                Case NAV_ZOOM
                 
                 'Move stuff around
                 Case NAV_MOVE
@@ -1305,7 +1314,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
         
             'Click-to-drag navigation
             Case NAV_DRAG
-                
+            
+            'TODO!
+            Case NAV_ZOOM
+            
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements
@@ -2158,6 +2170,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Else
                 CanvasView.RequestCursor_System IDC_ARROW
             End If
+        
+        'TODO!
+        Case NAV_ZOOM
         
         Case NAV_MOVE
             
