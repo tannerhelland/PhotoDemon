@@ -2174,6 +2174,15 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         'TODO!
         Case NAV_ZOOM
         
+            'When click-dragging the image to scroll around it, the cursor depends on being over the image
+            If IsMouseOverImage(x, y, PDImages.GetActiveImage()) Then
+                CanvasView.RequestCursor_Resource "cursor_zoom", 0, 0
+                
+            'If the cursor is not over the image, change to an arrow cursor
+            Else
+                CanvasView.RequestCursor_System IDC_ARROW
+            End If
+            
         Case NAV_MOVE
             
             'When transforming layers, the cursor depends on the active POI

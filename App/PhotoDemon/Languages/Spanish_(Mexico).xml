@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.83</langversion>
+<langversion>8.0.84</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -11536,6 +11536,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>Zoom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move and resize image layers</original>
 <translation>Mover y cambiar el tamaño de las capas de imagen</translation>
 </phrase>
@@ -11616,6 +11621,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>Zoom tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move tool</original>
 <translation>Herramienta de movimiento</translation>
 </phrase>
@@ -11690,7 +11700,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Herramienta de cubo de pintura</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13653,10 +13663,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5346 phrases. -->
-<!-- 2762 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 11758 total words. -->
+<!-- As of this build, PhotoDemon contains 5350 phrases. -->
+<!-- 2764 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 11761 total words. -->
 
 </pdData>
