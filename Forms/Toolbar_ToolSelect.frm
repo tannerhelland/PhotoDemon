@@ -1269,37 +1269,37 @@ Public Sub UpdateAgainstCurrentTheme()
     buttonImageSize = Interface.FixDPI(buttonImageSize)
     
     'Initialize file tool button images
-    cmdFile(FILE_NEW).AssignImage "file_new", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdFile(FILE_OPEN).AssignImage "file_open", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-    cmdFile(FILE_CLOSE).AssignImage "file_close", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdFile(FILE_NEW).AssignImage "file_new", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+    cmdFile(FILE_OPEN).AssignImage "file_open", Nothing, buttonImageSize, buttonImageSize
+    cmdFile(FILE_CLOSE).AssignImage "file_close", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     cmdFile(FILE_SAVE).AssignImage "file_save", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     cmdFile(FILE_SAVEAS_LAYERS).AssignImage "file_savedup", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     cmdFile(FILE_SAVEAS_FLAT).AssignImage "file_saveas", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     
-    cmdFile(FILE_UNDO).AssignImage "edit_undo", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdFile(FILE_REDO).AssignImage "edit_redo", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdFile(FILE_UNDO).AssignImage "edit_undo", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+    cmdFile(FILE_REDO).AssignImage "edit_redo", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     
     'Initialize canvas tool button images
-    cmdTools(NAV_DRAG).AssignImage "nd_hand", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdTools(NAV_DRAG).AssignImage "nd_hand", Nothing, buttonImageSize, buttonImageSize
     cmdTools(NAV_MOVE).AssignImage "nd_move", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
     cmdTools(COLOR_PICKER).AssignImage "color_picker", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(ND_MEASURE).AssignImage "nd_measure", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+    cmdTools(ND_MEASURE).AssignImage "nd_measure", Nothing, buttonImageSize, buttonImageSize, resampleAlgorithm:=GP_IM_NearestNeighbor
     
-    cmdTools(SELECT_RECT).AssignImage "select_rect", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(SELECT_CIRC).AssignImage "select_circle", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(SELECT_POLYGON).AssignImage "select_polygon", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(SELECT_LASSO).AssignImage "select_lasso", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdTools(SELECT_RECT).AssignImage "select_rect", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_Box
+    cmdTools(SELECT_CIRC).AssignImage "select_circle", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
+    cmdTools(SELECT_POLYGON).AssignImage "select_polygon", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
+    cmdTools(SELECT_LASSO).AssignImage "select_lasso", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
     cmdTools(SELECT_WAND).AssignImage "select_wand", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
     
     cmdTools(TEXT_BASIC).AssignImage "text_basic", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(TEXT_ADVANCED).AssignImage "text_fancy", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+    cmdTools(TEXT_ADVANCED).AssignImage "text_fancy", Nothing, buttonImageSize, buttonImageSize
     
-    cmdTools(PAINT_PENCIL).AssignImage "paint_pencil", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdTools(PAINT_PENCIL).AssignImage "paint_pencil", Nothing, buttonImageSize, buttonImageSize
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(PAINT_ERASER).AssignImage "paint_erase", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(PAINT_CLONE).AssignImage "clone_stamp", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+    cmdTools(PAINT_ERASER).AssignImage "paint_erase", Nothing, buttonImageSize, buttonImageSize
+    cmdTools(PAINT_CLONE).AssignImage "clone_stamp", Nothing, buttonImageSize, buttonImageSize
     cmdTools(PAINT_FILL).AssignImage "paint_fill", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-    cmdTools(PAINT_GRADIENT).AssignImage "nd_gradient", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+    cmdTools(PAINT_GRADIENT).AssignImage "nd_gradient", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
