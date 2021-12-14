@@ -3,8 +3,8 @@ Attribute VB_Name = "IconsAndCursors"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2021 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 30/May/19
-'Last update: render small overlay of PD's icon atop dynamic taskbar icons
+'Last updated: 14/December/21
+'Last update: fix cursor hotspot placement bug when creating cursors from resources
 '
 'Because VB6 doesn't provide many (any?) mechanisms for manipulating icons, I've had to manually write a wide variety
 ' of icon handling functions.  As of v7.0, all icons in PD are stored in our custom resource file (in a variety of
@@ -145,9 +145,10 @@ Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
     
     With cMenuImage
         
-        'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
+        'Menu icons rely on subclassing in XP (because there's no native OS support for 32-bit menu icons).
+        ' If inside the IDE on XP, don't even attempt to place menu icons inside the IDE.
         If (Not OS.IsVistaOrLater) And (Not OS.IsProgramCompiled) Then
-            Debug.Print "XP + IDE detected.  Menu icons will be disabled for this session."
+            PDDebug.LogAction "XP + IDE detected.  Menu icons are disabled for this session."
             Exit Sub
         End If
         
@@ -361,10 +362,8 @@ Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenu
         End If
     End If
     
-    'If that fails, use the legacy resource instead
-    If (Not loadedInternally) Then
-        Debug.Print "WARNING!  IconsAndCursors.AddImageResourceToClsMenu failed on: " & srcResID
-    End If
+    'If that fails, I probably made a typo in the resource name - note this!
+    If (Not loadedInternally) Then PDDebug.LogAction "WARNING!  IconsAndCursors.AddImageResourceToClsMenu failed on: " & srcResID
     
 End Sub
 
@@ -456,8 +455,6 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
             If (oldIcon32 <> 0) Then ReleaseIcon oldIcon32
             If (oldIcon16 <> 0) Then ReleaseIcon oldIcon16
             
-        Else
-            Debug.Print "WARNING!  Image refused to provide a thumbnail!"
         End If
         
     End If
@@ -500,7 +497,7 @@ Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByV
         curHotspotX = (CDbl(curHotspotX) / 16#) * m_CursorSize
         curHotspotY = (CDbl(curHotspotY) / 16#) * m_CursorSize
         
-        CreateCursorFromResource = CreateCursorFromDIB(resDIB)
+        CreateCursorFromResource = CreateCursorFromDIB(resDIB, curHotspotX, curHotspotY)
         
     Else
         PDDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
@@ -549,7 +546,7 @@ Public Function GetSystemCursorSizeInPx() As Long
     ' is why we divide the retrieved cursor size by two.
     If (m_CursorSize = 0) Then
         m_CursorSize = GetSystemMetrics(SM_CYCURSOR) \ 2
-        If (m_CursorSize <= 0) Then m_CursorSize = FixDPI(16)
+        If (m_CursorSize <= 0) Then m_CursorSize = Interface.FixDPI(16)
     End If
     
     GetSystemCursorSizeInPx = m_CursorSize

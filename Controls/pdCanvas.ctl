@@ -464,7 +464,7 @@ Public Sub SetScrollValue(ByVal barType As PD_Orientation, ByVal newValue As Lon
     End If
     
     'If automatic redraws are suspended, the scroll bars change events won't fire, so we must manually notify external UI elements
-    If Me.GetRedrawSuspension Then RelayViewportChanges
+    If Me.GetRedrawSuspension Then Viewport.NotifyEveryoneOfViewportChanges
     
 End Sub
 
@@ -1312,11 +1312,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
     
         Select Case g_CurrentTool
         
-            'Click-to-drag navigation
+            'Click-to-drag navigation requires no special behavior here
             Case NAV_DRAG
-            
-            'TODO!
-            Case NAV_ZOOM
             
             'Move stuff around
             Case NAV_MOVE
@@ -1372,6 +1369,11 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
     End If
     
+    'Some controls handle button differences themselves
+    If (g_CurrentTool = NAV_ZOOM) Then
+        Tools_Zoom.NotifyMouseUp Button, Shift, Me, PDImages.GetActiveImage(), x, y, m_NumOfMouseMovements, clickEventAlsoFiring
+    End If
+    
     If (Button = pdRightButton) Then m_RMBDown = False
     If (Button = pdMiddleButton) Then m_MMBDown = False
     
@@ -1412,39 +1414,7 @@ Public Sub CanvasView_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
-    
-    If Not IsCanvasInteractionAllowed() Then Exit Sub
-    
-    'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
-    Dim imgX As Double, imgY As Double
-    ConvertCanvasCoordsToImageCoords Me, PDImages.GetActiveImage(), x, y, imgX, imgY, True
-    
-    'Suspend automatic viewport redraws until we are done with our calculations
-    Viewport.DisableRendering
-    hRuler.SetRedrawSuspension True
-    vRuler.SetRedrawSuspension True
-    
-    'Calculate a new zoom value
-    If StatusBar.IsZoomEnabled Then
-        If (zoomAmount > 0) Then
-            If (StatusBar.GetZoomDropDownIndex > 0) Then StatusBar.SetZoomDropDownIndex Zoom.GetNearestZoomInIndex(StatusBar.GetZoomDropDownIndex)
-        ElseIf (zoomAmount < 0) Then
-            If (StatusBar.GetZoomDropDownIndex <> Zoom.GetZoomCount) Then StatusBar.SetZoomDropDownIndex Zoom.GetNearestZoomOutIndex(StatusBar.GetZoomDropDownIndex)
-        End If
-    End If
-    
-    'Re-enable automatic viewport redraws
-    Viewport.EnableRendering
-    
-    'Request a manual redraw from Viewport.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
-    ' relative to the underlying image.
-    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
-    
-    'Notify external UI elements of the change
-    hRuler.SetRedrawSuspension False, False
-    vRuler.SetRedrawSuspension False, False
-    RelayViewportChanges
-
+    If (zoomAmount <> 0) Then Tools_Zoom.RelayCanvasZoom Me, PDImages.GetActiveImage(), x, y, (zoomAmount > 0)
 End Sub
 
 Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -1521,7 +1491,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     'Request the scroll-specific viewport pipeline stage, and notify all relevant UI elements of the change
     If (Not Me.GetRedrawSuspension) Then
         Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
-        RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
     End If
     
 End Sub
@@ -2017,7 +1987,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
         
         'Notify any other relevant UI elements
-        RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
         
     End If
     
@@ -2171,14 +2141,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 CanvasView.RequestCursor_System IDC_ARROW
             End If
         
-        'TODO!
         Case NAV_ZOOM
-        
-            'When click-dragging the image to scroll around it, the cursor depends on being over the image
             If IsMouseOverImage(x, y, PDImages.GetActiveImage()) Then
-                CanvasView.RequestCursor_Resource "cursor_zoom", 0, 0
-                
-            'If the cursor is not over the image, change to an arrow cursor
+                CanvasView.RequestCursor_Resource "cursor_zoom", 4, 4
             Else
                 CanvasView.RequestCursor_System IDC_ARROW
             End If
@@ -2425,11 +2390,11 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     IsCanvasInteractionAllowed = CanvasView.IsCanvasInteractionAllowed
 End Function
 
-'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.  Any relays to external
-' functions (functions that rely on viewport settings, obviously) should be handled here.
-' TODO: migrate this function elsewhere, so things other than the canvas can easily utilize it.
-Public Sub RelayViewportChanges()
-    toolbar_Layers.NotifyViewportChange
+'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.
+' Any relays to external functions (functions that rely on viewport settings, obviously) should be handled here.
+' NOTE: external callers should call Viewport.NotifyEveryoneOfViewportChanges, which will automatically call
+' this sub as well as a bunch of other notifiers throughout the project.
+Public Sub NotifyViewportChanges()
     If m_RulersVisible Then
         hRuler.NotifyViewportChange
         vRuler.NotifyViewportChange

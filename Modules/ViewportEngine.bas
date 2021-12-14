@@ -479,7 +479,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     'Some conditions (e.g. program is shutting down) prevent viewport rendering
     If ViewportRenderingAllowed(srcImage, dstCanvas) Then
-    
+        
         'If no images are loaded, render a placeholder and exit.
         If (Not PDImages.IsImageNonNull()) Then
             FormMain.MainCanvas(0).ClearCanvas
@@ -536,7 +536,9 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             End With
             
             'Before querying the canvas object for sizes, make sure scroll bars are visible.
-            ' (As of v7.0, viewport scrollbars are *always* visible - this simplifies things a bit.)
+            ' (As of v7.0, viewport scrollbars are *always* visible - this simplifies things a bit
+            ' vs previous versions, where we constantly toggled visibility based upon reaching the
+            ' edge of the canvas.)
             FormMain.MainCanvas(0).SetScrollVisibility pdo_Both, True
             
             'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is
@@ -738,7 +740,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         
         End If
         
-    'If viewport rendering is disallowed, attempt to render a placeholder image before exiting
+    'If viewport rendering is disallowed, attempt to render a placeholder UI before exiting
     Else
         
         'Because dstCanvas may not yet exist, forcibly invoke the default canvas
@@ -754,9 +756,9 @@ ViewportPipeline_Stage1_Error:
     
 End Sub
 
-'Before executing a pipeline step, this function needs to be called to see if viewport rendering is even allowed.  (If the current
-' viewport stage was directly invoked by a *previous* pipeline step, this check can be skipped, as it's assumed the parent already
-' handled it.)
+'Before executing a pipeline step, this function needs to be called to see if viewport rendering is even allowed.
+' (If the current viewport stage was directly invoked by a *previous* pipeline step, this check can be skipped,
+' as it's assumed the parent already handled it.)
 Private Function ViewportRenderingAllowed(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas) As Boolean
     
     'First, see if viewport rendering has been forcibly disabled.
@@ -800,6 +802,22 @@ Public Sub EraseViewportBuffers()
         m_FrontBuffer.EraseDIB
         Set m_FrontBuffer = Nothing
     End If
+End Sub
+
+'After interacting with this module, you can call this sub to relay any new viewport changes
+' to UI elements across the program.  For example, if zoom has been changed, everything from
+' on-canvas scrollbars to the top-right navigator window needs to be notified of the change.
+' Rather than worry about who needs to be notified of what, just call this sub and it will
+' take care of the rest.
+Public Sub NotifyEveryoneOfViewportChanges()
+    
+    'Let the right-hand toolbar know that the viewport has changed (this will relay changes
+    ' to child windows, like the navigator)
+    toolbar_Layers.NotifyViewportChange
+    
+    'Notify the canvas itself of any changes
+    FormMain.MainCanvas(0).NotifyViewportChanges
+    
 End Sub
 
 'Report the current viewport performance profiling data to pdDebug.  Useless in non-debug builds.

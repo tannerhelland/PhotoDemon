@@ -1241,7 +1241,7 @@ End Sub
 
 'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the
 ' current control width/height.
-Friend Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+Friend Sub RequestNewSize(Optional ByVal newWidth As Long = 0&, Optional ByVal newHeight As Long = 0&, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters, if any
     If (newWidth = 0) Then newWidth = m_MoveSize.GetWidth

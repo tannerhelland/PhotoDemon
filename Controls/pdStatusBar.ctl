@@ -556,13 +556,6 @@ Private Sub CmbZoom_Click()
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
         PDImages.GetActiveImage.SetZoomIndex cmbZoom.ListIndex
         
-        'Disable the zoom in/out buttons when they reach the end of the available zoom levels
-        cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)
-        cmdZoomOut.Enabled = (cmbZoom.ListIndex <> Zoom.GetZoomCount)
-        
-        'Highlight the "zoom fit" button while fit mode is active
-        cmdZoomFit.Value = (cmbZoom.ListIndex = Zoom.GetZoomFitAllIndex)
-        
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
         If Viewport.IsRenderingEnabled Then
@@ -577,12 +570,22 @@ Private Sub CmbZoom_Click()
             End If
         
             'Notify any other relevant UI elements
-            FormMain.MainCanvas(0).RelayViewportChanges
+            Viewport.NotifyEveryoneOfViewportChanges
             
         End If
         
     End If
-
+    
+    'Synchronization of zoom buttons *always* needs to happen, regardless of canvas interaction state,
+    ' to ensure they don't fall out of sync.
+    
+    'Disable the zoom in/out buttons when they reach the end of the available zoom levels
+    cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)
+    cmdZoomOut.Enabled = (cmbZoom.ListIndex <> Zoom.GetZoomCount)
+    
+    'Highlight the "zoom fit" button while fit mode is active
+    cmdZoomFit.Value = (cmbZoom.ListIndex = Zoom.GetZoomFitAllIndex)
+    
 End Sub
 
 Private Sub cmdImgSize_Click(ByVal Shift As ShiftConstants)
@@ -590,7 +593,7 @@ Private Sub cmdImgSize_Click(ByVal Shift As ShiftConstants)
 End Sub
 
 Private Sub cmdZoomFit_Click(ByVal Shift As ShiftConstants)
-    CanvasManager.FitOnScreen
+    If FormMain.MainCanvas(0).IsCanvasInteractionAllowed Then CanvasManager.FitOnScreen
 End Sub
 
 Private Sub cmdZoomIn_Click(ByVal Shift As ShiftConstants)
