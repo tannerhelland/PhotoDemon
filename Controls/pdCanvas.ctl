@@ -2148,7 +2148,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
         Case NAV_ZOOM
             If IsMouseOverImage(x, y, PDImages.GetActiveImage()) Then
-                CanvasView.RequestCursor_Resource "cursor_zoom", 4, 4
+                CanvasView.RequestCursor_Resource "cursor_zoom", 5, 6
             Else
                 CanvasView.RequestCursor_System IDC_ARROW
             End If

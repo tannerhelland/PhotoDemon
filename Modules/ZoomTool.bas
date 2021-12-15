@@ -69,7 +69,8 @@ End Sub
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
     
     'Cache initial x/y positions
-    m_LMBDown = ((Button And pdLeftButton) <> 0)
+    m_LMBDown = ((Button And pdLeftButton) = pdLeftButton)
+    
     If m_LMBDown Then
         m_InitCanvasX = canvasX
         m_InitCanvasY = canvasY
@@ -121,6 +122,9 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     
     'If this is a click-drag event, we need to solve a more difficult equation
     Else
+        
+        'Bail if initial coordinates are bad
+        If (m_InitCanvasX = INVALID_X_COORD) Or (m_InitCanvasY = INVALID_Y_COORD) Then Exit Sub
         
         'Using the zoom tool, the user can click-drag a region to select it for zooming.
         ' Our job is to find the "best" zoom value for that rectangle, so that the entire rectangle
