@@ -1034,8 +1034,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case NAV_DRAG
                 Tools.SetInitialCanvasScrollValues FormMain.MainCanvas(0)
             
-            'TODO!
+            'Zoom in/out (and click-drag to set zoom area)
             Case NAV_ZOOM
+                Tools_Zoom.NotifyMouseDown Button, Shift, Me, PDImages.GetActiveImage, x, y
             
             'Move stuff around
             Case NAV_MOVE
@@ -1167,8 +1168,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case NAV_DRAG
                 Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
-            'TODO!
             Case NAV_ZOOM
+                Tools_Zoom.NotifyMouseMove Button, Shift, Me, PDImages.GetActiveImage, x, y
             
             'Move stuff around
             Case NAV_MOVE
@@ -1231,8 +1232,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 'Drag-to-navigate
                 Case NAV_DRAG
                 
-                'TODO!
+                'Zoom in/out
                 Case NAV_ZOOM
+                    Tools_Zoom.NotifyMouseMove Button, Shift, Me, PDImages.GetActiveImage, x, y
                 
                 'Move stuff around
                 Case NAV_MOVE
@@ -1315,6 +1317,9 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Click-to-drag navigation requires no special behavior here
             Case NAV_DRAG
             
+            'Zoom is handled later in this function, because it needs to track both left/right buttons
+            'Case NAV_ZOOM
+            
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements
@@ -1369,7 +1374,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
     End If
     
-    'Some controls handle button differences themselves
+    'Some controls handle multiple button possibilities themselves
     If (g_CurrentTool = NAV_ZOOM) Then
         Tools_Zoom.NotifyMouseUp Button, Shift, Me, PDImages.GetActiveImage(), x, y, m_NumOfMouseMovements, clickEventAlsoFiring
     End If

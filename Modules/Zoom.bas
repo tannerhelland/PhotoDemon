@@ -336,26 +336,13 @@ Public Function GetNearestZoomInIndex(ByVal curIndex As Long) As Long
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-in index is easy.
     If (curIndex <= m_zoomCountFixed) Then
-        
         GetNearestZoomInIndex = curIndex - 1
         If (GetNearestZoomInIndex < 0) Then GetNearestZoomInIndex = 0
     
-    'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
-    ' find that is larger than the current dynamic value being used.
+    'If the current zoom index is one of the "fit" options, this is more complicated.
+    ' We want to set the first fixed index we find that is larger than the current dynamic value being used.
     Else
-    
-        Dim curZoomValue As Double
-        curZoomValue = GetZoomRatioFromIndex(curIndex)
-        
-        'Start searching the zoom array for the nearest value that is larger than the current zoom value.
-        Dim i As Long
-        For i = m_zoomCountFixed To 0 Step -1
-            If (m_zoomValues(i) > curZoomValue) Then
-                GetNearestZoomInIndex = i
-                Exit For
-            End If
-        Next i
-    
+        GetNearestZoomInIndex = GetNearestZoomInIndex_FromRatio(GetZoomRatioFromIndex(curIndex))
     End If
 
 End Function
@@ -367,27 +354,39 @@ Public Function GetNearestZoomOutIndex(ByVal curIndex As Long) As Long
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-out index is easy.
     If (curIndex <= m_zoomCountFixed) Then
-        
         GetNearestZoomOutIndex = curIndex + 1
         If (GetNearestZoomOutIndex > m_zoomCountFixed) Then GetNearestZoomOutIndex = m_zoomCountFixed
     
-    'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
-    ' find that is smaller than the current dynamic value being used.
+    'If the current zoom index is one of the "fit" options, this is more complicated.
+    ' We want to set the first fixed index we find that is smaller than the current dynamic value being used.
     Else
-    
-        Dim curZoomValue As Double
-        curZoomValue = GetZoomRatioFromIndex(curIndex)
-        
-        'Start searching the zoom array for the nearest value that is larger than the current zoom value.
-        Dim i As Long
-        For i = 0 To m_zoomCountFixed
-            If (m_zoomValues(i) < curZoomValue) Then
-                GetNearestZoomOutIndex = i
-                Exit For
-            End If
-        Next i
-    
+        GetNearestZoomOutIndex = GetNearestZoomOutIndex_FromRatio(GetZoomRatioFromIndex(curIndex))
     End If
 
 End Function
 
+Public Function GetNearestZoomInIndex_FromRatio(ByVal srcRatio As Double) As Long
+
+    'Search the zoom array for the nearest value that is larger than the current zoom value.
+    Dim i As Long
+    For i = m_zoomCountFixed To 0 Step -1
+        If (m_zoomValues(i) > srcRatio) Then
+            GetNearestZoomInIndex_FromRatio = i
+            Exit For
+        End If
+    Next i
+
+End Function
+
+Public Function GetNearestZoomOutIndex_FromRatio(ByVal srcRatio As Double) As Long
+    
+    'Search the zoom array for the nearest value that is less than the current zoom value.
+    Dim i As Long
+    For i = 0 To m_zoomCountFixed
+        If (m_zoomValues(i) < srcRatio) Then
+            GetNearestZoomOutIndex_FromRatio = i
+            Exit For
+        End If
+    Next i
+
+End Function

@@ -267,9 +267,7 @@ Public Sub RenderMeasureUI(ByRef targetCanvas As pdCanvas)
     If (Not GetAngleInDegrees(curAngle)) Then Exit Sub
     
     'Start by converting the measurement positions to canvas coordinates
-    Dim canvasCoordsX() As Double, canvasCoordsY() As Double
-    ReDim canvasCoordsX(0 To 1) As Double
-    ReDim canvasCoordsY(0 To 1) As Double
+    Dim canvasCoordsX(0 To 1) As Double, canvasCoordsY(0 To 1) As Double
     
     Dim i As Long
     For i = 0 To 1

@@ -21,6 +21,12 @@ Option Explicit
 ' of directly querying the associated UI elements.
 Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
 
+Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
+    If Tools_Move.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+    If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+    If Tools_Move.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+End Sub
+
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
     
     Dim hOffset As Long, vOffset As Long
