@@ -1390,6 +1390,9 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_hand"
             toolbar_Toolbox.SelectNewTool NAV_DRAG, (actionSource = pdas_Search), True
         
+        Case "tool_zoom"
+            toolbar_Toolbox.SelectNewTool NAV_ZOOM, (actionSource = pdas_Search), True
+        
         Case "tool_move"
             toolbar_Toolbox.SelectNewTool NAV_MOVE, (actionSource = pdas_Search), True
         

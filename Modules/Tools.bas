@@ -917,6 +917,8 @@ Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
     Select Case toolIndex
         Case NAV_DRAG
             GetNameOfTool = "Hand"
+        Case NAV_ZOOM
+            GetNameOfTool = "Zoom"
         Case NAV_MOVE
             GetNameOfTool = "Move"
         Case COLOR_PICKER

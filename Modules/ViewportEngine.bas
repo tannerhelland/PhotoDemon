@@ -7,18 +7,20 @@ Attribute VB_Name = "Viewport"
 'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
-' - Viewport.Stage1_InitializeBuffer: calculate all viewport position and overlay rects (required only on first image load,
-'                                           when image size is changed, or when viewport zoom changes)
-' - Viewport.Stage2_CompositeAllLayers: composite all layers in the active image, while accounting for things like
-'                                             non-destructive modifications.  Because this function only composites the subset of
-'                                             the image relevant to the target viewport, it must be called on canvas scrollbar changes.
-' - Viewport.Stage3_CompositeCanvas: composite the image with any underlying/overlying canvas UI elements.  At present, this stage
-'                                          handles color management and selection tool compositing, when active.
-' - Viewport.Stage4_FlipBufferAndDrawUI: composite any interactive UI elements (transform nodes, paint tool outlines, etc) to the
-'                                              canvas, then flip everything to the screen.
 '
-'If you need to draw something to the screen, you need to call the *latest possible pipeline stage*.  Stages are sorted in rough order
-' of their "time-to-completion" requirements, and unnecessarily calling early pipeline stages will hurt program performance.
+' - Viewport.Stage1_InitializeBuffer: calculate all viewport position and overlay rects
+'    (required only on first image load, when image size is changed, or when viewport zoom changes)
+' - Viewport.Stage2_CompositeAllLayers: composite all layers in the active image, while accounting for
+'    things like non-destructive modifications.  Because this function only composites the subset of
+'    the image relevant to the target viewport, it must be called on canvas scrollbar changes.
+' - Viewport.Stage3_CompositeCanvas: composite the image with any underlying/overlying canvas UI elements.
+'    At present, this stage handles color management and selection tool compositing, when active.
+' - Viewport.Stage4_FlipBufferAndDrawUI: composite any interactive UI elements (transform nodes,
+'    paint tool outlines, etc) to the canvas, then flip everything to the screen.
+'
+'If you need to draw something to the screen, you need to call the *latest possible pipeline stage*.
+' Stages are sorted in rough order of their "processing time" requirements, and unnecessarily calling
+' early pipeline stages will harm viewport performance.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -27,16 +29,17 @@ Attribute VB_Name = "Viewport"
 
 Option Explicit
 
-'Due to the complexity of viewport rendering, some viewport pipeline calculations are stored at module-level, while others are
-' stored inside the source pdImage or destination pdCanvas used for a given rendering.  The module-level variables in particular are
-' used to improve efficiency over passing objects as parameters, because PD's viewport pipeline is as an "out of order" pipeline.
-' Different user interations trigger execution of the pipeline at different stages, which is crucial for maximizing viewport performance.
+'Due to the complexity of viewport rendering, some viewport pipeline calculations are stored at module-level,
+' while others are stored inside the source pdImage or destination pdCanvas used for a given rendering.
+' Module-level variables are typically used to improve efficiency over passing objects as parameters,
+' because PD's viewport pipeline is as an "out of order" pipeline. Different user interations trigger execution
+' of the pipeline at different stages, which is crucial for maximizing viewport performance.
 '
-'As such, pipeline functions must be *very cautious* about modifying module-level values, or viewport-related values stored within
-' source pdImage or destination pdCanvas objects.  CONSIDER YOURSELF WARNED.
+'As such, pipeline functions must be *very cautious* about modifying module-level values, or viewport-related
+' values stored within source pdImage or destination pdCanvas objects.  CONSIDER YOURSELF WARNED.
 
-'If external functions require special scroll bar treatment in the initial pipeline stage, they must pass one of these enums
-' as the first entry in the associated ParamArray().
+'If external functions require special scroll bar treatment in the initial pipeline stage, they must pass one
+' of these enums as the first entry in the associated ParamArray().
 Public Enum PD_VIEWPORT_SPECIAL_REQUEST
     VSR_ResetToZero = 0
     VSR_ResetToCustom = 1
@@ -47,28 +50,30 @@ End Enum
     Private Const VSR_ResetToZero = 0, VSR_ResetToCustom = 1, VSR_PreservePointPosition = 2
 #End If
 
-'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")  Multiple pipeline stages
-' use this, so it's cached by the first pipeline staged and simply reused after that.
+'The ZoomVal value is the actual coefficient for the current zoom value (i.e. 0.50 for "50% zoom").
+' Multiple pipeline stages use this, so it's cached by the first pipeline staged and simply reused after that.
 Private m_ZoomRatio As Double
 
-'m_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection tool effects)
+'m_FrontBuffer holds the final composited image, including any non-interactive overlays
+' (like selection tool effects)
 Private m_FrontBuffer As pdDIB
 
-'In most cases, viewport rendering is automatically triggered as underlying actions require it, but if a bunch of requests need to
-' be batched, it's useful to forcibly delay automatic redraws.  This variable tracks forcible viewport suspensions; interact with it
-' via the safe Enable/Disable wrapper functions, below.
+'In most cases, viewport rendering is automatically triggered as underlying actions require it,
+' but if a bunch of requests need to be batched, it's useful to forcibly delay automatic redraws.
+' This variable tracks forcible viewport suspensions; interact with it via the safe Enable/Disable
+' wrapper functions, below.
 Private m_DisableViewportRendering As Boolean
 
-'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 1
-' is ignored because it is only called under specific circumstances that are very difficult to profile accurately
-' (e.g. changes in zoom values or switching between images).
+'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.
+' Note that stage 1 is ignored because it is only called under specific circumstances that are very
+' difficult to profile accurately (e.g. changes in zoom values or switching between images).
 Private m_TimeStage2 As Currency, m_TimeStage3 As Currency, m_TimeStage4 As Currency
 Private m_TotalTime As Currency, m_TotalTimeStage2 As Currency, m_TotalTimeStage3 As Currency, m_TotalTimeStage4 As Currency
 
-'The last POI ("point of interest") passed to this class.  When a marching ant selection outline is active, it operates on
-' a timer, sending us redraw requests every (n) ms.  Rather than ask *it* to remember any active POIs (e.g. interactive bits
-' on the active canvas that need to be drawn differently), we cache the last POI we received and automatically render it on
-' marching-ant timer-initiated redraws.
+'The last POI ("point of interest") passed to this class.  When a marching ant selection outline is active,
+' it operates on a timer, sending us redraw requests every (n) ms.  Rather than ask *it* to remember any
+' active POIs (e.g. interactive bits on the active canvas that need to be drawn differently), we cache the
+' last POI we received and automatically render it on marching-ant timer-initiated redraws.
 Private m_LastPOI As PD_PointOfInterest
 
 'The viewport engine supports a number of optional parameters.  Rather than exponentially increase the parameter list
@@ -86,13 +91,14 @@ Public Function GetDefaultParamObject() As PD_ViewportParams
     GetDefaultParamObject.ptrToAlternateScratch = 0&
 End Function
 
-'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
-' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
-' very fast, and should be used whenever full compositing is unnecessary.
+'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited
+' canvas image to the destination pdCanvas object, and apply any final UI elements as well - control nodes,
+' custom cursors, etc.  This step is very fast, and should be used whenever full compositing is unnecessary.
 '
-'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied, it will forward this to any
-' UI functions that accept POI identifiers.  (Because the viewport is agnostic to underlying UI complexities, by design, it is up to
-' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
+'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied,
+' it will forward this to any UI functions that accept POI identifiers.  (Because the viewport is agnostic
+' to underlying UI complexities, by design, it is up to the caller to optimize POI-based requests,
+' e.g. not forwarding them unless the POI has changed, etc.)
 Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal ptrToViewportParams As Long = 0, Optional ByVal fullPipelineCall As Boolean = False)
     
     'If an outside function has invoked this pipeline stage directly, we need to make sure we're even allowed to render
@@ -125,11 +131,12 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'Lastly, do any tool-specific rendering directly onto the canvas itself.
             
-            'The layer move/size tool provides a number of rendering options specific to that tool
+            'Various tools do their own custom UI rendering atop the canvas
             If (g_CurrentTool = NAV_MOVE) Then
-                If Tools_Move.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
-                If Tools_Move.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
+                Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI
+                
+            ElseIf (g_CurrentTool = NAV_ZOOM) Then
+                Tools_Zoom.DrawCanvasUI dstCanvas, srcImage
             
             ElseIf (g_CurrentTool = COLOR_PICKER) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_ColorPicker.RenderColorPickerCursor dstCanvas
@@ -145,13 +152,8 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = TEXT_BASIC) Or (g_CurrentTool = TEXT_ADVANCED) Then
+                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI
                 
-                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
-                    Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                    Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
-                    Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
-                End If
-                    
             'Pencil and brush tools use the brush engine to paint a custom brush outline at the current mouse position
             ElseIf (g_CurrentTool = PAINT_PENCIL) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Pencil.RenderBrushOutline dstCanvas
@@ -479,7 +481,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     'Some conditions (e.g. program is shutting down) prevent viewport rendering
     If ViewportRenderingAllowed(srcImage, dstCanvas) Then
-    
+        
         'If no images are loaded, render a placeholder and exit.
         If (Not PDImages.IsImageNonNull()) Then
             FormMain.MainCanvas(0).ClearCanvas
@@ -536,7 +538,9 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             End With
             
             'Before querying the canvas object for sizes, make sure scroll bars are visible.
-            ' (As of v7.0, viewport scrollbars are *always* visible - this simplifies things a bit.)
+            ' (As of v7.0, viewport scrollbars are *always* visible - this simplifies things a bit
+            ' vs previous versions, where we constantly toggled visibility based upon reaching the
+            ' edge of the canvas.)
             FormMain.MainCanvas(0).SetScrollVisibility pdo_Both, True
             
             'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is
@@ -738,7 +742,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         
         End If
         
-    'If viewport rendering is disallowed, attempt to render a placeholder image before exiting
+    'If viewport rendering is disallowed, attempt to render a placeholder UI before exiting
     Else
         
         'Because dstCanvas may not yet exist, forcibly invoke the default canvas
@@ -754,9 +758,9 @@ ViewportPipeline_Stage1_Error:
     
 End Sub
 
-'Before executing a pipeline step, this function needs to be called to see if viewport rendering is even allowed.  (If the current
-' viewport stage was directly invoked by a *previous* pipeline step, this check can be skipped, as it's assumed the parent already
-' handled it.)
+'Before executing a pipeline step, this function needs to be called to see if viewport rendering is even allowed.
+' (If the current viewport stage was directly invoked by a *previous* pipeline step, this check can be skipped,
+' as it's assumed the parent already handled it.)
 Private Function ViewportRenderingAllowed(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas) As Boolean
     
     'First, see if viewport rendering has been forcibly disabled.
@@ -800,6 +804,22 @@ Public Sub EraseViewportBuffers()
         m_FrontBuffer.EraseDIB
         Set m_FrontBuffer = Nothing
     End If
+End Sub
+
+'After interacting with this module, you can call this sub to relay any new viewport changes
+' to UI elements across the program.  For example, if zoom has been changed, everything from
+' on-canvas scrollbars to the top-right navigator window needs to be notified of the change.
+' Rather than worry about who needs to be notified of what, just call this sub and it will
+' take care of the rest.
+Public Sub NotifyEveryoneOfViewportChanges()
+    
+    'Let the right-hand toolbar know that the viewport has changed (this will relay changes
+    ' to child windows, like the navigator)
+    toolbar_Layers.NotifyViewportChange
+    
+    'Notify the canvas itself of any changes
+    FormMain.MainCanvas(0).NotifyViewportChanges
+    
 End Sub
 
 'Report the current viewport performance profiling data to pdDebug.  Useless in non-debug builds.

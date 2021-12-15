@@ -74,7 +74,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   4
+      Index           =   5
       Left            =   120
       TabIndex        =   4
       Top             =   4440
@@ -84,7 +84,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   5
+      Index           =   6
       Left            =   840
       TabIndex        =   5
       Top             =   4440
@@ -94,7 +94,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   6
+      Index           =   7
       Left            =   1560
       TabIndex        =   6
       Top             =   4440
@@ -104,7 +104,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   7
+      Index           =   8
       Left            =   120
       TabIndex        =   7
       Top             =   5040
@@ -114,7 +114,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   8
+      Index           =   9
       Left            =   840
       TabIndex        =   8
       Top             =   5040
@@ -212,7 +212,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   9
+      Index           =   10
       Left            =   120
       TabIndex        =   17
       Top             =   6000
@@ -222,7 +222,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   10
+      Index           =   11
       Left            =   840
       TabIndex        =   18
       Top             =   6000
@@ -232,7 +232,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   11
+      Index           =   12
       Left            =   120
       TabIndex        =   19
       Top             =   7080
@@ -297,7 +297,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   12
+      Index           =   13
       Left            =   840
       TabIndex        =   0
       Top             =   7080
@@ -319,7 +319,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   13
+      Index           =   14
       Left            =   1560
       TabIndex        =   26
       Top             =   7080
@@ -329,7 +329,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   14
+      Index           =   15
       Left            =   120
       TabIndex        =   27
       Top             =   7680
@@ -349,7 +349,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   15
+      Index           =   16
       Left            =   840
       TabIndex        =   29
       Top             =   7680
@@ -359,10 +359,20 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   16
+      Index           =   17
       Left            =   1560
       TabIndex        =   30
       Top             =   7680
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   4
+      Left            =   840
+      TabIndex        =   31
+      Top             =   3480
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -1092,8 +1102,8 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     
         Select Case g_CurrentTool
             
-            'Hand tool is currently the only tool without additional options
-            Case NAV_DRAG
+            'Hand and zoom tools do not provide additional options
+            Case NAV_DRAG, NAV_ZOOM
                 Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
@@ -1281,6 +1291,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "nd_hand", Nothing, buttonImageSize, buttonImageSize
+    cmdTools(NAV_ZOOM).AssignImage "zoom_default", Nothing, buttonImageSize, buttonImageSize
     cmdTools(NAV_MOVE).AssignImage "nd_move", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
     cmdTools(COLOR_PICKER).AssignImage "color_picker", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
     cmdTools(ND_MEASURE).AssignImage "nd_measure", Nothing, buttonImageSize, buttonImageSize, resampleAlgorithm:=GP_IM_NearestNeighbor
@@ -1339,6 +1350,8 @@ Public Sub UpdateAgainstCurrentTheme()
     Dim shortcutText As String
     shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "H")
     cmdTools(NAV_DRAG).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Zoom") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "Z")
+    cmdTools(NAV_ZOOM).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Move and resize image layers") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "M")
     cmdTools(NAV_MOVE).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Select colors from the image") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
@@ -1384,6 +1397,9 @@ Public Sub UpdateAgainstCurrentTheme()
     
     m_ToolNames.AddString g_Language.TranslateMessage("Hand tool")
     m_ToolActions.AddString "tool_hand"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Zoom tool")
+    m_ToolActions.AddString "tool_zoom"
     
     m_ToolNames.AddString g_Language.TranslateMessage("Move tool")
     m_ToolActions.AddString "tool_move"

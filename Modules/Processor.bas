@@ -1465,7 +1465,7 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
             
             'Because Undo/Redo can involve image size changes (e.g. "Undo Resize Image"), we need to send a forcible
             ' UI notification to ensure that elements like rulers are correctly updated.
-            FormMain.MainCanvas(0).RelayViewportChanges
+            Viewport.NotifyEveryoneOfViewportChanges
             
             undoOrRedoUsed = True
             
@@ -1476,7 +1476,7 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
         If FormMain.MnuEdit(1).Enabled Then
             PDImages.GetActiveImage.UndoManager.RestoreRedoData
             Interface.NotifyImageChanged PDImages.GetActiveImageID()
-            FormMain.MainCanvas(0).RelayViewportChanges
+            Viewport.NotifyEveryoneOfViewportChanges
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
@@ -1487,7 +1487,7 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
         Else
             PDImages.GetActiveImage.UndoManager.MoveToSpecificUndoPoint_XML processParameters
             Interface.NotifyImageChanged PDImages.GetActiveImageID()
-            FormMain.MainCanvas(0).RelayViewportChanges
+            Viewport.NotifyEveryoneOfViewportChanges
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True

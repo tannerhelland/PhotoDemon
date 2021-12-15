@@ -48,7 +48,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         If (Not suppressRendering) Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
-        FormMain.MainCanvas(0).RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
     
     End If
 
@@ -72,7 +72,7 @@ Public Sub FitOnScreen()
         Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
-        FormMain.MainCanvas(0).RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
         
     End If
     
@@ -97,7 +97,7 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
         If (Not suspendImmediateRedraw) Then Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
-        FormMain.MainCanvas(0).RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
         
     End If
         

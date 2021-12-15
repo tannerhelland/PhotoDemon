@@ -350,7 +350,7 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
-        FormMain.MainCanvas(0).RelayViewportChanges
+        Viewport.NotifyEveryoneOfViewportChanges
         
     End If
 

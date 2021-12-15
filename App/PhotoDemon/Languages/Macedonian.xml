@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.378</langversion>
+<langversion>1.0.379</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -11536,6 +11536,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>Zoom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move and resize image layers</original>
 <translation>Се движите и да ја промените големината на сликата слоеви</translation>
 </phrase>
@@ -11616,6 +11621,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>Zoom tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move tool</original>
 <translation></translation>
 </phrase>
@@ -11690,7 +11700,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 98 phrases. 39 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13653,10 +13663,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5346 phrases. -->
-<!-- 2762 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 11758 total words. -->
+<!-- As of this build, PhotoDemon contains 5350 phrases. -->
+<!-- 2764 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 11761 total words. -->
 
 </pdData>
