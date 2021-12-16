@@ -16,7 +16,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ## Overview
 
-![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
+![Screenshot](https://photodemon.org/media/PD_9.0_screenshot.jpg)
 
 PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
