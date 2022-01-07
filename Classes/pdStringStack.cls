@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "String Stack" Class
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 05/February/15
 'Last updated: 20/July/21
 'Last update: add a fast "RemoveString" function; this isn't actually needed in PD, but in the separate

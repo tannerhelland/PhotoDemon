@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_WebP"
 '***************************************************************************
 'WebP Library Interface
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 22/September/21
 'Last updated: 23/September/21
 'Last update: wrap up initial build

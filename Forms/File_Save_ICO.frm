@@ -1007,7 +1007,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Windows Icon (ICO) Export Dialog
-'Copyright 2020-2021 by Tanner Helland
+'Copyright 2020-2022 by Tanner Helland
 'Created: 11/May/20
 'Last updated: 18/May/20
 'Last update: ongoing work on initial build

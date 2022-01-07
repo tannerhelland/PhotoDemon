@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 05/April/20
 'Last update: remove SafeArrayLock/Unlock calls when aliasing arrays; these have complications

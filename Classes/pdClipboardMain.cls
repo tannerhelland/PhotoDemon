@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 23/April/19
 'Last update: replace FreeImage PNG encoder with pdPNG; this produces much faster PNG copies

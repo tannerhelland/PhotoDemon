@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon LCMS (LittleCMS) Color Profile Manager
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 26/May/16
 'Last updated: 09/June/16
 'Last update: add support for linear RGB profiles

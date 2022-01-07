@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Recent Files (MRU) handler for PD macros (Tools > Macros)
-'Copyright 2005-2021 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2022 by Raj Chaudhuri and Tanner Helland
 'Created: 17/February/15
 'Last updated: 15/August/17
 'Last update: implemented support for Unicode menu captions

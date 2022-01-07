@@ -103,7 +103,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 19/February/20
 'Last update: large performance improvements, overhaul UI to properly support theming

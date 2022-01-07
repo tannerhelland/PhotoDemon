@@ -94,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brightness and Contrast Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 2/6/01
 'Last updated: 09/June/16
 'Last update: total overhaul; the old code was stupid and slow, and an option is now provided for a modern

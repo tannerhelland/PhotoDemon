@@ -1,7 +1,7 @@
 Attribute VB_Name = "Actions"
 '***************************************************************************
 'Action Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 07/October/21
 'Last updated: 10/October/21
 'Last update: add new support for recent files and macros (so they can be accessed from the search bar)

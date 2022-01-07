@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn Strip control
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 13/February/17
 'Last updated: 13/February/17
 'Last update: initial build (split off from the original pdButtonStrip control)

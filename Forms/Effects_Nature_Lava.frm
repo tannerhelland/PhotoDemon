@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lava Effect
-'Copyright 2002-2021 by Tanner Helland
+'Copyright 2002-2022 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 09/May/19
 'Last update: fix potential overflow on 32-bpp images with fully transparent regions

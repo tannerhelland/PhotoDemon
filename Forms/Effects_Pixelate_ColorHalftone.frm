@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Halftone Effect Interface
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 01/April/15
 'Last updated: 01/April/15
 'Last update: initial build

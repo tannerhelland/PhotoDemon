@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Uniscribe API Interface
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 19/May/15
 'Last update: migrate everything from a module to a class; there's enough useful code in here that we may want to

@@ -118,7 +118,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Film Noir Effect Interface
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: some time 2013
 'Last updated: 04/October/15
 'Last update: rewrite the old "one-click" filter from scratch, and completely rethink the algorithm while I'm at it.

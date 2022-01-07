@@ -77,7 +77,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Corel/JASC Paintshop Pro (PSP) Export Dialog
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 05/February/21
 'Last updated: 05/February/21
 'Last update: wrap up initial build

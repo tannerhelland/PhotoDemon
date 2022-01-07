@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Effect > Animation > Add background
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 13/November/20
 'Last update: actually implement permanent version of the effect!

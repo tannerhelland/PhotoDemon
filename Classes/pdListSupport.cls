@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box support class
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 18/February/16
 'Last update: continued integration with pdListBoxView

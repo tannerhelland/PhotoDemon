@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 12/December/01
 'Last updated: 23/August/21
 'Last update: finalize work on live previews of current resize options

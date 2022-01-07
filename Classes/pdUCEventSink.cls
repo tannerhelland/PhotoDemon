@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Dummy event sink for PD's user control engine
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 13/October/16
 'Last updated: 13/October/16
 'Last update: initial build

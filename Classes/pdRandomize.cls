@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Random Number Generator
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 23/June/15 (but assembled from bits scattered throughout PD, many from years earlier)
 'Last updated: 07/August/17
 'Last update: add gaussian distribution functions, which use a Box-Muller transform to produce random

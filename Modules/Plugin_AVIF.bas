@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_AVIF"
 '***************************************************************************
 'libavif Interface
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 13/July/21
 'Last updated: 03/August/21
 'Last update: wrap up work on AVIF export

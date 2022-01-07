@@ -1,7 +1,7 @@
 Attribute VB_Name = "SelectionFilters"
 '***************************************************************************
 'Selection Tools: Filters
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 03/September/21
 'Last update: split selection filters into their own module

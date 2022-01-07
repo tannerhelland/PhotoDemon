@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Stream-like I/O Interface
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 05/December/16
 'Last updated: 10/June/19
 'Last update: add new memory-mapped file backing option; this provides large performance boosts when

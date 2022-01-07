@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Resource Manager
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 13/December/16
 'Last updated: 03/October/19
 'Last update: switch to new pdPackage format for performance and memory gains

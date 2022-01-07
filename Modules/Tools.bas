@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 09/November/20
 'Last update: add support for new "lock aspect ratio" checkbox on the Move/Size toolpanel

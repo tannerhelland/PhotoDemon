@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Fill"
 '***************************************************************************
 'PhotoDemon Bucket Fill Manager
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 30/August/17
 'Last updated: 31/December/18
 'Last update: rework rendering code to make live previews feasible in the (near?) future

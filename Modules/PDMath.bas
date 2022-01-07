@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMath"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 12/January/17
 'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.

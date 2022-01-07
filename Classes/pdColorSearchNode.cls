@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Self-pruning Octree-based Color Lookup Class (Node only)
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 14/January/17
 'Last updated: 15/January/17
 'Last update: implement self-pruning behavior, by only passing colors down branches as absolutely necessary.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_zstd"
 '***************************************************************************
 'Zstd Compression Library Interface
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 01/December/16
 'Last updated: 08/March/19
 'Last update: switch to callconv-agnostic implementation (so we can use "official" binaries)

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Web"
 '***************************************************************************
 'Internet helper functions
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 12/July/17
 'Last update: reorganize the Files module to place web-related stuff here.

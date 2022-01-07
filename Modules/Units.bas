@@ -1,7 +1,7 @@
 Attribute VB_Name = "Units"
 '***************************************************************************
 'Unit Conversion Functions
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 10/February/14
 'Last updated: 30/December/14
 'Last update: harden code against potential divide-by-zero errors
@@ -27,11 +27,11 @@ Public Enum PD_MeasurementUnit
     mu_Millimeters = 4
     mu_Points = 5
     mu_Picas = 6
-    [mu_Max] = 6
+    [MU_MAX] = 6
 End Enum
 
 #If False Then
-    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4, mu_Points = 5, mu_Picas = 6, mu_Max = 6
+    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4, mu_Points = 5, mu_Picas = 6, MU_MAX = 6
 #End If
 
 Public Enum PD_ResolutionUnit
@@ -182,5 +182,5 @@ Public Function GetNameOfUnit(ByVal srcUnit As PD_MeasurementUnit, Optional ByVa
 End Function
 
 Public Function GetNumOfAvailableUnits() As Long
-    GetNumOfAvailableUnits = mu_Max
+    GetNumOfAvailableUnits = MU_MAX
 End Function

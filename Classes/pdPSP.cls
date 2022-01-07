@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
-'Copyright 2020-2021 by Tanner Helland
+'Copyright 2020-2022 by Tanner Helland
 'Created: 30/December/20
 'Last updated: 04/February/21
 'Last update: get ICC profile embedding working when exporting

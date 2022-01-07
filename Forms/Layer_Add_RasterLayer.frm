@@ -168,7 +168,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'New Layer dialog
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 08/June/14
 'Last updated: 09/July/14
 'Last update: added option for position and auto-selecting new layer

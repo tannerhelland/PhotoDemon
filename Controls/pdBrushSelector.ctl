@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Brush Selector custom control
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 30/June/15
 'Last updated: 03/December/20
 'Last update: improve UI rendering

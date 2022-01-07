@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Stylize"
 '***************************************************************************
 'Stylize Filter Collection
-'Copyright 2002-2021 by Tanner Helland
+'Copyright 2002-2022 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 19/October/17
 'Last update: add upgraded "Antique" filter effect

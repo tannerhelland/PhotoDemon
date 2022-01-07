@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_ColorPicker"
 '***************************************************************************
 'Color Picker Tool Manager
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 25/September/17
 'Last updated: 27/September/17
 'Last update: wrap up initial build

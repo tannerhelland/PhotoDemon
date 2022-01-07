@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon ICO (Icon) Container and Import/Export engine
-'Copyright 2020-2021 by Tanner Helland
+'Copyright 2020-2022 by Tanner Helland
 'Created: 07/May/20
 'Last updated: 16/January/21
 'Last update: fix layer name generation on frames with a null bit-depth (we can usually extract

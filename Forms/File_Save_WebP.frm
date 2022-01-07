@@ -117,7 +117,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Google WebP Export Dialog
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 25/September/21
 'Last update: overhaul UI to match new approach using libwebp directly (instead of FreeImage)

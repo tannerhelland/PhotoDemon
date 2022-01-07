@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon spritesheet cache
-'Copyright 2018-2021 by Tanner Helland
+'Copyright 2018-2022 by Tanner Helland
 'Created: 13/July/18
 'Last updated: 26/August/20
 'Last update: refactor cache to allow for multiple sheets per size; sheet limits are now

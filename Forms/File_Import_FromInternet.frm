@@ -77,7 +77,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Internet Interface (for importing images directly from a URL)
-'Copyright 2011-2021 by Tanner Helland
+'Copyright 2011-2022 by Tanner Helland
 'Created: 08/June/12
 'Last updated: 19/July/21
 'Last update: move download code elsewhere, so it can be used for non-image purposes

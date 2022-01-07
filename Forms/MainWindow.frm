@@ -1846,7 +1846,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'PhotoDemon is Copyright 1999-2021 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2022 by Tanner Helland, tannerhelland.com
 '
 'PhotoDemon's INSTALL file provides important information for developers:
 ' https://github.com/tannerhelland/PhotoDemon/blob/master/INSTALL.md
@@ -1858,7 +1858,7 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 'Primary PhotoDemon Interface
-'Copyright 2002-2021 by Tanner Helland
+'Copyright 2002-2022 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 06/October/21
 'Last update: remove all hotkey code - it's now handled elsewhere!

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Filter
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 13/December/19
 'Last update: final round of minor perf and quality improvements to the recursive BF algorithm
@@ -677,22 +677,22 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     Dim k As Long, mapFactorBCache As Single
     k = 0
     
-    Dim iDx As Long
+    Dim idx As Long
     For x = 0 To imgWidth - 1
         
         'Original code uses a per-channel loop here; we unroll it manually
         mapFactorBCache = 1! / map_factor_b(h1 * imgWidth + x)
-        iDx = (h1 * imgWidth + x) * channels
-        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        idx = (h1 * imgWidth + x) * channels
+        img_out_f(idx) = 0.5! * (img_out_f(idx) + slice_factor_b(k)) * mapFactorBCache
         k = k + 1
-        iDx = (h1 * imgWidth + x) * channels + 1
-        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        idx = (h1 * imgWidth + x) * channels + 1
+        img_out_f(idx) = 0.5! * (img_out_f(idx) + slice_factor_b(k)) * mapFactorBCache
         k = k + 1
-        iDx = (h1 * imgWidth + x) * channels + 2
-        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        idx = (h1 * imgWidth + x) * channels + 2
+        img_out_f(idx) = 0.5! * (img_out_f(idx) + slice_factor_b(k)) * mapFactorBCache
         k = k + 1
-        iDx = (h1 * imgWidth + x) * channels + 3
-        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        idx = (h1 * imgWidth + x) * channels + 3
+        img_out_f(idx) = 0.5! * (img_out_f(idx) + slice_factor_b(k)) * mapFactorBCache
         k = k + 1
         'img_out_f[idx] = 0.5f*(img_out_f[idx] + ypy[k++]) / map_factor_b[h1 * width + x];
         

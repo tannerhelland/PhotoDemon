@@ -97,7 +97,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Photo Filter Application Tool
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 06/June/13
 'Last updated: 27/October/20
 'Last update: greatly simplify tool to bring it in line with Photoshop

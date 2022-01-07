@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 07/January/21
 'Last update: PSP (PaintShop Pro) import support is pretty much complete!

@@ -103,7 +103,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 06/June/16
 'Last update: total overhaul to improve performance, quality, and feature set.  FreeImage is no longer involved.

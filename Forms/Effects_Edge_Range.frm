@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Range filter edge detection tool
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 23/November/15
 'Last updated: 25/June/20
 'Last update: as radius increases, use increasingly strong wavelet approximation for

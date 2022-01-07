@@ -964,7 +964,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection Tool Panel
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 06/December/21
 'Last update: break size/position/aspect-ratio settings out into their own dedicated controls,

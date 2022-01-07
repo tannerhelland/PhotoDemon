@@ -1,7 +1,7 @@
 Attribute VB_Name = "Resampling"
 '***************************************************************************
 'Image Resampling engine
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 16/August/21
 'Last updated: 23/August/21
 'Last update: new integer-based resampler (ResampleImageI), which provides a great performance boost over the

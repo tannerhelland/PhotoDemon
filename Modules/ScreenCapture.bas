@@ -1,7 +1,7 @@
 Attribute VB_Name = "ScreenCapture"
 '***************************************************************************
 'Screen Capture Interface
-'Copyright 1999-2021 by Tanner Helland
+'Copyright 1999-2022 by Tanner Helland
 'Created: 12/June/99
 'Last updated: 10/November/17
 'Last update: workarounds for Win 10 PrintWindow fails; some windows may be recoverable with a manual

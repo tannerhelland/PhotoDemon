@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer Listbox (inner portion only)
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 16/August/20
 'Last update: whole bunch of minor UI and UX improvements; see https://github.com/tannerhelland/PhotoDemon/issues/311

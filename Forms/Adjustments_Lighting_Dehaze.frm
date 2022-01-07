@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Dehazing Tool
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 08/September/21
 'Last updated: 09/September/21
 'Last update: wrap up initial build
@@ -261,7 +261,7 @@ Public Sub ApplyDehaze(ByVal effectParams As String, Optional ByVal toPreview As
     'With atmospheric value calculated, we can proceed with dehazing.
     Dim r As Long, g As Long, b As Long
     Dim t As Long, tf As Double, invTf As Double
-    Dim dX As Double, aX As Double  'aX is a correction factor called "alpha", but *not* related to the alpha channel
+    Dim dx As Double, aX As Double  'aX is a correction factor called "alpha", but *not* related to the alpha channel
     
     'Progress bar updates are only provided on non-preview applications
     Dim progBarCheck As Long
@@ -306,11 +306,11 @@ Public Sub ApplyDehaze(ByVal effectParams As String, Optional ByVal toPreview As
         
         'Calculate dX, or the relationship between the minimum of the current pixel and the atmospheric light.
         ' (This is used to mitigate darkening of pixels that experience severe haze correction.)
-        dX = Abs(tf - aMin) * 255#
+        dx = Abs(tf - aMin) * 255#
         
         'Use dX to determine correction factor alpha for this pixel
-        If (dX > 0#) Then
-            aX = Sqr(threshold / dX)
+        If (dx > 0#) Then
+            aX = Sqr(threshold / dx)
             If (mu > aX) Then aX = mu       'mu is used to establish a "safe" upper bound on correction
         Else
             aX = 1#

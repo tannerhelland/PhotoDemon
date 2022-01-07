@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 10/October/21
 'Last update: remove old CreateFromStdPicture function; it's only used one place (Drag/Drop from old

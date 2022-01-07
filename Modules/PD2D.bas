@@ -1,7 +1,7 @@
 Attribute VB_Name = "PD2D"
 '***************************************************************************
 'PhotoDemon 2D Painting class (interface for using pd2DBrush and pd2DPen on pd2DSurface objects)
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 03/July/17
 'Last update: kill off pd2DPainter class; migrate all commands to this module, instead

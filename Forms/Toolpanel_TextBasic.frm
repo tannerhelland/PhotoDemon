@@ -306,7 +306,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Basic Text Tool Panel
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 27/November/21
 'Last update: migrate UI to new flyout-driven design

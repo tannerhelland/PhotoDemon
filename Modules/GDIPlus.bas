@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 12/August/19
 'Last update: extend multipage loader to support animated GIF import, including relevant animation metadata

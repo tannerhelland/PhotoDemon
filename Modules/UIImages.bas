@@ -1,7 +1,7 @@
 Attribute VB_Name = "UIImages"
 '***************************************************************************
 'PhotoDemon Central UI image cache
-'Copyright 2018-2021 by Tanner Helland
+'Copyright 2018-2022 by Tanner Helland
 'Created: 13/July/18
 'Last updated: 01/June/21
 'Last update: rewrite against pdSpriteSheet, to reuse all the great optimization work I did there

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright 2006-2021 by Tanner Helland
+'Copyright 2006-2022 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 24/October/21
 'Last update: new Suspend option, for reducing memory usage when a pdImage isn't active

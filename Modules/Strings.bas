@@ -1,7 +1,7 @@
 Attribute VB_Name = "Strings"
 '***************************************************************************
 'Additional string support functions
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 13/June/17
 'Last updated: 23/October/20
 'Last update: fix a bug in Boyer-Moore string matcher if ANSI compare is requested on a string that contains non-ANSI chars
@@ -455,12 +455,12 @@ End Function
 '
 'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
 ' StringFromUTF16_FixedLen() function, below.
-Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal MaxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
+Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
     
     'Check string length
     Dim strLength As Long
     If useMaxLengthAsStrLength Then
-        strLength = MaxLength
+        strLength = maxLength
     Else
         If srcStringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
     End If
@@ -472,7 +472,7 @@ Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcSt
         
         'Make sure the string's length is valid.
         Dim maxAllowedLength As Long
-        If (MaxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = MaxLength
+        If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
         If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
         
         'Create the target string and copy the bytes over

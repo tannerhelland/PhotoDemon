@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Container and Parser
-'Copyright 2018-2021 by Tanner Helland
+'Copyright 2018-2022 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 13/October/21
 'Last update: fix rare edge-case bug when optimizing transparency in back-to-back APNG frames

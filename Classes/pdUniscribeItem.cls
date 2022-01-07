@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Uniscribe Item Container
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 20/May/15
 'Last updated: 20/May/15
 'Last update: start migrating run-specific information into this class, to make it easier to handle complicated text layouts.

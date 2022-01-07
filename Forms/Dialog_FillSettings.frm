@@ -240,7 +240,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brush Selection Dialog
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 16/June/16
 'Last update: overhaul UI to make better use of available space

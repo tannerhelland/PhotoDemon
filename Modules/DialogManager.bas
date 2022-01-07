@@ -1,7 +1,7 @@
 Attribute VB_Name = "Dialogs"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 12/February/17
 'Last update: add wrapper for "first-run" dialog

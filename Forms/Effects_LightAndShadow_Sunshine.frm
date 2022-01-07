@@ -223,7 +223,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sunshine Effect Form
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 31/July/17
 'Created: 01/August/17
 'Last update: finish work on new implementation

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 07/October/21
 'Last update: move output message callback here, and rewrite it to use internal PD objects for better perf
@@ -40,7 +40,7 @@ Private Type BITMAPINFO
     bmiColors As Long
 End Type
 
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'A single FreeImage declare is used here, to supply a callback for errors and other output messages
 Private Declare Sub FreeImage_SetOutputMessage Lib "FreeImage" Alias "_FreeImage_SetOutputMessageStdCall@4" (ByVal pCallback As Long)

@@ -65,7 +65,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 24/August/13
 'Last update: added command bar

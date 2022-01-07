@@ -46,6 +46,7 @@ Begin VB.UserControl pdMetadataExport
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
       Height          =   375
       Left            =   120
+      TabIndex        =   3
       Top             =   540
       Width           =   4935
       _ExtentX        =   8705
@@ -105,7 +106,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Metadata Export control group
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 18/March/16
 'Last updated: 13/June/16
 'Last update: minor code clean-up

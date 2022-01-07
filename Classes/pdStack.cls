@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic (int) Stack
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 05/February/15
 'Last updated: 22/March/18
 'Last update: split off from pdStringStack, because stuffing ints into strings is idiotic

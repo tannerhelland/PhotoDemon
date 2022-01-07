@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Clone"
 '***************************************************************************
 'Clone stamp tool interface
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 16/September/19
 'Last updated: 29/October/19
 'Last update: add support for cloning from layers with active non-destructive transforms

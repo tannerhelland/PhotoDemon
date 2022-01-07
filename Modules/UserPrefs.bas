@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserPrefs"
 '***************************************************************************
 'PhotoDemon User Preferences Manager
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 27/October/20
 'Last update: add a new 3DLUTs folder to the default /Data collection

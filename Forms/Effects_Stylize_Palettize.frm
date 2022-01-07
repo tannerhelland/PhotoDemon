@@ -253,7 +253,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Palettize" (e.g. reduce image color count) Dialog
-'Copyright 2000-2021 by Tanner Helland
+'Copyright 2000-2022 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 21/September/21
 'Last update: overhaul UI to support new neural-network quantization features

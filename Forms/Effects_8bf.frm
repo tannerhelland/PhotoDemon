@@ -78,6 +78,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   495
          Left            =   5280
+         TabIndex        =   8
          Top             =   4560
          Visible         =   0   'False
          Width           =   4695
@@ -129,6 +130,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdHyperlink hypPlugins 
          Height          =   375
          Left            =   0
+         TabIndex        =   9
          Top             =   600
          Width           =   10095
          _ExtentX        =   17806
@@ -209,7 +211,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '8bf Plugin Interface Dialog
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 08/February/21
 'Last updated: 10/February/21
 'Last update: flesh out user-defined folder(s) feature

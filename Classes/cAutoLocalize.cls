@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Localization Helper
-'Copright 2013-2021 by Tanner Helland.  Portions of this code were contributed to PD in 2013 by Frank Donckers; those elements are Copright 2013 Frank Donckers.  (Frank's original source is no longer online, but an approximation can be found early in PD's commit history - https://github.com/tannerhelland/PhotoDemon/commit/ec16846c3c765bd9ffa3810f719f916c5dbb6078#diff-8df7a363ed5ef64e4022372061e82504 )
+'Copright 2013-2022 by Tanner Helland.  Portions of this code were contributed to PD in 2013 by Frank Donckers; those elements are Copright 2013 Frank Donckers.  (Frank's original source is no longer online, but an approximation can be found early in PD's commit history - https://github.com/tannerhelland/PhotoDemon/commit/ec16846c3c765bd9ffa3810f719f916c5dbb6078#diff-8df7a363ed5ef64e4022372061e82504 )
 'Created: 19/February/13
 'Last updated: 02/September/20
 'Last update: add (quick and dirty) support for DeepL's free online service

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 10/September/21
 'Last update: refactor to allow text layers to remain editable after certain crop operations

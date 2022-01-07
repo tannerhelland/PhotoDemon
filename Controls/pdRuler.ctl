@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Viewport Ruler UI element
-'Copyright 2018-2021 by Tanner Helland
+'Copyright 2018-2022 by Tanner Helland
 'Created: 03/April/18
 'Last updated: 05/April/18
 'Last update: wrap up initial build

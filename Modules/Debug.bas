@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDDebug"
 '***************************************************************************
 'PhotoDemon Custom Debug Logger
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 17/July/14
 'Last updated: 08/March/18
 'Last update: rework initialization to allow us to arbitrarily start/suspend the debugger during a given session

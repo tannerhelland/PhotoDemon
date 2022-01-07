@@ -91,7 +91,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Homebrew Message Box Replacement
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 15/August/17
 'Last updated: 17/August/17
 'Last update: wrap up initial build

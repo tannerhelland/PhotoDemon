@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 05/December/21
 'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels

@@ -1,12 +1,12 @@
 Attribute VB_Name = "Drawing2D"
 '***************************************************************************
 'High-Performance 2D Rendering Interface
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 26/February/20
 'Last update: new helper functions for safer XML serialization of enums
 '
-'In 2015-2021, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton
+'In 2015-2019, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton
 ' of 2D rendering tasks, so it was finally time to migrate PD's hoary old GDI+ interface to a more
 ' modern solution.
 '

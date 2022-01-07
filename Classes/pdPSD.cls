@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 13/January/19
 'Last updated: 04/August/20
 'Last update: add support for layer groups!  PhotoDemon loads these as blank 1x1 "dummy" layers, but that's

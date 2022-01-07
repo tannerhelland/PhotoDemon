@@ -76,6 +76,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.pdHyperlink hypPluginFolder 
          Height          =   300
          Left            =   1800
+         TabIndex        =   5
          Top             =   0
          Width           =   5895
          _ExtentX        =   10398
@@ -153,6 +154,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.pdHyperlink hypHomepage 
          Height          =   270
          Left            =   1680
+         TabIndex        =   6
          Top             =   600
          Width           =   5850
          _ExtentX        =   10319
@@ -165,6 +167,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.pdHyperlink hypLicense 
          Height          =   270
          Left            =   1680
+         TabIndex        =   7
          Top             =   1080
          Width           =   5895
          _ExtentX        =   10398
@@ -269,7 +272,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 30/October/21
 'Last update: allow libraries to be missing but OK, like libavif (which is downloaded on-demand)

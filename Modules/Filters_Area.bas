@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 04/December/19
 'Last update: move recursive bilateral filter into a dedicated class (pdFxBilateral)

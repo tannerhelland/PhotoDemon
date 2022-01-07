@@ -360,6 +360,7 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdHyperlink lblCollection 
          Height          =   375
          Left            =   240
+         TabIndex        =   27
          Top             =   6540
          Width           =   12135
          _ExtentX        =   21405
@@ -499,7 +500,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Editor Dialog
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
 'Last updated: 03/March/19
 'Last update: new "collection" panel to simplify the process of reusing gradients

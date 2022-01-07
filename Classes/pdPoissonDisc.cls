@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Poisson Disc Sampler
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 14/November/19
 'Last updated: 14/November/19
 'Last update: initial build

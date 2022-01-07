@@ -1,7 +1,7 @@
 Attribute VB_Name = "Layers"
 '***************************************************************************
 'Layer Interface
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 04/July/14
 'Last update: added EraseLayerByIndex() function

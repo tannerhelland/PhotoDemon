@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median Filter Tool
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 08/Feb/13
 'Last updated: 23/June/20
 'Last update: as median radius increases, use an increasingly strong wavelet approximation.

@@ -173,7 +173,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated WebP export dialog
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 28/October/21
 'Last update: prep dialog for compatibility with batch processor

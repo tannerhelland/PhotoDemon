@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Path Wrapper
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
 'Last updated: 11/January/21
 'Last update: new helper function for adding a list of bezier curve + control points

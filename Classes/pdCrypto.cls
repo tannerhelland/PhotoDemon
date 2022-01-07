@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Cryptography (and Hash) Helper Class
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 19/August/16
 'Last updated: 09/September/17
 'Last update: minor code-cleanup, including removal of legacy functions

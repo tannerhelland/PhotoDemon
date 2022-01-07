@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Glyph Collection Interface
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 27/April/15
 'Last updated: 19/May/15
 'Last update: overhaul of the Uniscribe interface to use a class system (m_Uniscribe is the relevant instance)

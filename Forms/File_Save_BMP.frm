@@ -171,7 +171,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bitmap export dialog
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 11/August/17
 'Last update: dynamically reflow visible controls as panels are changed, and hide settings specific to

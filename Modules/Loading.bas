@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'General-purpose image and data import interface
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 18/June/21
 'Last update: expand the internal QuickLoadToDIB function to cover all the esoteric formats PD now supports via internal decoders

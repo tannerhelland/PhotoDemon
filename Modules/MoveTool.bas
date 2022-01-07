@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Move"
 '***************************************************************************
 'PhotoDemon Move/Size Tool Manager
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 24/May/14
 'Last updated: 09/April/18
 'Last update: migrate move tool bits out of pdCanvas and into a dedicated module

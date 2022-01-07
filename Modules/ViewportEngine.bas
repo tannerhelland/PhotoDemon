@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 29/November/16
 'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)

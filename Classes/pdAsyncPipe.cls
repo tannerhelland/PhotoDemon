@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Async ExifTool Interface
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 24/October/17
 'Last updated: 25/October/17
 'Last update: migrate code from hacked-up UserControl to dedicated class; large-scale code clean-up and

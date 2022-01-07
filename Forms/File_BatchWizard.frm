@@ -708,7 +708,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright 2007-2021 by Tanner Helland
+'Copyright 2007-2022 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 28/October/21
 'Last update: add support for auto-detecting (and exporting correctly) animated images

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font Collection Manager
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 12/May/15
 'Last updated: 29/October/15
 'Last update: allow the caller to request their own font matching mode.  Some font caches in the program use a uniform font size,

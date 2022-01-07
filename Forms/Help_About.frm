@@ -57,6 +57,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   1
          Left            =   240
+         TabIndex        =   4
          Top             =   1920
          Width           =   9300
          _ExtentX        =   16404
@@ -101,6 +102,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   2
          Left            =   240
+         TabIndex        =   5
          Top             =   2400
          Width           =   9300
          _ExtentX        =   16404
@@ -112,6 +114,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   0
          Left            =   240
+         TabIndex        =   6
          Top             =   1440
          Width           =   9300
          _ExtentX        =   16404
@@ -123,6 +126,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   3
          Left            =   240
+         TabIndex        =   7
          Top             =   2880
          Width           =   9300
          _ExtentX        =   16404
@@ -134,6 +138,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   4
          Left            =   240
+         TabIndex        =   8
          Top             =   3360
          Width           =   9300
          _ExtentX        =   16404
@@ -145,6 +150,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   5
          Left            =   240
+         TabIndex        =   9
          Top             =   3840
          Width           =   9300
          _ExtentX        =   16404
@@ -199,7 +205,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon About Dialog
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 14/June/17
 'Last update: update contributor list

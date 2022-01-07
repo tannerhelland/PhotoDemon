@@ -166,6 +166,7 @@ Begin VB.Form FormMetadata
       Begin PhotoDemon.pdHyperlink hypExiftool 
          Height          =   255
          Left            =   0
+         TabIndex        =   16
          Top             =   5700
          Width           =   6015
          _ExtentX        =   10610
@@ -311,7 +312,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Browser
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 27/May/13
 'Last updated: 23/January/21
 'Last update: fix display of some esoteric list-type values

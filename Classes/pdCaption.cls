@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Caption" support class for user controls
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 27/August/15
 'Last updated: 28/October/15
 'Last update: rewrite the class to use a program-level cache of requested caption sizes.  This spares us from needing to

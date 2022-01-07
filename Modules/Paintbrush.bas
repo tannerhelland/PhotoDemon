@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Paint"
 '***************************************************************************
 'Paintbrush tool interface
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 14/September/19
 'Last update: strip out pencil tool bits and heavily refactor in preparation for new paint tools

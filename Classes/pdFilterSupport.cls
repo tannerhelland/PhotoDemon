@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 25/August/21
 'Last update: tweak non-interpolated output by half-pixel offset to ensure alignment with interpolated results

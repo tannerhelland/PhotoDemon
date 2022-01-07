@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon primary canvas status bar control
-'Copyright 2002-2021 by Tanner Helland
+'Copyright 2002-2022 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 07/December/21
 'Last update: new code to display selection size in status bar, even while editing a selection

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Animation"
 '***************************************************************************
 'Animation Functions
-'Copyright 2019-2021 by Tanner Helland
+'Copyright 2019-2022 by Tanner Helland
 'Created: 20/August/19
 'Last updated: 30/August/20
 'Last update: new function for (reliably?) replacing an existing layer-name-frame-time with a new value

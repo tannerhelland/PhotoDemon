@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'AVIF (AV1) Export Dialog
-'Copyright 2021-2021 by Tanner Helland
+'Copyright 2021-2022 by Tanner Helland
 'Created: 28/July/21
 'Last updated: 03/August/21
 'Last update: wrap up initial build

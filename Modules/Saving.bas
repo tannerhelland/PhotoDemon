@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 25/January/21
 'Last update: add support for PSP (Paintshop Pro) export

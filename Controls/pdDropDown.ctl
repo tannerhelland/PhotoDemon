@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Drop Down control 2.0
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 24/February/16
 'Last updated: 01/November/21
 'Last update: new option for "compact" layout, to buy us more space in toolboxes

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Legacy"
 '***************************************************************************
 'Legacy PhotoDemon support functions
-'Copyright 2020-2021 by Tanner Helland
+'Copyright 2020-2022 by Tanner Helland
 'Created: 25/February/20
 'Last updated: 25/February/20
 'Last update: migrate legacy functions from elsewhere to this dedicated legacy module

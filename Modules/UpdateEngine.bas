@@ -1,7 +1,7 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
 'Automatic App Updater
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 07/October/21
 'Last update: move some global variables here, make 'em private, and wrap them with safety functions

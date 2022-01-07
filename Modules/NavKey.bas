@@ -1,7 +1,7 @@
 Attribute VB_Name = "NavKey"
 '***************************************************************************
 'Navigation Key Handler (including automated tab order handling)
-'Copyright 2017-2021 by Tanner Helland
+'Copyright 2017-2022 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 14/November/21
 'Last update: fix nav key tracking across toolboxes (which are no longer unloaded after switching away
@@ -179,11 +179,11 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
     
     NotifyNavKeypress = False
     
-    Dim childHWnd As Long
-    childHWnd = childObject.hWnd
+    Dim childHwnd As Long
+    childHwnd = childObject.hWnd
     
     Dim formIndex As Long
-    formIndex = GetFormIndex(childHWnd)
+    formIndex = GetFormIndex(childHwnd)
     
     'It should be physically impossible to *not* have a form index by now, but better safe than sorry.
     If (formIndex >= 0) Then
@@ -222,7 +222,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         'The only other supported key (at this point) is TAB.  Tab keypresses are handled by the object list;
         ' it's responsible for figuring out which control is next in order.
         Else
-            m_Forms(formIndex).NotifyTabKey childHWnd, ((Shift And vbShiftMask) <> 0)
+            m_Forms(formIndex).NotifyTabKey childHwnd, ((Shift And vbShiftMask) <> 0)
             NotifyNavKeypress = True
         End If
         
@@ -232,7 +232,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
 
 End Function
 
-Private Function GetFormIndex(ByVal childHWnd As Long) As Long
+Private Function GetFormIndex(ByVal childHwnd As Long) As Long
 
     GetFormIndex = -1
     
@@ -242,7 +242,7 @@ Private Function GetFormIndex(ByVal childHWnd As Long) As Long
     ' and it shortcuts the search process to go there first.)
     If (m_LastForm <> 0) Then
         If (Not m_Forms(m_LastForm) Is Nothing) Then
-            If m_Forms(m_LastForm).DoesHWndExist(childHWnd) Then GetFormIndex = m_LastForm
+            If m_Forms(m_LastForm).DoesHWndExist(childHwnd) Then GetFormIndex = m_LastForm
         End If
     End If
     
@@ -257,7 +257,7 @@ Private Function GetFormIndex(ByVal childHWnd As Long) As Long
             If (Not m_Forms(i) Is Nothing) Then
             
                 'While we're here, update m_LastForm to match - it may improve performance on subsequent matches
-                If m_Forms(i).DoesHWndExist(childHWnd) Then
+                If m_Forms(i).DoesHWndExist(childHwnd) Then
                     GetFormIndex = i
                     m_LastForm = GetFormIndex
                     Exit For

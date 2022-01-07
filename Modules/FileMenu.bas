@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 30/September/20
 'Last update: new user preference for initial folder suggestion on Save As

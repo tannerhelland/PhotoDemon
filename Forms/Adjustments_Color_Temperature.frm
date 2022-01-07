@@ -179,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Temperature Adjustment Form
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 16/September/12
 'Last updated: 27/April/20
 'Last update: minor perf improvements

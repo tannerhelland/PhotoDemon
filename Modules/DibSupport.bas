@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIBs"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
 'Last updated: 15/October/21
 'Last update: new functions for comparing two DIBs and outputting a new DIB with the lowest-entropy bits

@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'Copyright 2001-2021 by Tanner Helland
+'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 24/May/19
 'Last update: overhaul to implement full dithering feature set; also add a bunch of quality and perf improvements

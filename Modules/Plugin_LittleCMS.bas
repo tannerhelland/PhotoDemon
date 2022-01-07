@@ -1,7 +1,7 @@
 Attribute VB_Name = "LittleCMS"
 '***************************************************************************
 'LittleCMS Interface
-'Copyright 2016-2021 by Tanner Helland
+'Copyright 2016-2022 by Tanner Helland
 'Created: 21/April/16
 'Last updated: 29/January/19
 'Last update: minor updates to assist with PSD parsing

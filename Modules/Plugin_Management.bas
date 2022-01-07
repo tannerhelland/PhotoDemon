@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 29/October/21
 'Last update: remove optipng and pngquant, since we can create even smaller PNGs using nothing but pdPNG!

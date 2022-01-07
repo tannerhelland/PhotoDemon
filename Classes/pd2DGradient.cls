@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Manager
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 14/January/21
 'Last update: allow the user to set a custom center point for radial gradients (necessary for rendering

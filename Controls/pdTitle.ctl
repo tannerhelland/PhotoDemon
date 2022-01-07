@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Collapsible Title Label+Button control
-'Copyright 2014-2021 by Tanner Helland
+'Copyright 2014-2022 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 02/November/21
 'Last update: changes to accommodate new toolbar design

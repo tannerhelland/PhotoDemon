@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selections"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2021 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 05/December/21
 'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels

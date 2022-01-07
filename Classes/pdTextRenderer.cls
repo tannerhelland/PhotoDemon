@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon GDI+ Text Manager and Renderer
-'Copyright 2015-2021 by Tanner Helland
+'Copyright 2015-2022 by Tanner Helland
 'Created: 22/April/15
 'Last updated: 03/June/19
 'Last update: minor code clean-up and optimizations; reduce debug logging in stable code paths

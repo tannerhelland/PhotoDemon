@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats"
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright 2012-2021 by Tanner Helland
+'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 21/July/21
 'Last update: ongoing work on AVIF import/export support
