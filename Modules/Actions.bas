@@ -81,7 +81,17 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     ' the return from this function.)
     Dim mnuDoesntExist As Boolean
     If (Not Menus.IsMenuEnabled(srcMenuName, mnuDoesntExist)) Then
-        If (Not mnuDoesntExist) Then Exit Function
+        If (Not mnuDoesntExist) Then
+            
+            'Check for some known exceptions to this rule.  These are primarily convenience functions,
+            ' which automatically remap to a similar task when the requested one isn't available.
+            ' (For example, Ctrl+V is "Paste as new layer", but if no image is open, we silently remap
+            ' to "Paste as new image".)
+            If (Not Strings.StringsEqualAny(srcMenuName, True, "edit_pasteaslayer")) Then
+                Exit Function
+            End If
+            
+        End If
     End If
     
     'Helper functions exist for each main menu.  Once a command is located, we can stop searching.
@@ -303,7 +313,11 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
             Process "Copy merged", False, , UNDO_Nothing
             
         Case "edit_pasteaslayer"
-            Process "Paste", False, , UNDO_Image_VectorSafe
+            If PDImages.IsImageActive Then
+                Process "Paste", False, , UNDO_Image_VectorSafe
+            Else
+                Process "Paste to new image", False, , UNDO_Nothing, , False
+            End If
             
         Case "edit_pastetocursor"
             If (actionSource = pdas_Hotkey) Then

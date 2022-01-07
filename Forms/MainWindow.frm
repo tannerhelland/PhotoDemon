@@ -2071,7 +2071,7 @@ End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-
+    
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If (Not g_AllowDragAndDrop) Then Exit Sub
     
