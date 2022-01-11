@@ -1447,7 +1447,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     Dim maskBounds As RectF
-    maskBounds = MainSelection.GetBoundaryRect
+    maskBounds = MainSelection.GetCompositeBoundaryRect
     dstDIB.CreateBlank maskBounds.Width, maskBounds.Height, 32, 0
     dstDIB.SetInitialAlphaPremultiplicationState True
     
@@ -1472,7 +1472,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
         
         srcQuickY = topOffset + y
         srcDIB.WrapArrayAroundScanline srcImageData, srcSA, srcQuickY
-        MainSelection.GetMaskDIB.WrapArrayAroundScanline selData, selSA, srcQuickY
+        MainSelection.GetCompositeMaskDIB.WrapArrayAroundScanline selData, selSA, srcQuickY
         dstDIB.WrapArrayAroundScanline dstImageData, dstSA, y
         
     For x = 0 To dstDIB.GetDIBWidth - 1
@@ -1517,7 +1517,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     'Clear all array references
     srcDIB.UnwrapArrayFromDIB srcImageData
-    MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+    MainSelection.GetCompositeMaskDIB.UnwrapArrayFromDIB selData
     dstDIB.UnwrapArrayFromDIB dstImageData
     
     'If the calling function requested un-premultiplied alpha, apply it now
@@ -1547,7 +1547,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Dim dstImageData() As Byte, dstSA As SafeArray1D
     
     Dim maskBounds As RectF
-    maskBounds = MainSelection.GetBoundaryRect
+    maskBounds = MainSelection.GetCompositeBoundaryRect
     
     Dim leftBound As Long, topBound As Long, rightBound As Long, bottomBound As Long
     leftBound = maskBounds.Left
@@ -1565,7 +1565,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Const BYTE_TO_FLOAT As Single = 1! / 255!
     
     For y = topBound To bottomBound
-        MainSelection.GetMaskDIB.WrapArrayAroundScanline selData, selSA, y
+        MainSelection.GetCompositeMaskDIB.WrapArrayAroundScanline selData, selSA, y
         imgLayers(targetLayerIndex).layerDIB.WrapArrayAroundScanline dstImageData, dstSA, y
     For x = leftBound To rightBound
     
@@ -1601,7 +1601,6 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
                 dstImageData(dstQuickX + 3) = origAlpha * blendAlpha
                 
             End If
-                
             
         End If
         
@@ -1609,7 +1608,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Next y
     
     'Clear all array references
-    MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+    MainSelection.GetCompositeMaskDIB.UnwrapArrayFromDIB selData
     imgLayers(targetLayerIndex).layerDIB.UnwrapArrayFromDIB dstImageData
     
     'Shrink the layer to its maximum relevant size

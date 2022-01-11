@@ -332,7 +332,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     ' aren't relevant to the selection mask - that's always image-sized - but we can use the relevant selection rect
     ' to minimize how many per-pixel checks we perform.
     Dim selBounds As RectF
-    selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect
+    selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
     
     'Before proceeding further, calculate a "final" new image rect (the intersection of the current image rect
     ' and the selection rect).
@@ -361,7 +361,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     'Point a normal VB array at the selection mask bits.  (This is an alias, *not* a copy - so we need to release
     ' the alias before this function exits.)
     Dim selData() As Byte, selSA As SafeArray2D
-    PDImages.GetActiveImage.MainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
+    PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.WrapArrayAroundDIB selData, selSA
     
     'Lots of helper variables follow.  They are declared this way because VB6 is pesky.
     Dim thisAlpha As Long, blendAlpha As Double
@@ -464,7 +464,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 'PD's selection masks used to be 24-bpp surfaces.  Now they are 32-bpp surfaces.  As a failsafe
                 ' against future changes, we don't assume a given bit-depth here.
                 Dim selMaskDepth As Long
-                selMaskDepth = (PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
+                selMaskDepth = (PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBColorDepth \ 8)
                 
                 'Offsets between the new target layer and the selection mask are fixed from this point forward.
                 Dim leftOffset As Long, topOffset As Long
@@ -575,7 +575,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     Next i
 
     'Clear the selection mask array alias
-    PDImages.GetActiveImage.MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+    PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.UnwrapArrayFromDIB selData
     
     'From here, we do some generic clean-up that's identical for both destructive
     ' and non-destructive modes. (But generally speaking, it's only relevant when

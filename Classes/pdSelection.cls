@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 05/December/21
-'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels
-'             while creating or transforming a selection
+'Last updated: 11/January/22
+'Last update: continued work on multiple selection support
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
 ' currently implemented.  A selection brush is on my TODO list, pending the addition of selection unions.
@@ -43,7 +42,7 @@ Attribute VB_Exposed = False
 'Note also that this class is treated as a subset of pdImage().  This is important because each open image supports
 ' its own active selection, and switching between images also switches between their selections.
 '
-'As of 2021 I am actively working on support for multiple selections, which will finally allow things like
+'As of 2022 I am actively working on support for multiple selections, which will finally allow things like
 ' selection unions and intersections.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
@@ -54,7 +53,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Used when writing/reading selection data to/from a file
-Private Const SELECTION_IDENTIFIER As Long = &H64734450     'PDsd
+Private Const SELECTION_IDENTIFIER As Long = &H64734450     '"PDsd"
 Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
 Private Const SELECTION_FILE_VERSION_2019 As Long = &H1005&
 
@@ -131,6 +130,12 @@ Private m_CornersLocked As RectF
 'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the
 ' bounding area of the selection as a whole.  External functions most likely want to access *this* rect.
 Private m_Bounds As RectF
+
+'Is the current selection a composite of multiple selections?  (This is critical because it affects how
+' selection masks are generated - the goal is to always allow the user to modify the *last* selection
+' they created, and PD will auto-composite it against previous selections to produce a final "composite"
+' selection using the chosen merge mode.)
+Private m_CompositeActive As Boolean
 
 'Is this selection "locked in"?
 Private m_IsLocked As Boolean
@@ -279,32 +284,51 @@ Friend Function GetCornersLockedRect() As RectF
     GetCornersLockedRect = m_CornersLocked
 End Function
 
-Friend Function GetBoundaryRect() As RectF
-    GetBoundaryRect = m_Bounds
+Friend Function GetCompositeBoundaryRect() As RectF
+    'If m_CompositeActive Then...?
+    GetCompositeBoundaryRect = m_Bounds
 End Function
 
-'GetMaskDC() is used by functions like Tools_Fill.CommitFillResults() (which applies floodfill paint to the
+'GetMaskDC() is used by functions like Tools_Fill.CommitFillResults() (which applies flood-fill paint to the
 ' selected region).  Typically it is used as part of fast selection mask copies, e.g with BitBlt to crop out
 ' a portion of the mask image for fast masking against an underlying DIB.  The Preview engine also calls this
 ' function, so it is very perf-sensitive.  This function must *always* use the composite mask (if one exists).
 Friend Function GetMaskDC() As Long
+    
+    'The selection mask should always be ready?  TODO: see if this check is still necessary
     If (Not m_IsMaskReady) Then CreateSelectionMask
-    If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
+    
+    If m_CompositeActive Then
+        'TODO
+    Else
+        If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
+    End If
+    
 End Function
 
 'Give an outside function direct access to the mask DIB.  This is used for operations like "Crop to Selection"
 ' or "Copy to Clipboard".  This function must *always* use the composite mask (if one exists).
-Friend Function GetMaskDIB() As pdDIB
+Friend Function GetCompositeMaskDIB() As pdDIB
+    
+    'The selection mask should always be ready?  TODO: see if this check is still necessary
     If (Not m_IsMaskReady) Then CreateSelectionMask
-    Set GetMaskDIB = m_SelMask
+    
+    If m_CompositeActive Then
+        'TODO
+    
+    'If the current selection is *not* a composite, pass a reference to the current mask DIB as-is
+    Else
+        Set GetCompositeMaskDIB = m_SelMask
+    End If
+    
 End Function
 
 'The viewport-only copy of the selection mask is exclusively used by PD's paint tools.  They need a fast,
 ' viewport-specific copy of masked pixels that gets masked against the viewport-specific brush preview.
 ' This function must *always* use the composite mask (if one exists).
-Friend Function GetMaskDIB_ViewportCopy() As pdDIB
+Friend Function GetCompositeMaskDIB_ViewportCopy() As pdDIB
     If (Not m_IsMaskReady) Then CreateSelectionMask
-    Set GetMaskDIB_ViewportCopy = m_ViewportReference
+    Set GetCompositeMaskDIB_ViewportCopy = m_ViewportReference
 End Function
 
 Friend Sub SetParentReference(ByRef srcImage As pdImage)
@@ -3676,16 +3700,19 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     
 End Function
 
-'When working with raster selections (e.g. non-transformable ones), we still want to minimize selection processing time by processing the
-' smallest possible rectangle that includes all selected pixels.  This function will scan the selection mask and populate the
-' m_CornersLocked.Left/Top/Width/Height and m_Bounds.Left/Top/Width/Height values automatically, based on the mask's contents.
+'When working with raster selections (e.g. non-transformable ones), we still want to minimize
+' selection processing time by processing the smallest possible rectangle that includes all
+' selected pixels.  This function will scan the selection mask and populate the
+' m_CornersLocked.Left/Top/Width/Height and m_Bounds.Left/Top/Width/Height values automatically,
+' based on the mask's contents.
 '
-'By default, this function will mark a selection as type "Raster", since it's assumed that a vector selection would already have the data
-' necessary to determine its own bounds.  This behavior can be overridden, but do so with caution, because incorrectly calculated bounds
-' will cause errors on tools that try to map the selection back to the active layer.
+'By default, this function will mark a selection as type "Raster", since it's assumed that a
+' vector selection would already have the data necessary to determine its own bounds.
+' This behavior *can* be overridden, but DO SO WITH CAUTION because incorrectly calculated
+' boundaries will cause errors on tools that try to map the selection back to the active layer.
 '
-'If boundaries are successfully found, this function will return TRUE.  Otherwise, it will return FALSE, which effectively means the
-' selection mask is blank.
+'If boundaries are successfully found, this function will return TRUE.
+' Otherwise, it will return FALSE, which effectively means the selection mask is blank.
 Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
     'This function assumes two things: that a selection is not transformable (otherwise we'd know the boundaries already), and

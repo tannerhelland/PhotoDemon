@@ -102,7 +102,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Create a temporary DIB, then retrieve the current selection into it
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.MainSelection.GetMaskDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB
     
     'Selections use a "white = selected, transparent = unselected" strategy.  Composite against a black background now
     ' (but leave the DIB in 32-bpp format)

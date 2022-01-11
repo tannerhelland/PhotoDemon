@@ -286,7 +286,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     If (srcImage.MainSelection.GetSelectionShape = ss_Rectangle) Or (srcImage.MainSelection.GetSelectionShape = ss_Circle) Then
         tmpRectF = srcImage.MainSelection.GetCornersLockedRect()
     Else
-        tmpRectF = srcImage.MainSelection.GetBoundaryRect()
+        tmpRectF = srcImage.MainSelection.GetCompositeBoundaryRect()
     End If
     
     'Adjust the mouseAccuracy value based on the current zoom value

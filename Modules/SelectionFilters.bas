@@ -59,8 +59,8 @@ Public Sub InvertCurrentSelection()
     Dim selMaskData() As Long, selMaskSA As SafeArray1D
     
     Dim maskWidth As Long, maskHeight As Long
-    maskWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1
-    maskHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1
+    maskWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth - 1
+    maskHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -70,14 +70,14 @@ Public Sub InvertCurrentSelection()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For y = 0 To maskHeight
-        PDImages.GetActiveImage.MainSelection.GetMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
+        PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
     For x = 0 To maskWidth
         selMaskData(x) = Not selMaskData(x)
     Next x
         If (y And progBarCheck) = 0 Then SetProgBarVal y
     Next y
     
-    PDImages.GetActiveImage.MainSelection.GetMaskDIB.UnwrapLongArrayFromDIB selMaskData
+    PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.UnwrapLongArrayFromDIB selMaskData
     
     'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
     ' being non-transformable)
@@ -117,7 +117,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim retRadius As Double
         If DisplaySelectionDialog(pdsd_Feather, retRadius) = vbOK Then
-            Process "Feather selection", False, BuildParamList("filtervalue", retRadius), UNDO_Selection
+            Process "Feather selection", False, TextSupport.BuildParamList("filtervalue", retRadius), UNDO_Selection
         End If
         
     Else
@@ -130,30 +130,30 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         'Retrieve just the alpha channel of the current selection
         Dim tmpArray() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
         
         'Blur that temporary array
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         Filters_ByteArray.HorizontalBlur_ByteArray tmpArray, arrWidth, arrHeight, featherRadius, featherRadius
         Filters_ByteArray.VerticalBlur_ByteArray tmpArray, arrWidth, arrHeight, featherRadius, featherRadius
         
         'Reconstruct the DIB from the transparency table
-        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
         
-        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
-        ' being non-transformable)
+        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection
+        ' (such as being a non-vector raster selection now)
         PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
-        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually     'This sets selection shape to RASTER
         
-        'Lock in this selection
+        'Lock in the completed selection and ensure it's still marked as ACTIVE
         PDImages.GetActiveImage.MainSelection.LockIn
         PDImages.GetActiveImage.SetSelectionActive True
-                
-        SetProgBarVal 0
-        ReleaseProgressBar
         
+        'Finalize any remaining UI elements
+        ProgressBars.SetProgBarVal 0
+        ProgressBars.ReleaseProgressBar
         Message "Feathering complete."
         
         'Draw the new selection to the screen
@@ -184,22 +184,22 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
                 
         'Retrieve just the alpha channel of the current selection, and clone it so that we have two copies
         Dim tmpArray() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
         
         Dim tmpDstArray() As Byte
-        ReDim tmpDstArray(0 To PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1) As Byte
-        CopyMemoryStrict VarPtr(tmpDstArray(0, 0)), VarPtr(tmpArray(0, 0)), PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        ReDim tmpDstArray(0 To PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth - 1, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight - 1) As Byte
+        CopyMemoryStrict VarPtr(tmpDstArray(0, 0)), VarPtr(tmpArray(0, 0)), PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth * PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         
         'Blur the first temporary array
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         Filters_ByteArray.HorizontalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
         Filters_ByteArray.VerticalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
         
         'We're now going to perform an "unsharp mask" effect, but because we're using a single channel, it goes a bit faster
         Dim progBarCheck As Long
-        SetProgBarMax PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        SetProgBarMax PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         progBarCheck = ProgressBars.FindBestProgBarValue()
         
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10
@@ -209,8 +209,8 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         invScaleFactor = 1# - scaleFactor
         
         Dim iWidth As Long, iHeight As Long
-        iWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1
-        iHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1
+        iWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth - 1
+        iHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight - 1
         
         Dim lOrig As Long, lBlur As Long, lDelta As Single, lFull As Single, lNew As Long
         Dim x As Long, y As Long
@@ -247,7 +247,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Next y
         
         'Reconstruct the DIB from the finished transparency table
-        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpDstArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpDstArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -291,17 +291,17 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         
         Dim tmpArray() As Byte
         ReDim tmpArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
         
         Dim srcBytes() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcBytes
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcBytes
         
         If Filters_ByteArray.Dilate_ByteArray(growSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight) Then
-            DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
+            DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
         End If
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
@@ -346,17 +346,17 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         
         Dim tmpArray() As Byte
         ReDim tmpArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
         
         Dim srcBytes() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcBytes
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcBytes
         
         Filters_ByteArray.Erode_ByteArray shrinkSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight
-        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -403,21 +403,21 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         'First, extract selection data into a byte array so we can use optimized analysis functions
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         
         Dim srcArray() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcArray
         
         'Next, generate a shrink (erode) pass
         Dim shrinkBytes() As Byte
         ReDim shrinkBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 2
+        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth * 2
         
         'Generate a grow (dilate) pass
         Dim growBytes() As Byte
         ReDim growBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 2, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth * 2, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
         
         'Finally, XOR those results together: that's our border!
         Dim x As Long, y As Long
@@ -428,7 +428,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Next y
         
         'Reconstruct the target DIB from our final array
-        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)

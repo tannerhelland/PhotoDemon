@@ -258,29 +258,31 @@ Public Sub FinalizeNonstandardPreview(ByRef previewTarget As pdFxPreviewCtl, Opt
     
 End Sub
 
-'PrepImageData is responsible for copying the relevant DIB (or portion of a DIB, if a selection is active)
-' into a temporary DIB object, one that external filters and effects can freely modify.  This function also
+'PrepImageData is responsible for copying the relevant layer (or portion of a layer, if a selection is active)
+' into a temporary pdDIB object, one that external filters and effects can freely modify.  This function also
 ' populates a relevant SafeArray struct and other variables related to image processing; filters and effects
 ' can use these values to figure out how to handle the associated preview DIB.
 '
-'In one of the better triumphs of PD's design, this function is shared between previews and final effect appliations.
-' The isPreview parameter is used to notify the function of the intended purpose of a given request.  When isPreview
-' is TRUE, the source image is automatically scaled to the size of the preview area; this means many fewer pixels
-' to process, which in turn allows the tool dialog to render much faster.  (Importantly, for this to work, a valid
-' pdFxPreview reference must be passed to the function.)
+'In one of the better triumphs of PD's design, this function is shared between effect previews and effect
+' finalization (e.g. permanently applying the effect). The isPreview parameter is used to notify effect
+' functions of the source of a given request.  When isPreview is TRUE, the source image is automatically scaled
+' to the size of the preview area; this means many fewer pixels to process, which in turn allows the tool dialog
+' to render much faster.  (Importantly, for this to work, a valid pdFxPreview reference *must* be passed;
+' it's queried for things like on-screen size and source zoom values.)
 '
 'The calling routine can optionally specify a different maximum progress bar value.  By default, this is
-' the current DIB's width, but some routines run vertically and the progress bar maximum needs to be changed
-' to match.
+' the current layer (or selection's) width, but some routines run vertically and the progress bar maximum needs
+' to be changed to match.
 '
 'The optional "ignoreSelection" parameter should always be set to FALSE in internal PD code.  The parameter exists
 ' for external Photoshop plugins (8bf) which may handle selection masking themselves.  When used, PD will not
-' attempt to blend selection results itself and will instead rely on the given 8bf's native selection handling.
+' attempt to blend selection results itself and will instead rely on the target 8bf's native selection handling.
 Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False, Optional ByVal ignoreSelection As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     g_cancelCurrentAction = False
     
+    'Check for an active selection
     Dim selToolActive As Boolean
     selToolActive = PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
     
@@ -291,7 +293,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     Dim tmpLayer As pdLayer, selBounds As RectF
     If selToolActive Then
         Set tmpLayer = New pdLayer
-        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect
+        selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
     End If
             
     'If this effect is just a preview, we need to calculate a new width and height relative to the size of the
@@ -317,7 +319,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             tmpLayer.CopyExistingLayer PDImages.GetActiveImage.GetActiveLayer
             tmpLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
-            'Crop the relevant portion of the layer out, using the selection boundary as a guide.
+            'Crop the relevant portion of the layer out, using the selection boundary as a guide.  (We will only
+            ' process the selection rectangle area for the effect; pixels outside that rectangle will be ignored.)
             workingDIB.CreateBlank selBounds.Width, selBounds.Height, PDImages.GetActiveImage.GetActiveDIB().GetDIBColorDepth
             GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState PDImages.GetActiveImage.GetActiveLayer.layerDIB.GetAlphaPremultiplication
@@ -365,8 +368,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 srcWidth = previewTarget.GetPreviewWidth
                 srcHeight = previewTarget.GetPreviewHeight
                 
-                'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
-                ' to the selection boundaries.
+                'If a selection is active, and the selected area is smaller than the preview window,
+                ' constrain the source area to the selection boundaries.
                 If selToolActive Then
                 
                     If (selBounds.Width < srcWidth) Then
@@ -518,7 +521,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
         End If
     End With
     
-    'With our temporary DIB successfully created, populate the relevant SafeArray variable, so the caller has direct access to the DIB
+    'With our temporary DIB successfully created, populate the relevant SafeArray variable, so the caller has direct access to the DIB.
+    ' (TODO: move this into individual function calls.  It's stupid to do it here.)
     PrepSafeArray tmpSA, workingDIB
     
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
@@ -535,14 +539,14 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     
 End Sub
 
-'The counterpart to PrepImageData, FinalizeImageData copies the working DIB back into the source image, then renders
-' everything to the screen.  Like PrepImageData(), a preview target can also be named; if it is, FinalizeImageData
-' will rely on all preview-related values calculated by PrepImageData() because these two functions are always
-' designed to be called in-order as a pair.
+'The counterpart to PrepImageData, FinalizeImageData copies the working DIB back into the source image,
+' then renders everything to the screen.  Like PrepImageData(), a preview target can also be named;
+' if it is, FinalizeImageData will rely on all preview-related values calculated by PrepImageData()
+' because these two functions must always be called in-order as a pair.
 '
 'Note that unlike PrepImageData, this function has to do a lot of extra processing when selections are active.
 ' The selection mask must be scanned for each pixel, and the results blended with the original image as appropriate.
-' (This is the price we pay for full selection feathering support!)  This step can be forcibly bypassed by setting
+' (This is the price we pay for full selection feathering support.)  This step can be forcibly bypassed by setting
 ' the optional ignoreSelection parameter to TRUE, but this should never be used for internal PD tools.  (The setting
 ' exists only for Photoshop-style 8bf plugins, which are allowed to use their own selection blending logic.)
 Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False, Optional ByVal ignoreSelection As Boolean = False)
@@ -557,13 +561,14 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     Dim selToolActive As Boolean
-    selToolActive = (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn) And (Not ignoreSelection)
+    selToolActive = PDImages.GetActiveImage.IsSelectionActive
+    If selToolActive Then selToolActive = PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
     
     If selToolActive Then
         
         'Retrieve the current selection boundaries
         Dim selBounds As RectF
-        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect
+        selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
         
         'Before continuing further, create a copy of the selection mask at the relevant image size.
         ' (Note that "relevant size" differs between effect previews, which tend to be much smaller, and the final
@@ -580,7 +585,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 
                 'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
                 If previewTarget.ViewportFitFullImage Then
-                    GDI_Plus.GDIPlus_StretchBlt selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, PDImages.GetActiveImage.MainSelection.GetMaskDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , GP_IM_Default, , , , True
+                    GDI_Plus.GDIPlus_StretchBlt selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, interpolationType:=GP_IM_Default, dstCopyIsOkay:=True
                 
                 'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
                 ' selection processing DIB.
@@ -607,7 +612,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'A few rare functions actually change the color depth of the image.  Check for that now,
         ' and make sure the workingDIB and workingDIBBackup DIBs are the same bit-depth.
-        '(NOTE: I believe PD has fully transitioned to 32-bpp images, but just in case,
+        '(TODO: I believe PD has fully transitioned to 32-bpp images, but just in case,
         ' let's report any discrepancies .)
         If (workingDIB.GetDIBColorDepth <> workingDIBBackup.GetDIBColorDepth) Then
             PDDebug.LogAction "WARNING!  24-bpp image has been forcefully generated by effect.  Revisit!"

@@ -598,15 +598,19 @@ Private Sub UserControl_Show()
         ' auto-load dimensions from the active window.
         If PDImages.IsImageActive() And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
             If (PDImages.GetActiveImage.GetNumOfLayers <> 0) Then
+                
+                'An active layer is being used for this preview instance.  If a selection is active,
+                ' we need to know its size so that we can calculate zoom accordingly.
                 If PDImages.GetActiveImage.IsSelectionActive Then
                     Dim selBounds As RectF
-                    selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect
+                    selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
                     m_SrcImageWidth = selBounds.Width
                     m_SrcImageHeight = selBounds.Height
                 Else
                     m_SrcImageWidth = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
                     m_SrcImageHeight = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
                 End If
+                
             End If
         End If
         
