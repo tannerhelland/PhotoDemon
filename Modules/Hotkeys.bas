@@ -8,7 +8,7 @@ Attribute VB_Name = "Hotkeys"
 '             on FormMain is still used to for actual key-hooking and raising hotkey events, but it
 '             is no longer responsible for *any* element of actual hotkey storage and management.
 '
-'In 2021, PhotoDemon *finally* (dramatic breath) provides a way for users to specify custom hotkeys.
+'In 2022 (hopefully), PhotoDemon *finally* (dramatic breath) provides a way for users to specify custom hotkeys.
 ' This module is responsible for managing those custom-hotkey assignments, and it also manages default
 ' hotkey behavior (which is what 99.9% of users will presumably be using).
 '

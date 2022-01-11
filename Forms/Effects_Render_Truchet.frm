@@ -189,8 +189,8 @@ Attribute VB_Exposed = False
 'Truchet tiles date back to the 18th century:
 ' https://en.wikipedia.org/wiki/Truchet_tiles
 '
-'PD attempts to provide just enough truchet-related features to be interesting!  (Note that PD's implementation
-' shares a lot of code with the Render > Clouds effect, by design.)
+'PD attempts to provide just enough truchet-related features to be interesting!
+' (Note that PD's implementation shares a lot of code with the Render > Clouds effect, by design.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Move/Size Tool Panel
+'PhotoDemon Flyout Panel controller
 'Copyright 2021-2022 by Tanner Helland
 'Created: 01/November/21
 'Last updated: 05/December/21
