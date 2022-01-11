@@ -463,7 +463,7 @@ Public Sub StraightenLayerToMatch()
             .AddParam "target", pdat_SingleLayer
         End With
         
-        Process "Straighten layer", , cParams.GetParamString(), UNDO_Image
+        Process "Straighten layer", , cParams.GetParamString(), UNDO_Layer
         
     End If
 
