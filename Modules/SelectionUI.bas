@@ -583,109 +583,107 @@ End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
     
-    'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
-    ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
+    'On a new mouse event, we branch according to the current combine mode.
+    ' (Note that this is only relevant if a selection already exists.)
     If PDImages.GetActiveImage.IsSelectionActive Then
+        
+        'Normally, we need to wait to see if the user has clicked a transform point on the existing selection,
+        ' or if they are creating a new selection.
+        
+        'However, if the selection shape is *not* the same as the current shape, and TODO
+        
+        'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
+        ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
         If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> SelectionUI.GetSelectionShapeFromCurrentTool()) Then
             PDImages.GetActiveImage.SetSelectionActive False
             PDImages.GetActiveImage.MainSelection.SetSelectionShape SelectionUI.GetSelectionShapeFromCurrentTool()
         End If
+        
     End If
-        
-    'Because the wand tool is extremely simple, handle it specially
-    If (g_CurrentTool = SELECT_WAND) Then
     
-        'Magic wand selections never transform - they only generate anew
-        Selections.InitSelectionByPoint imgX, imgY
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+    'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
+    If PDImages.GetActiveImage.IsSelectionActive Then
+    
+        'Check the mouse coordinates of this click.
+        Dim sCheck As PD_PointOfInterest
+        sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
         
-    Else
-        
-        'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
-        If PDImages.GetActiveImage.IsSelectionActive Then
-        
-            'Check the mouse coordinates of this click.
-            Dim sCheck As PD_PointOfInterest
-            sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
+        'If a point of interest was clicked, initiate a transform
+        If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Polygon) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
             
-            'If a point of interest was clicked, initiate a transform
-            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Polygon) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-                
-                'Initialize a selection transformation
-                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-                PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                                
-            'If a point of interest was *not* clicked, erase any existing selection and start a new one
-            Else
-                
-                'Polygon selections require special handling, because they don't operate on the "mouse up = complete" assumption.
-                ' They are completed when the user re-clicks the first point.  Any clicks prior to that point are treated as
-                ' an instruction to add a new points.
-                If (g_CurrentTool = SELECT_POLYGON) Then
-                    
-                    'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
-                    If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
-                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-                        PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                    
-                    'Selection is not locked in, meaning the user is still constructing it.
-                    Else
-                    
-                        'If the user clicked on the initial polygon point, attempt to close the polygon
-                        If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
-                            PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
-                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
-                        
-                        'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
-                        Else
+            'Initialize a selection transformation
+            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+            PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
                             
-                            'Remove the current transformation mode (if any)
-                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI poi_Undefined
-                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode False
-                            
-                            'Add the new point
-                            If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
-                                Selections.InitSelectionByPoint imgX, imgY
-                            Else
-                                
-                                If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
-                                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
-                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
-                                Else
-                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-                                End If
-                                
-                            End If
-                            
-                            'Reinstate transformation mode, using the index of the new point as the transform ID
-                            PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
-                            
-                            'Redraw the screen
-                            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
-                            
-                        End If
-                    
-                    End If
-                    
-                Else
-                    Selections.InitSelectionByPoint imgX, imgY
-                End If
-                
-            End If
-        
-        'If a selection is not active, start a new one
+        'If a point of interest was *not* clicked, erase any existing selection and start a new one
         Else
             
-            Selections.InitSelectionByPoint imgX, imgY
-            
-            'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
-            ' transform mode, because dragging the mouse will simply move the newly created point.
+            'Polygon selections require special handling, because they don't operate on the "mouse up = complete" assumption.
+            ' They are completed when the user re-clicks the first point.  Any clicks prior to that point are treated as
+            ' an instruction to add a new points.
             If (g_CurrentTool = SELECT_POLYGON) Then
-                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
-                PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
+                
+                'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
+                If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                    PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                
+                'Selection is not locked in, meaning the user is still constructing it.
+                Else
+                
+                    'If the user clicked on the initial polygon point, attempt to close the polygon
+                    If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
+                        PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
+                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                    
+                    'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
+                    Else
+                        
+                        'Remove the current transformation mode (if any)
+                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI poi_Undefined
+                        PDImages.GetActiveImage.MainSelection.OverrideTransformMode False
+                        
+                        'Add the new point
+                        If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
+                            Selections.InitSelectionByPoint imgX, imgY
+                        Else
+                            
+                            If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
+                                PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
+                            Else
+                                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                            End If
+                            
+                        End If
+                        
+                        'Reinstate transformation mode, using the index of the new point as the transform ID
+                        PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                        PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
+                        
+                        'Redraw the screen
+                        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                        
+                    End If
+                
+                End If
+                
+            Else
+                Selections.InitSelectionByPoint imgX, imgY
             End If
             
+        End If
+    
+    'If a selection is not active, start a new one
+    Else
+        
+        Selections.InitSelectionByPoint imgX, imgY
+        
+        'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
+        ' transform mode, because dragging the mouse will simply move the newly created point.
+        If (g_CurrentTool = SELECT_POLYGON) Then
+            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
+            PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
         End If
         
     End If

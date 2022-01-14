@@ -58,7 +58,6 @@ Begin VB.Form toolpanel_Selections
       _ExtentX        =   3175
       _ExtentY        =   1296
       Caption         =   "mode"
-      Enabled         =   0   'False
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdTitle ttlPanel 

@@ -1326,10 +1326,19 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 'If a transform mode is active, re-mark the selection as being transformable
                 m_IsTransformable = True
             
-            'Wand selections are not transformable
+            'Wand selections are not technically transformable, but we allow the user to click-drag to
+            ' move the initiaion point
             Case ss_Wand
-                Debug.Print "Transform initiated on a wand selection - FIX THIS!"
-            
+                
+                If (m_CornersUnlocked.Left <> x) Or (m_CornersUnlocked.Top <> y) Then
+                    m_CornersUnlocked.Left = x
+                    m_CornersUnlocked.Top = y
+                Else
+                    newMaskRequired = False
+                End If
+                
+                m_IsTransformable = False
+                
         End Select
                 
     'This is not a transform, meaning the selection is being created for the first time.  For standard selection types,
@@ -1391,7 +1400,8 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     
                 End If
             
-            'Wand selections can have their point of interest moved, but they don't actually support "additional" coordinates
+            'Wand selections can have their point of interest moved, but they don't actually support "additional" coordinates.
+            ' (So we assume any additional coordinates are just "move POI here" commands.)
             Case ss_Wand
                 If (m_CornersUnlocked.Left <> x) Or (m_CornersUnlocked.Top <> y) Then
                     m_CornersUnlocked.Left = x
