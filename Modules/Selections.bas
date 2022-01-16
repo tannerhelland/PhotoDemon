@@ -145,6 +145,30 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
 End Sub
 
+'When a new selection is started, we need to check the current combine mode.
+' 1) If REPLACE is set, erase any previous selection(s)
+' 2) If ANY OTHER mode is set, we need to back up the current selection so we can calculate a merge later.
+Public Sub NotifyNewSelectionStarting()
+    
+    If PDImages.GetActiveImage.IsSelectionActive Then
+        
+        'Combine modes are TODO!
+        If (PDImages.GetActiveImage.MainSelection.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then
+        
+        Else
+        
+        End If
+        
+        'Temporarily, always erase the existing selection
+        Process "Remove selection", False, vbNullString, UNDO_Selection, g_CurrentTool
+        
+    'A selection is not active - do nothing
+    'Else
+    
+    End If
+    
+End Sub
+
 'Are selections currently allowed?  Program states like "no open images" prevent selections from being created,
 ' and individual functions can use this function to determine that state.  Passing TRUE for the
 ' "transformableMatters" param will add a check for an existing, transformable-type selection (squares, etc)

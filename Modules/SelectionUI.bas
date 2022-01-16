@@ -269,7 +269,8 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Exit Function
     End If
     
-    'Similarly, POIs are only enabled if the current selection tool matches the current selection shape
+    'Similarly, POIs are only enabled if the current selection tool matches the current selection shape.
+    ' (If a new selection shape has been selected, the user is definitely not modifying the existing selection.)
     If (g_CurrentTool <> SelectionUI.GetRelevantToolFromSelectShape()) Then
         IsCoordSelectionPOI = poi_Undefined
         Exit Function
@@ -406,31 +407,37 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             End If
             
         Case ss_Polygon
-        
-            'First, we want to check all polygon points for a hit.
-            PDImages.GetActiveImage.MainSelection.GetPolygonPoints poiListFloat()
             
-            'Used the generalized point comparison function to see if one of the points matches
-            closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
-            
-            'Was a close point found? If yes, then return that value
-            If (closestPoint <> poi_Undefined) Then
-                IsCoordSelectionPOI = closestPoint
+            If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints() > 0) Then
                 
-            'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.  This will trigger
-            ' a move transformation.
-            Else
+                'First, we want to check all polygon points for a hit.
+                PDImages.GetActiveImage.MainSelection.GetPolygonPoints poiListFloat()
                 
-                'Use a region object for hit-detection
-                Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
-                If (Not complexRegion Is Nothing) Then
-                    If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                'Used the generalized point comparison function to see if one of the points matches
+                closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
+                
+                'Was a close point found? If yes, then return that value
+                If (closestPoint <> poi_Undefined) Then
+                    IsCoordSelectionPOI = closestPoint
+                    
+                'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.
+                ' This will trigger a move transformation.
                 Else
-                    IsCoordSelectionPOI = poi_Undefined
+                    
+                    'Use a region object for hit-detection
+                    Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
+                    If (Not complexRegion Is Nothing) Then
+                        If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                    Else
+                        IsCoordSelectionPOI = poi_Undefined
+                    End If
+                    
                 End If
                 
+            Else
+                IsCoordSelectionPOI = poi_Undefined
             End If
-        
+            
         Case ss_Lasso
         
             'Use a region object for hit-detection
@@ -583,54 +590,52 @@ End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
     
-    'On a new mouse event, we branch according to the current combine mode.
-    ' (Note that this is only relevant if a selection already exists.)
-    If PDImages.GetActiveImage.IsSelectionActive Then
-        
-        'Normally, we need to wait to see if the user has clicked a transform point on the existing selection,
-        ' or if they are creating a new selection.
-        
-        'However, if the selection shape is *not* the same as the current shape, and TODO
-        
-        'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
-        ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
-        If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> SelectionUI.GetSelectionShapeFromCurrentTool()) Then
-            PDImages.GetActiveImage.SetSelectionActive False
-            PDImages.GetActiveImage.MainSelection.SetSelectionShape SelectionUI.GetSelectionShapeFromCurrentTool()
-        End If
-        
-    End If
-    
-    'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
+    'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
+    ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
     If PDImages.GetActiveImage.IsSelectionActive Then
     
         'Check the mouse coordinates of this click.
         Dim sCheck As PD_PointOfInterest
         sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
         
-        'If a point of interest was clicked, initiate a transform
-        If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Polygon) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-            
-            'Initialize a selection transformation
+        'TODO: potentially deal with raster selections here?  Right now PD doesn't allow any transforms
+        ' on raster selections, but hypothetically the user could be allowed to click-drag to move them...
+        ' I'll see if this is feasible in the future.
+        
+        'If a point of interest was clicked, initiate a transform event (to allow modification
+        ' of the *already existing* selection).
+        If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
             PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
             PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                            
+            
         'If a point of interest was *not* clicked, erase any existing selection and start a new one
         Else
             
-            'Polygon selections require special handling, because they don't operate on the "mouse up = complete" assumption.
-            ' They are completed when the user re-clicks the first point.  Any clicks prior to that point are treated as
-            ' an instruction to add a new points.
+            'Polygon selections require special handling, because they don't operate on the same
+            ' "mouse up = finished selection" assumption.  They are marked as complete under
+            ' special circumstances (when the user re-clicks the first point or double-clicks).
+            ' Any clicks prior to this are treated as an instruction to add a new point to the shape.
             If (g_CurrentTool = SELECT_POLYGON) Then
                 
-                'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
+                'First, see if the current polygon is "locked in" (i.e. finished).
+                ' If it is, treat this as starting a new selection.
                 If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
-                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                    
+                    Selections.NotifyNewSelectionStarting
+                    Selections.InitSelectionByPoint imgX, imgY
+                    
+                    'Start transformation mode, using the index of the new point as the transform ID.
+                    ' (This allows the user to click-drag this initial point.)
                     PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                
-                'Selection is not locked in, meaning the user is still constructing it.
+                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                    PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
+                    
+                    'Redraw the screen
+                    Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                    
+                'If the polygon is *not* locked in, the user is still constructing it.
                 Else
-                
+                    
                     'If the user clicked on the initial polygon point, attempt to close the polygon
                     If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
                         PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
@@ -645,6 +650,7 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                         
                         'Add the new point
                         If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
+                            Selections.NotifyNewSelectionStarting
                             Selections.InitSelectionByPoint imgX, imgY
                         Else
                             
@@ -669,18 +675,21 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                 End If
                 
             Else
+                Selections.NotifyNewSelectionStarting
                 Selections.InitSelectionByPoint imgX, imgY
             End If
             
         End If
     
-    'If a selection is not active, start a new one
+    'If a selection is not already active, start a new one.
     Else
         
+        Selections.NotifyNewSelectionStarting
         Selections.InitSelectionByPoint imgX, imgY
         
-        'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
-        ' transform mode, because dragging the mouse will simply move the newly created point.
+        'Polygon selections require special handling.  After creating the initial point,
+        ' we want to immediately initiate "transform mode" (which allows the user to drag
+        ' the mouse to move the newly created point).
         If (g_CurrentTool = SELECT_POLYGON) Then
             PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
             PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
@@ -819,6 +828,15 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Exit Sub
     End If
     
+    'NOTE FOR MULTIPLE SELECTION OVERHAUL:
+    ' GIMP has a nice behavior where - when a selection mode other than REPLACE is active -
+    ' a single-click off the selected area merges the active selection onto previous ones, and then
+    ' disables the dynamic selection boundaries (if previously available).  This seems intuitive
+    ' and likely has performance benefits, as it produces just a single merged raster selection
+    ' instead of a two-layer "old" and "new" selection collection.
+    '
+    'At present, PD is set up to always erase the active selection on a single-click off the image.
+    ' Once multiple selections are working, I would like to change this behavior to work like GIMP.
     Dim eraseThisSelection As Boolean
     
     Select Case g_CurrentTool
@@ -834,7 +852,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Dim selBounds As RectF
                 selBounds = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect
                 
-                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1))
+                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = poi_Undefined))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
@@ -850,7 +868,8 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         SyncTextToCurrentSelection PDImages.GetActiveImageID()
                     End If
                 
-                    'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
+                    'Check to see if all selection coordinates are invalid (e.g. off-image).
+                    ' If they are, forget about this selection.
                     If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid Then
                         Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     Else
@@ -911,14 +930,16 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         
             'If a selection was being drawn, lock it into place
             If PDImages.GetActiveImage.IsSelectionActive Then
-            
+                
+                'TODO: do not erase a selection here - instead, start a new one.  (Erase logic needs to be
+                ' moved elsewhere to account for multiple selections.)
+                
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState And clickEventAlsoFiring
                 eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1)
                 
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
-                
                 Else
                     
                     'If the polygon is already closed, we want to lock in the newly modified polygon
@@ -942,8 +963,9 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                                 Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                                 
-                        'No point of interest means this click lies off-image; this could be a "clear selection" event (if a Click
-                        ' event is also firing), or a "move polygon point" event (if the user dragged a point off-image).
+                        'No point of interest means this click lies off-image; this could be a "clear selection" event
+                        ' (if a Click event is also firing), or a "move polygon point" event (if the user dragged a
+                        ' point off-image).
                         ElseIf (polyPoint = -1) Then
                             
                             'If the user has clicked a blank spot unrelated to the selection, we want to remove the active selection
