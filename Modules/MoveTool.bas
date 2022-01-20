@@ -108,6 +108,32 @@ End Sub
 
 Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single)
     
+    'Failsafe check only
+    If (Not PDImages.IsImageActive) Then Exit Sub
+    
+    'See if a selection is active.  If it is, we need to see if the user has clicked within the selected region.
+    If PDImages.GetActiveImage.IsSelectionActive Then
+        
+        Debug.Print "here 1"
+        'See if the mouse is within the selection
+        If PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY) Then
+            Debug.Print "here 2"
+        
+            'The mouse is within the selected area.  We now need to do some complicated stuff.
+            ' 1) Create a new layer from the selected region
+            ' 2) (Potentially) erase these pixels from their old layer(s)
+            ' 3) Activate move mode for these pixels, and initiate a normal "move layer" operation.
+            Layers.AddLayerViaCopy
+            
+            'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
+            Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, poi_Interior
+            
+            Exit Sub
+            
+        End If
+    
+    End If
+    
     'See if the control key is down; if it is, we want to move the active layer to the current position.
     If ((Shift And vbCtrlMask) = vbCtrlMask) Then
     
@@ -142,7 +168,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
             End If
         
         End If
-                    
+        
         'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
         Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
         
