@@ -124,7 +124,7 @@ Public Sub TerminateGenericToolTracking()
 End Sub
 
 'The move tool uses this function to set various initial parameters for layer interactions.
-Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal useSelectedPixels As Boolean = False)
+Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal useSelectedPixels As Boolean = False, Optional ByVal Shift As ShiftConstants)
     
     'Note whether we a selection is active
     m_MoveSelectedPixels = useSelectedPixels
@@ -132,9 +132,12 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     'If a selection is active, we need to cut (or copy) the currently selected pixels into their own new layer.
     If m_MoveSelectedPixels Then
         
-        'Create the new layer
-        ' (TODO: copy vs cut, merged vs layer)
-        Layers.AddLayerViaSelection True, False, False  'True
+        'Create the new layer.  Note that Copy vs Cut is determined by first noting the user's default setting,
+        ' then toggling that setting if ALT was pressed.
+        Dim eraseOriginalPixels As Boolean
+        eraseOriginalPixels = Tools_Move.GetMoveSelectedPixels_DefaultCut()
+        If ((Shift And vbAltMask) = vbAltMask) Then eraseOriginalPixels = (Not eraseOriginalPixels)
+        Layers.AddLayerViaSelection True, Tools_Move.GetMoveSelectedPixels_SampleMerged, eraseOriginalPixels
         
         'Silently point the layer reference at the newly created layer (we don't care about the original layer ref)
         Set srcLayer = srcImage.GetActiveLayer

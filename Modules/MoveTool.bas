@@ -21,6 +21,10 @@ Option Explicit
 ' of directly querying the associated UI elements.
 Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
 
+'Same goes for various selection-related move settings (for moving selected pixels).  These are simple
+' flags whose value is relayed from the Move/Size options panel.
+Private m_SelectionDefaultCut As Boolean, m_SelectionSampleMerged As Boolean
+
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     If Tools_Move.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
     If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
@@ -175,13 +179,19 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         'If a selection is active, the only valid transform is movement.  Otherwise, the transform may
         ' be moving or resizing or rotating or some combination of these.
         Dim curPOI As PD_PointOfInterest
+        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        
+        'Give preferential treatment to corner and edge nodes; if neither of these are selected,
+        ' we then allow the selected area to "take over".
         If useSelectedPixels Then
-            curPOI = poi_Interior
-        Else
-            curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+            If (curPOI = poi_Interior) Or (curPOI = poi_Undefined) Then
+                curPOI = poi_Interior
+            Else
+                useSelectedPixels = False
+            End If
         End If
         
-        Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, curPOI, useSelectedPixels
+        Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, curPOI, useSelectedPixels, Shift
         
     End If
                 
@@ -258,7 +268,7 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
                 
 End Sub
 
-'Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+'Relay functions for layer move/size node and border rendering
 Public Function GetDrawLayerBorders() As Boolean
     GetDrawLayerBorders = m_DrawLayerBorders
 End Function
@@ -281,4 +291,21 @@ End Sub
 
 Public Sub SetDrawLayerRotateNodes(ByVal newState As Boolean)
     m_DrawRotateNodes = newState
+End Sub
+
+'Relay functions for move selected pixels behavior
+Public Function GetMoveSelectedPixels_DefaultCut() As Boolean
+    GetMoveSelectedPixels_DefaultCut = m_SelectionDefaultCut
+End Function
+
+Public Function GetMoveSelectedPixels_SampleMerged() As Boolean
+    GetMoveSelectedPixels_SampleMerged = m_SelectionSampleMerged
+End Function
+
+Public Sub SetMoveSelectedPixels_DefaultCut(ByVal newState As Boolean)
+    m_SelectionDefaultCut = newState
+End Sub
+
+Public Sub SetMoveSelectedPixels_SampleMerged(ByVal newState As Boolean)
+    m_SelectionSampleMerged = newState
 End Sub
