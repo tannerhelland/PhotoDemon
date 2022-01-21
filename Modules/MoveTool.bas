@@ -129,6 +129,9 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     cParams.AddParam "use-selected-pixels", useSelectedPixels
     
     'See if the control key is down; if it is, we want to move the active layer to the current position.
+    ' (Note that this behavior does *NOT* work with selections, by design, because there's no way for
+    ' the user to clarify the desired move source - unlike a normal click-drag operation, which explicitly
+    ' identifies the source on the initial click.)
     If ((Shift And vbCtrlMask) = vbCtrlMask) Then
         
         With cParams
@@ -138,19 +141,6 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         
         Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
         
-        'TODO: handle selected pixels!
-        
-'            'The mouse is within the selected area.  We now need to do some complicated stuff.
-'            ' 1) Create a new layer from the selected region
-'            ' 2) (Potentially) erase these pixels from their old layer(s)
-'            ' 3) Activate move mode for these pixels, and initiate a normal "move layer" operation.
-'            Layers.AddLayerViaCopy
-'
-'            'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-'            Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, poi_Interior
-'
-'            Exit Sub
-            
     Else
         
         'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
@@ -194,7 +184,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, curPOI, useSelectedPixels, Shift
         
     End If
-                
+    
 End Sub
 
 Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single) As Long
@@ -207,6 +197,18 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
     'Left mouse button *not* down
     Else
         
+        'If a selection is active, the selection region will take precedence over any layer(s)
+        ' beneath the current selection.  Determine this in advance.
+        Dim mouseOverSelection As Boolean: mouseOverSelection = False
+        If PDImages.GetActiveImage.IsSelectionActive Then
+            mouseOverSelection = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
+        End If
+        
+        'To spare the debug logger from receiving too many events, we will forcibly prevent logging
+        ' basic status bar messages while in debug mode.
+        Dim strAppendForDebug As String
+        If UserPrefs.GenerateDebugLogs Then strAppendForDebug = "DONOTLOG" Else strAppendForDebug = vbNullString
+        
         'If the Ctrl key is down, the user can ctrl+click to "jump" the active layer to
         ' the current mouse position.  We do not want to display target layer information
         ' in this case, as the "auto-select layer under mouse" behavior will be disabled.
@@ -215,40 +217,45 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
             'If the "auto-activate layer beneath mouse" option is active, report the current layer name in the message bar;
             ' this is helpful for letting the user know which layer will be affected by an action in the current position.
             If toolpanel_MoveSize.chkAutoActivateLayer.Value Then
-            
+                
                 Dim layerUnderMouse As Long
                 layerUnderMouse = Layers.GetLayerUnderMouse(imgX, imgY, True)
-                If (layerUnderMouse >= -1) Then
+                If (layerUnderMouse >= 0) Then
                 
                     NotifyMouseMove = layerUnderMouse
                     
-                    'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
-                    ' while in debug mode.
-                    If UserPrefs.GenerateDebugLogs Then
-                        Message "Target layer: %1", PDImages.GetActiveImage.GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
+                    If mouseOverSelection Then
+                        Message "Target: selected pixels", strAppendForDebug
                     Else
-                        Message "Target layer: %1", PDImages.GetActiveImage.GetLayerByIndex(layerUnderMouse).GetLayerName
+                        Message "Target layer: %1", PDImages.GetActiveImage.GetLayerByIndex(layerUnderMouse).GetLayerName, strAppendForDebug
                     End If
-                
-                'The mouse is *not* over a layer.  Default to the active layer, which allows the user to interact with the
-                ' layer even if it lies off-canvas.
+                    
+                'The mouse is *not* over a layer.  Default to the active layer, which allows the user
+                ' to interact with the layer even if it lies off-canvas.
                 Else
                 
                     NotifyMouseMove = PDImages.GetActiveImage.GetActiveLayerIndex
                     
-                    If UserPrefs.GenerateDebugLogs Then
-                        Message "Target layer: %1", g_Language.TranslateMessage("(none)"), "DONOTLOG"
+                    If mouseOverSelection Then
+                        Message "Target: selected pixels", strAppendForDebug
                     Else
-                        Message "Target layer: %1", g_Language.TranslateMessage("(none)")
+                        Message "Target layer: %1", g_Language.TranslateMessage("(none)"), strAppendForDebug
                     End If
                     
                 End If
             
-            'Auto-activation is disabled.  Don't bother reporting the layer beneath the mouse to the user, as actions can
-            ' only affect the active layer!
+            'Auto-activation is disabled.  In this state we only need to differentiate between the active layer
+            ' and pixels under the current selection (if one exists).
             Else
-                Message vbNullString
+                
                 NotifyMouseMove = PDImages.GetActiveImage.GetActiveLayerIndex
+                
+                If mouseOverSelection Then
+                    Message "Target: selected pixels", strAppendForDebug
+                Else
+                    Message "Target layer: %1", PDImages.GetActiveImage.GetActiveLayer.GetLayerName(), strAppendForDebug
+                End If
+                
             End If
         
         '/end Ctrl key down

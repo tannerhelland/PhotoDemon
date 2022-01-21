@@ -1940,9 +1940,10 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
 End Function
 
 'Given an x/y pair (in IMAGE COORDINATES), return the top-most layer under that position, if any.
-' The long-named optional parameter, "givePreferenceToCurrentLayer", will check the currently active layer before checking any others.
-' If the mouse is over one of the current layer's points-of-interest (e.g. a resize node), the function will return that layer instead
-' of others that lay atop it.  This allows the user to move and resize the current layer preferentially, and only if the current layer
+' The long-named optional parameter, "givePreferenceToCurrentLayer", will check the currently active layer
+' before checking any others.  If the mouse is over one of the current layer's points-of-interest
+' (e.g. a resize node), the function will return that layer instead of others that lay atop it.
+' This allows the user to move and resize the current layer preferentially, and only if the current layer
 ' is completely out of the picture will other layers become activated.
 Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
@@ -1987,7 +1988,8 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
             'Only evaluate the current layer if the mouse is over it
             If Layers.GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
-                'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
+                'A layer was identified beneath the mouse!  If the pixel is non-transparent,
+                ' return this layer as the selected one.
                 If (Not toolpanel_MoveSize.chkIgnoreTransparent.Value) Then
                     GetLayerUnderMouse = i
                     Exit Function
