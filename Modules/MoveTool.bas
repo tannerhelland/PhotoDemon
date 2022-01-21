@@ -112,33 +112,20 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     If (Not PDImages.IsImageActive) Then Exit Sub
     
     'See if a selection is active.  If it is, we need to see if the user has clicked within the selected region.
+    ' (If they have, we will allow them to move just the *selected* pixels.)
+    Dim useSelectedPixels As Boolean: useSelectedPixels = False
     If PDImages.GetActiveImage.IsSelectionActive Then
-        
-        Debug.Print "here 1"
-        'See if the mouse is within the selection
-        If PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY) Then
-            Debug.Print "here 2"
-        
-            'The mouse is within the selected area.  We now need to do some complicated stuff.
-            ' 1) Create a new layer from the selected region
-            ' 2) (Potentially) erase these pixels from their old layer(s)
-            ' 3) Activate move mode for these pixels, and initiate a normal "move layer" operation.
-            Layers.AddLayerViaCopy
-            
-            'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-            Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, poi_Interior
-            
-            Exit Sub
-            
-        End If
-    
+        useSelectedPixels = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
     End If
+    
+    'Some move settings allow for additional parameters to be passed (such as the selection check
+    ' we just performed above)
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.AddParam "use-selected-pixels", useSelectedPixels
     
     'See if the control key is down; if it is, we want to move the active layer to the current position.
     If ((Shift And vbCtrlMask) = vbCtrlMask) Then
-    
-        Dim cParams As pdSerialize
-        Set cParams = New pdSerialize
         
         With cParams
             .AddParam "layer-offsetx", imgX
@@ -147,6 +134,19 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         
         Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
         
+        'TODO: handle selected pixels!
+        
+'            'The mouse is within the selected area.  We now need to do some complicated stuff.
+'            ' 1) Create a new layer from the selected region
+'            ' 2) (Potentially) erase these pixels from their old layer(s)
+'            ' 3) Activate move mode for these pixels, and initiate a normal "move layer" operation.
+'            Layers.AddLayerViaCopy
+'
+'            'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
+'            Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, poi_Interior
+'
+'            Exit Sub
+            
     Else
         
         'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
@@ -169,8 +169,19 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         
         End If
         
-        'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-        Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        'Initiate the layer transformation engine.
+        ' (Note that nothing will happen until the user actually moves the mouse.)
+        '
+        'If a selection is active, the only valid transform is movement.  Otherwise, the transform may
+        ' be moving or resizing or rotating or some combination of these.
+        Dim curPOI As PD_PointOfInterest
+        If useSelectedPixels Then
+            curPOI = poi_Interior
+        Else
+            curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        End If
+        
+        Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, curPOI, useSelectedPixels
         
     End If
                 

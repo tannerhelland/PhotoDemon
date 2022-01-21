@@ -67,6 +67,11 @@ Private m_PaintToolAltState As Boolean
 ' because we need to restore previous tool state when the button is released.
 Private m_MiddleMouseState As Boolean
 
+'As of 9.0, the Move/Size tool behaves differently when used on a selection.  (The selected pixels
+' will be auto-copied/cut into their own layer, and that new layer will be moved instead of the
+' original one.)
+Private m_MoveSelectedPixels As Boolean
+
 'Get/Set the "alternate" state for a paint tool (typically triggered by pressing ALT)
 Public Function GetToolAltState() As Boolean
     GetToolAltState = m_PaintToolAltState
@@ -113,10 +118,28 @@ Public Sub TerminateGenericToolTracking()
     'Reset the current POI, if any
     m_CurPOI = poi_Undefined
     
+    'Reset any selection tracking
+    m_MoveSelectedPixels = False
+    
 End Sub
 
 'The move tool uses this function to set various initial parameters for layer interactions.
-Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined)
+Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal useSelectedPixels As Boolean = False)
+    
+    'Note whether we a selection is active
+    m_MoveSelectedPixels = useSelectedPixels
+    
+    'If a selection is active, we need to cut (or copy) the currently selected pixels into their own new layer.
+    If m_MoveSelectedPixels Then
+        
+        'Create the new layer
+        ' (TODO: copy vs cut, merged vs layer)
+        Layers.AddLayerViaSelection True, False, False  'True
+        
+        'Silently point the layer reference at the newly created layer (we don't care about the original layer ref)
+        Set srcLayer = srcImage.GetActiveLayer
+        
+    End If
     
     'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
     ' coordinate space (NOT the canvas's!)
@@ -518,8 +541,20 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     .AddParam "layer-offsety", srcImage.GetActiveLayer.GetLayerOffsetY
                 End With
                 
+                'If the user is moving pixels from an active selection, a new layer was automatically created
+                ' on _MouseDown.  We need to create a different type of undo entry (a full image stack) for
+                ' that special case.
+                Dim undoRequest As PD_UndoType
+                If m_MoveSelectedPixels Then
+                    undoRequest = UNDO_Image_VectorSafe
+                Else
+                    undoRequest = UNDO_LayerHeader
+                End If
+                
+                'TODO: a different process name for moving selected pixels
+                
                 With srcImage.GetActiveLayer
-                    Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
+                    Process "Move layer", False, cParams.GetParamString(), undoRequest
                 End With
                 
             'The caller can specify other dummy values if they don't want us to redraw the screen
