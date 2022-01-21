@@ -3,8 +3,9 @@ Attribute VB_Name = "TextSupport"
 'Miscellaneous functions related to specialized text handling
 'Copyright 2000-2022 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 08/August/17
-'Last update: remove legacy BuildParams() parameter system
+'Last updated: 21/January/22
+'Last update: fix minor parsing issue in IncrementTrailingNumber().  (Parentheses without a preceding
+'             space character no longer forcibly replace the preceding character with a space.)
 '
 'PhotoDemon interacts with a *lot* of text input.  This module contains various bits of text support code,
 ' typically based around tasks like "validate a user's text input" or "convert arbitrary text input
@@ -156,7 +157,7 @@ Public Function IsNumberLocaleUnaware(ByRef srcExpression As String) As Boolean
         End Select
         
     Next x
-        
+    
     IsNumberLocaleUnaware = txtIsNumber
     
 End Function
@@ -183,14 +184,15 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
                 ' the number inside the parentheses is, and strip that entire block from the string.
                 If Strings.StringsEqual(Mid$(srcString, i, 1), "(", False) Then
                 
-                    numToAppend = CLng(Mid$(srcString, i + 1, Len(srcString) - i - 1))
-                    srcString = Left$(srcString, i - 2)
+                    numToAppend = CLng(Mid$(srcString, i + 1, Len(srcString) - i - 1)) + 1
+                    srcString = Left$(srcString, i - 1)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this string does not already have a
                 ' number appended (in the expected format). Treat it like any other string and append " (2)" to it
                 Else
                     numToAppend = 2
+                    srcString = srcString & " "
                     Exit For
                 End If
                 
@@ -202,9 +204,10 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
     'If the string is not already in the format "text (#)", append a " (2)" to it
     Else
         numToAppend = 2
+        srcString = srcString & " "
     End If
     
-    IncrementTrailingNumber = srcString & " (" & CStr(numToAppend) & ")"
+    IncrementTrailingNumber = srcString & "(" & CStr(numToAppend) & ")"
 
 End Function
 

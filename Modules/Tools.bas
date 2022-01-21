@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools"
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2022 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 09/November/20
-'Last update: add support for new "lock aspect ratio" checkbox on the Move/Size toolpanel
+'Last updated: 21/January/22
+'Last update: new support for moving only selected pixels via the Move/Size tool
 '
 'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -67,6 +67,11 @@ Private m_PaintToolAltState As Boolean
 ' because we need to restore previous tool state when the button is released.
 Private m_MiddleMouseState As Boolean
 
+'As of 9.0, the Move/Size tool behaves differently when used on a selection.  (The selected pixels
+' will be auto-copied/cut into their own layer, and that new layer will be moved instead of the
+' original one.)
+Private m_MoveSelectedPixels As Boolean
+
 'Get/Set the "alternate" state for a paint tool (typically triggered by pressing ALT)
 Public Function GetToolAltState() As Boolean
     GetToolAltState = m_PaintToolAltState
@@ -113,10 +118,31 @@ Public Sub TerminateGenericToolTracking()
     'Reset the current POI, if any
     m_CurPOI = poi_Undefined
     
+    'Reset any selection tracking
+    m_MoveSelectedPixels = False
+    
 End Sub
 
 'The move tool uses this function to set various initial parameters for layer interactions.
-Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined)
+Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal useSelectedPixels As Boolean = False, Optional ByVal Shift As ShiftConstants)
+    
+    'Note whether we a selection is active
+    m_MoveSelectedPixels = useSelectedPixels
+    
+    'If a selection is active, we need to cut (or copy) the currently selected pixels into their own new layer.
+    If m_MoveSelectedPixels Then
+        
+        'Create the new layer.  Note that Copy vs Cut is determined by first noting the user's default setting,
+        ' then toggling that setting if ALT was pressed.
+        Dim eraseOriginalPixels As Boolean
+        eraseOriginalPixels = Tools_Move.GetMoveSelectedPixels_DefaultCut()
+        If ((Shift And vbAltMask) = vbAltMask) Then eraseOriginalPixels = (Not eraseOriginalPixels)
+        Layers.AddLayerViaSelection True, Tools_Move.GetMoveSelectedPixels_SampleMerged, eraseOriginalPixels
+        
+        'Silently point the layer reference at the newly created layer (we don't care about the original layer ref)
+        Set srcLayer = srcImage.GetActiveLayer
+        
+    End If
     
     'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
     ' coordinate space (NOT the canvas's!)
@@ -518,12 +544,16 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     .AddParam "layer-offsety", srcImage.GetActiveLayer.GetLayerOffsetY
                 End With
                 
-                With srcImage.GetActiveLayer
+                'If the user is moving pixels from an active selection, a new layer was automatically created
+                ' on _MouseDown.  We need to create a different type of undo entry (a full image stack) for
+                ' that special case.  (On a normal move event, we're literally just setting different position
+                ' flags inside a layer header - so we don't need to backup any pixel data.)
+                If m_MoveSelectedPixels Then
+                    Process "Move selected pixels", False, cParams.GetParamString(), UNDO_Image_VectorSafe
+                Else
                     Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
-                End With
+                End If
                 
-            'The caller can specify other dummy values if they don't want us to redraw the screen
-        
         End Select
     
     'If the transformation is still active (e.g. the user has the mouse pressed down), just redraw the viewport, but don't

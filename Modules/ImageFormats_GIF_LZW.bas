@@ -36,7 +36,7 @@ Attribute VB_Name = "ImageFormats_GIF_LZW"
 ' original C code with some ideas from Carles/Ron's VB6 versions to produce something appropriate
 ' for PhotoDemon.  I think the final result is very good, with meaningfully improved performance,
 ' a number of fixed edge-case bugs, reworking of various suboptimal-for-VB6 designs, and improved
-' LZW encoding efficiency .  The final result is a very compact LZW encoder with efficiency and
+' LZW encoding efficiency.  The final result is a very compact LZW encoder with efficiency and
 ' performance on par with giflib, and pretty much on-par with the original compress.c version.
 '
 'Note that this module only handles the LZW encoding portion of GIF export.  All the actual file

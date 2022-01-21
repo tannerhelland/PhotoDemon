@@ -3,10 +3,10 @@ Begin VB.Form toolpanel_MoveSize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4650
+   ClientHeight    =   6315
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   12075
+   ClientWidth     =   11910
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +25,9 @@ Begin VB.Form toolpanel_MoveSize
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   310
+   ScaleHeight     =   421
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   805
+   ScaleWidth      =   794
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -104,40 +104,40 @@ Begin VB.Form toolpanel_MoveSize
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2895
+      Height          =   4935
       Index           =   2
       Left            =   8160
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
-      _ExtentY        =   5106
+      _ExtentY        =   8705
       Begin PhotoDemon.pdCheckBox chkIgnoreTransparent 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   1
          Top             =   0
-         Width           =   3450
-         _ExtentX        =   6085
+         Width           =   3330
+         _ExtentX        =   5874
          _ExtentY        =   582
          Caption         =   "ignore transparent pixels"
       End
       Begin PhotoDemon.pdCheckBox chkLayerBorder 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   2
-         Top             =   750
-         Width           =   3450
-         _ExtentX        =   6085
+         Top             =   2790
+         Width           =   3330
+         _ExtentX        =   5874
          _ExtentY        =   582
          Caption         =   "show layer borders"
       End
       Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   0
-         Top             =   1140
-         Width           =   3450
-         _ExtentX        =   6085
+         Top             =   3180
+         Width           =   3330
+         _ExtentX        =   5874
          _ExtentY        =   582
          Caption         =   "show resize nodes"
       End
@@ -145,7 +145,7 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   240
          Index           =   1
          Left            =   120
-         Top             =   420
+         Top             =   2460
          Width           =   3360
          _ExtentX        =   5927
          _ExtentY        =   423
@@ -153,11 +153,11 @@ Begin VB.Form toolpanel_MoveSize
       End
       Begin PhotoDemon.pdCheckBox chkRotateNode 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   3
-         Top             =   1530
-         Width           =   3450
-         _ExtentX        =   6085
+         Top             =   3570
+         Width           =   3330
+         _ExtentX        =   5874
          _ExtentY        =   582
          Caption         =   "show rotate nodes"
       End
@@ -165,17 +165,17 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   240
          Index           =   0
          Left            =   120
-         Top             =   1950
+         Top             =   3990
          Width           =   3465
          _ExtentX        =   6112
          _ExtentY        =   423
-         Caption         =   "make changes permanent"
+         Caption         =   "make transforms permanent"
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
          Height          =   570
          Left            =   120
          TabIndex        =   14
-         Top             =   2250
+         Top             =   4290
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
@@ -184,13 +184,35 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
-         Left            =   3240
+         Left            =   3210
          TabIndex        =   20
-         Top             =   2400
+         Top             =   4440
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonStrip btsSampleMerged 
+         Height          =   945
+         Left            =   120
+         TabIndex        =   21
+         Top             =   360
+         Width           =   3435
+         _ExtentX        =   6059
+         _ExtentY        =   1667
+         Caption         =   "sample selections from"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonStrip btsCopyCut 
+         Height          =   945
+         Left            =   120
+         TabIndex        =   22
+         Top             =   1380
+         Width           =   3435
+         _ExtentX        =   6059
+         _ExtentY        =   1667
+         Caption         =   "default selection behavior"
+         FontSizeCaption =   10
       End
    End
    Begin PhotoDemon.pdTitle ttlPanel 
@@ -303,8 +325,8 @@ Begin VB.Form toolpanel_MoveSize
       Left            =   7440
       TabIndex        =   17
       Top             =   0
-      Width           =   3495
-      _ExtentX        =   6165
+      Width           =   3060
+      _ExtentX        =   5398
       _ExtentY        =   661
       Caption         =   "other options"
       Value           =   0   'False
@@ -314,8 +336,8 @@ Begin VB.Form toolpanel_MoveSize
       Left            =   7560
       TabIndex        =   13
       Top             =   480
-      Width           =   3450
-      _ExtentX        =   6085
+      Width           =   3045
+      _ExtentX        =   5371
       _ExtentY        =   582
       Caption         =   "auto select layer"
    End
@@ -329,8 +351,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 05/November/21
-'Last update: overhaul UI to use the new flyout panel design for toolbox options
+'Last updated: 21/January/22
+'Last update: new UI for modifying how this tool behaves when a selection is active
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -348,6 +370,38 @@ Attribute m_Flyout.VB_VarHelpID = -1
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
+
+Private Sub btsCopyCut_Click(ByVal buttonIndex As Long)
+    Tools_Move.SetMoveSelectedPixels_DefaultCut (buttonIndex = 1)
+End Sub
+
+Private Sub btsCopyCut_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub btsCopyCut_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsSampleMerged.hWnd
+    Else
+        newTargetHwnd = chkLayerBorder.hWnd
+    End If
+End Sub
+
+Private Sub btsSampleMerged_Click(ByVal buttonIndex As Long)
+    Tools_Move.SetMoveSelectedPixels_SampleMerged (buttonIndex = 0)
+End Sub
+
+Private Sub btsSampleMerged_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub btsSampleMerged_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkIgnoreTransparent.hWnd
+    Else
+        newTargetHwnd = Me.btsCopyCut.hWnd
+    End If
+End Sub
 
 Private Sub cboLayerResizeQuality_Click()
     
@@ -454,7 +508,7 @@ Private Sub chkIgnoreTransparent_SetCustomTabTarget(ByVal shiftTabWasPressed As 
     If shiftTabWasPressed Then
         newTargetHwnd = chkAutoActivateLayer.hWnd
     Else
-        newTargetHwnd = chkLayerBorder.hWnd
+        newTargetHwnd = btsSampleMerged.hWnd
     End If
 End Sub
 
@@ -470,9 +524,9 @@ End Sub
 
 Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = chkIgnoreTransparent.hWnd
+        newTargetHwnd = Me.btsCopyCut.hWnd
     Else
-        newTargetHwnd = chkLayerNodes.hWnd
+        newTargetHwnd = Me.chkLayerNodes.hWnd
     End If
 End Sub
 
@@ -555,9 +609,6 @@ Private Sub Form_Load()
     
     Tools.SetToolBusyState True
     
-    'Esoteric controls get tooltips
-    cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
-    
     cboLayerResizeQuality.SetAutomaticRedraws False
     cboLayerResizeQuality.Clear
     cboLayerResizeQuality.AddItem "nearest-neighbor", 0
@@ -566,10 +617,20 @@ Private Sub Form_Load()
     cboLayerResizeQuality.SetAutomaticRedraws True
     cboLayerResizeQuality.ListIndex = 1
     
+    btsSampleMerged.AddItem "image", 0
+    btsSampleMerged.AddItem "layer", 1
+    btsSampleMerged.ListIndex = 1
+    
+    btsCopyCut.AddItem "copy", 0
+    btsCopyCut.AddItem "cut", 1
+    btsCopyCut.ListIndex = 1
+    
     'Ensure our corresponding tool manager is synchronized with default layer rendering styles
     Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
+    Tools_Move.SetMoveSelectedPixels_SampleMerged (btsSampleMerged.ListIndex = 0)
+    Tools_Move.SetMoveSelectedPixels_DefaultCut (btsCopyCut.ListIndex = 1)
     
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -607,6 +668,8 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
     With m_lastUsedSettings
         .AddPresetData "move-size-auto-activate", chkAutoActivateLayer.Value
         .AddPresetData "move-size-ignore-transparent", chkIgnoreTransparent.Value
+        .AddPresetData "move-size-selection-sample-merged", btsSampleMerged.ListIndex
+        .AddPresetData "move-size-selection-default-cut", btsCopyCut.ListIndex
         .AddPresetData "move-size-show-layer-borders", chkLayerBorder.Value
         .AddPresetData "move-size-show-resize-nodes", chkLayerNodes.Value
         .AddPresetData "move-size-show-rotate-nodes", chkRotateNode.Value
@@ -620,6 +683,10 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
     With m_lastUsedSettings
         chkAutoActivateLayer.Value = .RetrievePresetData("move-size-auto-activate", True)
         chkIgnoreTransparent.Value = .RetrievePresetData("move-size-ignore-transparent", True)
+        
+        btsSampleMerged.ListIndex = CLng(.RetrievePresetData("move-size-selection-sample-merged", "1"))
+        btsCopyCut.ListIndex = CLng(.RetrievePresetData("move-size-selection-default-cut", "1"))
+        
         chkLayerBorder.Value = .RetrievePresetData("move-size-show-layer-borders", True)
         chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
         chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
@@ -886,6 +953,26 @@ Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
     End If
 End Sub
 
+'Because these controls are laid out in a non-standard pattern, we want to manually specify tab and
+' shift+tab focus targets.
+Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        If (Index > 0) Then
+            newTargetHwnd = tudLayerMove(Index - 1).hWnd
+        Else
+            newTargetHwnd = Me.ttlPanel(0).hWnd
+        End If
+    Else
+        If (Index < 3) Then
+            newTargetHwnd = tudLayerMove(Index + 1).hWnd
+        Else
+            newTargetHwnd = chkAspectRatio.hWnd
+        End If
+    End If
+
+End Sub
+
 'When a layer property control (either a slider or spinner) has a "FinalChange" event, use this control to update any
 ' necessary UI elements that may need to be adjusted due to non-destructive changes.
 Private Sub FinalChangeHandler(Optional ByVal performFullUISync As Boolean = False)
@@ -905,6 +992,9 @@ Public Sub UpdateAgainstCurrentTheme()
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(32)
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
+    
+    'Tooltips must be localized
+    cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
@@ -926,7 +1016,7 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     
     'Ensure we have a flyout manager, then raise the corresponding panel
     If newState Then
-        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex = 1, Interface.FixDPI(-8), 0)
+        If (flyoutIndex <> m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.ShowFlyout Me, ttlPanel(flyoutIndex), cntrPopOut(flyoutIndex), flyoutIndex, IIf(flyoutIndex > 0, Interface.FixDPI(-8), 0)
     Else
         If (flyoutIndex = m_Flyout.GetFlyoutTrackerID()) Then m_Flyout.HideFlyout
     End If
@@ -944,24 +1034,4 @@ Private Sub UpdateFlyout(ByVal flyoutIndex As Long, Optional ByVal newState As B
     'Clear the synchronization flag before exiting
     m_Flyout.SetFlyoutSyncState False
     
-End Sub
-
-'Because these controls are laid out in a non-standard pattern, we want to manually specify tab and
-' shift+tab focus targets.
-Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    
-    If shiftTabWasPressed Then
-        If (Index > 0) Then
-            newTargetHwnd = tudLayerMove(Index - 1).hWnd
-        Else
-            newTargetHwnd = Me.ttlPanel(0).hWnd
-        End If
-    Else
-        If (Index < 3) Then
-            newTargetHwnd = tudLayerMove(Index + 1).hWnd
-        Else
-            newTargetHwnd = chkAspectRatio.hWnd
-        End If
-    End If
-
 End Sub

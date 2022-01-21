@@ -301,8 +301,8 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
         intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access),
+    ' so we cheat and use 1D arrays, which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
     bottomScanlineSize = dstDIB.GetDIBStride:  bottomDIBPointer = dstDIB.GetDIBPointer
     

@@ -411,7 +411,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     If (Not m_NoColorAvailable) Then
     
         'Grab a color from the correct source.
-        If (btsSampleMerged.ListIndex <> 0) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
+        If (btsSampleMerged.ListIndex = 0) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
             
             'Before proceeding, ensure the mouse pointer lies within the image.
             If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > PDImages.GetActiveImage.Width) Or (m_ImgY > PDImages.GetActiveImage.Height) Then
@@ -866,8 +866,8 @@ Private Sub Form_Load()
     cboColorSpace(0).ListIndex = cps_RGBA
     cboColorSpace(1).ListIndex = cps_HSV
     
-    btsSampleMerged.AddItem "layer", 0
-    btsSampleMerged.AddItem "image", 1
+    btsSampleMerged.AddItem "image", 0
+    btsSampleMerged.AddItem "layer", 1
     btsSampleMerged.ListIndex = 0
     
     'Load any last-used settings for this form

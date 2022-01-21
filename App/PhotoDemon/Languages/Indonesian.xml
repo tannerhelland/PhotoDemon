@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.525</langversion>
+<langversion>6.6.526</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1278,7 +1278,7 @@
 <translation>bersih baru-baru ini Daftar Gambar</translation>
 </phrase>
 
-<!-- Actions.bas contains 258 phrases. 6 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
+<!-- Actions.bas contains 259 phrases. 7 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2087,6 +2087,11 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
+<original>New layer from selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Layer updated successfully.</original>
 <translation></translation>
 </phrase>
@@ -2171,7 +2176,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Halaman 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 56 phrases. 33 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 34 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -3246,11 +3251,16 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Move selected pixels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move layer</original>
 <translation>lapisan Pindah</translation>
 </phrase>
 
-<!-- Tools.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
@@ -3291,6 +3301,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Target: selected pixels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Target layer: %1</original>
 <translation>Lapisan Sasaran: %1</translation>
 </phrase>
@@ -3300,7 +3315,7 @@ Please masukkan nilai berangka.</translation>
 <translation>(Tiada)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- MoveTool.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Paint stroke</original>
@@ -11714,8 +11729,8 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>sample all layers</original>
-<translation>sampel semua lapisan</translation>
+<original>sample from</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11744,6 +11759,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>layer</original>
+<translation>lapisan</translation>
+</phrase>
+
+<phrase>
 <original>tile</original>
 <translation></translation>
 </phrase>
@@ -11763,15 +11783,10 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>sample from</original>
 <translation></translation>
 </phrase>
 
@@ -11791,16 +11806,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>layer</original>
-<translation>lapisan</translation>
-</phrase>
-
-<phrase>
 <original>n/a</original>
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 38 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -11827,11 +11837,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <phrase>
 <original>fill area</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>kawasan persampelan</translation>
 </phrase>
 
 <phrase>
@@ -11874,7 +11879,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Opsi ini mengontrol bagaimana piksel dianalisis saat menambahkannya ke isi.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>center offset</original>
@@ -11991,7 +11996,17 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>make changes permanent</original>
+<original>make transforms permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample selections from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default selection behavior</original>
 <translation></translation>
 </phrase>
 
@@ -12016,11 +12031,21 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>copy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
 <translation>Buat lapisan saat ini berubah (ukuran, sudut, dan geser) permanen. Tindakan ini tidak pernah diperlukan, namun jika viewport rendering lamban, ini bisa meningkatkan kinerja.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -13669,10 +13694,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2586</phrasecount>
+<phrasecount>2591</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5350 phrases. -->
-<!-- 2764 are duplicates, so only 2586 unique phrases have been written to file. -->
-<!-- These 2586 phrases contain approximately 11761 total words. -->
+<!-- As of this build, PhotoDemon contains 5363 phrases. -->
+<!-- 2772 are duplicates, so only 2591 unique phrases have been written to file. -->
+<!-- These 2591 phrases contain approximately 11774 total words. -->
 
 </pdData>
