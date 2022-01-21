@@ -2102,11 +2102,14 @@ Private Function DoesLayerAllowPainting(Optional ByVal displayUIFeedback As Bool
     
 End Function
 
-'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
-' is added, make sure to visit this sub and make any necessary cursor changes!
+'Set the active canvas cursor via this function.
 '
-'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-' RELAY: the actual cursor request needs to be passed to pdCanvasView, and we need to make sure its MouseEnter event also calls this.
+'Note that a number of extra values must be passed to this function.  Individual tools can use these parameters
+' to customize cursor requests (e.g. the Move/Size tool will display different cursors depending on what's present
+' at the given mouse location).
+'
+'Note that this function can also be used to hide the cursor completely, if you are using custom "cursor-ish"
+' rendering for e.g. a paintbrush outline.
 Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
@@ -2158,6 +2161,16 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             'When transforming layers, the cursor depends on the active POI
             curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
             
+            'If a POI has not been selected, but a selection is active, see if the mouse is
+            ' in the selected area.
+            Dim moveViaSelectionActive As Boolean
+            If (curPOI = poi_Undefined) Then
+                If PDImages.GetActiveImage.IsSelectionActive Then
+                    moveViaSelectionActive = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
+                    If moveViaSelectionActive Then curPOI = poi_Interior
+                End If
+            End If
+            
             Select Case curPOI
             
                 'Mouse is not over the current layer
@@ -2194,7 +2207,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     ' the Move cursor.  (Note that this works because the getLayerUnderMouse function, called during the MouseMove
                     ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
                     ' re-evaluate the setting here.)
-                    If (m_LayerAutoActivateIndex = PDImages.GetActiveImage.GetActiveLayerIndex) Then
+                    If (m_LayerAutoActivateIndex = PDImages.GetActiveImage.GetActiveLayerIndex) Or moveViaSelectionActive Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
                         CanvasView.RequestCursor_System IDC_ARROW

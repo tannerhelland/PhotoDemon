@@ -2553,8 +2553,15 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional ByVal rai
         Layers.MoveLayerOnCanvas PDImages.GetActiveImage.GetActiveLayerIndex, processParameters
         Process_LayerMenu = True
     
-    '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
-    ' after the user has performed a drag/drop rearrangement of the layer stack.
+    'If a selection is active, the user can use the move tool to copy (or cut) just the selected
+    ' pixels from either the active layer or the full image stack.  When this operation occurs,
+    ' we use a different processor call to make the Undo/Redo op title more sensible.
+    ElseIf Strings.StringsEqual(processID, "Move selected pixels", True) Then
+        Layers.MoveLayerOnCanvas PDImages.GetActiveImage.GetActiveLayerIndex, processParameters
+        Process_LayerMenu = True
+    
+    '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is
+    ' to create an Undo/Redo entry after the user has performed a drag/drop rearrangement of the layer stack.
     ElseIf Strings.StringsEqual(processID, "Rearrange layers", True) Then
         Process_LayerMenu = True
     End If

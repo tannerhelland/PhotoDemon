@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools"
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2022 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 09/November/20
-'Last update: add support for new "lock aspect ratio" checkbox on the Move/Size toolpanel
+'Last updated: 21/January/22
+'Last update: new support for moving only selected pixels via the Move/Size tool
 '
 'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -543,22 +543,14 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'If the user is moving pixels from an active selection, a new layer was automatically created
                 ' on _MouseDown.  We need to create a different type of undo entry (a full image stack) for
-                ' that special case.
-                Dim undoRequest As PD_UndoType
+                ' that special case.  (On a normal move event, we're literally just setting different position
+                ' flags inside a layer header - so we don't need to backup any pixel data.)
                 If m_MoveSelectedPixels Then
-                    undoRequest = UNDO_Image_VectorSafe
+                    Process "Move selected pixels", False, cParams.GetParamString(), UNDO_Image_VectorSafe
                 Else
-                    undoRequest = UNDO_LayerHeader
+                    Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
                 End If
                 
-                'TODO: a different process name for moving selected pixels
-                
-                With srcImage.GetActiveLayer
-                    Process "Move layer", False, cParams.GetParamString(), undoRequest
-                End With
-                
-            'The caller can specify other dummy values if they don't want us to redraw the screen
-        
         End Select
     
     'If the transformation is still active (e.g. the user has the mouse pressed down), just redraw the viewport, but don't
