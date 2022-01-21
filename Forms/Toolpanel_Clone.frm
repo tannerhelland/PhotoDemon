@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_Clone
    ClientHeight    =   3420
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   11865
+   ClientWidth     =   13170
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -27,24 +27,24 @@ Begin VB.Form toolpanel_Clone
    NegotiateMenus  =   0   'False
    ScaleHeight     =   228
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   791
+   ScaleWidth      =   878
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1335
+      Height          =   1935
       Index           =   3
       Left            =   8280
       Top             =   720
       Visible         =   0   'False
-      Width           =   3375
-      _ExtentX        =   5953
-      _ExtentY        =   2355
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   3413
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   3
-         Left            =   2880
+         Left            =   3240
          TabIndex        =   16
-         Top             =   825
+         Top             =   1440
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -55,22 +55,23 @@ Begin VB.Form toolpanel_Clone
          Index           =   2
          Left            =   120
          TabIndex        =   17
-         Top             =   480
-         Width           =   2655
-         _ExtentX        =   4683
+         Top             =   1080
+         Width           =   2985
+         _ExtentX        =   5265
          _ExtentY        =   1296
          Caption         =   "pattern mode"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdCheckBox chkSampleMerged 
-         Height          =   345
-         Left            =   120
+      Begin PhotoDemon.pdButtonStrip btsSampleMerged 
+         Height          =   945
+         Left            =   150
          TabIndex        =   18
          Top             =   0
-         Width           =   2640
-         _ExtentX        =   4657
-         _ExtentY        =   609
-         Caption         =   "sample all layers"
+         Width           =   2955
+         _ExtentX        =   5212
+         _ExtentY        =   1667
+         Caption         =   "sample from"
+         FontSizeCaption =   10
       End
    End
    Begin PhotoDemon.pdCheckBox chkAligned 
@@ -348,6 +349,22 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
+Private Sub btsSampleMerged_Click(ByVal buttonIndex As Long)
+    Tools_Clone.SetBrushSampleMerged (buttonIndex = 0)
+End Sub
+
+Private Sub btsSampleMerged_GotFocusAPI()
+    UpdateFlyout 3, True
+End Sub
+
+Private Sub btsSampleMerged_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.chkAligned.hWnd
+    Else
+        newTargetHwnd = Me.cboBrushSetting(2).hWnd
+    End If
+End Sub
+
 Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
     UpdateSpacingVisibility
 End Sub
@@ -412,7 +429,7 @@ Private Sub cboBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
             End If
         Case 2
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.chkSampleMerged.hWnd
+                newTargetHwnd = Me.btsSampleMerged.hWnd
             Else
                 newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
             End If
@@ -431,23 +448,7 @@ Private Sub chkAligned_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, n
     If shiftTabWasPressed Then
         newTargetHwnd = Me.ttlPanel(3).hWnd
     Else
-        newTargetHwnd = Me.chkSampleMerged.hWnd
-    End If
-End Sub
-
-Private Sub chkSampleMerged_Click()
-    Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
-End Sub
-
-Private Sub chkSampleMerged_GotFocusAPI()
-    UpdateFlyout 3, True
-End Sub
-
-Private Sub chkSampleMerged_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        newTargetHwnd = Me.chkAligned.hWnd
-    Else
-        newTargetHwnd = Me.cboBrushSetting(2).hWnd
+        newTargetHwnd = Me.btsSampleMerged.hWnd
     End If
 End Sub
 
@@ -489,6 +490,10 @@ Private Sub Form_Load()
     Interface.PopulateBlendModeDropDown cboBrushSetting(0), BM_Normal
     Interface.PopulateAlphaModeDropDown cboBrushSetting(1), AM_Normal
     
+    btsSampleMerged.AddItem "image", 0
+    btsSampleMerged.AddItem "layer", 1
+    btsSampleMerged.ListIndex = 0
+    
     cboBrushSetting(2).SetAutomaticRedraws False
     cboBrushSetting(2).AddItem "off", 0
     cboBrushSetting(2).AddItem "tile", 1
@@ -498,7 +503,6 @@ Private Sub Form_Load()
     cboBrushSetting(2).ListIndex = 0
     cboBrushSetting(2).SetAutomaticRedraws True, True
     
-    'Populate any other list-style UI elements
     btsSpacing.AddItem "auto", 0
     btsSpacing.AddItem "manual", 1
     btsSpacing.ListIndex = 0
@@ -653,7 +657,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushHardness sltBrushSetting(2).Value
     Tools_Clone.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Clone.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
+    Tools_Clone.SetBrushSampleMerged (btsSampleMerged.ListIndex = 0)
     Tools_Clone.SetBrushAligned chkAligned.Value
     Tools_Clone.SetBrushWrapMode GetWrapModeFromIndex(cboBrushSetting(2).ListIndex)
     Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
@@ -667,7 +671,7 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(2).Value = Tools_Clone.GetBrushHardness()
     cboBrushSetting(0).ListIndex = Tools_Clone.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Tools_Clone.GetBrushAlphaMode()
-    chkSampleMerged.Value = Tools_Clone.GetBrushSampleMerged()
+    If Tools_Clone.GetBrushSampleMerged() Then btsSampleMerged.ListIndex = 0 Else btsSampleMerged.ListIndex = 1
     chkAligned.Value = Tools_Clone.GetBrushAligned()
     cboBrushSetting(2).ListIndex = GetIndexFromWrapMode(Tools_Clone.GetBrushWrapMode())
     sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
