@@ -3,18 +3,23 @@ Attribute VB_Name = "Plugin_zstd"
 'Zstd Compression Library Interface
 'Copyright 2016-2022 by Tanner Helland
 'Created: 01/December/16
-'Last updated: 08/March/19
-'Last update: switch to callconv-agnostic implementation (so we can use "official" binaries)
+'Last updated: 22/January/22
+'Last update: update to latest 1.5.2 binary, fix up some comments to match
 '
 'Per its documentation (available at https://github.com/facebook/zstd), zstd is...
 '
 ' "...a fast lossless compression algorithm, targeting real-time compression scenarios
 '  at zlib-level and better compression ratios."
 '
-'zstd is BSD-licensed and sponsored by Facebook.  As of Dec 2016, development is very active and performance
-' numbers are very favorable compared to zLib.  (3-4x faster at compressing, ~1.5x faster at decompressing
-' depending on workload.)  As PD writes a ton of huge files, improved compression performance is a big win
-' for us.
+'zstd is 100% open-source and BSD-licensed.  Compared to a common compression library like zlib,
+' zstd is both much faster (5-6x faster at compressing, ~4-5x faster at decompressing as of v1.5.2)
+' while also producing smaller files (see benchmark results on e.g. the Silesia corpus:
+' https://github.com/facebook/zstd#benchmarks).  Ongoing development is very active and each new
+' release brings improved performance and compression capabilities.
+'
+'Like any photo editor, PhotoDemon constantly writes a ton of huge files, especially involving
+' Undo/Redo data.  Finding that sweet spot between low resources and responsiveness is critical,
+' and zstd helps a ton in that regard.
 '
 'This wrapper class uses a shorthand implementation of DispCallFunc originally written by Olaf Schmidt.
 ' Many thanks to Olaf, whose original version can be found here (link good as of Feb 2019):

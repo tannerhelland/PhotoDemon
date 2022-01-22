@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2022 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 29/October/21
-'Last update: remove optipng and pngquant, since we can create even smaller PNGs using nothing but pdPNG!
+'Last updated: 22/January/22
+'Last update: update zstd to latest 1.5.2
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' A number of third-party libraries are required for correct program operation.
@@ -63,7 +63,7 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.12.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10903"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_WEBP_VERSION As String = "1.2.1"
-Private Const EXPECTED_ZSTD_VERSION As String = "10500"
+Private Const EXPECTED_ZSTD_VERSION As String = "10502"
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
