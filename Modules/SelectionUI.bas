@@ -813,7 +813,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
             PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI selPOI
             Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
         Else
-            If (g_CurrentTool = SELECT_POLYGON) Then If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
+            If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
         End If
         
     End If

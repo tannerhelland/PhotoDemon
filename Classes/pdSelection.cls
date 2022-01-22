@@ -1441,6 +1441,39 @@ Friend Function IsTransformable() As Boolean
     IsTransformable = m_IsTransformable
 End Function
 
+'Is a given (x, y) coordinate selected?  (Use this for hit-detection against the selection.)
+Friend Function IsPointSelected(ByVal x As Long, ByVal y As Long) As Boolean
+    
+    IsPointSelected = False
+    
+    If (Not Me.IsLockedIn) Then Exit Function
+    If (m_SelMask Is Nothing) Then Exit Function
+    If (m_SelMask.GetDIBWidth = 0) Or (m_SelMask.GetDIBHeight = 0) Then Exit Function
+    
+    'Before doing anything else, ensure the x/y postition lies inside the mask DIB
+    If (x >= 0) And (x < m_SelMask.GetDIBWidth) And (y >= 0) And (y < m_SelMask.GetDIBHeight) Then
+        
+        Dim tmpData() As Byte, tSA As SafeArray2D
+        m_SelMask.WrapArrayAroundDIB tmpData, tSA
+        
+        Dim xStride As Long
+        xStride = x * (m_SelMask.GetDIBColorDepth \ 8)
+        
+        'Final failsafe boundary check (requires 32-bpp selection mask)
+        If ((xStride + 3) < m_SelMask.GetDIBStride) Then
+            
+            'The point is valid.  Check alpha at this position.
+            IsPointSelected = (tmpData(xStride + 3, y) <> 0)
+            
+        End If
+        
+        'Free our unsafe array wrapper before exiting
+        m_SelMask.UnwrapArrayFromDIB tmpData
+        
+    End If
+
+End Function
+
 'If the user is using the SHIFT key to request a square-shaped (or circle-shaped) selection, this function will be called.
 Private Sub MakeCoordinatesSquare()
 

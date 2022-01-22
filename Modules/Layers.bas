@@ -3,8 +3,8 @@ Attribute VB_Name = "Layers"
 'Layer Interface
 'Copyright 2014-2022 by Tanner Helland
 'Created: 24/March/14
-'Last updated: 04/July/14
-'Last update: added EraseLayerByIndex() function
+'Last updated: 20/January/22
+'Last update: new AddLayerViaSelection() function, for conveniently creating a layer from a selection region
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -384,15 +384,122 @@ Public Function AddLayerFromVisibleLayers(Optional replaceActiveLayerInstead As 
     
 End Function
 
+'Shortcut function to mimic Ctrl+C, Ctrl+V
 Public Sub AddLayerViaCopy()
     g_Clipboard.ClipboardCopy False, False, pdcf_InternalPD
     g_Clipboard.ClipboardPaste True
 End Sub
 
+'Shortcut function to mimic Ctrl+X, Ctrl+V
 Public Sub AddLayerViaCut()
     g_Clipboard.ClipboardCut False, pdcf_InternalPD
     g_Clipboard.ClipboardPaste True
 End Sub
+
+'Shortcut function to create a new layer (sort of like AddLayerViaCopy/Cut above, but this
+' will NOT touch the clipboard).  Requires an active selection.  You MUST validate selection state
+' before calling this function.
+Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False, Optional ByVal eraseOriginalPixels As Boolean = False) As Boolean
+        
+    'Failsafe check
+    If (Not PDImages.IsImageActive) Then Exit Function
+    If (Not PDImages.GetActiveImage.IsSelectionActive) Then Exit Function
+    
+    'Start by retrieving the selected pixels into a temporary DIB
+    Dim tmpDIB As pdDIB
+    If PDImages.GetActiveImage.RetrieveProcessedSelection(tmpDIB, preMultipliedAlphaState, useMergedImage) Then
+        
+        Dim i As Long
+        
+        'Before going any further, cache the ID of the currently active layer.
+        ' (We need to refer to it later, and the *active* layer ID will change after we add our new layer.)
+        Dim origLayerID As Long
+        origLayerID = PDImages.GetActiveImage.GetActiveLayerID()
+        
+        'With the selection successfully retrieved, optionally erase their original values
+        If eraseOriginalPixels Then
+            
+            'This step is simple if we are only cutting from a single layer...
+            If (Not useMergedImage) Then
+                PDImages.GetActiveImage.EraseProcessedSelection PDImages.GetActiveImage.GetActiveLayerIndex
+            
+            'If we're cutting from the merged image, we need to iterate all *visible* layers
+            ' (that's important - we will ignore invisible layers) and erase any pixels that
+            ' overlap the selected area.
+            Else
+                
+                'Iterate all layers but IGNORE INVISIBLE layers when erasing
+                For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                    If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
+                        PDImages.GetActiveImage.EraseProcessedSelection i
+                    End If
+                Next i
+                
+            End If
+            
+        End If
+        
+        'Create a name for the new layer.
+        ' (This varies depending on whether the source was a layer or the merged image.)
+        ' (Note also that we need to do this *before* creating a blank layer; otherwise the
+        ' active layer will be the blank one we create!)
+        Dim newLayerName As String
+        If useMergedImage Then
+            newLayerName = g_Language.TranslateMessage("New layer from selection")
+        Else
+            newLayerName = TextSupport.IncrementTrailingNumber(PDImages.GetActiveImage.GetActiveLayer.GetLayerName())
+        End If
+        
+        'Ask the current image to prepare a blank layer for us
+        Dim newLayerID As Long
+        newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+        
+        'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, tmpDIB
+        
+        'Note that tmpDIB now belongs to the parent image - do NOT erase it or modify pixels beyond this point.
+        
+        'Set the layer's initial (x, y) position to the current selection's top-left corner.
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Left
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Top
+        
+        'Set the new layer as the active layer
+        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
+        
+        'Notify the parent image that the entire image now needs to be recomposited, and note that
+        ' the changes we've made are vector-safe if...
+        ' 1) we're using copy (not cut), or...
+        ' 2) we're using cut and the source layer(s) are not vector layers
+        Dim undoRequest As PD_UndoType
+        undoRequest = UNDO_Image_VectorSafe
+        
+        'If "cut" was used, we need to see if any vector layers were affected
+        If eraseOriginalPixels Then
+            If useMergedImage Then
+                
+                'Do a quick iterate, looking for visible vector layers.  If any exist, we need to cache
+                ' a non-vector-safe Undo collection (which takes more time, so we avoid it unless necessary).
+                For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                    If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
+                        If PDImages.GetActiveImage.GetLayerByIndex(i).IsLayerVector Then
+                            undoRequest = UNDO_Image
+                            Exit For
+                        End If
+                    End If
+                Next i
+                
+            Else
+                If PDImages.GetActiveImage.GetLayerByID(origLayerID).IsLayerVector Then undoRequest = UNDO_Image
+            End If
+        End If
+        
+        'Notify the parent image of the change, and make sure to pass UNDO_IMAGE (*not* the vector-safe variety)
+        ' if a vector layer was chopped up.
+        PDImages.GetActiveImage.NotifyImageChanged undoRequest
+        
+    End If
+
+End Function
 
 'Load an image file, and add it to the current image as a new layer
 Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False)
@@ -423,12 +530,12 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         'Load the file in question
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
-            'Forcibly convert the new layer to 32bpp (failsafe only; it should already be in
-            ' 32-bpp mode)
+            'Forcibly convert the new layer to 32bpp
+            ' (failsafe only; it should already be in 32-bpp mode from the loader)
             If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
             
-            'We now have two pathways (because this function can create a new layer from file, or simply update
-            ' an existing layer's contents with an image file's contents)
+            'We now have two pathways (because this function can create a new layer from file,
+            ' or simply update an existing layer's contents with an image file's contents)
             
             'If we are just replacing the current layer, this step is easier
             If replaceActiveLayerInstead Then
@@ -1833,9 +1940,10 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
 End Function
 
 'Given an x/y pair (in IMAGE COORDINATES), return the top-most layer under that position, if any.
-' The long-named optional parameter, "givePreferenceToCurrentLayer", will check the currently active layer before checking any others.
-' If the mouse is over one of the current layer's points-of-interest (e.g. a resize node), the function will return that layer instead
-' of others that lay atop it.  This allows the user to move and resize the current layer preferentially, and only if the current layer
+' The long-named optional parameter, "givePreferenceToCurrentLayer", will check the currently active layer
+' before checking any others.  If the mouse is over one of the current layer's points-of-interest
+' (e.g. a resize node), the function will return that layer instead of others that lay atop it.
+' This allows the user to move and resize the current layer preferentially, and only if the current layer
 ' is completely out of the picture will other layers become activated.
 Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
@@ -1880,7 +1988,8 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
             'Only evaluate the current layer if the mouse is over it
             If Layers.GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
-                'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
+                'A layer was identified beneath the mouse!  If the pixel is non-transparent,
+                ' return this layer as the selected one.
                 If (Not toolpanel_MoveSize.chkIgnoreTransparent.Value) Then
                     GetLayerUnderMouse = i
                     Exit Function

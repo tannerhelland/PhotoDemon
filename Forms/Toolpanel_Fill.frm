@@ -264,7 +264,7 @@ Begin VB.Form toolpanel_Fill
          Width           =   2775
          _ExtentX        =   4895
          _ExtentY        =   1429
-         Caption         =   "sampling area"
+         Caption         =   "sample from"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdCheckBox chkAntialiasing 

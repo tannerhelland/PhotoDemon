@@ -207,7 +207,7 @@ End Sub
 'Given a pixel coordinate, return an RGBA quad for that coordinate.
 ' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
 Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQuad) As Boolean
-
+    
     'Before doing anything else, check to see if the x/y postition lies inside the DIB
     If (x >= 0) And (x < m_dibWidth) And (y >= 0) And (y < m_dibHeight) Then
         
