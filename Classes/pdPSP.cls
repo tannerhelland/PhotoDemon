@@ -18,21 +18,17 @@ Attribute VB_Exposed = False
 'Last updated: 04/February/21
 'Last update: get ICC profile embedding working when exporting
 '
-'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
-' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
-'
-'As always, import support was tackled first.  Export support may be added later.
+'This class (and its associated pdPSP- child classes) handle import and export of PSP
+' (JASC/Corel Paint Shop Pro) image files.  All code here has been custom-built for PhotoDemon,
+' with a particular emphasis on parsing performance.  This class will often outperform PSP's own
+' file parser, especially on images with vector layers.
 '
 'As with all 3rd-party PSP engines, Paint Shop Pro has many features that don't have direct analogs
-' in PhotoDemon.  Such features are still extracted by this class, but they will not "appear" in the
+' in PhotoDemon.  Such features are still extracted by this class, but they may not "appear" in the
 ' final loaded image.  My ongoing goal is to expand support in this class as various PSP features are
 ' implemented in PD itself.
 '
-'Finally, there is always a possibility that a particular file format may prove too cumbersome to
-' fully support. I make no guarantee that this class will ever reach full integration into PhotoDemon.
-'
-'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
-' "official" PSP spec at this URL (link good as of December 2020):
+'I've based all work in this class off the "official" PSP spec at this URL (link good as of December 2020):
 ' ftp://ftp.corel.com/pub/documentation/PSP/
 '
 'Older PSP specs were also useful.  You may be able to find them here (link good as of December 2020);

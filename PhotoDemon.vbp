@@ -1,6 +1,7 @@
 Type=Exe
 Reference=*\G{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}#1.0#0#..\..\Windows\SysWOW64\shell32.dll#Microsoft Shell Controls And Automation
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{F5078F18-C551-11D3-89B9-0000F81FE221}#6.0#0#..\..\Windows\SysWOW64\msxml6.dll#Microsoft XML, v6.0
 Module=PDMain; Modules\Main.bas
 Module=Public_Constants; Modules\PublicConstants.bas
 Module=Public_EnumsAndTypes; Modules\PublicEnumsAndTypes.bas
@@ -481,6 +482,7 @@ Form=Forms\Tools_ScreenVideo.frm
 Form=Forms\Tools_ScreenVideoPrefs.frm
 Form=Forms\Tools_ThemeEditor.frm
 ResFile32="Resources\PD_icons.RES"
+Class=pdSVG; Classes\pdSVG.cls
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
