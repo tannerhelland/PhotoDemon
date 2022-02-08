@@ -293,8 +293,11 @@ Friend Function GetCornersLockedRect() As RectF
 End Function
 
 Friend Function GetCompositeBoundaryRect() As RectF
-    'If m_CompositeActive Then...?
-    GetCompositeBoundaryRect = m_Bounds
+    If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
+        GetCompositeBoundaryRect = m_CompositeBounds
+    Else
+        GetCompositeBoundaryRect = m_Bounds
+    End If
 End Function
 
 'GetMaskDC() is used by functions like Tools_Fill.CommitFillResults() (which applies flood-fill paint to the
@@ -306,8 +309,8 @@ Friend Function GetMaskDC() As Long
     'The selection mask should always be ready?  TODO: see if this check is still necessary
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
-    If m_CompositeActive Then
-        'TODO
+    If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
+        GetMaskDC = m_CompositeMask.GetDIBDC
     Else
         If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
     End If
@@ -321,8 +324,8 @@ Friend Function GetCompositeMaskDIB() As pdDIB
     'The selection mask should always be ready?  TODO: see if this check is still necessary
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
-    If m_CompositeActive Then
-        'TODO
+    If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
+        Set GetCompositeMaskDIB = m_CompositeMask
     
     'If the current selection is *not* a composite, pass a reference to the current mask DIB as-is
     Else
@@ -336,7 +339,11 @@ End Function
 ' This function must *always* use the composite mask (if one exists).
 Friend Function GetCompositeMaskDIB_ViewportCopy() As pdDIB
     If (Not m_IsMaskReady) Then CreateSelectionMask
-    Set GetCompositeMaskDIB_ViewportCopy = m_ViewportReference
+    If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
+        Set GetCompositeMaskDIB_ViewportCopy = m_ViewportRefComposite
+    Else
+        Set GetCompositeMaskDIB_ViewportCopy = m_ViewportReference
+    End If
 End Function
 
 Friend Sub SetParentReference(ByRef srcImage As pdImage)
@@ -3449,19 +3456,22 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' I've left it disabled for now, pending additional testing.
         'cSurface.SetSurfacePixelOffset P2_PO_Half
         
+        'Render the composite outline (if multiple selections are active) or just the current outline
+        ' (if only one selection is active).
+        Dim srcOutline As pd2DPath
+        If m_CompositeActive Then
+            Set srcOutline = m_CompositeOutline
+        Else
+            Set srcOutline = m_CurrentOutline
+        End If
+        
         'Render the outline using PD's standard "white-on-black" outline technique
         If (renderType = PDSR_Outline) Then
             
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
+            PD2D.DrawPath cSurface, cPenUIBase, srcOutline
+            PD2D.DrawPath cSurface, cPenUITop, srcOutline
             
-            If m_CompositeActive Then
-                PD2D.DrawPath cSurface, cPenUIBase, m_CompositeOutline
-                PD2D.DrawPath cSurface, cPenUITop, m_CompositeOutline
-            Else
-                PD2D.DrawPath cSurface, cPenUIBase, m_CurrentOutline
-                PD2D.DrawPath cSurface, cPenUITop, m_CurrentOutline
-            End If
-        
         'Render the outline using an animated "marching ants" approach
         Else
             
@@ -3478,13 +3488,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
             cDottedPen.SetPenDashOffset m_AntDashOffset
             
-            If m_CompositeActive Then
-                PD2D.DrawPath cSurface, cBlackPen, m_CompositeOutline
-                PD2D.DrawPath cSurface, cDottedPen, m_CompositeOutline
-            Else
-                PD2D.DrawPath cSurface, cBlackPen, m_CurrentOutline
-                PD2D.DrawPath cSurface, cDottedPen, m_CurrentOutline
-            End If
+            PD2D.DrawPath cSurface, cBlackPen, srcOutline
+            PD2D.DrawPath cSurface, cDottedPen, srcOutline
                         
             'If marching ants are being used, make sure our timer is enabled now
             If (Not m_AntTimer.IsActive) Then
@@ -3522,13 +3527,6 @@ End Sub
 ' This function is generalized so that it can be used for composite selections
 ' (e.g. selections comprised of multiple independent selections).
 Private Sub CreateViewportOutlineForMask(ByRef srcRefRectF As RectF, ByRef imgViewportRectL As RectL_WH, ByRef viewportByteCopy() As Byte, ByRef viewportByteRect As RectL_WH, ByRef viewportDIB As pdDIB, ByRef dstOutline As pd2DPath)
-    
-    'srcRefRectF = m_ViewportRefRectF
-    'imgViewportRectL = imgViewportRectL
-    'viewportByteCopy = m_ViewportByteCopy
-    'viewportByteRect = m_ViewportByteCopyRect
-    'viewportDIB = m_ViewportReference
-    'dstOutline = m_CurrentOutline
     
     'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
     ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
