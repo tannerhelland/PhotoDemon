@@ -1536,6 +1536,9 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
         Exit Function
     End If
     
+    'If this is a vector layer, rasterize it
+    If imgLayers(targetLayerIndex).IsLayerVector Then Layers.RasterizeLayer targetLayerIndex
+    
     'Before doing anything else, null-pad the layer we will be processing.  (At present, this function only operates on a single layer.)
     imgLayers(targetLayerIndex).ConvertToNullPaddedLayer Me.Width, Me.Height
     
