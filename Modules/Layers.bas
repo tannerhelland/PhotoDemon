@@ -460,8 +460,8 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
         'Note that tmpDIB now belongs to the parent image - do NOT erase it or modify pixels beyond this point.
         
         'Set the layer's initial (x, y) position to the current selection's top-left corner.
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Left
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Top
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Left
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Top
         
         'Set the new layer as the active layer
         PDImages.GetActiveImage.SetActiveLayerByID newLayerID

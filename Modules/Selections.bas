@@ -49,6 +49,8 @@ End Sub
 'Remove the current selection
 Public Sub RemoveCurrentSelection(Optional ByVal updateUIToo As Boolean = True)
     
+    Debug.Print "RemoveCurrentSelection"
+    
     'Release the selection object and mark it as inactive
     PDImages.GetActiveImage.MainSelection.LockRelease
     PDImages.GetActiveImage.SetSelectionActive False
@@ -95,7 +97,7 @@ End Sub
 Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Reset any existing selection properties
-    PDImages.GetActiveImage.MainSelection.EraseCustomTrackers
+    PDImages.GetActiveImage.MainSelection.EraseCustomTrackers True
     
     'Activate the attached image's primary selection
     PDImages.GetActiveImage.SetSelectionActive True
@@ -109,6 +111,7 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
         .SetSelectionShape curShape
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_Area, toolpanel_Selections.cboSelArea(SelectionUI.GetSelectionSubPanelFromCurrentTool).ListIndex Else .SetSelectionProperty sp_Area, sa_Interior
         .SetSelectionProperty sp_Smoothing, toolpanel_Selections.cboSelSmoothing.ListIndex
+        .SetSelectionProperty sp_Combine, toolpanel_Selections.cboSelCombine.ListIndex
         .SetSelectionProperty sp_FeatheringRadius, toolpanel_Selections.sltSelectionFeathering.Value
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_BorderWidth, toolpanel_Selections.sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromCurrentTool).Value
         .SetSelectionProperty sp_RoundedCornerRadius, toolpanel_Selections.sltCornerRounding.Value
@@ -150,21 +153,20 @@ End Sub
 ' 2) If ANY OTHER mode is set, we need to back up the current selection so we can calculate a merge later.
 Public Sub NotifyNewSelectionStarting()
     
+    'This function is only relevant if a selection already exists
     If PDImages.GetActiveImage.IsSelectionActive Then
         
-        'Combine modes are TODO!
+        'In REPLACE mode, just erase the previous selection
         If (PDImages.GetActiveImage.MainSelection.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then
+            Debug.Print "replace mode"
+            Process "Remove selection", False, vbNullString, UNDO_Selection, g_CurrentTool
         
+        'In any other mode, we will need to retain the previous selection
         Else
-        
+            Debug.Print "mode OTHER than replace!"
+            PDImages.GetActiveImage.MainSelection.NotifyNewCompositeStarting
         End If
         
-        'Temporarily, always erase the existing selection
-        Process "Remove selection", False, vbNullString, UNDO_Selection, g_CurrentTool
-        
-    'A selection is not active - do nothing
-    'Else
-    
     End If
     
 End Sub

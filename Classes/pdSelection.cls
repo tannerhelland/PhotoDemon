@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 11/January/22
+'Last updated: 08/February/22
 'Last update: continued work on multiple selection support
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
@@ -119,9 +119,9 @@ End Enum
     Private Const pdsl_Width = 0, pdsl_Height = 1, pdsl_AspectRatio = 2
 #End If
 
-'The boundary coordinates of the current selection (if rectangular or elliptical).  This structure is also used
-' when click-dragging to transform the current preview.  It is not externally useful or accessible; only this class
-' needs to access it.
+'The boundary coordinates of the current selection (if rectangular or elliptical).
+' This structure is also used when click-dragging to transform the current preview.
+' These values are not externally useful or accessible; only this class requires access.
 Private m_CornersUnlocked As RectF_RB
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
@@ -145,14 +145,16 @@ Private m_IsLocked As Boolean
 Private m_IsWidthLocked As Boolean, m_IsHeightLocked As Boolean, m_IsAspectLocked As Boolean
 Private m_LockedWidth As Long, m_LockedHeight As Long, m_LockedAspectRatio As Double
 
-'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
+'When the selection is moved, it's necessary to know the difference between the current mouse point
+' and the original mouse point.  (This is particularly true for moving a complex polygon or lasso
+' selection.)
 Private m_MoveXDist As Single, m_MoveYDist As Single
 
 'Is this selection requesting text box updates? Because if it is, ignore external requests to update.
 Private m_RejectRefreshRequests As Boolean
 
-'Is a current "point of interest" selected?  (Note that different selection shapes may use this value differently; only certain values
-' are hard-coded across multiple shapes.)
+'Is a current "point of interest" selected?  (Note that different selection shapes may use this
+' value differently; only certain values are hard-coded across multiple shapes.)
 Private m_CurrentPOI As PD_PointOfInterest
 
 'Is transformation mode active?
@@ -179,13 +181,13 @@ Private m_IsMaskReady As Boolean
 ' both masks, the user is able to edit their current mask without ruining the old one.  Anyway, those old selection(s) are
 ' stored here.  (Note that when the user finalizes the current selection, the contents of this DIB are retained - because
 ' the user can switch away to a different tool, then return to edit the selection, and we still want it to be editable).
-Private m_OldMask As pdDIB
+Private m_OldMask As pdDIB, m_OldBounds As RectF
 
 'If both the old mask AND the current mask are in use, we must generate a 3rd selection DIB: the composite of both masks
 ' (using the current selection merge strategy). Technically speaking you could generate this on-the-fly from the other
 ' two masks, but there are significant performance concerns with doing this.  So we just cache the selection after
 ' computing it.  For things like processing a fill or paint operation against the image, *this* is the mask you must use.
-Private m_CompositeMask As pdDIB
+Private m_CompositeMask As pdDIB, m_CompositeBounds As RectF
 
 'Modify basic "marching ants" outline properties.  Note that these have performance considerations, so changes need to be
 ' intensively profiled to ensure they don't ruin the end-user experience.  (Note that things like animation frametime are
@@ -202,8 +204,7 @@ Private m_CurrentOutline As pd2DPath, m_CurrentOutlineIsReady As Boolean
 
 'Note that we need to make copies of all the above selection UI rendering objects for both the old mask, and the composite mask.
 ' (They have to be rendered too!)
-
-'TODO: figure out how many (and which) objects need to be cached for each mask version.
+Private m_OldOutline As pd2DPath, m_OldOutlineIsReady As Boolean
 
 'External forces may need to suspend animations for various reasons (e.g. a separate dialog is being raised).
 ' This value will be set to TRUE if animations are currently allowed; FALSE otherwise.  Note that this value is
@@ -262,6 +263,12 @@ Private m_ViewportOverlay As pdDIB, m_OverlayIsReady As Boolean
 '(Note that we also store the dimensions of this array, and its (x, y) offset relative to the underlying image.)
 Private m_ViewportByteCopy() As Byte, m_ViewportByteCopyRect As RectL_WH
 Private m_ViewportEdges As pdEdgeDetector
+
+'All the above settings also need to be kept for the old selection (if any) and composite selection (if any)
+Private m_ViewportRefOld As pdDIB, m_ViewportRefComposite As pdDIB
+Private m_ViewportByteCopyOld() As Byte, m_ViewportByteCopyRectOld As RectL_WH
+Private m_ViewportByteCopyComposite() As Byte, m_ViewportByteCopyRectComposite As RectL_WH
+Private m_ViewportRefOldRectF As RectF, m_ViewportRefCompositeRectF As RectF
 
 'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
 ' locally (to improve rendering time), we need to regenerate the cache whenever rendering settings change, independent of
@@ -383,6 +390,7 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
         
         'Combine mode changes always require a recalculation of the mask
         Case sp_Combine
+            Debug.Print "combine set: " & propertyValue
             m_IsMaskReady = False
         
         Case sp_BorderWidth
@@ -436,13 +444,13 @@ Friend Sub InitFromXML(ByRef srcXML As String)
             cParams.SetParamString srcXML
             
             'All selections share a core set of universal properties
-            SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
-            SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
-            SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", es_None)
-            SetSelectionProperty sp_Combine, cParams.GetLong("SelectionCombine", pdsm_Replace, True)
-            SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
-            SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
-            SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
+            Me.SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
+            Me.SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
+            Me.SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", es_None)
+            Me.SetSelectionProperty sp_Combine, cParams.GetLong("SelectionCombine", pdsm_Replace, True)
+            Me.SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
+            Me.SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
+            Me.SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
             
             'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
             With m_CornersLocked
@@ -638,17 +646,18 @@ Friend Function GetSelectionAsXML() As String
     
 End Function
 
-'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the new selection on-screen,
-' and it doesn't render a matching selection mask.  The caller is responsible for that.
+'Simple - use this to select the entire image attached to this selection object.
+' Note that this DOES NOT render the new selection on-screen, and it doesn't render a matching selection mask.
+' The caller is responsible for those tasks.
 Friend Sub SelectAll()
 
     'Set basic information about this selection
-    SetSelectionShape ss_Rectangle
-    SetSelectionProperty sp_Area, sa_Interior
-    SetSelectionProperty sp_Combine, pdsm_Replace
-    SetSelectionProperty sp_FeatheringRadius, 0
-    SetSelectionProperty sp_Smoothing, es_Antialiased
-    SetSelectionProperty sp_RoundedCornerRadius, 0#
+    Me.SetSelectionShape ss_Rectangle
+    Me.SetSelectionProperty sp_Area, sa_Interior
+    Me.SetSelectionProperty sp_Combine, pdsm_Replace
+    Me.SetSelectionProperty sp_FeatheringRadius, 0
+    Me.SetSelectionProperty sp_Smoothing, es_Antialiased
+    Me.SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
         .Left = 0!
@@ -666,6 +675,7 @@ Friend Sub SelectAll()
     
     m_IsTransformable = True
     m_IsMaskReady = False
+    m_CompositeActive = False
     
 End Sub
 
@@ -921,8 +931,9 @@ Friend Function GetSelectionAsRegion() As pd2DRegion
     
 End Function
 
-'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
-' Note that this this should only be called after a transformation type has been set (via SetActiveSelectionPOI(), above).
+'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by
+' the current transform operation.  This should only be called after a transformation type has been set
+' (via SetActiveSelectionPOI(), above).
 Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
 
     'If new transform coordinates are being set, this selection must be "unlocked" first
@@ -1997,10 +2008,31 @@ Friend Sub LockRelease()
     m_IsLocked = False
 End Sub
 
+'For transforms to work, we need to apply any transformation matrices to *the original* polygon/lasso points.
+' As such, we maintain a persistent second copy of the current point collection, backed up whenever the
+' current point collection changes.
+Private Sub BackupCurrentSelectionPoints()
+
+    Select Case m_SelectionShape
+    
+        Case ss_Polygon
+            If (UBound(m_PolygonPointsBackup) < m_NumOfPolygonPoints - 1) Then ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As PointFloat
+            CopyMemoryStrict VarPtr(m_PolygonPointsBackup(0)), VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
+            
+        Case ss_Lasso
+            If (UBound(m_LassoPointsBackup) < m_NumOfLassoPoints - 1) Then ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As PointFloat
+            CopyMemoryStrict VarPtr(m_LassoPointsBackup(0)), VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
+            
+    End Select
+
+End Sub
+
 'When a selection is erased, we can free up some internal tracking metrics.  If we don't do this, immediately starting a
 ' new selection of identical type (e.g. removing a polygon selection, starting a polygon selection) may result in some
 ' bits of the previous selection getting reused.
-Friend Sub EraseCustomTrackers()
+Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = False)
+    
+    Debug.Print "EraseCustomTrackers: " & keepCompositeData
     
     m_NumOfLassoPoints = 0
     m_NumOfPolygonPoints = 0
@@ -2017,22 +2049,34 @@ Friend Sub EraseCustomTrackers()
     m_IsTransformable = False
     m_IsMaskReady = False
     
+    If keepCompositeData Then
+        Debug.Print "(retaining old and composite masks)"
+    Else
+        m_CompositeActive = False
+        Set m_OldMask = Nothing
+        Set m_OldOutline = Nothing
+        Set m_CompositeMask = Nothing
+        'composite outline?
+    End If
+    
 End Sub
 
 'Create a selection mask based on the current selection type.  A few items to note:
-' 1) The selection mask is always the size of the full image.  This makes transforms (e.g. "grow selection") much easier to handle.
-' 2) Black pixels (0) in the mask represent unselected pixels in the image.  White (255) represents selected.  Other values can be
-'     used to specify aliasing or partial selections.
+' 1) The selection mask is always the size of the full image.
+'    (This makes transforms like "grow/shrink selection" much easier to handle.)
+' 2) Black pixels (0) in the mask represent unselected pixels in the image.  White (255) represents selected.
+'     Other values can be used to specify "partially" selected values (including antialiasing along edges).
 ' 3) The selection mask is stored as a pdDIB object, so any image filters can be applied to it.
-' 4) For shape-based selections (rectangle, square, etc), the selection's dimensions need to be set BEFORE calling this function.  This function
-'     relies on things like m_CornersLocked.Left and m_CornersLocked.Width to know where to render the mask.  For non-shape-based selections, this function will call a
-'     separate function to find the bounding rect.
+' 4) For shape-based selections (rectangle, square, etc), the selection's dimensions need to be set BEFORE
+'     calling this function.  This function relies on things like m_CornersLocked.Left and m_CornersLocked.Width
+'     to know where to render the mask.  For non-shape-based selections, this function will call a separate
+'     function to manually determine the bounding rect.
 Private Sub CreateSelectionMask()
 
     'Debug.Print "(" & Timer & ") Creating mask now..."
     
-    'Note that a mask has been created for this image.  This is important for saving/loading selections, as a new mask must be generated
-    ' if one isn't already present.
+    'Note that a mask has been created for this image.  This is important for saving/loading selections,
+    ' as a new mask must be generated if one isn't already present.
     ' TODO: see if we can move this to the end of the function without consequences.
     m_MaskHasBeenCreated = True
     
@@ -2439,6 +2483,54 @@ Private Sub CreateSelectionMask()
     ' (We only apply feathering when locked-in, as the performance penalty is severe.)
     If m_IsLocked And (GetSelectionProperty_Long(sp_Smoothing) = es_FullyFeathered) And (GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then ApplyFeatheringToMask
     
+    'The selection mask is now complete.
+    
+    'If a selection mode other than REPLACE is active, we now need to merge the new selection mask
+    ' with the old selection mask, and generate a new composite mask from the result.
+    Debug.Print "Reached end of CreateSelectionMask: " & m_CompositeActive
+    If (Me.GetSelectionProperty_Long(sp_Combine) <> pdsm_Replace) And m_CompositeActive Then CreateCompositeSelectionMask
+    
+End Sub
+
+'Merge the new selection mask with the old selection mask to produce a new "composite" selection mask.
+Private Sub CreateCompositeSelectionMask()
+    
+    Debug.Print "CreateCompositeSelectionMask() starting"
+    
+    'First things first: ensure a composite mask is actually required.
+    If (Not m_CompositeActive) Then Exit Sub
+    If (Me.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then Exit Sub
+    
+    'Failsafe checks only
+    If (m_OldMask Is Nothing) Then Exit Sub
+    
+    Debug.Print "(actually creating composite mask now)"
+    
+    'Start by creating a DIB to hold the results of the merge.  (At first, this will simply hold
+    ' the contents of the new selection mask - by design!)
+    If (m_CompositeMask Is Nothing) Then Set m_CompositeMask = New pdDIB
+    m_CompositeMask.CreateFromExistingDIB m_OldMask
+    
+    'Find the union rect of the old mask and the current one.  Depending on the combine mode,
+    ' we will need to iterate through these pixels and modify the combined mask accordingly.
+    Dim rectUnion As RectF
+    PDMath.UnionRectF rectUnion, m_Bounds, m_OldBounds
+    
+    'Ensure boundaries are safe
+    If (rectUnion.Left < 0) Then rectUnion.Left = 0
+    If (rectUnion.Top < 0) Then rectUnion.Top = 0
+    If (rectUnion.Width > m_CompositeMask.GetDIBWidth) Then rectUnion.Width = m_CompositeMask.GetDIBWidth
+    If (rectUnion.Height > m_CompositeMask.GetDIBHeight) Then rectUnion.Height = m_CompositeMask.GetDIBHeight
+    
+    'Perform the merge
+    m_SelMask.AlphaBlendToDC m_CompositeMask.GetDIBDC
+    
+    'Boundaries will need to be done differently in the future, but for now, let's just check
+    ' union behavior because it's easy lol
+    m_CompositeBounds = rectUnion
+    
+    Debug.Print "Composite mask boundaries: " & m_CompositeBounds.Left & ", " & m_CompositeBounds.Top & ", " & m_CompositeBounds.Width & ", " & m_CompositeBounds.Height
+    
 End Sub
 
 'When calculating selection boundaries, all bounds must ultimately lie on or inside image borders.  Use this function to verify that.
@@ -2711,8 +2803,8 @@ Private Function GenerateArbitraryHash(ParamArray srcStuff() As Variant) As Stri
 End Function
 
 'Render the current selection mask using one of several methods.  Required inputs include:
-' 1) Destination DIB, assumed to be the front buffer (e.g. the full composite image has already been rendered to this surface, in its
-'     proper location, and any color management has already been applied to it)
+' 1) Destination DIB, assumed to be the front buffer (e.g. the full composite image has *already*
+'     been rendered to this surface, in its proper location, and color management has already been handled)
 ' 2) Source image (we could technically pull from our local copy, but I'd like to remove that dependency in the future)
 ' 3) Destination canvas (which determines things like the current zoom and scroll position)
 '
@@ -2728,7 +2820,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
     'If the current selection lies fully off-image, skip rendering entirely.
-    If Me.AreAllCoordinatesInvalid Then Exit Sub
+    If Me.AreAllCoordinatesInvalid And (Not m_CompositeActive) Then Exit Sub
     
     'Debug builds may want to measure time taken; I've currently commented-out reporting capabilities, but this function
     ' is fully wired for detailed reporting as future needs may require.
@@ -2802,7 +2894,9 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' regenerate their own caches against the new temporary image.
     Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
     
-    'If any of our "viewport cache is ready" checks failed, generate a new cache now
+    'If any of our "viewport cache is ready" checks failed, generate a new cache now - and critically,
+    ' we need to regenerate a new cached copy of both the *active* selection, and the *composite* selection
+    ' (if one exists).
     If (Not m_ViewportRefReady) Then
         
         VBHacks.GetHighResTime startTime
@@ -2837,6 +2931,60 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             .Height = dstRectF.Height
             GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, False  'True
         End With
+        
+        'If a composite is active, repeat the above steps for the old and composite DIB(s).
+        ' (dstRectF is no longer needed, so we can freely repurpose it for these DIBs.)
+        If m_CompositeActive Then
+            
+            'Old mask (which combines with the new mask to get the composite mask)
+            If (Not m_OldMask Is Nothing) Then
+                
+                'Calculate blt rect
+                Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_OldBounds, m_ViewportRefOldRectF
+                
+                'Ensure DIB exists at correct size
+                If (m_ViewportRefOld Is Nothing) Then Set m_ViewportRefOld = New pdDIB
+                If (m_ViewportRefOld.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportRefOld.GetDIBHeight <> imgViewportRectL.Height) Then
+                    m_ViewportRefOld.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
+                    m_ViewportRefOld.SetInitialAlphaPremultiplicationState True
+                Else
+                    m_ViewportRefOld.ResetDIB 0
+                End If
+                
+                'Perform blt
+                With m_ViewportRefOldRectF
+                    .Left = .Left - viewportIntersectRectCanvas.Left
+                    .Top = .Top - viewportIntersectRectCanvas.Top
+                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefOld, .Left, .Top, .Width, .Height, m_OldMask, m_OldBounds.Left, m_OldBounds.Top, m_OldBounds.Width, m_OldBounds.Height, , interpolationType, , , isZoomedIn, False
+                End With
+                
+            End If
+            
+            'Now repeat all the above steps for the composite mask
+            If (Not m_CompositeMask Is Nothing) Then
+                
+                'Calculate blt rect
+                Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_CompositeBounds, m_ViewportRefCompositeRectF
+                
+                'Ensure DIB exists at correct size
+                If (m_ViewportRefComposite Is Nothing) Then Set m_ViewportRefComposite = New pdDIB
+                If (m_ViewportRefComposite.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportRefComposite.GetDIBHeight <> imgViewportRectL.Height) Then
+                    m_ViewportRefComposite.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
+                    m_ViewportRefComposite.SetInitialAlphaPremultiplicationState True
+                Else
+                    m_ViewportRefComposite.ResetDIB 0
+                End If
+                
+                'Perform blt
+                With m_ViewportRefCompositeRectF
+                    .Left = .Left - viewportIntersectRectCanvas.Left
+                    .Top = .Top - viewportIntersectRectCanvas.Top
+                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefComposite, .Left, .Top, .Width, .Height, m_CompositeMask, m_CompositeBounds.Left, m_CompositeBounds.Top, m_CompositeBounds.Width, m_CompositeBounds.Height, , interpolationType, , , isZoomedIn, False
+                End With
+                
+            End If
+            
+        End If
         
         'Mark the finished viewport cache as "ready"; we won't regenerate it unless the underlying selection mask
         ' (or the current viewport position/zoom) changes
@@ -2892,22 +3040,58 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
     End If
     
+    'TODO: figure out what to render when a composite is active.
     If useOutlineRenderingInstead Then
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     Else
         RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
     End If
-    
+'
+'    'A composite selection is active, meaning there is both an active selection (editable) and one or more
+'    ' old selections merged into a single composite selection (not editable).
+'    If m_CompositeActive Then
+'
+'        'Is the user actively transforming a selection?  If so, render the active selection as-is.
+'        If m_TransformModeActive Then
+'
+'            If useOutlineRenderingInstead Then
+'                RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
+'            Else
+'                RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
+'            End If
+'
+'            'Next, render the old selection as an outline.
+'
+'        'The user is not currently interacting with the selection.  Just render the composite selection.
+'        Else
+'
+'        End If
+'
+'    'If no composite is active, just render the existing selection as-is.
+'    Else
+'
+'        If useOutlineRenderingInstead Then
+'            RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
+'        Else
+'            RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
+'        End If
+'
+'    End If
+'
 End Sub
 
-'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
-' using the HIGHLIGHT or LIGHTBOX selection styles.
+'Child function of RenderSelectionToViewport(), above.
+' Renders the current selection mask to a target viewport, using the HIGHLIGHT or LIGHTBOX selection styles.
+' (These are effectively semi-transparent masks representing the active selection.)
 Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640, Optional ByVal renderOpacity As Single = 50!)
     
-    'To improve performance, this function caches the current selection overlay image as a persistent DIB.  (This lets
-    ' us cheat and directly AlphaBlend the cached result during intensive operations like paint strokes.)  If the associated
-    ' viewport cached has changed, we obviously need to regenerate our overlay cache - but we also need to regenerate the
-    ' cache if the current selection UI settings have changed (such as selection rendering color).
+    'To improve performance, this function caches the current selection overlay image as a persistent DIB.
+    ' (This lets us cheat and directly AlphaBlend the cached result during intensive operations like
+    ' paint strokes.)
+    '
+    'If the associated viewport cache has changed in some way (e.g. user changed scroll or zoom),
+    ' we obviously need to regenerate our cached overlay.  We also need to regenerate the cache if
+    ' the current selection UI settings have changed (such as selection UI mask color).
     Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
     If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor, renderOpacity), False)
     
@@ -2928,12 +3112,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_ViewportOverlay.ResetDIB 0
         End If
         
-        'In the future, I may allow selection masks to mask specific color channels (which would be awesome), but for now,
-        ' we treat the mask as if it contains grayscale entities only.  That allows us to cheat and use byte-sized lookup tables.
-        
         'Start by generating a lookup table of all 256 possible overlay colors.
-        Dim overlayLookup() As Long
-        ReDim overlayLookup(0 To 255) As Long
+        Dim overlayLookup(0 To 255) As Long
         
         Dim tmpRGBA As RGBQuad, i As Long
         Dim newR As Long, newG As Long, newB As Long, newA As Single
@@ -2944,8 +3124,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         newG = Colors.ExtractGreen(renderColor)
         newB = Colors.ExtractBlue(renderColor)
         
-        'Convert opacity to a [0, 1] scale, and because we're multiplying it by (color / 255), we can go a step
-        ' further and just pre-multiply it against (1 / 255)
+        'Convert opacity to a [0, 1] scale, and because we're multiplying it by (color / 255),
+        ' we can go a step further and just pre-multiply it against (1 / 255)
         Dim opacityMultiplier As Single
         opacityMultiplier = renderOpacity * 0.01! * (1! / 255!)
             
@@ -2999,7 +3179,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
         End If
         
-        'To shortcut per-pixel fill operations, fill the entire DIB with the default "background" color before we start.
+        'To shortcut per-pixel fill operations, fill the entire DIB with the default "background"
+        ' color before we start.
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
         GDI_Plus.GDIPlus_GraphicsSetCompositingMode cSurface.GetHandle, GP_CM_SourceCopy
@@ -3007,8 +3188,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_ViewportOverlay.GetDIBWidth, m_ViewportOverlay.GetDIBHeight
         Set cBrush = Nothing: Set cSurface = Nothing
         
-        'With the lookup table successfully generated, we can generate the overlay using identical code (regardless of the
-        ' actual overlay UI style)
+        'With the lookup table successfully generated, we can generate the overlay using identical code
+        ' (regardless of the actual overlay UI style)
         Dim x As Long, y As Long
         Dim overlayPixels() As Long, maskPixels() As Long
         Dim overlaySALine As SafeArray1D, maskSALine As SafeArray1D
@@ -3016,17 +3197,25 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
         Dim viewportIntersectRectCanvas As RectF
         srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
-    
+        
+        'Ensure the correct source rect is used
+        Dim srcViewportRefRectF As RectF
+        If m_CompositeActive Then
+            srcViewportRefRectF = m_ViewportRefCompositeRectF
+        Else
+            srcViewportRefRectF = m_ViewportRefRectF
+        End If
+        
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
-        loopStartX = Int(m_ViewportRefRectF.Left)
-        loopStartY = Int(m_ViewportRefRectF.Top)
+        loopStartX = Int(srcViewportRefRectF.Left)
+        loopStartY = Int(srcViewportRefRectF.Top)
         
         '(When the viewport is deeply zoomed in, we need larger compensation boundaries around the image's edges.)
         Dim extendX As Single, extendY As Single
         extendX = 1.999999
         extendY = 1.999999
-        loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + extendX)
-        loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + extendY)
+        loopEndX = loopStartX + Int(srcViewportRefRectF.Width + extendX)
+        loopEndY = loopStartY + Int(srcViewportRefRectF.Height + extendY)
         
         If (loopEndX > m_ViewportOverlay.GetDIBWidth - 1) Then loopEndX = m_ViewportOverlay.GetDIBWidth - 1
         If (loopEndY > m_ViewportOverlay.GetDIBHeight - 1) Then loopEndY = m_ViewportOverlay.GetDIBHeight - 1
@@ -3038,10 +3227,20 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Failsafe check for disastrous inputs
         If (loopStartX >= 0) And (loopStartY >= 0) Then
         
-            'With everything prepared, we can now (finally) apply the results to the overlay DIB.  Note that we use a
-            ' per-scanline approach for accessing pixels.  This lets us use 1-dimensional arrays instead of 2-dimensional
-            ' arrays for a slight performance boost.
-            m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+            'With everything prepared, we can now (finally) apply the results to the overlay DIB.
+            ' Note that we use a per-scanline approach for accessing pixels.
+            ' (This lets us use 1-dimensional arrays instead of 2-dimensional arrays for a slight performance boost.)
+            '
+            'Update as of 9.0: composite selections makes this step a bit more convoluted.
+            ' If a composite mask exists, use it for the operation.  Otherwise, use the normal mask.
+            If m_CompositeActive Then
+                Debug.Print "using m_ViewportRefComposite for overlay"
+                m_ViewportRefComposite.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+            Else
+                Debug.Print "using m_ViewportReference for overlay"
+                m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+            End If
+            
             Dim viewRefPtr As Long, viewRefStride As Long
             viewRefPtr = maskSALine.pvData
             viewRefStride = maskSALine.cElements * 4
@@ -3174,6 +3373,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 End If
                 
             End If
+            
+            'TODO: how to render composite outline, if one exists?
         
         '99% of the time, we'll be using our standard, "universal" outline detector.
         Else
@@ -3378,7 +3579,7 @@ Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional igno
     End If
     
 End Function
-        
+
 'Create a selection from selection data previously saved to file
 ' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
 '        request a render if they want one.)
@@ -3951,6 +4152,12 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
 End Function
 
+'Want to suspend (or subsequently re-enable) animations?  Use this sub.  Note that it does *not* touch the timer object,
+' by design - the activation and deactivation of the timer object is handled elsewhere.
+Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
+    m_AnimationsAllowed = allowedState
+End Sub
+
 'Normally, this class can auto-detect any changes that affect the selection mask.  Raster selections are an exception to this,
 ' because external functions can "hook" into the raster and modify it at will.  If a function does this, it needs to notify us,
 ' so we can generate a new viewport-specific overlay matching the updated raster data.
@@ -3960,10 +4167,42 @@ Friend Sub NotifyRasterDataChanged()
     m_ViewportRefReady = False
 End Sub
 
-'Want to suspend (or subsequently re-enable) animations?  Use this sub.  Note that it does *not* touch the timer object,
-' by design - the activation and deactivation of the timer object is handled elsewhere.
-Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
-    m_AnimationsAllowed = allowedState
+'If a new composite selection is about to start, we must be notified so we can cache the old selection
+Friend Sub NotifyNewCompositeStarting()
+    
+    'We now need to backup the current selection.
+    If (m_OldMask Is Nothing) Then Set m_OldMask = New pdDIB
+    
+    'If a composite mask already exists, *it* is the selection we want.
+    If m_CompositeActive And (Not m_CompositeMask Is Nothing) Then
+        
+        Debug.Print "Old mask being created from composite mask"
+        m_OldMask.CreateFromExistingDIB m_CompositeMask
+        m_OldBounds = m_CompositeBounds
+        
+    'Otherwise, we are starting a new composite selection so use the existing mask as the backup.
+    Else
+        
+        'Copy the current selection mask into the "old" selection mask object
+        Debug.Print "Old mask being created from current mask"
+        m_OldMask.CreateFromExistingDIB m_SelMask
+        m_OldBounds = m_Bounds
+        
+    End If
+    
+    'TODO: regardless of creationg method (above), ensure an outline object exists for the selection.
+    
+    'Mirror the state of the current outline object
+    m_OldOutlineIsReady = m_CurrentOutlineIsReady
+    If m_OldOutlineIsReady Then
+        Set m_OldOutline = New pd2DPath
+        m_OldOutline.CloneExistingPath m_CurrentOutline
+    End If
+    
+    'Set the composite flag to TRUE
+    Debug.Print "new composite created - composite active!  boundaries: " & m_OldBounds.Left & ", " & m_OldBounds.Top & ", " & m_OldBounds.Width & ", " & m_OldBounds.Height
+    m_CompositeActive = True
+    
 End Sub
 
 Private Sub Class_Initialize()
@@ -3978,8 +4217,9 @@ Private Sub Class_Initialize()
     'Note that a mask has never been created for this selection
     m_MaskHasBeenCreated = False
     
-    'Mark it as not transformable... yet
+    'Mark it as not transformable or composite... yet
     m_IsTransformable = False
+    m_CompositeActive = False
     
     'Prepare the property dictionary
     Set m_PropertyDict = New pdDictionary
@@ -4010,11 +4250,10 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    If (Not m_SelMask Is Nothing) Then
-        m_SelMask.EraseDIB
-        Set m_SelMask = Nothing
-    End If
-
+    'Manually free all masks before terminating
+    Set m_SelMask = Nothing
+    Set m_OldMask = Nothing
+    
 End Sub
 
 Private Sub m_AntTimer_Timer()
@@ -4047,22 +4286,4 @@ Private Sub m_AntTimer_Timer()
         
     End If
     
-End Sub
-'For transforms to work, we need to apply any transformation matrices to *the original* polygon/lasso points.
-' As such, we maintain a persistent second copy of the current point collection, backed up whenever the
-' current point collection changes.
-Private Sub BackupCurrentSelectionPoints()
-
-    Select Case m_SelectionShape
-    
-        Case ss_Polygon
-            If (UBound(m_PolygonPointsBackup) < m_NumOfPolygonPoints - 1) Then ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As PointFloat
-            CopyMemoryStrict VarPtr(m_PolygonPointsBackup(0)), VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
-            
-        Case ss_Lasso
-            If (UBound(m_LassoPointsBackup) < m_NumOfLassoPoints - 1) Then ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As PointFloat
-            CopyMemoryStrict VarPtr(m_LassoPointsBackup(0)), VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
-            
-    End Select
-
 End Sub

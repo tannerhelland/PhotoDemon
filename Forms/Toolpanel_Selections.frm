@@ -1207,14 +1207,6 @@ Private Sub cboSelSmoothing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boole
     End If
 End Sub
 
-Private Sub cboSize_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        newTargetHwnd = Me.ttlPanel(Index + 2).hWnd
-    Else
-        If Me.tudSel(Index * 2).Enabled Then newTargetHwnd = Me.tudSel(Index * 2).hWnd Else newTargetHwnd = Me.cboSelArea(Index).hWnd
-    End If
-End Sub
-
 Private Sub cboWandCompare_Click()
     
     'Limit the accuracy of the tolerance for certain comparison methods.
