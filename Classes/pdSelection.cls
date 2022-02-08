@@ -202,9 +202,10 @@ Private m_AntDashes() As Single, m_AntDashOffset As Single
 ' to viewport coordinates) is cached to improve performance.  Similarly, certain outline rendering properties are also cached.
 Private m_CurrentOutline As pd2DPath, m_CurrentOutlineIsReady As Boolean
 
-'Note that we need to make copies of all the above selection UI rendering objects for both the old mask, and the composite mask.
-' (They have to be rendered too!)
+'Note that we need to make copies of all the above selection UI rendering objects for both the old mask,
+' and the composite mask. (They have to be rendered too!)
 Private m_OldOutline As pd2DPath, m_OldOutlineIsReady As Boolean
+Private m_CompositeOutline As pd2DPath
 
 'External forces may need to suspend animations for various reasons (e.g. a separate dialog is being raised).
 ' This value will be set to TRUE if animations are currently allowed; FALSE otherwise.  Note that this value is
@@ -2497,9 +2498,12 @@ Private Sub CreateCompositeSelectionMask()
     
     Debug.Print "CreateCompositeSelectionMask() starting"
     
+    Dim curCombineMode As PD_SelectionCombine
+    curCombineMode = Me.GetSelectionProperty_Long(sp_Combine)
+    
     'First things first: ensure a composite mask is actually required.
     If (Not m_CompositeActive) Then Exit Sub
-    If (Me.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then Exit Sub
+    If (curCombineMode = pdsm_Replace) Then Exit Sub
     
     'Failsafe checks only
     If (m_OldMask Is Nothing) Then Exit Sub
@@ -2522,12 +2526,23 @@ Private Sub CreateCompositeSelectionMask()
     If (rectUnion.Width > m_CompositeMask.GetDIBWidth) Then rectUnion.Width = m_CompositeMask.GetDIBWidth
     If (rectUnion.Height > m_CompositeMask.GetDIBHeight) Then rectUnion.Height = m_CompositeMask.GetDIBHeight
     
-    'Perform the merge
-    m_SelMask.AlphaBlendToDC m_CompositeMask.GetDIBDC
+    'Perform the merge (varies according to combine mode)
     
-    'Boundaries will need to be done differently in the future, but for now, let's just check
-    ' union behavior because it's easy lol
-    m_CompositeBounds = rectUnion
+    'Add mode is easiest, because we can simply AlphaBlend the old and current masks together.
+    ' (Boundary calculation is also straightforward - just a simple union!)
+    If (curCombineMode = pdsm_Add) Then
+        m_SelMask.AlphaBlendToDC m_CompositeMask.GetDIBDC
+        m_CompositeBounds = rectUnion
+        
+    'Subtract mode requires manual per-pixel iteration
+    ElseIf (curCombineMode = pdsm_Subtract) Then
+        
+        
+        
+    'Intersect mode requires manual per-pixel iteration
+    ElseIf (curCombineMode = pdsm_Intersect) Then
+    
+    End If
     
     Debug.Print "Composite mask boundaries: " & m_CompositeBounds.Left & ", " & m_CompositeBounds.Top & ", " & m_CompositeBounds.Width & ", " & m_CompositeBounds.Height
     
@@ -2934,6 +2949,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         'If a composite is active, repeat the above steps for the old and composite DIB(s).
         ' (dstRectF is no longer needed, so we can freely repurpose it for these DIBs.)
+        m_OldOutlineIsReady = False
         If m_CompositeActive Then
             
             'Old mask (which combines with the new mask to get the composite mask)
@@ -3046,7 +3062,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     Else
         RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
     End If
-'
+
 '    'A composite selection is active, meaning there is both an active selection (editable) and one or more
 '    ' old selections merged into a single composite selection (not editable).
 '    If m_CompositeActive Then
@@ -3379,81 +3395,23 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         '99% of the time, we'll be using our standard, "universal" outline detector.
         Else
             
-            'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
-            ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
-            '
-            'From its values, we want to construct an integer-only set of boundaries, appropriate for a per-pixel loop.
-            Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
-            loopStartX = Int(m_ViewportRefRectF.Left)
-            loopStartY = Int(m_ViewportRefRectF.Top)
-            If (loopStartX < 0) Then loopStartX = 0
-            If (loopStartY < 0) Then loopStartY = 0
-            loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + 1.999999)
-            loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + 1.999999)
+            'Create an outline for the active selection
+            CreateViewportOutlineForMask m_ViewportRefRectF, imgViewportRectL, m_ViewportByteCopy, m_ViewportByteCopyRect, m_ViewportReference, m_CurrentOutline
             
-            If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
-            If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
-            If (loopStartX > loopEndX) Then loopStartX = loopEndX
-            If (loopStartY > loopEndY) Then loopStartY = loopEndY
-            
-            'We now want to use those loop boundaries to produce a byte-only copy of the selection mask.  (This is required
-            ' by the edge-detection engine, and it also gives a chance to better handle things like feathered selection edges.)
-            Dim newWidth As Long, newHeight As Long
-            newWidth = (loopEndX - loopStartX) + 4
-            newHeight = (loopEndY - loopStartY) + 4
-            
-            If (newWidth <> m_ViewportByteCopyRect.Width) Or (newHeight <> m_ViewportByteCopyRect.Height) Then
-                ReDim m_ViewportByteCopy(0 To newWidth, 0 To newHeight) As Byte
-                m_ViewportByteCopyRect.Width = newWidth
-                m_ViewportByteCopyRect.Height = newHeight
-            End If
-            
-            'We're going to offset each line by several pixels on either side; this guarantees blank boundary pixels,
-            ' which lets us skip time-consuming boundary checks.
-            Dim xModifier As Long, yModifier As Long
-            xModifier = (-loopStartX + 2)
-            yModifier = (-loopStartY + 2)
-            
-            Dim maskPixels() As Long, maskSALine As SafeArray1D
-            
-            Dim x As Long, y As Long, tmpXPosition As Long, tmpYPosition As Long
-            
-            For y = loopStartY To loopEndY
-                m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
-                tmpYPosition = y + yModifier
-            For x = loopStartX To loopEndX
-                If ((maskPixels(x) And 255) > 64) Then
-                    m_ViewportByteCopy(x + xModifier, tmpYPosition) = 255
-                Else
-                    m_ViewportByteCopy(x + xModifier, tmpYPosition) = 0
+            '...then repeat the steps, as necessary, for the composite outline (and previous selection)
+            If m_CompositeActive Then
+                
+                'The old outline does not need to be re-created unless the viewport has changed since the previous construction
+                If (Not m_ViewportRefOld Is Nothing) Then
+                    If (Not m_OldOutlineIsReady) Then
+                        CreateViewportOutlineForMask m_ViewportRefOldRectF, imgViewportRectL, m_ViewportByteCopyOld, m_ViewportByteCopyRectOld, m_ViewportRefOld, m_OldOutline
+                        m_OldOutlineIsReady = True
+                    End If
                 End If
-            Next x
-            Next y
-            
-            'Next, we must manually mirror edge pixels along a 1px border on the top- and left- sides; this guarantees that
-            ' our outline path remains *outside* the current viewport, when the selection is greatly zoomed-in.
-            
-            'The top-left corner pixel is handled specially
-            m_ViewportByteCopy(loopStartX + xModifier - 1, loopStartY + yModifier - 1) = m_ViewportByteCopy(loopStartX + xModifier, loopStartY + yModifier)
-            
-            'Top row
-            tmpYPosition = loopStartY + yModifier
-            For x = loopStartX To loopEndX
-                m_ViewportByteCopy(x + xModifier, tmpYPosition - 1) = m_ViewportByteCopy(x + xModifier, tmpYPosition)
-            Next x
-            
-            'Left row
-            tmpXPosition = loopStartX + xModifier
-            For y = loopStartY To loopEndY
-                m_ViewportByteCopy(tmpXPosition - 1, y + yModifier) = m_ViewportByteCopy(tmpXPosition, y + yModifier)
-            Next y
-            
-            'Because the array wrapped around the reference DIB is scoped locally, we need to free it before exiting
-            m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
-            
-            'Find the edges of the temporary byte-map we've just generated
-            If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
-            m_ViewportEdges.FindAllEdges m_CurrentOutline, m_ViewportByteCopy, 1, 1, m_ViewportByteCopyRect.Width - 1, m_ViewportByteCopyRect.Height - 1, loopStartX - 1, loopStartY - 1
+                
+                If (Not m_ViewportRefComposite Is Nothing) Then CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
+                
+            End If
             
         End If
         
@@ -3487,16 +3445,22 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, useAA
         
-        'Half-pixel offsets solve some rendering problems, while also introducing other ones.  I've left it disabled for now,
-        ' pending additional testing.
+        'Half-pixel offsets solve some rendering problems, while also introducing other ones.
+        ' I've left it disabled for now, pending additional testing.
         'cSurface.SetSurfacePixelOffset P2_PO_Half
         
         'Render the outline using PD's standard "white-on-black" outline technique
         If (renderType = PDSR_Outline) Then
             
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
-            PD2D.DrawPath cSurface, cPenUIBase, m_CurrentOutline
-            PD2D.DrawPath cSurface, cPenUITop, m_CurrentOutline
+            
+            If m_CompositeActive Then
+                PD2D.DrawPath cSurface, cPenUIBase, m_CompositeOutline
+                PD2D.DrawPath cSurface, cPenUITop, m_CompositeOutline
+            Else
+                PD2D.DrawPath cSurface, cPenUIBase, m_CurrentOutline
+                PD2D.DrawPath cSurface, cPenUITop, m_CurrentOutline
+            End If
         
         'Render the outline using an animated "marching ants" approach
         Else
@@ -3514,8 +3478,13 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
             cDottedPen.SetPenDashOffset m_AntDashOffset
             
-            PD2D.DrawPath cSurface, cBlackPen, m_CurrentOutline
-            PD2D.DrawPath cSurface, cDottedPen, m_CurrentOutline
+            If m_CompositeActive Then
+                PD2D.DrawPath cSurface, cBlackPen, m_CompositeOutline
+                PD2D.DrawPath cSurface, cDottedPen, m_CompositeOutline
+            Else
+                PD2D.DrawPath cSurface, cBlackPen, m_CurrentOutline
+                PD2D.DrawPath cSurface, cDottedPen, m_CurrentOutline
+            End If
                         
             'If marching ants are being used, make sure our timer is enabled now
             If (Not m_AntTimer.IsActive) Then
@@ -3539,9 +3508,9 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     End If
     
-    'Final task: rendering the final overlay onto the destination viewport.  If rendering and viewport settings haven't
-    ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
-    ' so speedy during paint ops).
+    'Final task: rendering the final overlay onto the destination viewport.
+    ' If rendering and viewport settings haven't changed since the last render, this step may be
+    ' the only thing this function actually performs (which is why it's so fast during paint ops).
     If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
     
     'Timing reports:
@@ -3549,8 +3518,99 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
 End Sub
 
-'When resources are tight, you can call this sub to free some non-essential internal caches.  This will cause a performance hit
-' on subsequent selection actions, so please only do it if the savings are relevant.
+'Create a viewport-specific outline for a given source selection mask.
+' This function is generalized so that it can be used for composite selections
+' (e.g. selections comprised of multiple independent selections).
+Private Sub CreateViewportOutlineForMask(ByRef srcRefRectF As RectF, ByRef imgViewportRectL As RectL_WH, ByRef viewportByteCopy() As Byte, ByRef viewportByteRect As RectL_WH, ByRef viewportDIB As pdDIB, ByRef dstOutline As pd2DPath)
+    
+    'srcRefRectF = m_ViewportRefRectF
+    'imgViewportRectL = imgViewportRectL
+    'viewportByteCopy = m_ViewportByteCopy
+    'viewportByteRect = m_ViewportByteCopyRect
+    'viewportDIB = m_ViewportReference
+    'dstOutline = m_CurrentOutline
+    
+    'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
+    ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
+    '
+    'From its values, we want to construct an integer-only set of boundaries, appropriate for a per-pixel loop.
+    Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
+    loopStartX = Int(srcRefRectF.Left)
+    loopStartY = Int(srcRefRectF.Top)
+    If (loopStartX < 0) Then loopStartX = 0
+    If (loopStartY < 0) Then loopStartY = 0
+    loopEndX = loopStartX + Int(srcRefRectF.Width + 1.999999)
+    loopEndY = loopStartY + Int(srcRefRectF.Height + 1.999999)
+    
+    If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
+    If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
+    If (loopStartX > loopEndX) Then loopStartX = loopEndX
+    If (loopStartY > loopEndY) Then loopStartY = loopEndY
+    
+    'We now want to use those loop boundaries to produce a byte-only copy of the selection mask.  (This is required
+    ' by the edge-detection engine, and it also gives a chance to better handle things like feathered selection edges.)
+    Dim newWidth As Long, newHeight As Long
+    newWidth = (loopEndX - loopStartX) + 4
+    newHeight = (loopEndY - loopStartY) + 4
+    
+    If (newWidth <> viewportByteRect.Width) Or (newHeight <> viewportByteRect.Height) Then
+        ReDim viewportByteCopy(0 To newWidth, 0 To newHeight) As Byte
+        viewportByteRect.Width = newWidth
+        viewportByteRect.Height = newHeight
+    End If
+    
+    'We're going to offset each line by several pixels on either side; this guarantees blank boundary pixels,
+    ' which lets us skip time-consuming boundary checks.
+    Dim xModifier As Long, yModifier As Long
+    xModifier = (-loopStartX + 2)
+    yModifier = (-loopStartY + 2)
+    
+    Dim maskPixels() As Long, maskSALine As SafeArray1D
+    
+    Dim x As Long, y As Long, tmpXPosition As Long, tmpYPosition As Long
+    
+    For y = loopStartY To loopEndY
+        viewportDIB.WrapLongArrayAroundScanline maskPixels, maskSALine, y
+        tmpYPosition = y + yModifier
+    For x = loopStartX To loopEndX
+        If ((maskPixels(x) And 255) > 64) Then
+            viewportByteCopy(x + xModifier, tmpYPosition) = 255
+        Else
+            viewportByteCopy(x + xModifier, tmpYPosition) = 0
+        End If
+    Next x
+    Next y
+    
+    'Because the array wrapped around the reference DIB is scoped locally, we need to free it before exiting
+    viewportDIB.UnwrapLongArrayFromDIB maskPixels
+    
+    'Next, we must manually mirror edge pixels along a 1px border on the top- and left- sides; this guarantees that
+    ' our outline path remains *outside* the current viewport, when the selection is greatly zoomed-in.
+    
+    'The top-left corner pixel is handled specially
+    viewportByteCopy(loopStartX + xModifier - 1, loopStartY + yModifier - 1) = viewportByteCopy(loopStartX + xModifier, loopStartY + yModifier)
+    
+    'Top row
+    tmpYPosition = loopStartY + yModifier
+    For x = loopStartX To loopEndX
+        viewportByteCopy(x + xModifier, tmpYPosition - 1) = viewportByteCopy(x + xModifier, tmpYPosition)
+    Next x
+    
+    'Left row
+    tmpXPosition = loopStartX + xModifier
+    For y = loopStartY To loopEndY
+        viewportByteCopy(tmpXPosition - 1, y + yModifier) = viewportByteCopy(tmpXPosition, y + yModifier)
+    Next y
+    
+    'Find the edges of the temporary byte-map we've just generated
+    If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
+    m_ViewportEdges.FindAllEdges dstOutline, viewportByteCopy, 1, 1, viewportByteRect.Width - 1, viewportByteRect.Height - 1, loopStartX - 1, loopStartY - 1
+    
+End Sub
+
+'When resources are tight, you can call this sub to free some non-essential internal caches.
+' This will cause a performance hit on subsequent selection actions, so please only do it if
+' the savings are relevant.
 Friend Sub FreeNonEssentialResources()
     
     'The flood fill manager caches a lot of internal resources (like the fill stack), so we may be able to save some memory there.
@@ -3558,6 +3618,8 @@ Friend Sub FreeNonEssentialResources()
     
     'If the current selection mask isn't actively being rendered, it doesn't need a DC attached.
     m_SelMask.FreeFromDC
+    If (Not m_OldMask Is Nothing) Then m_OldMask.FreeFromDC
+    If (Not m_CompositeMask Is Nothing) Then m_CompositeMask.FreeFromDC
     
 End Sub
 
@@ -4188,16 +4250,16 @@ Friend Sub NotifyNewCompositeStarting()
         m_OldMask.CreateFromExistingDIB m_SelMask
         m_OldBounds = m_Bounds
         
+        'Mirror the state of the current outline object
+        m_OldOutlineIsReady = m_CurrentOutlineIsReady
+        If m_OldOutlineIsReady Then
+            Set m_OldOutline = New pd2DPath
+            m_OldOutline.CloneExistingPath m_CurrentOutline
+        End If
+        
     End If
     
-    'TODO: regardless of creationg method (above), ensure an outline object exists for the selection.
-    
-    'Mirror the state of the current outline object
-    m_OldOutlineIsReady = m_CurrentOutlineIsReady
-    If m_OldOutlineIsReady Then
-        Set m_OldOutline = New pd2DPath
-        m_OldOutline.CloneExistingPath m_CurrentOutline
-    End If
+    'TODO: regardless of creation method (above), ensure an outline object exists for the selection.
     
     'Set the composite flag to TRUE
     Debug.Print "new composite created - composite active!  boundaries: " & m_OldBounds.Left & ", " & m_OldBounds.Top & ", " & m_OldBounds.Width & ", " & m_OldBounds.Height
