@@ -58,66 +58,7 @@ Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
 Private Const SELECTION_FILE_VERSION_2019 As Long = &H1005&
 
 'What shape does this selection have?
-Public Enum PD_SelectionShape
-    ss_Unknown = -1
-    ss_Rectangle = 0
-    ss_Circle = 1
-    ss_Polygon = 2
-    ss_Lasso = 3
-    ss_Wand = 4
-    ss_Raster = 5
-End Enum
-
-#If False Then
-    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Polygon = 2, ss_Lasso = 3, ss_Wand = 4, ss_Raster = 5
-#End If
-
 Private m_SelectionShape As PD_SelectionShape
-
-'What area does this selection encompass?  (Most selection shapes allow the user to change the selection state between interior, exterior,
-' and bordered on the fly.
-Public Enum PD_SelectionArea
-    sa_Interior = 0
-    sa_Exterior = 1
-    sa_Border = 2
-End Enum
-
-#If False Then
-    Private Const sa_Interior = 0, sa_Exterior = 1, sa_Border = 2
-#End If
-
-'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
-' values and the dictionary itself.
-Public Enum PD_SelectionProperty
-    sp_Area = 0
-    sp_Smoothing = 1
-    sp_Combine = 2
-    sp_FeatheringRadius = 3
-    sp_BorderWidth = 4
-    sp_RoundedCornerRadius = 5
-    sp_PolygonCurvature = 6
-    sp_WandTolerance = 7
-    sp_WandSearchMode = 8
-    sp_WandSampleMerged = 9
-    sp_WandCompareMethod = 10
-    sp_SmoothStroke = 11        'Currently unused; intended as a future lasso selection feature
-End Enum
-
-#If False Then
-    Private Const sp_Area = 0, sp_Smoothing = 1, sp_Combine = 2, sp_FeatheringRadius = 3, sp_BorderWidth = 4
-    Private Const sp_RoundedCornerRadius = 5, sp_PolygonCurvature = 6, sp_WandTolerance = 7, sp_WandSearchMode = 8
-    Private Const sp_WandSampleMerged = 9, sp_WandCompareMethod = 10, sp_SmoothStroke = 11
-#End If
-
-Public Enum PD_SelectionLockable
-    pdsl_Width = 0
-    pdsl_Height = 1
-    pdsl_AspectRatio = 2
-End Enum
-
-#If False Then
-    Private Const pdsl_Width = 0, pdsl_Height = 1, pdsl_AspectRatio = 2
-#End If
 
 'The boundary coordinates of the current selection (if rectangular or elliptical).
 ' This structure is also used when click-dragging to transform the current preview.
@@ -566,7 +507,7 @@ End Sub
 
 'Return all of this selection's important settings as an XML packet.  If the current selection shape is vector-based,
 ' this packet can be used to exactly re-create this selection.  (See also: "InitFromXML()" above)
-Friend Function GetSelectionAsXML() As String
+Friend Function GetSelectionAsXML(Optional ByVal treatCompositeAsRaster As Boolean = False) As String
     
     Dim i As Long
     
@@ -574,8 +515,36 @@ Friend Function GetSelectionAsXML() As String
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     
-    cParams.AddParam "SelectionShape", Me.GetSelectionShape
-    cParams.AddParam "SelectionArea", Me.GetSelectionProperty(sp_Area)
+    'During Undo/Redo operations, it's (currently) too complicated to save composite selections
+    ' to file as-is.  Instead, it's much simpler to just dump the (already-made) composite mask
+    ' and simply treat it as a raster selection.
+    '
+    'The plus side of this?  We just dump a single mask to file (fast! easy!) instead of two that
+    ' need to be reassembled at load-time (or three without a need for reassembly).
+    '
+    'The downside?  The user can no longer edit the last selection they created.  They just get
+    ' one giant uneditable raster selection.  I can live with this.
+    '
+    'Anyway, the Undo function passes the treatCompositeAsRaster as TRUE to tell us to ignore
+    ' composite complexities and instead just dump the composite mask as a raster selection.
+    ' This function doesn't care about the mask - it just generates the XML - but it specifically
+    ' tweaks the XML to describe a raster selection instead of whatever comprises the current
+    ' composite selection.
+    Dim forceCompositeToRaster As Boolean
+    forceCompositeToRaster = (treatCompositeAsRaster And m_CompositeActive)
+    
+    Dim shapeToUse As PD_SelectionShape
+    shapeToUse = m_SelectionShape
+    If forceCompositeToRaster Then shapeToUse = ss_Raster
+    cParams.AddParam "SelectionShape", shapeToUse
+    
+    'Raster selections can only ever be interior
+    If forceCompositeToRaster Then
+        cParams.AddParam "SelectionArea", sa_Interior
+    Else
+        cParams.AddParam "SelectionArea", Me.GetSelectionProperty(sp_Area)
+    End If
+    
     cParams.AddParam "SelectionCombine", Me.GetSelectionProperty(sp_Combine)
     cParams.AddParam "SelectionSmoothing", Me.GetSelectionProperty(sp_Smoothing)
     cParams.AddParam "SelectionFeatheringRadius", Me.GetSelectionProperty(sp_FeatheringRadius)
@@ -590,7 +559,7 @@ Friend Function GetSelectionAsXML() As String
     End With
     
     'After universal values, we add any additional properties specific to the current selection shape
-    Select Case m_SelectionShape
+    Select Case shapeToUse
     
         'Rectangles, ellipses, and lines store corner coordinates
         Case ss_Rectangle, ss_Circle
@@ -3952,7 +3921,7 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     
     'Start by adding the internal selection XML data
     cPackage.StartChunk "SELI"
-    cPackage.GetInProgressChunk.WriteString_UTF8 Me.GetSelectionAsXML()
+    cPackage.GetInProgressChunk.WriteString_UTF8 Me.GetSelectionAsXML(True)
     cPackage.EndChunk compressXML, xmlCompressionLevel
     
     'Next, prepare a second XML string, this one containing additional internal session data.
@@ -3960,7 +3929,9 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     ' external selection-adjacent data, like the size of the current image, so that we can
     ' properly scale the selection to other images in the future.)
     Dim maskWillBeEmbedded As Boolean
-    maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated) Or ((m_SelectionShape = ss_Wand) And m_MaskHasBeenCreated)
+    maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated)
+    maskWillBeEmbedded = maskWillBeEmbedded Or ((m_SelectionShape = ss_Wand) And m_MaskHasBeenCreated)
+    maskWillBeEmbedded = maskWillBeEmbedded Or m_CompositeActive
     
     Dim tmpXML As pdSerialize
     Set tmpXML = New pdSerialize
@@ -3996,7 +3967,11 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     'Finally, if this is a raster or magic-wand selection, add the full mask as well
     If maskWillBeEmbedded Then
         Dim maskDIBPointer As Long, maskDIBLength As Long
-        m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
+        If m_CompositeActive Then
+            m_CompositeMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
+        Else
+            m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
+        End If
         cPackage.AddChunk_WholeFromPtr "SELM", maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
     End If
     

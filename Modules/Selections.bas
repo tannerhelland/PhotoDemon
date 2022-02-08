@@ -19,6 +19,19 @@ Attribute VB_Name = "Selections"
 
 Option Explicit
 
+'What area does a selection encompass?
+' (Most selection shapes allow the user to change the selection state between
+' interior, exterior, and bordered on the fly - a very cool feature unique to PD.)
+Public Enum PD_SelectionArea
+    sa_Interior = 0
+    sa_Exterior = 1
+    sa_Border = 2
+End Enum
+
+#If False Then
+    Private Const sa_Interior = 0, sa_Exterior = 1, sa_Border = 2
+#End If
+
 Public Enum PD_SelectionCombine
     pdsm_Replace = 0
     pdsm_Add = 1
@@ -28,6 +41,54 @@ End Enum
 
 #If False Then
     Private Const pdsm_Replace = 0, pdsm_Add = 1, pdsm_Subtract = 2, pdsm_Intersect = 3
+#End If
+
+Public Enum PD_SelectionShape
+    ss_Unknown = -1
+    ss_Rectangle = 0
+    ss_Circle = 1
+    ss_Polygon = 2
+    ss_Lasso = 3
+    ss_Wand = 4
+    ss_Raster = 5
+End Enum
+
+#If False Then
+    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Polygon = 2, ss_Lasso = 3, ss_Wand = 4, ss_Raster = 5
+#End If
+
+'When accessing selection properties, use the following enum.
+' (Each pdSelection object uses a dictionary to store these values.)
+Public Enum PD_SelectionProperty
+    sp_Area = 0
+    sp_Smoothing = 1
+    sp_Combine = 2
+    sp_FeatheringRadius = 3
+    sp_BorderWidth = 4
+    sp_RoundedCornerRadius = 5
+    sp_PolygonCurvature = 6
+    sp_WandTolerance = 7
+    sp_WandSearchMode = 8
+    sp_WandSampleMerged = 9
+    sp_WandCompareMethod = 10
+    sp_SmoothStroke = 11        'Currently unused; intended as a possible future lasso selection feature
+End Enum
+
+#If False Then
+    Private Const sp_Area = 0, sp_Smoothing = 1, sp_Combine = 2, sp_FeatheringRadius = 3, sp_BorderWidth = 4
+    Private Const sp_RoundedCornerRadius = 5, sp_PolygonCurvature = 6, sp_WandTolerance = 7, sp_WandSearchMode = 8
+    Private Const sp_WandSampleMerged = 9, sp_WandCompareMethod = 10, sp_SmoothStroke = 11
+#End If
+
+'Rectangular and ellipse selections allow width/height/aspect-ratio locking
+Public Enum PD_SelectionLockable
+    pdsl_Width = 0
+    pdsl_Height = 1
+    pdsl_AspectRatio = 2
+End Enum
+
+#If False Then
+    Private Const pdsl_Width = 0, pdsl_Height = 1, pdsl_AspectRatio = 2
 #End If
 
 'Create a new selection using the settings stored in a pdSerialize-compatible string
