@@ -653,6 +653,8 @@ Friend Sub SelectAll()
     m_IsTransformable = True
     m_IsMaskReady = False
     m_CompositeActive = False
+    If (Not m_OldMask Is Nothing) Then m_OldMask.EraseDIB
+    If (Not m_CompositeMask Is Nothing) Then m_CompositeMask.EraseDIB
     
 End Sub
 
@@ -697,6 +699,57 @@ Friend Sub RequestNewMask()
         
     End If
     
+End Sub
+
+'Composite selections exist when the user has created multiple selections (which PD then
+' "stitches together" behind-the-scenes).  Composite selections require three selection copies
+' (an old mask, the active selection mask, and the composite produced by merging the two
+' together using the active combine mode).  If the user is done editing a composite selection
+' - as indicated by switching to a new tool, engaging a menu, etc - we can free up a lot of
+' resources and improve selection behavior by converting the current composite selection to
+' a normal raster selection.  This lets us erase two of the three masks we've been maintaining,
+' as well as a bunch of behind-the-scenes maintainence structures.
+Friend Sub SquashCompositeToRaster()
+    
+    'Failsafe checks (basically, skip this step if a composite is *not* active)
+    If (Not Me.IsLockedIn) Then Exit Sub
+    If (Not m_CompositeActive) Then Exit Sub
+    If (m_SelMask Is Nothing) Then Exit Sub
+    If (m_CompositeMask Is Nothing) Then Exit Sub
+    
+    'Converting a composite selection into a raster selection is actually pretty straightforward.
+    
+    'Start by setting the correct selection "shape"
+    Me.SetSelectionShape ss_Raster
+    
+    'Clone the composite mask into the active mask, then deactivate composite mode
+    m_SelMask.CreateFromExistingDIB m_CompositeMask
+    m_CompositeActive = False
+    
+    'Erase the (now unnecessary) old mask copies
+    If (Not m_OldMask Is Nothing) Then m_OldMask.EraseDIB
+    If (Not m_CompositeMask Is Nothing) Then m_CompositeMask.EraseDIB
+    If (Not m_ViewportRefOld Is Nothing) Then m_ViewportRefOld.EraseDIB
+    If (Not m_ViewportRefComposite Is Nothing) Then m_ViewportRefComposite.EraseDIB
+    
+    'Technically we could probably swap some composite UI objects (like an outline, if any)
+    ' into the active mask selection, but an easier solution is to simply notify ourselves
+    ' of the change and let some auto-detect functions trigger.
+    Me.NotifyRasterDataChanged
+    
+    'Perform a failsafe bounds-check to ensure the resulting composite selection has at least
+    ' one valid pixel selected.
+    If PDImages.GetActiveImage.MainSelection.FindNewBoundsManually() Then
+    
+        'At least one valid selection pixel still exists.  Finish locking in the "new" selection.
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
+        
+    'No selection pixels exist.  Unload any active selection data.
+    Else
+        Selections.RemoveCurrentSelection
+    End If
+
 End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like

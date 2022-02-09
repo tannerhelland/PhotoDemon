@@ -358,7 +358,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                     eDist = DistanceOneDimension(imgX, .Left + .Width)
                     sDist = DistanceOneDimension(imgY, .Top + .Height)
                     wDist = DistanceOneDimension(imgX, .Left)
-                
+                    
                     If (nDist <= minDistance) Then
                         If (imgX > (.Left - minDistance)) And (imgX < (.Left + .Width + minDistance)) Then
                             minDistance = nDist

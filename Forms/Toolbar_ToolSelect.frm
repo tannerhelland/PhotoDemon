@@ -844,30 +844,41 @@ Private Sub NewToolSelected()
         
             'See if a selection is already active on the image
             If SelectionsAllowed(False) Then
-            
-                'A selection is already active!
-
-                'If the existing selection type matches the tool type, no problem - activate the transform tools
-                ' (if relevant), but make no other changes to the image
+                
+                'A selection is active on this image.  We need to determine if the current selection
+                ' shape matches the current selection tool.  If it does, we need to synchronize all
+                ' UI elements on the toolpanel to match the active selection.
                 If (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
+                    
+                    'The existing selection type matches the activated selection tool.
+                    ' Activate the transformation tools (if any) for this tool, and note
+                    ' that this call will also synchronize any UI settings to the active
+                    ' selection (e.g. rectangular selections need the position/size/aspect ratio
+                    ' controls synchronized to the current values).
                     SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable
-
-                'A selection is already active, and it doesn't match the current tool type!
+                    
+                'A selection is already active, and it doesn't match the just-activated selection tool.
                 Else
-
-                    'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-                    If (g_CurrentTool = SELECT_CIRC) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Rectangle) Then
-                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Circle
-                        
-                        'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
-                        ' against the current selection's settings.
-                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-                        
-                    ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
-                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
-                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-
-                    End If
+                    
+                    'TODO: squash composite selections down to a single raster selection.  This frees a lot of RAM
+                    ' and improves selection performance, and if the user switches away from the active selection
+                    ' tool it's basically a sign that they're done transforming that active selection.
+                    PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+                    
+'
+'                    'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
+'                    If (g_CurrentTool = SELECT_CIRC) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Rectangle) Then
+'                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Circle
+'
+'                        'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
+'                        ' against the current selection's settings.
+'                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+'
+'                    ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
+'                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
+'                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+'
+'                    End If
                     
                     'Release any locked properties (e.g. locked aspect ratio)
                     PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Width
@@ -875,7 +886,8 @@ Private Sub NewToolSelected()
                     PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_AspectRatio
                     
                 End If
-                
+            
+            'A selection is not active; no further action is required
             End If
         
         Case PAINT_PENCIL
