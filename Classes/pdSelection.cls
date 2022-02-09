@@ -1488,20 +1488,29 @@ Friend Function IsPointSelected(ByVal x As Long, ByVal y As Long) As Boolean
     IsPointSelected = False
     
     If (Not Me.IsLockedIn) Then Exit Function
-    If (m_SelMask Is Nothing) Then Exit Function
-    If (m_SelMask.GetDIBWidth = 0) Or (m_SelMask.GetDIBHeight = 0) Then Exit Function
+    
+    'Composite selections require us to use the composite mask (not the active one)
+    Dim targetMask As pdDIB
+    If m_CompositeActive Then
+        Set targetMask = m_CompositeMask
+    Else
+        Set targetMask = m_SelMask
+    End If
+    
+    If (targetMask Is Nothing) Then Exit Function
+    If (targetMask.GetDIBWidth = 0) Or (targetMask.GetDIBHeight = 0) Then Exit Function
     
     'Before doing anything else, ensure the x/y postition lies inside the mask DIB
-    If (x >= 0) And (x < m_SelMask.GetDIBWidth) And (y >= 0) And (y < m_SelMask.GetDIBHeight) Then
+    If (x >= 0) And (x < targetMask.GetDIBWidth) And (y >= 0) And (y < targetMask.GetDIBHeight) Then
         
         Dim tmpData() As Byte, tSA As SafeArray2D
-        m_SelMask.WrapArrayAroundDIB tmpData, tSA
+        targetMask.WrapArrayAroundDIB tmpData, tSA
         
         Dim xStride As Long
-        xStride = x * (m_SelMask.GetDIBColorDepth \ 8)
+        xStride = x * (targetMask.GetDIBColorDepth \ 8)
         
         'Final failsafe boundary check (requires 32-bpp selection mask)
-        If ((xStride + 3) < m_SelMask.GetDIBStride) Then
+        If ((xStride + 3) < targetMask.GetDIBStride) Then
             
             'The point is valid.  Check alpha at this position.
             IsPointSelected = (tmpData(xStride + 3, y) <> 0)
@@ -1509,7 +1518,7 @@ Friend Function IsPointSelected(ByVal x As Long, ByVal y As Long) As Boolean
         End If
         
         'Free our unsafe array wrapper before exiting
-        m_SelMask.UnwrapArrayFromDIB tmpData
+        targetMask.UnwrapArrayFromDIB tmpData
         
     End If
 
