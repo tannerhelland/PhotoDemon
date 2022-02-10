@@ -593,9 +593,9 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-        
+    
     If m_IgnoreUserInput Then Exit Sub
-        
+    
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
     ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -608,20 +608,19 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
         ' on raster selections, but hypothetically the user could be allowed to click-drag to move them...
         ' I'll see if this is feasible in the future.
         
-        'If a point of interest was clicked, initiate a transform event (to allow modification
-        ' of the *already existing* selection).
-        If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-            PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+        'Polygon selections require special handling, because they don't operate on the same
+        ' "mouse up = finished selection" assumption.  They are marked as complete under
+        ' special circumstances (when the user re-clicks the first point or double-clicks).
+        ' Any clicks prior to this are treated as an instruction to add a new point to the shape.
+        If (g_CurrentTool = SELECT_POLYGON) Then
             
-        'If a point of interest was *not* clicked, erase any existing selection and start a new one
-        Else
-            
-            'Polygon selections require special handling, because they don't operate on the same
-            ' "mouse up = finished selection" assumption.  They are marked as complete under
-            ' special circumstances (when the user re-clicks the first point or double-clicks).
-            ' Any clicks prior to this are treated as an instruction to add a new point to the shape.
-            If (g_CurrentTool = SELECT_POLYGON) Then
+            'If a point of interest was clicked, initiate a transform event (to allow modification
+            ' of the *already existing* selection).
+            'If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
+            '    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+            '    PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+            '
+            'Else
                 
                 'First, see if the current polygon is "locked in" (i.e. finished).
                 ' If it is, treat this as starting a new selection.
@@ -680,13 +679,25 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                 
                 End If
                 
+            'End If
+            
+        'All other selection types are *much* simpler
+        Else
+            
+            'If a point of interest was clicked, initiate a transform event (to allow modification
+            ' of the *already existing* selection).
+            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                
+            'If a point of interest was *not* clicked, start a new selection at the clicked location
             Else
                 Selections.NotifyNewSelectionStarting
                 Selections.InitSelectionByPoint imgX, imgY
             End If
             
         End If
-    
+        
     'If a selection is not already active, start a new one.
     Else
         
@@ -956,7 +967,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         
         'As usual, polygon selections require special considerations.
         Case SELECT_POLYGON
-        
+            
             'If a selection was being drawn, lock it into place
             If PDImages.GetActiveImage.IsSelectionActive Then
                 
