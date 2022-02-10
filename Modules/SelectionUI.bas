@@ -48,6 +48,10 @@ Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
 ' _MouseUp.
 Private m_DblClickOccurred As Boolean
 
+'Similarly, to avoid problematic mouse interactions, we halt processing at the start of _MouseUp,
+' then resume processing after any actions triggered by _MouseUp finish.
+Private m_IgnoreUserInput As Boolean
+
 Public Function GetSelectionRenderMode() As PD_SelectionRender
     GetSelectionRenderMode = m_CurSelectionMode
 End Function
@@ -589,7 +593,9 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-    
+        
+    If m_IgnoreUserInput Then Exit Sub
+        
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
     ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -740,14 +746,19 @@ Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX 
 End Sub
 
 Public Sub NotifySelectionMouseLeave(ByRef srcCanvas As pdCanvas)
-
+    
+    'Ensure input behavior is normalized
+    m_IgnoreUserInput = False
+    
     'When the polygon selection tool is being used, redraw the canvas when the mouse leaves
     If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
 
 End Sub
 
 Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
-    
+        
+    If m_IgnoreUserInput Then Exit Sub
+        
     'Handling varies based on the current mouse state, obviously.
     If lmbState Then
         
@@ -828,20 +839,23 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Exit Sub
     End If
     
-    'NOTE FOR MULTIPLE SELECTION OVERHAUL:
-    ' GIMP has a nice behavior where - when a selection mode other than REPLACE is active -
-    ' a single-click off the selected area merges the active selection onto previous ones, and then
-    ' disables the dynamic selection boundaries (if previously available).  This seems intuitive
-    ' and likely has performance benefits, as it produces just a single merged raster selection
-    ' instead of a two-layer "old" and "new" selection collection.
-    '
-    'At present, PD is set up to always erase the active selection on a single-click off the image.
-    ' Once multiple selections are working, I would like to change this behavior to work like GIMP.
-    Dim eraseThisSelection As Boolean
+    'Failsafe for bad mice notifications - if we receive an unexpected trigger while ignoring input,
+    ' reset all flags but disallow the interrupted action.
+    If m_IgnoreUserInput Then
+        m_IgnoreUserInput = False
+        Exit Sub
+    End If
+    
+    'Ensure other actions don't trigger while this one is still processing (only affects this class!)
+    m_IgnoreUserInput = True
+    
+    'In default REPLACE mode, a single in-place click will erase the current selection.
+    ' (In other combine modes, this behavior is overridden.)
+    Dim eraseThisSelection As Boolean: eraseThisSelection = False
     
     Select Case g_CurrentTool
     
-        'Most selection tools are handled identically
+        'Most selection tools finalize the current selection on a _MouseUp event
         Case SELECT_RECT, SELECT_CIRC, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
@@ -852,11 +866,21 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Dim selBounds As RectF
                 selBounds = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect
                 
+                'We only enable selection erasing on a click in REPLACE mode.  Other combine modes
+                ' (add, subtract, etc) do not erase on a click.
                 eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = poi_Undefined))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
-                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                    
+                    'In "replace" mode, just erase the active selection (if any)
+                    If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() = pdsm_Replace) Then
+                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                    
+                    'In other modes, squash any active selections together into a single selection object.
+                    Else
+                        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+                    End If
                     
                 'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                 Else
@@ -871,7 +895,12 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                     'Check to see if all selection coordinates are invalid (e.g. off-image).
                     ' If they are, forget about this selection.
                     If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid Then
-                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                    
+                        If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() <> pdsm_Replace) Then
+                            PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+                        Else
+                            Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                        End If
                     Else
                         
                         'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
@@ -1047,6 +1076,8 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             End If
             
     End Select
+    
+    m_IgnoreUserInput = False
     
 End Sub
 
