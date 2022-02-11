@@ -481,18 +481,6 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     
     '*************************************************************************************************************************************
-    ' Based on available plugins, determine which image formats PhotoDemon can handle
-    '*************************************************************************************************************************************
-    
-    perfCheck.MarkEvent "Load import and export libraries"
-    LogStartupEvent "Loading import/export libraries..."
-    
-    'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
-    ImageFormats.GenerateInputFormats
-    ImageFormats.GenerateOutputFormats
-    
-    
-    '*************************************************************************************************************************************
     ' Build a font cache for this system
     '*************************************************************************************************************************************
     
@@ -540,11 +528,17 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     PluginManager.LoadPluginGroup False
     PluginManager.ReportPluginLoadSuccess
     
-    'Some plugin instances may require us to rebuild internal databases.
-    ' (Specifically as of 9.0, the optional AVIF encoder/decoder pair requires us to
-    ' add AV1-based codecs to the supported import/export list.)
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifExport) Then ImageFormats.GenerateOutputFormats
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport) Then ImageFormats.GenerateInputFormats
+    
+    '*************************************************************************************************************************************
+    ' Based on available plugins, determine which image formats PhotoDemon can handle
+    '*************************************************************************************************************************************
+    
+    perfCheck.MarkEvent "Load import and export libraries"
+    LogStartupEvent "Loading import/export libraries..."
+    
+    'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
+    ImageFormats.GenerateInputFormats
+    ImageFormats.GenerateOutputFormats
     
     
     '*************************************************************************************************************************************
