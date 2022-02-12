@@ -694,6 +694,10 @@ Friend Sub RequestNewMask()
         'Raster selections are simply bitmaps.  We will pad them to match the new image size, but other
         ' than that, we do not change their existing composition.
         Else
+            
+            'TODO: see if this is actually relevant or not?  A possible way to test is creating a raster selection,
+            ' then overlaying a polygon selection over the top of it??
+            If m_CompositeActive Then CreateCompositeSelectionMask
         
         End If
         
@@ -1165,6 +1169,7 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
             
             m_NumOfPolygonPoints = 1
             ReDim m_PolygonPoints(0 To 127) As PointFloat
+            m_PolygonClosed = False
             
             m_PolygonPoints(0).x = x
             m_PolygonPoints(0).y = y
@@ -1186,6 +1191,7 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
             
             m_NumOfLassoPoints = 1
             ReDim m_LassoPoints(0 To 127) As PointFloat
+            m_LassoClosed = False
             
             m_LassoPoints(0).x = x
             m_LassoPoints(0).y = y
@@ -2105,8 +2111,9 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
     m_IsMaskReady = False
     
     If keepCompositeData Then
-        Debug.Print "(retaining old and composite masks)"
+        Debug.Print "(retaining old and composite masks and outlines)"
     Else
+        Debug.Print "(erasing old and composite masks and outlines)"
         m_CompositeActive = False
         Set m_OldMask = Nothing
         Set m_OldOutline = Nothing
@@ -2543,7 +2550,13 @@ Private Sub CreateSelectionMask()
     'If a selection mode other than REPLACE is active, we now need to merge the new selection mask
     ' with the old selection mask, and generate a new composite mask from the result.
     Debug.Print "Reached end of CreateSelectionMask: " & m_CompositeActive
-    If (Me.GetSelectionProperty_Long(sp_Combine) <> pdsm_Replace) And m_CompositeActive Then CreateCompositeSelectionMask
+    
+    Dim makeCompositeToo As Boolean
+    makeCompositeToo = ((Me.GetSelectionProperty_Long(sp_Combine) <> pdsm_Replace) And m_CompositeActive)
+    
+    'If all criteria is met, go ahead and create a new composite
+    If (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed) Then makeCompositeToo = False
+    If makeCompositeToo Then CreateCompositeSelectionMask
     
 End Sub
 
@@ -2788,14 +2801,11 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                     'After drawing all polygon points, we lastly want to draw a dotted line to
                     ' the current mouse position.
                     If dstCanvas.IsMouseOverCanvas And (m_NumOfPolygonPoints > 0) And (Not Me.GetPolygonClosedState()) Then
-                        
+                    
                         'Remove antialiasing to match the default polygon renderer
                         cSurface.SetSurfaceAntialiasing P2_AA_None
                         
-                        Dim canvasMouseX As Long, canvasMouseY As Long
-                        canvasMouseX = dstCanvas.GetLastMouseX()
-                        canvasMouseY = dstCanvas.GetLastMouseY()
-                        
+                        'Initialize rendering objects
                         Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
                         Set cBlackPen = New pd2DPen
                         cBlackPen.SetPenColor vbBlack
@@ -2809,9 +2819,19 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
                         cDottedPen.SetPenDashOffset m_AntDashOffset
                         
-                        PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, canvasMouseX, canvasMouseY
-                        PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, canvasMouseX, canvasMouseY
+                        Dim canvasMouseX As Long, canvasMouseY As Long
+                        canvasMouseX = dstCanvas.GetLastMouseX()
+                        canvasMouseY = dstCanvas.GetLastMouseY()
                         
+                        'Make sure the line width is at least 1-px
+                        Dim lenLineInPixels As Single
+                        lenLineInPixels = PDMath.DistanceTwoPoints(polyX, polyY, canvasMouseX, canvasMouseY)
+                        
+                        If (lenLineInPixels >= 1!) Then
+                            PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, canvasMouseX, canvasMouseY
+                            PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, canvasMouseX, canvasMouseY
+                        End If
+                            
                         'Note that - by design - the standard selection renderer does not render
                         ' polygon lines until there are at least 3 points in the selection, as that's
                         ' the minimum required for a valid polygon (which the underlying renderer
@@ -2820,9 +2840,15 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         'To make the transition from 2 points to 3 point less jarring, we manually
                         ' render the first line segment when there are just 2 points in the polygon.
                         If (m_NumOfPolygonPoints = 2) Then
+                            
                             Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(0).x, m_PolygonPoints(0).y, tmpX, tmpY
-                            PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, tmpX, tmpY
-                            PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, tmpX, tmpY
+                            lenLineInPixels = PDMath.DistanceTwoPoints(polyX, polyY, tmpX, tmpY)
+                            
+                            If (lenLineInPixels >= 1!) Then
+                                PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, tmpX, tmpY
+                                PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, tmpX, tmpY
+                            End If
+                            
                         End If
                         
                     End If
@@ -2836,6 +2862,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         'Finally, for lasso selections, if the lasso is currently being drawn, we want to highlight
         ' the starting point of the lasso with a circle.
         If (m_SelectionShape = ss_Lasso) And (Not Me.GetLassoClosedState()) And (m_NumOfLassoPoints > 0) Then
+        
             Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(0).x, m_LassoPoints(0).y, tmpX, tmpY
             
             'If this is the initial point in a polygon selection, fill it to help orient the user
@@ -3034,6 +3061,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     GDI_Plus.GDIPlus_StretchBlt m_ViewportRefOld, .Left, .Top, .Width, .Height, m_OldMask, m_OldBounds.Left, m_OldBounds.Top, m_OldBounds.Width, m_OldBounds.Height, , interpolationType, , , isZoomedIn, False
                 End With
                 
+                Debug.Print "RenderSelectionToViewport - created m_ViewportRefOld"
+                
             End If
             
             'Now repeat all the above steps for the composite mask
@@ -3057,6 +3086,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Top = .Top - viewportIntersectRectCanvas.Top
                     GDI_Plus.GDIPlus_StretchBlt m_ViewportRefComposite, .Left, .Top, .Width, .Height, m_CompositeMask, m_CompositeBounds.Left, m_CompositeBounds.Top, m_CompositeBounds.Width, m_CompositeBounds.Height, , interpolationType, , , isZoomedIn, False
                 End With
+                
+                Debug.Print "RenderSelectionToViewport - created m_ViewportRefComposite"
                 
             End If
             
@@ -3100,11 +3131,9 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
     Dim useOutlineRenderingInstead As Boolean
     useOutlineRenderingInstead = (renderType = PDSR_Outline) Or (renderType = PDSR_Ants)
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
-    'If we are not using marching ants, disable the associated ant timer now (as a failsafe; this is typically solved elsewhere,
-    ' but better safe than sorry).
+    'If we are not using marching ants, disable the associated ant timer now
+    ' (as a failsafe only; this is typically solved elsewhere).
     If (renderType <> PDSR_Ants) Then
         
         'As a failsafe, forcibly disable animations prior to stopping the timer; this helps against any pending timer events
@@ -3116,44 +3145,26 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
     End If
     
-    'TODO: figure out what to render when a composite is active.
+    'Render the current selection (including a composite, if any) to the canvas
     If useOutlineRenderingInstead Then
+        Debug.Print "RenderSelectionAsOutline"
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     Else
+        Debug.Print "RenderSelectionAsOverlay"
         RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
     End If
-
-'    'A composite selection is active, meaning there is both an active selection (editable) and one or more
-'    ' old selections merged into a single composite selection (not editable).
-'    If m_CompositeActive Then
-'
-'        'Is the user actively transforming a selection?  If so, render the active selection as-is.
-'        If m_TransformModeActive Then
-'
-'            If useOutlineRenderingInstead Then
-'                RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
-'            Else
-'                RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
-'            End If
-'
-'            'Next, render the old selection as an outline.
-'
-'        'The user is not currently interacting with the selection.  Just render the composite selection.
-'        Else
-'
-'        End If
-'
-'    'If no composite is active, just render the existing selection as-is.
-'    Else
-'
-'        If useOutlineRenderingInstead Then
-'            RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
-'        Else
-'            RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
-'        End If
-'
-'    End If
-'
+    
+    'If an in-progress lasso or polygon selection is active, render that next.
+    ' (By design, it will be rendered "over the top" of any existing composite selections.)
+    Dim renderActiveLassoOrPolygon As Boolean
+    renderActiveLassoOrPolygon = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
+    renderActiveLassoOrPolygon = renderActiveLassoOrPolygon Or ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
+    
+    If renderActiveLassoOrPolygon Then
+        Debug.Print "RenderInProgressLassoOrPolygon"
+        RenderInProgressLassoOrPolygon dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
+    End If
+    
 End Sub
 
 'Child function of RenderSelectionToViewport(), above.
@@ -3275,9 +3286,17 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
         
         'Ensure the correct source rect is used
+        Dim useOldInsteadOfComposite As Boolean
+        useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
+        useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed)
+        
         Dim srcViewportRefRectF As RectF
         If m_CompositeActive Then
-            srcViewportRefRectF = m_ViewportRefCompositeRectF
+            If useOldInsteadOfComposite Then
+                srcViewportRefRectF = m_ViewportRefOldRectF
+            Else
+                srcViewportRefRectF = m_ViewportRefCompositeRectF
+            End If
         Else
             srcViewportRefRectF = m_ViewportRefRectF
         End If
@@ -3310,8 +3329,13 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             'Update as of 9.0: composite selections makes this step a bit more convoluted.
             ' If a composite mask exists, use it for the operation.  Otherwise, use the normal mask.
             If m_CompositeActive Then
-                Debug.Print "using m_ViewportRefComposite for overlay"
-                m_ViewportRefComposite.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+                If useOldInsteadOfComposite Then
+                    Debug.Print "using m_ViewportRefOld for overlay"
+                    m_ViewportRefOld.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+                Else
+                    Debug.Print "using m_ViewportRefComposite for overlay"
+                    m_ViewportRefComposite.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+                End If
             Else
                 Debug.Print "using m_ViewportReference for overlay"
                 m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
@@ -3376,7 +3400,10 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     '     (This provides a huge speed boost when the current image is large and zoomed-out, as we only generate a path
     '      relevant to the current on-screen representation.)
     ' 2) Render the actual outline onto the target viewport DIB
-    
+    Dim currentSelectionIncomplete As Boolean
+    currentSelectionIncomplete = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
+    currentSelectionIncomplete = currentSelectionIncomplete Or ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
+        
     'Let's begin with task (1): figuring out if our existing outline path is both:
     ' 1) available, and...
     ' 2) up-to-date.
@@ -3386,91 +3413,39 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         If (m_CurrentOutline Is Nothing) Then Set m_CurrentOutline = New pd2DPath Else m_CurrentOutline.ResetPath
         
-        'PD supports two different paths for populating an "outline path":
-        ' 1) 99% of the time, we want to perform a manual outline scan of the selection mask
-        '    (scaled and zoomed to match the current viewport).  This works for any selection tool,
-        '    regardless of shape, feathering, or other esoteric settings, which makes it universally
-        '    awesome.
+        'Because PhotoDemon uses pixel-based masks for selections (to allow for "partial" selecting),
+        ' we don't always have a vector-based path that defines the current selection.  So instead,
+        ' we directly construct a path from the current selection mask *AS IT APPEARS IN THE VIEWPORT*.
+        ' This "shortcut" provides a large performance boost, especially on large images, and it yields
+        ' some cool benefits like tracing precise pixel boundaries when deeply zoomed-in on an image.
         '
-        ' 2) As always, there is an exception, however: when rendering a lasso or polygon selection,
-        '    if the selection has *not yet been completed*, we want to simply render the current
-        '    selection outline "as-is" - this is important for conveying that the selection itself is
-        '    still "under construction".  For this, we use a separate, dedicated rendering function
-        '    based on the current in-progress polygon or lasso points.
-        Dim useLegacyVectorMode As Boolean
-        useLegacyVectorMode = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
-        If (Not useLegacyVectorMode) Then useLegacyVectorMode = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
+        'Note that we only construct a path here if the current selection is actually complete.
+        ' (In-progress lasso and polygon selections are rendered in a separate step.)  One exception
+        ' to this is if the current selection is not complete, *but* a composite selection is active.
         
-        If useLegacyVectorMode Then
+        'Create an outline for the active selection
+        If (Not currentSelectionIncomplete) Then CreateViewportOutlineForMask m_ViewportRefRectF, imgViewportRectL, m_ViewportByteCopy, m_ViewportByteCopyRect, m_ViewportReference, m_CurrentOutline
+        
+        '...then repeat the steps, as necessary, for the composite outline (and previous selection)
+        If m_CompositeActive Then
             
-            'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used
-            ' and the number of points.
-            If (m_SelectionShape = ss_Polygon) Or (m_SelectionShape = ss_Lasso) Then
-                
-                Dim numOfRenderPoints As Long
-                If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
-                
-                If (numOfRenderPoints > 1) Then
-                
-                    'Convert the lasso or polygon array to viewport coordinate space
-                    Dim tmpViewportSpace() As PointFloat
-                    ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As PointFloat
-                    
-                    Dim tmpX As Double, tmpY As Double
-                    
-                    Dim i As Long
-                    For i = 0 To numOfRenderPoints - 1
-                        
-                        If (m_SelectionShape = ss_Polygon) Then
-                            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
-                        Else
-                            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
-                        End If
-                        
-                        tmpViewportSpace(i).x = tmpX
-                        tmpViewportSpace(i).y = tmpY
-                        
-                    Next i
-                    
-                    'Add the converted shape to the path object
-                    If (m_SelectionShape = ss_Polygon) Then
-                        m_CurrentOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
-                    Else
-                        m_CurrentOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
-                    End If
-                    
-                    'Translate the final path into its correct on-screen position, while also accounting for the 1px border we
-                    ' manually add to the transparent "overlay" DIB (which gives us room for outlines that extend "outside"
-                    ' the first row and column of pixels in the image).
-                    m_CurrentOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
-                    
-                Else
-                    Set m_CurrentOutline = Nothing
+            'The old outline does not need to be re-created unless the viewport has changed since the previous construction
+            If (Not m_ViewportRefOld Is Nothing) Then
+                If (Not m_OldOutlineIsReady) Then
+                    Debug.Print "CreateViewportOutlineForMask - old!"
+                    CreateViewportOutlineForMask m_ViewportRefOldRectF, imgViewportRectL, m_ViewportByteCopyOld, m_ViewportByteCopyRectOld, m_ViewportRefOld, m_OldOutline
+                    m_OldOutlineIsReady = True
                 End If
-                
             End If
             
-            'TODO: how to render composite outline, if one exists?
-        
-        '99% of the time, we'll be using our standard, "universal" outline detector.
-        Else
-            
-            'Create an outline for the active selection
-            CreateViewportOutlineForMask m_ViewportRefRectF, imgViewportRectL, m_ViewportByteCopy, m_ViewportByteCopyRect, m_ViewportReference, m_CurrentOutline
-            
-            '...then repeat the steps, as necessary, for the composite outline (and previous selection)
-            If m_CompositeActive Then
-                
-                'The old outline does not need to be re-created unless the viewport has changed since the previous construction
-                If (Not m_ViewportRefOld Is Nothing) Then
-                    If (Not m_OldOutlineIsReady) Then
-                        CreateViewportOutlineForMask m_ViewportRefOldRectF, imgViewportRectL, m_ViewportByteCopyOld, m_ViewportByteCopyRectOld, m_ViewportRefOld, m_OldOutline
-                        m_OldOutlineIsReady = True
-                    End If
-                End If
-                
-                If (Not m_ViewportRefComposite Is Nothing) Then CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
-                
+            'If a polygon or lasso selection is in-progress, we are going to render the old mask and
+            ' *not* the composite (a new composite will be generated when the polygon or lasso is finished)
+            Dim skipCompositeStep As Boolean: skipCompositeStep = False
+            skipCompositeStep = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
+            skipCompositeStep = (Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed)
+            If (Not m_ViewportRefComposite Is Nothing) And (Not skipCompositeStep) Then
+                Debug.Print "CreateViewportOutlineForMask - composite!"
+                CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
             End If
             
         End If
@@ -3479,6 +3454,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' viewport position/zoom) changes.
         m_CurrentOutlineIsReady = True
         
+    Else
+        Debug.Print "(skipping outline assembly)"
     End If
         
     'We are now ready to render the actual outline onto the overlay DIB.
@@ -3487,11 +3464,22 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' (if only one selection is active).
     Dim srcOutline As pd2DPath
     If m_CompositeActive Then
-        Set srcOutline = m_CompositeOutline
+        
+        'If a lasso or polygon selection is in-progress (but *not* complete), render the old outline
+        ' instead of the composite one.
+        If currentSelectionIncomplete Then
+            Debug.Print "(using OldOutline)"
+            Set srcOutline = m_OldOutline
+        Else
+            Debug.Print "(using CompositeOutline)"
+            Set srcOutline = m_CompositeOutline
+        End If
+        
     Else
+        Debug.Print "(using CurrentOutline)"
         Set srcOutline = m_CurrentOutline
     End If
-        
+    
     If (Not srcOutline Is Nothing) Then
     
         'Start by making sure our cached overlay dimensions are correct.  We need the overlay DIB to be at least 1-px larger
@@ -3544,7 +3532,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
             PD2D.DrawPath cSurface, cBlackPen, srcOutline
             PD2D.DrawPath cSurface, cDottedPen, srcOutline
-                        
+            
             'If marching ants are being used, make sure our timer is enabled now
             If (Not m_AntTimer.IsActive) Then
                 If (g_InterfacePerformance = PD_PERF_FASTEST) Then
@@ -3564,6 +3552,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         m_LastOverlayCache = GenerateArbitraryHash(renderType)
         
     Else
+        Debug.Print "srcOutline is nothing - resetting overlay DIB"
         If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     End If
     
@@ -3575,6 +3564,116 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Timing reports:
     'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
     
+End Sub
+
+'The user can specify how we render selections on the canvas (highlight, marching ants, etc),
+' but when a lasso or polygon selection is *actively* in progress and has not yet been finished,
+' we always render it using an outline-style UI.  (It's impossible to see it otherwise.)
+'
+'Separating this renderer into its own function is also beneficial when composite selections
+' are active, since we can render the composite using the user's UI style preference, then overlay
+' any in-progress polygon or lasso outline over the top.
+Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
+    
+    'First, confirm that we actually want to run this step
+    Dim okToProceed As Boolean
+    okToProceed = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
+    okToProceed = okToProceed Or ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
+    If (Not okToProceed) Then Exit Sub
+    
+    'Proceed with rendering, using the in-progress selection's vector data as our guide
+    Dim tmpPath As pd2DPath
+    
+    Dim numOfRenderPoints As Long
+    If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
+    
+    If (numOfRenderPoints > 1) Then
+    
+        'Convert the lasso or polygon array to viewport coordinate space
+        Dim tmpViewportSpace() As PointFloat
+        ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As PointFloat
+        
+        Dim tmpX As Double, tmpY As Double
+        
+        Dim i As Long
+        For i = 0 To numOfRenderPoints - 1
+            
+            If (m_SelectionShape = ss_Polygon) Then
+                Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+            Else
+                Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+            End If
+            
+            tmpViewportSpace(i).x = tmpX
+            tmpViewportSpace(i).y = tmpY
+            
+        Next i
+        
+        Set tmpPath = New pd2DPath
+        Debug.Print "in-progress path: " & m_PolygonClosed
+        
+        'Add the converted shape to the path object
+        If (m_SelectionShape = ss_Polygon) Then
+            tmpPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), False, True, GetSelectionProperty_Float(sp_PolygonCurvature)
+        Else
+            tmpPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
+        End If
+        
+        'Translate the final path into its correct on-screen position, while also accounting for the 1px border we
+        ' manually add to the transparent "overlay" DIB (which gives us room for outlines that extend "outside"
+        ' the first row and column of pixels in the image).
+        ' m_CurrentOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
+        
+    Else
+        Set tmpPath = Nothing
+    End If
+    
+    'If we don't have a valid outline option, exit now
+    If (tmpPath Is Nothing) Then Exit Sub
+    
+    'Draw the assembled path onto the supplied canvas
+    Dim cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+    
+    'I haven't made a final decision on using antialiasing for the rendering outline.
+    ' At present, antialiasing is used for "outline" mode, but not "marching ant" mode.
+    ' (There is a non-trivial performance penalty with antialiased marching ants,
+    ' and I'm not sure the hit is worth it, especially on older PCs.)
+    Dim useAA As Boolean
+    useAA = (renderType = PDSR_Outline)
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, useAA
+    
+    'Half-pixel offsets solve some rendering problems, while also introducing other ones.
+    ' I've left it disabled for now, pending additional testing.
+    'cSurface.SetSurfacePixelOffset P2_PO_Half
+    
+    'Render the outline using PD's standard "white-on-black" outline technique
+    If (renderType = PDSR_Outline) Then
+        
+        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, False, P2_LJ_Round, P2_LC_Round
+        PD2D.DrawPath cSurface, cPenUIBase, tmpPath
+        PD2D.DrawPath cSurface, cPenUITop, tmpPath
+        
+    'Render the outline using a dotted "marching ants" approach
+    Else
+        
+        Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
+        Set cBlackPen = New pd2DPen
+        cBlackPen.SetPenColor vbBlack
+        cBlackPen.SetPenWidth 1!
+        
+        Set cDottedPen = New pd2DPen
+        cDottedPen.SetPenWidth 1!
+        cDottedPen.SetPenColor vbWhite
+        cDottedPen.CreatePen
+        cDottedPen.SetPenStyle P2_DS_Custom
+        cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
+        cDottedPen.SetPenDashOffset m_AntDashOffset
+        
+        PD2D.DrawPath cSurface, cBlackPen, tmpPath
+        PD2D.DrawPath cSurface, cDottedPen, tmpPath
+        
+    End If
+        
 End Sub
 
 'Create a viewport-specific outline for a given source selection mask.

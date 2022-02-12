@@ -643,9 +643,11 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                     
                     'If the user clicked on the initial polygon point, attempt to close the polygon
                     If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
+                        
+                        'Set appropriate closed flags, and activate the first point as a transform target
                         PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
                         PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
-                    
+                        
                     'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
                     Else
                         
@@ -984,6 +986,14 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                     
                     'If the polygon is already closed, we want to lock in the newly modified polygon
                     If PDImages.GetActiveImage.MainSelection.GetPolygonClosedState Then
+                        
+                        'For performance reasons, we don't auto-construct a composite mask while polygon
+                        ' selections are being constructed.  But if we don't construct a composite mask
+                        ' before "creating" this selection, the Undo/Redo engine will attempt to save
+                        ' a non-existent mask and crash.
+                        
+                        'So let's ensure a valid composite mask exists before finalizing this selection.
+                        PDImages.GetActiveImage.MainSelection.RequestNewMask
                         
                         'Polygons use a different transform numbering convention than other selection tools, because the number
                         ' of points involved aren't fixed.

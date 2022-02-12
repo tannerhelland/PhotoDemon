@@ -3652,7 +3652,10 @@ Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal sr
 End Function
 
 Public Function GDIPlus_DrawLineF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
-    GDIPlus_DrawLineF = (GdipDrawLine(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawLine(dstGraphics, srcPen, x1, y1, x2, y2)
+    GDIPlus_DrawLineF = (tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawLineI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Boolean
