@@ -616,11 +616,11 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
             
             'If a point of interest was clicked, initiate a transform event (to allow modification
             ' of the *already existing* selection).
-            'If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-            '    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-            '    PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-            '
-            'Else
+            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) And PDImages.GetActiveImage.MainSelection.GetPolygonClosedState() Then
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+            
+            Else
                 
                 'First, see if the current polygon is "locked in" (i.e. finished).
                 ' If it is, treat this as starting a new selection.
@@ -681,7 +681,7 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                 
                 End If
                 
-            'End If
+            End If
             
         'All other selection types are *much* simpler
         Else

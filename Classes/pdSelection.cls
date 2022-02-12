@@ -2556,6 +2556,7 @@ Private Sub CreateSelectionMask()
     
     'If all criteria is met, go ahead and create a new composite
     If (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed) Then makeCompositeToo = False
+    If (Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed) Then makeCompositeToo = False
     If makeCompositeToo Then CreateCompositeSelectionMask
     
 End Sub
@@ -3182,6 +3183,12 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
     If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor, renderOpacity), False)
     
+    'Under some circumstances (e.g. in-progress polygon selections), we're actually going to render the
+    ' "old" mask instead of the "composite" one
+    Dim useOldInsteadOfComposite As Boolean
+    useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
+    useOldInsteadOfComposite = useOldInsteadOfComposite Or ((Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed))
+        
     'If any preceding checks failed, generate a new UI DIB to match current settings.
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
         
@@ -3284,11 +3291,6 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
         Dim viewportIntersectRectCanvas As RectF
         srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
-        
-        'Ensure the correct source rect is used
-        Dim useOldInsteadOfComposite As Boolean
-        useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
-        useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed)
         
         Dim srcViewportRefRectF As RectF
         If m_CompositeActive Then
@@ -3442,7 +3444,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             ' *not* the composite (a new composite will be generated when the polygon or lasso is finished)
             Dim skipCompositeStep As Boolean: skipCompositeStep = False
             skipCompositeStep = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
-            skipCompositeStep = (Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed)
+            skipCompositeStep = skipCompositeStep Or ((Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed))
             If (Not m_ViewportRefComposite Is Nothing) And (Not skipCompositeStep) Then
                 Debug.Print "CreateViewportOutlineForMask - composite!"
                 CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
