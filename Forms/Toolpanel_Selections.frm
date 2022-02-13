@@ -1113,6 +1113,7 @@ Private Sub cboSelCombine_Click()
     'If a selection is already active, we may need to calculate a new combined area
     If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, cboSelCombine.ListIndex
+        PDImages.GetActiveImage.MainSelection.RequestNewMask
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
     

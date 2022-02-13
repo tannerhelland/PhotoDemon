@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionUI"
 'Selection Tools: UI
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 07/September/21
-'Last update: split selection UI code into its own module
+'Last updated: 12/February/22
+'Last update: composite selection support is finally here, woooohooo!
 '
 'This module should only contain UI code related to selection filters (e.g. key and mouse input,
 ' synchronizing UI elements and internal values, etc).

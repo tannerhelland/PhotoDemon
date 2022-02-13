@@ -339,7 +339,6 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
         
         'Combine mode changes always require a recalculation of the mask
         Case sp_Combine
-            Debug.Print "combine set: " & propertyValue
             m_IsMaskReady = False
         
         Case sp_BorderWidth
@@ -2103,6 +2102,7 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
     m_CurrentOutlineIsReady = False
     Set m_CurrentOutline = Nothing
     
+    m_OldOutlineIsReady = False
     m_OverlayIsReady = False
     m_LastOverlayCache = vbNullString
     If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
@@ -2605,11 +2605,121 @@ Private Sub CreateCompositeSelectionMask()
     'Subtract mode requires manual per-pixel iteration
     ElseIf (curCombineMode = pdsm_Subtract) Then
         
+        'In subtract mode, the new boundary rect will never be larger than the current boundary rect.
+        ' (Note that we will need to re-calculate a boundary rect after generating the composite mask.)
         
+        'For performance reasons, we only want to analyze the intersect rect of the two masks.
+        Dim newRectIntersect As RectF
+        If GDI_Plus.IntersectRectF(newRectIntersect, m_Bounds, m_OldBounds) Then
+                
+            'The old and new masks *do* intersect, and their intersection is stored in newRectIntersect.
+            
+            'Time to do a per-pixel iteration, and manually remove any pixels selected by the
+            ' current mask.
+            
+            'Start by bulk-copying the contents of the old mask into the composite mask.
+            ' (We will strip pixels out of this mask as necessary, but it reduces cache pressure to
+            ' only need to reference *two* images in the per-pixel loop.)
+            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
+            
+            'Build a look-up table of possible subtraction values.  (This spares the need for branches
+            ' in the inner loop.)
+            Dim subLookup(-255 To 255) As Byte
+            Dim x As Long, y As Long
+            For x = -255 To 255
+                subLookup(x) = IIf(x < 0, 0, x)
+            Next x
+            
+            'Next, calculate loop boundaries, including sanity checks
+            Dim pxLeft As Long, pxTop As Long, pxRight As Long, pxBottom As Long
+            pxLeft = Int(newRectIntersect.Left)
+            pxTop = Int(newRectIntersect.Top)
+            pxRight = pxLeft + Int(newRectIntersect.Width + 0.9999999!)
+            pxBottom = pxTop + Int(newRectIntersect.Height + 0.9999999!)
+            
+            If (pxLeft < 0) Then pxLeft = 0
+            If (pxTop < 0) Then pxTop = 0
+            If (pxRight >= m_CompositeMask.GetDIBWidth) Then pxRight = m_CompositeMask.GetDIBWidth - 1
+            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxRight = m_CompositeMask.GetDIBHeight - 1
+            
+            'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
+            pxLeft = pxLeft * 4
+            pxRight = pxRight * 4
+            
+            'Get pointers to both the destination (composite) and source (current) masks
+            Dim dstSA As SafeArray1D, dstPixels() As Byte, dstBasePointer As Long, dstStride As Long
+            m_CompositeMask.WrapArrayAroundDIB_1D dstPixels, dstSA
+            dstBasePointer = dstSA.pvData
+            dstStride = m_CompositeMask.GetDIBStride
+            
+            Dim srcSA As SafeArray1D, srcPixels() As Byte, srcBasePointer As Long
+            m_SelMask.WrapArrayAroundDIB_1D srcPixels, srcSA
+            srcBasePointer = srcSA.pvData
+            
+            Dim pxOld As Long, pxNew As Long
+            For y = pxTop To pxBottom
+                dstSA.pvData = dstBasePointer + y * dstStride
+                srcSA.pvData = srcBasePointer + y * dstStride
+            For x = pxLeft To pxRight Step 4
+                
+                'Ignore un-selected pixels in the source selection
+                pxNew = srcPixels(x + 3)
+                If (pxNew > 0) Then
+                    pxOld = dstPixels(x + 3)
+                    pxNew = subLookup(pxOld - pxNew)
+                    dstPixels(x) = pxNew
+                    dstPixels(x + 1) = pxNew
+                    dstPixels(x + 2) = pxNew
+                    dstPixels(x + 3) = pxNew
+                End If
+                
+            Next x
+            Next y
+            
+            'Free unsafe array refs
+            m_CompositeMask.UnwrapArrayFromDIB dstPixels
+            m_SelMask.UnwrapArrayFromDIB srcPixels
+            
+            'Find boundaries of the new mask
+            If FindBoundsOfArbitraryMask(m_CompositeMask, m_OldBounds, m_CompositeBounds) Then
+                
+                'One of the quirks of finding mask boundaries this way is that the resulting rect will
+                ' always use integer coordinates (because it used pixel scanning) but vector selection
+                ' sources will render using floating-point values.  This can create a disconnect at
+                ' certain zoom values where the boundaries don't *quite* map to identical on-screen
+                ' appearances.  To resolve this, we check for integer matches and if found, we replace
+                ' the integer values from the pixel scan with the floating-point values from the
+                ' original boundary set.
+                With m_OldBounds
+                    If Int(.Left) = Int(m_CompositeBounds.Left) Then m_CompositeBounds.Left = .Left
+                    If Int(.Top) = Int(m_CompositeBounds.Top) Then m_CompositeBounds.Top = .Top
+                    If Int(.Width) = Int(m_CompositeBounds.Width) Then m_CompositeBounds.Width = .Width
+                    If Int(.Height) = Int(m_CompositeBounds.Height) Then m_CompositeBounds.Height = .Height
+                End With
+                
+            Else
+                'TODO: flag bad boundaries here?  Maybe only perform this boundary step when a
+                ' selection is finalized, and ignore it otherwise?? IDK
+            End If
+            
+        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted).
+        Else
+            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
+            m_CompositeBounds = m_OldBounds
+        End If
         
     'Intersect mode requires manual per-pixel iteration
     ElseIf (curCombineMode = pdsm_Intersect) Then
     
+    'Replace mode isn't normally handled here.  The *one* exception is if the user changes combine
+    ' mode while a multi-part selection is currently active.  Then we may want to re-compute the
+    ' current selection in-place?
+    ElseIf (curCombineMode = pdsm_Replace) Then
+        
+        'Just clone the current selection mask into the composite selection mask
+        m_CompositeMask.CreateFromExistingDIB m_SelMask
+        m_CompositeBounds = m_Bounds
+        
     End If
     
     Debug.Print "Composite mask boundaries: " & m_CompositeBounds.Left & ", " & m_CompositeBounds.Top & ", " & m_CompositeBounds.Width & ", " & m_CompositeBounds.Height
@@ -3002,6 +3112,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' (if one exists).
     If (Not m_ViewportRefReady) Then
         
+        Debug.Print "viewport ref not ready"
         VBHacks.GetHighResTime startTime
         
         'Prep a target DIB; if at all possible, we want to reuse our existing DIB (as allocating new memory can be
@@ -3433,7 +3544,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
             'The old outline does not need to be re-created unless the viewport has changed since the previous construction
             If (Not m_ViewportRefOld Is Nothing) Then
-                If (Not m_OldOutlineIsReady) Then
+                If (Not m_OldOutlineIsReady) Or overlayWasRegenerated Then
                     Debug.Print "CreateViewportOutlineForMask - old!"
                     CreateViewportOutlineForMask m_ViewportRefOldRectF, imgViewportRectL, m_ViewportByteCopyOld, m_ViewportByteCopyRectOld, m_ViewportRefOld, m_OldOutline
                     m_OldOutlineIsReady = True
@@ -3682,12 +3793,6 @@ End Sub
 ' This function is generalized so that it can be used for composite selections
 ' (e.g. selections comprised of multiple independent selections).
 Private Sub CreateViewportOutlineForMask(ByRef srcRefRectF As RectF, ByRef imgViewportRectL As RectL_WH, ByRef viewportByteCopy() As Byte, ByRef viewportByteRect As RectL_WH, ByRef viewportDIB As pdDIB, ByRef dstOutline As pd2DPath)
-    
-    'Perform a sanity check on the source rectangle (since we map it to pixel offsets)
-    If (srcRefRectF.Left < 0) Then Exit Sub
-    If (srcRefRectF.Top < 0) Then Exit Sub
-    If (srcRefRectF.Width <= 0) Then Exit Sub
-    If (srcRefRectF.Height <= 0) Then Exit Sub
     
     'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
     ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
@@ -4168,6 +4273,161 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     End If
     
     WriteSelectionToFile = cPackage.FinishPackage()
+    
+End Function
+
+'Variation on the normal bounds-checking function, specifically designed for composite masks.
+' These have some differences from normal raster selections (for example, we usually have a
+' smaller-than-full-size boundary known *in advance*, so we don't have to scan the full mask).
+'
+'Caller must supply source mask, initial boundary rect (in), and destination boundary rect (out).
+'
+'If boundaries are successfully found, this function will return TRUE.
+' Otherwise, it will return FALSE, which means the area of the passed selection mask is blank.
+Private Function FindBoundsOfArbitraryMask(ByRef srcMask As pdDIB, ByRef srcInitBounds As RectF, ByRef dstFinalBounds As RectF) As Boolean
+    
+    'As a reminder, the expected return of this function is TRUE, which means at least one
+    ' selected pixel was located inside the passed boundary rect.
+    FindBoundsOfArbitraryMask = True
+    
+    'Point a standard int array at the selection mask.  (This is nice because we get slightly
+    ' faster access times.)
+    Dim x As Long, y As Long
+    Dim selMaskData() As Long, selMaskSA As SafeArray2D, selMaskSA1D As SafeArray1D
+    
+    'While here, grab a baseline DIB pointer and stride, so we can quickly wrap individual lines
+    Dim maskPtr As Long, maskStride As Long
+    srcMask.WrapLongArrayAroundScanline selMaskData, selMaskSA1D
+    maskPtr = selMaskSA1D.pvData
+    maskStride = selMaskSA1D.cElements * 4
+    
+    Dim maskLeft As Long, maskTop As Long
+    maskLeft = Int(srcInitBounds.Left)
+    If (maskLeft < 0) Then maskLeft = 0
+    If (maskLeft >= srcMask.GetDIBWidth) Then maskLeft = srcMask.GetDIBWidth - 1
+    
+    maskTop = Int(srcInitBounds.Top)
+    If (maskTop < 0) Then maskTop = 0
+    If (maskTop >= srcMask.GetDIBHeight) Then maskTop = srcMask.GetDIBHeight - 1
+    
+    'Note that these floating-point conversions aren't *technically* correct (we would want
+    ' to add the fractional amount from the left/top boundary, if any), but PD doesn't use
+    ' fractional positions of these RectF objects when determining selection boundaries.
+    ' Boundaries are always assumed to be clipped at integer values.
+    Dim maskRight As Long, maskBottom As Long
+    maskRight = maskLeft + Int(srcInitBounds.Width + 0.999999!)
+    If (maskRight < maskLeft) Then maskRight = maskLeft
+    If (maskRight >= srcMask.GetDIBWidth) Then maskRight = srcMask.GetDIBWidth - 1
+    
+    maskBottom = maskTop + Int(srcInitBounds.Height + 0.999999!)
+    If (maskBottom < maskTop) Then maskBottom = maskTop
+    If (maskBottom >= srcMask.GetDIBHeight) Then maskBottom = srcMask.GetDIBHeight - 1
+    
+    Dim boundFound As Boolean
+    
+    'Find the top bound first.
+    boundFound = False
+    y = maskTop
+    Do
+    
+        selMaskSA1D.pvData = maskPtr + y * maskStride
+    
+        For x = maskLeft To maskRight
+            
+            'In the future, if we decide to let the user select individual color channels, this code will need to be reworked.
+            ' For now, however, all pixels are rendered as grayscale, so we can shortcut and just check for non-zero entries.
+            If (selMaskData(x) <> 0) Then
+                boundFound = True
+                maskTop = y
+                dstFinalBounds.Top = y
+                Exit For
+            End If
+            
+        Next x
+        
+        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
+        If (Not boundFound) And (y >= maskBottom) Then
+            boundFound = True
+            FindBoundsOfArbitraryMask = False
+        End If
+        
+        y = y + 1
+    
+    Loop While (Not boundFound)
+    
+    'If the target region of the mask is empty, abandon ship
+    If (Not FindBoundsOfArbitraryMask) Then
+        srcMask.UnwrapLongArrayFromDIB selMaskData
+        dstFinalBounds = srcInitBounds
+        Exit Function
+    End If
+    
+    'Next, find the bottom bound.  Note that we skip the "is mask blank" check, as we've already handled that case above.
+    boundFound = False
+    y = maskBottom
+    
+    Do
+    
+        selMaskSA1D.pvData = maskPtr + y * maskStride
+        
+        For x = maskLeft To maskRight
+            If (selMaskData(x) <> 0) Then
+                boundFound = True
+                maskBottom = y
+                dstFinalBounds.Height = y - Int(dstFinalBounds.Top) + 1
+                Exit For
+            End If
+        Next x
+        
+        y = y - 1
+    
+    Loop While (Not boundFound)
+    
+    'Next, find the left bound
+    boundFound = False
+    x = maskLeft
+    
+    srcMask.UnwrapLongArrayFromDIB selMaskData
+    srcMask.WrapLongArrayAroundDIB selMaskData, selMaskSA
+    
+    Do
+    
+        For y = maskTop To maskBottom
+            If (selMaskData(x, y) <> 0) Then
+                boundFound = True
+                maskLeft = x
+                dstFinalBounds.Left = x
+                Exit For
+            End If
+            
+        Next y
+        
+        x = x + 1
+    
+    Loop While (Not boundFound)
+    
+    'Finally, find the right bound
+    boundFound = False
+    x = maskRight
+    
+    Do
+    
+        For y = maskTop To maskBottom
+            If (selMaskData(x, y) <> 0) Then
+                boundFound = True
+                dstFinalBounds.Width = x - Int(dstFinalBounds.Left) + 1
+                Exit For
+            End If
+        Next y
+        
+        x = x - 1
+        
+    Loop While (Not boundFound)
+    
+    'All boundaries have now been located (and stored in the destination RectF)
+    Debug.Print "bounds: ", srcInitBounds.Left, dstFinalBounds.Left, srcInitBounds.Top, dstFinalBounds.Top
+    'Release the final unsafe array ref and exit
+    srcMask.UnwrapLongArrayFromDIB selMaskData
     
 End Function
 
