@@ -59,8 +59,8 @@ Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef l
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function UpdateLayeredWindow Lib "user32" (ByVal hWnd As Long, ByVal hdcDst As Long, ByVal pptDst As Long, ByVal psize As Long, ByVal hdcSrc As Long, ByVal pptSrc As Long, ByVal crKey As Long, ByVal pblend As Long, ByVal dwFlags As Long) As Long
 
-'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once m_splashDIB (below)
-' has been successfully assembled.
+'A logo, drop shadow and screen backdrop are used to generate the splash.
+' These DIBs are released once m_splashDIB (below) has been successfully assembled.
 Private m_logoDIB As pdDIB, m_shadowDIB As pdDIB
 Private m_splashDIB As pdDIB
 
@@ -70,8 +70,7 @@ Private m_BackBuffer As pdDIB
 'We skip the entire display process if any of the DIBs can't be created
 Private m_dibsLoadedSuccessfully As Boolean
 
-'On high-DPI monitors, some stretching is required.  In the future, I would like to replace this with a more
-' elegant solution.
+'On high-DPI monitors, some stretching is required.
 Private m_logoAspectRatio As Double
 
 'The maximum progress count of the load operation is stored here.  The value is passed to the initial
@@ -82,7 +81,7 @@ Private m_maxProgress As Long, m_progressAtFirstNotify As Long
 Private Const WM_ERASEBKGND As Long = &H14
 Implements ISubclass
 
-'Load any logo DIBs from the .exe's resource area, and precalculate some rendering values
+'Load any logo DIBs from the .exe's resource area, and pre-calculate some rendering values
 Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     
     m_maxProgress = maxProgressValue

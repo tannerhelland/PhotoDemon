@@ -169,7 +169,7 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
         .SetSelectionShape curShape
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_Area, toolpanel_Selections.cboSelArea(SelectionUI.GetSelectionSubPanelFromCurrentTool).ListIndex Else .SetSelectionProperty sp_Area, sa_Interior
         .SetSelectionProperty sp_Smoothing, toolpanel_Selections.cboSelSmoothing.ListIndex
-        .SetSelectionProperty sp_Combine, toolpanel_Selections.cboSelCombine.ListIndex
+        .SetSelectionProperty sp_Combine, toolpanel_Selections.btsCombine.ListIndex
         .SetSelectionProperty sp_FeatheringRadius, toolpanel_Selections.sltSelectionFeathering.Value
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_BorderWidth, toolpanel_Selections.sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromCurrentTool).Value
         .SetSelectionProperty sp_RoundedCornerRadius, toolpanel_Selections.sltCornerRounding.Value

@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2022 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 29/April/20
-'Last update: migrate renderer to pd2D
+'Last updated: 15/February/22
+'Last update: new _MouseMove event so that controls can list custom tooltips for each button
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -60,9 +60,12 @@ Option Explicit
 'This control really only needs one event raised - Click
 Public Event Click(ByVal buttonIndex As Long)
 
-'These events are provided as a convenience, for hosts who may want to reroute mousewheel events to some other control.
-' (In PD, the metadata browser does this.)
+'These events are provided as a convenience, for hosts who may want to reroute mousewheel events
+' to some other control. (In PD, the metadata browser does this.)
 Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
+'MouseMove is only meant to be used for custom per-button tooltips
+Public Event MouseMoveInfoOnly(ByVal buttonIndex As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -433,7 +436,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
         'Any time the hover index changes, a repaint is required
         RedrawBackBuffer
-    
+        
+        'Also raise an informational event so the caller can modify our tooltip (if any)
+        RaiseEvent MouseMoveInfoOnly(mouseHoverIndex)
+        
     End If
     
 End Sub
