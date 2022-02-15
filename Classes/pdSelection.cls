@@ -716,8 +716,6 @@ Friend Sub SquashCompositeToRaster()
     
     'Failsafe checks (if masks don't exist, this function can't do anything)
     If (m_SelMask Is Nothing) Then Exit Sub
-    
-    'Not reaching this point (ugh)
     If (Not m_CompositeActive) Then Exit Sub
     If (m_CompositeMask Is Nothing) Then Exit Sub
     
@@ -2253,7 +2251,7 @@ Private Sub CreateSelectionMask()
             End With
             
         End If
-            
+        
     End If
     
     dstSurface.SetSurfaceCompositing P2_CM_Overwrite
@@ -2581,7 +2579,6 @@ Private Sub CreateCompositeSelectionMask()
     'Start by creating a DIB to hold the results of the merge.  (At first, this will simply hold
     ' the contents of the new selection mask - by design!)
     If (m_CompositeMask Is Nothing) Then Set m_CompositeMask = New pdDIB
-    m_CompositeMask.CreateFromExistingDIB m_OldMask
     
     'Find the union rect of the old mask and the current one.  Depending on the combine mode,
     ' we will need to iterate through these pixels and modify the combined mask accordingly.
@@ -2594,12 +2591,26 @@ Private Sub CreateCompositeSelectionMask()
     If (rectUnion.Width > m_CompositeMask.GetDIBWidth) Then rectUnion.Width = m_CompositeMask.GetDIBWidth
     If (rectUnion.Height > m_CompositeMask.GetDIBHeight) Then rectUnion.Height = m_CompositeMask.GetDIBHeight
     
+    'Lots of values are required for iterating pixels
+    Dim x As Long, y As Long
+    Dim pxLeft As Long, pxTop As Long, pxRight As Long, pxBottom As Long
+    Dim pxOld As Long, pxNew As Long
+    Dim dstSA As SafeArray1D, dstPixels() As Byte, dstBasePointer As Long, dstStride As Long
+    Dim srcSA As SafeArray1D, srcPixels() As Byte, srcBasePointer As Long
+    Dim newRectIntersect As RectF
+    
     'Perform the merge (varies according to combine mode)
     
     'Add mode is easiest, because we can simply AlphaBlend the old and current masks together.
     ' (Boundary calculation is also straightforward - just a simple union!)
     If (curCombineMode = pdsm_Add) Then
-        m_SelMask.AlphaBlendToDC m_CompositeMask.GetDIBDC
+        
+        m_CompositeMask.CreateFromExistingDIB m_OldMask
+        
+        'We could cheat and just blend the whole thing, a la...
+        'm_SelMask.AlphaBlendToDC m_CompositeMask.GetDIBDC
+        '...but we can save some cycles by only blending the relevant region from the current mask
+        m_SelMask.AlphaBlendToDCEx m_CompositeMask.GetDIBDC, Int(rectUnion.Left), Int(rectUnion.Top), Int(rectUnion.Width + 0.999999!), Int(rectUnion.Height + 0.999999!), Int(rectUnion.Left), Int(rectUnion.Top), Int(rectUnion.Width + 0.999999!), Int(rectUnion.Height + 0.999999!)
         m_CompositeBounds = rectUnion
         
     'Subtract mode requires manual per-pixel iteration
@@ -2607,11 +2618,11 @@ Private Sub CreateCompositeSelectionMask()
         
         'In subtract mode, the new boundary rect will never be larger than the current boundary rect.
         ' (Note that we will need to re-calculate a boundary rect after generating the composite mask.)
+        m_CompositeMask.CreateFromExistingDIB m_OldMask
         
         'For performance reasons, we only want to analyze the intersect rect of the two masks.
-        Dim newRectIntersect As RectF
         If GDI_Plus.IntersectRectF(newRectIntersect, m_Bounds, m_OldBounds) Then
-                
+            
             'The old and new masks *do* intersect, and their intersection is stored in newRectIntersect.
             
             'Time to do a per-pixel iteration, and manually remove any pixels selected by the
@@ -2625,13 +2636,11 @@ Private Sub CreateCompositeSelectionMask()
             'Build a look-up table of possible subtraction values.  (This spares the need for branches
             ' in the inner loop.)
             Dim subLookup(-255 To 255) As Byte
-            Dim x As Long, y As Long
             For x = -255 To 255
                 subLookup(x) = IIf(x < 0, 0, x)
             Next x
             
             'Next, calculate loop boundaries, including sanity checks
-            Dim pxLeft As Long, pxTop As Long, pxRight As Long, pxBottom As Long
             pxLeft = Int(newRectIntersect.Left)
             pxTop = Int(newRectIntersect.Top)
             pxRight = pxLeft + Int(newRectIntersect.Width + 0.9999999!)
@@ -2647,16 +2656,13 @@ Private Sub CreateCompositeSelectionMask()
             pxRight = pxRight * 4
             
             'Get pointers to both the destination (composite) and source (current) masks
-            Dim dstSA As SafeArray1D, dstPixels() As Byte, dstBasePointer As Long, dstStride As Long
             m_CompositeMask.WrapArrayAroundDIB_1D dstPixels, dstSA
             dstBasePointer = dstSA.pvData
             dstStride = m_CompositeMask.GetDIBStride
             
-            Dim srcSA As SafeArray1D, srcPixels() As Byte, srcBasePointer As Long
             m_SelMask.WrapArrayAroundDIB_1D srcPixels, srcSA
             srcBasePointer = srcSA.pvData
             
-            Dim pxOld As Long, pxNew As Long
             For y = pxTop To pxBottom
                 dstSA.pvData = dstBasePointer + y * dstStride
                 srcSA.pvData = srcBasePointer + y * dstStride
@@ -2710,7 +2716,109 @@ Private Sub CreateCompositeSelectionMask()
         
     'Intersect mode requires manual per-pixel iteration
     ElseIf (curCombineMode = pdsm_Intersect) Then
-    
+        
+        'Initialize the composite mask to an empty image the size of the old mask
+        If (m_CompositeMask.GetDIBWidth <> m_OldMask.GetDIBWidth) Or (m_CompositeMask.GetDIBHeight <> m_OldMask.GetDIBHeight) Then
+            m_CompositeMask.CreateBlank m_OldMask.GetDIBWidth, m_OldMask.GetDIBHeight, 32, 0
+        Else
+            m_CompositeMask.ResetDIB 0
+        End If
+        
+        'In intersect mode, the new boundary rect will never be larger than the natural intersect rect itself.
+        ' (Note that we will need to re-calculate a boundary rect after generating the composite mask,
+        ' as the new selection may be smaller still than either input.)
+        If GDI_Plus.IntersectRectF(newRectIntersect, m_Bounds, m_OldBounds) Then
+            
+            'The old and new masks *do* intersect, and their intersection is stored in newRectIntersect.
+            
+            'To minimize the amount of work we need to do, copy *just* the relevant rect from the
+            ' old mask into the new composite.  (This guarantees that the area surrounding the
+            ' intersection is empty.)
+            With newRectIntersect
+                GDI.BitBltWrapper m_CompositeMask.GetDIBDC, Int(.Left), Int(.Top), Int(.Width + 0.999999!), Int(.Height + 0.999999!), m_OldMask.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+            End With
+            
+            'Time to do a per-pixel iteration, and manually remove any pixels that are not selected
+            ' by *both* masks.
+            
+            'Start by bulk-copying the contents of the old mask into the composite mask.
+            ' (We will strip pixels out of this mask as necessary, but it reduces cache pressure to
+            ' only need to reference *two* images in the per-pixel loop.)
+            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
+            
+            'Next, calculate loop boundaries, including sanity checks
+            pxLeft = Int(newRectIntersect.Left)
+            pxTop = Int(newRectIntersect.Top)
+            pxRight = pxLeft + Int(newRectIntersect.Width + 0.9999999!)
+            pxBottom = pxTop + Int(newRectIntersect.Height + 0.9999999!)
+            
+            If (pxLeft < 0) Then pxLeft = 0
+            If (pxTop < 0) Then pxTop = 0
+            If (pxRight >= m_CompositeMask.GetDIBWidth) Then pxRight = m_CompositeMask.GetDIBWidth - 1
+            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxRight = m_CompositeMask.GetDIBHeight - 1
+            
+            'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
+            pxLeft = pxLeft * 4
+            pxRight = pxRight * 4
+            
+            'Get pointers to both the destination (composite) and source (current) masks
+            m_CompositeMask.WrapArrayAroundDIB_1D dstPixels, dstSA
+            dstBasePointer = dstSA.pvData
+            dstStride = m_CompositeMask.GetDIBStride
+            
+            m_SelMask.WrapArrayAroundDIB_1D srcPixels, srcSA
+            srcBasePointer = srcSA.pvData
+            
+            For y = pxTop To pxBottom
+                dstSA.pvData = dstBasePointer + y * dstStride
+                srcSA.pvData = srcBasePointer + y * dstStride
+            For x = pxLeft To pxRight Step 4
+                
+                'Take Min2() of the old and new masks
+                pxNew = srcPixels(x + 3)
+                pxOld = dstPixels(x + 3)
+                If (pxNew < pxOld) Then
+                    dstPixels(x) = pxNew
+                    dstPixels(x + 1) = pxNew
+                    dstPixels(x + 2) = pxNew
+                    dstPixels(x + 3) = pxNew
+                End If
+                
+            Next x
+            Next y
+            
+            'Free unsafe array refs
+            m_CompositeMask.UnwrapArrayFromDIB dstPixels
+            m_SelMask.UnwrapArrayFromDIB srcPixels
+            
+            'Find boundaries of the new mask
+            If FindBoundsOfArbitraryMask(m_CompositeMask, newRectIntersect, m_CompositeBounds) Then
+                
+                'One of the quirks of finding mask boundaries this way is that the resulting rect will
+                ' always use integer coordinates (because it used pixel scanning) but vector selection
+                ' sources will render using floating-point values.  This can create a disconnect at
+                ' certain zoom values where the boundaries don't *quite* map to identical on-screen
+                ' appearances.  To resolve this, we check for integer matches and if found, we replace
+                ' the integer values from the pixel scan with the floating-point values from the
+                ' original boundary set.
+                With m_OldBounds
+                    If Int(.Left) = Int(m_CompositeBounds.Left) Then m_CompositeBounds.Left = .Left
+                    If Int(.Top) = Int(m_CompositeBounds.Top) Then m_CompositeBounds.Top = .Top
+                    If Int(.Width) = Int(m_CompositeBounds.Width) Then m_CompositeBounds.Width = .Width
+                    If Int(.Height) = Int(m_CompositeBounds.Height) Then m_CompositeBounds.Height = .Height
+                End With
+                
+            Else
+                'TODO: flag bad boundaries here?  Maybe only perform this boundary step when a
+                ' selection is finalized, and ignore it otherwise?? IDK
+            End If
+            
+        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted).
+        Else
+            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
+            m_CompositeBounds = m_OldBounds
+        End If
+        
     'Replace mode isn't normally handled here.  The *one* exception is if the user changes combine
     ' mode while a multi-part selection is currently active.  Then we may want to re-compute the
     ' current selection in-place?

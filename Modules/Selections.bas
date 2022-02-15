@@ -3,9 +3,8 @@ Attribute VB_Name = "Selections"
 'Selection Interface
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 05/December/21
-'Last update: new interactions with the selections toolpanel to auto-drop (or auto-hide) relevant flyout panels
-'             while creating or transforming a selection
+'Last updated: 13/February/22
+'Last update: lots of changes to enable multiple selection support!
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -109,8 +108,6 @@ End Sub
 
 'Remove the current selection
 Public Sub RemoveCurrentSelection(Optional ByVal updateUIToo As Boolean = True)
-    
-    Debug.Print "RemoveCurrentSelection"
     
     'Release the selection object and mark it as inactive
     PDImages.GetActiveImage.MainSelection.LockRelease
@@ -219,12 +216,10 @@ Public Sub NotifyNewSelectionStarting()
         
         'In REPLACE mode, just erase the previous selection
         If (PDImages.GetActiveImage.MainSelection.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then
-            Debug.Print "replace mode"
             Process "Remove selection", False, vbNullString, UNDO_Selection, g_CurrentTool
         
         'In any other mode, we will need to retain the previous selection
         Else
-            Debug.Print "mode OTHER than replace!"
             PDImages.GetActiveImage.MainSelection.NotifyNewCompositeStarting
         End If
         
