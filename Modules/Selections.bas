@@ -98,8 +98,10 @@ Public Sub CreateNewSelection(ByRef paramString As String)
     PDImages.GetActiveImage.MainSelection.LockIn
     PDImages.GetActiveImage.SetSelectionActive True
     
+    'TODO: is this code still relevant?  We don't do this for polygon selections,
+    ' so why do it for lasso selections?
     'For lasso selections, mark the lasso as closed if the selection is being created anew
-    If (PDImages.GetActiveImage.MainSelection.GetSelectionShape() = ss_Lasso) Then PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
+    'If (PDImages.GetActiveImage.MainSelection.GetSelectionShape() = ss_Lasso) Then PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
     
     'Synchronize all user-facing controls to match
     SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()

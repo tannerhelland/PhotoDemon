@@ -168,7 +168,7 @@ Public Sub PrepareRestOfSplash()
         
         'Create a dummy 24-bpp DIB and paint the version to it.  (This is required for reliable
         ' antialiasing behavior; GDI can't render text to 32-bpp surfaces if antialiasing is active,
-        ' so we need to paitn to a 24-bpp surface, then upsample to 32-bpp and fill in alpha manually.)
+        ' so we need to paint to a 24-bpp surface, then upsample to 32-bpp and fill in alpha manually.)
         Dim fntWidth As Long, fntHeight As Long
         fntWidth = tmpFont.GetWidthOfString(versionString)
         fntHeight = tmpFont.GetHeightOfString(versionString)

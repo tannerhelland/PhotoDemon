@@ -2090,8 +2090,6 @@ End Sub
 ' bits of the previous selection getting reused.
 Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = False)
     
-    Debug.Print "EraseCustomTrackers: " & keepCompositeData
-    
     m_NumOfLassoPoints = 0
     m_NumOfPolygonPoints = 0
     m_PolygonClosed = False
@@ -2108,15 +2106,12 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
     m_IsTransformable = False
     m_IsMaskReady = False
     
-    If keepCompositeData Then
-        Debug.Print "(retaining old and composite masks and outlines)"
-    Else
-        Debug.Print "(erasing old and composite masks and outlines)"
+    If (Not keepCompositeData) Then
         m_CompositeActive = False
         Set m_OldMask = Nothing
         Set m_OldOutline = Nothing
         Set m_CompositeMask = Nothing
-        'composite outline?
+        Set m_CompositeOutline = Nothing
     End If
     
 End Sub
@@ -2132,8 +2127,6 @@ End Sub
 '     to know where to render the mask.  For non-shape-based selections, this function will call a separate
 '     function to manually determine the bounding rect.
 Private Sub CreateSelectionMask()
-
-    'Debug.Print "(" & Timer & ") Creating mask now..."
     
     'Note that a mask has been created for this image.  This is important for saving/loading selections,
     ' as a new mask must be generated if one isn't already present.
@@ -2547,8 +2540,6 @@ Private Sub CreateSelectionMask()
     
     'If a selection mode other than REPLACE is active, we now need to merge the new selection mask
     ' with the old selection mask, and generate a new composite mask from the result.
-    Debug.Print "Reached end of CreateSelectionMask: " & m_CompositeActive
-    
     Dim makeCompositeToo As Boolean
     makeCompositeToo = ((Me.GetSelectionProperty_Long(sp_Combine) <> pdsm_Replace) And m_CompositeActive)
     
@@ -2562,8 +2553,6 @@ End Sub
 'Merge the new selection mask with the old selection mask to produce a new "composite" selection mask.
 Private Sub CreateCompositeSelectionMask()
     
-    Debug.Print "CreateCompositeSelectionMask() starting"
-    
     Dim curCombineMode As PD_SelectionCombine
     curCombineMode = Me.GetSelectionProperty_Long(sp_Combine)
     
@@ -2573,8 +2562,6 @@ Private Sub CreateCompositeSelectionMask()
     
     'Failsafe checks only
     If (m_OldMask Is Nothing) Then Exit Sub
-    
-    Debug.Print "(actually creating composite mask now)"
     
     'Start by creating a DIB to hold the results of the merge.  (At first, this will simply hold
     ' the contents of the new selection mask - by design!)
@@ -2588,8 +2575,11 @@ Private Sub CreateCompositeSelectionMask()
     'Ensure boundaries are safe
     If (rectUnion.Left < 0) Then rectUnion.Left = 0
     If (rectUnion.Top < 0) Then rectUnion.Top = 0
-    If (rectUnion.Width > m_CompositeMask.GetDIBWidth) Then rectUnion.Width = m_CompositeMask.GetDIBWidth
-    If (rectUnion.Height > m_CompositeMask.GetDIBHeight) Then rectUnion.Height = m_CompositeMask.GetDIBHeight
+    
+    'Note that a composite mask won't exist yet, so we need to perform boundary checks against
+    ' a mask that is guaranteed to exist (old or current, doesn't matter which)
+    If (rectUnion.Width > m_OldMask.GetDIBWidth) Then rectUnion.Width = m_OldMask.GetDIBWidth
+    If (rectUnion.Height > m_OldMask.GetDIBHeight) Then rectUnion.Height = m_OldMask.GetDIBHeight
     
     'Lots of values are required for iterating pixels
     Dim x As Long, y As Long
@@ -2829,8 +2819,6 @@ Private Sub CreateCompositeSelectionMask()
         m_CompositeBounds = m_Bounds
         
     End If
-    
-    Debug.Print "Composite mask boundaries: " & m_CompositeBounds.Left & ", " & m_CompositeBounds.Top & ", " & m_CompositeBounds.Width & ", " & m_CompositeBounds.Height
     
 End Sub
 
@@ -3220,7 +3208,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' (if one exists).
     If (Not m_ViewportRefReady) Then
         
-        Debug.Print "viewport ref not ready"
         VBHacks.GetHighResTime startTime
         
         'Prep a target DIB; if at all possible, we want to reuse our existing DIB (as allocating new memory can be
@@ -3281,8 +3268,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     GDI_Plus.GDIPlus_StretchBlt m_ViewportRefOld, .Left, .Top, .Width, .Height, m_OldMask, m_OldBounds.Left, m_OldBounds.Top, m_OldBounds.Width, m_OldBounds.Height, , interpolationType, , , isZoomedIn, False
                 End With
                 
-                Debug.Print "RenderSelectionToViewport - created m_ViewportRefOld"
-                
             End If
             
             'Now repeat all the above steps for the composite mask
@@ -3306,8 +3291,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Top = .Top - viewportIntersectRectCanvas.Top
                     GDI_Plus.GDIPlus_StretchBlt m_ViewportRefComposite, .Left, .Top, .Width, .Height, m_CompositeMask, m_CompositeBounds.Left, m_CompositeBounds.Top, m_CompositeBounds.Width, m_CompositeBounds.Height, , interpolationType, , , isZoomedIn, False
                 End With
-                
-                Debug.Print "RenderSelectionToViewport - created m_ViewportRefComposite"
                 
             End If
             
@@ -3367,10 +3350,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
     'Render the current selection (including a composite, if any) to the canvas
     If useOutlineRenderingInstead Then
-        Debug.Print "RenderSelectionAsOutline"
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     Else
-        Debug.Print "RenderSelectionAsOverlay"
         RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
     End If
     
@@ -3381,7 +3362,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     renderActiveLassoOrPolygon = renderActiveLassoOrPolygon Or ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
     If renderActiveLassoOrPolygon Then
-        Debug.Print "RenderInProgressLassoOrPolygon"
         RenderInProgressLassoOrPolygon dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     End If
     
@@ -3411,7 +3391,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'If any preceding checks failed, generate a new UI DIB to match current settings.
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
         
-        If UserPrefs.GenerateDebugLogs Then Debug.Print "rebuilding selection overlay (" & Timer & ")"
+        'If UserPrefs.GenerateDebugLogs Then Debug.Print "rebuilding selection overlay (" & Timer & ")"
         
         'The following chunk of code generates the actual 32-bpp selection image "overlaid" on the viewport.
         ' (Said another way, this image reflects things like the user's currently selected highlight or lightbox UI settings.)
@@ -3551,14 +3531,11 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             ' If a composite mask exists, use it for the operation.  Otherwise, use the normal mask.
             If m_CompositeActive Then
                 If useOldInsteadOfComposite Then
-                    Debug.Print "using m_ViewportRefOld for overlay"
                     m_ViewportRefOld.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
                 Else
-                    Debug.Print "using m_ViewportRefComposite for overlay"
                     m_ViewportRefComposite.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
                 End If
             Else
-                Debug.Print "using m_ViewportReference for overlay"
                 m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
             End If
             
@@ -3645,7 +3622,9 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' to this is if the current selection is not complete, *but* a composite selection is active.
         
         'Create an outline for the active selection
-        If (Not currentSelectionIncomplete) Then CreateViewportOutlineForMask m_ViewportRefRectF, imgViewportRectL, m_ViewportByteCopy, m_ViewportByteCopyRect, m_ViewportReference, m_CurrentOutline
+        If (Not currentSelectionIncomplete) Then
+            CreateViewportOutlineForMask m_ViewportRefRectF, imgViewportRectL, m_ViewportByteCopy, m_ViewportByteCopyRect, m_ViewportReference, m_CurrentOutline
+        End If
         
         '...then repeat the steps, as necessary, for the composite outline (and previous selection)
         If m_CompositeActive Then
@@ -3653,7 +3632,6 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             'The old outline does not need to be re-created unless the viewport has changed since the previous construction
             If (Not m_ViewportRefOld Is Nothing) Then
                 If (Not m_OldOutlineIsReady) Or overlayWasRegenerated Then
-                    Debug.Print "CreateViewportOutlineForMask - old!"
                     CreateViewportOutlineForMask m_ViewportRefOldRectF, imgViewportRectL, m_ViewportByteCopyOld, m_ViewportByteCopyRectOld, m_ViewportRefOld, m_OldOutline
                     m_OldOutlineIsReady = True
                 End If
@@ -3664,8 +3642,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim skipCompositeStep As Boolean: skipCompositeStep = False
             skipCompositeStep = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
             skipCompositeStep = skipCompositeStep Or ((Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed))
+            
             If (Not m_ViewportRefComposite Is Nothing) And (Not skipCompositeStep) Then
-                Debug.Print "CreateViewportOutlineForMask - composite!"
                 CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
             End If
             
@@ -3675,8 +3653,6 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' viewport position/zoom) changes.
         m_CurrentOutlineIsReady = True
         
-    Else
-        Debug.Print "(skipping outline assembly)"
     End If
         
     'We are now ready to render the actual outline onto the overlay DIB.
@@ -3689,15 +3665,12 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'If a lasso or polygon selection is in-progress (but *not* complete), render the old outline
         ' instead of the composite one.
         If currentSelectionIncomplete Then
-            Debug.Print "(using OldOutline)"
             Set srcOutline = m_OldOutline
         Else
-            Debug.Print "(using CompositeOutline)"
             Set srcOutline = m_CompositeOutline
         End If
         
     Else
-        Debug.Print "(using CurrentOutline)"
         Set srcOutline = m_CurrentOutline
     End If
     
@@ -3773,7 +3746,6 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         m_LastOverlayCache = GenerateArbitraryHash(renderType)
         
     Else
-        Debug.Print "srcOutline is nothing - resetting overlay DIB"
         If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     End If
     
@@ -3831,7 +3803,6 @@ Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage
         Next i
         
         Set tmpPath = New pd2DPath
-        Debug.Print "in-progress path: " & m_PolygonClosed
         
         'Add the converted shape to the path object
         If (m_SelectionShape = ss_Polygon) Then
@@ -4533,7 +4504,8 @@ Private Function FindBoundsOfArbitraryMask(ByRef srcMask As pdDIB, ByRef srcInit
     Loop While (Not boundFound)
     
     'All boundaries have now been located (and stored in the destination RectF)
-    Debug.Print "bounds: ", srcInitBounds.Left, dstFinalBounds.Left, srcInitBounds.Top, dstFinalBounds.Top
+    'Debug.Print "FindBoundsOfArbitraryMask: ", srcInitBounds.Left, dstFinalBounds.Left, srcInitBounds.Top, dstFinalBounds.Top
+    
     'Release the final unsafe array ref and exit
     srcMask.UnwrapLongArrayFromDIB selMaskData
     
@@ -4573,10 +4545,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     FindNewBoundsManually = True
     
     'Make sure the mask is ready for processing
-    If (Not m_IsMaskReady) Then
-        Debug.Print "Creating new selection mask at the request of FindNewBoundsManually()"
-        CreateSelectionMask
-    End If
+    If (Not m_IsMaskReady) Then CreateSelectionMask
     
     'Point a standard int array at the selection mask
     Dim x As Long, y As Long
@@ -4617,7 +4586,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
         If (Not boundFound) And (y >= maskHeight) Then
-            Debug.Print "No top boundary found - is mask blank?"
+            'Debug.Print "No top boundary found - is mask blank?"
             boundFound = True
             m_CornersLocked.Top = 0
             m_Bounds.Top = m_CornersLocked.Top
@@ -4770,8 +4739,6 @@ Friend Sub NotifyNewCompositeStarting()
     
     'If a composite mask already exists, *it* is the selection we want.
     If m_CompositeActive And (Not m_CompositeMask Is Nothing) Then
-        
-        Debug.Print "Old mask being created from composite mask"
         m_OldMask.CreateFromExistingDIB m_CompositeMask
         m_OldBounds = m_CompositeBounds
         
@@ -4779,7 +4746,6 @@ Friend Sub NotifyNewCompositeStarting()
     Else
         
         'Copy the current selection mask into the "old" selection mask object
-        Debug.Print "Old mask being created from current mask"
         m_OldMask.CreateFromExistingDIB m_SelMask
         m_OldBounds = m_Bounds
         
@@ -4792,10 +4758,7 @@ Friend Sub NotifyNewCompositeStarting()
         
     End If
     
-    'TODO: regardless of creation method (above), ensure an outline object exists for the selection.
-    
     'Set the composite flag to TRUE
-    Debug.Print "new composite created - composite active!  boundaries: " & m_OldBounds.Left & ", " & m_OldBounds.Top & ", " & m_OldBounds.Width & ", " & m_OldBounds.Height
     m_CompositeActive = True
     
 End Sub

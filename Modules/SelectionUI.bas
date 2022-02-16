@@ -52,6 +52,10 @@ Private m_DblClickOccurred As Boolean
 ' then resume processing after any actions triggered by _MouseUp finish.
 Private m_IgnoreUserInput As Boolean
 
+'The selection engine can query us about MouseDown state.  (This changes the way certain selection
+' elements are rendered.)
+Private m_MouseDown As Boolean
+
 Public Function GetSelectionRenderMode() As PD_SelectionRender
     GetSelectionRenderMode = m_CurSelectionMode
 End Function
@@ -468,6 +472,10 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
 
 End Function
 
+Public Function IsMouseDown() As Boolean
+    IsMouseDown = m_MouseDown
+End Function
+
 'Keypresses on a source canvas are passed here.  The caller doesn't need pass anything except relevant keycodes, and a reference
 ' to itself (so we can relay canvas modifications).
 Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
@@ -589,11 +597,13 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
     
     End If
-                
+    
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-    
+        
+    m_MouseDown = True
+        
     If m_IgnoreUserInput Then Exit Sub
     
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
@@ -845,7 +855,9 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
 End Sub
 
 Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
-    
+        
+    m_MouseDown = False
+        
     'If a double-click just occurred, reset the flag and exit - do NOT process this click further
     If m_DblClickOccurred Then
         m_DblClickOccurred = False
@@ -863,7 +875,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     m_IgnoreUserInput = True
     
     'In default REPLACE mode, a single in-place click will erase the current selection.
-    ' (In other combine modes, this behavior is overridden.)
+    ' (In other combine modes, this behavior must be ignored or overridden.)
     Dim eraseThisSelection As Boolean: eraseThisSelection = False
     
     Select Case g_CurrentTool
@@ -886,7 +898,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 
                 If eraseThisSelection Then
                     
-                    'In "replace" mode, just erase the active selection (if any)
+                    'In "replace" mode, just remove the active selection (if any)
                     If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() = pdsm_Replace) Then
                         Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     
@@ -908,7 +920,6 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                     'Check to see if all selection coordinates are invalid (e.g. off-image).
                     ' If they are, forget about this selection.
                     If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid Then
-                    
                         If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() <> pdsm_Replace) Then
                             PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
                         Else
@@ -922,6 +933,17 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         
                             'Creating a new selection
                             If (PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
+                                
+                                'For performance reasons, we don't auto-construct a composite mask while lasso
+                                ' selections are being constructed.  But if we don't construct a composite mask
+                                ' before "creating" this selection, the Undo/Redo engine will attempt to save
+                                ' a non-existent mask and crash.
+                                
+                                'So let's ensure a valid composite mask exists before finalizing this selection.
+                                PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
+                                PDImages.GetActiveImage.MainSelection.RequestNewMask
+                                
+                                '*Now* we can create the selection
                                 Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
@@ -972,9 +994,6 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             
             'If a selection was being drawn, lock it into place
             If PDImages.GetActiveImage.IsSelectionActive Then
-                
-                'TODO: do not erase a selection here - instead, start a new one.  (Erase logic needs to be
-                ' moved elsewhere to account for multiple selections.)
                 
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState And clickEventAlsoFiring
