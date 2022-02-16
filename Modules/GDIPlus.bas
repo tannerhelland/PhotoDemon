@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2022 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 12/August/19
-'Last update: extend multipage loader to support animated GIF import, including relevant animation metadata
+'Last updated: 16/February/22
+'Last update: add wrapper function for filling regions
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally
 ' used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time
@@ -947,6 +947,7 @@ Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDI
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByVal ptrToPixels As Long, ByRef dstGdipBitmap As Long) As GP_Result
 'Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
+Private Declare Function GdipCreateFromHWND Lib "gdiplus" (ByVal hWnd As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImageAttributes As Long) As GP_Result
 'Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
@@ -997,6 +998,7 @@ Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal hGraphics As Long,
 Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal fillMode As GP_FillMode) As GP_Result
 Private Declare Function GdipFillRectangle Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
+Private Declare Function GdipFillRegion Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal hRegion As Long) As GP_Result
 
 'Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RectF, ByRef dstUnit As GP_Unit) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Single, ByRef dstHeight As Single) As GP_Result
@@ -3445,10 +3447,22 @@ End Function
 'Retrieve a persistent handle to a GDI+-format graphics container.
 Public Function GetGDIPlusGraphicsFromDC_Fast(ByVal srcDC As Long) As Long
     Dim gpResult As GP_Result
-    gpResult = (GdipCreateFromHDC(srcDC, GetGDIPlusGraphicsFromDC_Fast) = GP_OK)
-    If (Not gpResult) Then
+    gpResult = GdipCreateFromHDC(srcDC, GetGDIPlusGraphicsFromDC_Fast)
+    If (gpResult <> GP_OK) Then
         GetGDIPlusGraphicsFromDC_Fast = 0
         InternalGDIPlusError "GetGDIPlusGraphicsFromDC_Fast failed", "CreateFromHDC failed", gpResult
+    End If
+End Function
+
+'I'm honestly not sure how creating a graphics object from an hWnd works (it's possible the hWnd is just
+' used to drive color-management, since the corresponding System.Drawing method takes icm as an input),
+' but this is useful in PD for objects like regions that are unlikely to be naturally associated with a DC.
+Public Function GetGDIPlusGraphicsFromHWnd(ByVal srcHWnd As Long) As Long
+    Dim gpResult As GP_Result
+    gpResult = GdipCreateFromHWND(srcHWnd, GetGDIPlusGraphicsFromHWnd)
+    If (gpResult <> GP_OK) Then
+        GetGDIPlusGraphicsFromHWnd = 0
+        InternalGDIPlusError "GetGDIPlusGraphicsFromHWnd failed", errNumber:=gpResult
     End If
 End Function
 
@@ -3756,6 +3770,10 @@ End Function
 
 Public Function GDIPlus_FillRectI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
     GDIPlus_FillRectI = (GdipFillRectangleI(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+End Function
+
+Public Function GDIPlus_FillRegion(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcRegion As Long) As Boolean
+    GDIPlus_FillRegion = (GdipFillRegion(dstGraphics, srcBrush, srcRegion) = GP_OK)
 End Function
 
 Public Function GDIPlus_GraphicsSetCompositingMode(ByVal dstGraphics As Long, Optional ByVal newCompositeMode As GP_CompositingMode = GP_CM_SourceOver) As Boolean

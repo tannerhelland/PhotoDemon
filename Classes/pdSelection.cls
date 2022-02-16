@@ -57,6 +57,20 @@ Private Const SELECTION_IDENTIFIER As Long = &H64734450     '"PDsd"
 Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
 Private Const SELECTION_FILE_VERSION_2019 As Long = &H1005&
 
+'While interacting with selections, PD will need to render one or more outlines.
+' The source for this outline may be the current selection, the "old" (previous)
+' selection, or a composite of the old and new selections merged together
+' (using the current selection combine mode)
+Private Enum PD_SelectionRenderSource
+    srs_Current = 0
+    srs_Old = 1
+    srs_Composite = 2
+End Enum
+
+#If False Then
+    Private Const srs_Current = 0, srs_Old = 1, srs_Composite = 2
+#End If
+
 'What shape does this selection have?
 Private m_SelectionShape As PD_SelectionShape
 
@@ -3326,14 +3340,16 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     End If
     
     'We use the RASTER OVERLAY FUNCTION if...
-    ' 1) The user has requested "highlight" or "lightbox" rendering mode.
+    ' 1) The user has requested "highlight" or "lightbox" rendering mode, and the mouse is NOT down
     
     'We use "outline"-style rendering if...
     ' 1) The user has requested outline-only rendering, or...
-    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn), or...
-    ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
+    ' 2) The user is editing or creating a selection, or...
+    ' 3) A lasso selection is active but not locked-in (meaning it's still being drawn), or...
+    ' 4) A polygon selection is active but not locked-in (meaning it's still being drawn)
     Dim useOutlineRenderingInstead As Boolean
     useOutlineRenderingInstead = (renderType = PDSR_Outline) Or (renderType = PDSR_Ants)
+    useOutlineRenderingInstead = useOutlineRenderingInstead Or SelectionUI.IsMouseDown()
     
     'If we are not using marching ants, disable the associated ant timer now
     ' (as a failsafe only; this is typically solved elsewhere).
@@ -3649,8 +3665,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
         End If
         
-        'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
-        ' viewport position/zoom) changes.
+        'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask
+        ' (or the current viewport position/zoom) changes.
         m_CurrentOutlineIsReady = True
         
     End If
@@ -3659,19 +3675,34 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
     'Render the composite outline (if multiple selections are active) or just the current outline
     ' (if only one selection is active).
+    Dim outlineSource As PD_SelectionRenderSource
     Dim srcOutline As pd2DPath
+    
     If m_CompositeActive Then
         
         'If a lasso or polygon selection is in-progress (but *not* complete), render the old outline
         ' instead of the composite one.
         If currentSelectionIncomplete Then
             Set srcOutline = m_OldOutline
+            outlineSource = srs_Old
         Else
-            Set srcOutline = m_CompositeOutline
+            
+            'If the mouse is down, the user is actively interacting with the selection.
+            ' Render the *current* outline, not the composite one.  (This will overlay
+            ' nicely with the old selection.)
+            If SelectionUI.IsMouseDown Then
+                Set srcOutline = m_CurrentOutline
+                outlineSource = srs_Current
+            Else
+                Set srcOutline = m_CompositeOutline
+                outlineSource = srs_Composite
+            End If
+            
         End If
         
     Else
         Set srcOutline = m_CurrentOutline
+        outlineSource = srs_Current
     End If
     
     If (Not srcOutline Is Nothing) Then
@@ -3701,10 +3732,61 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' I've left it disabled for now, pending additional testing.
         'cSurface.SetSurfacePixelOffset P2_PO_Half
         
+        'If the user is actively modifying a selection, let's give them even more cool UI behavior.
+        ' Let's calculate a region of the old and new selection paths (using regions as a go-between),
+        ' then highlight that region specifically.
+        If m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete) Then
+            
+            'Construct a region from the old path.
+            Dim tmpRegion As pd2DRegion
+            Set tmpRegion = New pd2DRegion
+            tmpRegion.MakeRegionEmpty
+            tmpRegion.AddPath m_OldOutline, P2_CM_Replace
+            
+            'Add the current path to it, using the appropriate combine mode
+            If (Me.GetSelectionCombineMode = pdsm_Add) Then
+                tmpRegion.AddPath m_CurrentOutline, P2_CM_Union
+            ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
+                tmpRegion.AddPath m_CurrentOutline, P2_CM_Exclude
+            ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
+                tmpRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+            End If
+            
+            If (Not tmpRegion.IsRegionEmpty()) Then
+                
+                'Create a temporary translucent brush using the chosen highlight color
+                Dim renderColor As Long, renderOpacity As Single
+                renderColor = SelectionUI.GetSelectionColor_Highlight()
+                renderOpacity = SelectionUI.GetSelectionOpacity_Highlight()
+                
+                Dim cBrush As pd2DBrush
+                Set cBrush = New pd2DBrush
+                cBrush.SetBrushColor renderColor
+                cBrush.SetBrushOpacity renderOpacity
+                
+                'Fill the region
+                PD2D.FillRegion cSurface, cBrush, tmpRegion
+                Set cBrush = Nothing: Set tmpRegion = Nothing
+            
+            '/Else just means this is an empty region (common in subtract/intersect modes).  Do nothing.
+            End If
+            
+        End If
+        
         'Render the outline using PD's standard "white-on-black" outline technique
         If (renderType = PDSR_Outline) Then
             
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, False, P2_LJ_Round, P2_LC_Round
+            
+            'If this is a composite selection and the mouse is down (meaning the current selection
+            ' is being modified/created/transformed etc), ensure the *old* outline is drawn first.
+            ' Without this, selection modes like "subtract" are extremely challenging to work with.
+            If m_CompositeActive And (outlineSource <> srs_Old) And SelectionUI.IsMouseDown Then
+                PD2D.DrawPath cSurface, cPenUIBase, m_OldOutline
+                PD2D.DrawPath cSurface, cPenUITop, m_OldOutline
+            End If
+            
+            'Render the target path
             PD2D.DrawPath cSurface, cPenUIBase, srcOutline
             PD2D.DrawPath cSurface, cPenUITop, srcOutline
             
@@ -3723,6 +3805,14 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             cDottedPen.SetPenStyle P2_DS_Custom
             cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
             cDottedPen.SetPenDashOffset m_AntDashOffset
+            
+            'If this is a composite selection and the mouse is down (meaning the current selection
+            ' is being modified/created/transformed etc), ensure the *old* outline is drawn first.
+            ' Without this, selection modes like "subtract" are extremely challenging to work with.
+            If m_CompositeActive And (outlineSource <> srs_Old) And SelectionUI.IsMouseDown Then
+                PD2D.DrawPath cSurface, cBlackPen, m_OldOutline
+                PD2D.DrawPath cSurface, cDottedPen, m_OldOutline
+            End If
             
             PD2D.DrawPath cSurface, cBlackPen, srcOutline
             PD2D.DrawPath cSurface, cDottedPen, srcOutline
