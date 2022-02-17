@@ -217,7 +217,7 @@ Public Sub NotifyNewSelectionStarting()
     If PDImages.GetActiveImage.IsSelectionActive Then
         
         'In REPLACE mode, just erase the previous selection
-        If (PDImages.GetActiveImage.MainSelection.GetSelectionProperty_Long(sp_Combine) = pdsm_Replace) Then
+        If (toolpanel_Selections.btsCombine.ListIndex = pdsm_Replace) Then
             Process "Remove selection", False, vbNullString, UNDO_Selection, g_CurrentTool
         
         'In any other mode, we will need to retain the previous selection
@@ -225,6 +225,16 @@ Public Sub NotifyNewSelectionStarting()
             PDImages.GetActiveImage.MainSelection.NotifyNewCompositeStarting
         End If
         
+        'An interesting quirk here involves the shift/ctrl modifiers that allow for on-the-fly
+        ' combine mode changes.  When the combine mode is reset, the button will not trigger an
+        ' immediate relay of the new setting to this sub (to prevent the just-made selection
+        ' from "acquiring" the new combine mode).  To work around this, let's manually sync the
+        ' combine mode now.
+        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, toolpanel_Selections.btsCombine.ListIndex
+    
+    'If another selection is *not* active, always assume "replace" selection mode.
+    Else
+        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, pdsm_Replace
     End If
     
 End Sub

@@ -778,8 +778,6 @@ Private Sub CreateNewPreferencesFile()
         
         .WriteTag "Tools", vbNullString, True
             .WriteTag "ClearSelectionAfterCrop", "True"
-            .WriteTag "SelectionRenderMode", "0"
-            .WriteTag "SelectionHighlightColor", "#FF3A48"
             .WriteTag "HighResMouseInput", "True"
         .CloseTag "Tools"
         .WriteBlankLine

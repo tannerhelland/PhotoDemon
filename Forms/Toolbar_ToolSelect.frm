@@ -1105,7 +1105,15 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     Tools.SyncToolOptionsUIToCurrentLayer
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
-    If Tools.IsSelectionToolActive Then toolpanel_Selections.UpdateSelectionPanelLayout
+    If Tools.IsSelectionToolActive Then
+        toolpanel_Selections.UpdateSelectionPanelLayout
+    
+    'Otherwise, squash any composite selections down to a single mask.  (This frees up significant resources.)
+    Else
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+        End If
+    End If
     
     'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
     ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.

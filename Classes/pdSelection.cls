@@ -15,35 +15,46 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 08/February/22
-'Last update: continued work on multiple selection support
+'Last updated: 17/February/22
+'Last update: new rendering engine for new UI options
 '
-'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
-' currently implemented.  A selection brush is on my TODO list, pending the addition of selection unions.
+'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso,
+' and "magic wand" selections are currently implemented.  (A selection brush is on my TODO list.)
 '
-'All selections are treated as a subset of pixels within a bounding rectangle.  Each selection calculates this
-' bounding rectangle differently; simple shapes like rectangles and ellipses can calculate it using their (x1, y1)
-' and (x2, y2) coordinates, while more complex shapes (lasso, polygon, wand) may need to search their point collection
-' and manually construct a bounding rect.  Certain modifiable parameters - like feathering, or PD's built-in support
-' for exterior- and border-type selections - can also affect the bounding rect.  I mention this because the bounding
-' rect *must* be accurate or a lot of things will break - so consider it carefully.
+'In early 2022, full support for composite selections was added, including support for various
+' combine modes (add, subtract, etc).  This resulted in a fairly large overhaul of this class,
+' including an updated rendering engine, although some atrocious architectural decisions remain
+' because I don't have enough time to properly rework this class from scratch.  Maybe someday!
 '
-'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate
-' collections; these vary from simple coordinate pairs (rectangle, ellipse), to large variable-size arrays (lasso),
-' to something approximating raw raster data (wand).  From these point collections, a uniform set of boundaries are
-' calculated and stored inside the m_CornersLocked RectF; these define the boundaries of the entire selection.
-' These boundary values are primarily used internally, or to show the user the size of their created shape
-' (rectangle and elliptical selections allow the user to modify these via text box, for example).
+'All selections in PhotoDemon are treated as a subset of pixels within a bounding rectangle.
+' Each selection calculates this bounding rectangle differently; simple shapes like rectangles
+' and ellipses can calculate it using their (x1, y1) and (x2, y2) coordinates, while more complex
+' shapes (lasso, polygon, wand) may need to search their point collection and manually construct a
+' bounding rect.  Certain modifiable parameters - like feathering, or PD's built-in support for
+' exterior- and border-type selections - can also affect the bounding rect.  I mention this because
+' the bounding rect *must* be accurate or a lot of selection features break.
 '
-'At selection mask creation time, a final bounding rect (m_Bounds) is calculated.  These bounding values are the ones
-' that external functions must reference, because they enclose the full image area affected by the selection.  PD
-' currently guarantees that this boundary rect is accurate against all supported selection types and settings.
+'To that end, multiple coordinate sets are used by this class.  Individual shapes maintain their
+' own coordinate collections.  These vary from simple coordinate pairs (rectangle, ellipse),
+' to large variable-size arrays (lasso), to something approximating raw raster data (wand).
+' From these point collections, a boundary rect is calculated and stored inside the "m_CornersLocked"
+' RectF; this defines the boundaries of the entire selection.  These boundary values are primarily
+' used internally, or to show the user the size of their created shape (rectangle and elliptical
+' selections allow the user to modify these via text box, for example).
 '
-'Note also that this class is treated as a subset of pdImage().  This is important because each open image supports
-' its own active selection, and switching between images also switches between their selections.
+'At selection mask creation time, a final bounding rect (m_Bounds) is calculated.  This rect is the
+' one that external functions must reference, because it encloses the full image area affected by
+' the selection.  PD guarantees that this boundary rect is accurate against all supported selection
+' types and settings.
 '
-'As of 2022 I am actively working on support for multiple selections, which will finally allow things like
-' selection unions and intersections.
+'Composite selections introduce additional complexity, especially because I allow the user to modify
+' the last-added selection (unlike say Paint.NET, which commits all selections upon _MouseUp).
+' To enable this behavior, the previous mask must be maintained and dynamically merged with the
+' current mask to produce a "Composite" mask.  External functions are automatically handed the
+' Composite mask if one exists; otherwise, they simply get the active mask as-is.
+'
+'This class is treated as a subset of pdImage().  This is important because each open image supports
+' its own active selection, and switching between images also switches between their selection(s).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -225,11 +236,6 @@ Private m_ViewportRefOld As pdDIB, m_ViewportRefComposite As pdDIB
 Private m_ViewportByteCopyOld() As Byte, m_ViewportByteCopyRectOld As RectL_WH
 Private m_ViewportByteCopyComposite() As Byte, m_ViewportByteCopyRectComposite As RectL_WH
 Private m_ViewportRefOldRectF As RectF, m_ViewportRefCompositeRectF As RectF
-
-'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
-' locally (to improve rendering time), we need to regenerate the cache whenever rendering settings change, independent of
-' any changes to the actual underlying selection object.
-Private m_LastOverlayCache As String
 
 'Some selections use a timestamp to improve UI behavior
 Private m_LastTime As Currency
@@ -1852,7 +1858,6 @@ Friend Sub RemoveLastPolygonPoint()
         BackupCurrentSelectionPoints
         m_ViewportRefReady = False
         m_OverlayIsReady = False
-        m_LastOverlayCache = vbNullString
         m_CurrentOutlineIsReady = False
         m_IsMaskReady = False
         If (m_NumOfPolygonPoints < 2) Then Set m_CurrentOutline = Nothing
@@ -2129,7 +2134,6 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
     
     m_OldOutlineIsReady = False
     m_OverlayIsReady = False
-    m_LastOverlayCache = vbNullString
     If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     
     m_IsTransformable = False
@@ -3223,9 +3227,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
         End If
         
-        'Next, compare previous and current rendering modes
-        If (m_LastRenderMode <> SelectionUI.GetSelectionRenderMode()) Then m_ViewportRefReady = False
-        
     End If
     
     'If we regenerate our cached viewport image, we want to notify subsequent child functions, as they may need to
@@ -3233,8 +3234,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
     
     'If any of our "viewport cache is ready" checks failed, generate a new cache now - and critically,
-    ' we need to regenerate a new cached copy of both the *active* selection, and the *composite* selection
-    ' (if one exists).
+    ' we need to regenerate a new cached copy of the *active* selection, and the *old* selection (if any),
+    ' and the *composite* selection (if any).
     If (Not m_ViewportRefReady) Then
         
         VBHacks.GetHighResTime startTime
@@ -3271,7 +3272,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         End With
         
         'If a composite is active, repeat the above steps for the old and composite DIB(s).
-        ' (dstRectF is no longer needed, so we can freely repurpose it for these DIBs.)
         m_OldOutlineIsReady = False
         If m_CompositeActive Then
             
@@ -3337,41 +3337,15 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
     End If
     
-    'We have now covered all situations where the underlying mask reference may have changed.  (If it has,
-    ' the local "overlayWasRegenerated" value will be set to TRUE.)
+    'We have now covered all situations where the underlying mask reference may have changed.
+    ' (If it has, the local "overlayWasRegenerated" value will be TRUE.)
     
-    'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
-    ' renders the active selection's outline by treating the underlying selection data as a vector path, not a raster mask).
-    Dim renderType As PD_SelectionRender, renderColor As Long, renderOpacity As Long
-    renderType = SelectionUI.GetSelectionRenderMode()
-    m_LastRenderMode = renderType
-    
-    If (renderType = PDSR_Highlight) Then
-        renderColor = SelectionUI.GetSelectionColor_Highlight()
-        renderOpacity = SelectionUI.GetSelectionOpacity_Highlight()
-    Else
-        renderColor = SelectionUI.GetSelectionColor_Lightbox()
-        renderOpacity = SelectionUI.GetSelectionOpacity_Lightbox()
-    End If
-    
-    'We use the RASTER OVERLAY FUNCTION if...
-    ' 1) The user has requested "highlight" or "lightbox" rendering mode, and the mouse is NOT down
-    
-    'We use "outline"-style rendering if...
-    ' 1) The user has requested outline-only rendering, or...
-    ' 2) The user is editing or creating a selection, or...
-    ' 3) A lasso selection is active but not locked-in (meaning it's still being drawn), or...
-    ' 4) A polygon selection is active but not locked-in (meaning it's still being drawn)
-    Dim useOutlineRenderingInstead As Boolean
-    useOutlineRenderingInstead = (renderType = PDSR_Outline) Or (renderType = PDSR_Ants)
-    useOutlineRenderingInstead = useOutlineRenderingInstead Or SelectionUI.IsMouseDown()
-    
-    'If we are not using marching ants, disable the associated ant timer now
+    'If the user has disabled animations, disable the associated "marching ants" timer now
     ' (as a failsafe only; this is typically solved elsewhere).
-    If (renderType <> PDSR_Ants) Then
+    If (Not SelectionUI.GetUISetting_Animate()) Then
         
-        'As a failsafe, forcibly disable animations prior to stopping the timer; this helps against any pending timer events
-        ' firing as a result of stopping the timer
+        'As a failsafe, forcibly disable animations prior to stopping the timer;
+        ' this helps against any pending timer events firing as a result of stopping the timer
         Dim initAnimState As Boolean: initAnimState = m_AnimationsAllowed
         m_AnimationsAllowed = False
         m_AntTimer.StopTimer
@@ -3380,11 +3354,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     End If
     
     'Render the current selection (including a composite, if any) to the canvas
-    If useOutlineRenderingInstead Then
-        RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
-    Else
-        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
-    End If
+    RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated
     
     'If an in-progress lasso or polygon selection is active, render that next.
     ' (By design, it will be rendered "over the top" of any existing composite selections.)
@@ -3393,241 +3363,26 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     renderActiveLassoOrPolygon = renderActiveLassoOrPolygon Or ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
     If renderActiveLassoOrPolygon Then
-        RenderInProgressLassoOrPolygon dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
+        RenderInProgressLassoOrPolygon dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated
     End If
     
 End Sub
 
 'Child function of RenderSelectionToViewport(), above.
-' Renders the current selection mask to a target viewport, using the HIGHLIGHT or LIGHTBOX selection styles.
-' (These are effectively semi-transparent masks representing the active selection.)
-Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640, Optional ByVal renderOpacity As Single = 50!)
-    
-    'To improve performance, this function caches the current selection overlay image as a persistent DIB.
-    ' (This lets us cheat and directly AlphaBlend the cached result during intensive operations like
-    ' paint strokes.)
-    '
-    'If the associated viewport cache has changed in some way (e.g. user changed scroll or zoom),
-    ' we obviously need to regenerate our cached overlay.  We also need to regenerate the cache if
-    ' the current selection UI settings have changed (such as selection UI mask color).
-    Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
-    If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor, renderOpacity), False)
-    
-    'Under some circumstances (e.g. in-progress polygon selections), we're actually going to render the
-    ' "old" mask instead of the "composite" one
-    Dim useOldInsteadOfComposite As Boolean
-    useOldInsteadOfComposite = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
-    useOldInsteadOfComposite = useOldInsteadOfComposite Or ((Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed))
-        
-    'If any preceding checks failed, generate a new UI DIB to match current settings.
-    If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
-        
-        'If UserPrefs.GenerateDebugLogs Then Debug.Print "rebuilding selection overlay (" & Timer & ")"
-        
-        'The following chunk of code generates the actual 32-bpp selection image "overlaid" on the viewport.
-        ' (Said another way, this image reflects things like the user's currently selected highlight or lightbox UI settings.)
-        
-        'Start by making sure our cached overlay dimensions match the temporary viewport DIB generated by our parent function.
-        If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
-        If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height) Then
-            m_ViewportOverlay.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
-            m_ViewportOverlay.SetInitialAlphaPremultiplicationState True
-        Else
-            m_ViewportOverlay.ResetDIB 0
-        End If
-        
-        'Start by generating a lookup table of all 256 possible overlay colors.
-        Dim overlayLookup(0 To 255) As Long
-        
-        Dim tmpRGBA As RGBQuad, i As Long
-        Dim newR As Long, newG As Long, newB As Long, newA As Single
-        Dim defaultFillColor As Long
-        
-        'Extract RGB values from the passed color
-        newR = Colors.ExtractRed(renderColor)
-        newG = Colors.ExtractGreen(renderColor)
-        newB = Colors.ExtractBlue(renderColor)
-        
-        'Convert opacity to a [0, 1] scale, and because we're multiplying it by (color / 255),
-        ' we can go a step further and just pre-multiply it against (1 / 255)
-        Dim opacityMultiplier As Single
-        opacityMultiplier = renderOpacity * 0.01! * (1! / 255!)
-            
-        'The constructed lookup table varies by overlay type
-        If (renderType = PDSR_Highlight) Then
-            
-            'Build a lookup table of opacity-corrected values
-            For i = 0 To 255
-                newA = CSng(i) * opacityMultiplier
-                With tmpRGBA
-                    .Red = newR * newA
-                    .Green = newG * newA
-                    .Blue = newB * newA
-                    .Alpha = newA * 255
-                End With
-                CopyMemoryStrict VarPtr(overlayLookup(i)), VarPtr(tmpRGBA), 4&
-            Next i
-            
-            'Calculate a default fill color and opacity.  (This is the default color we fill the overlay with
-            ' before doing our actual per-pixel rendering.)  Note that we deliberately use premultiplied alpha,
-            ' despite GDI+ operating on non-premultiplied alpha by default.
-            If (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                newA = (renderOpacity * 0.01)
-                defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
-            Else
-                newA = 0#
-                defaultFillColor = 0
-            End If
-        
-        ElseIf (renderType = PDSR_Lightbox) Then
-            
-            For i = 0 To 255
-                newA = CSng(255 - i) * opacityMultiplier
-                With tmpRGBA
-                    .Red = newR * newA
-                    .Green = newG * newA
-                    .Blue = newB * newA
-                    .Alpha = newA * 255
-                End With
-                CopyMemoryStrict VarPtr(overlayLookup(i)), VarPtr(tmpRGBA), 4&
-            Next i
-            
-            'Calculate a default fill color and opacity.
-            If (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                newA = 0#
-                defaultFillColor = 0
-            Else
-                newA = (renderOpacity * 0.01)
-                defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
-            End If
-            
-        End If
-        
-        'To shortcut per-pixel fill operations, fill the entire DIB with the default "background"
-        ' color before we start.
-        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
-        GDI_Plus.GDIPlus_GraphicsSetCompositingMode cSurface.GetHandle, GP_CM_SourceCopy
-        Drawing2D.QuickCreateSolidBrush cBrush, defaultFillColor, newA * 100
-        PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_ViewportOverlay.GetDIBWidth, m_ViewportOverlay.GetDIBHeight
-        Set cBrush = Nothing: Set cSurface = Nothing
-        
-        'With the lookup table successfully generated, we can generate the overlay using identical code
-        ' (regardless of the actual overlay UI style)
-        Dim x As Long, y As Long
-        Dim overlayPixels() As Long, maskPixels() As Long
-        Dim overlaySALine As SafeArray1D, maskSALine As SafeArray1D
-        
-        'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
-        Dim viewportIntersectRectCanvas As RectF
-        srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
-        
-        Dim srcViewportRefRectF As RectF
-        If m_CompositeActive Then
-            If useOldInsteadOfComposite Then
-                srcViewportRefRectF = m_ViewportRefOldRectF
-            Else
-                srcViewportRefRectF = m_ViewportRefCompositeRectF
-            End If
-        Else
-            srcViewportRefRectF = m_ViewportRefRectF
-        End If
-        
-        Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
-        loopStartX = Int(srcViewportRefRectF.Left)
-        loopStartY = Int(srcViewportRefRectF.Top)
-        
-        '(When the viewport is deeply zoomed in, we need larger compensation boundaries around the image's edges.)
-        Dim extendX As Single, extendY As Single
-        extendX = 1.999999
-        extendY = 1.999999
-        loopEndX = loopStartX + Int(srcViewportRefRectF.Width + extendX)
-        loopEndY = loopStartY + Int(srcViewportRefRectF.Height + extendY)
-        
-        If (loopEndX > m_ViewportOverlay.GetDIBWidth - 1) Then loopEndX = m_ViewportOverlay.GetDIBWidth - 1
-        If (loopEndY > m_ViewportOverlay.GetDIBHeight - 1) Then loopEndY = m_ViewportOverlay.GetDIBHeight - 1
-        If (loopStartX < 0) Then loopStartX = 0
-        If (loopStartY < 0) Then loopStartY = 0
-        If (loopStartX > loopEndX) Then loopStartX = loopEndX
-        If (loopStartY > loopEndY) Then loopStartY = loopEndY
-        
-        'Failsafe check for disastrous inputs
-        If (loopStartX >= 0) And (loopStartY >= 0) Then
-        
-            'With everything prepared, we can now (finally) apply the results to the overlay DIB.
-            ' Note that we use a per-scanline approach for accessing pixels.
-            ' (This lets us use 1-dimensional arrays instead of 2-dimensional arrays for a slight performance boost.)
-            '
-            'Update as of 9.0: composite selections makes this step a bit more convoluted.
-            ' If a composite mask exists, use it for the operation.  Otherwise, use the normal mask.
-            If m_CompositeActive Then
-                If useOldInsteadOfComposite Then
-                    m_ViewportRefOld.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
-                Else
-                    m_ViewportRefComposite.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
-                End If
-            Else
-                m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
-            End If
-            
-            Dim viewRefPtr As Long, viewRefStride As Long
-            viewRefPtr = maskSALine.pvData
-            viewRefStride = maskSALine.cElements * 4
-            
-            m_ViewportOverlay.WrapLongArrayAroundScanline overlayPixels, overlaySALine, 0
-            Dim viewOverPtr As Long, viewOverStride As Long
-            viewOverPtr = overlaySALine.pvData
-            viewOverStride = overlaySALine.cElements * 4
-            
-            For y = loopStartY To loopEndY
-                maskSALine.pvData = viewRefPtr + viewRefStride * y
-                overlaySALine.pvData = viewOverPtr + viewOverStride * y
-            For x = loopStartX To loopEndX
-                overlayPixels(x) = overlayLookup(maskPixels(x) And 255)
-            Next x
-            Next y
-            
-            'Because the arrays wrapped around the target DIBs are scoped locally, we have to manually free them before
-            ' the function exits.
-            m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
-            m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
-            
-            'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
-            ' UI settings change, we'll need to generate a new overlay, even if the selection itself hasn't changed.)
-            
-            'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
-            ' previously overlay cache check, above.
-            m_LastOverlayCache = GenerateArbitraryHash(renderType, renderColor)
-            m_OverlayIsReady = True
-            
-        Else
-            PDDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
-        End If
-        
-    End If
-    
-    'Final task: rendering the actual overlay onto the destination viewport.  If rendering and viewport settings haven't
-    ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
-    ' so speedy during paint ops).
-    If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width, imgViewportRectL.Height, 0, 0, imgViewportRectL.Width, imgViewportRectL.Height
-    
-End Sub
-
-'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
-' using the OUTLINE or MARCHING ANT selection styles.
-Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
+' Renders the current selection mask to a target viewport, using a traditional "marching ant" line style.
+Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean)
     
     'Outline rendering isn't free.  In debug builds you may want to profile it.
-    ' (At present, profile reports are commented-out, but timing is still tracked - so just uncomment the
-    '  various pdDebug.LogAction() calls to gather performance data.)
+    ' (At present, profile reports are commented-out, but timing is still tracked -
+    ' so just uncomment the various pdDebug.LogAction() calls to gather performance data.)
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
     'Rendering an outline requires two broad stages:
     ' 1a) See if our currently cached outline path is accurate.
     ' 1b) If (1a) fails, we need to generate a new outline path, specific to the current viewport settings.
-    '     (This provides a huge speed boost when the current image is large and zoomed-out, as we only generate a path
-    '      relevant to the current on-screen representation.)
+    '     (This provides a huge speed boost when the current image is large and zoomed-out, as we only generate
+    '      an exterior path relevant to the current on-screen representation.)
     ' 2) Render the actual outline onto the target viewport DIB
     Dim currentSelectionIncomplete As Boolean
     currentSelectionIncomplete = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
@@ -3734,45 +3489,86 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         End If
         
         'Draw the assembled path onto the canvas
-        Dim cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+        Dim cSurface As pd2DSurface
         
         'I haven't made a final decision on using antialiasing for the rendering outline.  At present,
-        ' antialiasing is used for "outline" mode, but not "marching ant" mode.
+        ' antialiasing is *not* used for the traditional "marching ant" outline.
         Dim useAA As Boolean
-        useAA = (renderType = PDSR_Outline)
-        
+        useAA = False
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, useAA
         
         'Half-pixel offsets solve some rendering problems, while also introducing other ones.
         ' I've left it disabled for now, pending additional testing.
         'cSurface.SetSurfacePixelOffset P2_PO_Half
         
-        'If the user is actively modifying a selection, let's give them even more cool UI behavior.
-        ' Let's calculate a region of the old and new selection paths (using regions as a go-between),
-        ' then highlight that region specifically.
-        If m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete) Then
+        'If the user is actively modifying a selection, I prefer a nice bonus UI behavior.
+        ' We can calculate an on-the-fly composite region of the old and new selection paths
+        ' (using pd2D region objects as a fast estimate), then highlight that region specifically.
+        '
+        '(Note that this behavior can be toggled on/off by the user.)
+        '
+        'Similarly, the region around the active selection can also be "dimmed" out.
+        Dim interiorFillPref As PD_SelectionRenderMode, renderInteriorRegion As Boolean
+        interiorFillPref = SelectionUI.GetUISetting_InteriorFillMode()
+        If (interiorFillPref = pdsrm_Sometimes) Then
+            renderInteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
+        Else
+            renderInteriorRegion = (interiorFillPref = pdsrm_Always)
+        End If
+        
+        Dim exteriorFillPref As PD_SelectionRenderMode, renderExteriorRegion As Boolean
+        exteriorFillPref = SelectionUI.GetUISetting_ExteriorFillMode()
+        If (exteriorFillPref = pdsrm_Sometimes) Then
+            renderExteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
+        Else
+            renderExteriorRegion = (exteriorFillPref = pdsrm_Always)
+        End If
+        
+        'If either the inernal or external region is being rendered, calculate the region now.
+        Dim interiorRegion As pd2DRegion, exteriorRegion As pd2DRegion
+        If (renderInteriorRegion Or renderExteriorRegion) Then
             
-            'Construct a region from the old path.
-            Dim tmpRegion As pd2DRegion
-            Set tmpRegion = New pd2DRegion
-            tmpRegion.MakeRegionEmpty
-            tmpRegion.AddPath m_OldOutline, P2_CM_Replace
+            'Start with an empty region
+            Set interiorRegion = New pd2DRegion
+            interiorRegion.MakeRegionEmpty
             
-            'Add the current path to it, using the appropriate combine mode
-            If (Me.GetSelectionCombineMode = pdsm_Add) Then
-                tmpRegion.AddPath m_CurrentOutline, P2_CM_Union
-            ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
-                tmpRegion.AddPath m_CurrentOutline, P2_CM_Exclude
-            ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
-                tmpRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+            'If the user is actively modifying the current selection, we need to generate
+            ' a composite region "on the fly".
+            If (interiorFillPref = pdsrm_Sometimes) Then
+                
+                If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
+                
+                'Add the current path to it, using the appropriate combine mode
+                If (Not m_CurrentOutline Is Nothing) Then
+                    If (Me.GetSelectionCombineMode = pdsm_Add) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
+                    ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
+                    ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+                    End If
+                End If
+            
+            'Otherwise, just use the existing boundary path and call it good.
+            Else
+                If m_CompositeActive Then
+                    If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
+                Else
+                    If (Not m_CurrentOutline Is Nothing) Then interiorRegion.AddPath m_CurrentOutline
+                End If
             End If
             
-            If (Not tmpRegion.IsRegionEmpty()) Then
-                
+        End If
+        
+        'Only attempt to render if a valid region exists
+        If (renderInteriorRegion And (Not interiorRegion Is Nothing)) Then
+            
+            If (Not interiorRegion.IsRegionEmpty()) Then
+            
                 'Create a temporary translucent brush using the chosen highlight color
                 Dim renderColor As Long, renderOpacity As Single
-                renderColor = SelectionUI.GetSelectionColor_Highlight()
-                renderOpacity = SelectionUI.GetSelectionOpacity_Highlight()
+                renderColor = SelectionUI.GetUISetting_InteriorFillColor()
+                renderOpacity = SelectionUI.GetUISetting_InteriorFillOpacity()
                 
                 Dim cBrush As pd2DBrush
                 Set cBrush = New pd2DBrush
@@ -3780,75 +3576,136 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 cBrush.SetBrushOpacity renderOpacity
                 
                 'Fill the region
-                PD2D.FillRegion cSurface, cBrush, tmpRegion
-                Set cBrush = Nothing: Set tmpRegion = Nothing
+                PD2D.FillRegion cSurface, cBrush, interiorRegion
+                Set cBrush = Nothing: Set interiorRegion = Nothing
+                
+            End If
+        
+        '/Else just means this is an empty region (common in subtract/intersect modes).  Do nothing.
+        End If
+        
+        'Next, render the exterior region, as settings allow.
+        If renderExteriorRegion And (Not m_ViewportReference Is Nothing) Then
             
-            '/Else just means this is an empty region (common in subtract/intersect modes).  Do nothing.
+            'We may have already assembled a useable interior region in a previous step.
+            If (interiorRegion Is Nothing) Or (exteriorFillPref <> interiorFillPref) Then
+            
+                'Shit, we didn't actually assemble a useable region.  Assemble one now.
+                
+                'Start with an empty region
+                Set interiorRegion = New pd2DRegion
+                interiorRegion.MakeRegionEmpty
+                
+                'If the user is actively modifying the current selection, we need to generate
+                ' a composite region "on the fly".
+                If (exteriorFillPref = pdsrm_Sometimes) Then
+                    
+                    If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
+                    
+                    'Add the current path to it, using the appropriate combine mode
+                    If (Not m_CurrentOutline Is Nothing) Then
+                        If (Me.GetSelectionCombineMode = pdsm_Add) Then
+                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
+                        ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
+                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
+                        ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
+                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+                        End If
+                    End If
+                
+                'Otherwise, just use the existing boundary path and call it good.
+                Else
+                    If m_CompositeActive Then
+                        If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
+                    Else
+                        If (Not m_CurrentOutline Is Nothing) Then interiorRegion.AddPath m_CurrentOutline
+                    End If
+                End If
+                
+            End If
+            
+            'We now have a useable interior region.  We need to find the *inverse* of this for
+            ' the exterior region.
+            Set exteriorRegion = New pd2DRegion
+            exteriorRegion.MakeRegionEmpty
+            
+            'Add the full viewport rect
+            exteriorRegion.AddRectangleF -1!, -1, m_ViewportReference.GetDIBWidth + 2, m_ViewportReference.GetDIBHeight + 2, P2_CM_Replace
+            
+            '...then subtract the interior region we created
+            exteriorRegion.AddRegion interiorRegion, P2_CM_Exclude
+            
+            'If the region is non-null, render it
+            If (Not exteriorRegion.IsRegionEmpty()) Then
+                
+                'Create a temporary translucent brush using the chosen color
+                renderColor = SelectionUI.GetUISetting_ExteriorFillColor()
+                renderOpacity = SelectionUI.GetUISetting_ExteriorFillOpacity()
+                
+                Set cBrush = New pd2DBrush
+                cBrush.SetBrushColor renderColor
+                cBrush.SetBrushOpacity renderOpacity
+                
+                'Fill the region
+                PD2D.FillRegion cSurface, cBrush, exteriorRegion
+                Set cBrush = Nothing: Set exteriorRegion = Nothing
+                    
             End If
             
         End If
         
-        'Render the outline using PD's standard "white-on-black" outline technique
-        If (renderType = PDSR_Outline) Then
+        'If this is a composite selection, and the mouse is *not* down, and the active selection
+        ' *is* transformable, render its outline "beneath" the marching ant outline.  (Without this,
+        ' it is extremely challenging for the user to know where they can/can't transform the
+        ' active selection.)
+        If (m_CompositeActive And (Not SelectionUI.IsMouseDown) And (Not m_CurrentOutline Is Nothing) And Me.IsTransformable()) Then
             
+            Dim cPenUIBase As pd2DPen, cPenUITop As pd2DPen
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, False, P2_LJ_Round, P2_LC_Round
             
-            'If this is a composite selection and the mouse is down (meaning the current selection
-            ' is being modified/created/transformed etc), ensure the *old* outline is drawn first.
-            ' Without this, selection modes like "subtract" are extremely challenging to work with.
-            If m_CompositeActive And (outlineSource <> srs_Old) And SelectionUI.IsMouseDown Then
-                PD2D.DrawPath cSurface, cPenUIBase, m_OldOutline
-                PD2D.DrawPath cSurface, cPenUITop, m_OldOutline
-            End If
+            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            PD2D.DrawPath cSurface, cPenUIBase, m_CurrentOutline
+            PD2D.DrawPath cSurface, cPenUITop, m_CurrentOutline
+            If (Not useAA) Then cSurface.SetSurfaceAntialiasing P2_AA_None
             
-            'Render the target path
-            PD2D.DrawPath cSurface, cPenUIBase, srcOutline
-            PD2D.DrawPath cSurface, cPenUITop, srcOutline
-            
-        'Render the outline using an animated "marching ants" approach
-        Else
-            
-            Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
-            Set cBlackPen = New pd2DPen
-            cBlackPen.SetPenColor vbBlack
-            cBlackPen.SetPenWidth 1!
-            
-            Set cDottedPen = New pd2DPen
-            cDottedPen.SetPenWidth 1!
-            cDottedPen.SetPenColor vbWhite
-            cDottedPen.CreatePen
-            cDottedPen.SetPenStyle P2_DS_Custom
-            cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
-            cDottedPen.SetPenDashOffset m_AntDashOffset
-            
-            'If this is a composite selection and the mouse is down (meaning the current selection
-            ' is being modified/created/transformed etc), ensure the *old* outline is drawn first.
-            ' Without this, selection modes like "subtract" are extremely challenging to work with.
-            If m_CompositeActive And (outlineSource <> srs_Old) And SelectionUI.IsMouseDown Then
-                PD2D.DrawPath cSurface, cBlackPen, m_OldOutline
-                PD2D.DrawPath cSurface, cDottedPen, m_OldOutline
-            End If
-            
-            PD2D.DrawPath cSurface, cBlackPen, srcOutline
-            PD2D.DrawPath cSurface, cDottedPen, srcOutline
-            
-            'If marching ants are being used, make sure our timer is enabled now
-            If (Not m_AntTimer.IsActive) Then
-                If (g_InterfacePerformance = PD_PERF_FASTEST) Then
-                    m_AntTimer.Interval = ANT_DASH_SPEED_FAST
-                ElseIf (g_InterfacePerformance = PD_PERF_BESTQUALITY) Then
-                    m_AntTimer.Interval = ANT_DASH_SPEED_SLOW
-                Else
-                    m_AntTimer.Interval = ANT_DASH_SPEED_NORMAL
-                End If
-                m_AntTimer.StartTimer
-            End If
-        
         End If
         
-        'Update the overlay hash; even though we don't track this locally, it is necessary for overlay and lightbox rendering
-        ' to detect changes to their rendering mode options.
-        m_LastOverlayCache = GenerateArbitraryHash(renderType)
+        'Render the outline using an animated "marching ants" approach
+        Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
+        Set cBlackPen = New pd2DPen
+        cBlackPen.SetPenColor vbBlack
+        cBlackPen.SetPenWidth 1!
+        
+        Set cDottedPen = New pd2DPen
+        cDottedPen.SetPenWidth 1!
+        cDottedPen.SetPenColor vbWhite
+        cDottedPen.CreatePen
+        cDottedPen.SetPenStyle P2_DS_Custom
+        cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
+        cDottedPen.SetPenDashOffset m_AntDashOffset
+    
+        'If this is a composite selection and the mouse is down (meaning the current selection
+        ' is being modified/created/transformed etc), ensure the *old* outline is drawn first.
+        ' Without this, selection modes like "subtract" are extremely challenging to work with.
+        If m_CompositeActive And (outlineSource <> srs_Old) And SelectionUI.IsMouseDown Then
+            PD2D.DrawPath cSurface, cBlackPen, m_OldOutline
+            PD2D.DrawPath cSurface, cDottedPen, m_OldOutline
+        End If
+        
+        PD2D.DrawPath cSurface, cBlackPen, srcOutline
+        PD2D.DrawPath cSurface, cDottedPen, srcOutline
+        
+        'If marching ants are being used, make sure our timer is enabled now
+        If SelectionUI.GetUISetting_Animate() And (Not m_AntTimer.IsActive) Then
+            If (g_InterfacePerformance = PD_PERF_FASTEST) Then
+                m_AntTimer.Interval = ANT_DASH_SPEED_FAST
+            ElseIf (g_InterfacePerformance = PD_PERF_BESTQUALITY) Then
+                m_AntTimer.Interval = ANT_DASH_SPEED_SLOW
+            Else
+                m_AntTimer.Interval = ANT_DASH_SPEED_NORMAL
+            End If
+            m_AntTimer.StartTimer
+        End If
         
     Else
         If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
@@ -3871,7 +3728,7 @@ End Sub
 'Separating this renderer into its own function is also beneficial when composite selections
 ' are active, since we can render the composite using the user's UI style preference, then overlay
 ' any in-progress polygon or lasso outline over the top.
-Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
+Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean)
     
     'First, confirm that we actually want to run this step
     Dim okToProceed As Boolean
@@ -3932,44 +3789,32 @@ Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage
     Dim cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
     
     'I haven't made a final decision on using antialiasing for the rendering outline.
-    ' At present, antialiasing is used for "outline" mode, but not "marching ant" mode.
     ' (There is a non-trivial performance penalty with antialiased marching ants,
     ' and I'm not sure the hit is worth it, especially on older PCs.)
     Dim useAA As Boolean
-    useAA = (renderType = PDSR_Outline)
+    useAA = False
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, useAA
     
     'Half-pixel offsets solve some rendering problems, while also introducing other ones.
     ' I've left it disabled for now, pending additional testing.
     'cSurface.SetSurfacePixelOffset P2_PO_Half
     
-    'Render the outline using PD's standard "white-on-black" outline technique
-    If (renderType = PDSR_Outline) Then
-        
-        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, False, P2_LJ_Round, P2_LC_Round
-        PD2D.DrawPath cSurface, cPenUIBase, tmpPath
-        PD2D.DrawPath cSurface, cPenUITop, tmpPath
-        
-    'Render the outline using a dotted "marching ants" approach
-    Else
-        
-        Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
-        Set cBlackPen = New pd2DPen
-        cBlackPen.SetPenColor vbBlack
-        cBlackPen.SetPenWidth 1!
-        
-        Set cDottedPen = New pd2DPen
-        cDottedPen.SetPenWidth 1!
-        cDottedPen.SetPenColor vbWhite
-        cDottedPen.CreatePen
-        cDottedPen.SetPenStyle P2_DS_Custom
-        cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
-        cDottedPen.SetPenDashOffset m_AntDashOffset
-        
-        PD2D.DrawPath cSurface, cBlackPen, tmpPath
-        PD2D.DrawPath cSurface, cDottedPen, tmpPath
-        
-    End If
+    'Render the outline using a traditional dotted "marching ants" appearance
+    Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
+    Set cBlackPen = New pd2DPen
+    cBlackPen.SetPenColor vbBlack
+    cBlackPen.SetPenWidth 1!
+    
+    Set cDottedPen = New pd2DPen
+    cDottedPen.SetPenWidth 1!
+    cDottedPen.SetPenColor vbWhite
+    cDottedPen.CreatePen
+    cDottedPen.SetPenStyle P2_DS_Custom
+    cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
+    cDottedPen.SetPenDashOffset m_AntDashOffset
+    
+    PD2D.DrawPath cSurface, cBlackPen, tmpPath
+    PD2D.DrawPath cSurface, cDottedPen, tmpPath
         
 End Sub
 

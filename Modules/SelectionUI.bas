@@ -21,21 +21,37 @@ Attribute VB_Name = "SelectionUI"
 Option Explicit
 
 Public Enum PD_SelectionRenderSetting
-    pdsr_RenderMode = 0
-    pdsr_HighlightColor = 1
-    pdsr_HighlightOpacity = 2
-    pdsr_LightboxColor = 3
-    pdsr_LightboxOpacity = 4
+    pdsr_Animate
+    pdsr_InteriorFillMode
+    pdsr_InteriorFillColor
+    pdsr_InteriorFillOpacity
+    pdsr_ExteriorFillMode
+    pdsr_ExteriorFillColor
+    pdsr_ExteriorFillOpacity
 End Enum
 
 #If False Then
-    Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1, pdsr_HighlightOpacity = 2, pdsr_LightboxColor = 3, pdsr_LightboxOpacity = 4
+    Private Const pdsr_Animate = 0, pdsr_InteriorFillMode = 0, pdsr_InteriorFillColor = 0, pdsr_InteriorFillOpacity = 0, pdsr_ExteriorFillMode = 0, pdsr_ExteriorFillColor = 0, pdsr_ExteriorFillOpacity = 0
+#End If
+
+'Rendering the interior of the current selection with a "fill" style supports three modes:
+' always fill, fill only when combining selections (default), never fill
+Public Enum PD_SelectionRenderMode
+    pdsrm_Always
+    pdsrm_Sometimes
+    pdsrm_Never
+End Enum
+
+#If False Then
+    Private Const pdsrm_Always = 0, pdsrm_Sometimes = 0, pdsrm_Never = 0
 #End If
 
 'This module caches a number of UI-related selection details.  We cache these here because these
-' are tied to program preferences (and not to specific selection instances).
-Private m_CurSelectionMode As PD_SelectionRender, m_SelHighlightColor As Long, m_SelHighlightOpacity As Single
-Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
+' are tied to program preferences (and not to specific selection instances).  These preferences
+' are also highly perf-sensitive, so we do not want to retrieve them on-demand from file or UI elements.
+Private m_AnimateOutline As Boolean
+Private m_InteriorFillMode As PD_SelectionRenderMode, m_InteriorFillColor As Long, m_InteriorFillOpacity As Single
+Private m_ExteriorFillMode As PD_SelectionRenderMode, m_ExteriorFillColor As Long, m_ExteriorFillOpacity As Single
 
 'A double-click event can be used to close the current polygon selection.  Unfortunately, this can
 ' have the (funny?) side-effect of removing the active selection, because the first click of the
@@ -66,24 +82,32 @@ Private m_RestoreCombineMode As Boolean
 ' when shift is pressed AFTER the mouse has been pressed down, so we track it separately.
 Private m_ShiftForConstrain As Boolean
 
-Public Function GetSelectionRenderMode() As PD_SelectionRender
-    GetSelectionRenderMode = m_CurSelectionMode
+Public Function GetUISetting_Animate() As Boolean
+    GetUISetting_Animate = m_AnimateOutline
 End Function
 
-Public Function GetSelectionColor_Highlight() As Long
-    GetSelectionColor_Highlight = m_SelHighlightColor
+Public Function GetUISetting_InteriorFillMode() As PD_SelectionRenderMode
+    GetUISetting_InteriorFillMode = m_InteriorFillMode
 End Function
 
-Public Function GetSelectionOpacity_Highlight() As Single
-    GetSelectionOpacity_Highlight = m_SelHighlightOpacity
+Public Function GetUISetting_InteriorFillColor() As Long
+    GetUISetting_InteriorFillColor = m_InteriorFillColor
 End Function
 
-Public Function GetSelectionColor_Lightbox() As Long
-    GetSelectionColor_Lightbox = m_SelLightboxColor
+Public Function GetUISetting_InteriorFillOpacity() As Single
+    GetUISetting_InteriorFillOpacity = m_InteriorFillOpacity
 End Function
 
-Public Function GetSelectionOpacity_Lightbox() As Single
-    GetSelectionOpacity_Lightbox = m_SelLightboxOpacity
+Public Function GetUISetting_ExteriorFillMode() As PD_SelectionRenderMode
+    GetUISetting_ExteriorFillMode = m_ExteriorFillMode
+End Function
+
+Public Function GetUISetting_ExteriorFillColor() As Long
+    GetUISetting_ExteriorFillColor = m_ExteriorFillColor
+End Function
+
+Public Function GetUISetting_ExteriorFillOpacity() As Single
+    GetUISetting_ExteriorFillOpacity = m_ExteriorFillOpacity
 End Function
 
 'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
@@ -222,14 +246,17 @@ Public Sub InitializeSelectionRendering()
 
     If UserPrefs.IsReady Then
         
-        'Rendering mode (marching ants, highlight, etc)
-        m_CurSelectionMode = UserPrefs.GetPref_Long("Tools", "SelectionRenderMode", 0)
+        'Animate marching ants
+        m_AnimateOutline = UserPrefs.GetPref_Boolean("Tools", "SelectionAnimateOutline", True)
         
-        'Highlight, lightbox mode render settings
-        m_SelHighlightColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48"))
-        m_SelHighlightOpacity = UserPrefs.GetPref_Float("Tools", "SelectionHighlightOpacity", 50!)
-        m_SelLightboxColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionLightboxColor", "#000000"))
-        m_SelLightboxOpacity = UserPrefs.GetPref_Float("Tools", "SelectionLightboxOpacity", 50!)
+        'Interior and exterior fill settings
+        m_InteriorFillMode = UserPrefs.GetPref_Long("Tools", "SelectionInteriorFillMode", pdsrm_Sometimes)
+        m_InteriorFillColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionInteriorFillColor", "#6EE6FF"))
+        m_InteriorFillOpacity = UserPrefs.GetPref_Float("Tools", "SelectionInteriorFillOpacity", 50!)
+        
+        m_ExteriorFillMode = UserPrefs.GetPref_Long("Tools", "SelectionExteriorFillMode", pdsrm_Never)
+        m_ExteriorFillColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionExteriorFillColor", "#FF3C50"))
+        m_ExteriorFillOpacity = UserPrefs.GetPref_Float("Tools", "SelectionExteriorFillOpacity", 50!)
         
     End If
 
@@ -240,30 +267,38 @@ End Sub
 Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSetting, ByVal newValue As Variant)
     
     Select Case settingType
-        
-        Case pdsr_RenderMode
-            m_CurSelectionMode = newValue
+        Case pdsr_Animate
+            m_AnimateOutline = newValue
+            If Selections.SelectionsAllowed(False) Then PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed newValue
             
             'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
             ' them correctly, even if selection tools have not been loaded this session.  (This can happen if the user runs
             ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str$(m_CurSelectionMode))
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionAnimateOutline", Trim$(Str$(m_AnimateOutline))
             
-        Case pdsr_HighlightColor
-            m_SelHighlightColor = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_SelHighlightColor)
-        
-        Case pdsr_HighlightOpacity
-            m_SelHighlightOpacity = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightOpacity", m_SelHighlightOpacity
+        Case pdsr_InteriorFillMode
+            m_InteriorFillMode = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillMode", m_InteriorFillMode
             
-        Case pdsr_LightboxColor
-            m_SelLightboxColor = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionLightboxColor", Colors.GetHexStringFromRGB(m_SelLightboxColor)
-        
-        Case pdsr_LightboxOpacity
-            m_SelLightboxOpacity = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionlightboxOpacity", m_SelLightboxOpacity
+        Case pdsr_InteriorFillColor
+            m_InteriorFillColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillColor", Colors.GetHexStringFromRGB(m_InteriorFillColor)
+            
+        Case pdsr_InteriorFillOpacity
+            m_InteriorFillOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillOpacity", m_InteriorFillOpacity
+            
+        Case pdsr_ExteriorFillMode
+            m_ExteriorFillMode = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillMode", m_ExteriorFillMode
+            
+        Case pdsr_ExteriorFillColor
+            m_ExteriorFillColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillColor", Colors.GetHexStringFromRGB(m_ExteriorFillColor)
+            
+        Case pdsr_ExteriorFillOpacity
+            m_ExteriorFillOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillOpacity", m_ExteriorFillOpacity
             
     End Select
     
@@ -549,7 +584,9 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             SyncCombineModeToHotkeys
             
         Else
-            If (vkCode = VK_SHIFT) Then m_ShiftForConstrain = True
+            If (vkCode = VK_SHIFT) And ((m_CurrentShiftState And vbShiftMask) = 0) Then
+                m_ShiftForConstrain = True
+            End If
         End If
         
     End If
@@ -675,7 +712,7 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
     ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
     If PDImages.GetActiveImage.IsSelectionActive Then
-    
+        
         'Check the mouse coordinates of this click.
         Dim sCheck As PD_PointOfInterest
         sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
@@ -960,12 +997,12 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         'Look for at least one selected pixel.
         If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid(True) Then
             
-            'No pixels are selected.  Remove the existing selection, then exit.
+            'No pixels are selected. Remove the existing selection, then exit.
             Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
             GoTo FinishedMouseUp
             
-        '/Else do nothing; normal handling, below, cover all our bases!
+        '/Else do nothing; normal handling, below, covers all other bases!
         End If
     
     End If
@@ -995,7 +1032,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 If eraseThisSelection Then
                     
                     'In "replace" mode, just remove the active selection (if any)
-                    If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() = pdsm_Replace) Then
+                    If (toolpanel_Selections.btsCombine.ListIndex = pdsm_Replace) Then
                         Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     
                     'In other modes, squash any active selections together into a single selection object.
@@ -1224,9 +1261,8 @@ Private Sub SyncCombineModeToHotkeys()
         newCombineMode = pdsm_Intersect
     End If
     
-    'Ensure the UI and current selection object both reflect the new setting
+    'Ensure the UI reflects the new setting
     toolpanel_Selections.btsCombine.ListIndex = newCombineMode
-    PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, newCombineMode
     
 End Sub
 
