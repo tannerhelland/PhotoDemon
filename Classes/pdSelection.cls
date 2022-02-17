@@ -1732,41 +1732,56 @@ End Sub
 'Note that this function requires the m_CornersLocked.Left/Top/Width/Height values to be correctly set prior to calling.
 '
 'Returns: TRUE if this selection lies completely outside its parent image boundaries
-Friend Function AreAllCoordinatesInvalid() As Boolean
+Friend Function AreAllCoordinatesInvalid(Optional ByVal checkCompositeMode As Boolean = False) As Boolean
     
-    Select Case m_SelectionShape
-    
-        'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
-        ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
-        ' rely on intermediate x/y coords instead of the m_Bounds.Left/m_Bounds.Top etc values.
-        Case ss_Rectangle, ss_Circle
-            
-            If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Left > m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Top > m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
-           
-        'Polygon and Lasso are a bit more complicated.  If curvature is not active, we can use existing m_CornersLocked.Left/Top etc bounds,
-        ' but if it is active, we need to perform a manual search for boundaries.
-        Case ss_Polygon, ss_Lasso
+    'Composite selections use a simplified check - just scan the composite mask and ensure at least
+    ' *one* selected pixel exists.
+    If (m_CompositeActive And checkCompositeMode) Then
         
-            If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersLocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
+        If (m_CompositeMask Is Nothing) Then Exit Function
+        If (m_CompositeMask.GetDIBWidth <= 0) Or (m_CompositeMask.GetDIBHeight <= 0) Then Exit Function
         
-        'Wand selections are valid if the (x1, y1) coordinate pair falls inside the image
-        Case ss_Wand
-            If (m_CornersUnlocked.Left < 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersUnlocked.Top < 0) Then AreAllCoordinatesInvalid = True
-            If (m_CornersUnlocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
-            If (m_CornersUnlocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
+        'Perform a quick scan of the mask and look for at least *one* selected pixel.
+        Dim tmpRect As RectF
+        AreAllCoordinatesInvalid = (Not FindBoundsOfArbitraryMask(m_CompositeMask, m_CompositeBounds, tmpRect))
+        
+    Else
+        
+        Select Case m_SelectionShape
+        
+            'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
+            ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
+            ' rely on intermediate x/y coords instead of the m_Bounds.Left/m_Bounds.Top etc values.
+            Case ss_Rectangle, ss_Circle
+                
+                If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Left > m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Top > m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
+               
+            'Polygon and Lasso are a bit more complicated.  If curvature is not active, we can use existing m_CornersLocked.Left/Top etc bounds,
+            ' but if it is active, we need to perform a manual search for boundaries.
+            Case ss_Polygon, ss_Lasso
             
-        'In the future, additional selection types can be handled here.
-        Case Else
+                If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersLocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
             
-    End Select
-    
+            'Wand selections are valid if the (x1, y1) coordinate pair falls inside the image
+            Case ss_Wand
+                If (m_CornersUnlocked.Left < 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersUnlocked.Top < 0) Then AreAllCoordinatesInvalid = True
+                If (m_CornersUnlocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+                If (m_CornersUnlocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
+                
+            'In the future, additional selection types can be handled here.
+            Case Else
+                
+        End Select
+        
+    End If
+        
 End Function
 
 'Nudge the selection in a given direction.  This function is supplied as a convenience for SELECTION TYPES WHOSE POSITION CANNOT
@@ -4556,6 +4571,7 @@ Private Function FindBoundsOfArbitraryMask(ByRef srcMask As pdDIB, ByRef srcInit
     boundFound = False
     x = maskLeft
     
+    'Switch to 2D array handling for easier pixel access
     srcMask.UnwrapLongArrayFromDIB selMaskData
     srcMask.WrapLongArrayAroundDIB selMaskData, selMaskSA
     

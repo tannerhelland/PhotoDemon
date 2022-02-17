@@ -874,6 +874,36 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     'Ensure other actions don't trigger while this one is still processing (only affects this class!)
     m_IgnoreUserInput = True
     
+    'Composite selections have some interesting possible outcomes vs other selection types.
+    ' In particular, there are many ways to produce composite selections with no selected pixels.
+    ' (e.g. Use "subtract" mode to remove the previous selection completely.)
+    '
+    'To prevent this from creating a "nothing selected" state, we auto-detect this state on _MouseUp
+    ' and initiate a "Remove Selection" action.
+    If PDImages.GetActiveImage.MainSelection.IsCompositeSelection() Then
+        
+        'Some shapes do not auto-generate a composite mask while drawing (for perf reasons).
+        ' Ensure a valid composite mask exists before proceeding.
+        With PDImages.GetActiveImage.MainSelection
+            If ((.GetSelectionShape = ss_Polygon) And .GetPolygonClosedState) Or (.GetSelectionShape = ss_Lasso) Then
+                If (.GetSelectionShape = ss_Lasso) Then PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
+                PDImages.GetActiveImage.MainSelection.RequestNewMask
+            End If
+        End With
+        
+        'Look for at least one selected pixel.
+        If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid(True) Then
+            
+            'No pixels are selected.  Remove the existing selection, then exit.
+            Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+            GoTo FinishedMouseUp
+            
+        '/Else do nothing; normal handling, below, cover all our bases!
+        End If
+    
+    End If
+    
     'In default REPLACE mode, a single in-place click will erase the current selection.
     ' (In other combine modes, this behavior must be ignored or overridden.)
     Dim eraseThisSelection As Boolean: eraseThisSelection = False
@@ -934,14 +964,8 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                             'Creating a new selection
                             If (PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
                                 
-                                'For performance reasons, we don't auto-construct a composite mask while lasso
-                                ' selections are being constructed.  But if we don't construct a composite mask
-                                ' before "creating" this selection, the Undo/Redo engine will attempt to save
-                                ' a non-existent mask and crash.
-                                
-                                'So let's ensure a valid composite mask exists before finalizing this selection.
+                                'Ensure the lasso is closed
                                 PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
-                                PDImages.GetActiveImage.MainSelection.RequestNewMask
                                 
                                 '*Now* we can create the selection
                                 Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
@@ -1005,14 +1029,6 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                     
                     'If the polygon is already closed, we want to lock in the newly modified polygon
                     If PDImages.GetActiveImage.MainSelection.GetPolygonClosedState Then
-                        
-                        'For performance reasons, we don't auto-construct a composite mask while polygon
-                        ' selections are being constructed.  But if we don't construct a composite mask
-                        ' before "creating" this selection, the Undo/Redo engine will attempt to save
-                        ' a non-existent mask and crash.
-                        
-                        'So let's ensure a valid composite mask exists before finalizing this selection.
-                        PDImages.GetActiveImage.MainSelection.RequestNewMask
                         
                         'Polygons use a different transform numbering convention than other selection tools, because the number
                         ' of points involved aren't fixed.
@@ -1117,6 +1133,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             
     End Select
     
+FinishedMouseUp:
     m_IgnoreUserInput = False
     
 End Sub
