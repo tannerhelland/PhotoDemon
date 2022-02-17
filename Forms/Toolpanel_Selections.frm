@@ -1011,9 +1011,16 @@ Private Sub btsCombine_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, we may need to calculate a new combined area
     If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
+        
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, btsCombine.ListIndex
-        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        
+        'If this was triggered by the mouse (and not by a hotkey press on the canvas window),
+        ' squash the current composite to a single layer and redraw to match.
+        If (Not SelectionUI.GetSelectionUI_ShiftState()) Then
+            PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        End If
+        
     End If
     
 End Sub

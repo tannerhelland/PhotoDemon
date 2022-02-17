@@ -56,6 +56,11 @@ Private m_IgnoreUserInput As Boolean
 ' elements are rendered.)
 Private m_MouseDown As Boolean
 
+'Hotkeys can be used to temporarily trigger a switch to "add" or "subtract" selection mode.
+' When these hotkeys are released, we restore the user's original combine mode.
+Private m_OriginalCombineMode As PD_SelectionCombine, m_CurrentShiftState As ShiftConstants
+Private m_RestoreCombineMode As Boolean
+
 Public Function GetSelectionRenderMode() As PD_SelectionRender
     GetSelectionRenderMode = m_CurSelectionMode
 End Function
@@ -197,6 +202,10 @@ Public Function GetSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage
     
     End Select
     
+End Function
+
+Public Function GetSelectionUI_ShiftState() As Boolean
+    GetSelectionUI_ShiftState = (m_CurrentShiftState <> 0)
 End Function
 
 'Call at program startup.
@@ -479,7 +488,7 @@ End Function
 'Keypresses on a source canvas are passed here.  The caller doesn't need pass anything except relevant keycodes, and a reference
 ' to itself (so we can relay canvas modifications).
 Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
-
+    
     'Handle arrow keys first
     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
 
@@ -520,12 +529,59 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     ' so they are handled in the KeyUp event instead.)
     Else
         
+        'If the mouse is *not* down, the user can use Shift and Alt keys to change combine mode.
+        If (Not m_MouseDown) Then
+        
+            'If this is the first keypress during this round, save the user's current combine mode
+            If (m_CurrentShiftState = 0) Then m_OriginalCombineMode = toolpanel_Selections.btsCombine.ListIndex
+            
+            'Add this state to the running tracker
+            If (vkCode = VK_SHIFT) Then m_CurrentShiftState = m_CurrentShiftState Or vbShiftMask
+            If (vkCode = VK_CONTROL) Then m_CurrentShiftState = m_CurrentShiftState Or vbCtrlMask
+            If (vkCode = VK_ALT) Then m_CurrentShiftState = m_CurrentShiftState Or vbAltMask
+            
+            'The actual synchronizing between hotkey and UI/selection object is handled elsewhere
+            SyncCombineModeToHotkeys
+            
+        End If
+        
     End If
     
 End Sub
 
 Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
-
+    
+    'Ctrl/Alt/Shift modifiers can change combine mode
+    If (m_CurrentShiftState <> 0) Then
+        
+        If (vkCode = VK_SHIFT) Or (vkCode = VK_CONTROL) Or (vkCode = VK_ALT) Then
+            
+            'Update all flags
+            If (vkCode = VK_SHIFT) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbShiftMask)
+            If (vkCode = VK_CONTROL) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbCtrlMask)
+            If (vkCode = VK_ALT) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbAltMask)
+            
+            'If all modifier keys have been released, restore the user's original combine mode
+            If (m_CurrentShiftState = 0) Then
+                
+                'If the mouse is *still* down, don't make any changes now - instead, set a flag and
+                ' we'll restore the preferred combine mode in _MouseUp
+                If m_MouseDown Then
+                    m_RestoreCombineMode = True
+                Else
+                    m_RestoreCombineMode = False
+                    toolpanel_Selections.btsCombine.ListIndex = m_OriginalCombineMode
+                End If
+                
+            'If at least one modifier is still down, and the mouse is *not* down, switch to a new combine mode
+            Else
+                If (Not m_MouseDown) Then SyncCombineModeToHotkeys
+            End If
+            
+        End If
+    
+    End If
+    
     'Delete key: if a selection is active, erase the selected area
     If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive Then
         markEventHandled = True
@@ -1135,6 +1191,32 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     
 FinishedMouseUp:
     m_IgnoreUserInput = False
+    
+    'If the user pressed a shift/ctrl/alt key to set a temporary combine mode,
+    ' and released the key while the mouse was down, we need to reset their original
+    ' combine mode now.
+    If m_RestoreCombineMode And (m_CurrentShiftState = 0) Then
+        m_RestoreCombineMode = False
+        toolpanel_Selections.btsCombine.ListIndex = m_OriginalCombineMode
+    End If
+    
+End Sub
+
+Private Sub SyncCombineModeToHotkeys()
+
+    'Use the current state to determine which combine mode to set
+    Dim newCombineMode As PD_SelectionCombine
+    If (m_CurrentShiftState = vbShiftMask) Then
+        newCombineMode = pdsm_Add
+    ElseIf (m_CurrentShiftState = vbAltMask) Then
+        newCombineMode = pdsm_Subtract
+    ElseIf (m_CurrentShiftState = (vbShiftMask Or vbAltMask)) Then
+        newCombineMode = pdsm_Intersect
+    End If
+    
+    'Ensure the UI and current selection object both reflect the new setting
+    toolpanel_Selections.btsCombine.ListIndex = newCombineMode
+    PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, newCombineMode
     
 End Sub
 
