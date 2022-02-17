@@ -61,6 +61,11 @@ Private m_MouseDown As Boolean
 Private m_OriginalCombineMode As PD_SelectionCombine, m_CurrentShiftState As ShiftConstants
 Private m_RestoreCombineMode As Boolean
 
+'The shift key (and possibly ctrl in the future, but for a different purpose) can also be used
+' to constrain rectangular and elliptical selections to square proportions.  This only works
+' when shift is pressed AFTER the mouse has been pressed down, so we track it separately.
+Private m_ShiftForConstrain As Boolean
+
 Public Function GetSelectionRenderMode() As PD_SelectionRender
     GetSelectionRenderMode = m_CurSelectionMode
 End Function
@@ -543,6 +548,8 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             'The actual synchronizing between hotkey and UI/selection object is handled elsewhere
             SyncCombineModeToHotkeys
             
+        Else
+            If (vkCode = VK_SHIFT) Then m_ShiftForConstrain = True
         End If
         
     End If
@@ -581,6 +588,9 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         End If
     
     End If
+    
+    'Shift for constrain (works only during _MouseDown; see top of module for additional comments)
+    If (vkCode = VK_SHIFT) Then m_ShiftForConstrain = False
     
     'Delete key: if a selection is active, erase the selected area
     If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive Then
@@ -850,7 +860,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
                 If PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
-                    PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
+                    PDImages.GetActiveImage.MainSelection.RequestSquare m_ShiftForConstrain
                     
                     'Pass new points to the active selection
                     PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
@@ -998,7 +1008,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 
                     'If the selection is not raster-type, pass these final mouse coordinates to it
                     If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-                        PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
+                        PDImages.GetActiveImage.MainSelection.RequestSquare m_ShiftForConstrain
                         PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                         SyncTextToCurrentSelection PDImages.GetActiveImageID()
                     End If
