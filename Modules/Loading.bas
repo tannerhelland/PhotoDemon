@@ -504,8 +504,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
     '*************************************************************************************************************************************
     
-    'Restore the screen cursor if necessary
+    'Restore the screen cursor if necessary, then set focus to the canvas
     If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages > 1)
+    FormMain.MainCanvas(0).SetFocusToCanvasView
     
     'Report success/failure back to the user
     LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
