@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionUI"
 'Selection Tools: UI
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 07/September/21
-'Last update: split selection UI code into its own module
+'Last updated: 12/February/22
+'Last update: composite selection support is finally here, woooohooo!
 '
 'This module should only contain UI code related to selection filters (e.g. key and mouse input,
 ' synchronizing UI elements and internal values, etc).
@@ -21,21 +21,37 @@ Attribute VB_Name = "SelectionUI"
 Option Explicit
 
 Public Enum PD_SelectionRenderSetting
-    pdsr_RenderMode = 0
-    pdsr_HighlightColor = 1
-    pdsr_HighlightOpacity = 2
-    pdsr_LightboxColor = 3
-    pdsr_LightboxOpacity = 4
+    pdsr_Animate
+    pdsr_InteriorFillMode
+    pdsr_InteriorFillColor
+    pdsr_InteriorFillOpacity
+    pdsr_ExteriorFillMode
+    pdsr_ExteriorFillColor
+    pdsr_ExteriorFillOpacity
 End Enum
 
 #If False Then
-    Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1, pdsr_HighlightOpacity = 2, pdsr_LightboxColor = 3, pdsr_LightboxOpacity = 4
+    Private Const pdsr_Animate = 0, pdsr_InteriorFillMode = 0, pdsr_InteriorFillColor = 0, pdsr_InteriorFillOpacity = 0, pdsr_ExteriorFillMode = 0, pdsr_ExteriorFillColor = 0, pdsr_ExteriorFillOpacity = 0
+#End If
+
+'Rendering the interior of the current selection with a "fill" style supports three modes:
+' always fill, fill only when combining selections (default), never fill
+Public Enum PD_SelectionRenderMode
+    pdsrm_Always
+    pdsrm_Sometimes
+    pdsrm_Never
+End Enum
+
+#If False Then
+    Private Const pdsrm_Always = 0, pdsrm_Sometimes = 0, pdsrm_Never = 0
 #End If
 
 'This module caches a number of UI-related selection details.  We cache these here because these
-' are tied to program preferences (and not to specific selection instances).
-Private m_CurSelectionMode As PD_SelectionRender, m_SelHighlightColor As Long, m_SelHighlightOpacity As Single
-Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
+' are tied to program preferences (and not to specific selection instances).  These preferences
+' are also highly perf-sensitive, so we do not want to retrieve them on-demand from file or UI elements.
+Private m_AnimateOutline As Boolean
+Private m_InteriorFillMode As PD_SelectionRenderMode, m_InteriorFillColor As Long, m_InteriorFillOpacity As Single
+Private m_ExteriorFillMode As PD_SelectionRenderMode, m_ExteriorFillColor As Long, m_ExteriorFillOpacity As Single
 
 'A double-click event can be used to close the current polygon selection.  Unfortunately, this can
 ' have the (funny?) side-effect of removing the active selection, because the first click of the
@@ -48,24 +64,50 @@ Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
 ' _MouseUp.
 Private m_DblClickOccurred As Boolean
 
-Public Function GetSelectionRenderMode() As PD_SelectionRender
-    GetSelectionRenderMode = m_CurSelectionMode
+'Similarly, to avoid problematic mouse interactions, we halt processing at the start of _MouseUp,
+' then resume processing after any actions triggered by _MouseUp finish.
+Private m_IgnoreUserInput As Boolean
+
+'The selection engine can query us about MouseDown state.  (This changes the way certain selection
+' elements are rendered.)
+Private m_MouseDown As Boolean
+
+'Hotkeys can be used to temporarily trigger a switch to "add" or "subtract" selection mode.
+' When these hotkeys are released, we restore the user's original combine mode.
+Private m_OriginalCombineMode As PD_SelectionCombine, m_CurrentShiftState As ShiftConstants
+Private m_RestoreCombineMode As Boolean
+
+'The shift key (and possibly ctrl in the future, but for a different purpose) can also be used
+' to constrain rectangular and elliptical selections to square proportions.  This only works
+' when shift is pressed AFTER the mouse has been pressed down, so we track it separately.
+Private m_ShiftForConstrain As Boolean
+
+Public Function GetUISetting_Animate() As Boolean
+    GetUISetting_Animate = m_AnimateOutline
 End Function
 
-Public Function GetSelectionColor_Highlight() As Long
-    GetSelectionColor_Highlight = m_SelHighlightColor
+Public Function GetUISetting_InteriorFillMode() As PD_SelectionRenderMode
+    GetUISetting_InteriorFillMode = m_InteriorFillMode
 End Function
 
-Public Function GetSelectionOpacity_Highlight() As Single
-    GetSelectionOpacity_Highlight = m_SelHighlightOpacity
+Public Function GetUISetting_InteriorFillColor() As Long
+    GetUISetting_InteriorFillColor = m_InteriorFillColor
 End Function
 
-Public Function GetSelectionColor_Lightbox() As Long
-    GetSelectionColor_Lightbox = m_SelLightboxColor
+Public Function GetUISetting_InteriorFillOpacity() As Single
+    GetUISetting_InteriorFillOpacity = m_InteriorFillOpacity
 End Function
 
-Public Function GetSelectionOpacity_Lightbox() As Single
-    GetSelectionOpacity_Lightbox = m_SelLightboxOpacity
+Public Function GetUISetting_ExteriorFillMode() As PD_SelectionRenderMode
+    GetUISetting_ExteriorFillMode = m_ExteriorFillMode
+End Function
+
+Public Function GetUISetting_ExteriorFillColor() As Long
+    GetUISetting_ExteriorFillColor = m_ExteriorFillColor
+End Function
+
+Public Function GetUISetting_ExteriorFillOpacity() As Single
+    GetUISetting_ExteriorFillOpacity = m_ExteriorFillOpacity
 End Function
 
 'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
@@ -191,6 +233,10 @@ Public Function GetSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage
     
 End Function
 
+Public Function GetSelectionUI_ShiftState() As Boolean
+    GetSelectionUI_ShiftState = (m_CurrentShiftState <> 0)
+End Function
+
 'Call at program startup.
 ' At present, all this function does is cache the current user preferences for selection rendering settings.
 ' This ensures the settings are up-to-date, even if the user does not activate a specific selection tool.
@@ -200,14 +246,17 @@ Public Sub InitializeSelectionRendering()
 
     If UserPrefs.IsReady Then
         
-        'Rendering mode (marching ants, highlight, etc)
-        m_CurSelectionMode = UserPrefs.GetPref_Long("Tools", "SelectionRenderMode", 0)
+        'Animate marching ants
+        m_AnimateOutline = UserPrefs.GetPref_Boolean("Tools", "SelectionAnimateOutline", True)
         
-        'Highlight, lightbox mode render settings
-        m_SelHighlightColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48"))
-        m_SelHighlightOpacity = UserPrefs.GetPref_Float("Tools", "SelectionHighlightOpacity", 50!)
-        m_SelLightboxColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionLightboxColor", "#000000"))
-        m_SelLightboxOpacity = UserPrefs.GetPref_Float("Tools", "SelectionLightboxOpacity", 50!)
+        'Interior and exterior fill settings
+        m_InteriorFillMode = UserPrefs.GetPref_Long("Tools", "SelectionInteriorFillMode", pdsrm_Sometimes)
+        m_InteriorFillColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionInteriorFillColor", "#6EE6FF"))
+        m_InteriorFillOpacity = UserPrefs.GetPref_Float("Tools", "SelectionInteriorFillOpacity", 50!)
+        
+        m_ExteriorFillMode = UserPrefs.GetPref_Long("Tools", "SelectionExteriorFillMode", pdsrm_Never)
+        m_ExteriorFillColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionExteriorFillColor", "#FF3C50"))
+        m_ExteriorFillOpacity = UserPrefs.GetPref_Float("Tools", "SelectionExteriorFillOpacity", 50!)
         
     End If
 
@@ -218,30 +267,38 @@ End Sub
 Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSetting, ByVal newValue As Variant)
     
     Select Case settingType
-        
-        Case pdsr_RenderMode
-            m_CurSelectionMode = newValue
+        Case pdsr_Animate
+            m_AnimateOutline = newValue
+            If Selections.SelectionsAllowed(False) Then PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed newValue
             
             'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
             ' them correctly, even if selection tools have not been loaded this session.  (This can happen if the user runs
             ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str$(m_CurSelectionMode))
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionAnimateOutline", Trim$(Str$(m_AnimateOutline))
             
-        Case pdsr_HighlightColor
-            m_SelHighlightColor = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_SelHighlightColor)
-        
-        Case pdsr_HighlightOpacity
-            m_SelHighlightOpacity = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightOpacity", m_SelHighlightOpacity
+        Case pdsr_InteriorFillMode
+            m_InteriorFillMode = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillMode", m_InteriorFillMode
             
-        Case pdsr_LightboxColor
-            m_SelLightboxColor = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionLightboxColor", Colors.GetHexStringFromRGB(m_SelLightboxColor)
-        
-        Case pdsr_LightboxOpacity
-            m_SelLightboxOpacity = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionlightboxOpacity", m_SelLightboxOpacity
+        Case pdsr_InteriorFillColor
+            m_InteriorFillColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillColor", Colors.GetHexStringFromRGB(m_InteriorFillColor)
+            
+        Case pdsr_InteriorFillOpacity
+            m_InteriorFillOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionInteriorFillOpacity", m_InteriorFillOpacity
+            
+        Case pdsr_ExteriorFillMode
+            m_ExteriorFillMode = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillMode", m_ExteriorFillMode
+            
+        Case pdsr_ExteriorFillColor
+            m_ExteriorFillColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillColor", Colors.GetHexStringFromRGB(m_ExteriorFillColor)
+            
+        Case pdsr_ExteriorFillOpacity
+            m_ExteriorFillOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionExteriorFillOpacity", m_ExteriorFillOpacity
             
     End Select
     
@@ -269,7 +326,8 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Exit Function
     End If
     
-    'Similarly, POIs are only enabled if the current selection tool matches the current selection shape
+    'Similarly, POIs are only enabled if the current selection tool matches the current selection shape.
+    ' (If a new selection shape has been selected, the user is definitely not modifying the existing selection.)
     If (g_CurrentTool <> SelectionUI.GetRelevantToolFromSelectShape()) Then
         IsCoordSelectionPOI = poi_Undefined
         Exit Function
@@ -286,7 +344,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     If (srcImage.MainSelection.GetSelectionShape = ss_Rectangle) Or (srcImage.MainSelection.GetSelectionShape = ss_Circle) Then
         tmpRectF = srcImage.MainSelection.GetCornersLockedRect()
     Else
-        tmpRectF = srcImage.MainSelection.GetBoundaryRect()
+        tmpRectF = srcImage.MainSelection.GetCompositeBoundaryRect()
     End If
     
     'Adjust the mouseAccuracy value based on the current zoom value
@@ -357,7 +415,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                     eDist = DistanceOneDimension(imgX, .Left + .Width)
                     sDist = DistanceOneDimension(imgY, .Top + .Height)
                     wDist = DistanceOneDimension(imgX, .Left)
-                
+                    
                     If (nDist <= minDistance) Then
                         If (imgX > (.Left - minDistance)) And (imgX < (.Left + .Width + minDistance)) Then
                             minDistance = nDist
@@ -406,31 +464,37 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             End If
             
         Case ss_Polygon
-        
-            'First, we want to check all polygon points for a hit.
-            PDImages.GetActiveImage.MainSelection.GetPolygonPoints poiListFloat()
             
-            'Used the generalized point comparison function to see if one of the points matches
-            closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
-            
-            'Was a close point found? If yes, then return that value
-            If (closestPoint <> poi_Undefined) Then
-                IsCoordSelectionPOI = closestPoint
+            If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints() > 0) Then
                 
-            'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.  This will trigger
-            ' a move transformation.
-            Else
+                'First, we want to check all polygon points for a hit.
+                PDImages.GetActiveImage.MainSelection.GetPolygonPoints poiListFloat()
                 
-                'Use a region object for hit-detection
-                Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
-                If (Not complexRegion Is Nothing) Then
-                    If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                'Used the generalized point comparison function to see if one of the points matches
+                closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
+                
+                'Was a close point found? If yes, then return that value
+                If (closestPoint <> poi_Undefined) Then
+                    IsCoordSelectionPOI = closestPoint
+                    
+                'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.
+                ' This will trigger a move transformation.
                 Else
-                    IsCoordSelectionPOI = poi_Undefined
+                    
+                    'Use a region object for hit-detection
+                    Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
+                    If (Not complexRegion Is Nothing) Then
+                        If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                    Else
+                        IsCoordSelectionPOI = poi_Undefined
+                    End If
+                    
                 End If
                 
+            Else
+                IsCoordSelectionPOI = poi_Undefined
             End If
-        
+            
         Case ss_Lasso
         
             'Use a region object for hit-detection
@@ -457,10 +521,14 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
 
 End Function
 
+Public Function IsMouseDown() As Boolean
+    IsMouseDown = m_MouseDown
+End Function
+
 'Keypresses on a source canvas are passed here.  The caller doesn't need pass anything except relevant keycodes, and a reference
 ' to itself (so we can relay canvas modifications).
 Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
-
+    
     'Handle arrow keys first
     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
 
@@ -501,12 +569,66 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     ' so they are handled in the KeyUp event instead.)
     Else
         
+        'If the mouse is *not* down, the user can use Shift and Alt keys to change combine mode.
+        If (Not m_MouseDown) Then
+        
+            'If this is the first keypress during this round, save the user's current combine mode
+            If (m_CurrentShiftState = 0) Then m_OriginalCombineMode = toolpanel_Selections.btsCombine.ListIndex
+            
+            'Add this state to the running tracker
+            If (vkCode = VK_SHIFT) Then m_CurrentShiftState = m_CurrentShiftState Or vbShiftMask
+            If (vkCode = VK_CONTROL) Then m_CurrentShiftState = m_CurrentShiftState Or vbCtrlMask
+            If (vkCode = VK_ALT) Then m_CurrentShiftState = m_CurrentShiftState Or vbAltMask
+            
+            'The actual synchronizing between hotkey and UI/selection object is handled elsewhere
+            SyncCombineModeToHotkeys
+            
+        Else
+            If (vkCode = VK_SHIFT) And ((m_CurrentShiftState And vbShiftMask) = 0) Then
+                m_ShiftForConstrain = True
+            End If
+        End If
+        
     End If
     
 End Sub
 
 Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
-
+    
+    'Ctrl/Alt/Shift modifiers can change combine mode
+    If (m_CurrentShiftState <> 0) Then
+        
+        If (vkCode = VK_SHIFT) Or (vkCode = VK_CONTROL) Or (vkCode = VK_ALT) Then
+            
+            'Update all flags
+            If (vkCode = VK_SHIFT) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbShiftMask)
+            If (vkCode = VK_CONTROL) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbCtrlMask)
+            If (vkCode = VK_ALT) Then m_CurrentShiftState = m_CurrentShiftState And (Not vbAltMask)
+            
+            'If all modifier keys have been released, restore the user's original combine mode
+            If (m_CurrentShiftState = 0) Then
+                
+                'If the mouse is *still* down, don't make any changes now - instead, set a flag and
+                ' we'll restore the preferred combine mode in _MouseUp
+                If m_MouseDown Then
+                    m_RestoreCombineMode = True
+                Else
+                    m_RestoreCombineMode = False
+                    toolpanel_Selections.btsCombine.ListIndex = m_OriginalCombineMode
+                End If
+                
+            'If at least one modifier is still down, and the mouse is *not* down, switch to a new combine mode
+            Else
+                If (Not m_MouseDown) Then SyncCombineModeToHotkeys
+            End If
+            
+        End If
+    
+    End If
+    
+    'Shift for constrain (works only during _MouseDown; see top of module for additional comments)
+    If (vkCode = VK_SHIFT) Then m_ShiftForConstrain = False
+    
     'Delete key: if a selection is active, erase the selected area
     If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive Then
         markEventHandled = True
@@ -578,114 +700,131 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
     
     End If
-                
+    
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
+        
+    m_MouseDown = True
+        
+    If m_IgnoreUserInput Then Exit Sub
     
-    'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
-    ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
+    'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
+    ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
     If PDImages.GetActiveImage.IsSelectionActive Then
-        If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> SelectionUI.GetSelectionShapeFromCurrentTool()) Then
-            PDImages.GetActiveImage.SetSelectionActive False
-            PDImages.GetActiveImage.MainSelection.SetSelectionShape SelectionUI.GetSelectionShapeFromCurrentTool()
-        End If
-    End If
         
-    'Because the wand tool is extremely simple, handle it specially
-    If (g_CurrentTool = SELECT_WAND) Then
-    
-        'Magic wand selections never transform - they only generate anew
-        Selections.InitSelectionByPoint imgX, imgY
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+        'Check the mouse coordinates of this click.
+        Dim sCheck As PD_PointOfInterest
+        sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
         
-    Else
+        'TODO: potentially deal with raster selections here?  Right now PD doesn't allow any transforms
+        ' on raster selections, but hypothetically the user could be allowed to click-drag to move them...
+        ' I'll see if this is feasible in the future.
         
-        'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
-        If PDImages.GetActiveImage.IsSelectionActive Then
-        
-            'Check the mouse coordinates of this click.
-            Dim sCheck As PD_PointOfInterest
-            sCheck = SelectionUI.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
+        'Polygon selections require special handling, because they don't operate on the same
+        ' "mouse up = finished selection" assumption.  They are marked as complete under
+        ' special circumstances (when the user re-clicks the first point or double-clicks).
+        ' Any clicks prior to this are treated as an instruction to add a new point to the shape.
+        If (g_CurrentTool = SELECT_POLYGON) Then
             
-            'If a point of interest was clicked, initiate a transform
-            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Polygon) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-                
-                'Initialize a selection transformation
+            'If a point of interest was clicked, initiate a transform event (to allow modification
+            ' of the *already existing* selection).
+            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) And PDImages.GetActiveImage.MainSelection.GetPolygonClosedState() Then
                 PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
                 PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                                
-            'If a point of interest was *not* clicked, erase any existing selection and start a new one
+            
             Else
                 
-                'Polygon selections require special handling, because they don't operate on the "mouse up = complete" assumption.
-                ' They are completed when the user re-clicks the first point.  Any clicks prior to that point are treated as
-                ' an instruction to add a new points.
-                If (g_CurrentTool = SELECT_POLYGON) Then
+                'First, see if the current polygon is "locked in" (i.e. finished).
+                ' If it is, treat this as starting a new selection.
+                If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
                     
-                    'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
-                    If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
-                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-                        PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                    Selections.NotifyNewSelectionStarting
+                    Selections.InitSelectionByPoint imgX, imgY
                     
-                    'Selection is not locked in, meaning the user is still constructing it.
-                    Else
+                    'Start transformation mode, using the index of the new point as the transform ID.
+                    ' (This allows the user to click-drag this initial point.)
+                    PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                    PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
                     
-                        'If the user clicked on the initial polygon point, attempt to close the polygon
-                        If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
-                            PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
-                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                    'Redraw the screen
+                    Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                    
+                'If the polygon is *not* locked in, the user is still constructing it.
+                Else
+                    
+                    'If the user clicked on the initial polygon point, attempt to close the polygon
+                    If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
                         
-                        'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
+                        'Set appropriate closed flags, and activate the first point as a transform target
+                        PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
+                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                        
+                    'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
+                    Else
+                        
+                        'Remove the current transformation mode (if any)
+                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI poi_Undefined
+                        PDImages.GetActiveImage.MainSelection.OverrideTransformMode False
+                        
+                        'Add the new point
+                        If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
+                            Selections.NotifyNewSelectionStarting
+                            Selections.InitSelectionByPoint imgX, imgY
                         Else
                             
-                            'Remove the current transformation mode (if any)
-                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI poi_Undefined
-                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode False
-                            
-                            'Add the new point
-                            If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
-                                Selections.InitSelectionByPoint imgX, imgY
+                            If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
+                                PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
                             Else
-                                
-                                If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
-                                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
-                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
-                                Else
-                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
-                                End If
-                                
+                                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
                             End If
                             
-                            'Reinstate transformation mode, using the index of the new point as the transform ID
-                            PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
-                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
-                            
-                            'Redraw the screen
-                            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
-                            
                         End If
-                    
+                        
+                        'Reinstate transformation mode, using the index of the new point as the transform ID
+                        PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                        PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
+                        
+                        'Redraw the screen
+                        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                        
                     End If
-                    
-                Else
-                    Selections.InitSelectionByPoint imgX, imgY
+                
                 End If
                 
             End If
-        
-        'If a selection is not active, start a new one
+            
+        'All other selection types are *much* simpler
         Else
             
-            Selections.InitSelectionByPoint imgX, imgY
-            
-            'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
-            ' transform mode, because dragging the mouse will simply move the newly created point.
-            If (g_CurrentTool = SELECT_POLYGON) Then
-                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
-                PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
+            'If a point of interest was clicked, initiate a transform event (to allow modification
+            ' of the *already existing* selection).
+            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                
+            'If a point of interest was *not* clicked, start a new selection at the clicked location
+            Else
+                Selections.NotifyNewSelectionStarting
+                Selections.InitSelectionByPoint imgX, imgY
             End If
             
+        End If
+        
+    'If a selection is not already active, start a new one.
+    Else
+        
+        Selections.NotifyNewSelectionStarting
+        Selections.InitSelectionByPoint imgX, imgY
+        
+        'Polygon selections require special handling.  After creating the initial point,
+        ' we want to immediately initiate "transform mode" (which allows the user to drag
+        ' the mouse to move the newly created point).
+        If (g_CurrentTool = SELECT_POLYGON) Then
+            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
+            PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
         End If
         
     End If
@@ -733,14 +872,19 @@ Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX 
 End Sub
 
 Public Sub NotifySelectionMouseLeave(ByRef srcCanvas As pdCanvas)
-
+    
+    'Ensure input behavior is normalized
+    m_IgnoreUserInput = False
+    
     'When the polygon selection tool is being used, redraw the canvas when the mouse leaves
     If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
 
 End Sub
 
 Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
-    
+        
+    If m_IgnoreUserInput Then Exit Sub
+        
     'Handling varies based on the current mouse state, obviously.
     If lmbState Then
         
@@ -753,7 +897,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
                 If PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
-                    PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
+                    PDImages.GetActiveImage.MainSelection.RequestSquare m_ShiftForConstrain
                     
                     'Pass new points to the active selection
                     PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
@@ -814,18 +958,62 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
 End Sub
 
 Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
-    
+        
+    m_MouseDown = False
+        
     'If a double-click just occurred, reset the flag and exit - do NOT process this click further
     If m_DblClickOccurred Then
         m_DblClickOccurred = False
         Exit Sub
     End If
     
-    Dim eraseThisSelection As Boolean
+    'Failsafe for bad mice notifications - if we receive an unexpected trigger while ignoring input,
+    ' reset all flags but disallow the interrupted action.
+    If m_IgnoreUserInput Then
+        m_IgnoreUserInput = False
+        Exit Sub
+    End If
+    
+    'Ensure other actions don't trigger while this one is still processing (only affects this class!)
+    m_IgnoreUserInput = True
+    
+    'Composite selections have some interesting possible outcomes vs other selection types.
+    ' In particular, there are many ways to produce composite selections with no selected pixels.
+    ' (e.g. Use "subtract" mode to remove the previous selection completely.)
+    '
+    'To prevent this from creating a "nothing selected" state, we auto-detect this state on _MouseUp
+    ' and initiate a "Remove Selection" action.
+    If PDImages.GetActiveImage.MainSelection.IsCompositeSelection() Then
+        
+        'Some shapes do not auto-generate a composite mask while drawing (for perf reasons).
+        ' Ensure a valid composite mask exists before proceeding.
+        With PDImages.GetActiveImage.MainSelection
+            If ((.GetSelectionShape = ss_Polygon) And .GetPolygonClosedState) Or (.GetSelectionShape = ss_Lasso) Then
+                If (.GetSelectionShape = ss_Lasso) Then PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
+                PDImages.GetActiveImage.MainSelection.RequestNewMask
+            End If
+        End With
+        
+        'Look for at least one selected pixel.
+        If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid(True) Then
+            
+            'No pixels are selected. Remove the existing selection, then exit.
+            Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+            GoTo FinishedMouseUp
+            
+        '/Else do nothing; normal handling, below, covers all other bases!
+        End If
+    
+    End If
+    
+    'In default REPLACE mode, a single in-place click will erase the current selection.
+    ' (In other combine modes, this behavior must be ignored or overridden.)
+    Dim eraseThisSelection As Boolean: eraseThisSelection = False
     
     Select Case g_CurrentTool
     
-        'Most selection tools are handled identically
+        'Most selection tools finalize the current selection on a _MouseUp event
         Case SELECT_RECT, SELECT_CIRC, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
@@ -836,25 +1024,40 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Dim selBounds As RectF
                 selBounds = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect
                 
-                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1))
+                'We only enable selection erasing on a click in REPLACE mode.  Other combine modes
+                ' (add, subtract, etc) do not erase on a click.
+                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = poi_Undefined))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
-                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                    
+                    'In "replace" mode, just remove the active selection (if any)
+                    If (toolpanel_Selections.btsCombine.ListIndex = pdsm_Replace) Then
+                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                    
+                    'In other modes, squash any active selections together into a single selection object.
+                    Else
+                        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+                    End If
                     
                 'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                 Else
                 
                     'If the selection is not raster-type, pass these final mouse coordinates to it
                     If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
-                        PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
+                        PDImages.GetActiveImage.MainSelection.RequestSquare m_ShiftForConstrain
                         PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                         SyncTextToCurrentSelection PDImages.GetActiveImageID()
                     End If
                 
-                    'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
+                    'Check to see if all selection coordinates are invalid (e.g. off-image).
+                    ' If they are, forget about this selection.
                     If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid Then
-                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                        If (PDImages.GetActiveImage.MainSelection.GetSelectionCombineMode() <> pdsm_Replace) Then
+                            PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+                        Else
+                            Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
+                        End If
                     Else
                         
                         'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
@@ -863,6 +1066,11 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         
                             'Creating a new selection
                             If (PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
+                                
+                                'Ensure the lasso is closed
+                                PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
+                                
+                                '*Now* we can create the selection
                                 Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
@@ -906,21 +1114,19 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             
             'Synchronize the selection text box values with the final selection
             SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-            
         
         'As usual, polygon selections require special considerations.
         Case SELECT_POLYGON
-        
+            
             'If a selection was being drawn, lock it into place
             If PDImages.GetActiveImage.IsSelectionActive Then
-            
+                
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState And clickEventAlsoFiring
                 eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1)
                 
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
-                
                 Else
                     
                     'If the polygon is already closed, we want to lock in the newly modified polygon
@@ -944,8 +1150,9 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                                 Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                                 
-                        'No point of interest means this click lies off-image; this could be a "clear selection" event (if a Click
-                        ' event is also firing), or a "move polygon point" event (if the user dragged a point off-image).
+                        'No point of interest means this click lies off-image; this could be a "clear selection" event
+                        ' (if a Click event is also firing), or a "move polygon point" event (if the user dragged a
+                        ' point off-image).
                         ElseIf (polyPoint = -1) Then
                             
                             'If the user has clicked a blank spot unrelated to the selection, we want to remove the active selection
@@ -1011,7 +1218,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 'Check to see if all selection coordinates are invalid (e.g. off-image).
                 ' - If they are, forget about this selection.
                 ' - If they are not, commit this selection permanently
-                eraseThisSelection = PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid
+                eraseThisSelection = PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid(True)
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                 Else
@@ -1027,6 +1234,34 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             End If
             
     End Select
+    
+FinishedMouseUp:
+    m_IgnoreUserInput = False
+    
+    'If the user pressed a shift/ctrl/alt key to set a temporary combine mode,
+    ' and released the key while the mouse was down, we need to reset their original
+    ' combine mode now.
+    If m_RestoreCombineMode And (m_CurrentShiftState = 0) Then
+        m_RestoreCombineMode = False
+        toolpanel_Selections.btsCombine.ListIndex = m_OriginalCombineMode
+    End If
+    
+End Sub
+
+Private Sub SyncCombineModeToHotkeys()
+
+    'Use the current state to determine which combine mode to set
+    Dim newCombineMode As PD_SelectionCombine
+    If (m_CurrentShiftState = vbShiftMask) Then
+        newCombineMode = pdsm_Add
+    ElseIf (m_CurrentShiftState = vbAltMask) Then
+        newCombineMode = pdsm_Subtract
+    ElseIf (m_CurrentShiftState = (vbShiftMask Or vbAltMask)) Then
+        newCombineMode = pdsm_Intersect
+    End If
+    
+    'Ensure the UI reflects the new setting
+    toolpanel_Selections.btsCombine.ListIndex = newCombineMode
     
 End Sub
 
@@ -1059,7 +1294,7 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         ' (If it is not transformable, clear and lock the location text boxes.)
         If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
             
-            Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
+            Dim tmpRectF As RectF
             
             'Different types of selections will display size and position differently
             Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape()
@@ -1130,8 +1365,9 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
             toolpanel_Selections.sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
         End If
         
-        If toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
-        If toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
+        If (toolpanel_Selections.btsCombine.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Combine)) Then toolpanel_Selections.btsCombine.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Combine)
+        If (toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
+        If (toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
         
         'Finally, sync any shape-specific information
         Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape

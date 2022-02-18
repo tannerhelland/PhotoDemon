@@ -460,8 +460,8 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
         'Note that tmpDIB now belongs to the parent image - do NOT erase it or modify pixels beyond this point.
         
         'Set the layer's initial (x, y) position to the current selection's top-left corner.
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Left
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Top
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Left
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Top
         
         'Set the new layer as the active layer
         PDImages.GetActiveImage.SetActiveLayerByID newLayerID
@@ -2139,7 +2139,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
             'A selection is active.  Pre-mask the paint scratch layer against it.
             Dim cBlender As pdPixelBlender
             Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(srcRectF)
+            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, VarPtr(srcRectF)
             
         End If
         

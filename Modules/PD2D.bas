@@ -460,6 +460,10 @@ Public Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef 
     FillRectangleI_FromRectL = PD2D.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
+Public Function FillRegion(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRegion As pd2DRegion) As Boolean
+    FillRegion = GDI_Plus.GDIPlus_FillRegion(dstSurface.GetHandle, srcBrush.GetHandle, srcRegion.GetHandle)
+End Function
+
 Public Function FillRoundRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal x As Single, ByVal y As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single) As Boolean
         
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.

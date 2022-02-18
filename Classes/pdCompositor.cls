@@ -459,7 +459,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         If parentImage.IsSelectionActive Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
-            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.MainSelection.GetMaskDIB, ptrToPaintbrushRectF
+            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.MainSelection.GetCompositeMaskDIB, ptrToPaintbrushRectF
             
         End If
     End If
@@ -749,14 +749,14 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         'END block for layer visibility toggle
         End If
         
-        'If a scratch layer index has been specified, and the target layer is *not* a raster layer, composite the paint stroke
-        ' atop it as a standalone layer.
+        'If a scratch layer index has been specified, and the target layer is *not* a raster layer,
+        ' composite the paint stroke atop it as a standalone layer.
         If (paintScratchLayerIndex = i) Then
             If (Not srcImage.GetLayerByIndex(i).IsLayerRaster) Then
                 
                 'Selections require us to pre-mask our selection result
                 If srcImage.IsSelectionActive Then
-                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetMaskDIB_ViewportCopy(), ptrToAlternateScratch
+                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetCompositeMaskDIB_ViewportCopy(), ptrToAlternateScratch
                 Else
                     GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, Nothing, ptrToAlternateScratch
                 End If
@@ -780,7 +780,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
             Dim bltWidth As Single, bltHeight As Single
             bltWidth = .Width + PDMath.Frac(.Left)
             bltHeight = .Height + PDMath.Frac(.Top)
-            GDIPlus_StretchBlt dstDIB, Int(.Left), Int(.Top), bltWidth, bltHeight, m_dstDIB, 0#, 0#, bltWidth, bltHeight, 1#, GP_IM_NearestNeighbor, , True
+            GDIPlus_StretchBlt dstDIB, Int(.Left), Int(.Top), bltWidth, bltHeight, m_dstDIB, 0!, 0!, bltWidth, bltHeight, 1!, GP_IM_NearestNeighbor, disableEdgeFix:=True
             
             'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
             ' which can cause the underlying checkerboard to show through.  (Also, the performance benefit isn't that meaningful.)
@@ -1621,7 +1621,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Dim srcMask As pdDIB
         If srcImage.IsSelectionActive Then
             nonStandardBlendingActive = True
-            Set srcMask = srcImage.MainSelection.GetMaskDIB_ViewportCopy()
+            Set srcMask = srcImage.MainSelection.GetCompositeMaskDIB_ViewportCopy()
         End If
         
         'Just like the base layer, we now need to perform a composite operation similar to StretchBlt, where we calculate a

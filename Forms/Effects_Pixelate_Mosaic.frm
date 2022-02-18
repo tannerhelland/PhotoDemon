@@ -338,7 +338,7 @@ Private Sub Form_Load()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If PDImages.GetActiveImage.IsSelectionActive Then
         Dim selBounds As RectF
-        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+        selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
         sltWidth.Max = selBounds.Width
         sltHeight.Max = selBounds.Height
     Else

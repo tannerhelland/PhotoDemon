@@ -543,7 +543,7 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
                 If PDImages.GetActiveImage.MainSelection.IsLockedIn() Then
                 
                     Dim selRect As RectF
-                    selRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    selRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                     
                     'Apply to the layer
                     PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(selRect.Left + 0.5)

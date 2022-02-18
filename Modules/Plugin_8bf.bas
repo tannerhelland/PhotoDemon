@@ -436,7 +436,7 @@ Public Function SetMask_CurrentSelectionMask() As Boolean
     
         'Retrieve a copy of the mask
         Dim tmpDIB As pdDIB
-        Set tmpDIB = PDImages.GetActiveImage.MainSelection.GetMaskDIB()
+        Set tmpDIB = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB()
         
         'Retrieve just the alpha channel
         DIBs.RetrieveSingleChannel tmpDIB, m_MaskCopy, 0

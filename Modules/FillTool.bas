@@ -363,7 +363,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
                 'Paint the selection mask into place, with the transform active
                 Dim tmpSrcSurface As pd2DSurface
                 Set tmpSrcSurface = New pd2DSurface
-                tmpSrcSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.MainSelection.GetMaskDIB
+                tmpSrcSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB
                 PD2D.DrawSurfaceF cSurface, 0, 0, tmpSrcSurface
                 
                 Set tmpSrcSurface = Nothing
