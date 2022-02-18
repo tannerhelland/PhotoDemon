@@ -267,7 +267,9 @@ End Function
 ' function, so it is very perf-sensitive.  This function must *always* use the composite mask (if one exists).
 Friend Function GetMaskDC() As Long
     
-    'The selection mask should always be ready?  TODO: see if this check is still necessary
+    'When initializing some selection types via InitXML (like when loading from file),
+    ' the actual selection mask may not have been created yet.  Ensure it has before
+    ' handing out a DC to the mask.
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
     If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
@@ -281,18 +283,12 @@ End Function
 'Give an outside function direct access to the mask DIB.  This is used for operations like "Crop to Selection"
 ' or "Copy to Clipboard".  This function must *always* use the composite mask (if one exists).
 Friend Function GetCompositeMaskDIB() As pdDIB
-    
-    'The selection mask should always be ready?  TODO: see if this check is still necessary
     If (Not m_IsMaskReady) Then CreateSelectionMask
-    
     If (m_CompositeActive And (Not m_ViewportRefComposite Is Nothing)) Then
         Set GetCompositeMaskDIB = m_CompositeMask
-    
-    'If the current selection is *not* a composite, pass a reference to the current mask DIB as-is
     Else
         Set GetCompositeMaskDIB = m_SelMask
     End If
-    
 End Function
 
 'The viewport-only copy of the selection mask is exclusively used by PD's paint tools.  They need a fast,
@@ -713,11 +709,7 @@ Friend Sub RequestNewMask()
         'Raster selections are simply bitmaps.  We will pad them to match the new image size, but other
         ' than that, we do not change their existing composition.
         Else
-            
-            'TODO: see if this is actually relevant or not?  A possible way to test is creating a raster selection,
-            ' then overlaying a polygon selection over the top of it??
             If m_CompositeActive Then CreateCompositeSelectionMask
-        
         End If
         
     End If
@@ -1096,8 +1088,6 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         ' so that the flyout is automatically hidden if the mouse is inside the flyout area.
         Dim screenX As Long, screenY As Long
         Drawing.ConvertImageCoordsToScreenCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y, screenX, screenY, False
-        
-        'TODO: need to repeat this across other selections, potentially
         toolpanel_Selections.RequestDefaultFlyout screenX, screenY, False, (m_CurrentPOI <> poi_Interior), (m_CurrentPOI = poi_Interior)
         
     'Polygons can be both moved and resized (by click-dragging individual points)
@@ -2320,7 +2310,6 @@ Private Sub CreateSelectionMask()
     End If
     
     'The actual rendering of the selection will vary based on the current selection type (obviously).
-    ' TODO: move all rendering into a separate child class.  This is necessary for union/intersect/etc with multiple selections.
     Select Case m_SelectionShape
     
         Case ss_Rectangle
@@ -2425,7 +2414,7 @@ Private Sub CreateSelectionMask()
             
         'Wand selections use a custom class to perform a flood fill
         Case ss_Wand
-        
+            
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
             ' Note that we try to only regenerate this image as absolutely necessary.
             Dim wandImageRefreshRequired As Boolean
@@ -2448,7 +2437,6 @@ Private Sub CreateSelectionMask()
                 'Merged image data is far more cumbersome to generate
                 If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
                     m_parentPDImage.GetCompositedImage m_WandImage
-                    
                 Else
                     
                     Dim tmpLayer As pdLayer
@@ -2475,7 +2463,7 @@ Private Sub CreateSelectionMask()
             'Apply the flood fill, and make sure we retrieve an outline while we're at it
             If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
             m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
-                        
+            
         'Other selection types will be added in the future
         Case Else
     
@@ -2672,7 +2660,7 @@ Private Sub CreateCompositeSelectionMask()
             If (pxLeft < 0) Then pxLeft = 0
             If (pxTop < 0) Then pxTop = 0
             If (pxRight >= m_CompositeMask.GetDIBWidth) Then pxRight = m_CompositeMask.GetDIBWidth - 1
-            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxRight = m_CompositeMask.GetDIBHeight - 1
+            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxBottom = m_CompositeMask.GetDIBHeight - 1
             
             'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
             pxLeft = pxLeft * 4
@@ -2726,14 +2714,11 @@ Private Sub CreateCompositeSelectionMask()
                     If Int(.Height) = Int(m_CompositeBounds.Height) Then m_CompositeBounds.Height = .Height
                 End With
                 
-            Else
-                'TODO: flag bad boundaries here?  Maybe only perform this boundary step when a
-                ' selection is finalized, and ignore it otherwise?? IDK
             End If
             
-        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted).
+        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted),
+        ' but ensure bounds are correctly mirrored.
         Else
-            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
             m_CompositeBounds = m_OldBounds
         End If
         
@@ -2746,6 +2731,7 @@ Private Sub CreateCompositeSelectionMask()
         Else
             m_CompositeMask.ResetDIB 0
         End If
+        m_CompositeMask.SetInitialAlphaPremultiplicationState True
         
         'In intersect mode, the new boundary rect will never be larger than the natural intersect rect itself.
         ' (Note that we will need to re-calculate a boundary rect after generating the composite mask,
@@ -2778,7 +2764,7 @@ Private Sub CreateCompositeSelectionMask()
             If (pxLeft < 0) Then pxLeft = 0
             If (pxTop < 0) Then pxTop = 0
             If (pxRight >= m_CompositeMask.GetDIBWidth) Then pxRight = m_CompositeMask.GetDIBWidth - 1
-            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxRight = m_CompositeMask.GetDIBHeight - 1
+            If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxBottom = m_CompositeMask.GetDIBHeight - 1
             
             'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
             pxLeft = pxLeft * 4
@@ -2831,14 +2817,11 @@ Private Sub CreateCompositeSelectionMask()
                     If Int(.Height) = Int(m_CompositeBounds.Height) Then m_CompositeBounds.Height = .Height
                 End With
                 
-            Else
-                'TODO: flag bad boundaries here?  Maybe only perform this boundary step when a
-                ' selection is finalized, and ignore it otherwise?? IDK
             End If
             
-        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted).
+        'The two masks don't intersect.  Leave the current mask intact (e.g. nothing is subtracted),
+        ' but ensure bounds are up-to-date.
         Else
-            'm_CompositeMask.CreateFromExistingDIB m_OldMask    '(This was performed earlier in the function)
             m_CompositeBounds = m_OldBounds
         End If
         
@@ -3195,10 +3178,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     Dim dstRectF As RectF
     Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_Bounds, dstRectF
     
-    'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries.
-    ' (I still need to do something similar in the central viewport; hence why this is labeled as "experimental".)
-    'PDMath.GetIntClampedRectF dstRectF
-    
     'If we've already cached a viewport-specific mask copy on a previous run, we now want to perform two additional checks:
     ' one against the source image region, and another against the destination viewport region.  If either of these rects
     ' have changed since we generated our existing overlay copy, we need to create a new overlay reference (e.g. a new copy
@@ -3229,19 +3208,18 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
     End If
     
-    'If we regenerate our cached viewport image, we want to notify subsequent child functions, as they may need to
-    ' regenerate their own caches against the new temporary image.
+    'If we regenerate our cached viewport image, we need to notify subsequent child functions
+    ' (because they may need to regenerate their own cached images/masks/etc)
     Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
     
-    'If any of our "viewport cache is ready" checks failed, generate a new cache now - and critically,
-    ' we need to regenerate a new cached copy of the *active* selection, and the *old* selection (if any),
-    ' and the *composite* selection (if any).
+    'If any of our "viewport cache is ready" checks failed, generate a new cache now -
+    ' and critically, we need to regenerate a new cached copy of the *active* selection,
+    ' and the *old* selection (if any), and the *composite* selection (if any).
     If (Not m_ViewportRefReady) Then
         
         VBHacks.GetHighResTime startTime
         
-        'Prep a target DIB; if at all possible, we want to reuse our existing DIB (as allocating new memory can be
-        ' prohibitively expensive, given how frequently this function may be called).
+        'Prep a target DIB
         If (m_ViewportReference Is Nothing) Then Set m_ViewportReference = New pdDIB
         If (m_ViewportReference.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportReference.GetDIBHeight <> imgViewportRectL.Height) Then
             m_ViewportReference.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
@@ -3250,9 +3228,9 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_ViewportReference.ResetDIB 0
         End If
         
-        'Paint a resized+translated selection mask into our cached DIB.  Note that the interpolation method used varies
-        ' by user setting; this is done to match the main viewport pipeline, and ensure accurate results when the viewport
-        ' is greatly zoomed-out.
+        'Paint a resized+translated selection mask into our cached DIB.  Note that the
+        ' interpolation method used varies by user setting; this is done to match the main
+        ' viewport pipeline, and ensure accurate results when the viewport is zoomed-out.
         Dim isZoomedIn As Boolean
         isZoomedIn = (Zoom.GetZoomRatioFromIndex(srcImage.GetZoomIndex()) > 1#)
         
@@ -3268,7 +3246,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             .Top = dstRectF.Top - viewportIntersectRectCanvas.Top
             .Width = dstRectF.Width
             .Height = dstRectF.Height
-            GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, False  'True
+            GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
         End With
         
         'If a composite is active, repeat the above steps for the old and composite DIB(s).
@@ -3294,7 +3272,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 With m_ViewportRefOldRectF
                     .Left = .Left - viewportIntersectRectCanvas.Left
                     .Top = .Top - viewportIntersectRectCanvas.Top
-                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefOld, .Left, .Top, .Width, .Height, m_OldMask, m_OldBounds.Left, m_OldBounds.Top, m_OldBounds.Width, m_OldBounds.Height, , interpolationType, , , isZoomedIn, False
+                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefOld, .Left, .Top, .Width, .Height, m_OldMask, m_OldBounds.Left, m_OldBounds.Top, m_OldBounds.Width, m_OldBounds.Height, , interpolationType, , , isZoomedIn, True
                 End With
                 
             End If
@@ -3318,15 +3296,14 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 With m_ViewportRefCompositeRectF
                     .Left = .Left - viewportIntersectRectCanvas.Left
                     .Top = .Top - viewportIntersectRectCanvas.Top
-                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefComposite, .Left, .Top, .Width, .Height, m_CompositeMask, m_CompositeBounds.Left, m_CompositeBounds.Top, m_CompositeBounds.Width, m_CompositeBounds.Height, , interpolationType, , , isZoomedIn, False
+                    GDI_Plus.GDIPlus_StretchBlt m_ViewportRefComposite, .Left, .Top, .Width, .Height, m_CompositeMask, m_CompositeBounds.Left, m_CompositeBounds.Top, m_CompositeBounds.Width, m_CompositeBounds.Height, , interpolationType, , , isZoomedIn, True
                 End With
                 
             End If
             
         End If
         
-        'Mark the finished viewport cache as "ready"; we won't regenerate it unless the underlying selection mask
-        ' (or the current viewport position/zoom) changes
+        'Mark the finished viewport cache as "ready".
         m_ViewportRefReady = True
         
         'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
@@ -3428,6 +3405,11 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim skipCompositeStep As Boolean: skipCompositeStep = False
             skipCompositeStep = (Me.GetSelectionShape = ss_Polygon) And (Not m_PolygonClosed)
             skipCompositeStep = skipCompositeStep Or ((Me.GetSelectionShape = ss_Lasso) And (Not m_LassoClosed))
+            
+            'Similarly, if the user is actively interacting with a transformable selection (as detected by
+            ' _MouseDown state on the canvas), we don't need the composite *yet*.  Wand selections are an
+            ' exception to this as they always render the composite mask.
+            skipCompositeStep = skipCompositeStep Or (SelectionUI.IsMouseDown() And (Me.GetSelectionShape <> ss_Wand))
             
             If (Not m_ViewportRefComposite Is Nothing) And (Not skipCompositeStep) Then
                 CreateViewportOutlineForMask m_ViewportRefCompositeRectF, imgViewportRectL, m_ViewportByteCopyComposite, m_ViewportByteCopyRectComposite, m_ViewportRefComposite, m_CompositeOutline
@@ -3786,7 +3768,7 @@ Private Sub RenderInProgressLassoOrPolygon(ByRef dstDIB As pdDIB, ByRef srcImage
     If (tmpPath Is Nothing) Then Exit Sub
     
     'Draw the assembled path onto the supplied canvas
-    Dim cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+    Dim cSurface As pd2DSurface
     
     'I haven't made a final decision on using antialiasing for the rendering outline.
     ' (There is a non-trivial performance penalty with antialiased marching ants,
@@ -3859,14 +3841,18 @@ Private Sub CreateViewportOutlineForMask(ByRef srcRefRectF As RectF, ByRef imgVi
     yModifier = (-loopStartY + 2)
     
     Dim maskPixels() As Long, maskSALine As SafeArray1D
-    
     Dim x As Long, y As Long, tmpXPosition As Long, tmpYPosition As Long
+    
+    'Determining what constitutes a "selected" pixel is up to interpretation.  Right now, we use
+    ' a strict "selected more than 0%" rule, but you could soften this a bit to make outlines
+    ' appear more "natural".
+    Const EDGE_CUTOFF As Long = 0
     
     For y = loopStartY To loopEndY
         viewportDIB.WrapLongArrayAroundScanline maskPixels, maskSALine, y
         tmpYPosition = y + yModifier
     For x = loopStartX To loopEndX
-        If ((maskPixels(x) And 255) > 64) Then
+        If ((maskPixels(x) And 255) > EDGE_CUTOFF) Then
             viewportByteCopy(x + xModifier, tmpYPosition) = 255
         Else
             viewportByteCopy(x + xModifier, tmpYPosition) = 0
@@ -4292,13 +4278,20 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     
     'Finally, if this is a raster or magic-wand selection, add the full mask as well
     If maskWillBeEmbedded Then
+        
         Dim maskDIBPointer As Long, maskDIBLength As Long
         If m_CompositeActive Then
             m_CompositeMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
         Else
             m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
         End If
-        cPackage.AddChunk_WholeFromPtr "SELM", maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
+        
+        If (maskDIBPointer <> 0) And (maskDIBLength <> 0) Then
+            cPackage.AddChunk_WholeFromPtr "SELM", maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
+        Else
+            PDDebug.LogAction "WARNING! Bad selection mask pointer and/or length: " & maskDIBPointer & ", " & maskDIBLength
+        End If
+        
     End If
     
     WriteSelectionToFile = cPackage.FinishPackage()

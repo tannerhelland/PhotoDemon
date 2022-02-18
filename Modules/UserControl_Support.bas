@@ -158,16 +158,6 @@ Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
 ' figure out how many of the program's GDI objects are being used by UCs, and how many are being created and used elsewhere.
 Private m_PDControlCount As Long
 
-Private Enum Win32_GetWindowCmd
-    GW_HWNDFIRST = 0    'The retrieved handle identifies the window of the same type that is highest in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
-    GW_HWNDLAST = 1 'The retrieved handle identifies the window of the same type that is lowest in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
-    GW_HWNDNEXT = 2 'The retrieved handle identifies the window below the specified window in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
-    GW_HWNDPREV = 3 'The retrieved handle identifies the window above the specified window in the Z order. If the specified window is a topmost window, the handle identifies a topmost window. If the specified window is a top-level window, the handle identifies a top-level window. If the specified window is a child window, the handle identifies a sibling window.
-    GW_OWNER = 4    'The retrieved handle identifies the specified window's owner window, if any. For more information, see Owned Windows.
-    GW_CHILD = 5    'The retrieved handle identifies the child window at the top of the Z order, if the specified window is a parent window; otherwise, the retrieved handle is NULL. The function examines only child windows of the specified window. It does not examine descendant windows.
-    GW_ENABLEDPOPUP = 6 'The retrieved handle identifies the enabled popup window owned by the specified window (the search uses the first such window found using GW_HWNDNEXT); otherwise, if there are no enabled popup windows, the retrieved handle is that of the specified window.
-End Enum
-
 'Dropdown boxes (and similar controls, like flyout panels) are problematic, because we have to
 ' play weird window ownership games to ensure that the dropdowns appear "above" or "outside"
 ' VB windows, as necessary.  As such, this function is notified whenever a listbox (or flyout)
@@ -194,7 +184,7 @@ End Enum
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal uCmd As Win32_GetWindowCmd) As Long
+
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)

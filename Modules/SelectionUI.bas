@@ -1114,7 +1114,6 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             
             'Synchronize the selection text box values with the final selection
             SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-            
         
         'As usual, polygon selections require special considerations.
         Case SELECT_POLYGON
@@ -1219,7 +1218,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 'Check to see if all selection coordinates are invalid (e.g. off-image).
                 ' - If they are, forget about this selection.
                 ' - If they are not, commit this selection permanently
-                eraseThisSelection = PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid
+                eraseThisSelection = PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid(True)
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                 Else
@@ -1295,7 +1294,7 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         ' (If it is not transformable, clear and lock the location text boxes.)
         If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
             
-            Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
+            Dim tmpRectF As RectF
             
             'Different types of selections will display size and position differently
             Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape()
