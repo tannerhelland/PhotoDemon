@@ -3135,26 +3135,21 @@ End Function
 'Render the current selection mask using one of several methods.  Required inputs include:
 ' 1) Destination DIB, assumed to be the front buffer (e.g. the full composite image has *already*
 '     been rendered to this surface, in its proper location, and color management has already been handled)
-' 2) Source image (we could technically pull from our local copy, but I'd like to remove that dependency in the future)
+' 2) Source image (we pull viewport settings from it)
 ' 3) Destination canvas (which determines things like the current zoom and scroll position)
 '
-'Note that this function is the parent for *all* selection type rendering.  (After performing some required setup steps,
-' it will automatically forward subsequent rendering to an appropriate child function, depending on the current UI settings.)
+'Note that this function renders *all* selection types, including composite selections.
 Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
     
     'If an update has been requested, but we are already in the middle of an update, deny subsequent requests
     If m_RejectRefreshRequests Then Exit Sub
     
-    'Is the underlying selection mask ready?  If not, prepare it first.  (This allows us to suspend selection mask creation
-    ' until the last possible moment, reducing the potential of generating the mask more times than we actually require.)
+    'Is the underlying selection mask ready?  If not, prepare it first.
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
     'If the current selection lies fully off-image, skip rendering entirely.
+    ' (Composite selections allow this because the "old" mask still exists.)
     If Me.AreAllCoordinatesInvalid And (Not m_CompositeActive) Then Exit Sub
-    
-    'Debug builds may want to measure time taken; I've currently commented-out reporting capabilities, but this function
-    ' is fully wired for detailed reporting as future needs may require.
-    Dim startTime As Currency
     
     'Regardless of what type of selection overlay we're rendering (highlight, outline, marching ants, etc), we now want to
     ' generate a copy of the selection mask, scaled and cropped to match the current viewport.  (Subsequent rendering will
@@ -3221,8 +3216,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' and critically, we need to regenerate a new cached copy of the *active* selection,
     ' and the *old* selection (if any), and the *composite* selection (if any).
     If (Not m_ViewportRefReady) Then
-        
-        VBHacks.GetHighResTime startTime
         
         'Prep a target DIB
         If (m_ViewportReference Is Nothing) Then Set m_ViewportReference = New pdDIB
@@ -3314,9 +3307,6 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
         overlayWasRegenerated = True
         
-        'Timing report:
-        'pdDebug.LogAction "Selection viewport reference DIB generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-        
     End If
     
     'We have now covered all situations where the underlying mask reference may have changed.
@@ -3353,12 +3343,6 @@ End Sub
 'Child function of RenderSelectionToViewport(), above.
 ' Renders the current selection mask to a target viewport, using a traditional "marching ant" line style.
 Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean)
-    
-    'Outline rendering isn't free.  In debug builds you may want to profile it.
-    ' (At present, profile reports are commented-out, but timing is still tracked -
-    ' so just uncomment the various pdDebug.LogAction() calls to gather performance data.)
-    Dim startTime As Currency
-    VBHacks.GetHighResTime startTime
     
     'Rendering an outline requires two broad stages:
     ' 1a) See if our currently cached outline path is accurate.
@@ -3475,173 +3459,18 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_ViewportOverlay.ResetDIB 0
         End If
         
+        'New to v9.0 is the ability to render a "fill" in either the interior or exterior of
+        ' the current selection (depending on user preferences).  Perform this step before rendering
+        ' any outlines, so that the fill appears "beneath" those outlines.
+        RenderSelectionRegionFills currentSelectionIncomplete
+        
         'Draw the assembled path onto the canvas
         Dim cSurface As pd2DSurface
         
         'I haven't made a final decision on using antialiasing for the rendering outline.  At present,
         ' antialiasing is *not* used for the traditional "marching ant" outline.
-        Dim useAA As Boolean
-        useAA = False
+        Dim useAA As Boolean: useAA = False
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, useAA
-        
-        'Half-pixel offsets solve some rendering problems, while also introducing other ones.
-        ' I've left it disabled for now, pending additional testing.
-        'cSurface.SetSurfacePixelOffset P2_PO_Half
-        
-        'If the user is actively modifying a selection, I prefer a nice bonus UI behavior.
-        ' We can calculate an on-the-fly composite region of the old and new selection paths
-        ' (using pd2D region objects as a fast estimate), then highlight that region specifically.
-        '
-        '(Note that this behavior can be toggled on/off by the user.)
-        '
-        'Similarly, the region around the active selection can also be "dimmed" out.
-        Dim interiorFillPref As PD_SelectionRenderMode, renderInteriorRegion As Boolean
-        interiorFillPref = SelectionUI.GetUISetting_InteriorFillMode()
-        If (interiorFillPref = pdsrm_Sometimes) Then
-            renderInteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
-        Else
-            renderInteriorRegion = (interiorFillPref = pdsrm_Always)
-        End If
-        
-        Dim exteriorFillPref As PD_SelectionRenderMode, renderExteriorRegion As Boolean
-        exteriorFillPref = SelectionUI.GetUISetting_ExteriorFillMode()
-        If (exteriorFillPref = pdsrm_Sometimes) Then
-            renderExteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
-        Else
-            renderExteriorRegion = (exteriorFillPref = pdsrm_Always)
-        End If
-        
-        'If either the inernal or external region is being rendered, calculate the region now.
-        Dim interiorRegion As pd2DRegion, exteriorRegion As pd2DRegion
-        If (renderInteriorRegion Or renderExteriorRegion) Then
-            
-            'Start with an empty region
-            Set interiorRegion = New pd2DRegion
-            interiorRegion.MakeRegionEmpty
-            
-            'If the user is actively modifying the current selection, we need to generate
-            ' a composite region "on the fly".
-            Dim useDynamicComposite As Boolean
-            useDynamicComposite = m_CompositeActive And ((interiorFillPref = pdsrm_Sometimes) Or (interiorFillPref = pdsrm_Always))
-            If useDynamicComposite Then
-                
-                If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
-                
-                'Add the current path to it, using the appropriate combine mode
-                If (Not m_CurrentOutline Is Nothing) Then
-                    If (Me.GetSelectionCombineMode = pdsm_Add) Then
-                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
-                    ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
-                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
-                    ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
-                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
-                    End If
-                End If
-            
-            'Otherwise, just use the existing boundary path and call it good.
-            Else
-                If m_CompositeActive Then
-                    If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
-                Else
-                    If (Not m_CurrentOutline Is Nothing) Then interiorRegion.AddPath m_CurrentOutline
-                End If
-            End If
-            
-        End If
-        
-        'Only attempt to render if a valid region exists
-        If (renderInteriorRegion And (Not interiorRegion Is Nothing)) Then
-            
-            If (Not interiorRegion.IsRegionEmpty()) Then
-            
-                'Create a temporary translucent brush using the chosen highlight color
-                Dim renderColor As Long, renderOpacity As Single
-                renderColor = SelectionUI.GetUISetting_InteriorFillColor()
-                renderOpacity = SelectionUI.GetUISetting_InteriorFillOpacity()
-                
-                Dim cBrush As pd2DBrush
-                Set cBrush = New pd2DBrush
-                cBrush.SetBrushColor renderColor
-                cBrush.SetBrushOpacity renderOpacity
-                
-                'Fill the region
-                PD2D.FillRegion cSurface, cBrush, interiorRegion
-                Set cBrush = Nothing: Set interiorRegion = Nothing
-                
-            End If
-        
-        '/Else just means this is an empty region (common in subtract/intersect modes).  Do nothing.
-        End If
-        
-        'Next, render the exterior region, as settings allow.
-        If renderExteriorRegion And (Not m_ViewportReference Is Nothing) Then
-            
-            'We may have already assembled a useable interior region in a previous step.
-            If (interiorRegion Is Nothing) Or (exteriorFillPref <> interiorFillPref) Then
-            
-                'Shit, we didn't actually assemble a useable region.  Assemble one now.
-                
-                'Start with an empty region
-                Set interiorRegion = New pd2DRegion
-                interiorRegion.MakeRegionEmpty
-                
-                'If the user is actively modifying the current selection, we need to generate
-                ' a composite region "on the fly".
-                If (exteriorFillPref = pdsrm_Sometimes) Then
-                    
-                    If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
-                    
-                    'Add the current path to it, using the appropriate combine mode
-                    If (Not m_CurrentOutline Is Nothing) Then
-                        If (Me.GetSelectionCombineMode = pdsm_Add) Then
-                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
-                        ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
-                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
-                        ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
-                            interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
-                        End If
-                    End If
-                
-                'Otherwise, just use the existing boundary path and call it good.
-                Else
-                    If m_CompositeActive Then
-                        If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
-                    Else
-                        If (Not m_CurrentOutline Is Nothing) Then interiorRegion.AddPath m_CurrentOutline
-                    End If
-                End If
-                
-            End If
-            
-            'We now have a useable interior region.  We need to find the *inverse* of this for
-            ' the exterior region.
-            Set exteriorRegion = New pd2DRegion
-            exteriorRegion.MakeRegionEmpty
-            
-            'Add the full viewport rect
-            exteriorRegion.AddRectangleF -1!, -1, m_ViewportReference.GetDIBWidth + 2, m_ViewportReference.GetDIBHeight + 2, P2_CM_Replace
-            
-            '...then subtract the interior region we created
-            exteriorRegion.AddRegion interiorRegion, P2_CM_Exclude
-            
-            'If the region is non-null, render it
-            If (Not exteriorRegion.IsRegionEmpty()) Then
-                
-                'Create a temporary translucent brush using the chosen color
-                renderColor = SelectionUI.GetUISetting_ExteriorFillColor()
-                renderOpacity = SelectionUI.GetUISetting_ExteriorFillOpacity()
-                
-                Set cBrush = New pd2DBrush
-                cBrush.SetBrushColor renderColor
-                cBrush.SetBrushOpacity renderOpacity
-                
-                'Fill the region
-                PD2D.FillRegion cSurface, cBrush, exteriorRegion
-                Set cBrush = Nothing: Set exteriorRegion = Nothing
-                    
-            End If
-            
-        End If
         
         'If this is a composite selection, and the mouse is *not* down, and the active selection
         ' *is* transformable, render its outline "beneath" the marching ant outline.  (Without this,
@@ -3705,8 +3534,169 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' the only thing this function actually performs (which is why it's so fast during paint ops).
     If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
     
-    'Timing reports:
-    'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+End Sub
+
+'If the user is actively modifying a selection, I prefer a nice bonus UI behavior.
+' PD can calculate an on-the-fly composite region of the old and new selection paths
+' (using pd2D region objects as a fast estimate), then highlight that region specifically.
+'
+'Note that this behavior can be toggled on/off by the user via the selection toolpanel.
+'
+'As of v9.0, the region around the active selection can also be "dimmed" out according
+' to user preferences.  (We solve for this region by inverting the interior region.)
+Private Sub RenderSelectionRegionFills(ByVal currentSelectionIncomplete As Boolean)
+    
+    'Retrieve user preferences, and "update" them based on current UI state
+    Dim interiorFillPref As PD_SelectionRenderMode, renderInteriorRegion As Boolean
+    interiorFillPref = SelectionUI.GetUISetting_InteriorFillMode()
+    If (interiorFillPref = pdsrm_Sometimes) Then
+        renderInteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
+    Else
+        renderInteriorRegion = (interiorFillPref = pdsrm_Always)
+    End If
+    
+    Dim exteriorFillPref As PD_SelectionRenderMode, renderExteriorRegion As Boolean
+    exteriorFillPref = SelectionUI.GetUISetting_ExteriorFillMode()
+    If (exteriorFillPref = pdsrm_Sometimes) Then
+        renderExteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
+    Else
+        renderExteriorRegion = (exteriorFillPref = pdsrm_Always)
+    End If
+    
+    'If the user doesn't want region rendering, exit now
+    If (interiorFillPref = pdsrm_Never) And (exteriorFillPref = pdsrm_Never) Then Exit Sub
+    
+    'pd2D handles all rendering duties
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
+    
+    'If either the internal or external region is being rendered, calculate the internal region now.
+    ' (The external region is just the internal region, inverted!)
+    Dim interiorRegion As pd2DRegion, exteriorRegion As pd2DRegion
+    If (renderInteriorRegion Or renderExteriorRegion) Then
+        
+        Set interiorRegion = New pd2DRegion
+        interiorRegion.MakeRegionEmpty
+        
+        'If the user is actively modifying the current selection, we need to generate
+        ' a composite region estimate "on the fly".
+        Dim useDynamicComposite As Boolean
+        useDynamicComposite = m_CompositeActive And ((interiorFillPref = pdsrm_Sometimes) Or (interiorFillPref = pdsrm_Always))
+        useDynamicComposite = useDynamicComposite And (Not currentSelectionIncomplete)
+        If useDynamicComposite Then
+            
+            If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
+            
+            'Add the current selection region to it, using the appropriate combine mode
+            If (Not m_CurrentOutline Is Nothing) Then
+                If (Me.GetSelectionCombineMode = pdsm_Add) Then
+                    interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
+                ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
+                    interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
+                ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
+                    interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+                End If
+            End If
+        
+        'Otherwise, just use the existing boundary path as-is
+        Else
+            If m_CompositeActive Then
+                If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
+            Else
+                If (Not m_CurrentOutline Is Nothing) And (Not currentSelectionIncomplete) Then interiorRegion.AddPath m_CurrentOutline
+            End If
+        End If
+        
+    End If
+    
+    'Only attempt to render if a valid region exists
+    If (renderInteriorRegion And (Not interiorRegion Is Nothing)) Then
+        
+        If (Not interiorRegion.IsRegionEmpty()) Then
+        
+            'Create a temporary translucent brush using the chosen highlight color
+            Dim renderColor As Long, renderOpacity As Single
+            renderColor = SelectionUI.GetUISetting_InteriorFillColor()
+            renderOpacity = SelectionUI.GetUISetting_InteriorFillOpacity()
+            
+            Dim cBrush As pd2DBrush
+            Set cBrush = New pd2DBrush
+            cBrush.SetBrushColor renderColor
+            cBrush.SetBrushOpacity renderOpacity
+            
+            'Fill the region
+            PD2D.FillRegion cSurface, cBrush, interiorRegion
+            Set cBrush = Nothing
+            
+        End If
+    
+    '/Else just means this is an empty region (common in subtract/intersect modes).  Do nothing.
+    End If
+    
+    'Next, render the exterior region, as settings allow.
+    If renderExteriorRegion And (Not m_ViewportReference Is Nothing) Then
+        
+        'We may have already assembled a useable interior region in a previous step.
+        If (interiorRegion Is Nothing) Or (exteriorFillPref <> interiorFillPref) Then
+        
+            'Shit, we didn't actually assemble a useable region.  Assemble one now.
+            
+            '(These steps are identical to the interiorRegion branch, above.)
+            Set interiorRegion = New pd2DRegion
+            interiorRegion.MakeRegionEmpty
+            
+            useDynamicComposite = m_CompositeActive And ((exteriorFillPref = pdsrm_Sometimes) Or (exteriorFillPref = pdsrm_Always))
+            useDynamicComposite = useDynamicComposite And (Not currentSelectionIncomplete)
+            If useDynamicComposite Then
+                
+                If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
+                
+                If (Not m_CurrentOutline Is Nothing) Then
+                    If (Me.GetSelectionCombineMode = pdsm_Add) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Union
+                    ElseIf (Me.GetSelectionCombineMode = pdsm_Subtract) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Exclude
+                    ElseIf (Me.GetSelectionCombineMode = pdsm_Intersect) Then
+                        interiorRegion.AddPath m_CurrentOutline, P2_CM_Intersect
+                    End If
+                End If
+            
+            Else
+                If m_CompositeActive Then
+                    If (Not m_CompositeOutline Is Nothing) Then interiorRegion.AddPath m_CompositeOutline
+                Else
+                    If (Not m_CurrentOutline Is Nothing) And (Not currentSelectionIncomplete) Then interiorRegion.AddPath m_CurrentOutline
+                End If
+            End If
+            
+        End If
+        
+        'We are now guaranteed to have a useable interior region, even if we weren't required
+        ' to render it.  Now we need to find the *inverse* of this - that's the exterior region!
+        Set exteriorRegion = New pd2DRegion
+        exteriorRegion.MakeRegionEmpty
+        
+        'Add the full viewport rect
+        exteriorRegion.AddRectangleF -1!, -1, m_ViewportReference.GetDIBWidth + 2, m_ViewportReference.GetDIBHeight + 2, P2_CM_Replace
+        
+        '...then subtract the interior region we created previously
+        exteriorRegion.AddRegion interiorRegion, P2_CM_Exclude
+        
+        'If the region is non-null, render it
+        If (Not exteriorRegion.IsRegionEmpty()) Then
+            
+            renderColor = SelectionUI.GetUISetting_ExteriorFillColor()
+            renderOpacity = SelectionUI.GetUISetting_ExteriorFillOpacity()
+            
+            Set cBrush = New pd2DBrush
+            cBrush.SetBrushColor renderColor
+            cBrush.SetBrushOpacity renderOpacity
+            
+            PD2D.FillRegion cSurface, cBrush, exteriorRegion
+                
+        End If
+        
+    End If
     
 End Sub
 

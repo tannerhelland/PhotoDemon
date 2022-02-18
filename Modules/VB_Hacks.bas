@@ -345,9 +345,9 @@ End Function
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
-Public Sub DoEvents_SingleHwnd(ByVal srcHwnd As Long)
+Public Sub DoEvents_SingleHwnd(ByVal srcHWnd As Long)
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1&)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1&)
         TranslateMessage tmpMsg
         DispatchMessageW tmpMsg
     Loop
@@ -392,7 +392,7 @@ Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
     Loop
 End Sub
 
-Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
+Public Sub PurgeInputMessages(ByVal srcHWnd As Long)
     
     Const QS_MOUSEMOVE = &H2
     Const QS_MOUSEBUTTON = &H4
@@ -402,7 +402,7 @@ Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
     Const PM_QS_INPUT = (QS_INPUT * (2& ^ 16&))
     
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1& Or PM_QS_INPUT)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1& Or PM_QS_INPUT)
     Loop
     
 End Sub
