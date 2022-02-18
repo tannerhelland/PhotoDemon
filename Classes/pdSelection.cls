@@ -3521,7 +3521,9 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
             'If the user is actively modifying the current selection, we need to generate
             ' a composite region "on the fly".
-            If (interiorFillPref = pdsrm_Sometimes) Then
+            Dim useDynamicComposite As Boolean
+            useDynamicComposite = m_CompositeActive And ((interiorFillPref = pdsrm_Sometimes) Or (interiorFillPref = pdsrm_Always))
+            If useDynamicComposite Then
                 
                 If (Not m_OldOutline Is Nothing) Then interiorRegion.AddPath m_OldOutline, P2_CM_Replace
                 
@@ -4475,12 +4477,14 @@ End Function
 ' Otherwise, it will return FALSE, which effectively means the selection mask is blank.
 Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
-    'This function assumes two things: that a selection is not transformable (otherwise we'd know the boundaries already), and
-    ' a mask has already been created.  If either of these two conditions is not met, this function may fail.
+    'This function assumes two things: that a selection is not transformable (otherwise we'd know the
+    ' boundaries already), and a mask has already been created.  If either of these two conditions is
+    ' *not* met, this function may fail.
     '
-    'Because these states can be inferred, this function will automatically set certain selection parameters.  This behavior can
-    ' be overriden, BUT DO NOT OVERRIDE IT without understanding the consequences - in particular, that a mismatch between
-    ' vector selection data and the selection mask will cause errors in the mask-to-layer mapping code.
+    'Because these states can be inferred, this function will automatically set certain selection
+    ' parameters.  This behavior can be overriden, BUT DO NOT OVERRIDE IT without understanding the
+    ' consequences - in particular, that a mismatch between vector selection data and the selection
+    ' mask itself will cause errors in the mask-to-layer mapping code.
     If (Not overrideRasterState) Then
     
         m_IsTransformable = False

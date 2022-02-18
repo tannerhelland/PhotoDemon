@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionFilters"
 'Selection Tools: Filters
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 03/September/21
-'Last update: split selection filters into their own module
+'Last updated: 18/February/22
+'Last update: minor updates to fix compatibility with new "multiple selections" features
 '
 'This module should only contain selection filters (e.g. "grow", "border", etc).
 '
@@ -48,10 +48,11 @@ End Function
 ' TODO: swap exterior/interior automatically, if a valid option
 Public Sub InvertCurrentSelection()
 
-    'Unselect any existing selection
+    'Unlock any existing selection, and condense any composite selections down to a single raster layer.
     PDImages.GetActiveImage.MainSelection.LockRelease
     PDImages.GetActiveImage.SetSelectionActive False
-        
+    PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+    
     Message "Inverting..."
     
     'Point a standard 2D byte array at the selection mask
@@ -124,9 +125,10 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
     
         Message "Feathering selection..."
     
-        'Unselect any existing selection
+        'Unlock any existing selection, and condense any composite selections down to a single raster layer.
         PDImages.GetActiveImage.MainSelection.LockRelease
         PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
         
         'Retrieve just the alpha channel of the current selection
         Dim tmpArray() As Byte
@@ -178,9 +180,10 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
     
         Message "Sharpening selection..."
     
-        'Unselect any existing selection
+        'Unlock any existing selection, and condense any composite selections down to a single raster layer.
         PDImages.GetActiveImage.MainSelection.LockRelease
         PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
                 
         'Retrieve just the alpha channel of the current selection, and clone it so that we have two copies
         Dim tmpArray() As Byte
@@ -285,9 +288,10 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
     
         Message "Growing selection..."
     
-        'Unselect any existing selection
+        'Unlock any existing selection, and condense any composite selections down to a single raster layer.
         PDImages.GetActiveImage.MainSelection.LockRelease
         PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
@@ -340,9 +344,10 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     
         Message "Shrinking selection..."
     
-        'Unselect any existing selection
+        'Unlock any existing selection, and condense any composite selections down to a single raster layer.
         PDImages.GetActiveImage.MainSelection.LockRelease
         PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
@@ -394,9 +399,10 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     
         Message "Finding selection border..."
     
-        'Unselect any existing selection
+        'Unlock any existing selection, and condense any composite selections down to a single raster layer.
         PDImages.GetActiveImage.MainSelection.LockRelease
         PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
         
         'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
         ' to create the final bordered selection.
