@@ -2606,8 +2606,8 @@ Private Sub CreateCompositeSelectionMask()
     Dim x As Long, y As Long
     Dim pxLeft As Long, pxTop As Long, pxRight As Long, pxBottom As Long
     Dim pxOld As Long, pxNew As Long
-    Dim dstSA As SafeArray1D, dstPixels() As Byte, dstBasePointer As Long, dstStride As Long
-    Dim srcSA As SafeArray1D, srcPixels() As Byte, srcBasePointer As Long
+    Dim dstSA As SafeArray1D, dstPixels() As Long, dstBasePointer As Long, dstStride As Long
+    Dim srcSA As SafeArray1D, srcPixels() As Long, srcBasePointer As Long
     Dim newRectIntersect As RectF
     
     'Perform the merge (varies according to combine mode)
@@ -2646,9 +2646,23 @@ Private Sub CreateCompositeSelectionMask()
             
             'Build a look-up table of possible subtraction values.  (This spares the need for branches
             ' in the inner loop.)
-            Dim subLookup(-255 To 255) As Byte
-            For x = -255 To 255
-                subLookup(x) = IIf(x < 0, 0, x)
+            Dim subLookup(0 To 255 * 2) As Long, tmpRGBQuad As RGBQuad
+            For x = 0 To 255 * 2
+            
+                If (x <= 255) Then
+                    tmpRGBQuad.Red = 0
+                    tmpRGBQuad.Green = 0
+                    tmpRGBQuad.Blue = 0
+                    tmpRGBQuad.Alpha = 0
+                Else
+                    tmpRGBQuad.Red = x - 255
+                    tmpRGBQuad.Green = x - 255
+                    tmpRGBQuad.Blue = x - 255
+                    tmpRGBQuad.Alpha = x - 255
+                End If
+                
+                GetMem4 VarPtr(tmpRGBQuad), subLookup(x)
+                
             Next x
             
             'Next, calculate loop boundaries, including sanity checks
@@ -2663,39 +2677,35 @@ Private Sub CreateCompositeSelectionMask()
             If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxBottom = m_CompositeMask.GetDIBHeight - 1
             
             'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
-            pxLeft = pxLeft * 4
-            pxRight = pxRight * 4
+            pxLeft = pxLeft
+            pxRight = pxRight
             
             'Get pointers to both the destination (composite) and source (current) masks
-            m_CompositeMask.WrapArrayAroundDIB_1D dstPixels, dstSA
+            m_CompositeMask.WrapLongArrayAroundDIB_1D dstPixels, dstSA
             dstBasePointer = dstSA.pvData
             dstStride = m_CompositeMask.GetDIBStride
             
-            m_SelMask.WrapArrayAroundDIB_1D srcPixels, srcSA
+            m_SelMask.WrapLongArrayAroundDIB_1D srcPixels, srcSA
             srcBasePointer = srcSA.pvData
             
             For y = pxTop To pxBottom
                 dstSA.pvData = dstBasePointer + y * dstStride
                 srcSA.pvData = srcBasePointer + y * dstStride
-            For x = pxLeft To pxRight Step 4
+            For x = pxLeft To pxRight
                 
                 'Ignore un-selected pixels in the source selection
-                pxNew = srcPixels(x + 3)
+                pxNew = srcPixels(x) And &HFF&
                 If (pxNew > 0) Then
-                    pxOld = dstPixels(x + 3)
-                    pxNew = subLookup(pxOld - pxNew)
-                    dstPixels(x) = pxNew
-                    dstPixels(x + 1) = pxNew
-                    dstPixels(x + 2) = pxNew
-                    dstPixels(x + 3) = pxNew
+                    pxOld = (dstPixels(x) And &HFF&) + 255
+                    dstPixels(x) = subLookup(pxOld - pxNew)
                 End If
                 
             Next x
             Next y
             
             'Free unsafe array refs
-            m_CompositeMask.UnwrapArrayFromDIB dstPixels
-            m_SelMask.UnwrapArrayFromDIB srcPixels
+            m_CompositeMask.UnwrapLongArrayFromDIB dstPixels
+            m_SelMask.UnwrapLongArrayFromDIB srcPixels
             
             'Find boundaries of the new mask
             If FindBoundsOfArbitraryMask(m_CompositeMask, m_OldBounds, m_CompositeBounds) Then
@@ -2767,38 +2777,33 @@ Private Sub CreateCompositeSelectionMask()
             If (pxBottom >= m_CompositeMask.GetDIBHeight) Then pxBottom = m_CompositeMask.GetDIBHeight - 1
             
             'Change left/right boundaries to be in component coordinates (4 bytes per pixel)
-            pxLeft = pxLeft * 4
-            pxRight = pxRight * 4
+            pxLeft = pxLeft
+            pxRight = pxRight
             
             'Get pointers to both the destination (composite) and source (current) masks
-            m_CompositeMask.WrapArrayAroundDIB_1D dstPixels, dstSA
+            m_CompositeMask.WrapLongArrayAroundDIB_1D dstPixels, dstSA
             dstBasePointer = dstSA.pvData
             dstStride = m_CompositeMask.GetDIBStride
             
-            m_SelMask.WrapArrayAroundDIB_1D srcPixels, srcSA
+            m_SelMask.WrapLongArrayAroundDIB_1D srcPixels, srcSA
             srcBasePointer = srcSA.pvData
             
             For y = pxTop To pxBottom
                 dstSA.pvData = dstBasePointer + y * dstStride
                 srcSA.pvData = srcBasePointer + y * dstStride
-            For x = pxLeft To pxRight Step 4
+            For x = pxLeft To pxRight
                 
-                'Take Min2() of the old and new masks
-                pxNew = srcPixels(x + 3)
-                pxOld = dstPixels(x + 3)
-                If (pxNew < pxOld) Then
-                    dstPixels(x) = pxNew
-                    dstPixels(x + 1) = pxNew
-                    dstPixels(x + 2) = pxNew
-                    dstPixels(x + 3) = pxNew
-                End If
+                'Take Min2() of the old and new masks, and use that as the composite value
+                pxNew = srcPixels(x)
+                pxOld = dstPixels(x) And &HFF&
+                If ((pxNew And &HFF&) < pxOld) Then dstPixels(x) = pxNew
                 
             Next x
             Next y
             
             'Free unsafe array refs
-            m_CompositeMask.UnwrapArrayFromDIB dstPixels
-            m_SelMask.UnwrapArrayFromDIB srcPixels
+            m_CompositeMask.UnwrapLongArrayFromDIB dstPixels
+            m_SelMask.UnwrapLongArrayFromDIB srcPixels
             
             'Find boundaries of the new mask
             If FindBoundsOfArbitraryMask(m_CompositeMask, newRectIntersect, m_CompositeBounds) Then
