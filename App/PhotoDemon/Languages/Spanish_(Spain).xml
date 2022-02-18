@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.85</langversion>
+<langversion>8.0.86</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -3189,6 +3189,8 @@ Mientras tanto, intente guardar la imagen en un formato alternativo. También pu
 
 <!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
+<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Crear selección</translation>
@@ -3214,7 +3216,7 @@ Mientras tanto, intente guardar la imagen en un formato alternativo. También pu
 <translation>Haga clic en el primer punto para completar la selección de polígonos</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -12052,7 +12054,22 @@ Would you like to save your batch list before exiting?</original>
 <!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
+<original>animate</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(no additional options)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill interior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill exterior</original>
 <translation></translation>
 </phrase>
 
@@ -12077,37 +12094,42 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>highlight</original>
-<translation>Resaltar</translation>
-</phrase>
-
-<phrase>
-<original>lightbox</original>
-<translation>Área iluminada</translation>
-</phrase>
-
-<phrase>
-<original>ants</original>
-<translation>Línea punteada</translation>
-</phrase>
-
-<phrase>
-<original>replace</original>
+<original>combine</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>add</original>
+<original>New selection</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>subtract</original>
+<original>Add to selection</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>intersect</original>
+<original>Subtract from selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Intersect with selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>always</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when combining</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>never</original>
 <translation></translation>
 </phrase>
 
@@ -12134,11 +12156,6 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Bloquea este valor.  (Sólo se puede bloquear un valor a la vez.  Si bloquea un nuevo valor, los valores bloqueados anteriormente se desbloquearán).</translation>
-</phrase>
-
-<phrase>
-<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
-<translation>Haga clic para cambiar la forma en que las selecciones son representadas en el lienzo de la imagen. Esto no tiene nada que ver con el contenido de selección, solo con la forma en que aparecen durante la edición.</translation>
 </phrase>
 
 <phrase>
@@ -12201,7 +12218,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13694,10 +13711,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2772 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 11774 total words. -->
+<!-- As of this build, PhotoDemon contains 5376 phrases. -->
+<!-- 2782 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 11762 total words. -->
 
 </pdData>

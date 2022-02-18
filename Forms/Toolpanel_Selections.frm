@@ -1039,10 +1039,13 @@ Private Sub btsCombine_MouseMoveInfoOnly(ByVal buttonIndex As Long)
             ttString = g_Language.TranslateMessage("New selection")
         Case pdsm_Add
             ttString = g_Language.TranslateMessage("Add to selection")
+            ttString = ttString & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", Hotkeys.GetGenericMenuText(cmt_Shift))
         Case pdsm_Subtract
             ttString = g_Language.TranslateMessage("Subtract from selection")
+            ttString = ttString & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", Hotkeys.GetGenericMenuText(cmt_Alt))
         Case pdsm_Intersect
             ttString = g_Language.TranslateMessage("Intersect with selection")
+            ttString = ttString & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", Hotkeys.GetGenericMenuText(cmt_Shift) & "+" & Hotkeys.GetGenericMenuText(cmt_Alt))
     End Select
     
     btsCombine.AssignTooltip ttString
