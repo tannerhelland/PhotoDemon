@@ -3,8 +3,9 @@ Attribute VB_Name = "UserPrefs"
 'PhotoDemon User Preferences Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 27/October/20
-'Last update: add a new 3DLUTs folder to the default /Data collection
+'Last updated: 21/February/22
+'Last update: revert nightly builds to default to "nightly build" update track (I've gotten much better
+'             at disciplined nightly build development, and they are far more stable than the used to be).
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
 ' persistent user settings.
@@ -802,7 +803,7 @@ Private Sub CreateNewPreferencesFile()
                 ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
                 ' can always opt for a faster update frequency.
                 Case PD_PRE_ALPHA, PD_ALPHA
-                    .WriteTag "UpdateTrack", ut_Beta
+                    .WriteTag "UpdateTrack", ut_Developer
                     
                 Case PD_BETA
                     .WriteTag "UpdateTrack", ut_Beta
