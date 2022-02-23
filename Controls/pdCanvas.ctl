@@ -2443,7 +2443,7 @@ Public Sub SetCursorToCanvasPosition(ByVal newCanvasX As Double, ByVal newCanvas
 End Sub
 
 Public Sub SetFocusToCanvasView()
-    CanvasView.SetFocus
+    If CanvasView.Visible Then CanvasView.SetFocus
 End Sub
 
 Private Sub BuildPopupMenu()
