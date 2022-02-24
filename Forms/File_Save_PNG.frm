@@ -313,7 +313,12 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
+    
     UpdatePreview
+    
+    'Reflow titlebars too, to ensure panel layout is correct
+    UpdateStandardPanelVisibility
+    
 End Sub
 
 Private Sub cmdBar_ResetClick()

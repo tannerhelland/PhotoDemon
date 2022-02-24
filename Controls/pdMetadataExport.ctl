@@ -153,6 +153,11 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'On initialization, we grab a temporary filename from the filename manager, then cache it for the life
+' of this control.  (Without this, we'd generate a new name on every GetParamString() call, which may
+' happen multiple times as part of querying per-dialog Undo/Redo state.)
+Private m_tmpMetadataFilename As String
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_MetadataExport
 End Function
@@ -260,6 +265,11 @@ Private Sub UserControl_Initialize()
 '    btsMetadataFormat.AddItem "IPTC", 1
 '    btsMetadataFormat.AddItem "EXIF", 2
 '    btsMetadataFormat.AddItem "XMP", 3
+
+    'Grab a temporary filename to use as the temporary metadata filename for this instance.
+    ' (We cache this as part of the param string for each dialog, to ensure the same filename gets
+    ' passed between various image export functions.)
+    If PDMain.IsProgramRunning() Then m_tmpMetadataFilename = Files.RequestTempFile()
         
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -320,7 +330,7 @@ Public Function GetMetadataSettings() As String
     'Whenever a new metadata string is generated, we also generate a new temp filename for use with this image.
     ' This file may or may not created (it's required when setting thumbnails, for example), but by setting it at the
     ' image level, we allow any subsequent metadata operations to reuse the same file at their leisure.
-    cParams.AddParam "MetadataTempFilename", Files.RequestTempFile()
+    cParams.AddParam "MetadataTempFilename", m_tmpMetadataFilename
     
     GetMetadataSettings = cParams.GetParamString
 
