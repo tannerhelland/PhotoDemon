@@ -40,7 +40,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps all kinds of
 ' diagnostic information to the debug log.
-Private Const ICO_DEBUG_VERBOSE As Boolean = True
+Private Const ICO_DEBUG_VERBOSE As Boolean = False
 
 'ICO parsing is complicated, and a lot of things can go wrong.  Instead of returning
 ' binary "success/fail" values, we return specific flags; "warnings" may be recoverable
