@@ -15,10 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon "QUITE OK IMAGE FORMAT" (QOI) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 24/February/22
-'Last updated: 24/February/22
-'Last update: start work on initial build
+'Last updated: 25/February/22
+'Last update: wrap up initial decoder build
 '
-'The QOI image format was developed by Dominic Szablewski.  It is meant to be a compact, lossless
+'The QOI image format was developed by Dominic Szablewski.  It is designed as a compact, lossless
 ' image format with much greater simplicity than e.g. PNG but much smaller filesizes than e.g. BMP.
 ' A final 1.0 spec was released in 2022 and PhotoDemon uses that spec as the basis for its
 ' custom VB6 implementation.  You can find the QOI spec here (link good as of Feb 2022):
@@ -26,6 +26,36 @@ Attribute VB_Exposed = False
 ' https://qoiformat.org/qoi-specification.pdf
 '
 'Only decoding is currently planned.  Encoding may be added in the future.
+'
+'I referenced the QOI reference implementation (qoi.h) while developing this implementation.
+' qoi.h is MIT-licensed and Copyright 2021 Dominic Szablewski.  License text of qoi.h follows:
+'
+'   QOI - The "Quite OK Image" format for fast, lossless image compression
+'   Dominic Szablewski - https://phoboslab.org
+'
+'   -- LICENSE: The MIT License (MIT)
+'
+'   Copyright(c) 2021 Dominic Szablewski
+'
+'   Permission is hereby granted, free of charge, to any person obtaining a copy of
+'   this software and associated documentation files(the "Software"), to deal in
+'   the Software without restriction, including without limitation the rights to
+'   use, copy, modify, merge, publish, distribute, sublicense, and / or sell copies
+'   of the Software, and to permit persons to whom the Software is furnished to do
+'   so, subject to the following conditions :
+'
+'   The above copyright notice and this permission notice shall be included in all
+'   copies or substantial portions of the Software.
+'
+'   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+'   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+'   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+'   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+'   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+'   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+'   SOFTWARE.
+'
+'Thank you to Dominic for this neat concept!
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -36,7 +66,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps all kinds of
 ' diagnostic information to the debug log.
-Private Const QOI_DEBUG_VERBOSE As Boolean = True
+Private Const QOI_DEBUG_VERBOSE As Boolean = False
 
 'QOI files only support a few relevant items in the header:
 
@@ -64,9 +94,6 @@ Private m_qoiColorSpace As QOI_ColorSpace
 ' - Decoder and encoder start with {r: 0, g: 0, b: 0, a: 255} as the previous pixel value.
 ' - An image is complete when all pixels specified by width * height have been covered.
 ' - Color channels are assumed to not be premultiplied with the alpha channel (“un-premultiplied alpha”).
-
-'LUT of previous pixel values (size fixed per spec)
-Private m_PrevPixels(0 To 63) As RGBQuad
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -142,9 +169,15 @@ Friend Function LoadQOI_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         If (m_qoiColorSpace < 0) Or (m_qoiColorSpace > 1) Then InternalError FUNC_NAME, "unknown color space (will attempt to load anyway): " & m_qoiColorSpace
         
+        'Debug data is only relevant under certain circumstances
+        If QOI_DEBUG_VERBOSE Then
+            PDDebug.LogAction "QOI dimensions: " & m_qoiWidth & "x" & m_qoiHeight
+            PDDebug.LogAction "QOI channels and color space: " & m_qoiChannelCount & ", " & m_qoiColorSpace
+        End If
+        
         'Prep image buffer
         Set dstDIB = New pdDIB
-        If dstDIB.CreateBlank(m_qoiWidth, m_qoiHeight, 32, 255, 255) Then
+        If dstDIB.CreateBlank(m_qoiWidth, m_qoiHeight, 32, vbWhite, 255) Then
             
             'Hand the rest of the load process off to the parser
             LoadQOI_FromFile = LoadQOI_ParsePixels(dstDIB)
@@ -173,6 +206,11 @@ End Function
 ' be implemented manually.
 Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     
+    Const FUNC_NAME As String = "LoadQOI_ParsePixels"
+    LoadQOI_ParsePixels = False
+    
+    On Error GoTo BadDataStream
+    
     'Literals taken from qoi.h (https://github.com/phoboslab/qoi/blob/master/qoi.h)
     Const QOI_OP_INDEX  As Byte = &H0   '/* 00xxxxxx */
     Const QOI_OP_DIFF   As Byte = &H40  '/* 01xxxxxx */
@@ -186,28 +224,65 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     Const QOI_MASK_L6   As Byte = &H3F  '/* 00111111 */
     
     'Reset previous pixel trackers
-    Dim prevPixel As RGBQuad
-    With prevPixel
-        .Red = 0: .Green = 0: .Blue = 0: .Alpha = 255
+    Dim prevR As Long, prevG As Long, prevB As Long, prevA As Long
+    prevR = 0
+    prevG = 0
+    prevB = 0
+    prevA = 255
+    
+    'LUT of previous pixel values (size fixed per spec)
+    Dim prevPixels(0 To 63) As RGBQuad
+    
+    'Place the "previous pixel" into the lookup table using a simple
+    ' hash formula from the spec:
+    ' index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
+    Dim indexPos As Long
+    indexPos = prevR * 3 + prevG * 5 + prevB * 7 + prevA * 11
+    With prevPixels(indexPos And &H3F&)
+        .Blue = prevB
+        .Green = prevG
+        .Red = prevR
+        .Alpha = prevA
     End With
     
-    VBHacks.ZeroMemory VarPtr(m_PrevPixels(0)), 64 * 4
-        
     'Wrap a 1D array around the destination buffer
     Dim dstPixels() As RGBQuad, dstSA As SafeArray1D
     dstDIB.WrapRGBQuadArrayAroundDIB_1D dstPixels, dstSA
     
     'Pixel offsets will be tracked to avoid OOB on bad files
-    Dim pxOffset As Long: pxOffset = 0
+    Dim dstOffset As Long: dstOffset = 0
     Dim numPixels As Long: numPixels = m_qoiWidth * m_qoiHeight
     
     'A few different read values are used, in part because we need to swizzle from RGBA to BGRA order
-    Dim curPixel As RGBQuad
-    Dim nextByte As Byte
+    Dim curPixel As RGBQuad, tmpQuad As RGBQuad
+    Dim nextByte As Long
     Dim tmpColor As Long
     Dim curRun As Long
     
-    'Parse until we fill all pixels
+    'For perf reasons, we don't want to tap the stream object for single-byte reads.
+    ' Instead, grab the entire run of bytes and store it locally.
+    Dim srcBytes() As Byte, numSrcBytes As Long
+    
+    'Run size is (length of the file) - 14-byte header - 8-byte trailer
+    Const QOI_FIXED_HEADER_SIZE As Long = 14
+    Const QOI_FIXED_TRAILER_SIZE As Long = 8
+    numSrcBytes = m_Stream.GetStreamSize() - (QOI_FIXED_HEADER_SIZE + QOI_FIXED_TRAILER_SIZE)
+    If (numSrcBytes <> m_Stream.ReadBytes(srcBytes, numSrcBytes)) Then
+        InternalError FUNC_NAME, "not enough source data"
+        LoadQOI_ParsePixels = False
+        Exit Function
+    End If
+    
+    'The source stream object is no longer required.
+    m_Stream.StopStream True
+    
+    Dim srcOffset As Long: srcOffset = 0
+    
+    'Parse until we fill all destination pixels.  Note that we do not explicitly check
+    ' safety on source pixel accesses, so this function may error on malformed files
+    ' with truncated source bytes.  I'm okay with this - the reference decoder works the
+    ' same way, and there are large perf repercussions for safety checks on every source
+    ' access.
     Do
         
         'Handle runs as a special case
@@ -218,83 +293,84 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         Else
             
             'Retrieve the next byte
-            nextByte = m_Stream.ReadByte()
+            nextByte = srcBytes(srcOffset)
+            srcOffset = srcOffset + 1
             
             'Look for special 8-bit flags first
+            
+            'Explicit RGBA values follow
             If (nextByte = QOI_OP_RGBA) Then
-                
-                'Explicit RGBA values follow.  Read directly into the previous pixel holder so we can swizzle.
-                m_Stream.ReadBytesToBarePointer VarPtr(prevPixel), 4
-                tmpColor = prevPixel.Red
-                prevPixel.Red = prevPixel.Blue
-                prevPixel.Blue = tmpColor
-                
+                prevR = srcBytes(srcOffset)
+                prevG = srcBytes(srcOffset + 1)
+                prevB = srcBytes(srcOffset + 2)
+                prevA = srcBytes(srcOffset + 3)
+                srcOffset = srcOffset + 4
+            
+            'Explicit RGB values follow
             ElseIf (nextByte = QOI_OP_RGB) Then
             
                 'Explicit RGB values follow.  Read directly into the previous pixel holder (which conveniently
                 ' reuses its alpha value, which is required behavior per the spec) but don't forget to swizzle R/B.
-                m_Stream.ReadBytesToBarePointer VarPtr(prevPixel), 3
-                tmpColor = prevPixel.Red
-                prevPixel.Red = prevPixel.Blue
-                prevPixel.Blue = tmpColor
+                prevR = srcBytes(srcOffset)
+                prevG = srcBytes(srcOffset + 1)
+                prevB = srcBytes(srcOffset + 2)
+                srcOffset = srcOffset + 3
                 
             'Remaining options are 2-bit flags (2 MSBs) followed by 6-bit indicators.
             Else
                 
-                Dim high2b As Byte, low6b As Byte
+                Dim high2b As Long, low6b As Long
                 high2b = (nextByte And QOI_MASK_2)
                 low6b = (nextByte And QOI_MASK_L6)
                 
                 'Many of these flags require us to calculate diffs between pixels
                 Dim rDiff As Long, gDiff As Long, bDiff As Long
-                Dim rNew As Long, gNew As Long, bNew As Long
                 
                 Select Case high2b
                     
                     'Low 6-bits are an index into the previous color array [0-63]
                     Case QOI_OP_INDEX
-                        prevPixel = m_PrevPixels(low6b)
+                        With prevPixels(low6b)
+                            prevR = .Red
+                            prevG = .Green
+                            prevB = .Blue
+                            prevA = .Alpha
+                        End With
                         
                     'Low 6-bits are 2-bit differences (wraparound) between current RGB and previous RGB values,
                     ' so the range [0, 3] must be translated to the range [-2, 1]
                     Case QOI_OP_DIFF
-                        rDiff = CLng((low6b \ 16) And &H3) - 2
-                        gDiff = CLng((low6b \ 4) And &H3) - 2
-                        bDiff = CLng(low6b And &H3) - 2
+                        prevR = prevR + ((low6b \ 16) And &H3) - 2
+                        prevG = prevG + ((low6b \ 4) And &H3) - 2
+                        prevB = prevB + (low6b And &H3) - 2
                         
-                        'Calculate new values, with manual coverage for wraparound
-                        rNew = CLng(prevPixel.Red) + rDiff
-                        If (rNew < 0) Then rNew = rNew + 256 Else rNew = rNew And &HFF
-                        gNew = CLng(prevPixel.Green) + gDiff
-                        If (gNew < 0) Then gNew = gNew + 256 Else gNew = gNew And &HFF
-                        bNew = CLng(prevPixel.Blue) + bDiff
-                        If (bNew < 0) Then bNew = bNew + 256 Else bNew = bNew And &HFF
-                        
-                        prevPixel.Red = rNew
-                        prevPixel.Green = gNew
-                        prevPixel.Blue = bNew
+                        'Manually handle wraparound
+                        If (prevR >= 0) Then prevR = prevR And &HFF Else prevR = prevR + 256
+                        If (prevG >= 0) Then prevG = prevG And &HFF Else prevG = prevG + 256
+                        If (prevB >= 0) Then prevB = prevB And &HFF Else prevB = prevB + 256
                         
                     'Low 6-bits are a 6-bit difference (wraparound) between current G and previous G values,
-                    ' (translated from [0, 63] to [-32, 31]) and another byte must be read for difference
+                    ' (translated from [0, 63] to [-32, 31]).  Another byte must be read for difference
                     ' in R, B values (4-bits translated from [0, 15] to [-8, 7] and added to G diff).
                     Case QOI_OP_LUMA
-                        gDiff = CLng(low6b) - 32
-                        nextByte = m_Stream.ReadByte()
-                        rDiff = CLng(nextByte \ 16) - 8 + gDiff
-                        bDiff = CLng(nextByte And &HF) - 8 + gDiff
+                        gDiff = low6b - 32
+                        nextByte = srcBytes(srcOffset)
+                        srcOffset = srcOffset + 1
+                        rDiff = (nextByte \ 16) - 8 + gDiff
+                        bDiff = (nextByte And &HF) - 8 + gDiff
                         
                         'Calculate new values, with manual coverage for wraparound
-                        rNew = CLng(prevPixel.Red) + rDiff
-                        If (rNew < 0) Then rNew = rNew + 256 Else rNew = rNew And &HFF
-                        gNew = CLng(prevPixel.Green) + gDiff
-                        If (gNew < 0) Then gNew = gNew + 256 Else gNew = gNew And &HFF
-                        bNew = CLng(prevPixel.Blue) + bDiff
-                        If (bNew < 0) Then bNew = bNew + 256 Else bNew = bNew And &HFF
+                        prevR = prevR + rDiff
+                        prevG = prevG + gDiff
+                        prevB = prevB + bDiff
                         
-                        prevPixel.Red = rNew
-                        prevPixel.Green = gNew
-                        prevPixel.Blue = bNew
-                        
+                        If (prevR >= 0) Then prevR = prevR And &HFF Else prevR = prevR + 256
+                        If (prevG >= 0) Then prevG = prevG And &HFF Else prevG = prevG + 256
+                        If (prevB >= 0) Then prevB = prevB And &HFF Else prevB = prevB + 256
+                    
+                    'Simple RLE encoding does not require explicit handling.  Simply set the "run"
+                    ' flag to allow automatic use of prevR/G/B.  (A branch at the top of the Do Loop
+                    ' checks this flag and decrements it on each iteration.)
                     Case QOI_OP_RUN
                         curRun = low6b
                     
@@ -304,33 +380,47 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             
             'The contents of prevPixel will now reflect the color we just read.
             ' It must always be added to the recent color table.
-            UpdateRecentColorsLUT prevPixel
             
+            'Generate a simple hash into the lookup table using the formula from the spec:
+            ' index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
+            indexPos = prevR * 3 + prevG * 5 + prevB * 7 + prevA * 11
+            With prevPixels(indexPos And &H3F&)
+                .Blue = prevB
+                .Green = prevG
+                .Red = prevR
+                .Alpha = prevA
+            End With
+                
         End If
         
         'Write the pixel value into the destination image
-        dstPixels(pxOffset) = prevPixel
+        With dstPixels(dstOffset)
+            .Blue = prevB
+            .Green = prevG
+            .Red = prevR
+            .Alpha = prevA
+        End With
         
         'Increment pixel offset into the destination image and continue
-        pxOffset = pxOffset + 1
+        dstOffset = dstOffset + 1
         
-    Loop While (pxOffset < numPixels)
+    Loop While (dstOffset < numPixels)
     
     'Safely unwrap array wrapper and return
     dstDIB.UnwrapRGBQuadArrayFromDIB dstPixels
-    LoadQOI_ParsePixels = True
+    LoadQOI_ParsePixels = (dstOffset = numPixels)
+    
+    'In debug mode, require an extra validation against the source data length
+    If QOI_DEBUG_VERBOSE Then LoadQOI_ParsePixels = LoadQOI_ParsePixels And (srcOffset = numSrcBytes)
+    
+    'Remaining code must *only* be error-handler related
+    Exit Function
+    
+BadDataStream:
+    InternalError FUNC_NAME, "internal VB error #" & Err.Number & ": " & Err.Description
+    LoadQOI_ParsePixels = False
     
 End Function
-
-Private Sub UpdateRecentColorsLUT(ByRef newColor As RGBQuad)
-    
-    'Generate a simple hash into the lookup table using this formula from the spec:
-    ' index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
-    Dim indexPos As Long
-    indexPos = CLng(newColor.Red) * 3 + CLng(newColor.Green) * 5 + CLng(newColor.Blue) * 7 + CLng(newColor.Alpha) * 11
-    m_PrevPixels(indexPos And &H3F&) = newColor
-    
-End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
