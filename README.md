@@ -67,6 +67,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Comprehensive import and export support for the brand-new [AVIF file format](https://en.wikipedia.org/wiki/AV1#AV1_Image_File_Format_(AVIF)), c/o the [open-source libavif library](https://github.com/AOMediaCodec/libavif).  AVIF file support is incredibly complex (the stock encoder+decoder apps are almost 3x larger than PhotoDemon!) and they are only available for 64-bit systems, so PhotoDemon does not ship these libraries by default.  If you attempt to open or save an AVIF file, PhotoDemon will offer to download a local copy of libavif for you.  
 - Comprehensive import and export support for [animated WebP images](https://developers.google.com/speed/webp), including direct export to animated WebP from PhotoDemon's built-in screen recorder tool (`Tools > Animated screen capture`)
 - All-new [GIF import and export engines](https://github.com/tannerhelland/PhotoDemon/commit/cfee72e569721a71efe4a5bc8b8858a5f8501517), including a new [best-in-class GIF optimizer](https://github.com/tannerhelland/PhotoDemon/commit/aaab70c06a0697b56d0336e22477782b9af59093).
+- Comprehensive import and export support for [lossless QOI ("quite OK image") files](https://qoiformat.org/).
 - Comprehensive import support for [lossless JPEG (JPEG-LS) images](https://en.wikipedia.org/wiki/Lossless_JPEG), c/o the [open-source CharLS library](https://github.com/team-charls/charls)
 - Comprehensive import support for [Comic Book Archive (CBZ) images](https://en.wikipedia.org/wiki/Comic_book_archive).
 - Comprehensive import support for [Symbian (mbm, aif) images](https://en.wikipedia.org/wiki/MBM_(file_format))
@@ -75,24 +76,25 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Effects
 
 - New support for [Photoshop effect plugins](https://en.wikipedia.org/wiki/Photoshop_plugin) ("8bf", 32-bit only), with thanks to [spetric's Photoshop-Plugin-Host library](https://github.com/spetric/Photoshop-Plugin-Host).
-- New [Effects > Distort > Droste](https://github.com/tannerhelland/PhotoDemon/pull/364) tool, so you can channel your inner [M.C. Escher](https://en.wikipedia.org/wiki/Print_Gallery_(M._C._Escher))
-- New [Effects > Render > Truchet Tiles tool](https://github.com/tannerhelland/PhotoDemon/pull/358)
+- New [`Effects > Distort > Droste`](https://github.com/tannerhelland/PhotoDemon/pull/364) tool, so you can channel your inner [M.C. Escher](https://en.wikipedia.org/wiki/Print_Gallery_(M._C._Escher))
+- New [`Effects > Render > Truchet Tiles` tool](https://github.com/tannerhelland/PhotoDemon/pull/358)
 - New `Effects > Animation menu`, including new [Foreground and Background effects](https://github.com/tannerhelland/PhotoDemon/commit/06a4f1df3a5231eb0cac17dd7f426a049e44f7e7) (for automatically applying a background or foreground to an animated image)
-- New [Effects > Edge > Gradient flow](https://github.com/tannerhelland/PhotoDemon/commit/f7e28487c087f1483dac435290ab3c30f7c18ac0) tool
-- Greatly improved and accelerated [Effects > Artistic > Stained Glass](https://github.com/tannerhelland/PhotoDemon/commit/02f60a5c6807cec763fcfb7628332b9b6de897f2) and [Effects > Pixelate > Crystallize](https://github.com/tannerhelland/PhotoDemon/commit/ac2772d145a30b5e1a4bccd334c642062f63708c) tools
+- New [`Effects > Edge > Gradient flow`](https://github.com/tannerhelland/PhotoDemon/commit/f7e28487c087f1483dac435290ab3c30f7c18ac0) tool
+- Greatly improved and accelerated [`Effects > Artistic > Stained Glass`](https://github.com/tannerhelland/PhotoDemon/commit/02f60a5c6807cec763fcfb7628332b9b6de897f2) and [`Effects > Pixelate > Crystallize`](https://github.com/tannerhelland/PhotoDemon/commit/ac2772d145a30b5e1a4bccd334c642062f63708c) tools
 
 ### Adjustments
 
-- New [Adjustments > Color > Color lookup](https://github.com/tannerhelland/PhotoDemon/commit/5739253c850fbeb86af85f2ba4020da0ce1262d7) tool, with built-in support for [all 3D LUT formats that ship with Photoshop](https://helpx.adobe.com/photoshop/how-to/edit-photo-color-lookup-adjustment.html) (cube, look, 3dl) and [high-performance tetrahedral interpolation](https://www.nvidia.com/content/GTC/posters/2010/V01-Real-Time-Color-Space-Conversion-for-High-Resolution-Video.pdf) for best-in-class quality  
-- New [Adjustments > Lighting > Dehaze tool](https://github.com/tannerhelland/PhotoDemon/commit/dde19d0c6e45b41f9c0d88d6d7c62a4651595836)
-- Overhauled [Adjustments > Curves tool](https://github.com/tannerhelland/PhotoDemon/commit/989f861d8cf4b32e5a49c10cc87c094cc7f38b33), with improved performance and a new UI
-- Completely redesigned [Adjustments > Color > Photo filter](https://github.com/tannerhelland/PhotoDemon/commit/f142633977c1eed9f627f6ab6ab84053960914a1) tool, to better match the identical tool in Photoshop 
+- New [`Adjustments > Color > Color lookup`](https://github.com/tannerhelland/PhotoDemon/commit/5739253c850fbeb86af85f2ba4020da0ce1262d7) tool, with built-in support for [all 3D LUT formats that ship with Photoshop](https://helpx.adobe.com/photoshop/how-to/edit-photo-color-lookup-adjustment.html) (cube, look, 3dl) and [high-performance tetrahedral interpolation](https://www.nvidia.com/content/GTC/posters/2010/V01-Real-Time-Color-Space-Conversion-for-High-Resolution-Video.pdf) for best-in-class quality  
+- New [`Adjustments > Lighting > Dehaze` tool](https://github.com/tannerhelland/PhotoDemon/commit/dde19d0c6e45b41f9c0d88d6d7c62a4651595836)
+- Overhauled [`Adjustments > Curves` tool](https://github.com/tannerhelland/PhotoDemon/commit/989f861d8cf4b32e5a49c10cc87c094cc7f38b33), with improved performance and a new UI
+- Completely redesigned [`Adjustments > Color > Photo filter`](https://github.com/tannerhelland/PhotoDemon/commit/f142633977c1eed9f627f6ab6ab84053960914a1) tool, to better match the identical tool in Photoshop 
 - [Otsu's method](https://en.wikipedia.org/wiki/Otsu%27s_method) is now used by [the `Adjustments > Monochrome` tool](https://github.com/tannerhelland/PhotoDemon/commit/4286395b520ec84b4c047eb37092a91532e7d500), for improved contrast when reducing an image to two colors.
 
 ### Image and Layer tools
 
-- Completely redesigned [Image > Resize tool](https://github.com/tannerhelland/PhotoDemon/pull/361), with real-time interactive previews, 12 different resampling filters, memory size estimations, a user-resizable dialog, progress bar updates, and more.  The new tool was custom-built for PhotoDemon, and it has very low memory requirements, excellent performance, and zero 3rd-party dependencies.  (The `Layer > Resize` tool also receives all of these new features!)
-- New [Layer > Replace tools](https://github.com/tannerhelland/PhotoDemon/commit/24f50821c1fd665494d72fd4e4e75fc29e8c3a0e), for quickly replacing an existing layer with data from the clipboard or any arbitrary image file.
+- [All-new selection tool engine](https://github.com/tannerhelland/PhotoDemon/pull/387), including full support for merging selections.  All selection tools support new "Add", "Subtract", and "Intersect" combine modes.  In addition, a new canvas selection renderer automatically highlights the selected region of composite selections.  (Other new rendering UI features are available on each selection toolpanel).
+- Completely redesigned [`Image > Resize` tool](https://github.com/tannerhelland/PhotoDemon/pull/361), with real-time interactive previews, 12 different resampling filters, memory size estimations, a user-resizable dialog, progress bar updates, and more.  The new tool was custom-built for PhotoDemon, and it has very low memory requirements, excellent performance, and zero 3rd-party dependencies.  (The `Layer > Resize` tool also receives all of these new features!)
+- New [`Layer > Replace` tools](https://github.com/tannerhelland/PhotoDemon/commit/24f50821c1fd665494d72fd4e4e75fc29e8c3a0e), for quickly replacing an existing layer with data from the clipboard or any arbitrary image file.
 - Overhauled [`Image > Crop` tool](https://github.com/tannerhelland/PhotoDemon/commit/6bfe841f282ae9ec9d75b4cd29065eee11c7e9f2), including new support for retaining editable text layers after cropping (instead of rasterizing them).
 - New [lock aspect ratio](https://github.com/tannerhelland/PhotoDemon/commit/3b74576eb425c5ff80a4b05615f94a86faabf261) toggle on the Move/Size tool
 
