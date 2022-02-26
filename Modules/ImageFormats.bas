@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 24/February/22
-'Last update: add import support for QOI format; export support TBD
+'Last updated: 25/February/22
+'Last update: add export support for QOI format
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -417,6 +417,7 @@ Public Sub GenerateOutputFormats()
     If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
     AddOutputFormat "PSD - Adobe Photoshop", "psd", PDIF_PSD
     AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
+    AddOutputFormat "QOI - Quite OK Image", "qoi", PDIF_QOI
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
     If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
@@ -773,26 +774,16 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_BMP
             IsExportDialogSupported = True
-        Case PDIF_CBZ
-            IsExportDialogSupported = False
         Case PDIF_GIF
             IsExportDialogSupported = True
-        Case PDIF_HDR
-            IsExportDialogSupported = False
         Case PDIF_ICO
             IsExportDialogSupported = True
-        Case PDIF_JLS
-            IsExportDialogSupported = False
         Case PDIF_JP2
             IsExportDialogSupported = True
         Case PDIF_JPEG
             IsExportDialogSupported = True
         Case PDIF_JXR
             IsExportDialogSupported = True
-        Case PDIF_ORA
-            IsExportDialogSupported = False
-        Case PDIF_PDI
-            IsExportDialogSupported = False
         Case PDIF_PNG
             IsExportDialogSupported = True
         Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
@@ -801,10 +792,6 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_PSP
             IsExportDialogSupported = True
-        Case PDIF_QOI
-            IsExportDialogSupported = False
-        Case PDIF_TARGA
-            IsExportDialogSupported = False
         Case PDIF_TIFF
             IsExportDialogSupported = True
         Case PDIF_WEBP

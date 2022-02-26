@@ -3,13 +3,15 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 12/October/21
-'Last update: move (bulky) GIF code into its own module
+'Last updated: 25/February/22
+'Last update: add QOI encoder
 '
-'This module provides low-level "export" functionality for exporting image files out of PD.  You will not generally
-' want to interface with this module directly; instead, rely on the high-level functions in the "Saving" module.
-' They will intelligently drop into this module as necessary, sparing you the messy work of handling format-specific
-' details (which are many, especially given PD's many "automatic" export features).
+'This module provides low-level "export" functionality for exporting image files out of PD.
+'
+'You should not (generally) interface with this module directly; instead, rely on the high-level
+' functions in the "Saving" module. They will intelligently drop into this module as necessary,
+' sparing you the messy work of handling format-specific details (which are many, especially given
+' PD's many "automatic detection" export features).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -1669,6 +1671,58 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportPSPError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportPSP = False
+    
+End Function
+
+'QOI uses native codecs (implemented in the pdQOI class)
+Public Function ExportQOI(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportQOIError
+    
+    ExportQOI = False
+    Dim sFileType As String: sFileType = "QOI"
+    
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    'All export details are handled by a pdQOI instance
+    Dim cQOI As pdQOI
+    Set cQOI = New pdQOI
+    If cQOI.SaveQOI_ToFile(tmpFilename, srcPDImage, tmpImageCopy) Then
+        
+        'If we are not overwriting an existing file, exit immediately; otherwise, attempt to replace the original file
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportQOI = True
+        Else
+            ExportQOI = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            If (Not ExportQOI) Then
+                Files.FileDeleteIfExists tmpFilename
+                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite QOI file; original file is likely open elsewhere."
+            End If
+        End If
+        
+    End If
+    
+    Exit Function
+    
+ExportQOIError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportQOI = False
     
 End Function
 

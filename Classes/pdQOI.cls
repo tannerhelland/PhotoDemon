@@ -12,11 +12,11 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon "QUITE OK IMAGE FORMAT" (QOI) Container and Parser
+'PhotoDemon "Quite OK Image" (QOI) Decoder/Encoder
 'Copyright 2022-2022 by Tanner Helland
 'Created: 24/February/22
 'Last updated: 25/February/22
-'Last update: wrap up initial decoder build
+'Last update: wrap up initial build
 '
 'The QOI image format was developed by Dominic Szablewski.  It is designed as a compact, lossless
 ' image format with much greater simplicity than e.g. PNG but much smaller filesizes than e.g. BMP.
@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 '
 ' https://qoiformat.org/qoi-specification.pdf
 '
-'Only decoding is currently planned.  Encoding may be added in the future.
+'Decoding and encoding in native VB6 code (for better or worse) are both implemented here.
 '
 'I referenced the QOI reference implementation (qoi.h) while developing this implementation.
 ' qoi.h is MIT-licensed and Copyright 2021 Dominic Szablewski.  License text of qoi.h follows:
@@ -64,9 +64,21 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'To aid debugging, you can activate "verbose" output; this dumps all kinds of
+'To aid debugging, you can activate "verbose" output; this dumps a variety of
 ' diagnostic information to the debug log.
 Private Const QOI_DEBUG_VERBOSE As Boolean = False
+
+'Literals taken from qoi.h (https://github.com/phoboslab/qoi/blob/master/qoi.h)
+Private Const QOI_OP_INDEX  As Byte = &H0   '/* 00xxxxxx */
+Private Const QOI_OP_DIFF   As Byte = &H40  '/* 01xxxxxx */
+Private Const QOI_OP_LUMA   As Byte = &H80  '/* 10xxxxxx */
+Private Const QOI_OP_RUN    As Byte = &HC0  '/* 11xxxxxx */
+Private Const QOI_OP_RGB    As Byte = &HFE  '/* 11111110 */
+Private Const QOI_OP_RGBA   As Byte = &HFF  '/* 11111111 */
+
+'Masks for 2-bit flags followed by 6-bits of info
+Private Const QOI_MASK_2    As Byte = &HC0  '/* 11000000 */
+Private Const QOI_MASK_L6   As Byte = &H3F  '/* 00111111 */
 
 'QOI files only support a few relevant items in the header:
 
@@ -95,7 +107,8 @@ Private m_qoiColorSpace As QOI_ColorSpace
 ' - An image is complete when all pixels specified by width * height have been covered.
 ' - Color channels are assumed to not be premultiplied with the alpha channel (“un-premultiplied alpha”).
 
-'Byte-by-byte access is provided, as always, by a pdStream instance
+'Byte-by-byte access is provided, as always, by a pdStream instance - but note that this class dumps
+' the core data stream to local arrays before certain parsing duties (for perf reasons)
 Private m_Stream As pdStream
 
 'Validate a source filename as QOI format.  Validation *does* touch the file - we must validate
@@ -118,7 +131,7 @@ Friend Function IsFileQOI(ByRef srcFilename As String, Optional ByVal requireVal
         Set m_Stream = New pdStream
         If m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFilename) Then
             
-            'QOI header is 14-bytes, with the first 4 bytes as ASCII values "qoif"
+            'The first 4 bytes of a QOI file must be the ASCII values "qoif"
             potentiallyQOI = (m_Stream.ReadString_ASCII(4) = "qoif")
             If (potentiallyQOI And QOI_DEBUG_VERBOSE) Then PDDebug.LogAction "Valid QOI file found!"
             
@@ -211,18 +224,6 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     
     On Error GoTo BadDataStream
     
-    'Literals taken from qoi.h (https://github.com/phoboslab/qoi/blob/master/qoi.h)
-    Const QOI_OP_INDEX  As Byte = &H0   '/* 00xxxxxx */
-    Const QOI_OP_DIFF   As Byte = &H40  '/* 01xxxxxx */
-    Const QOI_OP_LUMA   As Byte = &H80  '/* 10xxxxxx */
-    Const QOI_OP_RUN    As Byte = &HC0  '/* 11xxxxxx */
-    Const QOI_OP_RGB    As Byte = &HFE  '/* 11111110 */
-    Const QOI_OP_RGBA   As Byte = &HFF  '/* 11111111 */
-    
-    'Masks for 2-bit flags followed by 6-bits of info
-    Const QOI_MASK_2    As Byte = &HC0  '/* 11000000 */
-    Const QOI_MASK_L6   As Byte = &H3F  '/* 00111111 */
-    
     'Reset previous pixel trackers
     Dim prevR As Long, prevG As Long, prevB As Long, prevA As Long
     prevR = 0
@@ -232,18 +233,7 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     
     'LUT of previous pixel values (size fixed per spec)
     Dim prevPixels(0 To 63) As RGBQuad
-    
-    'Place the "previous pixel" into the lookup table using a simple
-    ' hash formula from the spec:
-    ' index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
     Dim indexPos As Long
-    indexPos = prevR * 3 + prevG * 5 + prevB * 7 + prevA * 11
-    With prevPixels(indexPos And &H3F&)
-        .Blue = prevB
-        .Green = prevG
-        .Red = prevR
-        .Alpha = prevA
-    End With
     
     'Wrap a 1D array around the destination buffer
     Dim dstPixels() As RGBQuad, dstSA As SafeArray1D
@@ -384,7 +374,7 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             'Generate a simple hash into the lookup table using the formula from the spec:
             ' index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
             indexPos = prevR * 3 + prevG * 5 + prevB * 7 + prevA * 11
-            With prevPixels(indexPos And &H3F&)
+            With prevPixels(indexPos And QOI_MASK_L6)
                 .Blue = prevB
                 .Green = prevG
                 .Red = prevR
@@ -419,6 +409,239 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
 BadDataStream:
     InternalError FUNC_NAME, "internal VB error #" & Err.Number & ": " & Err.Description
     LoadQOI_ParsePixels = False
+    
+End Function
+
+'Save an arbitrary DIB to a standalone QOI file.  An optional parent pdImage object can also be passed,
+' but it is not currently required (or even used).
+Friend Function SaveQOI_ToFile(ByRef dstFile As String, ByRef srcImage As pdImage, ByRef srcDIB As pdDIB) As Boolean
+    
+    Const FUNC_NAME As String = "SaveQOI_ToFile"
+    SaveQOI_ToFile = False
+    
+    On Error GoTo SaveFailed
+    
+    'QOI files are very easy to save.  There are no user-controlled parameters, and saving is deterministic.
+    
+    'The only things we really need to know about the source image are its...
+    ' 1) Size (width, height)
+    ' 2) Color-depth (alpha presence)
+    ' 3) Color-management state (linear or sRGB)
+    
+    'PhotoDemon guarantees that (2) will always be TRUE and (3) will always be sRGB, which makes this very simple!
+    
+    'Start by opening a pdStream instance on the target file, then writing a fixed-size header.
+    Set m_Stream = New pdStream
+    If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, optimizeAccess:=OptimizeSequentialAccess)) Then
+        InternalError FUNC_NAME, "couldn't initialize stream on target file"
+        SaveQOI_ToFile = False
+        Exit Function
+    End If
+    
+    'Before writing the header, scan the source image to see if it contains any non-opaque pixels.
+    ' (If it does NOT, we can omit the alpha channel entirely.)
+    Dim srcHasAlpha As Boolean
+    srcHasAlpha = DIBs.IsDIBTransparent(srcDIB)
+    
+    ' qoi_header {
+    '    char magic[4]; // magic bytes "qoif"
+    '    uint32_t width; // image width in pixels (BE)
+    '    uint32_t height; // image height in pixels (BE)
+    '    uint8_t channels; // 3 = RGB, 4 = RGBA
+    '    uint8_t colorspace; // 0 = sRGB with linear alpha, 1 = all channels linear
+    ' };
+    With m_Stream
+        .WriteString_ASCII "qoif"
+        .WriteLong_BE srcDIB.GetDIBWidth
+        .WriteLong_BE srcDIB.GetDIBHeight
+        .WriteByte IIf(srcHasAlpha, 4, 3)
+        .WriteByte cs_sRGB
+    End With
+    
+    'Per the spec, the decoder and encoder must keep a running 64-color hash table of the last
+    ' 64 colors "encountered" (e.g. colors with unique hashes).
+    Dim prevPixels(0 To 63) As RGBQuad
+    Dim indexPos As Long
+    
+    'Track the immediately previous color with both an RGB int (for fast compares)...
+    Dim prevRGB As Long
+    
+    '...and individual ints (because we need to do wraparound math which is cumbersome with bytes in VB6)
+    Dim prevR As Long, prevG As Long, prevB As Long, prevA As Long
+    prevR = 0
+    prevG = 0
+    prevB = 0
+    prevA = 255
+    
+    Dim curPixel As RGBQuad, curRGB As Long
+    Dim curR As Long, curG As Long, curB As Long, curA As Long
+    
+    'QOI treats the image as a constant pixel stream (scanlines do not matter)
+    Dim srcPixels() As RGBQuad, srcSA As SafeArray1D
+    srcDIB.WrapRGBQuadArrayAroundDIB_1D srcPixels, srcSA
+    
+    'Simple pixel offsets will be tracked to measure progress
+    Dim srcOffset As Long: srcOffset = 0
+    Dim numPixels As Long: numPixels = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
+    
+    'Instead of writing bytes directly to the stream, we'll write them to a local array
+    ' and flush the array out to file in arbitrary length chunks (I'm using 64k here,
+    ' a number that was plucked out of thin air).
+    Const FLUSH_BYTE_LIMIT As Long = 65536
+    Dim dstBytes() As Byte
+    ReDim dstBytes(0 To 65552) As Byte  'Add a few extra bytes for safety, since we flush after adding new data (max 6 bytes in a single pass)
+    Dim dstOffset As Long: dstOffset = 0
+    
+    'RLE runs will be automatically detected and used preferentially
+    Dim curRun As Long: curRun = 0
+    
+    'Start encoding!
+    Do
+        
+        curPixel = srcPixels(srcOffset)
+        
+        'Always start by checking for duplicates of the previous pixel
+        curRGB = RGB(curPixel.Red, curPixel.Green, curPixel.Blue)
+        If (curRGB = prevRGB) And (curPixel.Alpha = prevA) Then
+            
+            curRun = curRun + 1
+            
+            'Check for two states:
+            ' 1) Max size of possible RLE (62 per the spec)
+            ' 2) EOF
+            'Either of these indicate an end of run, which means we must write this run
+            ' to file and reset the run counter.
+            If (curRun = 62) Or (srcOffset = (numPixels - 1)) Then
+                dstBytes(dstOffset) = QOI_OP_RUN Or (curRun - 1)
+                dstOffset = dstOffset + 1
+                curRun = 0
+            End If
+            
+        'This pixel does *not* match the previous pixel
+        Else
+        
+            'If this pixel breaks a running RLE segment, write the in-progress RLE segment
+            ' before continuing to process this pixel.
+            If (curRun > 0) Then
+                dstBytes(dstOffset) = QOI_OP_RUN Or (curRun - 1)
+                dstOffset = dstOffset + 1
+                curRun = 0
+            End If
+            
+            'Grab int versions of each channel (we need them for anything involving math)
+            With curPixel
+                curB = .Blue
+                curG = .Green
+                curR = .Red
+                curA = .Alpha
+            End With
+            
+            'Next, check to see if this pixel matches its partner in the hash table
+            indexPos = (curR * 3 + curG * 5 + curB * 7 + curA * 11) And QOI_MASK_L6
+            If (curRGB = RGB(prevPixels(indexPos).Red, prevPixels(indexPos).Green, prevPixels(indexPos).Blue)) And (curA = prevPixels(indexPos).Alpha) Then
+                dstBytes(dstOffset) = QOI_OP_INDEX Or indexPos
+                dstOffset = dstOffset + 1
+            Else
+                
+                'Hash table failed.  Update its table entry with this pixel.
+                prevPixels(indexPos) = curPixel
+                
+                'Next, look for mismatched alpha.  All diff flags operate on color channels.
+                ' Alpha changes require an explicit RGBA entry.
+                If (curA <> prevA) Then
+                    dstBytes(dstOffset) = QOI_OP_RGBA
+                    dstBytes(dstOffset + 1) = curR
+                    dstBytes(dstOffset + 2) = curG
+                    dstBytes(dstOffset + 3) = curB
+                    dstBytes(dstOffset + 4) = curA
+                    dstOffset = dstOffset + 5
+                Else
+                    
+                    'Alpha matches, which means we may be able to get away with a diff calculation
+                    ' instead of an explicit color entry.
+                    
+                    'Calculate RGB diffs now
+                    Dim rDiff As Long, gDiff As Long, bDiff As Long
+                    rDiff = curR - prevR
+                    gDiff = curG - prevG
+                    bDiff = curB - prevB
+                    
+                    'Calculate two more offsets based on the g channel (one diff formula requires these)
+                    Dim rgDiff As Long, bgDiff As Long
+                    rgDiff = rDiff - gDiff
+                    bgDiff = bDiff - gDiff
+                    
+                    'See if we can get away with a 1-byte diff indicator
+                    If ((rDiff > -3) And (rDiff < 2) And (gDiff > -3) And (gDiff < 2) And (bDiff > -3) And (bDiff < 2)) Then
+                        dstBytes(dstOffset) = QOI_OP_DIFF Or ((rDiff + 2) * 16) Or ((gDiff + 2) * 4) Or (bDiff + 2)
+                        dstOffset = dstOffset + 1
+                        
+                    'Next, see if we can get away with a 2-byte diff indicator
+                    ElseIf ((rgDiff > -9) And (rgDiff < 8) And (gDiff > -33) And (gDiff < 32) And (bgDiff > -9) And (bgDiff < 8)) Then
+                        dstBytes(dstOffset) = QOI_OP_LUMA Or (gDiff + 32)
+                        dstBytes(dstOffset + 1) = ((rgDiff + 8) * 16) Or (bgDiff + 8)
+                        dstOffset = dstOffset + 2
+                    
+                    'The difference is too large for a diff indicator; write an explicit RGB triplet
+                    Else
+                        dstBytes(dstOffset) = QOI_OP_RGB
+                        dstBytes(dstOffset + 1) = curR
+                        dstBytes(dstOffset + 2) = curG
+                        dstBytes(dstOffset + 3) = curB
+                        dstOffset = dstOffset + 4
+                    End If
+                
+                '/end curA <> prevA
+                End If
+            
+            '/end curPixel = prevPixels(indexPos)
+            End If
+            
+            'Update previous pixel data before continuing
+            prevRGB = curRGB
+            prevR = curR
+            prevG = curG
+            prevB = curB
+            prevA = curA
+            
+        End If
+        
+        'Increment source pixel counter (destination pixel counter is not used)
+        srcOffset = srcOffset + 1
+        
+        'If we have [arbitrary amount] worth of data, flush it to the stream and reset our
+        ' intermediary buffer offset.
+        If (dstOffset > FLUSH_BYTE_LIMIT) Then
+            m_Stream.WriteBytesFromPointer VarPtr(dstBytes(0)), dstOffset
+            dstOffset = 0
+        End If
+        
+    Loop While (srcOffset < numPixels)
+    
+    'If any bytes remain, flush them immediately
+    If (dstOffset > 0) Then
+        m_Stream.WriteBytesFromPointer VarPtr(dstBytes(0)), dstOffset
+        dstOffset = 0
+    End If
+        
+    'Free unsafe array reference
+    srcDIB.UnwrapRGBQuadArrayFromDIB srcPixels
+    
+    'End the file with a mandatory 8-byte trailer
+    Dim i As Long
+    For i = 0 To 6
+        m_Stream.WriteByte 0
+    Next i
+    m_Stream.WriteByte 1
+    
+    'Finished!
+    m_Stream.StopStream
+    SaveQOI_ToFile = True
+    Exit Function
+    
+SaveFailed:
+    SaveQOI_ToFile = False
+    InternalError FUNC_NAME, "internal VB error #" & Err.Number & ": " & Err.Description
     
 End Function
 
