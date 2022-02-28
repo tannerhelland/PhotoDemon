@@ -3550,7 +3550,15 @@ Private Sub RenderSelectionRegionFills(ByVal currentSelectionIncomplete As Boole
     Dim interiorFillPref As PD_SelectionRenderMode, renderInteriorRegion As Boolean
     interiorFillPref = SelectionUI.GetUISetting_InteriorFillMode()
     If (interiorFillPref = pdsrm_Sometimes) Then
+        
         renderInteriorRegion = m_CompositeActive And SelectionUI.IsMouseDown And (Not currentSelectionIncomplete)
+        
+        'Perfom an extra check for interior fills on "magic wand".  We only fill the interior region during
+        ' _MouseMove events in this case, to prevent an annoying "flicker" on each click.
+        If renderInteriorRegion And (Me.GetSelectionShape = ss_Wand) Then
+            renderInteriorRegion = SelectionUI.HasMouseMoved()
+        End If
+        
     Else
         renderInteriorRegion = (interiorFillPref = pdsrm_Always)
     End If

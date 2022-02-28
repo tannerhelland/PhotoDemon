@@ -68,9 +68,9 @@ Private m_DblClickOccurred As Boolean
 ' then resume processing after any actions triggered by _MouseUp finish.
 Private m_IgnoreUserInput As Boolean
 
-'The selection engine can query us about MouseDown state.  (This changes the way certain selection
-' elements are rendered.)
-Private m_MouseDown As Boolean
+'The selection engine can query us about MouseDown and Move state.
+' (This changes the way certain selection elements are rendered.)
+Private m_MouseDown As Boolean, m_HasMouseMoved As Boolean
 
 'Hotkeys can be used to temporarily trigger a switch to "add" or "subtract" selection mode.
 ' When these hotkeys are released, we restore the user's original combine mode.
@@ -303,6 +303,10 @@ Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSe
     End Select
     
 End Sub
+
+Public Function HasMouseMoved() As Boolean
+    HasMouseMoved = m_HasMouseMoved
+End Function
 
 'Given an (x, y) pair in IMAGE coordinate space (not screen or canvas space), return a constant if the point is a valid
 ' "point of interest" for the active selection.  Standard UI mouse distances are allowed (meaning zoom is factored into the
@@ -706,6 +710,7 @@ End Sub
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
         
     m_MouseDown = True
+    m_HasMouseMoved = False
         
     If m_IgnoreUserInput Then Exit Sub
     
@@ -884,7 +889,8 @@ End Sub
 Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
         
     If m_IgnoreUserInput Then Exit Sub
-        
+    m_HasMouseMoved = True
+    
     'Handling varies based on the current mouse state, obviously.
     If lmbState Then
         
@@ -960,7 +966,8 @@ End Sub
 Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
         
     m_MouseDown = False
-        
+    m_HasMouseMoved = False
+    
     'If a double-click just occurred, reset the flag and exit - do NOT process this click further
     If m_DblClickOccurred Then
         m_DblClickOccurred = False
