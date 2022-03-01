@@ -242,12 +242,7 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     'Pixel offsets will be tracked to avoid OOB on bad files
     Dim dstOffset As Long: dstOffset = 0
     Dim numPixels As Long: numPixels = m_qoiWidth * m_qoiHeight
-    
-    'A few different read values are used, in part because we need to swizzle from RGBA to BGRA order
-    Dim curPixel As RGBQuad, tmpQuad As RGBQuad
-    Dim nextByte As Long
-    Dim tmpColor As Long
-    Dim curRun As Long
+    Dim nextByte As Long, curRun As Long
     
     'For perf reasons, we don't want to tap the stream object for single-byte reads.
     ' Instead, grab the entire run of bytes and store it locally.

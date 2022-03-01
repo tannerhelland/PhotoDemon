@@ -3,10 +3,8 @@ Attribute VB_Name = "DIBs"
 'DIB Support Functions
 'Copyright 2012-2022 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
-'Last updated: 15/October/21
-'Last update: new functions for comparing two DIBs and outputting a new DIB with the lowest-entropy bits
-'             from either input stream (we use this during animation export to determine ideal strategies
-'             when pixel-blanking back-to-back frames)
+'Last updated: 01/March/22
+'Last update: new global function for swizzling R/B channels
 '
 'This module contains support functions for the pdDIB class.  In old versions of PD,
 ' these functions were provided by pdDIB, but there's no sense cluttering up that class
@@ -2811,6 +2809,38 @@ Public Sub ReverseScanlines(ByRef dstDIB As pdDIB)
         CopyMemoryStrict endPtr - y * scanlineSize, VarPtr(pxScanline(0)), scanlineSize
         
     Next y
+    
+End Sub
+
+'Swap red and blue channels, to convert between RGBA <--> BGRA.
+' Premultiplication status is not affected by this operation.
+Public Sub SwizzleBR(ByRef srcDIB As pdDIB)
+
+    If (srcDIB Is Nothing) Then Exit Sub
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim numColors As Long
+            numColors = srcDIB.GetDIBStride * srcDIB.GetDIBHeight - 1
+            
+            Dim pxData() As Byte, tmpSA As SafeArray1D
+            srcDIB.WrapArrayAroundDIB_1D pxData, tmpSA
+                
+            Dim x As Long, tmpColor As Byte
+            For x = 0 To numColors Step 4
+                tmpColor = pxData(x)
+                pxData(x) = pxData(x + 2)
+                pxData(x + 2) = tmpColor
+            Next x
+            
+            srcDIB.UnwrapArrayFromDIB pxData
+            
+        '/Ignore empty DIBs
+        End If
+    
+    '/Ignore non-32-bpp data
+    End If
     
 End Sub
 

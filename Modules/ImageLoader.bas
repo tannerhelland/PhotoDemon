@@ -3,13 +3,13 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 07/January/21
-'Last update: PSP (PaintShop Pro) import support is pretty much complete!
+'Last updated: 01/March/22
+'Last update: wrap up work on SVG import
 '
-'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
-' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
-' They will intelligently drop into this module as necessary, sparing you the messy work of having to handle
-' format-specific details (which are many).
+'This module provides low-level "import" functionality for importing image files into PD.
+' You will not generally want to interface with this module directly; instead, rely on the
+' high-level functions in the "Loading" module. They will intelligently drop into this module
+' as necessary, sparing you the messy work of handling format-specific import details.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -19,8 +19,8 @@ Attribute VB_Name = "ImageImporter"
 Option Explicit
 
 'PhotoDemon now provides many of its own image format parsers.  You can disable individual
-' formats for testing purposes, but note that fallback methods like FreeImage and GDI+
-' *CANNOT* read most of these formats.  If you encounter problems with a specific image format,
+' formats for testing purposes, but note that fallback methods like GDI+ *CANNOT* read most
+' (if any) of these formats.  If you encounter problems with a specific image format,
 ' PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
@@ -34,6 +34,7 @@ Private Const USE_INTERNAL_PARSER_QOI As Boolean = True
 'PNGs get some special preference due to their ubiquity; a persistent class enables better caching
 Private m_PNG As pdPNG
 
+'Similarly, JPEG auto-rotate behavior is persistently cached
 Private m_JpegObeyEXIFOrientation As PD_BOOL
 
 'Some user preferences control how image importing behaves.  Because these preferences are accessed frequently, we cache them
@@ -50,13 +51,12 @@ Public Function GetImportPref_JPEGOrientation() As Boolean
     GetImportPref_JPEGOrientation = (m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
 End Function
 
-'PDI loading.
-' "PhotoDemon Image" files are the only format PD supports for saving layered images.
-' (PDI to PhotoDemon is like PSD to PhotoShop, or XCF to GIMP.)
+'PDI loading.  PDI is PhotoDemon's native format, e.g. PDI is to PhotoDemon what PSD is to PhotoShop,
+' or XCF to GIMP.
 '
 'Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used
 ' to store undo/redo data, and when a PDI file is loaded as part of an Undo/Redo action,
-' we want to ignore certain segments in the file (e.g. settings like "LastSaveFormat"
+' we deliberately ignore certain segments in the file (e.g. settings like "LastSaveFormat"
 ' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer,
 ' and it tells it to ignore certain settings.
 Public Function LoadPDI_Normal(ByRef pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
@@ -681,71 +681,35 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
     
 End Function
 
-Public Function IsFileSVGCandidate(ByRef imagePath As String) As Boolean
-    IsFileSVGCandidate = Strings.StringsEqual(Right$(imagePath, 3), "svg", True)
-    
-    'Compressed SVG files are not currently supported.  (For them to work, we'd need to decompress to a temp file, which causes
-    ' some messy interaction details with ExifTool - we'll deal with this in the future.)
-    'If (Not IsFileSVGCandidate) Then IsFileSVGCandidate = CBool(StrComp(LCase$(Right$(imagePath, 4)), "svgz", vbBinaryCompare) = 0)
-End Function
-
-'SVG support is *experimental only*!  This function should not be enabled in production builds.
+'SVG support is primarily handled by the 3rd-party resvg library
 Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadSVGFail
     
-    'In the future, we'll add meaningful heuristics, but for now, don't even attempt a load unless the file extension matches.
-    If IsFileSVGCandidate(imagePath) Then
+    'For now, we rely on proper file extensions before handing data off to resvg
+    If Plugin_resvg.IsResvgEnabled() Then
         
-        PDDebug.LogAction "Waiting for SVG parsing to complete..."
+        LoadSVG = Plugin_resvg.LoadSVG_FromFile(imagePath, dstImage, dstDIB)
         
-        'Hang out while we wait for ExifTool to finish processing this image's metadata
-        Do While (Not dstImage.ImgMetadata.HasMetadata)
-            DoEvents
-            If ExifTool.IsMetadataFinished Then
-                dstImage.ImgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, dstImage.imageID
-            End If
-        Loop
+        'If successful, set format-specific flags in the parent pdImage object
+        If LoadSVG Then
         
-        'Retrieve the target SVG's width and height
-        Dim svgWidth As String, svgHeight As String
-        svgWidth = dstImage.ImgMetadata.GetTagValue("SVG:ImageWidth", vbBinaryCompare, True)
-        svgHeight = dstImage.ImgMetadata.GetTagValue("SVG:ImageHeight", vbBinaryCompare, True)
-        
-        'If there's a viewbox, grab it too
-        Dim svgHasViewbox As Boolean
-        svgHasViewbox = dstImage.ImgMetadata.DoesTagExistFullName("SVG:ViewBox", , vbBinaryCompare)
-        
-        Dim svgWidthL As Long, svgHeightL As Long
-        If (Len(svgWidth) <> 0) Then
+            dstImage.SetOriginalFileFormat PDIF_SVG
+            dstImage.NotifyImageChanged UNDO_Everything
+            dstImage.SetOriginalColorDepth 32
+            dstImage.SetOriginalGrayscale False
+            dstImage.SetDPI 96, 96
             
-            'Check for sizes defined as percentages (possible when a view box is specified)
-            If (InStr(1, svgWidth, "%", vbBinaryCompare) <> 0) Then
-                'TODO: grab width/height from viewbox
-                svgWidthL = 100
-            Else
-                Debug.Print "HERE 2", InStr(1, svgWidth, "%", vbBinaryCompare)
-                svgWidthL = CLng(svgWidth)
-            End If
+            'Assume alpha is present on 32-bpp images; assume it is *not* present if the SVG fills
+            ' the entire visible area.
+            dstImage.SetOriginalAlpha DIBs.IsDIBTransparent(dstDIB)
+            
+            'SVG files don't currently support color management
+            dstDIB.SetColorManagementState cms_ProfileConverted
             
         Else
-            svgWidthL = 100
+            PDDebug.LogAction "resvg failed; SVG load abandoned"
         End If
-        
-        If (Len(svgHeight) <> 0) Then
-            If (InStr(1, svgHeight, "%", vbBinaryCompare) <> 0) Then
-                svgHeightL = 100    'TODO: grab height/height from viewbox
-            Else
-                svgHeightL = CLng(svgHeight)
-            End If
-            
-        Else
-            svgHeightL = 100
-        End If
-        
-        LoadSVG = True
-        dstDIB.CreateBlank svgWidthL, svgHeightL, 32, vbWhite, 255
-        dstDIB.SetInitialAlphaPremultiplicationState True
         
     Else
         LoadSVG = False
@@ -927,17 +891,6 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     'Before jumping out to a 3rd-party library, check for any image formats that we must decode using internal plugins.
     
-    'SVG support is just experimental at present!
-    CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
-    If CascadeLoadGenericImage Then
-        decoderUsed = id_SVGParser
-        dstImage.SetOriginalFileFormat PDIF_SVG
-        dstImage.SetDPI 96, 96
-        dstImage.SetOriginalColorDepth 32
-        dstImage.SetOriginalGrayscale False
-        dstImage.SetOriginalAlpha True
-    End If
-    
     'PD's internal PNG/APNG parser is preferred for all PNG images.  For backwards compatibility reasons,
     ' it does *not* rely on the .png extension.  (Instead, it will manually verify the PNG signature,
     ' then work from there.)
@@ -1086,6 +1039,15 @@ LibAVIFDidntWork:
             dstImage.SetOriginalFileFormat PDIF_QOI
         End If
     End If
+	
+    'SVG/Z support was added in v9.0
+    If (Not CascadeLoadGenericImage) And Plugin_resvg.IsFileSVGCandidate(srcFile) Then
+        CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_resvg
+            dstImage.SetOriginalFileFormat PDIF_SVG
+		End If
+	End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
