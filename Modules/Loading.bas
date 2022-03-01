@@ -803,6 +803,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "libavif plugin"
         Case id_libwebp
             GetDecoderName = "libwebp plugin"
+        Case id_resvg
+            GetDecoderName = "resvg plugin"
         Case Else
             GetDecoderName = "unknown?!"
     End Select

@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2022 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 22/January/22
-'Last update: update zstd to latest 1.5.2
+'Last updated: 28/February/22
+'Last update: add resvg
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' A number of third-party libraries are required for correct program operation.
@@ -26,7 +26,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST update this.  PD iterates plugins in order, so if
 ' you do not update this, the plugin at the end of the chain (probably zstd) won't get
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 12
+Private Const CORE_PLUGIN_COUNT As Long = 13
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
@@ -42,12 +42,13 @@ Public Enum CORE_PLUGINS
     CCP_LittleCMS
     CCP_lz4
     CCP_pspiHost
+    CCP_resvg
     CCP_zstd
 End Enum
 
 #If False Then
     Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_zstd = 0
+    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_resvg = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -62,6 +63,7 @@ Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.9"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.12.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10903"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
+Private Const EXPECTED_RESVG_VERSION As String = "0.22"
 Private Const EXPECTED_WEBP_VERSION As String = "1.2.1"
 Private Const EXPECTED_ZSTD_VERSION As String = "10502"
 
@@ -208,6 +210,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "pspiHost.dll"
         Case CCP_libwebp
             GetPluginFilename = "libwebp.dll"
+        Case CCP_resvg
+            GetPluginFilename = "resvg.dll"
         Case CCP_zstd
             GetPluginFilename = "libzstd.dll"
     End Select
@@ -237,6 +241,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "pspiHost"
         Case CCP_libwebp
             GetPluginName = "libwebp"
+        Case CCP_resvg
+            GetPluginName = "resvg"
         Case CCP_zstd
             GetPluginName = "zstd"
         Case Else
@@ -262,40 +268,33 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_AvifImport
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(False)
         
-        'CharLS provides a dedicated version-checking function
         Case CCP_CharLS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_CharLS.GetVersion()
         
-        'ExifTool can write its version number to stdout
         Case CCP_ExifTool
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = ExifTool.GetExifToolVersion()
             
-        'EZTwain provides a dedicated version-checking function
         Case CCP_EZTwain
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_EZTwain.GetEZTwainVersion()
         
-        'libdeflate does not export a version-checking function, and it is compiled without version info.
-        ' We just hard-code a version check now, as its API is stable and future versions are unlikely to change that.
         Case CCP_libdeflate
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
         
-        'LittleCMS provides a dedicated version-checking function
         Case CCP_LittleCMS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
         
-        'LZ4 provides a dedicated version-checking function
         Case CCP_lz4
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_lz4.GetLz4Version()
             
-        'pspiHost returns a 3-char version string
         Case CCP_pspiHost
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
             
-        'libwebp provides a dedicated version-checking function
         Case CCP_libwebp
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_WebP.GetVersion()
-            
-        'zstd provides a dedicated version-checking function
+        
+        Case CCP_resvg
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_resvg.GetVersion()
+        
         Case CCP_zstd
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_zstd.GetZstdVersion()
         
@@ -355,6 +354,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
             dstStringStack.AddString "libwebpdemux.dll"
             dstStringStack.AddString "libwebp-LICENSE.txt"
             dstStringStack.AddString "libwebpmux.dll"
+        
+        Case CCP_resvg
+            dstStringStack.AddString "resvg-LICENSE.txt"
             
         Case CCP_zstd
             dstStringStack.AddString "libzstd-LICENSE.txt"
@@ -403,6 +405,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
         Case CCP_libwebp
             IsPluginCurrentlyEnabled = Plugin_WebP.IsWebPEnabled()
+        Case CCP_resvg
+            IsPluginCurrentlyEnabled = Plugin_resvg.IsResvgEnabled()
         Case CCP_zstd
             IsPluginCurrentlyEnabled = m_ZstdEnabled
     End Select
@@ -435,6 +439,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             Plugin_8bf.ForciblySetAvailability newEnabledState
         Case CCP_libwebp
             Plugin_WebP.ForciblySetAvailability newEnabledState
+        Case CCP_resvg
+            Plugin_resvg.ForciblySetAvailability newEnabledState
         Case CCP_zstd
             m_ZstdEnabled = newEnabledState
     End Select
@@ -473,6 +479,8 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = False
         Case CCP_libwebp
             IsPluginHighPriority = False
+        Case CCP_resvg
+            IsPluginHighPriority = False
         Case CCP_zstd
             IsPluginHighPriority = True
     End Select
@@ -504,6 +512,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_PSPI_VERSION
         Case CCP_libwebp
             ExpectedPluginVersion = EXPECTED_WEBP_VERSION
+        Case CCP_resvg
+            ExpectedPluginVersion = EXPECTED_RESVG_VERSION
         Case CCP_zstd
             ExpectedPluginVersion = EXPECTED_ZSTD_VERSION
     End Select
@@ -534,6 +544,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
         Case CCP_libwebp
             GetPluginHomepage = "https://developers.google.com/speed/webp"
+        Case CCP_resvg
+            GetPluginHomepage = "https://github.com/RazrFalcon/resvg"
         Case CCP_zstd
             GetPluginHomepage = "https://facebook.github.io/zstd/"
     End Select
@@ -564,6 +576,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_libwebp
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_resvg
+            GetPluginLicenseName = g_Language.TranslateMessage("Mozilla Public License 2.0")
         Case CCP_zstd
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
     End Select
@@ -594,6 +608,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
         Case CCP_libwebp
             GetPluginLicenseURL = "https://github.com/webmproject/libwebp/blob/master/COPYING"
+        Case CCP_resvg
+            GetPluginLicenseURL = "https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt"
         Case CCP_zstd
             GetPluginLicenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE"
     End Select
@@ -664,9 +680,12 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             
         Case CCP_libwebp
             initializationSuccessful = Plugin_WebP.InitializeEngine(PluginManager.GetPluginPath)
-            
+        
         Case CCP_pspiHost
             initializationSuccessful = Plugin_8bf.InitializeEngine(PluginManager.GetPluginPath)
+            
+        Case CCP_resvg
+            initializationSuccessful = Plugin_resvg.InitializeEngine(PluginManager.GetPluginPath)
             
     End Select
 
@@ -712,6 +731,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             
         Case CCP_libwebp
             Plugin_WebP.ForciblySetAvailability pluginState
+        
+        Case CCP_resvg
+            Plugin_resvg.ForciblySetAvailability pluginState
         
         Case CCP_zstd
             m_ZstdEnabled = pluginState
@@ -837,15 +859,18 @@ Public Sub TerminateAllPlugins()
     Plugin_8bf.ReleaseEngine
     PDDebug.LogAction "pspiHost released"
     
+    Plugin_WebP.ReleaseEngine
+    PDDebug.LogAction "libwebp released"
+    
+    Plugin_resvg.ReleaseEngine
+    PDDebug.LogAction "resvg released"
+    
     Plugin_FreeImage.ReleaseFreeImage
     ImageFormats.SetFreeImageEnabled False
     PDDebug.LogAction "FreeImage released"
     
     LittleCMS.ReleaseLCMS
     PDDebug.LogAction "LittleCMS released"
-    
-    Plugin_WebP.ReleaseEngine
-    PDDebug.LogAction "libwebp released"
     
     If m_LibDeflateEnabled Or m_ZstdEnabled Or m_lz4Enabled Then
         Compression.StopCompressionEngines

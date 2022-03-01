@@ -711,16 +711,8 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     End If
     
     'If the user wants us to extract unknown tags, do so now.
-    ' IMPORTANT NOTE: this behavior is overridden if a file appears to be SVG.  ExifTool will happily parse
-    ' SVG files for us, but it will return all SVG entities as "unknowns", which we must handle manually.
-    If ImageImporter.IsFileSVGCandidate(srcFile) Then
-        cmdParams.AppendLine "-U"
-        
-    'If this file is *not* an SVG candidate, rely on the user's setting to control unknown tag behavior.
-    Else
-        If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
-            cmdParams.AppendLine "-u"
-        End If
+    If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
+        cmdParams.AppendLine "-u"
     End If
     
     'If the user wants us to expose duplicate tags, do so now.  (Default behavior is to suppress duplicates.)

@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 21/July/21
-'Last update: ongoing work on AVIF import/export support
+'Last updated: 01/March/22
+'Last update: add import support for SVG/Z images
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -12,16 +12,16 @@ Attribute VB_Name = "ImageFormats"
 ' of importing and exporting.  Import/export lists are separately maintained, and the presence of a
 ' format in the Import category does not guarantee a similar presence in the Export category.
 '
-'Some esoteric formats rely on the external FreeImage.dll for loading and/or saving.  In some cases,
-' GDI+ is used preferentially over FreeImage (e.g. loading JPEGs; FreeImage has better coverage of
-' non-standard JPEG encodings, but GDI+ is significantly faster).  From this module alone, it won't
-' be clear which plugin, if any, is used to load a given file - for that, you'd need to consult the
-' relevant debug log after loading an image file.
+'Some esoteric formats rely on the external FreeImage.dll for loading and/or saving.  Similarly,
+' some formats support multiple import engines (e.g. PNGs are preferentially loaded by an internal
+' PNG decoder, but we could theoretically hand them off to GDI+ or FreeImage too).  From this
+' module alone, it won't be clear which engine or third-party library (if any) is used to load a
+' given format - for that, you'd need to consult the relevant debug log after loading an image file.
 '
-'Note also that as of 2021, many formats use native PhotoDemon-specific encoder/decoder classes.
+'Note also that as of 2020, many formats use native PhotoDemon-specific encoder/decoder classes.
 ' These formats are *always* available regardless of 3rd-party library status (but some formats
 ' may still require third-party libraries, e.g. PNG files use internal PD parsers, but still need
-' an external library for DEFLATE compression).
+' an external library for DEFLATE de/compression).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -30,7 +30,9 @@ Attribute VB_Name = "ImageFormats"
 
 Option Explicit
 
-'Is the FreeImage DLL available?
+'Is the FreeImage DLL available?  We store this value here because we fall back to FreeImage
+' for any images that don't load via traditional means (which provides last-ditch coverage for
+' esoteric and/or legacy formats).
 Private m_FreeImageEnabled As Boolean
 
 'Number of available input, output formats
@@ -307,8 +309,12 @@ Public Sub GenerateInputFormats()
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
         AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
         AddInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", PDIF_SGI
-        AddInputFormat "TGA - Truevision (TARGA)", "*.tga", PDIF_TARGA
     End If
+    
+    'resvg is required for SVG images
+    If Plugin_resvg.IsResvgEnabled() Then AddInputFormat "SVG - Scalable Vector Graphics", "*.svg;*.svgz", PDIF_SVG
+    
+    If m_FreeImageEnabled Then AddInputFormat "TGA - Truevision (TARGA)", "*.tga", PDIF_TARGA
     
     'FreeImage or GDI+ works for loading TIFFs
     AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
