@@ -4,7 +4,7 @@ Attribute VB_Name = "Plugin_resvg"
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/February/22
 'Last updated: 01/March/22
-'Last update: wrap up initial build
+'Last update: attempt to silently "rescue" malformed SVGs if they're just missing a namespace
 '
 'Per its documentation (available at https://github.com/RazrFalcon/resvg), resvg is...
 '
@@ -185,6 +185,10 @@ Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As L
 Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef fit_to As resvg_fit_to, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal fit_to As resvg_fit_to, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
+'A single persistent SVG options handle is maintained for the life of a session.
+' (Initializing this object is expensive because it needs to scan system fonts.)
+Private m_Options As Long
+
 'Library handle will be non-zero if all required dll(s) are available;
 ' you can also forcibly override the "availability" state by setting m_LibAvailable to FALSE.
 ' (This effectively disables run-time support in the UI.)
@@ -207,17 +211,22 @@ Public Function GetVersion() As String
 End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
-
-    Dim strLibPath As String
-    strLibPath = pathToDLLFolder & "resvg.dll"
-    m_LibHandle = VBHacks.LoadLib(strLibPath)
-    m_LibAvailable = (m_LibHandle <> 0)
-    InitializeEngine = m_LibAvailable
     
-    If InitializeEngine Then
-        PDDebug.LogAction "SVG support enabled"
+    'I don't currently know how to build resvg in an XP-compatible way.
+    ' As a result, its support is limited to Win Vista and above.
+    If OS.IsVistaOrLater Then
+        
+        Dim strLibPath As String
+        strLibPath = pathToDLLFolder & "resvg.dll"
+        m_LibHandle = VBHacks.LoadLib(strLibPath)
+        m_LibAvailable = (m_LibHandle <> 0)
+        InitializeEngine = m_LibAvailable
+        
+        If (Not InitializeEngine) Then PDDebug.LogAction "WARNING!  LoadLibraryW failed to load resvg.  Last DLL error: " & Err.LastDllError
+        
     Else
-        PDDebug.LogAction "WARNING!  LoadLibraryW failed to load resvg.  Last DLL error: " & Err.LastDllError
+        InitializeEngine = False
+        PDDebug.LogAction "resvg does not currently work on Windows XP"
     End If
     
 End Function
@@ -248,15 +257,18 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     'resvg_init_log();
     
     'Create a blank resvg options object
-    Dim svgOptions As Long
-    svgOptions = resvg_options_create()
-    
-    'Potentially expose this via UI, but we also need to initialize a system font list
-    ' (in case the SVG file embeds font data).  Note that there is a (potentially significant)
-    ' perf penalty to this.
-    resvg_options_load_system_fonts svgOptions
-    If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "System fonts ready for any embedded SVG text data"
-    
+    If (m_Options = 0) Then
+        
+        m_Options = resvg_options_create()
+        
+        'Potentially expose this via UI, but we also need to initialize a system font list
+        ' (in case the SVG file embeds font data).  Note that there is a (potentially significant)
+        ' perf penalty to this.
+        resvg_options_load_system_fonts m_Options
+        If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "System fonts ready for any embedded SVG text data"
+        
+    End If
+        
     'Pre-set any other options here, as desired...
     
     'Create a blank resvg render tree pointer, and note that this is the first call where we get
@@ -265,14 +277,63 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
     Dim utf8path() As Byte, utf8Len As Long
     Strings.UTF8FromString srcFile, utf8path, utf8Len
-    svgResult = resvg_parse_tree_from_file(VarPtr(utf8path(0)), svgOptions, svgTree)
+    svgResult = resvg_parse_tree_from_file(VarPtr(utf8path(0)), m_Options, svgTree)
     
     If (svgResult = RESVG_OK) Then
         If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "Successfully retrieved SVG tree: " & svgTree
     Else
-        InternalError vbNullString, svgResult
-        LoadSVG_FromFile = False
-        GoTo SafeCleanup
+        
+        'Check error state.  Some errors may be recoverable.
+        If (svgResult = RESVG_ERROR_PARSING_FAILED) Then
+            
+            'Modern SVGs must define a namespace, e.g. 'xmlns="http://www.w3.org/2000/svg"'.
+            ' Without this, they are considered malformed and most browsers/software will not
+            ' load them (including resvg).
+            '
+            'Unfortunately, many old SVG collections (like OpenClipArt) do not respect
+            ' this requirement.  Let's try to silently workaround the issue by checking for
+            ' a namespace, and if one isn't found, silently inserting one and re-trying the file.
+            Dim madeFileWorkAnyway As Boolean
+            madeFileWorkAnyway = False
+            
+            'Start by pulling the SVG into a VB string
+            Dim svgText As String
+            If Files.FileLoadAsString(srcFile, svgText, True) Then
+                
+                'Look for the <svg tag
+                Dim svgTopTagPos As Long, svgTopTagPosEnd As Long
+                svgTopTagPos = InStr(1, svgText, "<svg ", vbTextCompare)
+                
+                'Find the trailing position
+                If (svgTopTagPos > 0) Then svgTopTagPosEnd = InStr(svgTopTagPos, svgText, ">", vbBinaryCompare)
+                
+                'Search between the two positions for an xml namespace
+                Dim xmlnsPos As Long
+                xmlnsPos = InStr(svgTopTagPos, svgText, "xmlns", vbTextCompare)
+                
+                'No namespace found!  Silently insert one, then try loading the file again
+                If (xmlnsPos = 0) Then svgText = Left$(svgText, svgTopTagPos + 4) & " xmlns=""http://www.w3.org/2000/svg"" " & Right$(svgText, Len(svgText) - (svgTopTagPos + 4))
+                
+                Strings.UTF8FromString svgText, utf8path, utf8Len
+                svgResult = resvg_parse_tree_from_data(VarPtr(utf8path(0)), utf8Len, m_Options, svgTree)
+                madeFileWorkAnyway = (svgResult = RESVG_OK)
+                
+            End If
+            
+            'If we couldn't save the file, oh well
+            If (Not madeFileWorkAnyway) Then
+                InternalError vbNullString, svgResult
+                LoadSVG_FromFile = False
+                GoTo SafeCleanup
+            End If
+        
+        '/failed for some other reason than a bad parse
+        Else
+            InternalError vbNullString, svgResult
+            LoadSVG_FromFile = False
+            GoTo SafeCleanup
+        End If
+        
     End If
     
     'Can safely delete options here, I think?  (sample cairo file demonstrates this)
@@ -315,16 +376,24 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
 SafeCleanup:
 
     'On success OR failure, free any opaque references
-    If (svgOptions <> 0) Then resvg_options_destroy svgOptions
     If (svgTree <> 0) Then resvg_tree_destroy svgTree
 
 End Function
 
 Public Sub ReleaseEngine()
+    
+    'Free the persistent options handle, if it exists
+    If (m_Options <> 0) Then
+        resvg_options_destroy m_Options
+        m_Options = 0
+    End If
+    
+    'Free the library itself
     If (m_LibHandle <> 0) Then
         VBHacks.FreeLib m_LibHandle
         m_LibHandle = 0
     End If
+    
 End Sub
 
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As resvg_result = RESVG_OK)
