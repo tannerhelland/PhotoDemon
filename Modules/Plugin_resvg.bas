@@ -16,7 +16,8 @@ Attribute VB_Name = "Plugin_resvg"
 ' The copy of resvg.dll that ships with PhotoDemon is based on the 0.22.0 release and built against the
 ' i686-pc-windows-msvc rust target (for XP support).  It *must* be hand-edited to export stdcall funcs.
 ' (Normally I just use cdecl via DispCallFunc, but resvg returns some custom types that don't work
-' with DispCallFunc - so manually building against stdcall is necessary.)
+' with DispCallFunc - so manually building against stdcall is necessary.)  Note that some function decs
+' must also be rewritten to pass UDTs as references instead of values, as required by VB6.
 '
 'A full copy of the resvg license is available here:
 ' https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt
@@ -28,7 +29,9 @@ Attribute VB_Name = "Plugin_resvg"
 
 Option Explicit
 
-Private Const SVG_DEBUG_VERBOSE As Boolean = True
+'Information on individual resvg calls can be saved to the debug log via this constant;
+' please DISABLE in production builds
+Private Const SVG_DEBUG_VERBOSE As Boolean = False
 
 Private Enum resvg_result
     'Everything is ok.
@@ -55,7 +58,6 @@ End Enum
 
 'A "fit to" type.
 ' (All types produce proportional scaling.)
-
 Private Enum resvg_fit_to_type
     'Use an original image size.
     RESVG_FIT_TO_TYPE_ORIGINAL
@@ -102,14 +104,6 @@ End Enum
 #If False Then
     Private Const RESVG_TEXT_RENDERING_OPTIMIZE_SPEED = 0, RESVG_TEXT_RENDERING_OPTIMIZE_LEGIBILITY = 0, RESVG_TEXT_RENDERING_GEOMETRIC_PRECISION = 0
 #End If
-
-'An SVG to #resvg_render_tree conversion options.
-' Also, contains a fonts database used during text to path conversion.
-' (The database is empty by default.)
-'typedef struct resvg_options resvg_options;
-
-'An opaque pointer to the rendering tree.
-'typedef struct resvg_render_tree resvg_render_tree;
 
 'A 2D transform representation.
 Private Type resvg_transform
@@ -169,7 +163,7 @@ Private Declare Sub resvg_options_set_sans_serif_family Lib "resvg" (ByVal resvg
 Private Declare Sub resvg_options_set_cursive_family Lib "resvg" (ByVal resvg_options As Long, ByVal ptrToConstUtf8Family As Long)
 Private Declare Sub resvg_options_set_fantasy_family Lib "resvg" (ByVal resvg_options As Long, ByVal ptrToConstUtf8Family As Long)
 Private Declare Sub resvg_options_set_monospace_family Lib "resvg" (ByVal resvg_options As Long, ByVal ptrToConstUtf8Family As Long)
-Private Declare Sub resvg_options_set_languages Lib "resvg" (ByVal resvg_options As Long, ByVal ptrToConstUtf8Languages)
+Private Declare Sub resvg_options_set_languages Lib "resvg" (ByVal resvg_options As Long, ByVal ptrToConstUtf8Languages As Long)
 Private Declare Sub resvg_options_set_shape_rendering_mode Lib "resvg" (ByVal resvg_options As Long, ByVal newMode As resvg_shape_rendering)
 Private Declare Sub resvg_options_set_text_rendering_mode Lib "resvg" (ByVal resvg_options As Long, ByVal newMode As resvg_text_rendering)
 Private Declare Sub resvg_options_set_image_rendering_mode Lib "resvg" (ByVal resvg_options As Long, ByVal newMode As resvg_image_rendering)
