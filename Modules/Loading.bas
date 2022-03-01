@@ -3,15 +3,17 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 18/June/21
-'Last update: expand the internal QuickLoadToDIB function to cover all the esoteric formats PD now supports via internal decoders
+'Last updated: 01/March/22
+'Last update: add support for importing new layers from SVG/Z files
 '
-'This module provides high-level "load" functionality for getting image files into PD.  There are a number of different ways to do this;
-' for example, loading a user-facing image file is a horrifically complex affair, with lots of messy work involved in metadata parsing,
-' UI prep, Undo/Redo stuff, and more.  Conversely, loading an image file as a resource or internal image can bypass a lot of those steps.
+'This module provides high-level "load" functionality for getting image files into PD.
+' There are a number of different ways to do this; for example, loading a user-facing image
+' is a horrifically complex affair, with lots of messy work involved in metadata parsing,
+' UI prep, Undo/Redo stuff, and more.  Conversely, loading an image file as a resource or
+' internal image can bypass many of those steps.
 '
-'Note that these high-level functions call into a number of lower-level functions inside the ImageImporter module, and potentially various
-' plugin-specific interfaces (e.g. FreeImage).
+'Note that these high-level functions call into a number of lower-level functions inside
+' the ImageImporter module, and potentially various third-party libraries.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -639,7 +641,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             Set cQOI = New pdQOI
             If cQOI.IsFileQOI(imagePath, False, True) Then loadSuccessful = cQOI.LoadQOI_FromFile(imagePath, tmpPDImage, targetDIB)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
-            
+        
+        Case "SVG", "SVGZ"
+            If Plugin_resvg.IsResvgEnabled() Then
+                If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB)
+            End If
+        
         'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
         ' copying of the official libavif exe binaries (for example,
         ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
