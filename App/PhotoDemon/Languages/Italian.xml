@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.79</langversion>
+<langversion>8.0.80</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -2649,7 +2649,12 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <translation>Licenza MIT</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Mozilla Public License 2.0</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3624,7 +3629,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>Immagine importata</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -13718,10 +13723,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5376 phrases. -->
-<!-- 2782 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 11762 total words. -->
+<!-- As of this build, PhotoDemon contains 5379 phrases. -->
+<!-- 2784 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11765 total words. -->
 
 </pdData>

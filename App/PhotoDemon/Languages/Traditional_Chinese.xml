@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.255</langversion>
+<langversion>7.0.256</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -2624,7 +2624,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>MIT 授權</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 24 phrases. 19 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Mozilla Public License 2.0</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3586,7 +3591,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>匯入影像</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -13657,10 +13662,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5376 phrases. -->
-<!-- 2782 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 11762 total words. -->
+<!-- As of this build, PhotoDemon contains 5379 phrases. -->
+<!-- 2784 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 11765 total words. -->
 
 </pdData>
