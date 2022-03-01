@@ -368,6 +368,12 @@ Friend Sub WrapRGBQuadArrayAroundDIB(ByRef srcArray() As RGBQuad, ByRef srcSafeA
     PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
+Friend Sub WrapRGBQuadArrayAroundDIB_1D(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray1D)
+    PrepInternalLongSafeArray_Scanline srcSafeArray, 0
+    srcSafeArray.cElements = m_dibWidth * m_dibHeight
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
+End Sub
+
 Friend Sub WrapRGBQuadArrayAroundScanline(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
     PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)

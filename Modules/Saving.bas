@@ -3,17 +3,16 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/January/21
-'Last update: add support for PSP (Paintshop Pro) export
+'Last updated: 25/February/22
+'Last update: add QOI export
 '
-'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in
-' the GDI+ module for consistency's sake).  Export functions are sorted by file type, and most serve as relatively
-' lightweight wrappers corresponding functions in the FreeImage plugin.
+'This module handles high-level image export duties.  Low-level export functions
+' are generally located in the ImageExport module; see there for per-format details.
 '
-'The most important sub is PhotoDemon_SaveImage at the top of the module.  This sub is responsible for a multitude of
-' decision-making related to saving an image, including tasks like raising format-specific save dialogs, determining
-' what color-depth to use, and requesting MRU updates post-save.  Note that the raising of export dialogs can be
-' manually controlled by the forceOptionsDialog parameter.
+'The most important function here is PhotoDemon_SaveImage at the top of the module.
+' This function is responsible for a multitude of decision-making related to exporting
+' an image, including tasks like raising format-specific save dialogs, determining what
+' color-depth to use, and various post-save housekeeping (like MRU updates).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -405,12 +404,6 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
-    'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
-    ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.SetParamString saveParameters
-    
     Select Case outputPDIF
         
         Case PDIF_AVIF
@@ -462,6 +455,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_PSP
             ExportToSpecificFormat = ImageExporter.ExportPSP(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_QOI
+            ExportToSpecificFormat = ImageExporter.ExportQOI(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_TARGA
             ExportToSpecificFormat = ImageExporter.ExportTGA(srcImage, dstPath, saveParameters, metadataParameters)

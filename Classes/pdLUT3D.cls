@@ -15,13 +15,13 @@ Attribute VB_Exposed = False
 'PhotoDemon 3D LUT I/O class
 'Copyright 2020-2022 by Tanner Helland
 'Created: 23/October/20
-'Last updated: 02/November/20
-'Last update: add support for .look-format files, which are also supported by (and ship with) Photoshop
+'Last updated: 23/February/22
+'Last update: fix parsing issues on weirdly encoded 3rd-party .look files
 '
 'From the .CUBE spec:
 '
 '"Look-up tables (LUTs) are often used when converting an image from one color representation
-' to another-  for example, when converting between log and gamma encodings, changing color space,
+' to another - for example, when converting between log and gamma encodings, changing color space,
 ' applying color corrections, changing dynamic range, gamut mapping, exporting to an output device,
 ' or previewing how an image will be reproduced.
 '
@@ -773,8 +773,17 @@ Private Function LoadLUTFromFile_look(ByRef srcFile As String) As Boolean
             Set cXML = New pdSerialize
             cXML.SetParamString rawFileString
             
-            Dim lutText As String
-            If cXML.GetStringEx("LUT", lutText) Then
+            'Now, a bit of hackery.  I encountered an online LUT collection that included a bunch of
+            ' null "LUT" tags inside the preliminary shader segment of the .look file.  I don't know how
+            ' they managed to do this but it's probably the result of a garbage 3rd-party LUT generator.
+            '
+            'Rather than do a full-blown XML parse (which would require more work than I care to implement),
+            ' look for the *last* LUT tag in the file.  This will be the correct one.
+            Dim lutText As String, tmpPosition As Long
+            tmpPosition = InStrRev(rawFileString, "<LUT>", -1, vbTextCompare)
+            If (tmpPosition <= 0) Then tmpPosition = -1
+            
+            If cXML.GetStringEx("LUT", lutText, True, tmpPosition) Then
                 
                 'We need two values from the LUT section.
                 cXML.SetParamString lutText
@@ -895,7 +904,7 @@ Private Function LoadLUTFromFile_look(ByRef srcFile As String) As Boolean
                         
                         'Copy the bytes as-is into the float array
                         CopyMemoryStrict VarPtr(m_lut3D(0, 0, 0)), VarPtr(lutBytes(0)), m_LutSize * m_LutSize * m_LutSize * 4 * 3
-            
+                        
                     End If
                     
                 End If

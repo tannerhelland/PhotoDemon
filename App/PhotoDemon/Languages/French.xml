@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.566</langversion>
+<langversion>6.7.568</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2085,7 +2085,7 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>New layer from selection</original>
-<translation></translation>
+<translation>Nouveau calque à partir de la sélection</translation>
 </phrase>
 
 <phrase>
@@ -2296,12 +2296,12 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Warning</original>
-<translation></translation>
+<translation>Avertissement</translation>
 </phrase>
 
 <phrase>
 <original>Macro canceled.</original>
-<translation></translation>
+<translation>Macro annulée</translation>
 </phrase>
 
 <phrase>
@@ -2330,7 +2330,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Save macro</original>
-<translation></translation>
+<translation>Sauvegarder la macro</translation>
 </phrase>
 
 <phrase>
@@ -2345,12 +2345,12 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Open macro</original>
-<translation></translation>
+<translation>Ouvrir la macro</translation>
 </phrase>
 
 <phrase>
 <original>Loading macro</original>
-<translation></translation>
+<translation>Chargement de la macro</translation>
 </phrase>
 
 <phrase>
@@ -2360,12 +2360,12 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation></translation>
+<translation>Macro incompatible trouvée. Macro annulée.</translation>
 </phrase>
 
 <phrase>
 <original>Playing macro</original>
-<translation></translation>
+<translation>Macro en cours</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -2737,7 +2737,7 @@ Description: %2
 
 <phrase>
 <original>opacity</original>
-<translation>opacité </translation>
+<translation>opacité</translation>
 </phrase>
 
 <phrase>
@@ -2822,7 +2822,7 @@ Description: %2
 
 <phrase>
 <original>font (size unit)</original>
-<translation>police (unité de taille)</translation>
+<translation>police (taille)</translation>
 </phrase>
 
 <phrase>
@@ -2887,7 +2887,7 @@ Description: %2
 
 <phrase>
 <original>fill style</original>
-<translation>remplir avec le style</translation>
+<translation>style de remplissage</translation>
 </phrase>
 
 <phrase>
@@ -2897,22 +2897,22 @@ Description: %2
 
 <phrase>
 <original>outline style</original>
-<translation>style de contour</translation>
+<translation>style du contour</translation>
 </phrase>
 
 <phrase>
 <original>background style</original>
-<translation>style de fond</translation>
+<translation>style d'arrière plan</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation>bordure de fond</translation>
+<translation>bordure de l'arrière plan</translation>
 </phrase>
 
 <phrase>
 <original>background border style</original>
-<translation>style de bordure de fond</translation>
+<translation>style de bordure de l'arrière plan</translation>
 </phrase>
 
 <phrase>
@@ -2957,7 +2957,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation>mise en miroir</translation>
+<translation>reflection</translation>
 </phrase>
 
 <phrase>
@@ -3189,6 +3189,8 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 
 <!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
+<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Créer une sélection</translation>
@@ -3214,7 +3216,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Cliquez sur le premier point pour terminer la sélection polygonale</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3251,7 +3253,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Move selected pixels</original>
-<translation></translation>
+<translation>Déplacer les pixels sélectionnés</translation>
 </phrase>
 
 <phrase>
@@ -3301,7 +3303,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Target: selected pixels</original>
-<translation></translation>
+<translation>Cible: pixels sélectionnés</translation>
 </phrase>
 
 <phrase>
@@ -3463,7 +3465,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Redo (fast-forward to a later state)</original>
-<translation></translation>
+<translation>Refaire (retour rapide à l'ancien état)</translation>
 </phrase>
 
 <phrase>
@@ -3483,12 +3485,12 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation></translation>
+<translation>Epingler ce panneau ouvert</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>Les panneaux des boites à outils se referment automatiquement, mais vous pouvez en épingler un pour le garder ouvert. (les panneaux ouverts se refermeront toujours pour permuter vers d'autres outils ou de nouveaux panneaux)</translation>
 </phrase>
 
 <phrase>
@@ -5405,7 +5407,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Medium buttons</original>
-<translation></translation>
+<translation>Boutons moyens</translation>
 </phrase>
 
 <phrase>
@@ -7168,7 +7170,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>monochromatic</original>
-<translation>monochromes</translation>
+<translation>monochrome</translation>
 </phrase>
 
 <phrase>
@@ -7178,12 +7180,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation></translation>
+<translation>Vous pouvez modifier les paramètres de la langue et du thème à tout moment à partir du menu Outils.</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customatizations are available in the Window menu.</original>
-<translation></translation>
+<translation>Des personnalisations supplémentaires de l'interface sont disponibles dans le menu Fenêtre.</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -9371,7 +9373,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation></translation>
+<translation>préserver la structure d'origine des dossiers</translation>
 </phrase>
 
 <phrase>
@@ -9436,7 +9438,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation></translation>
+<translation>auto-détection des images animées</translation>
 </phrase>
 
 <phrase>
@@ -9456,7 +9458,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation></translation>
+<translation>paramétrer l'exportation pour les images animées</translation>
 </phrase>
 
 <phrase>
@@ -11564,7 +11566,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Zoom</original>
-<translation></translation>
+<translation>Zoom</translation>
 </phrase>
 
 <phrase>
@@ -11649,7 +11651,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Zoom tool</original>
-<translation></translation>
+<translation>Outil de zoom</translation>
 </phrase>
 
 <phrase>
@@ -11736,7 +11738,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>sample from</original>
-<translation></translation>
+<translation>échantillonner a partir de</translation>
 </phrase>
 
 <phrase>
@@ -11793,12 +11795,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
+<translation>après avoir cliqué</translation>
 </phrase>
 
 <phrase>
 <original>return to previous tool</original>
-<translation></translation>
+<translation>retour à l'outil précédent</translation>
 </phrase>
 
 <phrase>
@@ -11827,7 +11829,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>brush style</original>
-<translation></translation>
+<translation>style de brosse</translation>
 </phrase>
 
 <phrase>
@@ -11837,12 +11839,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>compare pixels by</original>
-<translation></translation>
+<translation>comparer les pixels par</translation>
 </phrase>
 
 <phrase>
 <original>fill area</original>
-<translation></translation>
+<translation>remplir la zone par</translation>
 </phrase>
 
 <phrase>
@@ -11889,7 +11891,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>center offset</original>
-<translation></translation>
+<translation>center l'offset</translation>
 </phrase>
 
 <phrase>
@@ -11921,7 +11923,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>modify measurement</original>
-<translation></translation>
+<translation>modifier la mesure</translation>
 </phrase>
 
 <phrase>
@@ -11941,7 +11943,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>clear points</original>
-<translation></translation>
+<translation>effacer les points</translation>
 </phrase>
 
 <phrase>
@@ -11956,7 +11958,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>use measurement to</original>
-<translation></translation>
+<translation>utiliser les mesures pour</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -11978,7 +11980,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>ignore transparent pixels</original>
-<translation></translation>
+<translation>ignorer les pixels transparents</translation>
 </phrase>
 
 <phrase>
@@ -12023,12 +12025,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>shear (x, y)</original>
-<translation></translation>
+<translation>incliner (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>auto select layer</original>
-<translation></translation>
+<translation>sélection automatique du calque</translation>
 </phrase>
 
 <phrase>
@@ -12038,12 +12040,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>copy</original>
-<translation></translation>
+<translation>copier</translation>
 </phrase>
 
 <phrase>
 <original>cut</original>
-<translation></translation>
+<translation>coller</translation>
 </phrase>
 
 <phrase>
@@ -12058,7 +12060,22 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
+<original>animate</original>
+<translation>animer</translation>
+</phrase>
+
+<phrase>
 <original>(no additional options)</original>
+<translation>( pas d'autres options )</translation>
+</phrase>
+
+<phrase>
+<original>fill interior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill exterior</original>
 <translation></translation>
 </phrase>
 
@@ -12074,7 +12091,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>round corners</original>
-<translation></translation>
+<translation>radius</translation>
 </phrase>
 
 <phrase>
@@ -12083,38 +12100,43 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>highlight</original>
-<translation>surligner</translation>
+<original>combine</original>
+<translation>combiner</translation>
 </phrase>
 
 <phrase>
-<original>lightbox</original>
-<translation>table lumineuse</translation>
+<original>New selection</original>
+<translation>Nouvelle sélection</translation>
 </phrase>
 
 <phrase>
-<original>ants</original>
-<translation>fourmis</translation>
+<original>Add to selection</original>
+<translation>Ajouter à la sélection</translation>
 </phrase>
 
 <phrase>
-<original>replace</original>
-<translation></translation>
+<original>Subtract from selection</original>
+<translation>Soustraire de la sélection</translation>
 </phrase>
 
 <phrase>
-<original>add</original>
-<translation></translation>
+<original>Intersect with selection</original>
+<translation>Intersectionner avec la selection</translation>
 </phrase>
 
 <phrase>
-<original>subtract</original>
-<translation></translation>
+<original>always</original>
+<translation>toujours</translation>
 </phrase>
 
 <phrase>
-<original>intersect</original>
-<translation></translation>
+<original>when combining</original>
+<translation>lors de la combinaison</translation>
+</phrase>
+
+<phrase>
+<original>never</original>
+<translation>jamais</translation>
 </phrase>
 
 <phrase>
@@ -12140,11 +12162,6 @@ Vous pouvez alors si besoin
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Bloquer cette valeur. (une seule valeur peut être bloquée à la fois. Si vous bloquez une nouvelle valeur, la précédente sera débloquée)</translation>
-</phrase>
-
-<phrase>
-<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
-<translation>Cliquez pour changer la façon dont les sélections sont rendues sur la zone de l'image. Cela n'a aucune incidence sur le contenu de la sélection - seulement la façon dont elles apparaissent lors de l'édition.</translation>
 </phrase>
 
 <phrase>
@@ -12174,7 +12191,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation></translation>
+<translation>Ce panneau peut s'ouvrir automatiquement lorsque vous modifiez ou créez une sélection.  Sur les petits écrans, cela peut ne pas être utile si cela masque une trop grande partie de la toile, vous pouvez donc désactiver ce comportement ici.</translation>
 </phrase>
 
 <phrase>
@@ -12207,16 +12224,16 @@ Vous pouvez alors si besoin
 <translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajouté à la sélection actuelle.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
-<translation></translation>
+<translation>cliquer pour éditer le texte</translation>
 </phrase>
 
 <phrase>
 <original>edit text</original>
-<translation></translation>
+<translation>éditer le texte</translation>
 </phrase>
 
 <phrase>
@@ -12273,12 +12290,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>gigue (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>inflate</original>
-<translation></translation>
+<translation>contourer</translation>
 </phrase>
 
 <phrase>
@@ -12288,12 +12305,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>horizontal padding</original>
-<translation></translation>
+<translation>écart horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation></translation>
+<translation>écart vertical</translation>
 </phrase>
 
 <phrase>
@@ -12308,7 +12325,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>outline background</original>
-<translation></translation>
+<translation>contour d'arrière plan</translation>
 </phrase>
 
 <phrase>
@@ -12318,12 +12335,12 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>fill and outline</original>
-<translation></translation>
+<translation>remplissage et contour</translation>
 </phrase>
 
 <phrase>
 <original>click to edit</original>
-<translation></translation>
+<translation>cliquer pour éditer</translation>
 </phrase>
 
 <phrase>
@@ -13603,27 +13620,27 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>not installed, but available on-demand</original>
-<translation></translation>
+<translation>non installé mais disponible sur demande</translation>
 </phrase>
 
 <phrase>
 <original>missing</original>
-<translation>non présent</translation>
+<translation>manquant</translation>
 </phrase>
 
 <phrase>
 <original>an AVIF image</original>
-<translation></translation>
+<translation>une image AVIF</translation>
 </phrase>
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation></translation>
+<translation>Cette bibliothèque n'est pas livrée avec PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation></translation>
+<translation>Si vous interagissez avec %1, PhotoDemon vous proposera de télécharger et configuer cette bibliothèque pour vous.</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -13640,7 +13657,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation>L'enregistrement démarrera dans %1</translation>
+<translation>L'enregistrement commencera dans %1</translation>
 </phrase>
 
 <phrase>
@@ -13709,10 +13726,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2772 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 11774 total words. -->
+<!-- As of this build, PhotoDemon contains 5376 phrases. -->
+<!-- 2782 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 11762 total words. -->
 
 </pdData>

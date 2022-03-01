@@ -460,8 +460,8 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
         'Note that tmpDIB now belongs to the parent image - do NOT erase it or modify pixels beyond this point.
         
         'Set the layer's initial (x, y) position to the current selection's top-left corner.
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Left
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetBoundaryRect.Top
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Left
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect.Top
         
         'Set the new layer as the active layer
         PDImages.GetActiveImage.SetActiveLayerByID newLayerID
@@ -502,7 +502,7 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
 End Function
 
 'Load an image file, and add it to the current image as a new layer
-Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False)
+Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False) As Boolean
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -512,7 +512,8 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
     
         'Retrieve a filepath
         Dim imgFilePath As String
-        If FileMenu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd) Then
+        LoadImageAsNewLayer = FileMenu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd)
+        If LoadImageAsNewLayer Then
             If replaceActiveLayerInstead Then
                 Process "Replace layer from file", False, imgFilePath, UNDO_Layer
             Else
@@ -528,7 +529,8 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         Set tmpDIB = New pdDIB
         
         'Load the file in question
-        If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
+        LoadImageAsNewLayer = Loading.QuickLoadImageToDIB(imagePath, tmpDIB)
+        If LoadImageAsNewLayer Then
             
             'Forcibly convert the new layer to 32bpp
             ' (failsafe only; it should already be in 32-bpp mode from the loader)
@@ -664,7 +666,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
     
     End If
 
-End Sub
+End Function
 
 'Make a given layer fully transparent.  This is used by the Edit > Cut menu at present, if the user cuts without first making a selection.
 Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
@@ -2139,7 +2141,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
             'A selection is active.  Pre-mask the paint scratch layer against it.
             Dim cBlender As pdPixelBlender
             Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(srcRectF)
+            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, VarPtr(srcRectF)
             
         End If
         

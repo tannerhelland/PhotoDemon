@@ -504,8 +504,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
     '*************************************************************************************************************************************
     
-    'Restore the screen cursor if necessary
+    'Restore the screen cursor if necessary, then set focus to the canvas
     If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages > 1)
+    FormMain.MainCanvas(0).SetFocusToCanvasView
     
     'Report success/failure back to the user
     LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
@@ -633,6 +634,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cPSP.IsFilePSP(imagePath) Then loadSuccessful = (cPSP.LoadPSP(imagePath, tmpPDImage, targetDIB) < psp_Failure)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
+        Case "QOI"
+            Dim cQOI As pdQOI
+            Set cQOI = New pdQOI
+            If cQOI.IsFileQOI(imagePath, False, True) Then loadSuccessful = cQOI.LoadQOI_FromFile(imagePath, tmpPDImage, targetDIB)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+            
         'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
         ' copying of the official libavif exe binaries (for example,
         ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
@@ -795,6 +802,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "Internal PSD parser"
         Case id_PSPParser
             GetDecoderName = "Internal PaintShop Pro parser"
+        Case id_QOIParser
+            GetDecoderName = "Internal QOI parser"
         Case id_WIC
             GetDecoderName = "Windows Imaging Component"
         Case id_CharLS

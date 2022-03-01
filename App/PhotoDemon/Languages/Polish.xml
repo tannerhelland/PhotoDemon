@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.87</langversion>
+<langversion>8.0.88</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -3183,6 +3183,8 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 
 <!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
+<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <phrase>
 <original>Create selection</original>
 <translation>Utwórz zaznaczenie</translation>
@@ -3208,7 +3210,7 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 <translation>Kliknij pierwszy punkt, aby zakończyć zaznaczaniewielokątem</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 25 phrases. 20 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -12048,7 +12050,22 @@ pliku nie zostaną zmodyfikowane.</translation>
 <!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
+<original>animate</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(no additional options)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill interior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill exterior</original>
 <translation></translation>
 </phrase>
 
@@ -12073,37 +12090,42 @@ pliku nie zostaną zmodyfikowane.</translation>
 </phrase>
 
 <phrase>
-<original>highlight</original>
-<translation>Podświetlenie</translation>
-</phrase>
-
-<phrase>
-<original>lightbox</original>
-<translation>Komórka świetlna</translation>
-</phrase>
-
-<phrase>
-<original>ants</original>
-<translation>Kreski</translation>
-</phrase>
-
-<phrase>
-<original>replace</original>
+<original>combine</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>add</original>
+<original>New selection</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>subtract</original>
+<original>Add to selection</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>intersect</original>
+<original>Subtract from selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Intersect with selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>always</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when combining</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>never</original>
 <translation></translation>
 </phrase>
 
@@ -12130,11 +12152,6 @@ pliku nie zostaną zmodyfikowane.</translation>
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Zablokuj tę wartość. (Jednocześnie można zablokować tylko jedną wartość. Jeśli zablokujesz nową wartość, wcześniej zablokowane wartości zostaną odblokowane).</translation>
-</phrase>
-
-<phrase>
-<original>This changes the rendering style of your selection tools.  This setting does not affect selection behavior; it only affects how selections appear on your screen.</original>
-<translation>Kliknij, aby zmienić sposób renderowania zaznaczenia na płótnie obrazu. Nie ma to żadnego wpływu na treść zaznaczenia - tylko na sposób w jaki pojawi się podczas edycji.</translation>
 </phrase>
 
 <phrase>
@@ -12197,7 +12214,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 <translation>Ta opcja określa, jakich kryteriów używa Magicznej różdżka aby określić, czy dany piksel należy dodać do bieżącego zaznaczenia.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 64 phrases. 34 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13685,10 +13702,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5363 phrases. -->
-<!-- 2772 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 11774 total words. -->
+<!-- As of this build, PhotoDemon contains 5376 phrases. -->
+<!-- 2782 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 11762 total words. -->
 
 </pdData>

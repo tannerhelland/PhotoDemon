@@ -189,19 +189,28 @@ Friend Function IsRegionInfinite() As Boolean
     End If
 End Function
 
-'TODO: is graphics object required by GDI+ call?  Docs are unclear...
 Friend Function IsRegionEmpty() As Boolean
+    
     If (m_RegionHandle <> 0) Then
-        Dim tmpResult As Long, tmpReturn As GP_Result
-        tmpReturn = GdipIsEmptyRegion(m_RegionHandle, 0&, tmpResult)
+    
+        'Unlike some GDI+ flat APIs, a graphics object is *required* by this call.
+        ' (Passing null will result in error #2, bad parameters)
+        Dim tmpResult As Long, tmpGraphics As Long, tmpReturn As GP_Result
+        tmpGraphics = GDI_Plus.GetGDIPlusGraphicsFromHWnd(OS.ThunderMainHWnd)
+        tmpReturn = GdipIsEmptyRegion(m_RegionHandle, tmpGraphics, tmpResult)
+        GDI_Plus.ReleaseGDIPlusGraphics tmpGraphics
+        
         If (tmpReturn = GP_OK) Then
             IsRegionEmpty = (tmpResult <> 0)
         Else
             InternalError "IsRegionEmpty", "GDI+ failure", tmpReturn
         End If
+    
+    'No region handle...
     Else
         InternalError "IsRegionEmpty", "null handle"
     End If
+    
 End Function
 
 'TODO: is graphics object required by GDI+ call?  Docs are unclear...

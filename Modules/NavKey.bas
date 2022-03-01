@@ -236,8 +236,6 @@ Private Function GetFormIndex(ByVal childHwnd As Long) As Long
 
     GetFormIndex = -1
     
-    Dim targetHWnd As Long
-    
     'First, search the LastForm object for a hit.  (In most cases, that form will be the currently active form,
     ' and it shortcuts the search process to go there first.)
     If (m_LastForm <> 0) Then

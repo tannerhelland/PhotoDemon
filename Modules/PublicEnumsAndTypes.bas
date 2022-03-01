@@ -299,9 +299,10 @@ Public Enum PD_ImageDecoder
     id_PNGParser
     id_PSDParser
     id_PSPParser
+    id_QOIParser
     id_WIC
-    id_CharLS
     id_libavif
+	id_CharLS
     id_libwebp
     id_resvg
 End Enum
@@ -309,8 +310,8 @@ End Enum
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
     Private Const id_CBZParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0, id_PNGParser = 0
-    Private Const id_PSDParser = 0, id_PSPParser = 0, id_SVGParser = 0, id_WIC = 0, id_libavif = 0, id_CharLS = 0
-    Private Const id_libwebp = 0, id_resvg = 0
+    Private Const id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0
+    Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
@@ -519,7 +520,7 @@ End Type
 Public Enum PD_IMAGE_FORMAT
     PDIF_UNKNOWN = -1
     PDIF_BMP = 0
-    PDIF_ICO = 1
+    PDIF_ICO = 1    'FreeImage is *not* used to load/save icons; we use our own internal parser
     PDIF_JPEG = 2
     PDIF_JNG = 3
     PDIF_KOALA = 4
@@ -532,19 +533,19 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_PCX = 10
     PDIF_PGM = 11
     PDIF_PGMRAW = 12
-    PDIF_PNG = 13
+    PDIF_PNG = 13   'FreeImage is *not* used to load/save PNGs; we use our own internal parser
     PDIF_PPM = 14
     PDIF_PPMRAW = 15
     PDIF_RAS = 16
     PDIF_TARGA = 17
     PDIF_TIFF = 18
     PDIF_WBMP = 19
-    PDIF_PSD = 20   'Note that FreeImage is *not* used to load PSDs; we use our own internal parser
+    PDIF_PSD = 20   'FreeImage is *not* used to load/save PSDs; we use our own internal parser
     PDIF_CUT = 21
     PDIF_XBM = 22
     PDIF_XPM = 23
     PDIF_DDS = 24
-    PDIF_GIF = 25
+    PDIF_GIF = 25   'FreeImage is *not* used to load/save GIFs; we use our own internal parser
     PDIF_HDR = 26
     PDIF_FAXG3 = 27
     PDIF_SGI = 28
@@ -554,7 +555,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_PFM = 32
     PDIF_PICT = 33
     PDIF_RAW = 34
-    PDIF_WEBP = 35
+    PDIF_WEBP = 35  'FreeImage is *not* used to load/save WebP; we use libwebp
     PDIF_JXR = 36
    
     'PhotoDemon's internal PDI format identifier(s).
@@ -574,6 +575,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_CBZ = 118      'Comic book archives (zip format only) were added in 9.0 nightly builds
     PDIF_AVIF = 119     'Modern high-efficiency images (AV1 frames) were added in 9.0 nightly builds
     PDIF_JLS = 120      'JPEG-LS was added in 9.0 nightly builds
+    PDIF_QOI = 121      'QOI was added in 9.0 nightly builds
     
 End Enum
 
@@ -586,7 +588,7 @@ End Enum
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116, PDIF_PSP = 117
-    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120
+    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

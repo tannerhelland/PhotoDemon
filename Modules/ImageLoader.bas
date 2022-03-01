@@ -29,6 +29,7 @@ Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
+Private Const USE_INTERNAL_PARSER_QOI As Boolean = True
 
 'PNGs get some special preference due to their ubiquity; a persistent class enables better caching
 Private m_PNG As pdPNG
@@ -1030,14 +1031,23 @@ LibAVIFDidntWork:
         End If
     End If
     
+    'QOI support was added in v9.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_QOI Then
+        CascadeLoadGenericImage = LoadQOI(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_QOIParser
+            dstImage.SetOriginalFileFormat PDIF_QOI
+        End If
+    End If
+	
     'SVG/Z support was added in v9.0
     If (Not CascadeLoadGenericImage) And Plugin_resvg.IsFileSVGCandidate(srcFile) Then
         CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage)
         If CascadeLoadGenericImage Then
             decoderUsed = id_resvg
             dstImage.SetOriginalFileFormat PDIF_SVG
-        End If
-    End If
+		End If
+	End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
@@ -1478,6 +1488,40 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
         End If
 
+    End If
+    
+End Function
+
+Private Function LoadQOI(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadQOI = False
+    
+    'pdQOI handles all the dirty work for us
+    Dim cReader As pdQOI
+    Set cReader = New pdQOI
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadQOI = cReader.LoadQOI_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadQOI Then
+        
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_QOI
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        'QOI files are always 24- or 32-bpp
+        'TODO!
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        
+        'QOI headers can differentiate between 24- and 32-bpp sources
+        'TODO!
+        dstImage.SetOriginalAlpha True
+        
+        'QOI files don't really support color management, but can be flagged as sRGB vs linear
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
     End If
     
 End Function

@@ -71,10 +71,10 @@ Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal h
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
 Private Const WS_EX_WINDOWEDGE As Long = &H100&
 Private Const WS_EX_TOPMOST As Long = &H8&
-Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
+'Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
 Private Const SWP_HIDEWINDOW As Long = &H80&
-Private Const SWP_SHOWWINDOW As Long = &H40&
-Private Const SWP_NOACTIVATE As Long = &H10&
+'Private Const SWP_SHOWWINDOW As Long = &H40&
+'Private Const SWP_NOACTIVATE As Long = &H10&
 Private Const SWP_FRAMECHANGED As Long = &H20&
 
 'When a flyout is visible, this is set to TRUE.

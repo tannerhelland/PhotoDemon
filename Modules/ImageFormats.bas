@@ -305,6 +305,9 @@ Public Sub GenerateInputFormats()
     'In v9.0, PhotoDemon received a custom PSP parser
     AddInputFormat "PSP - PaintShop Pro", "*.psp;*.pspimage;*.tub;*.psptube;*.pfr;*.pspframe;*.msk;*.pspmask;*.pspbrush", PDIF_PSP
     
+    'In v9.0, PhotoDemon received a custom QOI parser
+    AddInputFormat "QOI - Quite OK Image", "*.qoi", PDIF_QOI
+    
     If m_FreeImageEnabled Then
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
         AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
@@ -321,8 +324,10 @@ Public Sub GenerateInputFormats()
         
     If m_FreeImageEnabled Then AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
         
-    'libwebp is our preferred handler for WebP files, but if it goes missing, we can fall back to FreeImage
-    ' (albeit with a greatly reduced feature-set)
+    'libwebp is our preferred handler for WebP files, but if it goes missing,
+    ' we can fall back to FreeImage (albeit with a greatly reduced feature-set).
+    ' Note also that this fallback is not expected or really tested - it only exists
+    ' as an "absolute last resort" for a borked PD install.
     If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
@@ -418,6 +423,7 @@ Public Sub GenerateOutputFormats()
     If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
     AddOutputFormat "PSD - Adobe Photoshop", "psd", PDIF_PSD
     AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
+    AddOutputFormat "QOI - Quite OK Image", "qoi", PDIF_QOI
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
     If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
@@ -548,6 +554,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "psd"
         Case PDIF_PSP
             GetExtensionFromPDIF = "psp"
+        Case PDIF_QOI
+            GetExtensionFromPDIF = "qoi"
         Case PDIF_RAS
             GetExtensionFromPDIF = "ras"
         'RAW is an interesting case; because PD can write HDR images, which support nearly all features
@@ -657,6 +665,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_PSD
         Case "psp", "pspimage"
             GetPDIFFromExtension = PDIF_PSP
+        Case "qoi"
+            GetPDIFFromExtension = PDIF_QOI
         Case "ras"
             GetPDIFFromExtension = PDIF_RAS
         Case "sgi"
@@ -716,6 +726,8 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         Case PDIF_PSP
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        Case PDIF_QOI
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_TARGA
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_TIFF
@@ -768,26 +780,16 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_BMP
             IsExportDialogSupported = True
-        Case PDIF_CBZ
-            IsExportDialogSupported = False
         Case PDIF_GIF
             IsExportDialogSupported = True
-        Case PDIF_HDR
-            IsExportDialogSupported = False
         Case PDIF_ICO
             IsExportDialogSupported = True
-        Case PDIF_JLS
-            IsExportDialogSupported = False
         Case PDIF_JP2
             IsExportDialogSupported = True
         Case PDIF_JPEG
             IsExportDialogSupported = True
         Case PDIF_JXR
             IsExportDialogSupported = True
-        Case PDIF_ORA
-            IsExportDialogSupported = False
-        Case PDIF_PDI
-            IsExportDialogSupported = False
         Case PDIF_PNG
             IsExportDialogSupported = True
         Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
@@ -796,8 +798,6 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_PSP
             IsExportDialogSupported = True
-        Case PDIF_TARGA
-            IsExportDialogSupported = False
         Case PDIF_TIFF
             IsExportDialogSupported = True
         Case PDIF_WEBP
@@ -817,6 +817,8 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
             IsExifToolRelevant = False
         Case PDIF_PDI
             IsExifToolRelevant = False
+        Case PDIF_QOI
+            IsExifToolRelevant = False
         'Testing only; comment should be added back eventually!
         Case PDIF_GIF
             IsExifToolRelevant = False
@@ -825,6 +827,7 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
     End Select
 End Function
 
+'Helper wrappers to declare FreeImage availability as a last-resort fallback
 Public Function IsFreeImageEnabled() As Boolean
     IsFreeImageEnabled = m_FreeImageEnabled
 End Function

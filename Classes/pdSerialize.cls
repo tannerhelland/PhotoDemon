@@ -177,8 +177,8 @@ Friend Function GetString(ByRef paramName As String, Optional ByVal defaultRetur
 End Function
 
 'If you want to combine "DoesParamExist" and "GetString", use this function
-Friend Function GetStringEx(ByRef paramName As String, ByRef dstParamValue As String) As Boolean
-    GetStringEx = GetParamValue(paramName, dstParamValue)
+Friend Function GetStringEx(ByRef paramName As String, ByRef dstParamValue As String, Optional ByVal nameGuaranteedXMLSafe As Boolean = False, Optional ByVal searchStart As Long = -1) As Boolean
+    GetStringEx = GetParamValue(paramName, dstParamValue, nameGuaranteedXMLSafe, searchStart)
 End Function
 
 Friend Function GetVariant(ByRef paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
@@ -199,18 +199,21 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
     'Make the parameter name XML-safe
     If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
     
-    'Search starting from wherever we found our previous tag.  (PD tags are usually read in sequential order,
-    ' and this *greatly* accelerates parse-time.)
+    'If the caller supplied a custom search position, start searching there (under the assumption
+    ' that they know something about the param string that we do not).
+    '
+    'Otherwise, start searching from wherever we found our previous tag.  This *greatly* accelerates
+    ' parse time because PD tags are pretty much always read in sequential order.
     Dim tagStart As Long, tagEnd As Long
-    If (searchStart < 0) Then
+    If (searchStart < 1) Then
         If (m_SearchStart > m_ParamString.GetLength()) Then m_SearchStart = 1
     Else
-        m_SearchStart = 1
+        m_SearchStart = searchStart
     End If
     tagStart = m_ParamString.StrStr("<" & paramName & ">", m_SearchStart)
     
     'If we didn't find anything, and we didn't start our search at the front of the string, try a full-string search now
-    If (tagStart = 0) And (m_SearchStart <> 1) Then
+    If (tagStart = 0) And (m_SearchStart > 1) Then
         m_SearchStart = 1
         tagStart = m_ParamString.StrStr("<" & paramName & ">", m_SearchStart)
     End If

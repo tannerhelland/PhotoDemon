@@ -543,7 +543,7 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
                 If PDImages.GetActiveImage.MainSelection.IsLockedIn() Then
                 
                     Dim selRect As RectF
-                    selRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    selRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                     
                     'Apply to the layer
                     PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(selRect.Left + 0.5)
@@ -968,17 +968,23 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         If (Not pasteToThisDIBInstead Is Nothing) Then
             ClipboardPaste_WellFormedURL = Loading.QuickLoadImageToDIB(tmpDownloadFile, pasteToThisDIBInstead, False, False)
         Else
-            If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-                Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, False, False
+            If (PDImages.IsImageActive() And srcIsMeantAsLayer) Then
+                ClipboardPaste_WellFormedURL = Layers.LoadImageAsNewLayer(False, tmpDownloadFile, tmpFilename, False, False)
             Else
-                LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
+                ClipboardPaste_WellFormedURL = LoadFileAsNewImage(tmpDownloadFile, tmpFilename, False, True)
             End If
         End If
         
         'Delete the temporary file
         Files.FileDeleteIfExists tmpDownloadFile
         
-        If (Not suppressErrorMsgs) Then Message "Image imported successfully "
+        If (Not suppressErrorMsgs) Then
+            If ClipboardPaste_WellFormedURL Then
+                Message "Image imported successfully "
+            Else
+                Message "Image download failed.  Please copy a valid image URL and try again."
+            End If
+        End If
         
         'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
         ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,

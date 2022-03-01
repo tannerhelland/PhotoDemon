@@ -133,7 +133,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'Various tools do their own custom UI rendering atop the canvas
             If (g_CurrentTool = NAV_MOVE) Then
-                Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI
+                Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI, False
                 
             ElseIf (g_CurrentTool = NAV_ZOOM) Then
                 Tools_Zoom.DrawCanvasUI dstCanvas, srcImage
@@ -152,7 +152,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = TEXT_BASIC) Or (g_CurrentTool = TEXT_ADVANCED) Then
-                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI
+                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then Tools_Move.DrawCanvasUI dstCanvas, srcImage, localViewportParams.curPOI, True
                 
             'Pencil and brush tools use the brush engine to paint a custom brush outline at the current mouse position
             ElseIf (g_CurrentTool = PAINT_PENCIL) Then

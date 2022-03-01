@@ -242,30 +242,36 @@ Private Sub cmdBrowse_Click()
             End If
             
             'Ensure we have sufficient space for a new entry
-            If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+            If (m_numOfLUTs <= 0) Then
+                ReDim m_LUTs(0) As LUTCache
+            Else
+                If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+            End If
             
             Dim targetFilenameOnly As String
             targetFilenameOnly = Files.FileGetName(srcFilename)
             
             'We now need to search the current list of LUTs and figure out where to insert this one.
             Dim i As Long
-            For i = 0 To m_numOfLUTs - 1
+            i = 0
+            
+            If (m_numOfLUTs > 0) Then
                 
                 'Look for the first entry with a value *less* than the current one
-                If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+                For i = 0 To m_numOfLUTs - 1
+                    If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+                Next i
                 
-            Next i
-            
-            'Shift all existing entries to make room for this new one
-            If (i < m_numOfLUTs - 1) Then
-                
-                Dim j As Long
-                For j = m_numOfLUTs - 1 To i + 1 Step -1
-                    m_LUTs(j) = m_LUTs(j - 1)
-                Next j
+                'Shift all existing entries to make room for this new one
+                If (i < m_numOfLUTs - 1) Then
+                    Dim j As Long
+                    For j = m_numOfLUTs - 1 To i + 1 Step -1
+                        m_LUTs(j) = m_LUTs(j - 1)
+                    Next j
+                End If
                 
             End If
-            
+                
             With m_LUTs(i)
                 .fullPath = srcFilename
                 .filenameOnly = targetFilenameOnly

@@ -190,7 +190,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdCanvasView CanvasView 
       Height          =   4935
       Left            =   360
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   600
       Width           =   4575
       _ExtentX        =   8281
@@ -199,7 +199,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
       Left            =   5040
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
@@ -212,7 +212,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
       Left            =   360
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
@@ -224,7 +224,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
       Left            =   5040
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   600
       Visible         =   0   'False
       Width           =   255
@@ -2440,6 +2440,10 @@ End Sub
 
 Public Sub SetCursorToCanvasPosition(ByVal newCanvasX As Double, ByVal newCanvasY As Double)
     CanvasView.SetCursorToCanvasPosition newCanvasX, newCanvasY
+End Sub
+
+Public Sub SetFocusToCanvasView()
+    If CanvasView.Visible Then CanvasView.SetFocus
 End Sub
 
 Private Sub BuildPopupMenu()

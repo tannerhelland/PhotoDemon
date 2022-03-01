@@ -467,13 +467,13 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
                         Case ss_Rectangle, ss_Circle
                             selectRect = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect()
                         Case ss_Polygon
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                         Case ss_Lasso
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                         Case ss_Wand
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                         Case ss_Raster
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
                     End Select
                     
                     'We're also going to assemble the final display string using a pdString instance

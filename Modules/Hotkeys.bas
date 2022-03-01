@@ -40,7 +40,7 @@ Private Const INITIAL_HOTKEY_LIST_SIZE As Long = 16&
 'To improve performance when language translations are active, we cache certain common translations
 ' (such as "Ctrl+" for hotkey text) to minimize how many times we have to hit the language engine.
 ' (Similarly, whenever the active language changes, make sure this text gets updated!)
-Private Enum PD_CommonMenuText
+Public Enum PD_CommonMenuText
     cmt_Ctrl = 0
     cmt_Alt = 1
     cmt_Shift = 2
@@ -401,6 +401,10 @@ Private Sub CacheCommonTranslations()
         PDDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
     End If
 End Sub
+
+Public Function GetGenericMenuText(ByVal srcID As PD_CommonMenuText) As String
+    GetGenericMenuText = m_CommonMenuText(srcID)
+End Function
 
 Public Sub UpdateHotkeyLocalization()
     CacheCommonTranslations
