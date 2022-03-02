@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1027</langversion>
+<langversion>9.0.1282</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1913,7 +1913,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Pin light</original>
-<translation>Lichtpunkt</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2085,7 +2085,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>New layer from selection</original>
-<translation></translation>
+<translation>Neuer Layer aus Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -2314,7 +2314,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Session aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
 
-(Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später jederzeit löschen können, wenn Sie sich entscheiden, dass Sie es nicht wollen.)</translation>
+(Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer löschen können, wenn Sie sich entscheiden, dass Sie es nicht wollen.)</translation>
 </phrase>
 
 <phrase>
@@ -3258,7 +3258,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Move selected pixels</original>
-<translation></translation>
+<translation>Selektierte Pixel verschieben</translation>
 </phrase>
 
 <phrase>
@@ -3282,14 +3282,14 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Fill tool</original>
-<translation>Fülltool</translation>
+<translation>Füll-Tool</translation>
 </phrase>
 
 <!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Gradient tool</original>
-<translation>Gradiententool</translation>
+<translation>Gradient-Tool</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3308,7 +3308,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Target: selected pixels</original>
-<translation></translation>
+<translation>Ziel: Selektierte Pixel</translation>
 </phrase>
 
 <phrase>
@@ -3470,7 +3470,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Redo (fast-forward to a later state)</original>
-<translation></translation>
+<translation>Wiederherstellen (zu einem späteren Zustand vorspulen)</translation>
 </phrase>
 
 <phrase>
@@ -3490,12 +3490,12 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation></translation>
+<translation>Dieses Panel geöffnet anheften</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>Toolbox-Panels schließen automatisch, aber Sie können eines anheften, um es geöffnet zu halten. (Angeheftete Panels werden beim Wechsel der Tools oder beim Öffnen neuer Panels dennoch schließen.)</translation>
 </phrase>
 
 <phrase>
@@ -7187,12 +7187,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation></translation>
+<translation>Sie können die Einstellungen für Sprache und Theme zu jeder Zeit über das Menü Extras ändern.</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customatizations are available in the Window menu.</original>
-<translation></translation>
+<translation>Additionale Interface-Anpassungen sind im Menü Fenster verfügbar.</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -11455,7 +11455,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Dateitools: Erstellen, laden und speichern Sie Bilddateien.</translation>
+<translation>Datei-Tools: Erstellen, laden und speichern Sie Bilddateien.</translation>
 </phrase>
 
 <phrase>
@@ -11470,12 +11470,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation>Auswahltools: Isolieren Sie Teile eines Bildes oder eines Layers zur weiteren Bearbeitung.</translation>
+<translation>Auswählen-Tools: Isolieren Sie Teile eines Bildes oder eines Layers zur weiteren Bearbeitung.</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation>Texttools: Erstellen und bearbeiten Sie Text-Layer.</translation>
+<translation>Text-Tools: Erstellen und bearbeiten Sie Text-Layer.</translation>
 </phrase>
 
 <phrase>
@@ -11545,7 +11545,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf, so können Sie einen neuen Dateiname, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
+<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf. Daher können Sie einen neuen Dateiname, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
 </phrase>
 
 <phrase>
@@ -11645,12 +11645,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Hand tool</original>
-<translation>Handtool</translation>
+<translation>Hand-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Zoom tool</original>
-<translation></translation>
+<translation>Zoom-Tool</translation>
 </phrase>
 
 <phrase>
@@ -11695,12 +11695,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Basic text tool</original>
-<translation>Grundlegendes Texttool</translation>
+<translation>Grundlegendes Text-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation>Erweitertes Texttool</translation>
+<translation>Erweitertes Text-Tool</translation>
 </phrase>
 
 <phrase>
@@ -11794,12 +11794,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
+<translation>Nach einem Klick</translation>
 </phrase>
 
 <phrase>
 <original>return to previous tool</original>
-<translation></translation>
+<translation>Zu vorherigem Tool zurükckkehren</translation>
 </phrase>
 
 <phrase>
@@ -11838,7 +11838,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>compare pixels by</original>
-<translation></translation>
+<translation>Pixel vergleichen nach</translation>
 </phrase>
 
 <phrase>
@@ -11979,7 +11979,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>ignore transparent pixels</original>
-<translation></translation>
+<translation>Transparente Pixel ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -12039,12 +12039,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>copy</original>
-<translation></translation>
+<translation>Kopieren</translation>
 </phrase>
 
 <phrase>
 <original>cut</original>
-<translation></translation>
+<translation>Ausschneiden</translation>
 </phrase>
 
 <phrase>
@@ -12060,27 +12060,27 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>animate</original>
-<translation></translation>
+<translation>Animieren</translation>
 </phrase>
 
 <phrase>
 <original>(no additional options)</original>
-<translation></translation>
+<translation>(keine additionalen Optionen)</translation>
 </phrase>
 
 <phrase>
 <original>fill interior</original>
-<translation></translation>
+<translation>Innenbereich füllen</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation></translation>
+<translation>Außenbereich füllen</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation></translation>
+<translation>Panel automatisch öffnen</translation>
 </phrase>
 
 <phrase>
@@ -12105,7 +12105,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>New selection</original>
-<translation></translation>
+<translation>Neue Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -12125,7 +12125,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>always</original>
-<translation></translation>
+<translation>Immer</translation>
 </phrase>
 
 <phrase>
@@ -12135,7 +12135,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>never</original>
-<translation></translation>
+<translation>Nie</translation>
 </phrase>
 
 <phrase>
@@ -12190,7 +12190,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation></translation>
+<translation>Dieses Panel kann automatisch öffnen, wenn Sie eine Auswahl bearbeiten oder erstellen. Auf kleineren Screens ist dies möglicherweise nicht hilfreich, wenn zu viel von der Leinwand verdeckt wird. Daher können Sie dieses Verhalten hier deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -12200,17 +12200,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Diese Option erhöht die Glattheit einer freihändigen Lasso-Auswahl.</translation>
+<translation>Diese Option erhöht die Glattheit einer handgezeichneten Lasso-Auswahl.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
-<translation>Toleranz steuert, wie ähnlich sich zwei Pixel sein müssen, bevor diese zu einer Zauberstab-Auswahl hinzugefügt werden.</translation>
+<translation>Toleranz steuert, wie ähnlich ein Pixel der Zielfarbe sein muss, bevor es einer Zauberstab-Auswahl hinzugefügt wird.</translation>
 </phrase>
 
 <phrase>
 <original>The magic wand tool can operate on the entire image, or just the active layer.</original>
-<translation>Der Zauberstab kann auf dem gesamten Bild agieren oder nur auf dem aktiven Layer.</translation>
+<translation>Das Zauberstab-Tool kann auf dem gesamten Bild operieren oder nur auf dem aktiven Layer.</translation>
 </phrase>
 
 <phrase>
@@ -12220,19 +12220,19 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
-<translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
+<translation>Diese Option steuert, welche Kriterien der Zauberstab verwendet, um Pixel mit der Zielfarbe zu vergleichen.</translation>
 </phrase>
 
 <!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
-<translation></translation>
+<translation>Klick, um Text zu bearbeiten</translation>
 </phrase>
 
 <phrase>
 <original>edit text</original>
-<translation></translation>
+<translation>Text bearbeiten</translation>
 </phrase>
 
 <phrase>
@@ -12262,7 +12262,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Dies ist ein erweiterter Text-Layer. Um ihn mit dem grundlegenden Texttool zu bearbeiten, müssen Sie diesen zuerst in einen grundlegenden Text-Layer konvertieren.</translation>
+<translation>Dies ist ein erweiterter Text-Layer. Um ihn mit dem grundlegenden Text-Tool zu bearbeiten, müssen Sie diesen zuerst in einen grundlegenden Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -12339,7 +12339,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>click to edit</original>
-<translation></translation>
+<translation>Klick, um zu bearbeiten</translation>
 </phrase>
 
 <phrase>
@@ -12389,7 +12389,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation>Dies ist ein grundlegender Text-Layer. Um ihn mit dem erweiterten Texttool zu bearbeiten, müssen Sie diesen zuerst in einen erweiterten Text-Layer konvertieren.</translation>
+<translation>Dies ist ein grundlegender Text-Layer. Um ihn mit dem erweiterten Text-Tool zu bearbeiten, müssen Sie diesen zuerst in einen erweiterten Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
