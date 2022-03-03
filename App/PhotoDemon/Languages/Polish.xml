@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.89</langversion>
+<langversion>8.0.90</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -7180,7 +7180,7 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Additional interface customatizations are available in the Window menu.</original>
+<original>Additional interface customizations are available in the Window menu.</original>
 <translation></translation>
 </phrase>
 
@@ -13705,12 +13705,19 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2596</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5379 phrases. -->
-<!-- 2784 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11765 total words. -->
+<!-- As of this build, PhotoDemon contains 5382 phrases. -->
+<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
+<!-- These 2596 phrases contain approximately 11772 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1282</langversion>
+<langversion>9.0.1289</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1928,7 +1928,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Exclusion</original>
-<translation>Ausschluss</translation>
+<translation>Exklusion</translation>
 </phrase>
 
 <phrase>
@@ -2626,12 +2626,12 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>BSD license</original>
-<translation>BSD-License</translation>
+<translation>BSD License</translation>
 </phrase>
 
 <phrase>
 <original>artistic license</original>
-<translation>Artistic-License</translation>
+<translation>Artistic License</translation>
 </phrase>
 
 <phrase>
@@ -2641,17 +2641,17 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>FreeImage public license</original>
-<translation>FreeImage Public-License</translation>
+<translation>FreeImage Public License</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation>MIT-License</translation>
+<translation>MIT License</translation>
 </phrase>
 
 <phrase>
 <original>Mozilla Public License 2.0</original>
-<translation></translation>
+<translation>Mozilla Public License 2.0</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -2947,17 +2947,17 @@ Deskription: %2
 
 <phrase>
 <original>horizontal jitter</original>
-<translation>Jitter horizontal</translation>
+<translation>Horizontaler Jitter</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation>Jitter vertikal</translation>
+<translation>Vertikaler Jitter</translation>
 </phrase>
 
 <phrase>
 <original>inflation</original>
-<translation>Inflation</translation>
+<translation>Aufblähung</translation>
 </phrase>
 
 <phrase>
@@ -7191,7 +7191,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Additional interface customatizations are available in the Window menu.</original>
+<original>Additional interface customizations are available in the Window menu.</original>
 <translation>Additionale Interface-Anpassungen sind im Menü Fenster verfügbar.</translation>
 </phrase>
 
@@ -11942,7 +11942,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>clear points</original>
-<translation></translation>
+<translation>Punkte löschen</translation>
 </phrase>
 
 <phrase>
@@ -12004,7 +12004,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>make transforms permanent</original>
-<translation></translation>
+<translation>Transformationen dauerhaft machen</translation>
 </phrase>
 
 <phrase>
@@ -12014,7 +12014,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>default selection behavior</original>
-<translation></translation>
+<translation>Default-Auswahlverhalten</translation>
 </phrase>
 
 <phrase>
@@ -12024,12 +12024,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>shear (x, y)</original>
-<translation></translation>
+<translation>Scherung (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>auto select layer</original>
-<translation></translation>
+<translation>Layer automatisch auswählen</translation>
 </phrase>
 
 <phrase>
@@ -12100,7 +12100,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>combine</original>
-<translation></translation>
+<translation>Kombinieren</translation>
 </phrase>
 
 <phrase>
@@ -12130,7 +12130,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>when combining</original>
-<translation></translation>
+<translation>Beim Kombinieren</translation>
 </phrase>
 
 <phrase>
@@ -12289,12 +12289,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>Jitter (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>inflate</original>
-<translation></translation>
+<translation>Aufblasen</translation>
 </phrase>
 
 <phrase>
@@ -12304,12 +12304,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>horizontal padding</original>
-<translation></translation>
+<translation>Horizontales Auffüllen</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation></translation>
+<translation>Vertikales Auffüllen</translation>
 </phrase>
 
 <phrase>
@@ -12324,7 +12324,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>outline background</original>
-<translation></translation>
+<translation>Hintergrund konturieren</translation>
 </phrase>
 
 <phrase>
@@ -12334,7 +12334,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fill and outline</original>
-<translation></translation>
+<translation>Füllen und Konturieren</translation>
 </phrase>
 
 <phrase>
@@ -13076,7 +13076,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>memory usage will be displayed here</original>
-<translation>Speicherverbrauch wird hier angezeigt</translation>
+<translation>Speicherauslastung wird hier angezeigt</translation>
 </phrase>
 
 <phrase>
@@ -13488,12 +13488,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>current PhotoDemon memory usage</original>
-<translation>Aktueller Speicherverbrauch von PhotoDemon</translation>
+<translation>Aktuelle PhotoDemon-Speicherauslastung</translation>
 </phrase>
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>Max. Speicherverbrauch von PhotoDemon bei dieser Session</translation>
+<translation>Max. PhotoDemon-Speicherauslastung in dieser Session</translation>
 </phrase>
 
 <phrase>
@@ -13714,12 +13714,19 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2596</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5379 phrases. -->
-<!-- 2784 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 11765 total words. -->
+<!-- As of this build, PhotoDemon contains 5382 phrases. -->
+<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
+<!-- These 2596 phrases contain approximately 11772 total words. -->
 
 </pdData>

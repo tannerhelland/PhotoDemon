@@ -332,7 +332,7 @@ Private Sub LiveUpdateUITheme()
         If (Not g_Language Is Nothing) Then useLineBreak = Not g_Language.TranslationActive()
         
         Dim tmpString As String
-        tmpString = g_Language.TranslateMessage("Additional interface customatizations are available in the Window menu.")
+        tmpString = g_Language.TranslateMessage("Additional interface customizations are available in the Window menu.")
         If useLineBreak Then
             cString.AppendLineBreak
             cString.Append tmpString
