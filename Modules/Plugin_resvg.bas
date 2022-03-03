@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_resvg"
 'resvg Library Interface (SVG import)
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/February/22
-'Last updated: 01/March/22
-'Last update: attempt to silently "rescue" malformed SVGs if they're just missing a namespace
+'Last updated: 03/March/22
+'Last update: on non-batch-process loads, display a UI so the user can specify custom rasterization dimensions
 '
 'Per its documentation (available at https://github.com/RazrFalcon/resvg), resvg is...
 '
@@ -345,23 +345,80 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     Dim intWidth As Long, intHeight As Long
     intWidth = Int(imgSize.svg_width)
     intHeight = Int(imgSize.svg_height)
+    If (intWidth < 1) Then intWidth = 1
+    If (intHeight < 1) Then intHeight = 1
+    
+    'We now know the size the SVG is *supposed* to be, but the most useful thing about vector graphics
+    ' is the ability to losslessly (ish) resize them to arbitrary sizes.  If we are not in the midst
+    ' of a batch conversion, let's ask the user what size they want for this image.
+    Dim userWidth As Long, userHeight As Long
+    If (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK) Then
+        
+        Dim userInput As VbMsgBoxResult, userDPI As Long
+        userInput = Dialogs.PromptImportSVG(svgTree, intWidth, intHeight, userWidth, userHeight, userDPI)
+        
+        If (userInput = vbOK) Then
+            
+            'Validate user width/height
+            If (userWidth < 1) Then userWidth = intWidth
+            If (userHeight < 1) Then userHeight = intHeight
+            
+            'Cache DPI inside the parent pdImage object
+            If (Not dstImage Is Nothing) Then dstImage.SetDPI userDPI, userDPI
+            
+        Else
+            LoadSVG_FromFile = False
+            GoTo SafeCleanup
+        End If
+        
+    End If
     
     'Prep the target DIB
     Set dstDIB = New pdDIB
-    If dstDIB.CreateBlank(intWidth, intHeight, 32, 0, 0) Then
+    If dstDIB.CreateBlank(userWidth, userHeight, 32, 0, 0) Then
         
-        'SVG render will always be premultiplied
+        'SVG renders will always be premultiplied
         dstDIB.SetInitialAlphaPremultiplicationState True
         
-        'Specify fitting behavior (should make this user-controlled in the future)
+        'Specify fitting behavior (we always use original fit - you'll see why in a moment)
         Dim fitBehavior As resvg_fit_to
         fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ORIGINAL
         fitBehavior.fit_value = 1!
         
-        'Render!
+        'If custom destination width/height is specified, we want to use the final transform matrix
+        ' to apply the resize.
         Dim idMatrix As resvg_transform
         idMatrix = resvg_transform_identity()
-        resvg_render svgTree, fitBehavior, idMatrix, intWidth, intHeight, dstDIB.GetDIBPointer()
+        
+        If (userWidth <> intWidth) Or (userHeight <> intHeight) Then
+            
+            'Here's a nice twist - let's make our code more readable by using a pd2D class to
+            ' produce the scale transform for us!  (Ideally, we could also use this to apply
+            ' skew and rotate in the future.)
+            Dim cMatrix As pd2DTransform
+            Set cMatrix = New pd2DTransform
+            cMatrix.ApplyScaling userWidth / intWidth, userHeight / intHeight
+            
+            Dim tmpFloats() As Single
+            If cMatrix.GetMatrixPoints(tmpFloats) Then
+                
+                'resvg uses doubles, not floats
+                With idMatrix
+                    .a = tmpFloats(0)
+                    .b = tmpFloats(1)
+                    .c = tmpFloats(2)
+                    .d = tmpFloats(3)
+                    .e = tmpFloats(4)
+                    .f = tmpFloats(5)
+                End With
+            
+            'no Else required, since we've already initialized the matrix to its identity form
+            End If
+            
+        End If
+        
+        'Render!
+        resvg_render svgTree, fitBehavior, idMatrix, userWidth, userHeight, dstDIB.GetDIBPointer()
         PDDebug.LogAction "Finished render"
         
         'Finally, we need to swizzle RGBA order to BGRA order
@@ -375,8 +432,11 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
 SafeCleanup:
 
-    'On success OR failure, free any opaque references
+    'On success OR failure, free any opaque references.
     If (svgTree <> 0) Then resvg_tree_destroy svgTree
+    
+    'Note, however, the we do *not* free the SVG options handle (if one exists).  That's a cumbersome
+    ' object to create, so we maintain it for the life of the current session.
 
 End Function
 
@@ -395,6 +455,43 @@ Public Sub ReleaseEngine()
     End If
     
 End Sub
+
+'Do not call this function.  It is only designed to be used for previews on the SVG import screen.
+Public Function RenderToArbitraryDIB(ByVal hResvgTree As Long, ByRef dstDIB As pdDIB) As Boolean
+
+    'Specify fitting behavior
+    Dim fitBehavior As resvg_fit_to
+    fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ORIGINAL
+    fitBehavior.fit_value = 1!
+    
+    'If custom destination width/height is specified, we want to use the final transform matrix
+    ' to apply the resize.
+    Dim idMatrix As resvg_transform
+    idMatrix = resvg_transform_identity()
+    
+    'Scale to fit the destination DIB (if its size doesn't match the original width/height)
+    Dim imgSize As resvg_size
+    imgSize = resvg_get_image_size(hResvgTree)
+    
+    Dim intWidth As Long, intHeight As Long
+    intWidth = Int(imgSize.svg_width)
+    intHeight = Int(imgSize.svg_height)
+    If (intWidth < 1) Then intWidth = 1
+    If (intHeight < 1) Then intHeight = 1
+    
+    'You could do more complex scaling/translation here, but in PD I only need this function
+    ' for previews on the import screen - so its guaranteed that the passed DIB will always
+    ' be the same aspect ratio as the source SVG.
+    If (dstDIB.GetDIBWidth <> intWidth) Or (dstDIB.GetDIBHeight <> intHeight) Then
+        fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ZOOM
+        fitBehavior.fit_value = dstDIB.GetDIBWidth / intWidth
+    End If
+    
+    'Render and swizzle
+    resvg_render hResvgTree, fitBehavior, idMatrix, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBPointer()
+    DIBs.SwizzleBR dstDIB
+    
+End Function
 
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As resvg_result = RESVG_OK)
     If (faultyReturnCode <> RESVG_OK) Then

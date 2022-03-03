@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon 2D Transformation manager
 'Copyright 2014-2022 by Tanner Helland
 'Created: 09/May/15 (though assembled from various parts written much earlier)
-'Last updated: 22/June/15
-'Last update: add x/y shear support
+'Last updated: 02/March/22
+'Last update: add helper function to retrieve matrix as an array of bare floats
 '
 'This class is a VB6-friendly wrapper for the GDI+ Matrix object.  It is not intended as a comprehensive interface;
 ' instead, I add functions to it as I need them for various PD elements.
@@ -37,6 +37,7 @@ Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long,
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
 'Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipGetMatrixElements Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrTo6ElementFloatArray As Long) As GP_Result
 Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
 Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
 Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
@@ -242,6 +243,19 @@ Friend Function ApplyTransformToXY(ByRef srcX As Single, ByRef srcY As Single) A
     'Return the translated values
     srcX = tmpPoint.x
     srcY = tmpPoint.y
+    
+End Function
+
+'Return matrix points as a float array.  The array will be forcibly resized to (0, 5),
+' and points will be returned in the order m11, m12, m21, m22, m31, m32,
+' where mij denotes the element in row i, column j.
+Friend Function GetMatrixPoints(ByRef dstPoints() As Single) As Boolean
+    
+    'The matrix always has six points.
+    ReDim dstPoints(0 To 5) As Single
+    
+    If (m_TransformHandle = 0) Then CreateTransform
+    GetMatrixPoints = (GdipGetMatrixElements(m_TransformHandle, VarPtr(dstPoints(0))) = GP_OK)
     
 End Function
 

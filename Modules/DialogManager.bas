@@ -631,10 +631,10 @@ End Function
 'Ask the user if they want to drag/drop the target image as a new standalone image, or a new layer in the current image.
 ' (If no image is loaded, the drag/drop result will be forced to "drop as standalone image", e.g. this function will return NO.
 '  Note that CANCEL is also a viable return, one which the user needs to respect.)
-Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
+Public Function PromptDropAsNewLayer() As VbMsgBoxResult
 
     If (PDImages.GetNumOpenImages() = 0) Then
-        PromptForDropAsNewLayer = vbYes
+        PromptDropAsNewLayer = vbYes
     Else
         
         Dim questionText As String
@@ -652,30 +652,22 @@ Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
         'Display the dialog and return the result
         Dim questionID As String
         questionID = g_Language.TranslateMessage("Drop as image or layer")
-        PromptForDropAsNewLayer = Dialogs.PromptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, IDI_QUESTION, vbCancel, False, "generic_image", "generic_add", "generic_cancel")
+        PromptDropAsNewLayer = Dialogs.PromptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, IDI_QUESTION, vbCancel, False, "generic_image", "generic_add", "generic_cancel")
             
     End If
 
 End Function
 
-Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
+Public Sub PromptEffect_Animation(ByVal useBackgroundMode As Boolean)
+    Load FormAnimBackground
+    FormAnimBackground.SetBackgroundMode useBackgroundMode
+    Interface.ShowPDDialog vbModal, FormAnimBackground
+End Sub
 
-    Load FormClipboard
-    FormClipboard.ShowClipboardDialog clipMode
-    
-    If (FormClipboard.DialogResult = vbOK) Then
-        If (clipMode = co_Cut) Then
-            Processor.Process "Cut special", False, FormClipboard.GetParamString(), UNDO_Image
-        ElseIf (clipMode = co_Copy) Then
-            Processor.Process "Copy special", False, FormClipboard.GetParamString(), UNDO_Nothing
-        Else
-            Processor.Process "Paste special", False, FormClipboard.GetParamString(), UNDO_Image_VectorSafe
-        End If
-    End If
-    
-    Unload FormClipboard
-    Set FormClipboard = Nothing
-    
+Public Sub PromptEffect_Median(ByVal medianCutoff As Single)
+    Load FormMedian
+    FormMedian.SetMedianCutoff medianCutoff
+    Interface.ShowPDDialog vbModal, FormMedian
 End Sub
 
 Public Function PromptExportAnimatedGIF(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
@@ -720,15 +712,38 @@ Public Function PromptExportAnimatedWebP(ByRef srcImage As pdImage, ByRef dstFor
     
 End Function
 
-Public Sub PromptEffect_Animation(ByVal useBackgroundMode As Boolean)
-    Load FormAnimBackground
-    FormAnimBackground.SetBackgroundMode useBackgroundMode
-    Interface.ShowPDDialog vbModal, FormAnimBackground
-End Sub
+Public Function PromptImportSVG(ByVal hResvgTree As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
+    
+    Load dialog_SVGImport
+    dialog_SVGImport.ShowDialog hResvgTree, origWidth, origHeight
+    
+    PromptImportSVG = dialog_SVGImport.GetDialogResult
+    dstWidth = dialog_SVGImport.GetUserWidth
+    dstHeight = dialog_SVGImport.GetUserHeight
+    dstDPI = dialog_SVGImport.GetUserDPI
+    
+    Unload dialog_SVGImport
+    Set dialog_SVGImport = Nothing
+    
+End Function
 
-Public Sub PromptEffect_Median(ByVal medianCutoff As Single)
-    Load FormMedian
-    FormMedian.SetMedianCutoff medianCutoff
-    Interface.ShowPDDialog vbModal, FormMedian
+Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
+
+    Load FormClipboard
+    FormClipboard.ShowClipboardDialog clipMode
+    
+    If (FormClipboard.DialogResult = vbOK) Then
+        If (clipMode = co_Cut) Then
+            Processor.Process "Cut special", False, FormClipboard.GetParamString(), UNDO_Image
+        ElseIf (clipMode = co_Copy) Then
+            Processor.Process "Copy special", False, FormClipboard.GetParamString(), UNDO_Nothing
+        Else
+            Processor.Process "Paste special", False, FormClipboard.GetParamString(), UNDO_Image_VectorSafe
+        End If
+    End If
+    
+    Unload FormClipboard
+    Set FormClipboard = Nothing
+    
 End Sub
 

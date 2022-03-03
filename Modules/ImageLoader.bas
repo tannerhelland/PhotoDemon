@@ -698,7 +698,7 @@ Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef 
             dstImage.NotifyImageChanged UNDO_Everything
             dstImage.SetOriginalColorDepth 32
             dstImage.SetOriginalGrayscale False
-            dstImage.SetDPI 96, 96
+            If (dstImage.GetDPI <= 0) Then dstImage.SetDPI 96, 96
             
             'Assume alpha is present on 32-bpp images; assume it is *not* present if the SVG fills
             ' the entire visible area.
@@ -1039,15 +1039,15 @@ LibAVIFDidntWork:
             dstImage.SetOriginalFileFormat PDIF_QOI
         End If
     End If
-	
+        
     'SVG/Z support was added in v9.0
     If (Not CascadeLoadGenericImage) And Plugin_resvg.IsFileSVGCandidate(srcFile) Then
         CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage)
         If CascadeLoadGenericImage Then
             decoderUsed = id_resvg
             dstImage.SetOriginalFileFormat PDIF_SVG
-		End If
-	End If
+                End If
+        End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
