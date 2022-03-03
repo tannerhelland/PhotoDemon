@@ -2099,7 +2099,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     
     'Map operations
     ElseIf Strings.StringsEqual(processID, "Gradient map", True) Then
-        'TODO
+        If raiseDialog Then ShowPDDialog vbModal, FormGradientMap Else FormGradientMap.ApplyGradientMap processParameters
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Palette map", True) Then
