@@ -2097,6 +2097,15 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         MenuInvert
         Process_AdjustmentsMenu = True
     
+    'Map operations
+    ElseIf Strings.StringsEqual(processID, "Gradient map", True) Then
+        'TODO
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Palette map", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPalettize Else FormPalettize.ApplyPalettizeEffect processParameters
+        Process_AdjustmentsMenu = True
+        
     'Monochrome conversion
     ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
     ElseIf Strings.StringsEqual(processID, "Color to monochrome", True) Then

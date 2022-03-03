@@ -1048,8 +1048,20 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Monochrome"
+         Caption         =   "Map"
          Index           =   17
+         Begin VB.Menu MnuMap 
+            Caption         =   "Gradient map..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuMap 
+            Caption         =   "Palette map..."
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Monochrome"
+         Index           =   18
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -3450,6 +3462,15 @@ Private Sub MnuMacroCreate_Click(Index As Integer)
             Actions.LaunchAction_ByName "tools_recordmacro"
         Case 3
             Actions.LaunchAction_ByName "tools_stopmacro"
+    End Select
+End Sub
+
+Private Sub MnuMap_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "adj_gradientmap"
+        Case 1
+            Actions.LaunchAction_ByName "adj_palettemap"
     End Select
 End Sub
 
