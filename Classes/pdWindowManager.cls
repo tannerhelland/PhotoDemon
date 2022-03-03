@@ -110,8 +110,10 @@ Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal h
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
-'Misc window APIs
+'Misc window APIs.  Note that these are modern APIs with strict version requirements;
+' see individual invocations for details.
 Private Declare Function DwmIsCompositionEnabled Lib "dwmapi" (ByRef dstEnabledBool As Long) As Long
+Private Declare Function DwmSetWindowAttribute Lib "dwmapi" (ByVal hWnd As Long, ByVal dwAttribute As Long, ByVal pvAttribute As Long, ByVal cbAttribute As Long) As Long
 
 'We manually enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
@@ -170,6 +172,16 @@ Private m_tmpMinMax As MinMaxInfo
 '  GENERIC HELPER FUNCTIONS: VB-friendly wrappers to window-related APIs
 '***********************************************************************************************
 
+Friend Sub SetOSDarkTheme(ByVal dstHWnd As Long)
+    If OS.IsWin10OrLater() Then
+        Const DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        If (OS.GetWin10Build() >= 22000) Then
+            Dim srcValue As Long: srcValue = 1
+            DwmSetWindowAttribute dstHWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, VarPtr(srcValue), 4&
+        End If
+    End If
+End Sub
+
 'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
 ' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
 Friend Sub SetWindowCaptionW(ByRef targetHWnd As Long, ByRef newCaption As String)
@@ -210,47 +222,47 @@ Friend Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As B
     End If
 End Sub
 
-Friend Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Boolean)
-    EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
+Friend Sub SetEnablementByHWnd(ByVal dstHWnd As Long, ByVal enabledState As Boolean)
+    EnableWindow dstHWnd, IIf(enabledState, 1&, 0&)
 End Sub
 
-Friend Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSizeByHWnd(ByVal dstHWnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     Dim swpFlags As Long
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
-    SetWindowPos dstHwnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+    SetWindowPos dstHWnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
 End Sub
 
 'Thin wrapper to SetWindowPos, which means left/top coordinates are in *client coordinates*.
-Friend Sub SetSizeAndPositionByHWnd(ByVal dstHwnd As Long, ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSizeAndPositionByHWnd(ByVal dstHWnd As Long, ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     Dim swpFlags As Long
     swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
-    SetWindowPos dstHwnd, 0&, newLeft, newTop, newWidth, newHeight, swpFlags
+    SetWindowPos dstHWnd, 0&, newLeft, newTop, newWidth, newHeight, swpFlags
 End Sub
 
-Friend Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
+Friend Function GetWindowLongWrapper(ByVal dstHWnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
     Dim nIndex As Long
     If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
-    GetWindowLongWrapper = GetWindowLong(dstHwnd, nIndex)
+    GetWindowLongWrapper = GetWindowLong(dstHWnd, nIndex)
 End Function
 
 'As it says, a simplified wrapper to SetWindowLong.  Returns the original window style before any changes are made.
-Friend Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Long, Optional ByVal removeFlagInstead As Boolean = False, Optional ByVal useExtendedStyle As Boolean = False, Optional ByVal overrideEntireLong As Boolean = False) As Long
+Friend Function SetWindowLongWrapper(ByVal dstHWnd As Long, ByVal newFlag As Long, Optional ByVal removeFlagInstead As Boolean = False, Optional ByVal useExtendedStyle As Boolean = False, Optional ByVal overrideEntireLong As Boolean = False) As Long
     
     Dim nIndex As Long
     If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
     
     Dim curStyle As Long
-    curStyle = GetWindowLong(dstHwnd, nIndex)
+    curStyle = GetWindowLong(dstHWnd, nIndex)
     
     If overrideEntireLong Then
-        SetWindowLong dstHwnd, nIndex, newFlag
+        SetWindowLong dstHWnd, nIndex, newFlag
     Else
         If removeFlagInstead Then
-            SetWindowLong dstHwnd, nIndex, curStyle And (Not newFlag)
+            SetWindowLong dstHWnd, nIndex, curStyle And (Not newFlag)
         Else
-            SetWindowLong dstHwnd, nIndex, curStyle Or newFlag
+            SetWindowLong dstHWnd, nIndex, curStyle Or newFlag
         End If
     End If
     
@@ -455,9 +467,11 @@ Friend Sub ForceWindowRepaint(ByVal hWnd As Long)
     UpdateWindow hWnd
 End Sub
 
-'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.  Thanks to excellent debug work by ChenLin,
-' this is a problem on older OSes that only display window icons in the Alt+Tab rotation.  We can work around this problem by
-' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window is shown.
+'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.
+' Thanks to excellent debug work by ChenLin, this is a problem on older OSes that
+' only display window icons in the Alt+Tab rotation.  We can work around this problem by
+' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window
+' is shown.
 Friend Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As Boolean)
     
     Dim curExStyle As Long

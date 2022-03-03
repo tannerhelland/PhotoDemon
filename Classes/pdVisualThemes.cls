@@ -890,6 +890,12 @@ Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
         If (Not m_SubclassedHWnds.DoesKeyExist(srcHwnd)) Then
             m_SubclassedHWnds.AddEntry srcHwnd, 0
             VBHacks.StartSubclassing srcHwnd, Me
+            If (Not g_WindowManager Is Nothing) And (Not g_Themer Is Nothing) Then
+                
+                'NOTE: this code works, but is disabled pending owner-drawn menus (required for dark mode menus)
+                'If (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then g_WindowManager.SetOSDarkTheme srcHwnd
+                
+            End If
         End If
         
     End If
