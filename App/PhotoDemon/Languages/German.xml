@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1289</langversion>
+<langversion>9.0.1290</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1883,12 +1883,12 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Linear dodge</original>
-<translation>Linear abwedeln</translation>
+<translation>Linear abwedeln (Add.)</translation>
 </phrase>
 
 <phrase>
 <original>Overlay</original>
-<translation>Overlay</translation>
+<translation>Ineinanderkopieren / Überlagern</translation>
 </phrase>
 
 <phrase>
@@ -1903,7 +1903,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Vivid light</original>
-<translation>Plastisches Licht</translation>
+<translation>Strahlendes Licht</translation>
 </phrase>
 
 <phrase>
@@ -1913,7 +1913,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Pin light</original>
-<translation></translation>
+<translation>Lichtpunkt</translation>
 </phrase>
 
 <phrase>
@@ -1928,7 +1928,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Exclusion</original>
-<translation>Exklusion</translation>
+<translation>Ausschluss</translation>
 </phrase>
 
 <phrase>
@@ -1958,7 +1958,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Luminosity</original>
-<translation>Leuchtkraft</translation>
+<translation>Luminosität</translation>
 </phrase>
 
 <phrase>
@@ -7192,7 +7192,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Additional interface customizations are available in the Window menu.</original>
-<translation>Additionale Interface-Anpassungen sind im Menü Fenster verfügbar.</translation>
+<translation>Additionale Interface-Individualisierungen sind im Menü Fenster verfügbar.</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -9072,7 +9072,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>zoom</original>
-<translation>Zoomen</translation>
+<translation>Zoom</translation>
 </phrase>
 
 <phrase>
@@ -9338,7 +9338,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>add individual images</original>
-<translation>Einzelne Bilder hinzufügen</translation>
+<translation>Individuelle Bilder hinzufügen</translation>
 </phrase>
 
 <phrase>
@@ -9844,7 +9844,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Waiting for user to specify export options</original>
-<translation>Warten auf Benutzer, um Exportioptionen zu spezifizieren</translation>
+<translation>Warten auf Benutzer, um Exportoptionen zu spezifizieren</translation>
 </phrase>
 
 <phrase>
@@ -11565,7 +11565,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Zoom</original>
-<translation></translation>
+<translation>Zoom</translation>
 </phrase>
 
 <phrase>
@@ -11999,7 +11999,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>show rotate nodes</original>
-<translation>Dreh-Nodes zeigen</translation>
+<translation>Drehen-Nodes zeigen</translation>
 </phrase>
 
 <phrase>
@@ -12110,17 +12110,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Add to selection</original>
-<translation></translation>
+<translation>Zu Auswahl addieren</translation>
 </phrase>
 
 <phrase>
 <original>Subtract from selection</original>
-<translation></translation>
+<translation>Von Auswahl subtrahieren</translation>
 </phrase>
 
 <phrase>
 <original>Intersect with selection</original>
-<translation></translation>
+<translation>Mit Auswahl überschneiden</translation>
 </phrase>
 
 <phrase>
@@ -13716,7 +13716,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation></translation>
+<translation>Warten auf Benutzer, um Importoptionen zu spezifizieren</translation>
 </phrase>
 
 <!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->

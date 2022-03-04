@@ -42,10 +42,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Drop Down control 2.0
 'Copyright 2016-2022 by Tanner Helland
 'Created: 24/February/16
-'Last updated: 01/November/21
-'Last update: new option for "compact" layout, to buy us more space in toolboxes
+'Last updated: 03/March/22
+'Last update: improve horizontal size of dropdown when translations are active (and text is longer than en-US equivalent)
 '
-'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar in construction to
+'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar to
 ' the pdListBox object, including its reliance on a separate pdListSupport class for managing its data.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
@@ -672,6 +672,35 @@ Private Sub RaiseListBox()
     
     'If separators are used, bump up the display size by 1 to ensure the popup is large enough to avoid scrolling
     If separatorsUsed Then popupRect.Height = popupRect.Height + 1
+    
+    'Next, we need to make sure the dropdown is wide enough to display all items in the list.
+    ' Find the longest (as it would appear on-screen, in pixels) item in the list, and use that
+    ' as the basis for the dropdown's width.
+    Dim tmpFont As pdFont
+    Set tmpFont = New pdFont
+    tmpFont.SetFontSize Me.FontSize
+    tmpFont.CreateFontObject
+    
+    Dim tmpDC As Long
+    tmpDC = GDI.GetMemoryDC(0)
+    tmpFont.AttachToDC tmpDC
+    
+    Dim testWidth As Long, maxWidth As Long
+    For i = 0 To listSupport.ListCount - 1
+        testWidth = tmpFont.GetWidthOfString(listSupport.List(i, True))
+        If (testWidth > maxWidth) Then maxWidth = testWidth
+    Next i
+    
+    tmpFont.ReleaseFromDC
+    Set tmpFont = Nothing
+    GDI.FreeMemoryDC tmpDC
+    
+    'Add a (somewhat arbitrary) padding buffer; this accounts for borders, padding between
+    ' text and said borders, a potential vertical scrollbar, etc
+    maxWidth = maxWidth + Interface.FixDPI(28)
+    
+    'Take the larger of maxWidth and the underlying dropdown width, and use that as our final width.
+    If (maxWidth > popupRect.Width) Then popupRect.Width = maxWidth
     
     'We now want to make sure the popup box doesn't lie off-screen.  Check each dimension in turn, and note that changing
     ' the vertical position of the listbox also changes the pixel-based position of the active .ListIndex within the box.
