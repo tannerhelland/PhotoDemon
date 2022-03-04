@@ -480,7 +480,7 @@ End Sub
 
 'Helper functions for quickly constructing two- and three-point gradients, without the obnoxious overhead of creating your own point
 ' and color arrays.
-Friend Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#)
+Friend Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100!, Optional ByVal secondOpacity As Single = 100!)
     
     m_GradientIsDefault = False
     
@@ -499,7 +499,7 @@ Friend Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As
     
 End Sub
 
-Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#, Optional ByVal thirdOpacity As Single = 100#, Optional ByVal secondColorPosition As Single = 0.5)
+Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100!, Optional ByVal secondOpacity As Single = 100!, Optional ByVal thirdOpacity As Single = 100!, Optional ByVal secondColorPosition As Single = 0.5!)
     
     m_GradientIsDefault = False
     
@@ -1426,16 +1426,16 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                 centerX = dstRect.Left + halfWidth
                 centerY = dstRect.Top + halfHeight
                 
-                Dim squareRect As RectF, maxLength As Double, radiusRect As Double, radiusSquare As Double
-                If (dstRect.Width > dstRect.Height) Then maxLength = halfWidth Else maxLength = halfHeight
+                Dim squareRect As RectF, MaxLength As Double, radiusRect As Double, radiusSquare As Double
+                If (dstRect.Width > dstRect.Height) Then MaxLength = halfWidth Else MaxLength = halfHeight
                 radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
-                radiusSquare = Sqr(maxLength * maxLength + maxLength * maxLength) + 0.5
+                radiusSquare = Sqr(MaxLength * MaxLength + MaxLength * MaxLength) + 0.5
                                 
                 With squareRect
-                    .Left = centerX - maxLength
-                    .Top = centerY - maxLength
-                    .Width = maxLength * 2
-                    .Height = maxLength * 2
+                    .Left = centerX - MaxLength
+                    .Top = centerY - MaxLength
+                    .Width = MaxLength * 2
+                    .Height = MaxLength * 2
                 End With
                 
                 'Construct a reference path, using the 1) target rect, and 2) gradient shape to determine path behavior

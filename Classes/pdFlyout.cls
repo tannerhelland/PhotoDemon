@@ -61,7 +61,7 @@ Public Event FlyoutClosed(ByRef origTriggerObject As Control)
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHWnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
@@ -144,9 +144,9 @@ Friend Function GetLockedHWnd() As Long
     GetLockedHWnd = m_flyoutLockedHWnd
 End Function
 
-Friend Sub UpdateLockStatus(ByVal srcHwnd As Long, ByVal newState As Boolean, ByRef srcButton As pdButtonToolbox)
+Friend Sub UpdateLockStatus(ByVal srcHWnd As Long, ByVal newState As Boolean, ByRef srcButton As pdButtonToolbox)
     If newState Then
-        m_flyoutLockedHWnd = srcHwnd
+        m_flyoutLockedHWnd = srcHWnd
         Set m_flyoutLockedButton = srcButton
     Else
         m_flyoutLockedHWnd = 0

@@ -136,14 +136,14 @@ Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_No
     End If
 End Sub
 
-Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100#)
+Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100!)
     If (newFlow <> m_BrushFlow) Then
         m_BrushFlow = newFlow
         m_BrushIsReady = False
     End If
 End Sub
 
-Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100#)
+Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100!)
     newHardness = newHardness * 0.01
     If (newHardness <> m_BrushHardness) Then
         m_BrushHardness = newHardness
@@ -351,7 +351,7 @@ End Sub
 'Create a brush mask using passed color, radius, hardness, and flow.
 ' IMPORTANTLY: this function does NOT size the destination DIB; you must handle that manually,
 ' which is necessary in PD as different tools have different padding requirements.
-Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor As Long, ByVal brushSize As Single, ByVal brushHardness As Single, Optional ByVal brushFlow As Single = 100#) As Boolean
+Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor As Long, ByVal brushSize As Single, ByVal brushHardness As Single, Optional ByVal brushFlow As Single = 100!) As Boolean
 
     'At present, there are no fail states for this function
     CreateBrushMask_SolidColor = True

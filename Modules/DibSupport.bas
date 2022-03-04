@@ -1870,7 +1870,7 @@ End Function
 'Outline a 32-bpp DIB.  The outline is drawn along the first-encountered border where transparent and opaque pixels meet.
 ' The caller must supply the outline pen they want used and optionally, an edge threshold on the range [0, 100].
 'Returns: TRUE if successful; FALSE otherwise
-Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, Optional ByVal edgeThreshold As Single = 50#) As Boolean
+Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, Optional ByVal edgeThreshold As Single = 50!) As Boolean
 
     If (srcDIB Is Nothing) Then Exit Function
     

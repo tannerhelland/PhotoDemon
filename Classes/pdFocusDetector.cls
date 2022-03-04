@@ -64,7 +64,7 @@ End Sub
 
 'This function should be called in a UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Friend Sub StartFocusTracking(ByVal srcHwnd As Long)
+Friend Sub StartFocusTracking(ByVal srcHWnd As Long)
     
     If PDMain.IsProgramRunning() Then
     
@@ -75,7 +75,7 @@ Friend Sub StartFocusTracking(ByVal srcHwnd As Long)
         End If
         
         'Subclass all necessary messages for proper focus detection
-        m_hWnd = srcHwnd
+        m_hWnd = srcHWnd
         If (m_hWnd <> 0) Then VBHacks.StartSubclassing m_hWnd, Me
         
     End If

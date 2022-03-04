@@ -261,8 +261,8 @@ Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
 'Size of level bar "nodes" in the interactive UI.
-Private Const LEVEL_NODE_WIDTH As Single = 12#
-Private Const LEVEL_NODE_HEIGHT As Single = 14#
+Private Const LEVEL_NODE_WIDTH As Single = 12!
+Private Const LEVEL_NODE_HEIGHT As Single = 14!
 
 'An image of the current image histogram is generated for each channel, then displayed as requested
 Private m_hDIB() As pdDIB

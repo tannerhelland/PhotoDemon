@@ -210,15 +210,15 @@ Friend Function GetWindowCaptionW(ByRef targetHWnd As Long) As String
     
 End Function
 
-Friend Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
-    GetVisibilityByHWnd = (IsWindowVisible(srcHwnd) <> 0)
+Friend Function GetVisibilityByHWnd(ByVal srcHWnd As Long) As Boolean
+    GetVisibilityByHWnd = (IsWindowVisible(srcHWnd) <> 0)
 End Function
 
-Friend Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
+Friend Sub SetVisibilityByHWnd(ByVal srcHWnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
     If visibilityState Then
-        If activateWindowToo Then ShowWindow srcHwnd, SW_RESTORE Else ShowWindow srcHwnd, SW_SHOWNA
+        If activateWindowToo Then ShowWindow srcHWnd, SW_RESTORE Else ShowWindow srcHWnd, SW_SHOWNA
     Else
-        ShowWindow srcHwnd, SW_HIDE
+        ShowWindow srcHWnd, SW_HIDE
     End If
 End Sub
 
@@ -274,28 +274,28 @@ Friend Sub SetWindowPos_API(ByVal targetHWnd As Long, ByVal hWndInsertAfter As L
     SetWindowPos targetHWnd, hWndInsertAfter, x, y, cx, cy, wFlags
 End Sub
 
-Friend Function GetWindowHeight(ByVal srcHwnd As Long) As Long
+Friend Function GetWindowHeight(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, VarPtr(tmpRect)
+    GetWindowRect srcHWnd, VarPtr(tmpRect)
     GetWindowHeight = (tmpRect.y2 - tmpRect.y1)
 End Function
 
-Friend Function GetWindowWidth(ByVal srcHwnd As Long) As Long
+Friend Function GetWindowWidth(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, VarPtr(tmpRect)
+    GetWindowRect srcHWnd, VarPtr(tmpRect)
     GetWindowWidth = (tmpRect.x2 - tmpRect.x1)
 End Function
 
-Friend Sub GetWindowRect_API(ByVal srcHwnd As Long, ByRef dstRect As winRect)
-    GetWindowRect srcHwnd, VarPtr(dstRect)
+Friend Sub GetWindowRect_API(ByVal srcHWnd As Long, ByRef dstRect As winRect)
+    GetWindowRect srcHWnd, VarPtr(dstRect)
 End Sub
 
-Friend Sub GetWindowRect_API_Universal(ByVal srcHwnd As Long, ByVal ptrToAnyRectObject As Long)
-    GetWindowRect srcHwnd, ptrToAnyRectObject
+Friend Sub GetWindowRect_API_Universal(ByVal srcHWnd As Long, ByVal ptrToAnyRectObject As Long)
+    GetWindowRect srcHWnd, ptrToAnyRectObject
 End Sub
 
-Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
-    GetClientRect srcHwnd, dstRect
+Friend Sub GetClientWinRect(ByVal srcHWnd As Long, ByRef dstRect As winRect)
+    GetClientRect srcHWnd, dstRect
 End Sub
 
 Friend Function GetClientWidth(ByVal targetHWnd As Long) As Long
@@ -318,32 +318,32 @@ Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
 
-Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As PointAPI) As Boolean
+Friend Function GetClientToScreen(ByVal srcHWnd As Long, ByRef srcPoint As PointAPI) As Boolean
     
     'MapWindowPoints is preferred over ClientToScreen because it works on BiDi systems.  However,
     ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
     ' (although I don't know how well that would work in VB, given the way Err.LastDllError works),
     ' but we simply assume success and always return TRUE.
-    MapWindowPoints srcHwnd, 0, VarPtr(srcPoint), 1&
+    MapWindowPoints srcHWnd, 0, VarPtr(srcPoint), 1&
     GetClientToScreen = True
     
 End Function
 
-Friend Function GetClientToScreen_Universal(ByVal srcHwnd As Long, ByVal ptrPtAPI As Long) As Boolean
+Friend Function GetClientToScreen_Universal(ByVal srcHWnd As Long, ByVal ptrPtAPI As Long) As Boolean
     
     'MapWindowPoints is preferred over ClientToScreen because it works on BiDi systems.  However,
     ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
     ' (although I don't know how well that would work in VB, given the way Err.LastDllError works),
     ' but we simply assume success and always return TRUE.
-    MapWindowPoints srcHwnd, 0, ptrPtAPI, 1&
+    MapWindowPoints srcHWnd, 0, ptrPtAPI, 1&
     GetClientToScreen_Universal = True
     
 End Function
 
-Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As PointAPI) As Boolean
+Friend Function GetScreenToClient(ByVal srcHWnd As Long, ByRef srcPoint As PointAPI) As Boolean
     
     'See the notes for GetClientToScreen, above
-    MapWindowPoints 0, srcHwnd, VarPtr(srcPoint), 1&
+    MapWindowPoints 0, srcHWnd, VarPtr(srcPoint), 1&
     GetScreenToClient = True
     
 End Function
@@ -472,10 +472,10 @@ End Sub
 ' only display window icons in the Alt+Tab rotation.  We can work around this problem by
 ' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window
 ' is shown.
-Friend Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As Boolean)
+Friend Sub ForceWindowAppearInAltTab(ByVal srcHWnd As Long, ByVal appearState As Boolean)
     
     Dim curExStyle As Long
-    curExStyle = GetWindowLong(srcHwnd, GWL_EXSTYLE)
+    curExStyle = GetWindowLong(srcHWnd, GWL_EXSTYLE)
     
     If appearState Then
         curExStyle = curExStyle Or WS_EX_APPWINDOW
@@ -483,7 +483,7 @@ Friend Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As
         curExStyle = curExStyle And (Not WS_EX_APPWINDOW)
     End If
     
-    SetWindowLong srcHwnd, GWL_EXSTYLE, curExStyle
+    SetWindowLong srcHWnd, GWL_EXSTYLE, curExStyle
     
 End Sub
 
@@ -769,12 +769,12 @@ End Sub
 
 'Use this function to set minimum and/or maximum sizes for any arbitrary window.  (Note that this requires us to subclass
 ' the window in question; plan accordingly!)
-Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
+Friend Sub RequestMinMaxTracking(ByVal srcHWnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
-    If ((srcHwnd <> 0) And PDMain.IsProgramRunning()) Then
+    If ((srcHWnd <> 0) And PDMain.IsProgramRunning()) Then
     
         With m_MinMaxEntries(m_numOfMinMaxEntries)
-            .hWnd = srcHwnd
+            .hWnd = srcHWnd
             .internalID = internalID
             .minWidth = minWidth
             .minHeight = minHeight
@@ -787,7 +787,7 @@ Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalI
         
         'Unfortunately, there's no simple way to set min/max values in advance.  Instead, we must subclass the window, and respond
         ' to any received WM_GETMINMAXINFO messages.
-        VBHacks.StartSubclassing srcHwnd, Me
+        VBHacks.StartSubclassing srcHWnd, Me
         
     End If
 

@@ -1543,7 +1543,7 @@ End Function
 'Generate a "browse for folder" dialog.  Vista+ users get a fancy new interface; XP users get the shitty old interface.
 ' Many thanks to vbForums user "LaVolpe", who wrote both the interfaces used here.  For implementation details and
 ' links to the original, unmodified classes, please read the header comments in the referenced classes.
-Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
+Friend Function PathBrowseDialog(ByVal srcHWnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
     
     If (LenB(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
     
@@ -1559,7 +1559,7 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
             
             'For reasons I don't understand, a strange magic number is used to report cancellation; see the
             ' function documentation for additional details.
-            If (.DialogShow(srcHwnd, FDLG_BROWSEFOLDERS, dialogTitleText) <> -2147023673) Then
+            If (.DialogShow(srcHWnd, FDLG_BROWSEFOLDERS, dialogTitleText) <> -2147023673) Then
                 PathBrowseDialog = .IShellItem_GetDisplayName(ObjPtr(.ResultsItem(1)), SIGDN_FILESYSPATH, False)
             Else
                 PathBrowseDialog = vbNullString
@@ -1578,7 +1578,7 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
             .dialogTitle = dialogTitleText
             .Flags = BIF_RETURNONLYFSDIRS Or BIF_NEWDIALOGSTYLE
                 
-            If .ShowBrowseForFolder(srcHwnd) Then
+            If .ShowBrowseForFolder(srcHWnd) Then
                 PathBrowseDialog = cBrowse.SelectedFolder
             Else
                 PathBrowseDialog = vbNullString

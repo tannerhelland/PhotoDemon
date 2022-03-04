@@ -124,7 +124,7 @@ End Function
 '
 'Also, note that wherever possible we try to bypass GDI+ and just use GDI, which is totally sufficient for 24-bpp
 ' targets and/or integer-only coordinates.
-Public Function DrawSurfaceI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
     ' (This is only possible because pd2D operates in the premultiplied alpha space; if it didn't, we'd be forced
@@ -167,7 +167,7 @@ Private Function AlphaBlendWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByV
 End Function
 
 'Whenever floating-point coordinates are used, we must use GDI+ for rendering.  This is always slower than GDI.
-Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = srcSurface.GetSurfaceWidth
@@ -175,14 +175,14 @@ Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Sing
     
     'Custom opacity requires a totally different (and far more complicated) GDI+ function
     If (customOpacity <> 100#) Then
-        DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, srcWidth, srcHeight, 0#, 0#, srcWidth, srcHeight, customOpacity * 0.01)
+        DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, srcWidth, srcHeight, 0!, 0!, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY)
     End If
     
 End Function
 
-Public Function DrawSurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal cropWidth As Long, ByVal cropHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal cropWidth As Long, ByVal cropHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
     ' (This is only possible because pd2D operates in the premultiplied alpha space; if it didn't, we'd be forced
@@ -195,11 +195,11 @@ Public Function DrawSurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX 
     
 End Function
 
-Public Function DrawSurfaceCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal cropWidth As Single, ByVal cropHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal cropWidth As Single, ByVal cropHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, Optional ByVal customOpacity As Single = 100!) As Boolean
     DrawSurfaceCroppedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, cropWidth, cropHeight, srcX, srcY, cropWidth, cropHeight, customOpacity * 0.01)
 End Function
 
-Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = srcSurface.GetSurfaceWidth
@@ -214,29 +214,29 @@ Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX 
 End Function
 
 'Whenever floating-point coordinates are used, we must use GDI+ for rendering.  This is always slower than GDI.
-Public Function DrawSurfaceResizedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceResizedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = srcSurface.GetSurfaceWidth
     srcHeight = srcSurface.GetSurfaceHeight
     
     If (customOpacity <> 100#) Then
-        DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0#, 0#, srcWidth, srcHeight, customOpacity * 0.01)
+        DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0!, 0!, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight)
     End If
     
 End Function
 
-Public Function DrawSurfaceResizedCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceResizedCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100!) As Boolean
     DrawSurfaceResizedCroppedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
 End Function
 
-Public Function DrawSurfaceResizedCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceResizedCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customOpacity As Single = 100!) As Boolean
     DrawSurfaceResizedCroppedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
 End Function
 
-Public Function DrawSurfaceRotatedF(ByRef dstSurface As pd2DSurface, ByVal dstCenterX As Single, ByVal dstCenterY As Single, ByVal rotateAngle As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceRotatedF(ByRef dstSurface As pd2DSurface, ByVal dstCenterX As Single, ByVal dstCenterY As Single, ByVal rotateAngle As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     'Create a transform that describes the rotation
     Dim cTransform As pd2DTransform: Set cTransform = New pd2DTransform
@@ -262,7 +262,7 @@ Public Function DrawSurfaceRotatedF(ByRef dstSurface As pd2DSurface, ByVal dstCe
     
 End Function
 
-Public Function DrawSurfaceTransformedF(ByRef dstSurface As pd2DSurface, ByRef srcSurface As pd2DSurface, ByRef srcTransform As pd2DTransform, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+Public Function DrawSurfaceTransformedF(ByRef dstSurface As pd2DSurface, ByRef srcSurface As pd2DSurface, ByRef srcTransform As pd2DTransform, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100!) As Boolean
     
     'Translate the corner points of the image to match.  (Note that the order of points is important; GDI+ requires points
     ' in top-left, top-right, bottom-left order, with the fourth point being optional.)
@@ -291,7 +291,7 @@ Public Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen 
     DrawLineF_FromPtF = GDI_Plus.GDIPlus_DrawLineF(dstSurface.GetHandle, srcPen.GetHandle, srcPoint1.x, srcPoint1.y, srcPoint2.x, srcPoint2.y)
 End Function
 
-Public Function DrawLinesF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
+Public Function DrawLinesF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5!) As Boolean
     If useCurveAlgorithm Then
         DrawLinesF_FromPtF = GDI_Plus.GDIPlus_DrawCurveF(dstSurface.GetHandle, srcPen.GetHandle, ptrToPtFArray, numOfPoints, curvatureTension)
     Else
@@ -307,7 +307,7 @@ Public Function DrawLineI_FromPtL(ByRef dstSurface As pd2DSurface, ByRef srcPen 
     DrawLineI_FromPtL = GDI_Plus.GDIPlus_DrawLineI(dstSurface.GetHandle, srcPen.GetHandle, srcPoint1.x, srcPoint1.y, srcPoint2.x, srcPoint2.y)
 End Function
 
-Public Function DrawLinesI_FromPtL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
+Public Function DrawLinesI_FromPtL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5!) As Boolean
     If useCurveAlgorithm Then
         DrawLinesI_FromPtL = GDI_Plus.GDIPlus_DrawCurveI(dstSurface.GetHandle, srcPen.GetHandle, ptrToPtLArray, numOfPoints, curvatureTension)
     Else
@@ -327,7 +327,7 @@ Public Function DrawPath_Transformed(ByRef dstSurface As pd2DSurface, ByRef srcP
     DrawPath_Transformed = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, tmpPath.GetHandle)
 End Function
 
-Public Function DrawPolygonF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
+Public Function DrawPolygonF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5!) As Boolean
     If useCurveAlgorithm Then
         DrawPolygonF = GDI_Plus.GDIPlus_DrawClosedCurveF(dstSurface.GetHandle, srcPen.GetHandle, ptrToPtFArray, numOfPoints, curvatureTension)
     Else
@@ -335,7 +335,7 @@ Public Function DrawPolygonF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd
     End If
 End Function
 
-Public Function DrawPolygonI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
+Public Function DrawPolygonI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5!) As Boolean
     If useCurveAlgorithm Then
         DrawPolygonI = GDI_Plus.GDIPlus_DrawClosedCurveI(dstSurface.GetHandle, srcPen.GetHandle, ptrToPtLArray, numOfPoints, curvatureTension)
     Else
@@ -424,7 +424,7 @@ Public Function FillPath_Transformed(ByRef dstSurface As pd2DSurface, ByRef srcB
     FillPath_Transformed = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
 End Function
 
-Public Function FillPolygonF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal fillMode As PD_2D_FillRule = P2_FR_Winding) As Boolean
+Public Function FillPolygonF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5!, Optional ByVal fillMode As PD_2D_FillRule = P2_FR_Winding) As Boolean
     If useCurveAlgorithm Then
         FillPolygonF_FromPtF = GDI_Plus.GDIPlus_FillClosedCurveF(dstSurface.GetHandle, srcBrush.GetHandle, ptrToPtFArray, numOfPoints, curvatureTension, fillMode)
     Else

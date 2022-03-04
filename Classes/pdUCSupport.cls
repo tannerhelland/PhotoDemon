@@ -79,7 +79,7 @@ Private Const SWP_HIDEWINDOW As Long = &H80
 Private Const SWP_SHOWWINDOW As Long = &H40
 
 Private Declare Function CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHWnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
@@ -1105,7 +1105,7 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, O
     
 End Sub
 
-Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByVal mouseHoverY As Single = -1)
+Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1!, Optional ByVal mouseHoverY As Single = -1!)
     
     If ((LenB(m_TTCaption) <> 0) And Me.AmIVisible And Me.AmIEnabled) Then
         

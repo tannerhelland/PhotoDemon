@@ -105,8 +105,8 @@ Private Sub EndSubclassing()
     End If
 End Sub
 
-Private Function MakeKeyFromHWnd(ByVal srcHwnd As Long) As String
-    MakeKeyFromHWnd = Trim$(Str$(srcHwnd))
+Private Function MakeKeyFromHWnd(ByVal srcHWnd As Long) As String
+    MakeKeyFromHWnd = Trim$(Str$(srcHWnd))
 End Function
 
 Private Sub RestoreOriginalWindowBits(ByVal childHwnd As Long)
@@ -160,7 +160,7 @@ Friend Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
 End Sub
 
 'Move or resize a window
-Private Sub SetWindowPosition(ByVal srcHwnd As Long, ByVal newLeft As Long, ByVal newTop As Long, Optional ByVal notifyWindow As Boolean = True)
+Private Sub SetWindowPosition(ByVal srcHWnd As Long, ByVal newLeft As Long, ByVal newTop As Long, Optional ByVal notifyWindow As Boolean = True)
     
     'Per VB convention, the new left/top coordinates should be in parent coordinates.  If you want to position a
     ' window using *screen coordinates*, you'll need to write a new function (and/or manually convert the coordinates
@@ -169,17 +169,17 @@ Private Sub SetWindowPosition(ByVal srcHwnd As Long, ByVal newLeft As Long, ByVa
     swpFlags = SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOACTIVATE
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
-    SetWindowPos srcHwnd, 0&, newLeft, newTop, 0&, 0&, swpFlags
+    SetWindowPos srcHWnd, 0&, newLeft, newTop, 0&, 0&, swpFlags
     
 End Sub
 
-Private Sub SetWindowSize(ByVal srcHwnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Private Sub SetWindowSize(ByVal srcHWnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE
     If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
-    SetWindowPos srcHwnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+    SetWindowPos srcHWnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
     
 End Sub
 

@@ -29,9 +29,9 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Used for testing color weighting by human eye sensitivity.  (Not used at present; results are unpredictable.)
-'Private Const CUSTOM_WEIGHT_RED As Single = 0.299
-'Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587
-'Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114
+'Private Const CUSTOM_WEIGHT_RED As Single = 0.299!
+'Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587!
+'Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114!
 
 'Local copy of the master palette.  By caching this, we can perform all internal comparisons via palette
 ' index instead of by color.  This provides a meaningful performance boost, given that we'll traverse the

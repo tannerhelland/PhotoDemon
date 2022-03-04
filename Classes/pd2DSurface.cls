@@ -637,7 +637,7 @@ End Function
 ' like fill boundaries and implicit draw operations (draw operations where the caller isn't required to pass width and height).
 ' If you don't provide width and height, pd2D will try to guess dimensions from the active object inside the DC, but this is
 ' subject to a bunch of problems and is unlikely to provide desired results.
-Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd As Long = 0, Optional ByVal surfaceWidth As Single = 0!, Optional ByVal surfaceHeight As Single = 0!) As Boolean
+Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHWnd As Long = 0, Optional ByVal surfaceWidth As Single = 0!, Optional ByVal surfaceHeight As Single = 0!) As Boolean
     
     If (srcDC <> 0) Then
         
@@ -662,7 +662,7 @@ Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
                 SyncAllPropertiesToBackend
                 
                 'Determine how we're gonna get size data from this DC
-                If (srcHwnd = 0) Then
+                If (srcHWnd = 0) Then
                     If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
                         m_SurfaceWidthCaller = surfaceWidth
                         m_SurfaceHeightCaller = surfaceHeight
@@ -671,7 +671,7 @@ Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
                         m_SurfaceSizeMode = P2_SizeUnknown
                     End If
                 Else
-                    m_SurfaceHWnd = srcHwnd
+                    m_SurfaceHWnd = srcHWnd
                     m_SurfaceSizeMode = P2_SizeFromHWnd
                 End If
                 
@@ -966,7 +966,7 @@ End Function
 ' color and/or alpha to use when erasing.
 '
 'Note that wrapped GDI surfaces will *not* touch alpha, by design, to avoid screwing up the target DC's behavior.
-Friend Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optional ByVal newAlpha As Single = 0#)
+Friend Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optional ByVal newAlpha As Single = 0!)
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         GDI.FillRectToDC m_SurfaceDC, 0, 0, Me.GetSurfaceWidth + 1, Me.GetSurfaceHeight + 1, newColor
     ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
