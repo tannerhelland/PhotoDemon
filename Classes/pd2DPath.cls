@@ -277,7 +277,7 @@ End Function
 'Technically this should be called "AddPolygon_RegularConvex", but for brevity, we use just "regular".  Regular polygons
 ' (https://en.wikipedia.org/wiki/Regular_polygon) are the ones you learned in grade school: square, pentagon, hexagon, etc.
 ' Regular polygons are defined by a center point, radius, and number of sides.  This function also supports curvature.
-Friend Function AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curveTension As Single = 0.5!) As Boolean
+Friend Function AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single, Optional ByVal centerX As Single = 0!, Optional ByVal centerY As Single = 0!, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curveTension As Single = 0.5!) As Boolean
     
     If (numOfSides > 0) Then
         

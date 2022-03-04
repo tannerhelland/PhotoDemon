@@ -642,8 +642,8 @@ Private m_CurPoint As Long, m_CurHoverPoint As Long
 Private m_CurHoverX As Long
 
 'Size of gradient "nodes" in the interactive UI.
-Private Const GRADIENT_NODE_WIDTH As Single = 12#
-Private Const GRADIENT_NODE_HEIGHT As Single = 14#
+Private Const GRADIENT_NODE_WIDTH As Single = 12!
+Private Const GRADIENT_NODE_HEIGHT As Single = 14!
 
 'Other gradient node UI renderers
 Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush

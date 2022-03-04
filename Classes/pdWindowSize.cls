@@ -106,17 +106,17 @@ Private m_ResizeActive As Boolean
 '
 'This class can optionally subclass API size/move events, including max/min window size requests,
 ' and raise corresponding events, allowing us to completely bypass VB's faulty handling.
-Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False, Optional ByVal subclassMaxMinToo As Boolean = False)
+Friend Sub AttachToHWnd(ByVal srcHWnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False, Optional ByVal subclassMaxMinToo As Boolean = False)
     
     If PDMain.IsProgramRunning() Then
     
         EndSubclassing
         
-        If (srcHwnd = 0) Then
+        If (srcHWnd = 0) Then
             PDDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
         Else
         
-            m_hWnd = srcHwnd
+            m_hWnd = srcHWnd
             
             'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
             m_SubclassActive = subclassMoveSizeEvents

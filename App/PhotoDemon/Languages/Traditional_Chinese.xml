@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.257</langversion>
+<langversion>7.0.258</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -799,6 +799,16 @@
 </phrase>
 
 <phrase>
+<original>Gradient map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Palette map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color to monochrome</original>
 <translation>單色色彩</translation>
 </phrase>
@@ -1273,7 +1283,7 @@
 <translation>清除最近影像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 259 phrases. 7 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
+<!-- Actions.bas contains 261 phrases. 7 were duplicates of existing phrases, so only 254 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5116,6 +5126,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>單色</translation>
 </phrase>
@@ -5553,7 +5568,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6263,6 +6278,18 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>gradient</original>
+<translation>漸層</translation>
+</phrase>
+
+<phrase>
+<original>Applying gradient map</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>advice from the experts</original>
 <translation></translation>
 </phrase>
@@ -6623,11 +6650,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>gradient</original>
-<translation>漸層</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>影子</translation>
 </phrase>
@@ -6637,7 +6659,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>矩形</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6990,6 +7012,18 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -10117,12 +10151,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13660,19 +13689,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Waiting for user to specify import options</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5382 phrases. -->
-<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 11772 total words. -->
+<!-- As of this build, PhotoDemon contains 5393 phrases. -->
+<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11780 total words. -->
 
 </pdData>

@@ -38,9 +38,9 @@ End Enum
 
 'Used for more accurate color distance comparisons (using human eye sensitivity as a rough guide, while staying in
 ' the sRGB space for performance reasons)
-Private Const CUSTOM_WEIGHT_RED As Single = 0.299
-Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587
-Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114
+Private Const CUSTOM_WEIGHT_RED As Single = 0.299!
+Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587!
+Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114!
 
 'WAPI provides palette matching functions that run quite a bit faster than an equivalent VB function; we use this
 ' if "perfect" palette matching is desired (where an exhaustive search is applied against each pixel in the image,

@@ -61,7 +61,7 @@ End Enum
 Private Declare Function AppendMenuW Lib "user32" (ByVal hMenu As Long, ByVal uFlags As WapiMenuFlags, ByVal uIDNewItem As Long, ByVal lpNewItem As Long) As Long
 Private Declare Function CreatePopupMenu Lib "user32" () As Long
 Private Declare Function DestroyMenu Lib "user32" (ByVal hMenu As Long) As Long
-Private Declare Function TrackPopupMenu Lib "user32" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal x As Long, ByVal y As Long, ByVal nReserved As Long, ByVal srcHwnd As Long, ByVal prcRect As Long) As Long
+Private Declare Function TrackPopupMenu Lib "user32" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal x As Long, ByVal y As Long, ByVal nReserved As Long, ByVal srcHWnd As Long, ByVal prcRect As Long) As Long
 
 Private m_NumMenuItems As Long
 Private m_MenuItems() As PopupMenuItem
@@ -82,13 +82,13 @@ Friend Sub Reset()
 End Sub
 
 'Display the menu.  Listen for a MenuClicked() event to retrieve the clicked entry (if any).
-Friend Sub ShowMenu(ByVal srcHwnd As Long, ByVal srcX As Long, ByVal srcY As Long)
+Friend Sub ShowMenu(ByVal srcHWnd As Long, ByVal srcX As Long, ByVal srcY As Long)
     
     'Translate the source x/y coords into screen coords
     Dim srcPoint As PointAPI
     srcPoint.x = srcX
     srcPoint.y = srcY
-    g_WindowManager.GetClientToScreen srcHwnd, srcPoint
+    g_WindowManager.GetClientToScreen srcHWnd, srcPoint
     
     'Create an API menu object
     Dim hMenu As Long
@@ -98,7 +98,7 @@ Friend Sub ShowMenu(ByVal srcHwnd As Long, ByVal srcX As Long, ByVal srcY As Lon
     Const TPM_RETURNCMD As Long = &H100&, TPM_NONOTIFY As Long = &H80&
     
     Dim hRet As Long
-    hRet = TrackPopupMenu(hMenu, TPM_NONOTIFY Or TPM_RETURNCMD, srcPoint.x, srcPoint.y, 0&, srcHwnd, 0&)
+    hRet = TrackPopupMenu(hMenu, TPM_NONOTIFY Or TPM_RETURNCMD, srcPoint.x, srcPoint.y, 0&, srcHWnd, 0&)
     If (hRet <> 0) Then RaiseEvent MenuClicked(hRet - 1, m_MenuItems(hRet - 1).pmCaption)
     
     'Destroy the menu object before exiting

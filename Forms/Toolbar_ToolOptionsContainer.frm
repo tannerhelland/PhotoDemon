@@ -86,8 +86,8 @@ Private Sub Form_Unload(Cancel As Integer)
     End If
 End Sub
 
-Public Sub NotifyChildPanelHWnd(ByVal srcHwnd As Long)
-    m_PanelHWnd = srcHwnd
+Public Sub NotifyChildPanelHWnd(ByVal srcHWnd As Long)
+    m_PanelHWnd = srcHWnd
 End Sub
 
 'Updating against the current theme accomplishes a number of things:

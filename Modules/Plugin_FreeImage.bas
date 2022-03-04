@@ -1873,7 +1873,7 @@ End Function
 '
 'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
 ' Forget this, and the function will leak.
-Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal newGamma As Single = 2.2, Optional ByVal exposureCompensation As Single = 2#, Optional ByVal shoulderStrength As Single = 0.22, Optional ByVal linearStrength As Single = 0.3, Optional ByVal linearAngle As Single = 0.1, Optional ByVal toeStrength As Single = 0.2, Optional ByVal toeNumerator As Single = 0.01, Optional ByVal toeDenominator As Single = 0.3, Optional ByVal linearWhitePoint As Single = 11.2) As Long
+Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal newGamma As Single = 2.2!, Optional ByVal exposureCompensation As Single = 2!, Optional ByVal shoulderStrength As Single = 0.22!, Optional ByVal linearStrength As Single = 0.3!, Optional ByVal linearAngle As Single = 0.1!, Optional ByVal toeStrength As Single = 0.2!, Optional ByVal toeNumerator As Single = 0.01!, Optional ByVal toeDenominator As Single = 0.3!, Optional ByVal linearWhitePoint As Single = 11.2!) As Long
     
     'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
     ' Other formats are invalid.

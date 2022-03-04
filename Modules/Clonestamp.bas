@@ -148,14 +148,14 @@ Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_No
     End If
 End Sub
 
-Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100#)
+Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100!)
     If (newFlow <> m_BrushFlow) Then
         m_BrushFlow = newFlow
         m_BrushIsReady = False
     End If
 End Sub
 
-Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100#)
+Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100!)
     newHardness = newHardness * 0.01
     If (newHardness <> m_BrushHardness) Then
         m_BrushHardness = newHardness

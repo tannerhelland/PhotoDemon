@@ -432,7 +432,7 @@ Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal 
 End Function
 
 'Shortcut function for quickly creating a blank surface with the default rendering backend and default rendering settings
-Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceSupportsAlpha As Boolean = True, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialOpacity As Single = 100#) As Boolean
+Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceSupportsAlpha As Boolean = True, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialOpacity As Single = 100!) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
@@ -441,11 +441,11 @@ Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal s
 End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
-Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHwnd As Long = 0) As Boolean
+Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHWnd As Long = 0) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
-        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHwnd)
+        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHWnd)
     End With
 End Function
 
@@ -465,7 +465,7 @@ Public Function QuickCreateSurfaceFromFile(ByRef dstSurface As pd2DSurface, ByVa
 End Function
 
 'Shortcut function for creating a solid brush
-Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVal brushColor As Long = vbWhite, Optional ByVal brushOpacity As Single = 100#) As Boolean
+Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVal brushColor As Long = vbWhite, Optional ByVal brushOpacity As Single = 100!) As Boolean
     If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     With dstBrush
         .SetBrushColor brushColor
@@ -475,7 +475,7 @@ Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVa
 End Function
 
 'Shortcut function for creating a two-color gradient brush
-Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RectF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100#, Optional ByVal secondColorOpacity As Single = 100#, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0#) As Boolean
+Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RectF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100!, Optional ByVal secondColorOpacity As Single = 100!, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0!) As Boolean
     
     If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     

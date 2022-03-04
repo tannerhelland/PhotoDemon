@@ -150,14 +150,14 @@ Friend Function GetParentHWnd() As Long
     GetParentHWnd = m_ParentHWnd
 End Function
 
-Friend Function DoesHWndExist(ByVal srcHwnd As Long) As Boolean
+Friend Function DoesHWndExist(ByVal srcHWnd As Long) As Boolean
     
     DoesHWndExist = False
     
     If (m_numOfControls > 0) Then
         Dim i As Long
         For i = 0 To m_numOfControls - 1
-            If (m_Controls(i).hWnd = srcHwnd) Then
+            If (m_Controls(i).hWnd = srcHWnd) Then
                 DoesHWndExist = True
                 Exit For
             End If
@@ -226,15 +226,15 @@ Friend Sub NotifyChildControl(ByRef childControl As Object, ByVal canReceiveFocu
 End Sub
 
 'Tab keypresses only require an incoming hWnd; we'll figure out the rest.
-Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
+Friend Sub NotifyTabKey(ByVal srcHWnd As Long, ByVal shiftTabPressed As Boolean)
     
     'Before doing anything else, ask the source control if it wants to specify a custom tab-key target.
     ' If it does, we'll use its suggestion instead of determining our own.
     Dim newTargetHwnd As Long: newTargetHwnd = 0
     If shiftTabPressed Then
-        UserControls.PostPDMessage WM_PD_SHIFT_TAB_KEY_TARGET, srcHwnd, VarPtr(newTargetHwnd)
+        UserControls.PostPDMessage WM_PD_SHIFT_TAB_KEY_TARGET, srcHWnd, VarPtr(newTargetHwnd)
     Else
-        UserControls.PostPDMessage WM_PD_TAB_KEY_TARGET, srcHwnd, VarPtr(newTargetHwnd)
+        UserControls.PostPDMessage WM_PD_TAB_KEY_TARGET, srcHWnd, VarPtr(newTargetHwnd)
     End If
     
     If (newTargetHwnd = 0) Then
@@ -278,7 +278,7 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
                     End With
                     
                     'If this control is the one that supplied the tabkey, note it now
-                    If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
+                    If (srcHWnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
                     
                     m_numOfControlsSort = m_numOfControlsSort + 1
                     
@@ -291,10 +291,10 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
         ' if it wasn't (for whatever reason), retrieve its last-known position and use that instead.
         If (currentControlIndex = -1) Then
             
-            g_WindowManager.GetWindowRect_API srcHwnd, tmpRect
+            g_WindowManager.GetWindowRect_API srcHWnd, tmpRect
             
             With m_ControlsSort(m_numOfControlsSort)
-                .hWnd = srcHwnd
+                .hWnd = srcHWnd
                 .x = tmpRect.x1
                 .y = tmpRect.y1
                 .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
@@ -332,7 +332,7 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
         
         'Now that our list is sorted, we need to once again find the source window's hWnd.
         For i = 0 To m_numOfControlsSort - 1
-            If (m_ControlsSort(i).hWnd = srcHwnd) Then
+            If (m_ControlsSort(i).hWnd = srcHWnd) Then
                 currentControlIndex = i
                 Exit For
             End If
@@ -427,11 +427,11 @@ Private Function GetSortKeyFromRect(ByRef srcRect As winRect, ByVal screenWidth 
     
 End Function
 
-Private Function GetControlNameFromHWnd(ByVal srcHwnd As Long) As String
+Private Function GetControlNameFromHWnd(ByVal srcHWnd As Long) As String
 
     Dim i As Long
     For i = 0 To m_numOfControls - 1
-        If (srcHwnd = m_Controls(i).hWnd) Then
+        If (srcHWnd = m_Controls(i).hWnd) Then
             GetControlNameFromHWnd = m_Controls(i).ctlName & " (" & m_Controls(i).ctlType & ")"
             Exit For
         End If

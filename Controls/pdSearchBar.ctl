@@ -138,7 +138,7 @@ Private Const EDITBOX_BORDER_PADDING As Long = 2&
 
 'Everything below this line comes from pdDropDown, and should be (hypothetically) tied to raising the
 ' dynamic list box.
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHWnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 

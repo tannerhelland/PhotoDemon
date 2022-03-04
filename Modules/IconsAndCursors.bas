@@ -349,7 +349,7 @@ Public Sub ResetMenuIcons()
         
 End Sub
 
-Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenuObject As clsMenuImage, Optional ByVal desiredSize As Long = 0, Optional ByVal desiredPadding As Single = 0.5)
+Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenuObject As clsMenuImage, Optional ByVal desiredSize As Long = 0, Optional ByVal desiredPadding As Single = 0.5!)
 
     'First, attempt to load the image from our internal resource manager
     Dim loadedInternally As Boolean: loadedInternally = False

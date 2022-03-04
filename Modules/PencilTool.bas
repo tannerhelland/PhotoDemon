@@ -163,7 +163,7 @@ Private Sub CreateCurrentBrushOutline()
     Set m_BrushOutlinePath = New pd2DPath
     
     'Single-pixel brushes are treated as a square for cursor purposes.
-    If (m_BrushSize > 0#) Then
+    If (m_BrushSize > 0!) Then
         If (m_BrushSize = 1) Then
             m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
         Else
@@ -406,7 +406,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     'Inflate the rect calculation by the size of the current brush, while accounting for the possibility of antialiasing
     ' (which may extend up to 1.0 pixel outside the calculated boundary area).
     Dim halfBrushSize As Single
-    halfBrushSize = m_BrushSize / 2 + 1#
+    halfBrushSize = m_BrushSize / 2 + 1!
     
     tmpRectF.Left = tmpRectF.Left - halfBrushSize
     tmpRectF.Top = tmpRectF.Top - halfBrushSize
@@ -515,8 +515,8 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         
         'Paint a target cursor - but *only* if the mouse is not currently down!
         Dim crossLength As Single, outerCrossBorder As Single
-        crossLength = 3#
-        outerCrossBorder = 0.5
+        crossLength = 3!
+        outerCrossBorder = 0.5!
         
         If (Not m_MouseDown) Then
             outerPen.SetPenLineCap P2_LC_Round

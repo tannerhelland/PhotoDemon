@@ -137,7 +137,7 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         FillZoomRect_ImageCoords srcCanvas, srcImage, rectImageCoords
         
         'Failsafe check for DBZ errors
-        If (rectImageCoords.Width <= 0#) Or (rectImageCoords.Height <= 0#) Then Exit Sub
+        If (rectImageCoords.Width <= 0!) Or (rectImageCoords.Height <= 0!) Then Exit Sub
         
         'We now need to retrieve the current viewport rect in screen space (actual pixels)
         Dim viewportWidth As Double, viewportHeight As Double

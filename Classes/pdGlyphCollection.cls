@@ -609,7 +609,7 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None)
+Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0!, Optional ByVal customCharSpacing As Single = 0!, Optional ByVal customCharOrientation As Single = 0!, Optional ByVal customCharJitterX As Single = 0!, Optional ByVal customCharJitterY As Single = 0!, Optional ByVal customCharInflation As Single = 0!, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None)
     
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing

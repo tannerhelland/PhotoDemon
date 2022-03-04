@@ -409,9 +409,12 @@ Public Sub InitializeMenus()
         AddMenuItem "HDR...", "adj_hdr", 5, 16, 5
         AddMenuItem "Levels...", "adj_levels", 5, 16, 6
         AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 7
-    AddMenuItem "Monochrome", "adj_monochrome", 5, 17
-        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 17, 0
-        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 17, 1
+    AddMenuItem "Map", "adj_map", 5, 17
+        AddMenuItem "Gradient map...", "adj_gradientmap", 5, 17, 0
+        AddMenuItem "Palette map...", "adj_palettemap", 5, 17, 1
+    AddMenuItem "Monochrome", "adj_monochrome", 5, 18
+        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 18, 0
+        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 18, 1
         
     'Effects (Filters) Menu
     AddMenuItem "Effects", "effects_top", 6
@@ -927,11 +930,11 @@ End Sub
 'Automatically determine new mnemonics for *all* menu captions.
 Private Sub DetermineMnemonics()
     
-    'Mnemonics use a (somewhat convoluted) automatic generation strategy, roughly akin to the way
-    ' humans would manually create mnemonics.
+    'Mnemonics use a (somewhat convoluted) automatic generation strategy,
+    ' roughly akin to the way humans would manually create mnemonics.
     
-    'First, recognize that all mnemonic decisions are made among sibling menus.  Child menus (and menus
-    ' with a different parent) can and will reuse mnemonic characters.
+    'First, recognize that all mnemonic decisions are made among sibling menus.
+    ' Child menus (and menus with different parents) can and will reuse mnemonic characters.
     
     'Mnemonics are calculated as follows:
     '1) Ignore all non-alpha characters.  (Punctuation, numbers, whitespace are never used for mnemonics.)

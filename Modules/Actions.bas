@@ -815,6 +815,13 @@ Private Function Launch_ByName_MenuAdjustments(ByRef srcMenuName As String, Opti
             'Case "adj_levels"  'Covered by parent menu
             'Case "adj_sandh"   'Covered by parent menu
             
+        Case "adj_map"
+            Case "adj_gradientmap"
+                Process "Gradient map", True
+                
+            Case "adj_palettemap"
+                Process "Palette map", True
+            
         Case "adj_monochrome"
             Case "adj_colortomonochrome"
                 Process "Color to monochrome", True

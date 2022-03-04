@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.76</langversion>
+<langversion>8.0.77</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -799,6 +799,16 @@
 </phrase>
 
 <phrase>
+<original>Gradient map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Palette map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color to monochrome</original>
 <translation>Kleur naar zwart-wit</translation>
 </phrase>
@@ -1273,7 +1283,7 @@
 <translation>Wis recente lijst met afbeeldingen</translation>
 </phrase>
 
-<!-- Actions.bas contains 259 phrases. 7 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
+<!-- Actions.bas contains 261 phrases. 7 were duplicates of existing phrases, so only 254 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5156,6 +5166,11 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>Zwart-wit</translation>
 </phrase>
@@ -5593,7 +5608,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6303,6 +6318,18 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>gradient</original>
+<translation>kleurverloop</translation>
+</phrase>
+
+<phrase>
+<original>Applying gradient map</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>advice from the experts</original>
 <translation>advies van de experts</translation>
 </phrase>
@@ -6663,11 +6690,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>gradient</original>
-<translation>kleurverloop</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>reflectie</translation>
 </phrase>
@@ -6677,7 +6699,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>rechthoek</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -7030,6 +7052,18 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1 opties</translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -10163,12 +10197,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1 opties</translation>
-</phrase>
-
-<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13714,19 +13743,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Waiting for user to specify import options</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5382 phrases. -->
-<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 11772 total words. -->
+<!-- As of this build, PhotoDemon contains 5393 phrases. -->
+<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11780 total words. -->
 
 </pdData>

@@ -339,8 +339,8 @@ Public Function PathAddBackslash(ByRef srcPath As String) As String
     If InitializeFSO Then PathAddBackslash = m_FSO.PathAddBackslash(srcPath)
 End Function
 
-Public Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
-    If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHwnd, initFolder, dialogTitleText)
+Public Function PathBrowseDialog(ByVal srcHWnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
+    If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHWnd, initFolder, dialogTitleText)
 End Function
 
 Public Function PathCommonPrefix(ByRef srcPath1 As String, ByRef srcPath2 As String, ByRef dstCommonPrefix As String) As Boolean

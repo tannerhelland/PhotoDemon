@@ -881,19 +881,19 @@ Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackageChunky, ByRef sr
     
 End Sub
 
-Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
+Friend Sub AddWindowPainter(ByVal srcHWnd As Long)
     
     If PDMain.IsProgramRunning() Then
         
         'If we're not already subclassing this hWnd (something that shouldn't be possible, but better safe than sorry),
         ' add it to our subclassed list.
-        If (Not m_SubclassedHWnds.DoesKeyExist(srcHwnd)) Then
-            m_SubclassedHWnds.AddEntry srcHwnd, 0
-            VBHacks.StartSubclassing srcHwnd, Me
+        If (Not m_SubclassedHWnds.DoesKeyExist(srcHWnd)) Then
+            m_SubclassedHWnds.AddEntry srcHWnd, 0
+            VBHacks.StartSubclassing srcHWnd, Me
             If (Not g_WindowManager Is Nothing) And (Not g_Themer Is Nothing) Then
                 
                 'NOTE: this code works, but is disabled pending owner-drawn menus (required for dark mode menus)
-                'If (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then g_WindowManager.SetOSDarkTheme srcHwnd
+                'If (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then g_WindowManager.SetOSDarkTheme srcHWnd
                 
             End If
         End If
@@ -902,13 +902,13 @@ Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
     
 End Sub
 
-Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
+Friend Sub RemoveWindowPainter(ByVal srcHWnd As Long)
     
     'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
     If PDMain.IsProgramRunning() Then
-        If m_SubclassedHWnds.DoesKeyExist(srcHwnd) Then
-            VBHacks.StopSubclassing srcHwnd, Me
-            m_SubclassedHWnds.DeleteEntry srcHwnd
+        If m_SubclassedHWnds.DoesKeyExist(srcHWnd) Then
+            VBHacks.StopSubclassing srcHWnd, Me
+            m_SubclassedHWnds.DeleteEntry srcHWnd
             m_SubclassedHWnds.TrimDeletedEntries
         End If
     End If

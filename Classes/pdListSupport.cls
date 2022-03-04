@@ -73,7 +73,7 @@ Private m_DefaultHeight As Long
 Private m_TotalHeight As Long
 
 'Divider height is calculated as a fraction of the default line height.  This makes things like DPI handling much simpler.
-Private Const SEPARATOR_LINE_HEIGHT As Single = 0.55
+Private Const SEPARATOR_LINE_HEIGHT As Single = 0.55!
 
 'This class will track .ListIndex for you.  It needs to know that value to auto-suggest things like scroll bar position
 ' after a keypress.
@@ -536,7 +536,7 @@ Friend Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String)
             m_Items(itemIndex).textEn = newItemText
             
             'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
-            If Not (g_Language Is Nothing) Then
+            If (Not g_Language Is Nothing) Then
                 If g_Language.TranslationActive Then
                     m_Items(itemIndex).textTranslated = g_Language.TranslateMessage(newItemText)
                 Else
@@ -768,7 +768,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
             MakeSureListIndexFitsOnscreen = True
             
             'If the item lies *above* the viewport rect, scroll down to compensate.
-            If liTop < liContainerTop Then
+            If (liTop < liContainerTop) Then
                 m_ScrollValue = liTop
                 
             'If the item lies *below* the viewport rect, scroll up to compensate.
@@ -776,8 +776,8 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
                 m_ScrollValue = (liTop - (m_ListRectF.Height - m_Items(m_ListIndex).itemHeight)) - 1
             End If
             
-            If m_ScrollValue > m_ScrollMax Then m_ScrollValue = m_ScrollMax
-            If m_ScrollValue < 0 Then m_ScrollValue = 0
+            If (m_ScrollValue > m_ScrollMax) Then m_ScrollValue = m_ScrollMax
+            If (m_ScrollValue < 0) Then m_ScrollValue = 0
         
         End If
         
@@ -787,11 +787,11 @@ End Function
 
 'All PD lists aim to support scroll-by-drag behavior
 Private Sub ScrollListByDrag(ByVal newX As Single, ByVal newY As Single)
-    If m_ScrollMax > 0 Then
+    If (m_ScrollMax > 0) Then
         Dim tmpScrollValue As Long
         tmpScrollValue = m_InitScroll + (m_InitMouseY - newY)
-        If tmpScrollValue < 0 Then tmpScrollValue = 0
-        If tmpScrollValue > m_ScrollMax Then tmpScrollValue = m_ScrollMax
+        If (tmpScrollValue < 0) Then tmpScrollValue = 0
+        If (tmpScrollValue > m_ScrollMax) Then tmpScrollValue = m_ScrollMax
         ScrollValue = tmpScrollValue
     End If
 End Sub
@@ -861,8 +861,8 @@ Friend Sub GetRenderingLimits(ByRef firstRenderIndex As Long, ByRef lastRenderIn
     listIsEmpty = (m_NumOfItems = 0)
 End Sub
 
-'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data, plus
-' rendering-specific information like the item's literal position in the current list box.
+'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data,
+' plus rendering-specific information like the item's literal position in the current list box.
 Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_LISTITEM, ByRef dstItemTop As Long, ByRef dstItemHeight As Long, ByRef dstItemHeightWithoutSeparator As Long)
     
     dstListItem = m_Items(srcListIndex)
@@ -945,8 +945,8 @@ Friend Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRe
     
 End Sub
 
-'Call this sub to request a full redraw of the list.  This sub doesn't actually perform any drawing; instead, it raises a series of
-' RenderListItem() events, which the caller can then handle on their own terms.
+'Call this sub to request a full redraw of the list.  This sub doesn't actually perform any drawing;
+' instead, it raises a series of RenderListItem() events, which the caller can then handle on their own terms.
 Friend Sub CalculateRenderMetrics()
     
     'Prior to requesting a redraw, determine the indices of the first and last items our owner needs to draw.
@@ -1044,6 +1044,7 @@ Friend Sub UpdateAgainstCurrentTheme()
             End If
         
             m_RenderDataCorrect = False
+            Me.CalculateRenderMetrics
             
         End If
         

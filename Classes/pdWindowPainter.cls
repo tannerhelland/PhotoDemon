@@ -99,14 +99,14 @@ End Sub
 
 'This function must be called in the UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Friend Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal wantEraseMessages As Boolean = False)
+Friend Sub StartPainter(ByVal srcHWnd As Long, Optional ByVal wantEraseMessages As Boolean = False)
     
     If PDMain.IsProgramRunning() Then
     
         'Release the existing subclasser, if any
         EndSubclassing
         
-        m_hWnd = srcHwnd
+        m_hWnd = srcHWnd
     
         'Subclass all necessary messages for proper window painting
         If (m_hWnd <> 0) Then

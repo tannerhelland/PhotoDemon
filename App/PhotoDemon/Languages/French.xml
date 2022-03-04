@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.570</langversion>
+<langversion>6.7.571</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -799,6 +799,16 @@
 </phrase>
 
 <phrase>
+<original>Gradient map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Palette map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color to monochrome</original>
 <translation>De coloré à monochrome</translation>
 </phrase>
@@ -1273,7 +1283,7 @@
 <translation>Effacer la liste des images récentes</translation>
 </phrase>
 
-<!-- Actions.bas contains 259 phrases. 7 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
+<!-- Actions.bas contains 261 phrases. 7 were duplicates of existing phrases, so only 254 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5156,6 +5166,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>Monochrome</translation>
 </phrase>
@@ -5593,7 +5608,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6303,6 +6318,18 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>gradient</original>
+<translation>dégradé</translation>
+</phrase>
+
+<phrase>
+<original>Applying gradient map</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>advice from the experts</original>
 <translation>conseils d'experts</translation>
 </phrase>
@@ -6663,11 +6690,6 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>gradient</original>
-<translation>dégradé</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>symétrique</translation>
 </phrase>
@@ -6677,7 +6699,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>rectangle</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -7030,6 +7052,18 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1 options</translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -10163,12 +10197,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>La compression AVIF est très gourmande en ressources de calcul.  Sur les PC plus anciens ou plus lents, vous pouvez désactiver les aperçus en direct.</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1 options</translation>
-</phrase>
-
-<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13729,19 +13758,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Waiting for user to specify import options</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5382 phrases. -->
-<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 11772 total words. -->
+<!-- As of this build, PhotoDemon contains 5393 phrases. -->
+<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11780 total words. -->
 
 </pdData>

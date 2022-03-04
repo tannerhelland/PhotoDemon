@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.529</langversion>
+<langversion>6.6.530</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -804,6 +804,16 @@
 </phrase>
 
 <phrase>
+<original>Gradient map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Palette map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color to monochrome</original>
 <translation>Warna monokrom</translation>
 </phrase>
@@ -1278,7 +1288,7 @@
 <translation>bersih baru-baru ini Daftar Gambar</translation>
 </phrase>
 
-<!-- Actions.bas contains 259 phrases. 7 were duplicates of existing phrases, so only 252 new phrases were written to file. -->
+<!-- Actions.bas contains 261 phrases. 7 were duplicates of existing phrases, so only 254 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5156,6 +5166,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>monokrom</translation>
 </phrase>
@@ -5593,7 +5608,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 381 phrases. 200 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6303,6 +6318,18 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>gradient</original>
+<translation>gradien</translation>
+</phrase>
+
+<phrase>
+<original>Applying gradient map</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>advice from the experts</original>
 <translation>nasihat daripada pakar-pakar</translation>
 </phrase>
@@ -6663,11 +6690,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>gradient</original>
-<translation>gradien</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>refleksi</translation>
 </phrase>
@@ -6677,7 +6699,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>empat persegi panjang</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -7030,6 +7052,18 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -10163,12 +10197,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13714,19 +13743,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Waiting for user to specify import options</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_SVGImport.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5382 phrases. -->
-<!-- 2786 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 11772 total words. -->
+<!-- As of this build, PhotoDemon contains 5393 phrases. -->
+<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11780 total words. -->
 
 </pdData>

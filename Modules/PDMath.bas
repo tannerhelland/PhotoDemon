@@ -406,7 +406,7 @@ Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As 
 
 End Sub
 
-Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius As Single, ByRef dstX As Single, ByRef dstY As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#)
+Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius As Single, ByRef dstX As Single, ByRef dstY As Single, Optional ByVal centerX As Single = 0!, Optional ByVal centerY As Single = 0!)
 
     'Calculate the new (x, y)
     dstX = srcRadius * Cos(srcAngle)

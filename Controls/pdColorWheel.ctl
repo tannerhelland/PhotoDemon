@@ -70,7 +70,7 @@ Private m_MouseDownWheel As Boolean, m_MouseDownBox As Boolean
 Private Const WHEEL_PADDING As Long = 2
 
 'Width (in pixels) of the hue wheel.  This width is applied along the radial axis.
-Private Const WHEEL_WIDTH_DEFAULT As Single = 15#
+Private Const WHEEL_WIDTH_DEFAULT As Single = 15!
 Private m_WheelWidth As Single
 
 'Various hue wheel positioning values.  These are calculated by the CreateColorWheel function and cached here, as a convenience

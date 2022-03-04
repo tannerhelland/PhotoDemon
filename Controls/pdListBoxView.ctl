@@ -68,8 +68,8 @@ Private m_FontSize As Single
 
 'Padding around individual list items.  This value is added to the default font metrics to arrive at a default
 ' per-item size.
-Private Const LIST_PADDING_HORIZONTAL As Single = 4#
-Private Const LIST_PADDING_VERTICAL As Single = 2#
+Private Const LIST_PADDING_HORIZONTAL As Single = 4!
+Private Const LIST_PADDING_VERTICAL As Single = 2!
 
 'The rectangle where the list is actually rendered
 Private m_ListRect As RectF

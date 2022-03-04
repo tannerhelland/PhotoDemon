@@ -176,7 +176,9 @@ End Sub
 ' automatic handling.  (For example, Enter will trigger a command bar "OK" press, if a command bar is present
 ' on the same dialog as the child object.)
 Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode As PD_NavigationKey, ByVal Shift As ShiftConstants) As Boolean
-    
+        
+    If (Not PDMain.IsProgramRunning()) Then Exit Function
+        
     NotifyNavKeypress = False
     
     Dim childHwnd As Long
