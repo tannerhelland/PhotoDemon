@@ -155,7 +155,7 @@ Private m_MaskCopy() As Byte
 Private m_EnumProgressBar As pdProgressBar
 
 'Returns the number of discovered 8bf plugins; 0 means no plugins found.  Note that you can call this
-' function back-to-back with different folders, and it will just keep appending discoveries to a master list.
+' function back-to-back with different folders, and it will just keep appending discoveries to a central list.
 ' This makes it convenient to do a single list sort before calling GetEnumerateResults(), below.
 Public Function EnumerateAvailable8bf(ByVal srcPath As String, Optional ByRef dstProgressBar As pdProgressBar = Nothing) As Long
     

@@ -851,7 +851,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             jpegSubsampling = JPEG_SUBSAMPLING_411
     End Select
     
-    'Combine all FreeImage-specific flags into one master flag
+    'Combine all FreeImage-specific flags into one merged flag
     Dim jpegFlags As Long
     jpegFlags = jpegQuality Or jpegCompression Or jpegSubsampling
     
@@ -1906,8 +1906,8 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Start by creating a blank multipage object
         Files.FileDeleteIfExists dstFile
         
-        Dim fi_MasterHandle As Long
-        fi_MasterHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)
+        Dim fi_MultipageHandle As Long
+        fi_MultipageHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)
         
         'If all pages are monochrome, we can encode the final TIFF object using monochrome compression settings, but if even
         ' one page is color, it complicates that.
@@ -1929,7 +1929,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 'Rasterize as necessary
                 If (Not tmpLayer.IsLayerRaster) Then tmpLayer.RasterizeVectorData
                 
-                'Convert the layer to a flat, null-padded layer at the same size as the master image
+                'Convert the layer to a flat, null-padded layer at the same size as the original image
                 tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
                 
                 'Un-premultiply alpha, if any
@@ -2025,7 +2025,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 If (fi_PageHandle <> 0) Then
                 
                     'Insert this page at the *end* of the current multipage file, then free our copy of it
-                    FreeImage_AppendPage fi_MasterHandle, fi_PageHandle
+                    FreeImage_AppendPage fi_MultipageHandle, fi_PageHandle
                     Plugin_FreeImage.ReleaseFreeImageObject fi_PageHandle
                     
                 Else
@@ -2044,7 +2044,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(tiffCompressionColor)
         End If
         
-        ExportTIFF = FreeImage_CloseMultiBitmap(fi_MasterHandle, TIFFflags)
+        ExportTIFF = FreeImage_CloseMultiBitmap(fi_MultipageHandle, TIFFflags)
         If ExportTIFF Then
             ExportDebugMsg "Export to " & sFileType & " appears successful."
         Else

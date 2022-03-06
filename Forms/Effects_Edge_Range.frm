@@ -126,7 +126,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply a "range filter" filter to the current master image (basically a max/min rank algorithm, with some tweaks)
+'Apply a "range filter" filter to an image (basically a max/min rank algorithm, with some tweaks)
 Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list

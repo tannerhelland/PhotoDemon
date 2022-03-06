@@ -107,7 +107,7 @@ Private m_LastResults As pdStringStack, m_ResultsChanged As Boolean
 Private m_BestMatchString As String
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -942,7 +942,7 @@ Private Sub UserControl_Initialize()
     'Initialize an edit box support class
     Set m_EditBox = New pdEditBoxW
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     
@@ -1362,7 +1362,7 @@ Private Sub RaiseListBox()
         
     End If
     
-    'As an additional failsafe, we also notify the master UserControl tracker that a list box is active.
+    'As an additional failsafe, we also notify the central UserControl tracker that a list box is active.
     ' If any other PD control receives focus, that tracker will automatically unload our list box as well,
     ' "just in case".
     UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, True
@@ -1380,7 +1380,7 @@ Private Sub HideListBox()
 
     If m_PopUpVisible And (m_PopUpHwnd <> 0) Then
         
-        'Notify the master UserControl tracker that our list box is now inactive.
+        'Notify the central UserControl tracker that our list box is now inactive.
         UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False
         
         m_PopUpVisible = False

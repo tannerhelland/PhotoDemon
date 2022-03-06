@@ -115,7 +115,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply a "modern art" filter to the current master image (basically a max/min rank algorithm,
+'Apply a "modern art" filter to the active layer (basically a max/min rank algorithm,
 ' with some tweaks like shape-specific search regions)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)

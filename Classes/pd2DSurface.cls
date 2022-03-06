@@ -350,7 +350,7 @@ Friend Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
             'Apply any other stored settings to the newly created surface
             If CreateBlankSurface Then SyncAllPropertiesToBackend
                     
-            'When debug mode is active, all object creations are reported back to the master Drawing2D module
+            'When debug mode is active, all object creations are reported back to the central Drawing2D module
             If (CreateBlankSurface And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
@@ -391,7 +391,7 @@ Friend Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVa
         CreateSurfaceFromFile = False
     End If
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If (CreateSurfaceFromFile And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
@@ -596,7 +596,7 @@ Friend Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal 
         CreateSurfaceFromArray = False
     End If
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If (CreateSurfaceFromArray And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
@@ -621,7 +621,7 @@ Friend Function CreateSurfaceFromPtr(ByVal srcPtr As Long, ByVal srcLen As Long,
         CreateSurfaceFromPtr = False
     End If
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If (CreateSurfaceFromPtr And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
@@ -679,7 +679,7 @@ Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHWnd 
                 InternalError "WrapSurfaceAroundDC", "failed to wrap hDC"
             End If
             
-            'When debug mode is active, all object creations are reported back to the master Drawing2D module
+            'When debug mode is active, all object creations are reported back to the central Drawing2D module
             If (WrapSurfaceAroundDC And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
@@ -715,7 +715,7 @@ Friend Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
         'Apply any other stored settings to the newly created surface
         If WrapSurfaceAroundPDDIB Then SyncAllPropertiesToBackend
         
-        'When debug mode is active, all object creations are reported back to the master Drawing2D module
+        'When debug mode is active, all object creations are reported back to the central Drawing2D module
         If (WrapSurfaceAroundPDDIB And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
         
     Else

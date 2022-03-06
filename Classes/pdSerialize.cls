@@ -260,7 +260,8 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
 
 End Function
 
-'Blindly add a parameter to the master string.  No special checks (e.g. duplicates) are applied; use updateParam if you need those.
+'Blindly add a parameter to the central string.
+' No special checks (e.g. duplicates) are applied; use UpdateParam() if you need those.
 Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant, Optional ByVal nameGuaranteedXMLSafe As Boolean = False, Optional ByVal valueGuaranteedXMLSafe As Boolean = False) As Boolean
     
     On Error GoTo AddParamFailed
@@ -308,7 +309,7 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     If (LenB(paramName) <> 0) And (Not nameGuaranteedXMLSafe) Then paramName = Me.GetXMLSafeName(paramName)
     If (LenB(strParamValue) <> 0) And (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
     
-    'Tack the parameter name and value we were passed onto the master string
+    'Tack the parameter name and value we were passed onto the central string
     m_ParamString.XMLAppend paramName, strParamValue
     
     AddParam = True
@@ -383,8 +384,8 @@ Friend Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
     
 End Function
 
-'Given a string, replace any characters that are not allowed with underscores; this is used as a failsafe when adding
-' new parameters to the master string.
+'Given a string, replace any characters that are not allowed with underscores;
+' this is used as a failsafe when adding new parameters to the central string.
 Friend Function GetXMLSafeName(ByRef srcString As String) As String
     
     'Remove any incidental white space before processing

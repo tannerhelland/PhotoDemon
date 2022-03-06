@@ -717,8 +717,8 @@ Public Sub ResetAppIcons()
     
 End Sub
 
-'When PD is first loaded, we associate an icon with the master "ThunderMain" owner window, to ensure proper icons in places
-' like Task Manager.
+'When PD is first loaded, we associate an icon with the hidden "ThunderMain" owner window,
+' to ensure proper icons in places like Task Manager.
 Public Sub SetThunderMainIcon()
 
     'Start by loading the default icons from the resource file, as necessary

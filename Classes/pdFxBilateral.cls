@@ -173,7 +173,7 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     
     'We are now going to overlay a bunch of temporary arrays over that (large!) internal buffer.
     ' Note that these *MUST BE SPECIALLY FREED* when we are done with them, as they aren't actual
-    ' allocations - they're just pointers into the master buffer allocated above.
+    ' allocations - they're just pointers into the buffer allocated above.
     Dim sizeRemaining As Long
     sizeRemaining = bufferSize
     

@@ -399,7 +399,7 @@ Friend Function GetBrushPropertiesAsXML() As String
         .AddParam "brush-pattern-color-2", RGB(m_PatternRGBA2.Red, m_PatternRGBA2.Green, m_PatternRGBA2.Blue), True, True
         .AddParam "brush-pattern-opacity-2", CSng(m_PatternRGBA2.Alpha) * MAP_255_TO_100, True, True
         
-        'All other gradient parameters derive from this master string, so we do not need to set them individually
+        'All other gradient parameters derive from this central string, so we do not need to set them individually
         If (Not m_Gradient Is Nothing) Then
             .AddParam "brush-gradient", m_Gradient.GetGradientAsString(), True, False
         End If
@@ -442,7 +442,7 @@ Friend Sub SetBrushPropertiesFromXML(ByRef srcString As String)
             Me.SetBrushPattern2Color .GetLong("brush-pattern-color-2", vbBlack, True)
             Me.SetBrushPattern2Opacity .GetSingle("brush-pattern-opacity-2", 100!, True)
             
-            'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
+            'All other gradient parameters derive from this central string, so we do not need to retrieve them individually
             If .DoesParamExist("brush-gradient") Then
                 If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
                 m_Gradient.CreateGradientFromString .GetString("brush-gradient", vbNullString)
@@ -477,7 +477,7 @@ Friend Sub SetBrushPropertiesFromXML_Legacy(ByRef srcString As String)
             Me.SetBrushPattern2Color .GetLong("BrushPatternColor2", vbBlack)
             Me.SetBrushPattern2Opacity .GetSingle("BrushPatternColor2Opacity", 100!)
             
-            'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
+            'All other gradient parameters derive from this central string, so we do not need to retrieve them individually
             If .DoesParamExist("BrushGradientString") Then
                 If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
                 m_Gradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
@@ -557,7 +557,7 @@ Friend Function CreateBrush() As Boolean
             
     End Select
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If (CreateBrush And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyBrushCountChange True
     
 End Function
@@ -593,7 +593,7 @@ Friend Sub ResetAllProperties()
     Me.SetBrushPattern2Color vbBlack
     Me.SetBrushPattern2Opacity 100!
     
-    'All other gradient parameters derive from this master string, so we do not need to set them individually
+    'All other gradient parameters derive from this central string, so we do not need to set them individually
     Me.SetBrushGradientAllSettings vbNullString
     
     Me.SetBrushTextureWrapMode P2_WM_Tile

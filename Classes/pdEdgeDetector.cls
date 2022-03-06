@@ -264,25 +264,25 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     PutMem4 VarPtrArray(tmpArray()), VarPtr(tmpSA)
     
     'And now, a duplicate of the above steps, but designed for the outer loop
-    Dim tmpMasterArray() As Byte, tmpMasterSA As SafeArray1D
-    Dim srcMasterPointer As Long, srcMasterStride As Long
-    srcMasterPointer = VarPtr(srcArray(0, 0))
-    srcMasterStride = UBound(srcArray(), 1) + 1
+    Dim tmpPixelArray() As Byte, tmpPixelSA As SafeArray1D
+    Dim srcPixelPointer As Long, srcPixelStride As Long
+    srcPixelPointer = VarPtr(srcArray(0, 0))
+    srcPixelStride = UBound(srcArray(), 1) + 1
     
-    With tmpMasterSA
+    With tmpPixelSA
         .cbElements = 1
         .cDims = 1
         .cLocks = 1
         .lBound = 0
-        .cElements = srcMasterStride
+        .cElements = srcPixelStride
         
         'pvData *will* change as the function goes along, but let's at least start with a safe value
-        .pvData = srcMasterPointer
+        .pvData = srcPixelPointer
         
     End With
     
     'Point the uninitialized temporary array at our custom-built SafeArray struct
-    PutMem4 VarPtrArray(tmpMasterArray()), VarPtr(tmpMasterSA)
+    PutMem4 VarPtrArray(tmpPixelArray()), VarPtr(tmpPixelSA)
     
     'Because we've typically added a 1-px blank byte border around our image data (during pre-processing), all edge coordinates
     ' are going to be offset by (1, 1).  Create a generic transform now, which we'll use to offset edge coordinates before
@@ -296,11 +296,11 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     
     'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
     For y = initY To finalY
-        tmpMasterSA.pvData = srcMasterPointer + (y * srcMasterStride)
+        tmpPixelSA.pvData = srcPixelPointer + (y * srcPixelStride)
     For x = initX To finalX
         
         'Is this an edge pixel?
-        If (tmpMasterArray(x) <> 0) Then
+        If (tmpPixelArray(x) <> 0) Then
             
             'It is!  Start tracing its contour.
             startX = x
@@ -458,7 +458,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     
     'Before exiting, free any temporary source array pointers
     PutMem4 VarPtrArray(tmpArray()), 0&
-    PutMem4 VarPtrArray(tmpMasterArray()), 0&
+    PutMem4 VarPtrArray(tmpPixelArray()), 0&
     
     'Want detailed timing reports?  Uncomment this line:
     'pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")

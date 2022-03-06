@@ -165,7 +165,7 @@ Friend Sub HideFlyout(Optional ByVal okToLeaveIfLocked As Boolean = False)
             If (m_flyoutLockedHWnd = m_flyoutHWnd) Then Exit Sub
         End If
         
-        'Notify the master UserControl tracker that our flyout is now inactive.
+        'Notify the central UserControl tracker that our flyout is now inactive.
         UserControls.NotifyFlyoutChangeState m_ParentHWnd, m_flyoutHWnd, Me, False
         
         If ANIMATE_FLYOUTS Then
@@ -323,7 +323,7 @@ Friend Sub ShowFlyout(ByRef ownerForm As Form, ByRef originatingObject As Contro
         
     End If
     
-    'As an additional failsafe, we also notify the master UserControl tracker that a flyout is active.
+    'As an additional failsafe, we also notify the central UserControl tracker that a flyout is active.
     ' If any other PD control receives focus, that tracker will automatically unload our flyout as
     ' necessary (the conditions of which are complicated; see the function for details).
     UserControls.NotifyFlyoutChangeState m_ParentHWnd, m_flyoutHWnd, Me, True

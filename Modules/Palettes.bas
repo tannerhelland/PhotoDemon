@@ -1,6 +1,6 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
-'PhotoDemon's Master Palette Interface
+'PhotoDemon's Central Palette Interface
 'Copyright 2017-2022 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 18/November/21

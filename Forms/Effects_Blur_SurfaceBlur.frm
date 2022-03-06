@@ -128,7 +128,7 @@ Option Explicit
 Private WithEvents m_Bilateral As pdFxBilateral
 Attribute m_Bilateral.VB_VarHelpID = -1
 
-Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub BilateralFilter_Central(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying surface blur..."
     
@@ -214,7 +214,7 @@ Private Sub sldRange_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then BilaterFilter_Master GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then BilateralFilter_Central GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

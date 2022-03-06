@@ -37,7 +37,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Unicode interface.  Note that the only thing we pass it is a pointer to the master OPENFILENAME struct; it does the rest.
+'Unicode interface.  Note that the only thing we pass it is a pointer to an OPENFILENAME struct.
 Private Declare Function GetOpenFileNameW Lib "comdlg32" (ByVal ptrToOFN As Long) As Long
 Private Declare Function GetSaveFileNameW Lib "comdlg32" (ByVal ptrToOFN As Long) As Long
 Private Declare Function CommDlgExtendedError Lib "comdlg32" () As Long

@@ -1089,14 +1089,14 @@ Private m_AttributesMatrix() As Single
 
 'When loading multi-page (TIFF) or multi-frame (GIF) images, we first perform a default load operation
 ' on the first page/frame. (This gives the user something to work with if subsequent pages fail,
-' which is worryingly possible especially given the complexities of loading TIFFs.)  PD's master load
+' which is worryingly possible especially given the complexities of loading TIFFs.)  PD's central load
 ' function can then do whatever it needs to - e.g. prompt the user for desired load behavior - and
 ' notify GDI+ of the result.  If the user wants more pages/frames from the file, we don't have to load
 ' it again; instead, we can just activate subsequent pages in turn, carrying on where we first left off.
 Private m_hMultiPageImage As Long, m_OriginalFIF As PD_IMAGE_FORMAT
 
-'When loading GIFs, we need to cache some extra GIF-related metadata (e.g. frame times).  This metadata
-' gets embedded into a master pdImage object, and reused at export time as relevant.
+'When loading GIFs, we need to cache some extra GIF-related metadata (e.g. frame times).
+' This metadata gets embedded into a parent pdImage object, and reused at export time as relevant.
 Private m_FrameTimes() As Long, m_FrameCount As Long
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
@@ -2321,7 +2321,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             
         End If
         
-        'Before exiting, make sure we free the master image handle
+        'Before exiting, make sure we free the parent image handle
         GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
         
         ContinueLoadingMultipageImage = True
@@ -2723,7 +2723,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'Release our image attributes object
         GdipDisposeImageAttributes imgAttributesHandle
         
-        'Reset alpha in the master identity matrix
+        'Reset alpha in the (reusable) identity matrix
         If (newAlpha < 1!) Then m_AttributesMatrix(3, 3) = 1!
         
         'Update premultiplication status in the target
@@ -2797,7 +2797,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat
         'Release our image attributes object
         If (imgAttributesHandle <> 0) Then GdipDisposeImageAttributes imgAttributesHandle
         
-        'Reset alpha in the master identity matrix
+        'Reset alpha in the (reusable) identity matrix
         If (newAlpha <> 1!) Then m_AttributesMatrix(3, 3) = 1!
         
         'Update premultiplication status in the target
@@ -3588,7 +3588,7 @@ Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcI
     GDIPlus_DrawImageRectRectF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
-    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    'As necessary, release our image attributes object, and reset the alpha value of the (reusable) identity matrix
     If (opacityModifier <> 1#) Then
         GdipDisposeImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = 1!
@@ -3611,7 +3611,7 @@ Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcI
     GDIPlus_DrawImageRectRectI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
-    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    'As necessary, release our image attributes object, and reset the alpha value of the (reusable) identity matrix
     If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = 1!
@@ -3634,7 +3634,7 @@ Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal sr
     GDIPlus_DrawImagePointsRectF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
-    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    'As necessary, release our image attributes object, and reset the alpha value of the (reusable) identity matrix
     If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = 1!
@@ -3657,7 +3657,7 @@ Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal sr
     GDIPlus_DrawImagePointsRectI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
-    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    'As necessary, release our image attributes object, and reset the alpha value of the (reusable) identity matrix
     If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = 1!

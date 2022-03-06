@@ -123,8 +123,8 @@ Public Function GetShift(ByVal idxHotkey As Long) As ShiftConstants
     End If
 End Function
 
-'If an accelerator exists in our current collection, this will return a value >= 0 corresponding to
-' its position in the master array.
+'If an accelerator exists in our current collection, this will return a value >= 0
+' corresponding to its position in the primary tracking array.
 Public Function GetHotkeyIndex(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants) As Long
     
     GetHotkeyIndex = -1

@@ -40,8 +40,8 @@ Attribute VB_Exposed = False
 '
 'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction
 ' with the command bar user control, as it easily supports gradient reset/randomize/preset events.  It is
-' also nice to update a single master function for gradient selection, then have the change propagate to
-' all tool windows.
+' also nice to update a single central function for gradient selection, then have the change propagate to
+' all tool instances.
 '
 'The actual gradient functionality of the control comes from the pd2dGradient class - look there for details.
 '
@@ -78,7 +78,7 @@ Private m_GradientRect As RectF, m_MouseInsideGradientRect As Boolean, m_MouseDo
 Private m_ReverseRect As RectF, m_MouseInsideReverseRect As Boolean, m_MouseDownReverseRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -329,7 +329,7 @@ Private Sub UserControl_Initialize()
     Set m_Brush = New pd2DBrush
     m_Brush.SetBrushMode P2_BM_Gradient
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True

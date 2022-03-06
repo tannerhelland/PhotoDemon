@@ -40,9 +40,10 @@ Attribute VB_Exposed = False
 ' color is selected (e.g. Cancel is not pressed), it updates its back color to match, and raises a "ColorChanged"
 ' event.
 '
-'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
-' command bar user control, as it easily supports color reset/randomize/preset events.  It is also nice to be able
-' to update a single master function for color selection, then have the change propagate to all tool windows.
+'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction
+' with the command bar user control, as it easily supports color reset/randomize/preset events.  It is also
+' nice to just update a single central function for color selection, then have changes propagate to all tool
+' instances.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -80,7 +81,7 @@ Private m_MouseInPrimaryButton As Boolean, m_MouseInSecondaryButton As Boolean
 Private m_ShowMainWindowColor As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -319,7 +320,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True

@@ -355,7 +355,7 @@ Private Function CalculateOptimalThreshold() As Long
 End Function
 
 'Convert an image to black and white (1-bit image)
-Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub MonochromeConvert_Central(ByVal monochromeParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Converting image to two colors..."
     
@@ -706,7 +706,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then MasterBlackWhiteConversion GetFunctionParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MonochromeConvert_Central GetFunctionParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -615,11 +615,12 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
     End Select
 End Function
 
-'If a function requires specialized initialization steps, add them here.  Do NOT add any user-facing interactions (e.g. UI) here,
-' and DO NOT account for user preferences here.  (User preferences are handled via ism_PluginAllowed(), above).
+'If a function requires specialized initialization steps, add them here.
+' Do NOT add any user-facing interactions (e.g. UI) here, and DO NOT account for user preferences here.
+' (User preferences are handled via IsPluginAllowed(), above).
 '
-'This step purely exists to handle custom initialization of plugins, when the master plugin file is known to exist in the
- 'official plugin folder, and the user has not forcibly disabled a given plugin.
+'This step purely exists to handle custom initialization of plugins, when the original plugin file
+' is verified as existing in PD's plugin folder, and the user has not forcibly disabled that plugin.
 '
 'Returns TRUE if the plugin was initialized successfully; FALSE otherwise.
 Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean

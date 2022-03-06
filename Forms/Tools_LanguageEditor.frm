@@ -855,8 +855,8 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             'Show a brief hourglass while we load and validate the source language file
             Screen.MousePointer = vbHourglass
                         
-            'If they want to start a new language file from scratch, set the load path to the MASTER English language file (which is
-            ' hopefully present... if not, there's not much we can do.)
+            'If they want to start a new language file from scratch, set the load path to the MASTER English language file
+            ' (which is hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                                 
                 If LoadAllPhrasesFromFile(UserPrefs.GetLanguagePath & "Master\MASTER.xml") Then

@@ -31,9 +31,12 @@ Attribute VB_Name = "UserPrefs"
 
 Option Explicit
 
-'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
-'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
-'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
+'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders
+' are necessary.  These include:
+'  /App subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install
+'        (e.g. plugin DLLs, language files)
+'  /Data subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install
+'        (e.g. user prefs, saved macros, last-used dialog settings)
 Private m_ProgramPath As String
 Private m_AppPath As String
 Private m_DataPath As String
@@ -87,10 +90,11 @@ End Enum
 Private m_GenerateDebugLogs As PD_DebugLogBehavior, m_EmergencyDebug As Boolean
 Private m_UIFontName As String
 
-'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
-' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
-' file, and individual windows rely on this module to manage the file for them.
-Private m_XMLPresets As pdXML, m_MasterPresetFile As String
+'Prior to v7.0, each dialog stored its preset data to a unique XML file.
+' This causes a lot of HDD thrashing as each main window panel retrieves its preset data separately.
+' To improve performance, we now use a single central preset file, and individual windows rely on
+' this module to manage persistence.
+Private m_XMLPresets As pdXML, m_CentralPresetFile As String
 
 'PD runs in portable mode by default, with all data folders assumed present in the same folder
 ' as PD itself.  If for some reason this is *not* the case, this variable will be flagged.
@@ -512,11 +516,11 @@ Public Function InitializePaths() As Boolean
     m_PreferencesPath = m_DataPath & "PhotoDemon_settings.xml"
     
     'Last-used dialog settings are also located in the \Presets subfolder; this file *is* loaded now, if it exists.
-    m_MasterPresetFile = m_PresetPath & "MainPanels.xml"
+    m_CentralPresetFile = m_PresetPath & "MainPanels.xml"
     If (m_XMLPresets Is Nothing) Then Set m_XMLPresets = New pdXML
     
-    If Files.FileExists(m_MasterPresetFile) Then
-        If m_XMLPresets.LoadXMLFile(m_MasterPresetFile) Then
+    If Files.FileExists(m_CentralPresetFile) Then
+        If m_XMLPresets.LoadXMLFile(m_CentralPresetFile) Then
             If (Not m_XMLPresets.IsPDDataType("Presets")) Then m_XMLPresets.PrepareNewXML "Presets"
         End If
     Else
@@ -1039,13 +1043,14 @@ Public Function IsReady() As Boolean
     IsReady = Not (m_XMLPresets Is Nothing)
 End Function
 
-'In rare cases, we may want to forcibly copy all current user preferences out to file (e.g. after the Tools > Options dialog
-' is closed via OK button).  This function will force an immediate to-file dump, but note that it will only work if...
+'In rare cases, we may want to forcibly copy all current user preferences out to file
+' (e.g. after the Tools > Options dialog is closed via OK button).  This function forces an
+' immediate dump to disk, but note that it will only work if...
 ' 1) the preferences engine has been successfully initialized, and...
-' 2) the master preset file path has already been validated
+' 2) the central preset file path has already been validated
 Public Sub ForceWriteToFile(Optional ByVal alsoWritePresets As Boolean = True)
     If ((Not m_XMLEngine Is Nothing) And (LenB(m_PreferencesPath) <> 0)) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
     If alsoWritePresets Then
-        If ((Not m_XMLPresets Is Nothing) And (LenB(m_MasterPresetFile) <> 0)) Then m_XMLPresets.WriteXMLToFile m_MasterPresetFile
+        If ((Not m_XMLPresets Is Nothing) And (LenB(m_CentralPresetFile) <> 0)) Then m_XMLPresets.WriteXMLToFile m_CentralPresetFile
     End If
 End Sub

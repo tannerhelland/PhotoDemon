@@ -2202,7 +2202,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         '  and a lossy translation is unnecessary.)
         If ((outColorType = png_Truecolor) Or (outColorType = png_TruecolorAlpha)) And (outBitsPerChannel >= 8) Then
         
-            'The PNG is going to be 32-bpp.  Generate a master palette for *all* frames (yes *all* frames)
+            'The PNG is going to be 32-bpp.  Generate a merged palette for *all* frames (yes *all* frames)
             ' and store it at module-level, while also setting all relevant flags.
             SetupExportSettings_APNG_Lossy srcPDImage, outColorType, outBitsPerChannel, fullParamString
         

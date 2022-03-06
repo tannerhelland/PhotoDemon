@@ -18,16 +18,17 @@ Attribute VB_Exposed = False
 'Last updated: 21/January/16
 'Last update: continue fleshing out features
 '
-'Each individual PD control uses a unique list of colors.  Some of these colors may be modified by different settings
-' or actions (e.g. enabled vs disabled, hovered vs active).
+'Each individual PD control uses a unique list of colors.  Some of these colors may be modified
+' by different settings or actions (e.g. enabled vs disabled, hovered vs active).
 '
-'This class exists to simplify the color retrieval process.  Each control maintains a list of needed colors as some
-' kind of enum (meaning each color is assigned numerically).  During the initialization step, this class retrieves
-' the string values matching those Enums from the master theme file, plugs in any missing values (e.g. not every
-' color requires specialized "hovered" or "disabled" values), and fills a matching array with the complete list of
-' required colors.
+'This class exists to simplify color retrieval.  Each control maintains a list of required colors
+' as some kind of enum (meaning each color is assigned numerically).  During initialization,
+' this class retrieves the string values matching those Enums from PD's central theme file,
+' plugs in any missing values (e.g. not every color requires specialized "hovered" or "disabled" values),
+' then fills a matching array with the complete list of colors.
 '
-'This way, the rendering function inside each UC can access colors very quickly, regardless of changes to control state.
+'This way, the rendering function inside each UC can access colors very quickly, regardless of changes
+' to control state.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

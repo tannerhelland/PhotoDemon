@@ -79,23 +79,28 @@ End Enum
     Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15
 #End If
 
-'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
-' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
+'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.
+' Other DPI settings mess up spacing calculations. To remedy this, we dynamically modify
+' pixel measurements at run-time, using the current screen resolution as our guide.
 Private m_DPIRatio As Double
 
-'When a modal dialog is displayed, a reference to it is saved in this variable.  If subsequent modal dialogs are displayed (for example,
-' if a tool dialog displays a color selection dialog), the previous modal dialog is given ownership over the new dialog.
+'When a modal dialog is displayed, a reference to it is saved in this variable.
+' If subsequent modal dialogs are displayed (for example, if a tool dialog displays a
+' color selection dialog), the previous modal dialog is given ownership over the new dialog.
 Private currentDialogReference As Form
 Private isSecondaryDialog As Boolean
 
-'When the master "ShowPDDialog" function is called, it's assumed that the dialog it raises is using one of PD's command bar instances.
-' The command bar will set a global "OK/Cancel" value that subsequent functions can retrieve, if they're curious.  (For example,
-' a "cancel" result usually means that you can skip subsequent UI syncs, as the image's status has not changed.)
+'When the central "ShowPDDialog" function is called, the dialog it raises must possess one of
+' PD's command bar instances. The command bar will set a global "OK/Cancel" value that subsequent
+' functions can retrieve, if they're curious.  (For example, a "cancel" result usually means that
+' you can skip subsequent UI syncs, as the image's status has not changed.)
 Private m_LastShowDialogResult As VbMsgBoxResult
 
-'When a message is displayed to the user in the message portion of the status bar, we automatically cache the message's contents.
-' If a subsequent request is raised with the exact same text, we can skip the whole message display process.
-' (Note that this is the *unparsed, English-language* version of the message!  That's much faster for pattern-matching.)
+'When a message is displayed to the user in the message portion of the status bar,
+' we automatically cache the message's contents. If a subsequent request is raised
+' with the exact same text, we can skip the whole message display process.
+' (Note that this is the *unparsed, English-language* version of the message!
+'  It is a much faster candidate for pattern-matching.)
 Private m_PrevMessage As String
 
 'Same as m_PrevMessage, but with all translations and/or custom parsing applied

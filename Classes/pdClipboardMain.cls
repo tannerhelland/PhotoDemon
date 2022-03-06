@@ -1319,7 +1319,7 @@ End Function
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
 Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
-    'Unicode-enabled drag/drop code is used elsewhere in PD, so we have a master function for it
+    'Unicode-enabled drag/drop code is used elsewhere in PD, so we use a central function for it
     Dim cFiles As pdStringStack
     If VBHacks.GetDragDropFileListW(OLEDragDrop_DataObject, cFiles) Then
 

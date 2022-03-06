@@ -32,14 +32,14 @@ Private Type InitCommonControlsExStruct
     lngICC As Long
 End Type
 
-'As of September 2015, reordering the list of files in the master VBP caused unpredictable crashes when PD closes.
-' (After the final line of PD code is run, no less.)  I spent two days bisecting commits and I can conclusively nail
-' the problem down to
+'As of September 2015, reordering the list of files in PhotoDemon.VBP caused unpredictable
+' crashes when PD closes. (After the final line of PD code is run, no less.)  I spent two days
+' bisecting commits and can conclusively nail the problem down to
 ' https://github.com/tannerhelland/PhotoDemon/commit/293de1ba4f2d5bc3102304d0263af624e93b6093
 '
-'I eventually solved the problem by manually unloading all global class instances in a specific order, rather than
-' leaving it to VB, but during testing, I still sometimes find it helpful to suppress the default Windows crash dialog.
-' In case this proves useful in the future, I'll leave the declaration here.
+'I eventually solved the problem by manually unloading all global class instances in a specific order,
+' rather than leaving it to VB, but during testing, I still sometimes find it helpful to suppress
+' the default Windows crash dialog. In case this proves useful in the future, I'll leave the declaration.
 Private Declare Function SetErrorMode Lib "kernel32" (ByVal wMode As Long) As Long
 Private Const SEM_NOGPFAULTERRORBOX As Long = &H2
 

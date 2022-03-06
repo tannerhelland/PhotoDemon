@@ -570,8 +570,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     
 End Sub
 
-'Are on-canvas tools currently allowed?  This master function will evaluate all relevant program states for allowing on-canvas
-' tool operations (e.g. "no open images", "main form locked").
+'Are on-canvas tools currently allowed?
+' This central function evaluates all relevant program states related to on-canvas tool operations
+' (e.g. "no open images", "main form locked against input").
 Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True, Optional ByVal checkMainWindowEnabled As Boolean = True) As Boolean
 
     CanvasToolsAllowed = False

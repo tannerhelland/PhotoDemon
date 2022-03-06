@@ -854,7 +854,7 @@ End Sub
 
 Private Sub PrepHistogramOverlays()
     
-    'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
+    'Even though we don't need log-based versions of the histogram data, the central function requires arrays for both.
     ' (TODO: fix this!  Most functions need one or the other; not both.)
     Dim hData() As Long, hDataLog() As Double
     Dim hMax() As Long, hMaxLog() As Double, hMaxPosition() As Byte
@@ -981,7 +981,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
         gValues(x) = 1# / ((gValues(x) + 1# / ROOT10) ^ 2)
     Next x
     
-    'Parse out individual level values into a master levels array
+    'Parse out individual level values into a central levels array
     Dim levelValues(0 To 3, 0 To 4) As Double
     FillLevelsFromParamString listOfLevels, levelValues
     
@@ -1512,7 +1512,7 @@ Private Sub tudLevels_Change(Index As Integer)
     ' of the opposite control.
     If (Index = 0) Or (Index = 2) Then FixScrollBars
     
-    'Store the changed value in our master levels array
+    'Store the changed value in our central levels array
     m_LevelValues(m_curChannel, Index) = tudLevels(Index)
     
     'Redraw the on-screen preview
@@ -1523,7 +1523,7 @@ End Sub
 'Convert all channel level values into a single list, built according to PD's internal string parameter format.
 Private Function GetLevelsParamString() As String
     
-    'Remember that the layout of our master tracking array is [channel R/G/B/L, level adjustment].
+    'Remember that the layout of our central tracking array is [channel R/G/B/L, level adjustment].
     ' Level adjustment values are, in order: input min, input mid, input max, output min, output max.
     ' Private m_LevelValues(0 To 3, 0 To 4) As Double
     Dim cParams As pdSerialize

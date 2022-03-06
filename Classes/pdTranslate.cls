@@ -403,7 +403,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                         m_AvailableLanguages(nLanguages).IsOfficial = isOfficialFolder
                         
                         'Because this is a valid language file, we want to cache its key properties in the
-                        ' master user preferences file.  This lets us skip validation on subsequent runs.
+                        ' central user preferences file.  This lets us skip validation on subsequent runs.
                         m_LangCacheXML.UpdateTag chkXMLName, GetLangFileChecksum(chkFile)
                         CacheLanguageInfo chkXMLName, m_AvailableLanguages(nLanguages)
                         

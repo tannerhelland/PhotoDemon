@@ -77,7 +77,7 @@ Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As I
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 
-'Master subclasser for all input actions
+'Subclasser for all input window messages
 Implements ISubclass
 
 'hWnd to track.  Because this class works by dynamically hooking the object that has focus, a separate class instance

@@ -90,7 +90,7 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 Private m_HueHover As Double, m_SaturationHover As Double, m_ValueHover As Double
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -494,7 +494,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True

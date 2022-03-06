@@ -657,7 +657,7 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     End If
     
-    'Prep a dither table.  Note that any tables from the masterBlackWhiteConversion function could be used, but at present,
+    'Prep a dither table.  Note that any dithering table will work, but at present,
     ' I've hard-coded this function against Floyd-Steinberg dithering.
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Double
@@ -767,7 +767,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
         grayLookUp(x) = g
     Next x
     
-    'Prep a dither table.  Note that any tables from the masterBlackWhiteConversion function could be used, but at present,
+    'Prep a dither table.  Note that any dithering table will work, but at present
     ' I've hard-coded this function against Floyd-Steinberg dithering.
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Double

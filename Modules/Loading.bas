@@ -142,9 +142,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     Dim targetImage As pdImage
     PDImages.GetDefaultPDImageObject targetImage
     
-    'Normally, we don't assign an ID value to an image until we actually add it to the master pdImages collection.  However, some tasks
-    ' (like retrieving metadata asynchronously) require an ID so we can synchronize incoming data post-load.  Give the target image
-    ' a provisional image ID; this ID will become its formal ID only if it's loaded successfully.
+    'Normally, we don't assign an ID value to an image until we actually add it to the central
+    ' pdImages collection.  However, some tasks (like retrieving metadata asynchronously) require
+    ' an ID so we can synchronize incoming data post-load.  Give the target image a provisional
+    ' image ID; this ID will become its formal ID only if it loads successfully.
     targetImage.imageID = PDImages.GetProvisionalImageID()
     
     'Next, create a blank target DIB.  Image loaders need a place to stick their decoded image data, and we'll use this
@@ -309,10 +310,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         PDDebug.LogAction "Finalizing image details..."
         
-        'The finalized pdImage object is finally worthy of being added to the master PD collection.
+        'The finalized pdImage object is finally worthy of being added to the central PD collection.
         ' (Note that this function will automatically update PDImages.GetActiveImageID() to point
         ' at the new image.)
-        PDImages.AddImageToMasterCollection targetImage
+        PDImages.AddImageToCentralCollection targetImage
         
         'The UI needs a *lot* of changes to reflect the state of the newly loaded image
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
@@ -591,8 +592,9 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
-        'PDTMP files are custom PD-format files saved ONLY during Undo/Redo or Autosaving.  As such, they have some weirdly specific
-        ' parsing criteria during the master load function, but for quick-loading, we can simply grab the raw image buffer portion.
+        'PDTMP files are custom PD-format files saved ONLY during Undo/Redo or Autosaving.
+        ' As such, they have weirdly specific parsing criteria inside PD's central load function,
+        ' but for quick-loading, we can simply grab the raw image buffer inside 'em.
         Case "PDTMP"
             loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
         

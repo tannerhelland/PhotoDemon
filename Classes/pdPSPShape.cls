@@ -619,7 +619,7 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'PSP v6 files use a totally different layout, and due to the asinine design of these blocks
     ' (where header size includes a ton of huge, variable-length blocks that follow instead of
     ' just defining the damn header), it's impossible to detect as-we-go.  Instead, we need to
-    ' rely on the master version at the head of the file to tell us how to parse.
+    ' rely on the original version at the head of the file to tell us how to parse.
     m_FilePSPVersion = srcHeader.psph_VersionMajor
     m_FileIsPSPv6 = (srcHeader.psph_VersionMajor <= 4)
     m_FileIsPSPv8 = (srcHeader.psph_VersionMajor >= 6)
@@ -1518,7 +1518,7 @@ Private Function BuildBrush_Gradient(ByRef srcStream As pdStream, ByRef srcWarni
             Exit Function
         End If
         
-        'Read in the master gradient definition struct
+        'Read in the gradient definition struct
         With m_GradientDefinition
             .gd_Size = chunkSize
             Dim lenName As Long

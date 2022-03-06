@@ -361,7 +361,7 @@ End Function
 Private Function GetRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
     'We could start by retrieving glyph metrics, which are plugged directly into the current
-    ' glyph entry in the master collection.  (These metrics are separate from the glyph shape;
+    ' glyph entry in the central collection.  (These metrics are separate from the glyph shape;
     ' we use them to control inter-character spacing, among other things.)
     
     'To grab these, use the following line of code:
@@ -639,7 +639,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
         '    *greatly* simplifies the main rendering loop.  Note that some glyph-specific features (e.g. stretching) must be
         '    calculated here, to ensure line-breaks are placed correctly.
-        ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single master
+        ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single merged
         '    pd2DPath object.  Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
         
         '(FYI: the first step - the glyph positioning algorithm - fills the .finalX and .finalY entries for each glyph.)
@@ -695,7 +695,8 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                 End If
             End If
             
-            'If these characteristics are met, add this path to the master path, at the offsets pre-calculated by calculateGlyphPositions().
+            'If these characteristics are met, add this path to the merged path, at the offsets pre-calculated
+            ' by CalculateGlyphPositions().
             If glyphIsRenderable Then
                 
                 'If weird character effects are active, we need to do a bit more processing work
@@ -747,7 +748,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                         'TODO
                         
                         'Finally, reassemble the original glyph by combining all subpaths into a single
-                        ' "master" path object.
+                        ' "merged" path object.
                         
                         'TODO
                         

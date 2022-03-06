@@ -361,7 +361,7 @@ Friend Function CreatePen() As Boolean
         InternalError "CreatePen", "GdipCreatePen1 failed"
     End If
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If PD2D_DEBUG_MODE Then
         If CreatePen Then
             Drawing2D.DEBUG_NotifyPenCountChange True
@@ -387,7 +387,7 @@ Friend Function CreatePenFromBrush(ByRef srcBrush As pd2DBrush) As Boolean
     CreatePenFromBrush = (GdipCreatePenFromBrush(srcBrush.GetHandle, m_PenWidth, GP_U_Pixel, m_PenHandle) = GP_OK)
     If CreatePenFromBrush Then CreatePenFromBrush = (m_PenHandle <> 0)
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     If (CreatePenFromBrush And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyPenCountChange True
     
 End Function

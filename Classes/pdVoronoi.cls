@@ -194,7 +194,7 @@ Friend Sub InitPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     If (m_numColumns < 1) Then m_numColumns = 1
     m_NumPoints = m_numRows * m_numColumns
     
-    'Resize master Voronoi data collection
+    'Resize central Voronoi data collection
     If (UBound(m_vPoints) <> m_NumPoints - 1) Then ReDim m_vPoints(0 To m_NumPoints - 1) As VoronoiData
     
     'Manually fill the max distance array with near-zero-but-not-actually-zero values.

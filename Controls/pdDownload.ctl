@@ -144,7 +144,7 @@ Private m_LastErrorNumber As Long, m_LastErrorDescription As String
 ' for each lock/unlock action.  Access errors are a strong potential for a class like this, where accesses and resets may happen
 ' inside raised events, so as a precaution, I track "Reset" instructions via this module-level boolean.  Once a reset has been
 ' requested, this will be set to TRUE alongside the tmrReset control.  Every second, that control will check to see if all locks
-' have been released for a given array.  If they have, it knows it can safely erase the master array.
+' have been released for a given array.  If they have, it knows it can safely erase the buffer array.
 Private m_ResetActive As Boolean
 
 'Canceled downloads are released using a failsafe timer; this prevents issues where internal functions are working with
@@ -166,7 +166,7 @@ Private Sub m_ResetTimer_Timer()
 
     If m_ResetActive Then
     
-        'Reset the master tracking array.  Note that this may fail when in an error state, as the array will be locked
+        'Reset the tracking array.  Note that this may fail when in an error state, as the array will be locked
         ' when we try to ReDim it.  In that case, simply carry on.
         ReDim m_DownloadList(0 To 3) As pdDownloadEntry
         
@@ -471,7 +471,7 @@ ResetError:
     m_DownloadsAllowed = False
     ReDim m_DownloadList(0 To 31) As pdDownloadEntry
     
-    'The master tracking array is likely locked, as this function will likely be accessed from inside a raised event.
+    'The tracking array is likely locked, as this function will likely be accessed from inside a raised event.
     ' To prevent asynchronicity issues, launch a separate timer.  It will handle the actual erasing of the array.
     If setFailsafeTimer Then
         m_ResetActive = True

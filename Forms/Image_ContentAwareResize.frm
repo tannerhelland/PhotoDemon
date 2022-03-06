@@ -274,7 +274,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         PDImages.GetActiveImage.GetActiveLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
     End If
     
-    'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
+    'Create a temporary DIB, which will be passed to the central SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
@@ -285,7 +285,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False))
     imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False))
     
-    'Pass the temporary DIB to the master seam carve function
+    'Pass the temporary DIB to the central seam carve function
     If Me.SeamCarveDIB(tmpDIB, imgWidth, imgHeight) Then
         
         'Ensure premultiplied alpha

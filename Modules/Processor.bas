@@ -1665,7 +1665,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Surface blur", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilateralFilter_Central processParameters
         Process_EffectsMenu = True
         
     'Motion (directional) blurs
@@ -1831,7 +1831,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     
     'Legacy support only; this has been superceded by the new surface blur tool
     ElseIf Strings.StringsEqual(processID, "Bilateral smoothing", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilateralFilter_Central processParameters
         Process_EffectsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Dust and scratches", True) Then
@@ -2081,7 +2081,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     
     'Grayscale conversions
     ElseIf Strings.StringsEqual(processID, "Black and white", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormGrayscale Else FormGrayscale.MasterGrayscaleFunction processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormGrayscale Else FormGrayscale.GrayscaleConvert_Central processParameters
         Process_AdjustmentsMenu = True
     
     'Invert operations
@@ -2109,7 +2109,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     'Monochrome conversion
     ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
     ElseIf Strings.StringsEqual(processID, "Color to monochrome", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormMonochrome Else FormMonochrome.MasterBlackWhiteConversion processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormMonochrome Else FormMonochrome.MonochromeConvert_Central processParameters
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Monochrome to gray", True) Then

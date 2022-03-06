@@ -60,7 +60,7 @@ End Function
 Public Function Evaluate(ByVal srcExpression As String) As Variant
     
     'Coerce arbitrary decimal separators into the standard, locale-invariant "."
-    ' (For details on why we do this, see PD's "master" implementation in TextSupport.CDblCustom().)
+    ' (For details on why we do this, see PD's primary implementation in TextSupport.CDblCustom().)
     If (InStr(1, srcExpression, ",", vbBinaryCompare) <> 0) Then srcExpression = Replace$(srcExpression, ",", ".", , , vbBinaryCompare)
     If (InStr(1, srcExpression, ChrW$(&H66B&), vbBinaryCompare) <> 0) Then srcExpression = Replace$(srcExpression, ChrW$(&H66B&), ".", , , vbBinaryCompare)
     

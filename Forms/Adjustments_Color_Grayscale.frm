@@ -152,7 +152,7 @@ End Enum
 
 'Preview the current grayscale conversion technique
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then MasterGrayscaleFunction GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then GrayscaleConvert_Central GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
@@ -238,7 +238,7 @@ End Sub
 'All different grayscale (black and white) routines are handled by this single function.  As of 16 Feb '14, grayscale operations
 ' are divided into four params: type of transform, optional params for transform (if any), number of shades to use, and
 ' dithering options (if any).  This should allow the user to mix and match the various options at their leisure.
-Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub GrayscaleConvert_Central(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Converting image to black and white..."
     

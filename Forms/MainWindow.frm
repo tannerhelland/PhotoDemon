@@ -2368,7 +2368,7 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         
         If downloadSuccessful Then
         
-            'The update file downloaded correctly.  Write today's date to the master preferences file
+            'The update file downloaded correctly.  Write today's date to the central preferences file
             ' so we can correctly calculate weekly or monthly update checks for users that request it.
             PDDebug.LogAction "Update file download complete.  Update information has been saved at " & savedToThisFile
             UserPrefs.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")

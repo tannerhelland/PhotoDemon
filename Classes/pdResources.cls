@@ -521,7 +521,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
             RaiseResourceError "Resource header missing: " & imgResName
         End If
     
-    'master resource file isn't available
+    'central resource file isn't available
     Else
         RaiseResourceError "Resources aren't available (executable corrupt?)"
     End If

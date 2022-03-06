@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 '    event instead of a "Scroll" event.
 ' 2) High DPI settings are handled automatically.
 ' 3) A hand cursor is automatically applied.
-' 4) Visual appearance is automatically handled by PD's master theming engine.
+' 4) Visual appearance is automatically handled by PD's central theming engine.
 ' 5) This control represents both horizontal and vertical orientations.  Set the corresponding property to match,
 '     but be forwarned that this does *not* automatically change the control's size to match!  This is by design.
 '     (Although I don't know why it would ever be wise to do this, note that you can technically change orientation
@@ -135,7 +135,7 @@ End Enum
 Private m_VisualStyle As ScrollBarVisualStyle
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -784,7 +784,7 @@ End Sub
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True

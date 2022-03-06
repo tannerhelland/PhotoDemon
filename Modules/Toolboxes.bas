@@ -305,19 +305,22 @@ Public Sub SetToolboxVisibility(ByVal toolID As PD_Toolbox, ByVal newSetting As 
     m_Toolboxes(toolID).IsVisibleNow = newSetting
 End Sub
 
-'This function is named similarly to the one beneath it, but it's behavior is quite different.  Basically, this function just
-' sets a window's visibility so that it matches the user's preference.  This is relevant for the bottom Options toolbox,
-' which is forcibly hidden for some tools (e.g. the hand), but shown according to preference for other tools.
+'This function is named similarly to the one beneath it, but remember this critical difference:
+' this function simply sets a window's visibility *matching the current user preference*.
+' This is relevant for the top "Tool Options" toolbox, which is forcibly hidden for some tools
+' (e.g. the hand/pan tool), but shown according to preference for other tools.
 Public Sub SetToolboxVisibilityByPreference(ByVal toolID As PD_Toolbox)
     m_Toolboxes(toolID).IsVisibleNow = m_Toolboxes(toolID).IsVisiblePreference
 End Sub
 
-'If the user has changed their actual preference for toolbox visibility (e.g. by clicking the corresponding menu entry),
-' call this function.  It will update the master preferences file with the new setting, but it *WILL NOT* actually show/hide
-' the window.  You must manually call CalculateNewToolboxRects() first, as showing/hiding a toolbox has repercussions on
-' neighboring windows that must be considered too.
+'If the user has changed their actual preference for toolbox visibility (e.g. by clicking
+' the corresponding menu), call this function.  It will update the central user preferences file
+' with the new setting, but it *WILL NOT* actually show/hide the toolbox.  You must manually call
+' CalculateNewToolboxRects() first, because changing toolbox visibility has repercussions on
+' neighboring windows.
 '
-' *IF*, however, you just want to show/hide a tool window as part of auto-hide behavior, use SetToolboxVisibility(), above.
+' *IF*, however, you just want to show/hide a tool window as part of auto-hide behavior,
+' use SetToolboxVisibility(), above.
 Public Sub SetToolboxVisibilityPreference(ByVal toolID As PD_Toolbox, ByVal newSetting As Boolean)
     With m_Toolboxes(toolID)
         .IsVisiblePreference = newSetting

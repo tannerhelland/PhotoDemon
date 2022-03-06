@@ -13,7 +13,7 @@ Attribute VB_Name = "PD2D"
 
 Option Explicit
 
-'This master debug-mode flag modifies behavior in various pd2D objects (for example, some objects
+'This central debug-mode flag modifies behavior in various pd2D objects (for example, some objects
 ' will track create/destroy behavior to make it easier to track down leaks).  I do *not* recommend
 ' enabling it in production builds as it has perf repercussions.
 Public Const PD2D_DEBUG_MODE As Boolean = False

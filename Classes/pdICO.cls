@@ -1244,7 +1244,7 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
     'With all frames parsed, we now need to construct a new layer for each frame in the
     ' destination pdImage object.
     
-    'Start by finding the largest frame in the file; we'll use this for our master image dimensions
+    'Start by finding the largest frame in the file; we'll use this for the parent image dimensions
     Dim maxWidth As Long, maxHeight As Long
     For i = 0 To m_NumIcons - 1
         If m_Icons(i).ico_OK Then

@@ -524,7 +524,7 @@ Private Function RetrieveModifiedXMLString() As String
                         'If the tag is followed by a newline, remove that too
                         If (InStr(tagEnd, newXMLString, vbCrLf, vbBinaryCompare) = tagEnd + 1) Then tagEnd = tagEnd + 2
                         
-                        'Use those positions to fully remove the tag from the master XML string
+                        'Use those positions to fully remove the tag from the parent XML string
                         newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
                         
                     End If
@@ -1509,7 +1509,7 @@ End Sub
 '  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
 Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As pdImage) As Boolean
     
-    'XML writing is handled by PD's master XML engine
+    'XML writing is handled by PD's central XML engine
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     

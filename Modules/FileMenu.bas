@@ -537,8 +537,8 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String) As B
         newImage.ImgStorage.AddEntry "OriginalFileExtension", vbNullString
         newImage.SetSaveState False, pdSE_AnySave
         
-        'Add the finished image to the master collection, and ensure that the newly created layer is the active layer
-        PDImages.AddImageToMasterCollection newImage
+        'Add the finished image to the central collection, and ensure that the newly created layer is the active layer
+        PDImages.AddImageToCentralCollection newImage
         Layers.SetActiveLayerByID newLayerID, False, False
         
         'Use the Image Importer engine to prepare a bunch of default viewport settings for us.  (Because this new image

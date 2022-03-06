@@ -43,9 +43,9 @@ Private m_OpenImageCount As Long
 ' a new entry in this array.
 Private m_PDImages() As pdImage
 
-'Add an already-created pdImage object to the master m_PDImages() collection.
+'Add an already-created pdImage object to the centrak m_PDImages() collection.
 ' DO NOT PASS AN EMPTY OBJECT!
-Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
+Public Function AddImageToCentralCollection(ByRef srcImage As pdImage) As Boolean
     
     If (Not srcImage Is Nothing) Then
         
@@ -67,10 +67,10 @@ Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
             ReDim Preserve m_PDImages(0 To m_ImagesLoadedThisSession * 2 - 1) As pdImage
         End If
         
-        AddImageToMasterCollection = True
+        AddImageToCentralCollection = True
         
     Else
-        AddImageToMasterCollection = False
+        AddImageToCentralCollection = False
     End If
     
 End Function
@@ -90,7 +90,7 @@ End Function
 'Pass this function to obtain a default pdImage object, instantiated to match current UI settings and
 ' user preferences.  Note that this function *does not touch* the main pdImages object, and as such,
 ' the created image will not yet have an imageID value.  An ID value will be assigned when the object
-' is added to the main m_PDImages() collection (via AddImageToMasterCollection(), above).
+' is added to the main m_PDImages() collection (via AddImageToCentralCollection(), above).
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     dstImage.SetZoomIndex Zoom.GetZoom100Index

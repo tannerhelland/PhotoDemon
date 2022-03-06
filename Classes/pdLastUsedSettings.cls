@@ -44,7 +44,7 @@ Private m_Params As pdSerialize
 
 'Each instance of this control must be tied to a unique form.  The form's name is used to
 ' generate a unique key at initialization time, and that key is used to set/retrieve preset
-' data from the master preset file.
+' data from the central preset file.
 Private m_ParentID As String
 
 'If a form needs to read or write custom preset data, we use these variables to store all

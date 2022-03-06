@@ -1024,11 +1024,12 @@ Public Function SystemTempPath() As String
     
 End Function
 
-'Get PD's master hWnd.  The value is cached after an initial call.  Based on a sample project by the ever-talented Bonnie West
+'Get PD's hidden ThunderMain hWnd.  (This is the central hWnd of a VB6 project that owns all other hWnds.)
+' The value is cached after an initial call.  Based on a sample project by the ever-talented Bonnie West
 ' (http://www.vbforums.com/showthread.php?682474-VB6-ThunderMain-class).
 '
-'Note that this call *does* work in the IDE, but any subsequent calls that operate on the hWnd may be prone to failure
-' and/or difficult-to-replicate bugs.
+'Note that this call *does* work in the IDE, but any subsequent calls involving the hWnd may be
+' prone to failure and/or difficult-to-replicate bugs.
 Public Function ThunderMainHWnd() As Long
 
     'If we already grabbed the hWnd this session, we can skip right to the end

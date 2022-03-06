@@ -95,15 +95,16 @@ Public Function ReleaseFreeImage() As Boolean
     ReleaseFreeImage = True
 End Function
 
-'Load a given file.  If successful, returns a non-zero FreeImage handle.  Multi-page files will also fill a multipage DIB handle,
-' which must also be freed post-load (in addition to the default handle returned by this function).
+'Load a given file.  If successful, returns a non-zero FreeImage handle.
+' Multi-page files will also fill a multipage DIB handle, which must also be freed post-load
+' (in addition to the default handle returned by this function).
 '
 'On success, the target DIB object will also have its OriginalColorSpace member filled.
 Private Function FI_LoadImageU(ByVal srcFilename As String, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS, ByRef dstDIB As pdDIB, ByRef fi_multi_hDIB As Long, Optional ByVal pageToLoad As Long = 0&, Optional ByVal suppressDebugData As Boolean = False) As Long
 
-    'FreeImage uses separate import behavior for single-page and multi-page files.  As such, we may need to track
-    ' multiple handles (e.g. a handle to the master image, and a handle to the current page).  If fi_multi_hDIB is non-zero,
-    ' this is a multipage image.
+    'FreeImage uses separate import behavior for single-page and multi-page files.
+    ' As such, we may need to track multiple handles (e.g. a handle to the full image,
+    ' and a handle to the current page).  If fi_multi_hDIB is non-zero, this is a multipage image.
     Dim fi_hDIB As Long
     If (pageToLoad <= 0) Then
         FI_DebugMsg "Invoking FreeImage_LoadUInt...", suppressDebugData
@@ -186,8 +187,9 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Load the image into a FreeImage container
     '****************************************************************************
     
-    'FreeImage uses separate import behavior for single-page and multi-page files.  As such, we may need to track
-    ' multiple handles (e.g. a handle to the master image, and a handle to the current page).  If fi_multi_hDIB is non-zero,
+    'FreeImage uses separate import behavior for single-page and multi-page files.
+    ' As such, we may need to track multiple handles (e.g. a handle to the full image,
+    ' and a different handle to the current page).  If fi_multi_hDIB is non-zero,
     ' this is a multipage image.
     Dim fi_hDIB As Long, fi_multi_hDIB As Long
     fi_hDIB = FI_LoadImageU(srcFilename, fileFIF, fi_ImportFlags, dstDIB, fi_multi_hDIB, pageToLoad, suppressDebugData)

@@ -159,8 +159,9 @@ Private m_PlgPoints() As PointFloat
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' it must call this function afterward.
 '
-'IMPORTANT NOTE! As of v7.0, PD functions should not call this sub directly.  Instead, they must call notifyImageChanged on
-' the parent pdImage object, so the master object knows to recomposite itself (which is necessary for some viewport modes).
+'IMPORTANT NOTE! As of v7.0, PD functions should not call this sub directly.
+' Instead, they must call NotifyImageChanged on the *parent* pdImage object, so the parent image
+' knows to recomposite itself (which is necessary for some viewport models).
 '
 'ANOTHER IMPORTANT NOTE!  This function only needs to be called if a change was *destructive*.  Non-destructive changes
 ' - per the name, lol - do not require us to rebuild internal caches, because the effects and/or resizing will be
@@ -1255,8 +1256,8 @@ End Sub
 ' copy at run-time.)
 '
 'Note also that this function will try to match color-managed layers against matching ICC profiles in the
-' master ColorManagement cache.  Make *sure* you have added all embedded color profiles to the master cache
-' before invoking this function.
+' central ColorManagement cache.  Make *sure* you have added all embedded color profiles to the central
+' cache before invoking this function.
 Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data

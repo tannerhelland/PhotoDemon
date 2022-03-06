@@ -392,7 +392,7 @@ Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Lon
     m_SourceImage.CreateFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
-    'Replace the master energy array with the resized copy
+    'Replace the original energy array with the resized copy
     ReDim m_Energy(0 To finalX, 0 To finalY + numOfAddedSeams) As Byte
     CopyMemoryStrict VarPtr(m_Energy(0, 0)), VarPtr(newEnergyMap(0, 0)), (finalX + 1) * (finalY + 1 + numOfAddedSeams)
     
@@ -725,7 +725,7 @@ Private Sub GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As L
     m_SourceImage.CreateFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
-    'Replace the master energy array with the resized copy
+    'Replace the original energy array with the resized copy
     ReDim m_Energy(0 To finalX + numOfAddedSeams, 0 To finalY) As Byte
     CopyMemoryStrict VarPtr(m_Energy(0, 0)), VarPtr(newEnergyMap(0, 0)), (finalX + 1 + numOfAddedSeams) * (finalY + 1)
 

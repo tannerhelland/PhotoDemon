@@ -1715,7 +1715,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             Exit Function
         End If
         
-    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the full buffer
     Else
         If (dataPackedSize <> 0) Then
             m_DataBuffer.ReadBytes dstArray, dataPackedSize
@@ -1820,7 +1820,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         End If
         
-    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the full buffer
     Else
         CopyMemoryStrict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
     End If

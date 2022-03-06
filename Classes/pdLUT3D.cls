@@ -933,7 +933,7 @@ End Function
 
 Friend Sub GetInterpolatedRGB_Int(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long, ByRef dstR As Long, ByRef dstG As Long, ByRef dstB As Long)
 
-    'Use the source RGB values as indices into the master lookup table
+    'Use the source RGB values as indices into the central lookup table
     Const ONE_DIV_255 As Single = 1! / 255!
     Dim rIndex As Single, gIndex As Single, bIndex As Single
     rIndex = (srcR * m_LutLoopSize) * ONE_DIV_255

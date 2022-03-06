@@ -115,7 +115,7 @@ End Enum
 Private m_ControlShape As COLOR_WHEEL_SHAPE
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -339,7 +339,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True
@@ -468,7 +468,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
     
     'For this control layout, we are going to use a temporary rect collection to define the position of all color variants.
-    ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the master pd2DPath array.
+    ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the central pd2DPath array.
     Dim colorRects() As RectF
     ReDim colorRects(0 To NUM_OF_VARIANTS - 1) As RectF
     
@@ -557,7 +557,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     colorRects(CV_GreenDown).Top = colorRects(CV_GreenUp).Top
     colorRects(CV_BlueDown).Top = colorRects(CV_BlueUp).Top
     
-    'With the color rects successfully constructed, we can now add them to our master path collection
+    'With the color rects successfully constructed, we can now add them to our central path collection
     For i = CV_Primary To NUM_OF_VARIANTS - 1
         m_ColorRegions(i).AddRectangle_RectF colorRects(i)
     Next i

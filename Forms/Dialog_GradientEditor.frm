@@ -1157,7 +1157,7 @@ Private Sub cmdBar_ResetClick()
     m_PreviousPanel = m_PrevPanelBeforeReset
     btsEdit.ListIndex = m_PanelBeforeReset
     
-    'Reset our master gradient object; everything else derives from it
+    'Reset our central gradient object; everything else derives from it
     Set m_NodePreview = New pd2DGradient
     m_NodePreview.CreateGradientFromString vbNullString
     

@@ -41,7 +41,7 @@ Attribute VB_Exposed = False
 '
 'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
 ' command bar user control, as it easily supports pen reset/randomize/preset events.  It is also nice to be able
-' to update a single master function for pen selection, then have the change propagate to all tool windows.
+' to update a single central function for pen selection, then have the change propagate to all tool instances.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -73,7 +73,7 @@ Private m_IsDialogLive As Boolean
 Private m_PenRect As RectF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -262,7 +262,7 @@ Private Sub UserControl_Initialize()
     
     Set m_PreviewPath = New pd2DPath
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True

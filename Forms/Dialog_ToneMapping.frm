@@ -421,7 +421,7 @@ Private Sub UpdatePreview()
     
     Dim tmp_FIHandle As Long
     
-    'Retrieve a tone-mapped image, using the master tone-map function
+    'Retrieve a tone-mapped image, using the central tone-map function
     If (mini_FIHandle <> 0) Then tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, GetToneMapParamString())
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
@@ -445,7 +445,7 @@ Private Sub UpdatePreview()
     
     'Tone mapping failed; abandon the preview attempt
     Else
-        PDDebug.LogAction "Can't preview tone-mapping; unspecified error returned by master tone-map function."
+        PDDebug.LogAction "Can't preview tone-mapping; unspecified error returned by central tone-map function."
     End If
     
     'Re-enable the form

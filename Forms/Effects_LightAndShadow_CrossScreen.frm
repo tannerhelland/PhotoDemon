@@ -257,7 +257,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     ' to calculate two spokes at once.
     
     'Both paths share an identical base step, however, when we create the initial spoke and place it inside m_mbDIB.
-    ' m_mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
+    ' m_mbDIB serves as the "central" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
     m_mbDIB.CreateFromExistingDIB m_thresholdDIB
     GetMotionBlurredDIB m_thresholdDIB, m_mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
     
@@ -276,7 +276,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
             spokeIntervalDegrees = 180# / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
-            ' the "master" m_mbDIB layer.
+            ' the "central" m_mbDIB layer.
             For i = 1 To numSpokeIterations - 1
                 
                 'Create the new spoke layer
@@ -312,7 +312,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
             spokeIntervalDegrees = 360# / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
-            ' the "master" m_mbDIB layer.
+            ' the "central" m_mbDIB layer.
             For i = 1 To numSpokeIterations - 1
                 
                 'Create the new spoke layer

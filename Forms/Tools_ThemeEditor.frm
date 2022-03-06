@@ -589,7 +589,7 @@ Private Sub cmdExport_Click()
         lblExport.Caption = "Finalizing package..."
         lblExport.RequestRefresh
         
-        'Add the final image packages to the master package
+        'Add the final image packages
         Dim tmpStream As pdStream
         cImageHeaders.FinishPackage tmpStream
         cPackage.AddChunk_NameValuePair "NAME", "final_img_headers", "DATA", tmpStream.Peek_PointerOnly(0, tmpStream.GetStreamSize()), tmpStream.GetStreamSize(), cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)

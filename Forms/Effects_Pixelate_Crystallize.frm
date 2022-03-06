@@ -245,7 +245,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         'Use the Voronoi class to find the nearest point to this pixel
         nearestPoint = m_Voronoi.GetNearestPointIndex(x, y)
         
-        'Store the nearest point index in our master lookup table
+        'Store the nearest point index in our central lookup table
         vLookup(x, y) = nearestPoint
         
         'If the user has elected to recolor each cell using the average color for the cell,

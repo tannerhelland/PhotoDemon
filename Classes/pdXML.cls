@@ -146,8 +146,8 @@ Friend Function WriteComment(ByRef commentText As String) As Boolean
 
 End Function
 
-'Write a new XML tag to the master XML string.  By default, new tags are written to the end of the file, but the writeAtStart
-' param can be set to TRUE to write tags at the top.
+'Write a new XML tag to the XML string.  By default, new tags are written to the end of the file,
+' but the writeAtStart param can be set to TRUE to write tags at the top.
 Friend Function WriteTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal doNotCloseTag As Boolean = False, Optional ByVal writeAtStart As Boolean = False) As Boolean
 
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
@@ -241,16 +241,17 @@ Friend Function DoesTagExist(ByRef tagName As String, Optional ByRef attributeNa
 
 End Function
 
-'This is a bit different from the updateTag function below (which exists primarily to deal with INI-style entries).  This function asks
-' for a location in the master string.  The first occurrence of the tag AFTER that location will be updated with the new value.  The
-' current value of the tag does not need to be known.
+'This is a bit different from the updateTag function below (which exists primarily to deal with INI-style entries).
+' This function asks for a location in the XML string.  The first occurrence of the tag AFTER that location will
+' be updated with the new value.  The current value of the tag does not need to be known.
 '
-'The intended purpose of this function is adding/updating translations to a PD language file.  In that case, getLocationOfParentTag is
-' used to find the <phrase> wrapper, and that location is then passed to this function so the immediately following <translation> tag
-' can be updated.
+'The intended purpose of this function is adding/updating translations to a PD language file.  In that case,
+' GetLocationOfParentTag() is used to find the <phrase> wrapper, and that location is then passed to this function
+' so the immediately following <translation> tag can be updated.
 '
-'NOTE: Unlike the updateTag function, if the requested tagName cannot be found at this location, this function will not add a new tag
-' to the file.  It will simply fail and exit.  (updateTag will add the requested tag to the end of the specified section.)
+'NOTE: Unlike the updateTag function, if the requested tagName cannot be found at this location,
+' this function will not add a new tag to the file.  It will simply fail and exit.
+' (UpdateTag() will add the requested tag to the end of the specified section.)
 Friend Function UpdateTagAtLocation(ByVal tagName As String, ByVal newTagContents As String, Optional ByVal startLocation As Long = 1) As Boolean
 
     Dim tagLocation As Long
@@ -394,8 +395,9 @@ Friend Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, 
 
 End Function
 
-'Write a new XML tag to the master XML string, including a single attribute and value.  By default, new tags are written to the end of
-' the file, but the writeAtStart param can be set to TRUE to write tags at the top.
+'Write a new XML tag to the XML string, including a single attribute and value.
+' By default, new tags are written to the end of the file, but the writeAtStart param can be set to TRUE
+' to write tags at the top.
 ' If you don't want the tag automatically closed, set the doNotCloseTag parameter to TRUE.
 Friend Function WriteTagWithAttribute(ByVal tagName As String, ByVal tagAttribute As String, ByVal attributeValue As String, ByVal tagContents As String, Optional ByVal doNotCloseTag As Boolean = False, Optional ByVal writeAtStart As Boolean = False) As Boolean
 

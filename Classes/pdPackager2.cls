@@ -1929,7 +1929,7 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         'Now that the destination array is appropriately sized, we can offload further loading to the unsafe pointer-only function
         GetNodeDataByIndex = Me.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, VarPtr(dstArray(LBound(dstArray))))
         
-    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the full buffer
     Else
         If (dataPackedSize <> 0) Then
             m_DataBuffer.ReadBytes dstArray, dataPackedSize, trimDstArray
@@ -2089,7 +2089,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             Exit Function
         End If
         
-    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the full buffer
     Else
         
         'As with compressed mode, a switch is required depending on the stream backing mode

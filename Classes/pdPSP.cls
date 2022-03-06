@@ -120,14 +120,14 @@ End Type
 
 Private m_numCompositeImages As Long, m_CompositeImages() As PSPCompositeImage
 
-'Composite images are allowed to use their own custom palette, separate from the image's master palette
+'Composite images are allowed to use their own custom palette, separate from the parent image's palette
 Private m_CompositePalette() As RGBQuad, m_CompositePaletteCount As Long
 
-'Indexed images will provide a "master" palette for the full image.  If one exists,
-' m_MasterPaletteCount will be some value > 0.
-Private m_MasterPalette() As RGBQuad, m_MasterPaletteCount As Long
+'Indexed images will provide a "parent" palette for the full image.
+' If one exists, m_ParentPaletteCount will be some value > 0.
+Private m_ParentPalette() As RGBQuad, m_ParentPaletteCount As Long
 
-'Master layer collection.  The total number of layers is mirrored by the image header, but note
+'Central layer collection.  The total number of layers is mirrored by the image header, but note
 ' that PhotoDemon may choose to "deactivate" layers it doesn't understand - so post-parsing,
 ' it's critical to defer to this layer count instead of the one embedded in the image header.
 Private m_LayerCount As Long, m_Layers() As pdPSPLayer
@@ -244,10 +244,10 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     ' import of a giant image-sized layer can greatly improve import time.)
     'If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, False)
     
-    'Next, if the image is < 24-bpp and non-grayscale, we need to retrieve the master palette.
+    'Next, if the image is < 24-bpp and non-grayscale, we need to retrieve the parent palette.
     ' (At this point, note that block order is no longer guaranteed - so the palette block could
     ' lie anywhere inside the file.)
-    If (keepLoading < psp_Failure) Then keepLoading = Step5_ReadMasterPalette(srcFile)
+    If (keepLoading < psp_Failure) Then keepLoading = Step5_ReadParentPalette(srcFile)
     
     'With the palette read, it's time to parse layers!
     If (keepLoading < psp_Failure) Then keepLoading = Step6_LoadLayers(srcFile)
@@ -1997,17 +1997,17 @@ InternalVBError:
 End Function
 
 'Do *NOT* call import steps out-of-order!
-Private Function Step5_ReadMasterPalette(ByRef srcFile As String) As PD_PSPResult
+Private Function Step5_ReadParentPalette(ByRef srcFile As String) As PD_PSPResult
     
     On Error GoTo InternalVBError
-    Const funcName As String = "Step5_ReadMasterPalette"
+    Const funcName As String = "Step5_ReadParentPalette"
     
-    Step5_ReadMasterPalette = psp_Success
+    Step5_ReadParentPalette = psp_Success
     
     'Failsafe check
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
         InternalError funcName, "filename has changed since original validation!"
-        Step5_ReadMasterPalette = psp_Failure
+        Step5_ReadParentPalette = psp_Failure
         Exit Function
     End If
     
@@ -2021,7 +2021,7 @@ Private Function Step5_ReadMasterPalette(ByRef srcFile As String) As PD_PSPResul
     '  paletted bitmaps and should not be written for image documents that contain 24-bit or
     '  48-bit bitmaps (the block can be ignored in the latter cases)."
     
-    'PD will always attempt to retrieve a master palette if one exists.  24/48-bpp images
+    'PD will always attempt to retrieve a parent palette if one exists.  24/48-bpp images
     ' will simply ignore it when generating layers.
     Dim paletteBlockIndex As Long
     paletteBlockIndex = -1
@@ -2037,43 +2037,43 @@ Private Function Step5_ReadMasterPalette(ByRef srcFile As String) As PD_PSPResul
     'If no palette block is found, that's fine - just mark it as such and carry on!
     If (paletteBlockIndex < 0) Then
         
-        Step5_ReadMasterPalette = psp_Success
+        Step5_ReadParentPalette = psp_Success
         
         'If the current image is grayscale (regardless of color-depth), generate a default
         ' gray palette matching the current bit-depth.
         If m_ImageHeader.psph_IsGrayscale Then
         
             If (m_ImageHeader.psph_BitDepth >= 8) Then
-                m_MasterPaletteCount = 256
-                Palettes.GetPalette_Grayscale m_MasterPalette
+                m_ParentPaletteCount = 256
+                Palettes.GetPalette_Grayscale m_ParentPalette
             ElseIf (m_ImageHeader.psph_BitDepth = 4) Then
-                m_MasterPaletteCount = 16
-                Palettes.GetPalette_GrayscaleEx m_MasterPalette, m_MasterPaletteCount
+                m_ParentPaletteCount = 16
+                Palettes.GetPalette_GrayscaleEx m_ParentPalette, m_ParentPaletteCount
             ElseIf (m_ImageHeader.psph_BitDepth = 1) Then
-                m_MasterPaletteCount = 2
-                Palettes.GetPalette_GrayscaleEx m_MasterPalette, m_MasterPaletteCount
+                m_ParentPaletteCount = 2
+                Palettes.GetPalette_GrayscaleEx m_ParentPalette, m_ParentPaletteCount
             Else
                 InternalError funcName, "unknown bit-depth and grayscale combination"
-                Step5_ReadMasterPalette = psp_Failure
+                Step5_ReadParentPalette = psp_Failure
             End If
             
             If PSP_DEBUG_VERBOSE Then
-                If (Step5_ReadMasterPalette < psp_Failure) Then PDDebug.LogAction "Master grayscale palette constructed successfully."
+                If (Step5_ReadParentPalette < psp_Failure) Then PDDebug.LogAction "Parent grayscale palette constructed successfully."
             End If
         
         'This is a color image
         Else
             
-            m_MasterPaletteCount = 0
+            m_ParentPaletteCount = 0
             
             'The error state of this case depends on parent image bit-depth, obviously.
             If (m_ImageHeader.psph_BitDepth <= 8) Then
                 InternalError funcName, "no palette found; image is unsaveable"
-                Step5_ReadMasterPalette = psp_Failure
+                Step5_ReadParentPalette = psp_Failure
                 
             'This image is full-color, so just carry on loading!
             Else
-                Step5_ReadMasterPalette = psp_Success
+                Step5_ReadParentPalette = psp_Success
             End If
             
         End If
@@ -2090,12 +2090,12 @@ Private Function Step5_ReadMasterPalette(ByRef srcFile As String) As PD_PSPResul
         'As always, workarounds are required for v5 stream alignment
         If m_PSPisV5 Then m_Stream.SetPosition -4, FILE_CURRENT
         
-        If RetrievePalette(m_MasterPalette, m_MasterPaletteCount) Then
-            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Master palette retrieved successfully (" & m_MasterPaletteCount & " colors)"
-            Step5_ReadMasterPalette = psp_Success
+        If RetrievePalette(m_ParentPalette, m_ParentPaletteCount) Then
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Parent palette retrieved successfully (" & m_ParentPaletteCount & " colors)"
+            Step5_ReadParentPalette = psp_Success
         Else
             InternalError funcName, "bad palette block"
-            Step5_ReadMasterPalette = psp_Failure
+            Step5_ReadParentPalette = psp_Failure
         End If
         
     End If
@@ -2111,7 +2111,7 @@ InternalVBError:
     If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 5, #" & Err.Number & ": " & Err.Description
-    Step5_ReadMasterPalette = psp_Failure
+    Step5_ReadParentPalette = psp_Failure
 
 End Function
 
@@ -2168,7 +2168,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     ' vector, text, or adjustment layers.  As such, we need to be careful about what we
     ' attempt to load.
     
-    'To start, we first want to just load some header data for each layer into a master
+    'To start, we first want to just load some header data for each layer into a central
     ' layer directory.
     m_LayerCount = m_ImageHeader.psph_LayerCount
     ReDim m_Layers(0 To m_LayerCount - 1) As pdPSPLayer
@@ -2235,7 +2235,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
                 'If the layer actually has pixels, generate a DIB for it
                 If m_Layers(numLayersFound).IsLayerPixelBased() Then
                 
-                    If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
+                    If m_Layers(numLayersFound).ConstructMatchingDIB(m_ParentPalette, m_ParentPaletteCount, m_ImageHeader) Then
                         
                         'Apply color-management, if any
                         If (Not m_ICCProfile Is Nothing) Then
@@ -2268,7 +2268,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
                     'On vector layers, attempt to build a raster version of the underlying vector data
                     ElseIf (m_Layers(numLayersFound).GetLayerType = keGLTVector) Then
                         
-                        If m_Layers(numLayersFound).ConstructMatchingDIB_Vector(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
+                        If m_Layers(numLayersFound).ConstructMatchingDIB_Vector(m_ParentPalette, m_ParentPaletteCount, m_ImageHeader) Then
                             
                             'Apply color-management, if any
                             If (Not m_ICCProfile Is Nothing) Then
@@ -2324,7 +2324,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     
     'All layers loaded!
     
-    'Reset the master "layer count" to match only the number of *valid* layers found
+    'Reset the central "layer count" to match only the number of *valid* layers found
     m_LayerCount = numLayersFound
     
     'Forcibly align the stream pointer before continuing

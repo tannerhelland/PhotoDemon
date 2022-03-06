@@ -361,7 +361,7 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
         'Use the Voronoi class to find the nearest points to this pixel
         nearestPoint = m_Voronoi.GetNearestPointIndex(x, y, secondNearestPoint)
         
-        'Store the nearest and second-nearest point indices in our master lookup table
+        'Store the nearest and second-nearest point indices in our central lookup table
         vLookup(x, y).x = nearestPoint
         vLookup(x, y).y = secondNearestPoint
         

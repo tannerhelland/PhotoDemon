@@ -668,9 +668,10 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     m_captureModeActive = True
     
     'Erase any previous metadata caches.
-    ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master
-    '        metadata string, as its construction may lag behind the rest of the image load process.  When a full
-    '        metadata string is retrieved, the RetrieveMetadataString() function now handles clearing for us.
+    ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to
+    '        erase the original metadata string, as its construction may lag behind the rest of the
+    '        image load process.  When a full metadata string is retrieved, the RetrieveMetadataString()
+    '        function now handles clearing for us.
     'm_currentMetadataText = vbNullString
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects
@@ -1747,11 +1748,12 @@ End Function
 
 Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRef srcXML As String) As Boolean
 
-    'This function assumes that the XML packet it receives is well-formed, and properly parsed out of the appropriate
-    ' table in the master ExifTool database.  If these criteria are not met, all bets are off.
+    'This function assumes that the XML packet it receives is well-formed,
+    ' and properly parsed out of the appropriate table in the primary ExifTool database.
+    ' If these criteria are not met, all bets are off.
     
-    'The first thing we want to do is break the XML into lines.  ExifTool spits out well-formed XML where each entry is
-    ' placed on its own line, and this simplifies parsing.
+    'The first thing we want to do is break the XML into lines.  ExifTool spits out
+    ' well-formed XML where each entry is placed on its own line, and this simplifies parsing.
     Dim xmlLines() As String
     xmlLines = Split(srcXML, vbCrLf, , vbBinaryCompare)
     

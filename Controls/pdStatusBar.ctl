@@ -197,7 +197,7 @@ Private m_LastEnabledState As Boolean
 Private m_LinePositions() As Single
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -606,7 +606,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, False
     ucSupport.RequestExtraFunctionality True

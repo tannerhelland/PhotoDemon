@@ -179,7 +179,7 @@ Private Declare Function SystemParametersInfoW Lib "user32" (ByVal uiAction As L
 Private Const SPI_GETWHEELSCROLLLINES As Long = &H68
 Private Const SPI_GETWHEELSCROLLCHARS As Long = &H6C
 
-'Master subclasser for all input actions
+'Central subclasser for all input window messages
 Implements ISubclass
 
 'The hWnd currently being tracked.  You can test this value against zero to see if the class is active.
@@ -752,15 +752,15 @@ Private Sub UpdateMouseModifiers(Optional ByVal lParam As Long = 0)
     If IsMouseButtonDown(VK_XBUTTON1) Then m_retMouseButton = m_retMouseButton Or pdXButtonOne
     If IsMouseButtonDown(VK_XBUTTON2) Then m_retMouseButton = m_retMouseButton Or pdXButtonTwo
         
-    'Some functions also supply mouse button and coordinate values; we'll be retrieving these as well.
-    ' To improve accuracy of the retrieved coordinates (and to make future support for GetMouseMovePointsEx
-    ' easier to implement), we're going to manually retrieve coordinates using GetCursorPos, then translate
-    ' these into the coordinate space of the master hWnd given to this class.
+    'Some functions also supply mouse button and coordinate values; we'll retrieve these as well.
+    ' To improve accuracy of the retrieved coordinates (and make GetMouseMovePointsEx easier to implement),
+    ' we manually retrieve coordinates using GetCursorPos, then translate these into the coordinate space
+    ' of the target hWnd assigned to this class.
     GetCurrentCursorPosition m_MouseX, m_MouseY
     
-    'As a failsafe, crucial mouse events (button down and up, particularly) can never afford to be delayed.  We must retrieve
-    ' their values at *exactly* the moment the message arrives.  To that end, we always store copies of these integer-only values,
-    ' using the values passed in the message parameters.
+    'As a failsafe, crucial mouse events (button down and up, particularly) can never afford to be delayed.
+    ' We must retrieve their values at *exactly* the moment the message arrives.  To that end, we always
+    ' store copies of these integer-only values, using the values passed in the message parameters.
     m_MouseXInt = GetLoWord(lParam)
     m_MouseYInt = GetHiWord(lParam)
     

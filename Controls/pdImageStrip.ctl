@@ -155,7 +155,7 @@ Private Const MIN_STRIP_SIZE As Long = 40
 Private Const MAX_STRIP_SIZE As Long = 300
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -599,7 +599,7 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     
 End Sub
 
-'New images are currently added by their master ID value; at some point it might be nice to modify this to
+'New images are currently added by their ID value; at some point it might be nice to modify this to
 ' accept any arbitrary image, but for the primary canvas, this method avoids a lot of unnecessary "glue" code.
 Public Sub AddNewThumb(ByVal pdImageIndex As Long)
 
@@ -879,7 +879,7 @@ Private Sub UserControl_Initialize()
     m_NumOfThumbs = 0
     ReDim m_Thumbs(0 To 3) As ImageThumbEntry
         
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True

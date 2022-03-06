@@ -293,7 +293,7 @@ Private Function CreateTransform() As Boolean
     Dim gpResult As GP_Result
     gpResult = GdipCreateMatrix(m_TransformHandle)
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     CreateTransform = (gpResult = GP_OK) And (m_TransformHandle <> 0)
     If (CreateTransform And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyTransformCountChange True
     

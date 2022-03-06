@@ -65,7 +65,7 @@ Private m_Caption As String, m_Title As String
 Private m_InternalPadding As Long, m_TitlePadding As Long
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
-' but I've since attempted to wrap these into a single master control support class.
+' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
@@ -98,7 +98,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Initialize a master user control support class
+    'Initialize a user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl Me.hWnd, False
     ucSupport.RequestExtraFunctionality True, , , False

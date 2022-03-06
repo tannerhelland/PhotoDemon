@@ -125,7 +125,7 @@ Private Function CreatePath() As Boolean
     If (m_PathHandle <> 0) Then Me.ReleasePath
     CreatePath = (GdipCreatePath(DEFAULT_FILL_RULE, m_PathHandle) = GP_OK)
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    'When debug mode is active, all object creations are reported back to the central Drawing2D module
     CreatePath = CreatePath And (m_PathHandle <> 0)
     If (CreatePath And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyPathCountChange True
     

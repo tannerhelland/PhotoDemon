@@ -255,7 +255,7 @@ Friend Function CreateRegion() As Boolean
     
         CreateRegion = (m_RegionHandle <> 0)
         
-        'When debug mode is active, all object creations are reported back to the master Drawing2D module
+        'When debug mode is active, all object creations are reported back to the central Drawing2D module
         If (CreateRegion And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyRegionCountChange True
         
     Else

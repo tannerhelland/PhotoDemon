@@ -655,8 +655,8 @@ Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, By
 
 End Sub
 
-'After adding all menu items to the master table, call this function to iterate through the final list and
-' auto-populate some helpful menu properties (e.g. the "has children" bool)
+'After adding all menu items to the central menu table, call this function to iterate through
+' the final list and auto-populate a few helpful menu properties (e.g. the "has children" bool)
 Private Sub FinalizeMenuProperties()
 
     'First, we want to determine whether each menu has child menus.  This is important for producing
@@ -1178,7 +1178,7 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
     
     Set dstStack = New pdStack
     
-    'For detailed comments, please refer to the master DetermineMnemonics sub.  This is just a
+    'For detailed comments, please refer to the parent DetermineMnemonics sub.  This is just a
     ' one-off version designed for menus whose caption changes dynamically at run-time
     ' (e.g. "Undo" can become "Undo [operation]")
     

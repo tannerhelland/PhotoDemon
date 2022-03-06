@@ -33,9 +33,9 @@ Option Explicit
 'Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587!
 'Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114!
 
-'Local copy of the master palette.  By caching this, we can perform all internal comparisons via palette
-' index instead of by color.  This provides a meaningful performance boost, given that we'll traverse the
-' tree millions of times on a typical image.
+'Local copy of the source palette.  By caching this, we can perform all internal comparisons
+' by palette index instead of by color.  This provides a meaningful performance boost,
+' given that we'll traverse the tree millions of times on a typical image.
 Private m_ColorList() As RGBQuad
 
 'Depth of this node.  Nodes on the outermost level of the tree return their color directly,
@@ -55,14 +55,14 @@ Private m_BitShiftMasks() As Long
 Private m_ChildNodes(0 To 7) As pdColorSearchNode
 
 'Constructor
-Friend Sub NodeInitialize(ByVal nodeDepth As Long, ByRef masterColorList() As RGBQuad)
+Friend Sub NodeInitialize(ByVal nodeDepth As Long, ByRef srcColorList() As RGBQuad)
 
     m_Depth = nodeDepth
     
     'Caching the full color list in each node requires little memory, and it potentially accelerates
     ' a number of search-related functions.
-    ReDim m_ColorList(0 To UBound(masterColorList)) As RGBQuad
-    CopyMemoryStrict VarPtr(m_ColorList(0)), VarPtr(masterColorList(0)), UBound(masterColorList) * 4 + 4
+    ReDim m_ColorList(0 To UBound(srcColorList)) As RGBQuad
+    CopyMemoryStrict VarPtr(m_ColorList(0)), VarPtr(srcColorList(0)), UBound(srcColorList) * 4 + 4
 
 End Sub
 

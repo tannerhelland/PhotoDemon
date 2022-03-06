@@ -853,7 +853,7 @@ Friend Function GetHeaderAsXML() As String
     ' file data).
     xmlEngine.AddParam "image-id", imageID, True, True
     
-    'Write relevant master-image data
+    'Write relevant parent image data
     xmlEngine.AddParam "width", Me.Width, True, True
     xmlEngine.AddParam "height", Me.Height, True, True
     xmlEngine.AddParam "x-resolution", m_XResolution, True, True
