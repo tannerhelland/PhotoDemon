@@ -31,8 +31,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Collapsible Title Label+Button control
 'Copyright 2014-2022 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 02/November/21
-'Last update: changes to accommodate new toolbar design
+'Last updated: 06/March/22
+'Last update: tweak layout behavior to improve caption layouts when font size must be severely shrunk
+'             (due to lengthy localized text)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -470,60 +471,27 @@ Private Sub UpdateControlLayout()
         ' control size.  Because we are inside the UpdateControlLayout sub, we know that the control's size
         ' has changed, which means we need to perform a fresh size calculation.
         
-        'As such, start with a default caption instance.
+        'As such, start with a default font instance matching the design-time font size.
         Dim tmpFont As pdFont
         Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize, Me.FontBold)
         
-        'In this control, we auto-size the control's height according to the control's current font size.
-        ' In turn, the control's font size may be automatically shrunk to fit the control's available width.
-        
-        '(I know, it's a bit confusing.)
-        
-        'Let's start by determining how much horizontal space is available for the caption.
-        Dim maxCaptionWidth As Long
-        maxCaptionWidth = bWidth - (Interface.FixDPI(hTextPadding) * 2) - bHeight
-        
-        'If the control is draggable, we need to account for some extra left-side space to render a gripper
-        If m_Draggable Then maxCaptionWidth = maxCaptionWidth - Interface.FixDPI(GRIPPER_PADDING)
-        
-        'Next, determine if our current caption + font-size combination fits within the available space.
-        Dim fontWidth As Long
-        fontWidth = tmpFont.GetWidthOfString(Me.Caption)
-        
-        'If our current caption + font-size fits in the available space, great!  Use our current font height
-        ' to auto-size this control accordingly.
-        If (fontWidth <= maxCaptionWidth) Then
-        
-            If (tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
-                bHeight = tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2
-                ucSupport.RequestNewSize bWidth, bHeight, False
-            End If
-            
-        'If our current caption + font-size does *not* fit in the available space, we need to figure out what
-        ' size *does* fit.
-        Else
-        
-            Dim tmpFontSize As Single
-            tmpFontSize = Fonts.FindFontSizeSingleLine(Me.Caption, maxCaptionWidth, Me.FontSize, Me.FontBold, cacheIfNovel:=True)
-            
-            'Retrieve a new font object at the specified size.
-            Set tmpFont = Fonts.GetMatchingUIFont(tmpFontSize, Me.FontBold)
-            
-            'Use that font's height to calculate a new height for this control
-            If (tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
-                bHeight = tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2
-                ucSupport.RequestNewSize bWidth, bHeight, False
-            End If
-            
+        'Use the default font height to auto-size control height.  (This ensures all instances of this control
+        ' using this font size have identical heights, regardless of how I drew them at design-time.)
+        If (tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
+            bHeight = tmpFont.GetHeightOfString(Me.Caption) + Interface.FixDPI(vTextPadding) * 2
+            ucSupport.RequestNewSize bWidth, bHeight, False
         End If
         
         'The control and backbuffer are now guaranteed to be the proper size.  Update our internal trackers.
         bWidth = ucSupport.GetBackBufferWidth
         bHeight = ucSupport.GetBackBufferHeight
     
-        'For caption rendering purposes, we need to determine a target rectangle for the caption itself.  The ucSupport class
-        ' will automatically fit the caption within this area, regardless of the currently selected font size.
+        'For caption rendering purposes, we need to determine a target rectangle for the caption itself.
+        ' The ucSupport class will automatically fit the caption within this area, regardless of the
+        ' currently selected font size.  (This helps ensure correct behavior of localized text that is
+        ' longer than the original English text.)
         With m_CaptionRect
+        
             .Left = Interface.FixDPI(hTextPadding)
             If m_Draggable Then .Left = .Left + Interface.FixDPI(GRIPPER_PADDING)
             .Top = Interface.FixDPI(vTextPadding)
@@ -531,12 +499,13 @@ Private Sub UpdateControlLayout()
             
             'The right measurement is the only complicated one, as it requires padding so we have room
             ' to render the drop-down arrow.
-            .Right = bWidth - FixDPI(hTextPadding) * 2 - bHeight
+            .Right = bWidth - Interface.FixDPI(hTextPadding) * 2 - (bHeight - 6)
             If m_Draggable Then .Right = .Right - Interface.FixDPI(GRIPPER_PADDING)
             If (.Right < .Left) Then .Right = .Left + 1
             
             'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
             ucSupport.SetCaptionCustomPosition .Left, .Top, .Right - .Left, .Bottom - .Top
+            
         End With
         
     End If
@@ -593,8 +562,9 @@ Private Sub RedrawBackBuffer()
     
     'The ucSupport class will paint our caption for us, using the rect we supplied in a previous step
     If ucSupport.IsCaptionActive Then
-        ucSupport.SetCaptionCustomColor txtColor
-        ucSupport.PaintCaptionManually
+        With m_CaptionRect
+            ucSupport.PaintCaptionManually_Clipped .Left, .Top, .Right - .Left, .Bottom - .Top, txtColor, True
+        End With
     End If
     
     If PDMain.IsProgramRunning() Then
@@ -633,44 +603,45 @@ Private Sub RedrawBackBuffer()
     
         'Next, paint the drop-down arrow.  To simplify calculations, we first calculate a boundary rect.
         Dim arrowRect As RectF
-        arrowRect.Left = bWidth - bHeight - FixDPI(2)
+        arrowRect.Left = (bWidth - bHeight)
         arrowRect.Top = 1
         arrowRect.Height = bHeight - 2
         arrowRect.Width = bHeight - 2
         
         Dim arrowPt1 As PointFloat, arrowPt2 As PointFloat, arrowPt3 As PointFloat
-                    
+        Dim arrowHeight As Single: arrowHeight = bHeight / 4
+        
         'The orientation of the arrow varies depending on open/close state.
         
         'Corresponding panel is open, so arrow points down
         If m_TitleState Then
         
-            arrowPt1.x = arrowRect.Left + FixDPIFloat(4)
-            arrowPt1.y = arrowRect.Top + (arrowRect.Height / 2) - FixDPIFloat(2)
+            arrowPt1.x = arrowRect.Left + Interface.FixDPIFloat(5) + 0.5
+            arrowPt1.y = arrowRect.Top + (arrowRect.Height / 2) + 1 - (arrowHeight / 2)
             
-            arrowPt3.x = (arrowRect.Left + arrowRect.Width) - FixDPIFloat(4)
+            arrowPt3.x = (arrowRect.Left + arrowRect.Width) - Interface.FixDPIFloat(5)
             arrowPt3.y = arrowPt1.y
             
             arrowPt2.x = arrowPt1.x + (arrowPt3.x - arrowPt1.x) / 2
-            arrowPt2.y = arrowPt1.y + FixDPIFloat(3)
+            arrowPt2.y = arrowPt1.y + (arrowHeight / 2) + 0.5
             
         'Corresponding panel is closed, so arrow points left
         Else
         
-            arrowPt1.x = arrowRect.Left + (arrowRect.Width / 2) + FixDPIFloat(2)
-            arrowPt1.y = arrowRect.Top + FixDPIFloat(4)
+            arrowPt1.x = arrowRect.Left + (arrowRect.Height / 2) + (arrowHeight / 2) - 1
+            arrowPt1.y = arrowRect.Top + Interface.FixDPIFloat(5) + 0.5
         
             arrowPt3.x = arrowPt1.x
-            arrowPt3.y = (arrowRect.Top + arrowRect.Height) - FixDPIFloat(4)
+            arrowPt3.y = (arrowRect.Top + arrowRect.Height) - Interface.FixDPIFloat(5)
         
-            arrowPt2.x = arrowPt1.x - FixDPIFloat(3)
+            arrowPt2.x = arrowPt1.x - (arrowHeight / 2) - 0.5
             arrowPt2.y = arrowPt1.y + (arrowPt3.y - arrowPt1.y) / 2
         
         End If
         
         'Draw the drop-down arrow *IF* enabled
         If Me.Enabled Then
-            Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
+            Drawing2D.QuickCreateSolidPen cPen, 2!, arrowColor, 100!, P2_LJ_Round, P2_LC_Round
             PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
             PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
         End If
@@ -679,8 +650,8 @@ Private Sub RedrawBackBuffer()
         ' one across the top, the other down the right side.
         Dim ctlRect As RectF
         With ctlRect
-            .Left = 0#
-            .Top = 0#
+            .Left = 0!
+            .Top = 0!
             .Width = bWidth
             .Height = bHeight
         End With
@@ -689,17 +660,17 @@ Private Sub RedrawBackBuffer()
         If Me.Enabled Then
             
             Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
-            cPen.SetPenWidth 1#
+            cPen.SetPenWidth 1!
             cPen.CreatePenFromBrush cBrush
             PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
             
             'For convenience, you can uncomment this line to also paint the bottom boundary of the control.
-            ' I've used this while trying to perfect rendering layouts.
+            ' I used this while perfecting rendering layouts.
             'PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
             
             ctlRect.Top = ctlRect.Top - 1
             ctlRect.Width = ctlRect.Width - 1
-            Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, , , , 270#
+            Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, gradientAngle:=270!
             cPen.CreatePenFromBrush cBrush
             PD2D.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
             
