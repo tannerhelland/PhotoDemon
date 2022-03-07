@@ -260,7 +260,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   1815
       _ExtentX        =   3201
       _ExtentY        =   423
-      Caption         =   "n-d"
+      Caption         =   "layout"
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -384,15 +384,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Primary Toolbar
+'PhotoDemon Primary Toolbox
 'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 15/May/19
-'Last update: new option to "flash" a button when it's selected programmatically.
-'             (The new search bar uses this to let the user know what tool was selected!)
+'Last updated: 06/March/22
+'Last update: rename "non-destructive" tool group to "layout tools"
 '
-'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
-' and all toolbars were moved to their own forms.
+'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind
+' the MDI model, and all toolboxes were moved to their own windows.  This toolbox now manages
+' all on-canvas tools, while also providing shortcuts to open/save/undo/redo tasks.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -737,7 +737,7 @@ Private Sub ReflowToolboxLayout()
     PositionToolLabel 1, cmdFile(FILE_SAVEAS_FLAT), hOffset, vOffset
     ReflowButtonSet 1, False, FILE_UNDO, FILE_REDO, hOffset, vOffset
     
-    'Non-destructive group
+    'Layout group
     PositionToolLabel 2, cmdFile(FILE_REDO), hOffset, vOffset
     ReflowButtonSet 2, True, NAV_DRAG, ND_MEASURE, hOffset, vOffset
     
@@ -860,25 +860,10 @@ Private Sub NewToolSelected()
                 'A selection is already active, and it doesn't match the just-activated selection tool.
                 Else
                     
-                    'TODO: squash composite selections down to a single raster selection.  This frees a lot of RAM
+                    'Squash composite selections down to a single raster selection.  This frees a lot of resources
                     ' and improves selection performance, and if the user switches away from the active selection
                     ' tool it's basically a sign that they're done transforming that active selection.
                     PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
-                    
-'
-'                    'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-'                    If (g_CurrentTool = SELECT_CIRC) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Rectangle) Then
-'                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Circle
-'
-'                        'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
-'                        ' against the current selection's settings.
-'                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-'
-'                    ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
-'                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
-'                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-'
-'                    End If
                     
                     'Release any locked properties (e.g. locked aspect ratio)
                     PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Width
@@ -1341,8 +1326,8 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Title bars first
     ttlCategories(0).AssignTooltip "File tools: create, load, and save image files"
-    ttlCategories(1).AssignTooltip "Undo/Redo tools: revert destructive changes made to an image or layer"
-    ttlCategories(2).AssignTooltip "Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image"
+    ttlCategories(1).AssignTooltip "Undo/Redo tools: revert changes made to an image or layer"
+    ttlCategories(2).AssignTooltip "Layout tools: explore, zoom, move or measure an image or layer"
     ttlCategories(3).AssignTooltip "Select tools: isolate parts of an image or layer for further editing"
     ttlCategories(4).AssignTooltip "Text tools: create and edit text layers"
     ttlCategories(5).AssignTooltip "Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer"
@@ -1366,7 +1351,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdFile(FILE_SAVEAS_LAYERS).AssignTooltip "Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).", "Save lossless copy"
     cmdFile(FILE_SAVEAS_FLAT).AssignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
         
-    'Non-destructive tool buttons are next
+    'Layout tool buttons are next
     Dim shortcutText As String
     shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "H")
     cmdTools(NAV_DRAG).AssignTooltip shortcutText
