@@ -505,7 +505,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Diffuse...", "effects_diffuse", 6, 10, 1
         AddMenuItem "Kuwahara...", "effects_kuwahara", 6, 10, 2
         AddMenuItem "Outline...", "effects_outline", 6, 10, 3
-        AddMenuItem "Palettize...", "effects_palettize", 6, 10, 4
+        AddMenuItem "Palette...", "effects_palette", 6, 10, 4
         AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 10, 5
         AddMenuItem "Solarize...", "effects_solarize", 6, 10, 6
         AddMenuItem "Twins...", "effects_twins", 6, 10, 7

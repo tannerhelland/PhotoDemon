@@ -1075,8 +1075,8 @@ Private Function Launch_ByName_MenuEffects(ByRef srcMenuName As String, Optional
             Case "effects_outline"
                 Process "Outline", True
                 
-            Case "effects_palettize"
-                Process "Palettize", True
+            Case "effects_palette"
+                Process "Palette", True
                 
             Case "effects_portraitglow"
                 Process "Portrait glow", True

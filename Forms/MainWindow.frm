@@ -1422,7 +1422,7 @@ Begin VB.Form FormMain
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Palettize..."
+            Caption         =   "Palette..."
             Index           =   4
          End
          Begin VB.Menu MnuStylize 
@@ -3692,7 +3692,7 @@ Private Sub MnuStylize_Click(Index As Integer)
         Case 3
             Actions.LaunchAction_ByName "effects_outline"
         Case 4
-            Actions.LaunchAction_ByName "effects_palettize"
+            Actions.LaunchAction_ByName "effects_palette"
         Case 5
             Actions.LaunchAction_ByName "effects_portraitglow"
         Case 6

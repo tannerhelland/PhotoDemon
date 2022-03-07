@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPalettize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   Caption         =   " Palettize"
+   Caption         =   " Palette"
    ClientHeight    =   7395
    ClientLeft      =   120
    ClientTop       =   465
@@ -252,7 +252,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'"Palettize" (e.g. reduce image color count) Dialog
+'Palette Map Dialog (aka indexed color, reduce color count)
 'Copyright 2000-2022 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 21/September/21
@@ -360,7 +360,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Palettize", , GetToolParamString, UNDO_Layer
+    Process "Palette", , GetToolParamString, UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
