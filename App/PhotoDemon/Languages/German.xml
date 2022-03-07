@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1291</langversion>
+<langversion>9.0.1301</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -145,7 +145,7 @@
 
 <phrase>
 <original>Fade</original>
-<translation>Fade</translation>
+<translation>Verblassen</translation>
 </phrase>
 
 <phrase>
@@ -595,7 +595,7 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>Weiche Kante auswählen</translation>
+<translation>Weiche Auswahlkante-Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -800,12 +800,12 @@
 
 <phrase>
 <original>Gradient map</original>
-<translation></translation>
+<translation>Gradient-Map</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Palette-Map</translation>
 </phrase>
 
 <phrase>
@@ -1174,8 +1174,8 @@
 </phrase>
 
 <phrase>
-<original>Palettize</original>
-<translation>Palettieren</translation>
+<original>Palette</original>
+<translation>Palette</translation>
 </phrase>
 
 <phrase>
@@ -1513,7 +1513,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Applying %1 filter</original>
-<translation>Anwenden des %1 Filters</translation>
+<translation>Anwenden des Filters %1</translation>
 </phrase>
 
 <phrase>
@@ -1793,7 +1793,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Fade: %1</original>
-<translation>Fade: %1</translation>
+<translation>Verblassen: %1</translation>
 </phrase>
 
 <phrase>
@@ -2757,7 +2757,7 @@ Deskription: %2
 
 <phrase>
 <original>blend mode</original>
-<translation>Überblendungs-Modus</translation>
+<translation>Blend-Mode</translation>
 </phrase>
 
 <phrase>
@@ -3169,17 +3169,17 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Feathering selection</original>
-<translation>Selektion mit weicher Auswahlkante</translation>
+<translation>Weiche Kanten-Auswahl</translation>
 </phrase>
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Weiche Auswahlkante abgeschlossen.</translation>
+<translation>Weiche Kanten abgeschlossen.</translation>
 </phrase>
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>Auswahl wird geschärft</translation>
+<translation>Scharfzeichnen der Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -4768,11 +4768,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Palette</original>
-<translation>Palette</translation>
-</phrase>
-
-<phrase>
 <original>Batch operations</original>
 <translation>Batch-Operationen</translation>
 </phrase>
@@ -4884,7 +4879,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Map photo location</original>
-<translation>Fotoort abbilden</translation>
+<translation>Fotostandort abbilden</translation>
 </phrase>
 
 <phrase>
@@ -5099,7 +5094,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Feather</original>
-<translation>Weiche Kante</translation>
+<translation>Weiche Auswahlkante</translation>
 </phrase>
 
 <phrase>
@@ -5169,7 +5164,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Map</original>
-<translation></translation>
+<translation>Map</translation>
 </phrase>
 
 <phrase>
@@ -5610,7 +5605,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6326,7 +6321,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying gradient map</original>
-<translation></translation>
+<translation>Anwenden der Gradient-Map</translation>
 </phrase>
 
 <!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6729,7 +6724,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Gradient editor</original>
-<translation>Gradienten-Editor</translation>
+<translation>Gradient-Editor</translation>
 </phrase>
 
 <phrase>
@@ -6949,7 +6944,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
-<translation>Verwenden Sie diese Einstellung, um eine gleiche Positionierung für alle Gradienten-Nodes automatisch zu berechnen.</translation>
+<translation>Verwenden Sie diese Einstellung, um eine gleiche Positionierung für alle Gradient-Nodes automatisch zu berechnen.</translation>
 </phrase>
 
 <phrase>
@@ -7221,12 +7216,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation>Sie können die Einstellungen für Sprache und Theme zu jeder Zeit über das Menü Extras ändern.</translation>
+<translation>Sie können die Einstellungen für Sprache und Theme zu jeder Zeit über das Menü "Extras" ändern.</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customizations are available in the Window menu.</original>
-<translation>Additionale Interface-Individualisierungen sind im Menü Fenster verfügbar.</translation>
+<translation>Additionale Interface-Individualisierungen sind im Menü "Fenster" verfügbar.</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -7388,12 +7383,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fading previous action (%1)</original>
-<translation>Fading der vorherigen Aktion (%1)</translation>
+<translation>Verblassen der vorherigen Aktion (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Fade complete.</original>
-<translation>Fade abgeschlossen.</translation>
+<translation>Verblassen abgeschlossen.</translation>
 </phrase>
 
 <!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8626,17 +8621,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation>Energie-Gradienten werden berechnet (Durchlauf %1 von %2)</translation>
+<translation>Energiegradienten werden berechnet (Durchlauf %1 von %2)</translation>
 </phrase>
 
 <phrase>
 <original>4-way cardinal</original>
-<translation>4-Wege Kardinalzahl</translation>
+<translation>4-Wege-Kardinalzahl</translation>
 </phrase>
 
 <phrase>
 <original>4-way ordinal</original>
-<translation>4-Wege Ordinalzahl</translation>
+<translation>4-Wege-Ordinalzahl</translation>
 </phrase>
 
 <phrase>
@@ -8900,7 +8895,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color fade</original>
-<translation>Farb-Fade</translation>
+<translation>Farbe verblassen</translation>
 </phrase>
 
 <phrase>
@@ -8910,7 +8905,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fade edges</original>
-<translation>Fade-Kanten</translation>
+<translation>Kanten verblassen</translation>
 </phrase>
 
 <phrase>
@@ -11210,7 +11205,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>flatten behavior</original>
-<translation>Verhalten bei: Auf Hintergrund-Layer reduzieren</translation>
+<translation>Verhalten: Auf Hintergrund-Layer reduzieren</translation>
 </phrase>
 
 <phrase>
@@ -11282,7 +11277,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>close images normally (prompt for unsaved changes)</original>
-<translation>Bilder normal schließen (Aufforderung bei ungesicherten Änderungen)</translation>
+<translation>Bilder normal schließen (Aufforderung für ungesicherte Änderungen)</translation>
 </phrase>
 
 <phrase>
@@ -11354,7 +11349,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>blend</original>
-<translation>Überblenden</translation>
+<translation>Blend-Mode</translation>
 </phrase>
 
 <phrase>
@@ -11463,8 +11458,8 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>n-d</original>
-<translation>Nicht-destruktiv (n-d)</translation>
+<original>layout</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11488,13 +11483,13 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Rückgängigmachen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder einem Layer vorgenommene destruktive Änderungen um.</translation>
+<original>Undo/Redo tools: revert changes made to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Nicht-destruktive (n-d) Tools: Verschieben, drehen oder wenden Sie bestimmte Fotoanpassungen an - ohne permanente Modifizierung eines Bildes.</translation>
+<original>Layout tools: explore, zoom, move or measure an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11766,7 +11761,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>sample from</original>
-<translation></translation>
+<translation>Sample aus</translation>
 </phrase>
 
 <phrase>
@@ -12038,7 +12033,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>sample selections from</original>
-<translation></translation>
+<translation>Sample-Selektionen aus</translation>
 </phrase>
 
 <phrase>
@@ -12169,7 +12164,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>feathered</original>
-<translation>Mit weicher Kante</translation>
+<translation>Mit weichen Kanten</translation>
 </phrase>
 
 <phrase>
@@ -12194,12 +12189,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
-<translation>Diese Option steuert, wie weich eine Auswahl sich mit deren Umgebung vermischt.</translation>
+<translation>Diese Option steuert, wie glatt Selektionskanten mit deren Umgebung verschmelzen.</translation>
 </phrase>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation>Diese Optionen steuern, den durch eine Auswahl beeinflussten Bereich. Die Auswahl kann auf Leinwand modifiziert werden, während jegliche dieser Einstellungen aktiv sind. Für erweiterte Auswahlanpassungen verwenden Sie das Auswahlmenü.</translation>
+<translation>Selektionen wählen normalerweise den Bereich innerhalb ihrer Grenzen aus, aber Sie können dieses Verhalten hier modifizieren. (Für erweiterte Anpassungen des Auswahlbereiches verwenden Sie das Menü "Auswahl".)</translation>
 </phrase>
 
 <phrase>
@@ -12209,7 +12204,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Dieser "Weiche Auswahlkante"-Schieberegler erlaubt unmittelbare Anpassungen der weichen Auswahlkante. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere Radien verwenden Sie bitte das Menü "Auswahl > Weiche Auswahlkante".</translation>
+<translation>Dieser "Weiche Kanten"-Schieberegler erlaubt unmittelbare Anpassungen der weichen Kanten. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere weiche Kanten-Radien verwenden Sie bitte das Menü "Auswahl > Weiche Kanten".</translation>
 </phrase>
 
 <phrase>
@@ -13745,10 +13740,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2599</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11780 total words. -->
+<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
+<!-- These 2599 phrases contain approximately 11775 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.530</langversion>
+<langversion>6.6.531</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1179,8 +1179,8 @@
 </phrase>
 
 <phrase>
-<original>Palettize</original>
-<translation>Pikirkan Ulang</translation>
+<original>Palette</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4766,11 +4766,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Batch operations</original>
 <translation>Operasi batch</translation>
 </phrase>
@@ -5608,7 +5603,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -11463,8 +11458,8 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>n-d</original>
-<translation>n-d</translation>
+<original>layout</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11488,13 +11483,13 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Membuka</translation>
+<original>Undo/Redo tools: revert changes made to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Alat yang tidak merusak: memindahkan, memutar, atau menerapkan penyesuaian foto tertentu tanpa memodifikasi gambar secara permanen</translation>
+<original>Layout tools: explore, zoom, move or measure an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13745,10 +13740,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2599</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11780 total words. -->
+<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
+<!-- These 2599 phrases contain approximately 11775 total words. -->
 
 </pdData>

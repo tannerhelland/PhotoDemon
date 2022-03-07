@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.82</langversion>
+<langversion>8.0.83</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -1174,8 +1174,8 @@
 </phrase>
 
 <phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
+<original>Palette</original>
+<translation>Paletta</translation>
 </phrase>
 
 <phrase>
@@ -4764,11 +4764,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Palette</original>
-<translation>Paletta</translation>
-</phrase>
-
-<phrase>
 <original>Batch operations</original>
 <translation>Operazioni in lotti</translation>
 </phrase>
@@ -5606,7 +5601,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -11470,8 +11465,8 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>n-d</original>
-<translation>visionare</translation>
+<original>layout</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11495,13 +11490,13 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Strumenti UndoRedo: ripristinare le modifiche distruttive apportate a un'immagine o a un livello</translation>
+<original>Undo/Redo tools: revert changes made to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Strumenti non distruttivi: spostare, ruotare o applicare determinate regolazioni fotografiche senza modificare permanentemente un'immagine</translation>
+<original>Layout tools: explore, zoom, move or measure an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13752,10 +13747,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2599</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11780 total words. -->
+<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
+<!-- These 2599 phrases contain approximately 11775 total words. -->
 
 </pdData>

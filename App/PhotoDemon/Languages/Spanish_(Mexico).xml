@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.89</langversion>
+<langversion>8.0.90</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -1174,8 +1174,8 @@
 </phrase>
 
 <phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
+<original>Palette</original>
+<translation>Paleta</translation>
 </phrase>
 
 <phrase>
@@ -4760,11 +4760,6 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Palette</original>
-<translation>Paleta</translation>
-</phrase>
-
-<phrase>
 <original>Batch operations</original>
 <translation>Operaciones por lotes</translation>
 </phrase>
@@ -5602,7 +5597,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -11457,8 +11452,8 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>n-d</original>
-<translation>n-d</translation>
+<original>layout</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11482,13 +11477,13 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Herramientas de Deshacer: revertir los cambios destructivos hechos a una imagen o capa</translation>
+<original>Undo/Redo tools: revert changes made to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Herramientas no destructivas: mover, rotar o aplicar ciertos ajustes de la foto sin modificar permanentemente una imagen</translation>
+<original>Layout tools: explore, zoom, move or measure an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13739,10 +13734,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2599</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11780 total words. -->
+<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
+<!-- These 2599 phrases contain approximately 11775 total words. -->
 
 </pdData>

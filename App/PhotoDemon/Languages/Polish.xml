@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.91</langversion>
+<langversion>8.0.92</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -1174,8 +1174,8 @@
 </phrase>
 
 <phrase>
-<original>Palettize</original>
-<translation>Paletyzacja</translation>
+<original>Palette</original>
+<translation>Paleta</translation>
 </phrase>
 
 <phrase>
@@ -4760,11 +4760,6 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
-<original>Palette</original>
-<translation>Paleta</translation>
-</phrase>
-
-<phrase>
 <original>Batch operations</original>
 <translation>Operacje wsadowe</translation>
 </phrase>
@@ -5599,7 +5594,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 202 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -11459,8 +11454,8 @@ pliku nie zostaną zmodyfikowane.</translation>
 </phrase>
 
 <phrase>
-<original>n-d</original>
-<translation>Narzędzia</translation>
+<original>layout</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11484,13 +11479,13 @@ pliku nie zostaną zmodyfikowane.</translation>
 </phrase>
 
 <phrase>
-<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Narzędzia Cofnij/Ponów: przywracanie destrukcyjnych zmian wprowadzonych do obrazu lub warstwy</translation>
+<original>Undo/Redo tools: revert changes made to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Narzędzia niedestrukcyjne: przenoszenie, obrót lub korekcja zdjęć bez trwałej modyfikacji obrazu</translation>
+<original>Layout tools: explore, zoom, move or measure an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13736,10 +13731,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2599</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2793 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11780 total words. -->
+<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
+<!-- These 2599 phrases contain approximately 11775 total words. -->
 
 </pdData>
