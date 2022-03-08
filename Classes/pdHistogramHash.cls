@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2022-2022 by Tanner Helland
 'Created: 07/March/22
 'Last updated: 08/March/22
-'Last update: wrap up initial build
+'Last update: add dynamic resizing if/when overflow table overflows
 '
 'A number of RGB/A-based image processing functions can be accelerated using histograms.
 ' For RGB images, a naive 16-million-color array can be used to track unique colors, but this
@@ -32,11 +32,14 @@ Attribute VB_Exposed = False
 '
 'Collisions are resolved using linked list indices into a dedicated overflow array.  This works well
 ' for cache locality but is relatively naive in implementation - a perf-friendly trade-off for
-' VB6 implementations, generally speaking.
+' most VB6 implementations, generally speaking.
 '
-'Note also that this class does *not* currently dynamically resize the hash table.  It uses a
-' fixed size based on average photo color counts.  Dynamic resizing could be helpful on extreme
-' outliers and I may tackle this someday.
+'This class will dynamically resize the hash table whenever the overflow table fills. By default,
+' the overflow table is set to the same size as the hash table, which means that when the overflow
+' fills and a resize is triggered, both the hash table *and* the overflow table will double in size.
+' Powers-of-two are used for table size.  This is not ideal from a hashing standpoint (primes hash
+' better) but it's a great fit for VB because we can use simple AND masks for table assignment,
+' improving performance further.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -52,24 +55,30 @@ Private Type MergedEntry
     idxNext As Long     'Index to the next entry in the list (always in the overflow table)
 End Type
 
-'Initial hash table, fixed size.  64k is effectively arbitrary; it's a decent starting size for
-' average RGBA images.
-Private Const HASH_TABLE_MASK As Long = &HFFFF&
-Private m_hashTable(0 To 65535) As MergedEntry
+'Initial table size is effectively arbitrary.  65k entries at 12-bytes-per-entry is about
+' ~1.5 MB of space, which is a good compromise between tiny images (which won't need that
+' much space) and extremely color-dense images (which will only need to resize the table
+' a handful of times).
+Private Const INIT_TABLE_SIZE As Long = 2 ^ 16
+
+'Hash table and mask that lets us map into the table.  Mask must always be of the form 2^n-1.
+' (A new mask must be generated whenever the table is resized.)
+Private HASH_TABLE_MASK As Long
+Private m_hashTable() As MergedEntry
 
 'Hash collisons are resolved by placement into an overflow table, which expands linearly.
-' Initial size is arbitrary; resizes are expensive so we try to minimize resize attempts,
-' but note that each entry is 12-bytes long so we don't want to make it *too* large.
-Private Const INIT_OVERFLOW_SIZE As Long = 65536
-Private m_OverflowTable() As MergedEntry
+' The overflow table size is currently set to always match the size of the hash table;
+' this simplifies resize operations, and lends itself to good table coverage.
+Private m_overflowTable() As MergedEntry
 
 'Current index into the next available position in the overflow table.
 Private m_idxOverflow As Long
 
-Friend Sub AddColor(ByVal srcColor As Long)
+Friend Sub AddColor(ByVal srcColor As Long, Optional ByVal srcColorCount As Long = 1)
     
     'Generate a (very cheap) hash for the incoming color.  This formula deliberately weights
-    ' alpha less than RGB values (2 ^ 9, 2 ^ 25) and performs very well on small images
+    ' alpha less than RGB values (2 ^ 9, 2 ^ 25) and typically results in ~80% hash table
+    ' coverage before a resize is required.
     Dim idxTable As Long
     idxTable = srcColor Xor (srcColor \ 512) Xor (srcColor \ 33554432)
     idxTable = idxTable And HASH_TABLE_MASK
@@ -80,7 +89,7 @@ Friend Sub AddColor(ByVal srcColor As Long)
         'Empty table position; initialize against this color
         With m_hashTable(idxTable)
             .hstColor = srcColor
-            .hstCount = 1
+            .hstCount = srcColorCount
         End With
     
     'Table position occupied
@@ -90,7 +99,7 @@ Friend Sub AddColor(ByVal srcColor As Long)
         If (m_hashTable(idxTable).hstColor = srcColor) Then
         
             'Match!  Increment count and exit
-            m_hashTable(idxTable).hstCount = m_hashTable(idxTable).hstCount + 1
+            m_hashTable(idxTable).hstCount = m_hashTable(idxTable).hstCount + srcColorCount
             
         'Color mismatch
         Else
@@ -103,10 +112,10 @@ Friend Sub AddColor(ByVal srcColor As Long)
                 
                 'Place this color as a new entry in the overflow table.
                 m_hashTable(idxTable).idxNext = m_idxOverflow
-                If (m_idxOverflow > UBound(m_OverflowTable)) Then ReDim Preserve m_OverflowTable(0 To m_idxOverflow * 2 - 1) As MergedEntry
-                m_OverflowTable(m_idxOverflow).hstColor = srcColor
-                m_OverflowTable(m_idxOverflow).hstCount = 1
+                m_overflowTable(m_idxOverflow).hstColor = srcColor
+                m_overflowTable(m_idxOverflow).hstCount = srcColorCount
                 m_idxOverflow = m_idxOverflow + 1
+                If (m_idxOverflow > UBound(m_overflowTable)) Then IncreaseTableSize
                 
             Else
             
@@ -115,34 +124,31 @@ Friend Sub AddColor(ByVal srcColor As Long)
                 
                 Do
                     
-                    If (m_OverflowTable(idxTable).hstColor = srcColor) Then
+                    If (m_overflowTable(idxTable).hstColor = srcColor) Then
                         
                         'Colors match!  Increment count and exit
-                        m_OverflowTable(idxTable).hstCount = m_OverflowTable(idxTable).hstCount + 1
+                        m_overflowTable(idxTable).hstCount = m_overflowTable(idxTable).hstCount + srcColorCount
                         Exit Sub
                         
                     Else
                         
                         'If this is the end of the linked list, add this entry to the table
-                        If (m_OverflowTable(idxTable).idxNext = 0) Then
-                            m_OverflowTable(idxTable).idxNext = m_idxOverflow
-                            If (m_idxOverflow > UBound(m_OverflowTable)) Then ReDim Preserve m_OverflowTable(0 To m_idxOverflow * 2 - 1) As MergedEntry
-                            m_OverflowTable(m_idxOverflow).hstColor = srcColor
-                            m_OverflowTable(m_idxOverflow).hstCount = 1
+                        If (m_overflowTable(idxTable).idxNext = 0) Then
+                            m_overflowTable(idxTable).idxNext = m_idxOverflow
+                            m_overflowTable(m_idxOverflow).hstColor = srcColor
+                            m_overflowTable(m_idxOverflow).hstCount = srcColorCount
                             m_idxOverflow = m_idxOverflow + 1
+                            If (m_idxOverflow > UBound(m_overflowTable)) Then IncreaseTableSize
                             Exit Sub
                         
                         'More colors to probe; reassign the table index, and let the loop continue naturally
                         Else
-                            idxTable = m_OverflowTable(idxTable).idxNext
+                            idxTable = m_overflowTable(idxTable).idxNext
                         End If
                     
                     End If
                     
                 Loop
-                
-                'NOP - the loop is guaranteed to terminate internally, so this line should never trigger
-                Exit Sub
                 
             End If
             
@@ -198,8 +204,8 @@ Friend Function GetUniqueColors(ByRef dstQuadArray() As RGBQuad, dstCounts() As 
     Next i
     
     For i = 0 To m_idxOverflow - 2
-        fakeLongArray(idxDst) = m_OverflowTable(i).hstColor
-        dstCounts(idxDst) = m_OverflowTable(i).hstCount
+        fakeLongArray(idxDst) = m_overflowTable(i).hstColor
+        dstCounts(idxDst) = m_overflowTable(i).hstCount
         idxDst = idxDst + 1
     Next i
     
@@ -208,9 +214,50 @@ Friend Function GetUniqueColors(ByRef dstQuadArray() As RGBQuad, dstCounts() As 
     
 End Function
 
+'This function imposes a large performance penalty.  *Please* call it sparingly!
+Private Sub IncreaseTableSize()
+    
+    'If we're here, it means we've run out of space in the overflow table.
+    ' (In the current implementation, the hash and overflow tables are always identically sized.
+    '  If the overflow table overflows, we double the size of *both* the hash table and the
+    '  overflow table, then re-add all existing elements.)
+    
+    'Start by backing up the existing hash tables into temporary arrays
+    Dim tmpHash() As MergedEntry, tmpOverflow() As MergedEntry
+    ReDim tmpHash(0 To UBound(m_hashTable)) As MergedEntry
+    ReDim tmpOverflow(0 To UBound(m_overflowTable)) As MergedEntry
+    CopyMemoryStrict VarPtr(tmpHash(0)), VarPtr(m_hashTable(0)), (UBound(m_hashTable) + 1) * 12
+    CopyMemoryStrict VarPtr(tmpOverflow(0)), VarPtr(m_overflowTable(0)), (UBound(m_overflowTable) + 1) * 12
+    
+    'Calculate new table sizes, then increase the main hash and overflow tables to match
+    Dim newTableSize As Long
+    newTableSize = (HASH_TABLE_MASK + 1) * 2
+    HASH_TABLE_MASK = newTableSize - 1
+    
+    ReDim m_hashTable(0 To newTableSize - 1) As MergedEntry
+    ReDim m_overflowTable(0 To newTableSize - 1) As MergedEntry
+    
+    'Re-add all items to the new, larger hash table
+    Dim i As Long
+    For i = 0 To UBound(tmpHash)
+        If (tmpHash(i).hstCount > 0) Then Me.AddColor tmpHash(i).hstColor, tmpHash(i).hstCount
+    Next i
+    
+    'By definition, the overflow table was full prior to this resize, so we don't need to check for
+    ' non-zero count values. (Note also that we start at position 1 because 0 is a reserved value
+    ' indicating "no linked entry".)
+    For i = 1 To UBound(tmpOverflow)
+        Me.AddColor tmpOverflow(i).hstColor, tmpOverflow(i).hstCount
+    Next i
+    
+End Sub
+
 Private Sub Class_Initialize()
     
-    ReDim m_OverflowTable(0 To INIT_OVERFLOW_SIZE - 1) As MergedEntry
+    'Create the initial table(s) and bit-mask
+    ReDim m_hashTable(0 To INIT_TABLE_SIZE - 1) As MergedEntry
+    ReDim m_overflowTable(0 To INIT_TABLE_SIZE - 1) As MergedEntry
+    HASH_TABLE_MASK = INIT_TABLE_SIZE - 1
     
     '0 is used to denote "no children", so ensure the overflow index starts at 1
     m_idxOverflow = 1

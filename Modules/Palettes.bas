@@ -517,6 +517,7 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ' to the median cut object.
     Dim listOfPixels() As RGBQuad, pixelCounts() As Long, numPixels As Long
     numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    Set pxHist = Nothing
     pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
@@ -664,6 +665,7 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     ' to the median cut object.
     Dim listOfPixels() As RGBQuad, pixelCounts() As Long, numPixels As Long
     numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    Set pxHist = Nothing
     pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
@@ -841,6 +843,7 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
     ' to the median cut object.
     Dim listOfPixels() As RGBQuad, pixelCounts() As Long
     numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    Set pxHist = Nothing
     pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
