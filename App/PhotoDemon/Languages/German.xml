@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1301</langversion>
+<langversion>9.0.1308</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -75,7 +75,7 @@
 
 <phrase>
 <original>Revert</original>
-<translation>Umkehren</translation>
+<translation>Zurückkehren</translation>
 </phrase>
 
 <phrase>
@@ -3475,7 +3475,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Neue Einstellungen für dieses Tool zufällig auswählen. Das hilft Ihnen herauszufinden, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
+<translation>Neue Einstellungen für dieses Tool zufällig auswählen. Dies ist hilfreich, um zu explorieren, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
 </phrase>
 
 <phrase>
@@ -4514,7 +4514,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Die finalen Breiten- und Höhenmaße müssen zwischen 1 und S32760 Pixel liegen.</translation>
+<translation>Die finalen Maße für Breite und Höhe müssen zwischen 1 und S32760 Pixel liegen.</translation>
 </phrase>
 
 <phrase>
@@ -4644,7 +4644,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation>"%1" erzeugt ein Resultat außerhalb des Bereiches (%2).
+<translation>"%1" produziert ein Resultat außerhalb des Bereiches (%2).
 Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
@@ -6343,7 +6343,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können das Menü "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
+<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild produzieren. Sie können das Menü "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8386,7 +8386,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>sample radius</original>
-<translation>Radius samplen</translation>
+<translation>Sample-Radius</translation>
 </phrase>
 
 <phrase>
@@ -10555,32 +10555,32 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>single filter: none</original>
-<translation>Einzelner Filter: Keine</translation>
+<translation>Single Filter: None</translation>
 </phrase>
 
 <phrase>
 <original>single filter: sub</original>
-<translation>Einzelner Filter: Sub</translation>
+<translation>Single Filter: Sub</translation>
 </phrase>
 
 <phrase>
 <original>single filter: up</original>
-<translation>Einzelner Filter: Up</translation>
+<translation>Single Filter: Up</translation>
 </phrase>
 
 <phrase>
 <original>single filter: average</original>
-<translation>Einzelner Filter: Durchschnitt</translation>
+<translation>Single Filter: Average</translation>
 </phrase>
 
 <phrase>
 <original>single filter: paeth</original>
-<translation>Einzelner Filter: Pfad</translation>
+<translation>Single Filter: (Alan W.) Paeth</translation>
 </phrase>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl erzeugt eine bessere Kompression. Verwenden Sie die automatische Einstellung, um PhotoDemon multiple Strategien testen zu lassen, und wählen Sie automatisch diejenige aus, die die beste Kompression erzeugt.</translation>
+<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl produziert eine bessere Kompression. Verwenden Sie die automatische Einstellung, um PhotoDemon multiple Strategien testen zu lassen, und wählen Sie automatisch diejenige aus, die die beste Kompression produziert.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -10975,7 +10975,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, aber diese können überschrieben werden, um eine gültige Bilddatei zu erzeugen.</translation>
+<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, aber diese können überschrieben werden, um eine gültige Bilddatei zu produzieren.</translation>
 </phrase>
 
 <phrase>
@@ -11459,7 +11459,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>layout</original>
-<translation></translation>
+<translation>Layout</translation>
 </phrase>
 
 <phrase>
@@ -11479,32 +11479,32 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Datei-Tools: Erstellen, laden und speichern Sie Bilddateien.</translation>
+<translation>Datei-Tools: Erstellen, laden und speichern Sie Bilddateien</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>Rückgängigmachen/Wiederherstellen- (Undo/Redo-) Tools: Nehmen Sie an einem Bild oder Layer vorgenommene Änderungen zurück</translation>
 </phrase>
 
 <phrase>
 <original>Layout tools: explore, zoom, move or measure an image or layer</original>
-<translation></translation>
+<translation>Layout-Tools: Explorieren, zoomen, verschieben oder messen Sie ein Bild oder einen Layer</translation>
 </phrase>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation>Auswählen-Tools: Isolieren Sie Teile eines Bildes oder eines Layers zur weiteren Bearbeitung.</translation>
+<translation>Auswahl-Tools: Isolieren Sie Teile eines Bildes oder Layers zur weiteren Bearbeitung</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation>Text-Tools: Erstellen und bearbeiten Sie Text-Layer.</translation>
+<translation>Text-Tools: Erstellen und bearbeiten Sie Text-Layer</translation>
 </phrase>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation>Paint-Tools: Verwenden Sie eine Maus, ein Touchpad oder Stifttablett, um Pinselstriche auf ein Bild oder einen Layer anzuwenden.</translation>
+<translation>Paint-Tools: Verwenden Sie eine Maus, ein Touchpad oder Stifttablett, um Pinselstriche auf ein Bild oder einen Layer anzuwenden</translation>
 </phrase>
 
 <phrase>
@@ -11689,7 +11689,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Measure tool</original>
-<translation>Maß-Tool</translation>
+<translation>Messen-Tool</translation>
 </phrase>
 
 <phrase>
@@ -11761,7 +11761,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>sample from</original>
-<translation>Sample aus</translation>
+<translation>Samplen aus</translation>
 </phrase>
 
 <phrase>
@@ -11823,7 +11823,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>return to previous tool</original>
-<translation>Zu vorherigem Tool zurükckkehren</translation>
+<translation>Zu vorherigem Tool zurückkehren</translation>
 </phrase>
 
 <phrase>
@@ -11946,7 +11946,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>modify measurement</original>
-<translation></translation>
+<translation>Maß modifizieren</translation>
 </phrase>
 
 <phrase>
@@ -11981,7 +11981,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>use measurement to</original>
-<translation></translation>
+<translation>Maß verwenden für</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12033,7 +12033,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>sample selections from</original>
-<translation>Sample-Selektionen aus</translation>
+<translation>Selektionen samplen aus</translation>
 </phrase>
 
 <phrase>
@@ -12756,7 +12756,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>When you are finished editing this language, please consider sharing it!  Contact me by visiting</original>
-<translation>Wenn Sie mit der Bearbeitung dieser Sprache fertig sind, erwägen Sie bitte, diese mit anderen zu teilen! Kontaktieren Sie mich durch Besuch unter</translation>
+<translation>Wenn Sie mit der Bearbeitung dieser Sprache fertig sind, erwägen Sie bitte, diese zu teilen (Sharing)! Nehmen Sie Kontakt mit mir auf</translation>
 </phrase>
 
 <phrase>
@@ -13000,7 +13000,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>Rückgängigmachen-/Wiederherstellen-Daten auf dem folgenden Level komprimieren</translation>
+<translation>Rückgängigmachen/Wiederherstellen-Daten auf dem folgenden Level komprimieren</translation>
 </phrase>
 
 <phrase>
@@ -13035,7 +13035,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>undo/redo</original>
-<translation>Rückgängig/Wiederherstellen</translation>
+<translation>Rückgängigmachen/Wiederherstellen</translation>
 </phrase>
 
 <phrase>
@@ -13384,7 +13384,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Niedrige Kompressionseinstellungen erfordern mehr Speicherplatz, aber Rückgängigmachen-/Wiederherstellen-Operationen sind schneller. Hohe Kompressionseinstellungen erfordern weniger Speicherplatz, aber Rückgängigmachen-/Wiederherstellen-Operationen werden langsamer sein. Rückgängigmachen-Daten werden beim Schließen von Bildern gelöscht, so wirkt sich diese Einstellung nur auf den Speicherplatz aus, während BIlder aktiv bearbeitet werden.</translation>
+<translation>Niedrige Kompressionseinstellungen erfordern mehr Speicherplatz, aber Rückgängigmachen/Wiederherstellen-Operationen sind schneller. Hohe Kompressionseinstellungen erfordern weniger Speicherplatz, aber Rückgängigmachen/Wiederherstellen-Operationen werden langsamer sein. Rückgängigmachen-Daten werden beim Schließen von Bildern gelöscht, so wirkt sich diese Einstellung nur auf den Speicherplatz aus, während BIlder aktiv bearbeitet werden.</translation>
 </phrase>
 
 <phrase>
