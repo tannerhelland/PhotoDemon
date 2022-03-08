@@ -3,9 +3,8 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Central Palette Interface
 'Copyright 2017-2022 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 18/November/21
-'Last update: new GetOptimizedPaletteIncAlpha_AllLayers() function, which builds a palette across
-'             multiple image layers (used by an experimental lossy APNG encoder)
+'Last updated: 08/March/22
+'Last update: use new pdHistogramHash class to greatly accelerate median cut palette generation
 '
 'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary
 ' source images, and also applying arbitrary palettes to images.
@@ -486,13 +485,22 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ' that's a good compromise between performance and quality.
     pxStack(0).SetQuantizeMode quantMode
     
-    Dim srcPixels() As RGBQuad, tmpSA As SafeArray1D, tmpQuad As RGBQuad
+    'To improve performance further, we start by assembling an RGBA histogram of each color in the image.
+    ' Most photos contain only a small subset of colors (typical color count is < 10k colors per megapixel,
+    ' so < 200k colors for a 20mp photo), so we are likely to see many repeat color entries.  By merging
+    ' repeat color instances into a single "color + occurrence count" value, we greatly trim the size of
+    ' the final color tree, which makes pruning it *significantly* faster.  For example, on a 20-megapixel
+    ' RGBA image with variable transparency, this technique cuts running time of this function by ~60-70%.
+    Dim pxHist As pdHistogramHash
+    Set pxHist = New pdHistogramHash
+    
+    'Add all colors to the histogram
+    Dim srcPixels() As Long, tmpSA As SafeArray1D
     
     For y = 0 To finalY
-        srcDIB.WrapRGBQuadArrayAroundScanline srcPixels, tmpSA, y
+        srcDIB.WrapLongArrayAroundScanline srcPixels, tmpSA, y
     For x = 0 To finalX
-        tmpQuad = srcPixels(x)
-        pxStack(0).AddColor_RGB tmpQuad.Red, tmpQuad.Green, tmpQuad.Blue
+        pxHist.AddColor srcPixels(x) Or &HFF000000
     Next x
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
@@ -502,7 +510,14 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         End If
     Next y
     
-    srcDIB.UnwrapRGBQuadArrayFromDIB srcPixels
+    'Direct pixel access is no longer required; safely free the unsafe pixel wrapper
+    srcDIB.UnwrapLongArrayFromDIB srcPixels
+    
+    'Next, retrieve the list of unique colors (and their counts), and bulk-add all of those colors
+    ' to the median cut object.
+    Dim listOfPixels() As RGBQuad, pixelCounts() As Long, numPixels As Long
+    numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
     If (pxStack(0).GetNumOfColors > numOfColors) Then
@@ -585,24 +600,19 @@ End Function
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.
 '
-'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
-' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
-' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~500,000 pixels.
+'Because palette generation is a time-consuming task, you can save some time by shrinking the source image
+' prior to quantizing.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
+' resizes an image to a target pixel count, and generally speaking, resizing down to ~500,000 pixels rarely
+' affects image quality (but can greatly increase quantization perf).
 Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
     
-    Dim srcPixels() As Byte, tmpSA As SafeArray2D
-    srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
-    
-    Dim pxSize As Long
-    pxSize = srcDIB.GetDIBColorDepth \ 8
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.GetDIBStride - 1
+    finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
@@ -622,32 +632,22 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     ' that's a good compromise between performance and quality.
     pxStack(0).SetQuantizeMode quantMode
     
-    Dim r As Long, g As Long, b As Long, a As Long
+    'To improve performance further, we start by assembling an RGBA histogram of each color in the image.
+    ' Most photos contain only a small subset of colors (typical color count is < 10k colors per megapixel,
+    ' so < 200k colors for a 20mp photo), so we are likely to see many repeat color entries.  By merging
+    ' repeat color instances into a single "color + occurrence count" value, we greatly trim the size of
+    ' the final color tree, which makes pruning it *significantly* faster.  For example, on a 20-megapixel
+    ' RGBA image with variable transparency, this technique cuts running time of this function by ~60-70%.
+    Dim pxHist As pdHistogramHash
+    Set pxHist = New pdHistogramHash
+    
+    'Add all colors to the histogram
+    Dim srcPixels() As Long, tmpSA As SafeArray1D
     
     For y = 0 To finalY
-    For x = 0 To finalX Step pxSize
-        
-        b = srcPixels(x, y)
-        g = srcPixels(x + 1, y)
-        r = srcPixels(x + 2, y)
-        a = srcPixels(x + 3, y)
-        
-        'If you want to apply any heuristics to pre-reduce RGBA complexity, this is the place to do it.
-        ' At present, we primarily reduce the complexity of alpha bytes; they tend to not influence
-        ' final image appearance nearly as much as RGB data, so we can pre-filter alpha into set
-        ' groups to minimize how much it impacts color tree complexity.
-        
-        'Reduce very low-opacity values to zero, and note that we must supply premultiplied values
-        ' as RGBA matching works *way* better with premultiplied data
-        If (a < 8) Then
-            r = 0
-            g = 0
-            b = 0
-            a = 0
-        End If
-        
-        pxStack(0).AddColor_RGBA r, g, b, a
-        
+        srcDIB.WrapLongArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX
+        pxHist.AddColor srcPixels(x)
     Next x
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
@@ -657,7 +657,14 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
         End If
     Next y
     
-    srcDIB.UnwrapArrayFromDIB srcPixels
+    'Direct pixel access is no longer required; safely free the unsafe pixel wrapper
+    srcDIB.UnwrapLongArrayFromDIB srcPixels
+    
+    'Next, retrieve the list of unique colors (and their counts), and bulk-add all of those colors
+    ' to the median cut object.
+    Dim listOfPixels() As RGBQuad, pixelCounts() As Long, numPixels As Long
+    numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
     
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
     If (pxStack(0).GetNumOfColors > numOfColors) Then
@@ -746,13 +753,14 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     
 End Function
 
-'Given a source pdImage, an (empty) destination palette array, and a color count, return an optimized palette using
-' all source layers from the source pdImage as the reference.  A modified median-cut system is used, and it achieves
-' a nice combination of performance, low memory usage, and high-quality output.
+'Given a source pdImage, an (empty) destination palette array, and a color count, return an optimized palette
+' using *ALL* source layers from the source pdImage.  A modified median-cut system is used, and it achieves
+' a great combination of performance, low memory usage, and high-quality output.
 '
-'Because palette generation is a time-consuming task, I'll probably want to add some element of random sampling to
-' this function (or reduce each layer to some subset of its original size).  There's not a lot of research on the
-' ideal values to use here, so any existing code is based on my best guesses rather than an empirical study.
+'Because palette generation is a time-consuming task, you might consider implementing some element of
+' random sampling here (or alternatively, reducing each layer to some subset of its original size).
+' The hard thing with this is that there's not exactly a ton of research on the ideal values to use here,
+' so any existing code is based on my best guesses rather than an empirical study.
 Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Failsafe checks
@@ -769,7 +777,6 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
-    Dim srcPixels() As Byte, tmpSA As SafeArray1D
     Dim tmpDIB As pdDIB
     
     Const MAX_PIXELS_PER_LAYER As Long = 50000
@@ -784,6 +791,18 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
     ' that's a good compromise between performance and quality.
     pxStack(0).SetQuantizeMode quantMode
     
+    'To improve performance further, we start by assembling an RGBA histogram of each color in the image.
+    ' Most photos contain only a small subset of colors (typical color count is < 10k colors per megapixel,
+    ' so < 200k colors for a 20mp photo), so we are likely to see many repeat color entries.  By merging
+    ' repeat color instances into a single "color + occurrence count" value, we greatly trim the size of
+    ' the final color tree, which makes pruning it *significantly* faster.  For example, on a 20-megapixel
+    ' RGBA image with variable transparency, this technique cuts running time of this function by ~60-70%.
+    Dim pxHist As pdHistogramHash
+    Set pxHist = New pdHistogramHash
+    
+    'Add all colors to the histogram
+    Dim srcPixels() As Long, tmpSA As SafeArray1D
+    
     'Add all pixels from every layer to a base color stack
     Dim i As Long
     For i = 0 To srcImage.GetNumOfLayers - 1
@@ -792,45 +811,22 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
         If DIBs.ResizeDIBByPixelCount(srcImage.GetLayerByIndex(i).layerDIB, tmpDIB, MAX_PIXELS_PER_LAYER) Then
         
             'Wrap an array around the temporary DIB copy
-            tmpDIB.WrapArrayAroundDIB_1D srcPixels, tmpSA
+            tmpDIB.WrapLongArrayAroundDIB_1D srcPixels, tmpSA
             
-            Dim numBytes As Long
-            numBytes = tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight
-            
-            Dim r As Long, g As Long, b As Long, a As Long
+            Dim numPixels As Long
+            numPixels = (tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight) - 1
             
             'Load all pixels into the median cut object
             Dim x As Long
-            For x = 0 To (numBytes - 1) Step 4
-                
-                b = srcPixels(x)
-                g = srcPixels(x + 1)
-                r = srcPixels(x + 2)
-                a = srcPixels(x + 3)
-                
-                'If you want to apply any heuristics to pre-reduce RGBA complexity, this is the place to do it.
-                ' At present, we primarily reduce the complexity of alpha bytes; they tend to not influence
-                ' final image appearance nearly as much as RGB data, so we can pre-filter alpha into set
-                ' groups to minimize how much it impacts color tree complexity.
-                
-                'Reduce very low-opacity values to zero, and note that we must supply premultiplied values
-                ' as RGBA matching works *way* better with premultiplied data
-                If (a < 8) Then
-                    r = 0
-                    g = 0
-                    b = 0
-                    a = 0
-                End If
-                
-                pxStack(0).AddColor_RGBA r, g, b, a
-                
+            For x = 0 To numPixels
+                pxHist.AddColor srcPixels(x)
             Next x
             
             'Ensure we safely unwrap the array wrapper from each layer
-            tmpDIB.UnwrapArrayFromDIB srcPixels
+            tmpDIB.UnwrapLongArrayFromDIB srcPixels
             
         End If
-    
+        
         'Update progress bar on each completed layer
         If (Not suppressMessages) Then
             If (i And progBarCheck) = 0 Then
@@ -841,6 +837,12 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
         
     Next i
     
+    'Next, retrieve the list of unique colors (and their counts), and bulk-add all of those colors
+    ' to the median cut object.
+    Dim listOfPixels() As RGBQuad, pixelCounts() As Long
+    numPixels = pxHist.GetUniqueColors(listOfPixels, pixelCounts)
+    pxStack(0).BulkAddColors_RGBA listOfPixels, pixelCounts, numPixels
+    
     'Next, make sure there are more than [numOfColors] colors in the image (otherwise, our work is already done!)
     If (pxStack(0).GetNumOfColors > numOfColors) Then
         
@@ -849,6 +851,7 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
         
         Dim maxVariance As Single, mvIndex As Long
         Dim rVariance As Single, gVariance As Single, bVariance As Single, aVariance As Single, netVariance As Single
+        Dim r As Long, g As Long, b As Long, a As Long
         
         'With the initial stack constructed, we can now start partitioning it into smaller stacks based on variance
         Do

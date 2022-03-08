@@ -195,10 +195,6 @@ Public Sub ApplyGradientMap(ByVal effectParams As String, Optional ByVal toPrevi
     
 End Sub
 
-Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    UpdatePreview
-End Sub
-
 Private Sub cboBlendMode_Click()
     UpdatePreview
 End Sub
@@ -229,10 +225,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub grdMap_GradientChanged()
-    UpdatePreview
 End Sub
 
 Private Sub grdSource_GradientChanged()

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Median-Cut Color Quantization Class
 'Copyright 2017-2022 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 16/September/21
-'Last update: performance improvements
+'Last updated: 08/March/22
+'Last update: new "bulk add" function for faster interop with the new pdHistogramHash class
 '
 'This class provides a highly optimized Median Cut Quantization implementation.
 ' For a nice overview of how the median cut algorithm works, see
@@ -238,6 +238,93 @@ Friend Sub AddColor_RGBA(ByVal srcR As Byte, ByVal srcG As Byte, ByVal srcB As B
         m_Colors(m_NumOfColors - 1).Count = m_Colors(m_NumOfColors - 1).Count + cCount
         m_NumOfColorsAdded = m_NumOfColorsAdded + cCount
     End If
+    
+    'Variance-based quantization requires us to re-calculate variance after modifying the color tables.
+    ' Rather than waste a branch on this, just always reset the variance tracker.
+    m_VarianceUpToDate = False
+    
+End Sub
+
+'Add an entire array of colors (and their respective color counts) to the table.
+' Note that this function assumes a *unique* list of colors, which provides a nice performance benefit
+' as we can skip cheap optimization attempts (like RLE checks).
+Friend Sub BulkAddColors_RGBA(ByRef srcListOfColors() As RGBQuad, ByRef srcListOfCounts() As Long, ByVal numOfColorsInList As Long)
+    
+    'First, ensure appropriate size of color array.  (It is fastest to simply size the array once,
+    ' before beginning the bulk-add operation.)
+    Dim arrayUBoundNeeded As Long
+    arrayUBoundNeeded = (m_NumOfColors + numOfColorsInList) - 1
+    If (arrayUBoundNeeded > UBound(m_Colors)) Then ReDim Preserve m_Colors(0 To arrayUBoundNeeded) As RGBStackItem
+    
+    'We now have a guaranteed "safe" amount of room for adding colors, which will let us skip array bound
+    ' checks on the inner loop.
+    
+    'Generate a pointer to the first available slot in the current table, then bulk add all colors
+    Dim idxTable As Long, netCountAdded As Long, idxOrig As Long
+    idxTable = m_NumOfColors
+    idxOrig = m_NumOfColors
+    
+    Dim i As Long
+    For i = 0 To numOfColorsInList - 1
+        With m_Colors(idxTable)
+            .Blue = srcListOfColors(i).Blue
+            .Green = srcListOfColors(i).Green
+            .Red = srcListOfColors(i).Red
+            .Alpha = srcListOfColors(i).Alpha
+            .Flag = 0
+            .Count = srcListOfCounts(i)
+            netCountAdded = netCountAdded + .Count
+        End With
+        idxTable = idxTable + 1
+    Next i
+    
+    'Increment color count and total colors added count (required for some reduction techniques)
+    m_NumOfColors = m_NumOfColors + numOfColorsInList
+    m_NumOfColorsAdded = m_NumOfColorsAdded + netCountAdded
+        
+    'Recalculate any running statistical data
+    If (m_QuantizeMode = pdqs_MinMax) Then
+        
+        'Find the min/max of the colors just added
+        For i = idxOrig To m_NumOfColors - 1
+            
+            With m_Colors(i)
+                
+                If (.Red > m_RMax) Then
+                    m_RMax = .Red
+                ElseIf (.Red < m_RMin) Then
+                    m_RMin = .Red
+                End If
+                
+                If (.Green > m_GMax) Then
+                    m_GMax = .Green
+                ElseIf (.Green < m_GMin) Then
+                    m_GMin = .Green
+                End If
+                
+                If (.Blue > m_BMax) Then
+                    m_BMax = .Blue
+                ElseIf (.Blue < m_BMin) Then
+                    m_BMin = .Blue
+                End If
+                
+                If (.Alpha > m_AMax) Then
+                    m_AMax = .Alpha
+                ElseIf (.Alpha < m_AMin) Then
+                    m_AMin = .Alpha
+                End If
+                
+            End With
+            
+        Next i
+        
+    End If
+    
+    'Update last color to ensure correct behavior on subsequent runs
+    With srcListOfColors(numOfColorsInList - 1)
+        m_LastColor = RGB(.Red, .Green, .Blue)
+        m_LastA = .Alpha
+    End With
     
     'Variance-based quantization requires us to re-calculate variance after modifying the color tables.
     ' Rather than waste a branch on this, just always reset the variance tracker.
