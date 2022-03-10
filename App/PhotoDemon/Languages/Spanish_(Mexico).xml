@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.90</langversion>
+<langversion>8.0.91</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -12254,6 +12254,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>always open this panel for new text layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>font</original>
 <translation>Fuente</translation>
 </phrase>
@@ -12293,7 +12298,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Haga clic aquí para convertir esta capa en texto básico.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12415,7 +12420,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Haga clic aquí para convertir esta capa en texto avanzado.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13734,10 +13739,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2599</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
-<!-- These 2599 phrases contain approximately 11775 total words. -->
+<!-- As of this build, PhotoDemon contains 5396 phrases. -->
+<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11783 total words. -->
 
 </pdData>

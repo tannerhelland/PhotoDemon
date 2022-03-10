@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1308</langversion>
+<langversion>9.0.1325</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -8359,7 +8359,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Tracing image edges with virtual paintbrush</original>
-<translation>Bildkanten werden mit virtuellem Malpinsel nachgezeichnet</translation>
+<translation>Bildkanten werden mit virtuellem Malpinsel (Paintbrush) nachgezeichnet</translation>
 </phrase>
 
 <!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11349,7 +11349,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>blend</original>
-<translation>Blend-Mode</translation>
+<translation>Blend</translation>
 </phrase>
 
 <phrase>
@@ -11569,7 +11569,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf. Daher können Sie einen neuen Dateiname, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
+<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf, so können Sie einen neuen Dateiname, Ordner und/oder ein neues Bildformat für das aktuelle Bild spezifizieren.</translation>
 </phrase>
 
 <phrase>
@@ -11823,7 +11823,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>return to previous tool</original>
-<translation>Zu vorherigem Tool zurückkehren</translation>
+<translation>Rückkehr zu vorherigem Tool</translation>
 </phrase>
 
 <phrase>
@@ -11852,7 +11852,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>brush style</original>
-<translation></translation>
+<translation>Pinselstil</translation>
 </phrase>
 
 <phrase>
@@ -11867,7 +11867,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fill area</original>
-<translation></translation>
+<translation>Füllbereich</translation>
 </phrase>
 
 <phrase>
@@ -12214,7 +12214,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation>Dieses Panel kann automatisch öffnen, wenn Sie eine Auswahl bearbeiten oder erstellen. Auf kleineren Screens ist dies möglicherweise nicht hilfreich, wenn zu viel von der Leinwand verdeckt wird. Daher können Sie dieses Verhalten hier deaktivieren.</translation>
+<translation>Dieses Panel kann automatisch öffnen, wenn Sie eine Auswahl bearbeiten oder erstellen. Auf kleineren Screens ist dies möglicherweise nicht hilfreich, wenn zu viel von der Leinwand verdeckt wird, so können Sie dieses Verhalten hier deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -12260,6 +12260,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>always open this panel for new text layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>font</original>
 <translation>Font</translation>
 </phrase>
@@ -12299,7 +12304,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in grundlegenden Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12421,7 +12426,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in erweiterten Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 56 phrases. 32 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13740,10 +13745,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2599</phrasecount>
+<phrasecount>2600</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5393 phrases. -->
-<!-- 2794 are duplicates, so only 2599 unique phrases have been written to file. -->
-<!-- These 2599 phrases contain approximately 11775 total words. -->
+<!-- As of this build, PhotoDemon contains 5396 phrases. -->
+<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
+<!-- These 2600 phrases contain approximately 11783 total words. -->
 
 </pdData>
