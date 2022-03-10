@@ -73,10 +73,12 @@ End Sub
 
 Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfMouseMovements As Long, ByVal clickEventAlsoFiring As Boolean)
 
-    'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
+    'Pass a final transform request to the layer handler.
+    ' (This will initiate Undo/Redo creation, among other things.)
     
-    '(Note that this function branches according to two states: whether this click is creating a new text layer (which requires a full
-    ' image stack Undo/Redo), or whether we are simply modifying an existing layer.
+    '(Note that this function branches according to two states:
+    ' 1) whether this click is creating a new text layer (which requires a full image stack Undo/Redo), or...
+    ' 2) whether we are simply modifying an existing text layer.
     If (Tools.GetCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER) Then
         
         'Mark the current tool as busy to prevent any unwanted UI syncing
@@ -181,7 +183,11 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         Interface.SyncInterfaceToCurrentImage
         
         'Finally, set focus to the text layer text entry box
-        If (g_CurrentTool = TEXT_BASIC) Then toolpanel_TextBasic.txtTextTool.SelectAll Else toolpanel_TextAdvanced.txtTextTool.SelectAll
+        If (g_CurrentTool = TEXT_BASIC) Then
+            toolpanel_TextBasic.NotifyNewLayerCreated
+        Else
+            toolpanel_TextAdvanced.NotifyNewLayerCreated
+        End If
         
     'The user is simply editing an existing layer.
     Else

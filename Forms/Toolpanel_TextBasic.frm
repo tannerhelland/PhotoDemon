@@ -85,20 +85,30 @@ Begin VB.Form toolpanel_TextBasic
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2055
+      Height          =   2310
       Index           =   0
       Left            =   0
       Top             =   960
       Visible         =   0   'False
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   3625
+      Width           =   7800
+      _ExtentX        =   13758
+      _ExtentY        =   4075
+      Begin PhotoDemon.pdCheckBox chkAutoOpenText 
+         Height          =   360
+         Left            =   90
+         TabIndex        =   18
+         Top             =   1905
+         Width           =   7110
+         _ExtentX        =   12541
+         _ExtentY        =   635
+         Caption         =   "always open this panel for new text layers"
+      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   7800
+         Left            =   7350
          TabIndex        =   1
-         Top             =   1560
+         Top             =   1875
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -108,11 +118,10 @@ Begin VB.Form toolpanel_TextBasic
          Height          =   1815
          Left            =   120
          TabIndex        =   2
-         Top             =   120
+         Top             =   30
          Width           =   7575
          _ExtentX        =   13361
          _ExtentY        =   3201
-         FontSize        =   9
          Multiline       =   -1  'True
       End
    End
@@ -308,8 +317,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Basic Text Tool Panel
 'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 27/November/21
-'Last update: migrate UI to new flyout-driven design
+'Last updated: 09/March/22
+'Last update: new checkbox for auto-dropping text entry field after creating a new text layer
 '
 'This form includes all user-editable settings for the Basic Text tool.
 '
@@ -951,8 +960,16 @@ Private Function CurrentLayerIsText() As Boolean
     
 End Function
 
+'When a new text layer is created, the user can choose to auto-drop the text entry panel.
+Public Sub NotifyNewLayerCreated()
+    If Me.chkAutoOpenText.Value Then
+        UpdateFlyout 0, True
+        Me.txtTextTool.SetFocusToEditBox True
+    End If
+End Sub
+
 'Updating against the current theme accomplishes a number of things:
-' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 1) All user-drawn controls are redrawn according to the current UI theme settings.
 ' 2) All tooltips and captions are translated according to the current language.
 ' 3) ApplyThemeAndTranslations is called, which redraws the form itself according to any theme and/or system settings.
 '

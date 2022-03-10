@@ -233,6 +233,10 @@ Public Property Let SelStart(ByVal newPosition As Long)
     If (Not m_EditBox Is Nothing) Then m_EditBox.SelStart = newPosition
 End Property
 
+Public Sub SetFocusToEditBox(Optional ByVal selectTextToo As Boolean = False)
+    If (Not m_EditBox Is Nothing) Then m_EditBox.SetFocusToEditBox selectTextToo
+End Sub
+
 Public Property Get Text() As String
 Attribute Text.VB_ProcData.VB_Invoke_Property = ";Text"
 Attribute Text.VB_UserMemId = 0

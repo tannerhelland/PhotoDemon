@@ -31,6 +31,48 @@ Begin VB.Form toolpanel_TextAdvanced
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   2310
+      Index           =   0
+      Left            =   0
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   7800
+      _ExtentX        =   13758
+      _ExtentY        =   4075
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   7350
+         TabIndex        =   2
+         Top             =   1875
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1815
+         Left            =   120
+         TabIndex        =   3
+         Top             =   30
+         Width           =   7575
+         _ExtentX        =   13361
+         _ExtentY        =   3201
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkAutoOpenText 
+         Height          =   360
+         Left            =   90
+         TabIndex        =   43
+         Top             =   1905
+         Width           =   7110
+         _ExtentX        =   12541
+         _ExtentY        =   635
+         Caption         =   "always open this panel for new text layers"
+      End
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   4380
       Index           =   1
       Left            =   120
@@ -484,38 +526,6 @@ Begin VB.Form toolpanel_TextAdvanced
       Caption         =   "edit text"
       Value           =   0   'False
    End
-   Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2055
-      Index           =   0
-      Left            =   0
-      Top             =   840
-      Visible         =   0   'False
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   3625
-      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
-         Height          =   390
-         Index           =   0
-         Left            =   7800
-         TabIndex        =   2
-         Top             =   1560
-         Width           =   390
-         _ExtentX        =   1111
-         _ExtentY        =   1111
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtTextTool 
-         Height          =   1815
-         Left            =   120
-         TabIndex        =   3
-         Top             =   120
-         Width           =   7575
-         _ExtentX        =   13361
-         _ExtentY        =   3201
-         FontSize        =   9
-         Multiline       =   -1  'True
-      End
-   End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   360
       Index           =   1
@@ -633,8 +643,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Advanced Typography Tool Panel
 'Copyright 2013-2022 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 30/November/21
-'Last update: migrate UI to new flyout-driven design
+'Last updated: 09/March/22
+'Last update: new checkbox for auto-dropping text entry field after creating a new text layer
 '
 'This form includes all user-editable settings for PD's Advanced Typography text tool.
 '
@@ -1990,8 +2000,16 @@ Public Sub UpdateAgainstCurrentLayer()
 
 End Sub
 
+'When a new text layer is created, the user can choose to auto-drop the text entry panel.
+Public Sub NotifyNewLayerCreated()
+    If Me.chkAutoOpenText.Value Then
+        UpdateFlyout 0, True
+        Me.txtTextTool.SetFocusToEditBox True
+    End If
+End Sub
+
 'Updating against the current theme accomplishes a number of things:
-' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 1) All user-drawn controls are redrawn according to the current UI theme settings.
 ' 2) All tooltips and captions are translated according to the current language.
 ' 3) ApplyThemeAndTranslations is called, which redraws the form itself according to any theme and/or system settings.
 '
