@@ -24,38 +24,39 @@ Begin VB.Form FormGradientMap
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
-   Begin PhotoDemon.pdGradientSelector grdSource 
-      Height          =   1215
+   Begin PhotoDemon.pdButtonStrip btsCategory 
+      Height          =   975
       Left            =   6000
       TabIndex        =   4
-      Top             =   1080
+      Top             =   240
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   2143
-      Caption         =   "gradient"
+      _ExtentY        =   1720
+      Caption         =   "gradient type"
    End
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   975
       Left            =   6000
       TabIndex        =   3
-      Top             =   3480
+      Top             =   3960
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1720
       Caption         =   "blend mode"
    End
-   Begin PhotoDemon.pdSlider sltIntensity 
+   Begin PhotoDemon.pdSlider sldIntensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   2520
+      Top             =   3000
       Width           =   5880
       _ExtentX        =   10372
       _ExtentY        =   1270
       Caption         =   "intensity"
       Max             =   100
-      Value           =   50
-      DefaultValue    =   50
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -75,6 +76,92 @@ Begin VB.Form FormGradientMap
       _ExtentX        =   21378
       _ExtentY        =   1323
    End
+   Begin PhotoDemon.pdContainer pnlMode 
+      Height          =   1560
+      Index           =   0
+      Left            =   5880
+      Top             =   1320
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   2752
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         Top             =   1020
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Alignment       =   1
+         Caption         =   "midpoint"
+      End
+      Begin PhotoDemon.pdSlider sldMidpoint 
+         Height          =   495
+         Left            =   1430
+         TabIndex        =   9
+         Top             =   960
+         Width           =   4560
+         _ExtentX        =   8043
+         _ExtentY        =   873
+         FontSizeCaption =   10
+         Max             =   100
+         Value           =   50
+         NotchPosition   =   2
+         NotchValueCustom=   50
+      End
+      Begin PhotoDemon.pdColorSelector csSimple 
+         Height          =   615
+         Index           =   0
+         Left            =   240
+         TabIndex        =   6
+         Top             =   120
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   1085
+         curColor        =   0
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdColorSelector csSimple 
+         Height          =   615
+         Index           =   1
+         Left            =   2220
+         TabIndex        =   7
+         Top             =   120
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   1085
+         curColor        =   5085183
+      End
+      Begin PhotoDemon.pdColorSelector csSimple 
+         Height          =   615
+         Index           =   2
+         Left            =   4200
+         TabIndex        =   8
+         Top             =   120
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   1085
+         ShowMainWindowColor=   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlMode 
+      Height          =   1560
+      Index           =   1
+      Left            =   5880
+      Top             =   1320
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   2752
+      Begin PhotoDemon.pdGradientSelector grdSource 
+         Height          =   1335
+         Left            =   240
+         TabIndex        =   5
+         Top             =   120
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   2355
+      End
+   End
 End
 Attribute VB_Name = "FormGradientMap"
 Attribute VB_GlobalNameSpace = False
@@ -85,11 +172,11 @@ Attribute VB_Exposed = False
 'Gradient Map Adjustment Dialog
 'Copyright 2022-2022 by Tanner Helland
 'Created: 03/March/2022
-'Last updated: 03/March/2022
-'Last update: initial build
+'Last updated: 10/March/2022
+'Last update: provide a "simple" mode for people who don't want to dive into the full gradient editor
 '
-'Gradient mapping is more useful as an adjustment layer, but until PD supports 'em
-' this dialog will need to suffice.
+'Gradient mapping is more useful as an adjustment layer, but alas, PD doesn't support
+' adjustment layers yet.  Until that point, this standalone tool must fill the gap.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -195,6 +282,11 @@ Public Sub ApplyGradientMap(ByVal effectParams As String, Optional ByVal toPrevi
     
 End Sub
 
+Private Sub btsCategory_Click(ByVal buttonIndex As Long)
+    UpdateCategoryPanel
+    UpdatePreview
+End Sub
+
 Private Sub cboBlendMode_Click()
     UpdatePreview
 End Sub
@@ -209,6 +301,13 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     cboBlendMode.ListIndex = BM_Normal
+    csSimple(0).Color = RGB(0, 0, 0)
+    csSimple(1).Color = RGB(255, 150, 75)
+    csSimple(2).Color = RGB(255, 255, 255)
+End Sub
+
+Private Sub csSimple_ColorChanged(Index As Integer)
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -216,6 +315,11 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
+    
+    btsCategory.AddItem "basic", 0
+    btsCategory.AddItem "advanced", 1
+    btsCategory.ListIndex = 0
+    UpdateCategoryPanel
     
     ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
@@ -236,9 +340,20 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-'Update the preview whenever the combination slider/text control has its value changed
-Private Sub sltIntensity_Change()
+Private Sub sldMidpoint_Change()
     UpdatePreview
+End Sub
+
+'Update the preview whenever the combination slider/text control has its value changed
+Private Sub sldIntensity_Change()
+    UpdatePreview
+End Sub
+
+Private Sub UpdateCategoryPanel()
+    Dim i As Long
+    For i = pnlMode.lBound To pnlMode.UBound
+        pnlMode(i).Visible = (i = btsCategory.ListIndex)
+    Next i
 End Sub
 
 Private Sub UpdatePreview()
@@ -251,9 +366,26 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
+        
         .AddParam "blendmode", cboBlendMode.ListIndex
-        .AddParam "intensity", sltIntensity.Value
-        .AddParam "source-gradient", grdSource.Gradient
+        .AddParam "intensity", sldIntensity.Value
+        .AddParam "gradient-mode", btsCategory.ListIndex
+        
+        'Which gradient string we add to the param string depends on the user's current
+        ' gradient "mode" (simple vs complex)
+        If (btsCategory.ListIndex = 0) Then
+            
+            'Next, we need to build a gradient object from the simple gradient UI
+            Dim tmpGradient As pd2DGradient
+            Set tmpGradient = New pd2DGradient
+            tmpGradient.CreateThreePointGradient csSimple(0).Color, csSimple(1).Color, csSimple(2).Color, secondColorPosition:=sldMidpoint.Value / 100!
+            .AddParam "source-gradient", tmpGradient.GetGradientAsString()
+            
+        'The "complex" gradient option can be pulled straight from the gradient control
+        Else
+            .AddParam "source-gradient", grdSource.Gradient
+        End If
+        
     End With
     
     GetLocalParamString = cParams.GetParamString()
