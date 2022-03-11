@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionUI"
 'Selection Tools: UI
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 12/February/22
-'Last update: composite selection support is finally here, woooohooo!
+'Last updated: 11/March/22
+'Last update: fix combine mode accidentally "resetting" after certain actions
 '
 'This module should only contain UI code related to selection filters (e.g. key and mouse input,
 ' synchronizing UI elements and internal values, etc).
@@ -1372,7 +1372,6 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
             toolpanel_Selections.sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
         End If
         
-        If (toolpanel_Selections.btsCombine.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Combine)) Then toolpanel_Selections.btsCombine.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Combine)
         If (toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
         If (toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
         
