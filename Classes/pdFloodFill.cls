@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright 2014-2022 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 05/April/20
-'Last update: minor performance improvements
+'Last updated: 11/March/22
+'Last update: fix half-pixel offset when antialiasing is enabled; see https://github.com/tannerhelland/PhotoDemon/issues/395
 '
 'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
 ' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
@@ -225,7 +225,7 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
         If m_AntialiasingMode Then cSurface.SetSurfacePixelOffset P2_PO_Half Else cSurface.SetSurfacePixelOffset P2_PO_Normal
         
-        If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
+        If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100!
         
         PD2D.FillPath cSurface, m_Brush, dstOutlinePath
         Set cSurface = Nothing

@@ -142,6 +142,9 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
         'Silently point the layer reference at the newly created layer (we don't care about the original layer ref)
         Set srcLayer = srcImage.GetActiveLayer
         
+        'Remove the active selection
+        Selections.RemoveCurrentSelection False
+        
     End If
     
     'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
