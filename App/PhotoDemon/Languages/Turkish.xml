@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.65</langversion>
+<langversion>1.0.66</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -6285,7 +6285,12 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>gradient</original>
+<original>gradient type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>midpoint</original>
 <translation></translation>
 </phrase>
 
@@ -6294,7 +6299,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6657,6 +6662,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>reflection</original>
 <translation></translation>
 </phrase>
@@ -6666,7 +6676,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -13697,10 +13707,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5396 phrases. -->
-<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11783 total words. -->
+<!-- As of this build, PhotoDemon contains 5400 phrases. -->
+<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 11786 total words. -->
 
 </pdData>

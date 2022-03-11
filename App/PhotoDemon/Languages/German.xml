@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1325</langversion>
+<langversion>9.0.1327</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -595,7 +595,7 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>Weiche Auswahlkante-Auswahl</translation>
+<translation>Weiche Kante-Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -4514,12 +4514,12 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Die finalen Maße für Breite und Höhe müssen zwischen 1 und S32760 Pixel liegen.</translation>
+<translation>Die finalen Breiten- und Höhenmessungen müssen zwischen 1 und 32760 Pixel liegen.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid measurement</original>
-<translation>Ungültiges Maß</translation>
+<translation>Ungültige Messung</translation>
 </phrase>
 
 <phrase>
@@ -5094,7 +5094,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Feather</original>
-<translation>Weiche Auswahlkante</translation>
+<translation>Weiche Kante</translation>
 </phrase>
 
 <phrase>
@@ -6315,8 +6315,13 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>gradient</original>
-<translation>Gradient</translation>
+<original>gradient type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6324,7 +6329,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Anwenden der Gradient-Map</translation>
 </phrase>
 
-<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6687,6 +6692,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>gradient</original>
+<translation>Gradient</translation>
+</phrase>
+
+<phrase>
 <original>reflection</original>
 <translation>Reflexion</translation>
 </phrase>
@@ -6696,7 +6706,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Rechteck</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -8359,7 +8369,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Tracing image edges with virtual paintbrush</original>
-<translation>Bildkanten werden mit virtuellem Malpinsel (Paintbrush) nachgezeichnet</translation>
+<translation>Nachzeichnen der Bildkanten mit virtuellem Malpinsel (Paintbrush)</translation>
 </phrase>
 
 <!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8450,7 +8460,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Tracing image contour</original>
-<translation>Bildkontur wird nachgezeichnet</translation>
+<translation>Nachzeichnen der Bildkontur</translation>
 </phrase>
 
 <!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -11624,7 +11634,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>Lasso-Auswahl (Freihand)</translation>
+<translation>Lasso- (Freihand-) Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -11946,12 +11956,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>modify measurement</original>
-<translation>Maß modifizieren</translation>
+<translation>Messung modifizieren</translation>
 </phrase>
 
 <phrase>
 <original>share measurements between images</original>
-<translation>Maße zwischen Bildern teilen</translation>
+<translation>Messungen zwischen Bildern teilen</translation>
 </phrase>
 
 <phrase>
@@ -11981,7 +11991,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>use measurement to</original>
-<translation>Maß verwenden für</translation>
+<translation>Messung verwenden für</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12189,7 +12199,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
-<translation>Diese Option steuert, wie glatt Selektionskanten mit deren Umgebung verschmelzen.</translation>
+<translation>Diese Option steuert, wie glatt Auswahlkanten mit deren Umgebung verschmelzen.</translation>
 </phrase>
 
 <phrase>
@@ -12261,7 +12271,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation></translation>
+<translation>Dieses Panel immer für neue Text-Layer öffnen</translation>
 </phrase>
 
 <phrase>
@@ -13745,10 +13755,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5396 phrases. -->
-<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11783 total words. -->
+<!-- As of this build, PhotoDemon contains 5400 phrases. -->
+<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 11786 total words. -->
 
 </pdData>

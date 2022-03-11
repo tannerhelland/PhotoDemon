@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.532</langversion>
+<langversion>6.6.533</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -6313,8 +6313,13 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>gradient</original>
-<translation>gradien</translation>
+<original>gradient type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6322,7 +6327,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6685,6 +6690,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>gradient</original>
+<translation>gradien</translation>
+</phrase>
+
+<phrase>
 <original>reflection</original>
 <translation>refleksi</translation>
 </phrase>
@@ -6694,7 +6704,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>empat persegi panjang</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -13745,10 +13755,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5396 phrases. -->
-<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11783 total words. -->
+<!-- As of this build, PhotoDemon contains 5400 phrases. -->
+<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 11786 total words. -->
 
 </pdData>

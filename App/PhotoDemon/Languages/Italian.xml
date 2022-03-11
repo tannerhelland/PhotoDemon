@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.84</langversion>
+<langversion>8.0.85</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -6311,8 +6311,13 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>gradient</original>
-<translation>sfumatura</translation>
+<original>gradient type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6320,7 +6325,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Map_Gradient.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6683,6 +6688,11 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
+<original>gradient</original>
+<translation>sfumatura</translation>
+</phrase>
+
+<phrase>
 <original>reflection</original>
 <translation>riflessione</translation>
 </phrase>
@@ -6692,7 +6702,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>rettangolo</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -13752,10 +13762,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2600</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5396 phrases. -->
-<!-- 2796 are duplicates, so only 2600 unique phrases have been written to file. -->
-<!-- These 2600 phrases contain approximately 11783 total words. -->
+<!-- As of this build, PhotoDemon contains 5400 phrases. -->
+<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 11786 total words. -->
 
 </pdData>
