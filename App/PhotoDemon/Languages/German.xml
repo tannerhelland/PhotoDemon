@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1327</langversion>
+<langversion>9.0.1330</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3169,12 +3169,12 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Feathering selection</original>
-<translation>Weiche Kanten-Auswahl</translation>
+<translation>Weiche Kante-Auswahl</translation>
 </phrase>
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Weiche Kanten abgeschlossen.</translation>
+<translation>Weiche Kante abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -4000,7 +4000,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an selektierten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation einkalkuliert. Bitte versuchen Sie es erneut mit einem kleineren Set an selektierten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -6316,7 +6316,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>gradient type</original>
-<translation></translation>
+<translation>Gradiententyp</translation>
 </phrase>
 
 <phrase>
@@ -12214,7 +12214,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Dieser "Weiche Kanten"-Schieberegler erlaubt unmittelbare Anpassungen der weichen Kanten. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere weiche Kanten-Radien verwenden Sie bitte das Menü "Auswahl > Weiche Kanten".</translation>
+<translation>Dieser "Weiche Kante"-Schieberegler kalkuliert unmittelbare Anpassungen der weichen Kante mit ein. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere weiche Kante-Radien verwenden Sie bitte das Menü "Auswahl > Weiche Kante".</translation>
 </phrase>
 
 <phrase>
