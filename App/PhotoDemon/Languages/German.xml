@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1330</langversion>
+<langversion>9.0.1332</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3713,7 +3713,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Inferred</original>
-<translation>Gefolgert</translation>
+<translation>Abgeleitet</translation>
 </phrase>
 
 <phrase>
@@ -6321,7 +6321,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>midpoint</original>
-<translation></translation>
+<translation>Mittelpunkt -</translation>
 </phrase>
 
 <phrase>
@@ -8241,7 +8241,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Swirling image round and round</original>
-<translation>Bild wird Runde um Runde verwirbelt</translation>
+<translation>Bild wird im Kreis herum verwirbelt</translation>
 </phrase>
 
 <!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10960,22 +10960,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation>"System"-Tags werden von dem Betriebssystem bereitgestellt. Sie werden nicht als traditionelle Metadaten eingebettet.</translation>
+<translation>"System"-Tags werden von dem Betriebssystem bereitgestellt. Sie sind nicht als traditionelle Metadaten eingebettet.</translation>
 </phrase>
 
 <phrase>
 <original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
-<translation>"Datei"-Tags sind bei diesem Bildformat erforderlich. Sie werden nicht als traditionelle Metadaten eingebettet.</translation>
+<translation>"Datei"-Tags sind bei diesem Bildformat erforderlich. Sie sind nicht als traditionelle Metadaten eingebettet.</translation>
 </phrase>
 
 <phrase>
 <original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
-<translation>ICC-Profile werden automatisch von PhotoDemon gehandhabt. Sie werden nicht als traditionelle Metadaten eingebettet.</translation>
+<translation>ICC-Profile werden automatisch von PhotoDemon gehandhabt. Sie sind nicht als traditionelle Metadaten eingebettet.</translation>
 </phrase>
 
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
-<translation>Gefolgert"-Tags sind aus anderen Metadaten abgeleitete hypothetische Werte. Sie werden nicht wie traditionelle Metadaten eingebettet.</translation>
+<translation>"Abgeleitet (Inferred)"-Tags sind aus anderen Metadaten abgeleitete hypothetische Werte. Sie sind nicht als traditionelle Metadaten eingebettet.</translation>
 </phrase>
 
 <phrase>
@@ -12124,7 +12124,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>round corners</original>
-<translation></translation>
+<translation>Ecken runden</translation>
 </phrase>
 
 <phrase>
@@ -13289,7 +13289,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Das JPEG-Format bietet keine Möglichkeit, JPEG-Qualitätseinstellungen in Bilddateien zu speichern. PhotoDemon kann dies durch Inferieren von Qualitätseinstellungen aus anderen Metadaten (wie Quantisierungstabellen) umgehen.</translation>
+<translation>Das JPEG-Format bietet keine Möglichkeit, JPEG-Qualitätseinstellungen in Bilddateien zu speichern. PhotoDemon kann dies umgehen, indem es die Qualitätseinstellungen aus anderen Metadaten (wie Quantisierungstabellen) ableitet.</translation>
 </phrase>
 
 <phrase>

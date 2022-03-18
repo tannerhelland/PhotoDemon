@@ -3,13 +3,17 @@ Attribute VB_Name = "Files"
 'Comprehensive wrapper for pdFSO (Unicode file and folder functions)
 'Copyright 2001-2022 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 12/July/17
-'Last update: large code cleanup
+'Last updated: 18/March/22
+'Last update: add additional pdFSO function wrapper(s)
 '
-'The pdFSO class provides Unicode file/folder interactions for PhotoDemon.  However, sometimes you just want to do
-' something trivial, like checking whether a file exists, without instantiating a full class (especially because this
-' is unnecessarily verbose in VB).  This module wraps a pdFSO instance and allows you to directly invoke common
-' functions without worrying about the details.
+'The pdFSO class normally provides Unicode file/folder interactions for PhotoDemon.
+'
+'But sometimes you just want to do something trivial - like see if a file exists - and instantiating
+' a full class for this is unnecessarily verbose in VB.  Thus the purpose of this module: to provide
+' fast access to pdFSO functions without you needing to worry about the details.
+'
+'If you need persistent interactions with a file, use pdFSO.  If you need one-off access to a
+' particular file-related function, use this module.  (All calls end up at a pdFSO instance eventually.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -285,6 +289,10 @@ End Function
 
 Public Function FileGetPath(ByRef srcPath As String) As String
     If InitializeFSO Then FileGetPath = m_FSO.FileGetPath(srcPath)
+End Function
+
+Public Function FileGetTimeAsCurrency(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Currency
+    If InitializeFSO Then FileGetTimeAsCurrency = m_FSO.FileGetTimeAsCurrency(srcFile, typeOfTime)
 End Function
 
 Public Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Date

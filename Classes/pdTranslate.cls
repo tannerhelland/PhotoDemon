@@ -15,24 +15,33 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2022 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 08/November/17
-'Last update: perform some duplicate file clean-up when upgrading between versions
+'Last updated: 16/March/22
+'Last update: code clean-up in preparation for new features
 '
-'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
-' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
-' also for taking the time to translate the entire PhotoDemon text collection into multiple languages.
-' (This was a huge project, as PhotoDemon contains a LOT of text.)
+'In 2012, Frank Donckers made a significant contribution to PhotoDemon: a prototype for a run-time
+' localization engine.  This may not sound like much, but VB6 does not provide native support for
+' anything like this, so this was a *huge* undertaking, especially for a volunteer working on a
+' foreign codebase.  Thank you to Frank for kicking off what would become a multi-year initiative
+' to provide the best multi-language experience ever achieved in VB6.  (Frank also provided the
+' initial language files for three new localizations: Vlaams, Francais, and Deutsch.)
 '
-'The latest revision of the translation engine operates on translation files stored as XML.  You can see
-' (and freely edit) these files inside the /App/PhotoDemon/Languages/ subfolder of wherever PD is installed.
-' If you do decide to edit these language files, I strongly suggest saving the new files inside the USER
-' folder of the project, e.g. /Data/Languages/.  This will ensure they are not overwritten by software
-' updates or future changes to the official language files included with PD.
+'Today, PhotoDemon's translation engine is a lean-and-mean little machine.  It provides full
+' support for Unicode text both on the backend (e.g. Unicode filenames) and on the front-end
+' (UI elements, user input).  This is achieved via a fully themable, UTF-8 compatible user-control
+' suite hand-built for the project. New localizations can be applied (or undone) *at* run-time and
+' *in* real-time, which I consider an indispensable feature, especially because translations are
+' supplied by volunteers and may not always be 100% up-to-date.
 '
-'Most of the crucial translation work in the program happens inside a global object called "g_Language",
-' which is an object of this class (pdTranslate).  Most subs and functions should be self-explanatory.  To
-' really get a feel for how the translation engine works, I suggest starting with the Loading module, and
-' looking at the way this class is initialized and loaded.
+'Translation files are shipped as basic XML.  You can see (and freely edit) these files inside the
+' /App/PhotoDemon/Languages/ subfolder wherever PD is installed.  If you do decide to edit PD's
+' language files, I strongly suggest saving the new files inside the USER folder of the project,
+' e.g. /Data/Languages/.  This will ensure they are not overwritten by software updates or future
+' changes to the official language files that ship with the app.
+'
+'Most of the crucial translation work in the program happens inside a global object called
+' "g_Language", which is an instance of this class (pdTranslate).  Most subs and functions here
+' should be self-explanatory.  To really get a feel for how the translation engine works, I suggest
+' starting with the Loading module, and looking at the way this class is initialized and loaded.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -41,61 +50,63 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'NOTE: this class frequently uses a type called pdLanguageFile.  Because outside functions (like the Language Editor) also need
-' access to this type, I have moved it to the Public_Variables module.
+'NOTE: this class frequently uses a type called pdLanguageFile.  Because outside functions
+' (like the Language Editor) also access this type, it is located in Public_Variables.
 
-'Language-related API calls
+'Language-related WAPI
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
 Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 
-'Constants related to API language calls
-Private Const LOCALE_USER_DEFAULT = &H400
+Private Const LOCALE_USER_DEFAULT As Long = &H400
 Private Const LOCALE_SISO639LANGNAME As Long = &H59   'ISO 639 abbreviated language name, e.g. "en" for "English"
 Private Const LOCALE_SISO3166CTRYNAME As Long = &H5A   'ISO 4166 abbreviated country/region name, e.g. "US" for "United States"
 
-'Array of currently available languages
+'Array of currently available language files.
 Private m_numOfLanguages As Long
 Private m_AvailableLanguages() As PDLanguageFile
 
-'Array ID of the current language.  If no language is selected (e.g. PhotoDemon is using its default text), this value is -1
+'Array ID of the current language.
+' If no language is selected (e.g. PhotoDemon is using en-US), this value is -1.
 Private m_currentLanguage As Long
 
-'Array ID of the default language (English - US)
+'Array ID of the default language (en-US).
 Private m_defaultLanguage As Long
 
-'If the user needs to be shown a language select screen, this will be set to true at some point in the initialization process
+'If the user should see a language select screen, this will be set to TRUE during initialization
 Private m_needToShowLanguageDialog As Boolean
 
-'The full contents of the translation file will be loaded into this string.
+'The full contents of the translation file are loaded into this string.  Queries against this string
+' will always return the correct translation for a given en-US equivalent, but additional mechanisms
+' may be used to avoid touching this original XML string (unless absolutely necessary).
 Private m_XMLEngine As pdXML
 
-'Is the class ready to be used for translations?
+'Is the class ready for use?  Early in the app load process, this may be FALSE.  We use this value
+' internally to determine whether we can actually return localized strings.
 Private m_isReady As Boolean
 
-'The following boolean values are marked by preProcessString, then read by postProcessString
-Private m_hasDotDotDot As Boolean
+'The following boolean values are marked by PreProcessString(), then read by PostProcessString().
+' (Things like trailing colons or ellipses are stripped before matching translations.)
+Private m_hasEllipsis As Boolean
 Private m_hasTrailingColon As Boolean
 
-'File interactions in this class are handled by pdFSO
-Private m_FSO As pdFSO
-
-'Language files are checksummed to improve startup time.  This class is not guaranteed to exist, so please review individual
-' functions before attempting to use the crypto object.
+'Language files are checksummed to improve startup time.  This checksum class is not guaranteed
+' to exist, so please review individual functions before attempting to use the crypto object.
+' (Functions that require it should always check instantation before acccessing.)
 Private m_Crypto As pdCrypto
 
-'The language file cache is handled inside this XML object.
+'The language file cache gets stored as its own persistent XML file.  If we detect changes,
+' we'll note that cache change state separately.
 Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
 
-'To try and improve performance, we profile translation times inside developer builds
+'Performance is tracked by developer builds
 Private m_NetTranslateTime As Double
 
-'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
-' function will then fill with the data assembled from Checkm_availableLanguages().
+'External functions can request the a copy of all found languages.  The caller must provide
+' a pdLanguageFile array; this function will fill it (with data retrieved by CheckAvailableLanguages()).
 Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As PDLanguageFile)
     
     ReDim dstListOfLanguages(0 To m_numOfLanguages - 1) As PDLanguageFile
     
-    'Copy all language data entries into the new array.
     Dim i As Long
     For i = 0 To m_numOfLanguages - 1
         dstListOfLanguages(i) = m_AvailableLanguages(i)
@@ -103,22 +114,27 @@ Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As PDLanguageFile)
     
 End Sub
 
-'External functions can request the current language, which may then be used to request translations from
-' 3rd-party plugins (specifically, ExifTool).
+'External functions can request the current language, which may then be used to request translations
+' from 3rd-party plugins (ExifTool, at present).
 Friend Function GetCurrentLanguage(Optional ByVal getLocaleToo As Boolean = False) As String
-    If TranslationActive Then
-        If getLocaleToo Then GetCurrentLanguage = m_AvailableLanguages(m_currentLanguage).langID Else GetCurrentLanguage = Left$(m_AvailableLanguages(m_currentLanguage).langID, 2)
+    If Me.TranslationActive Then
+        If getLocaleToo Then
+            GetCurrentLanguage = m_AvailableLanguages(m_currentLanguage).langID
+        Else
+            GetCurrentLanguage = Left$(m_AvailableLanguages(m_currentLanguage).langID, 2)
+        End If
     Else
         If getLocaleToo Then GetCurrentLanguage = "en-US" Else GetCurrentLanguage = "en"
     End If
 End Function
 
-'This function will return PD's internal language index (m_currentLanguage), which matches the language's index in the Language menu.
+'This function will return PD's internal language index (m_currentLanguage).  This also serves as
+' an index into the Language menu.
 Friend Function GetCurrentLanguageIndex() As Long
     GetCurrentLanguageIndex = m_currentLanguage
 End Function
 
-'External function for asking the translator if a language selection dialog is needed
+'External function for asking the translation engine if a language selection dialog is needed
 Friend Function IsLanguageDialogNeeded() As Boolean
     IsLanguageDialogNeeded = m_needToShowLanguageDialog
 End Function
@@ -128,16 +144,20 @@ Friend Function ReadyToTranslate() As Boolean
     If (Not m_XMLEngine Is Nothing) Then ReadyToTranslate = m_isReady Else ReadyToTranslate = False
 End Function
 
-'If the currently active language is different from the default language, this function will return TRUE
+'If the currently active language is different from the default language, this function will return TRUE.
+' If this function returns TRUE, you do not need to query the translation engine at all - just use the
+' default en-US text.
 Friend Function TranslationActive() As Boolean
     TranslationActive = (m_currentLanguage <> m_defaultLanguage)
 End Function
 
+'Store the user's language preference
 Friend Sub WriteLanguagePreferencesToFile()
     UserPrefs.SetPref_String "Language", "Current Language File", m_AvailableLanguages(m_currentLanguage).FileName
 End Sub
 
-'Given an index in the m_availableLanguages array, mark that as the new language (including saving it to the preferences file)
+'Given an index in the m_availableLanguages array, mark that as the new language
+' (including saving it to the preferences file)
 Friend Sub ActivateNewLanguage(ByVal newLangIndex As Long)
     m_currentLanguage = newLangIndex
     Interface.GenerateInterfaceID
@@ -145,24 +165,25 @@ Friend Sub ActivateNewLanguage(ByVal newLangIndex As Long)
 End Sub
 
 'Determine which language to use.  This can be done one of several ways:
-' 1) If the user has already specified a language, use that one (obviously)
-' 2) If the user has not specified a language, and this is *not* the first time they have run the program,
-'     assume they're using English.
-' 3) If this is the first time PhotoDemon has been run on this machine, estimate what language to present based on the
-'     current system language.  If a matching language is available, present that.  If not, present English.
+' 1) If the user has already specified a language, use it (obviously)
+' 2) If the user has *not* specified a language, and this is *not* the first time they've run the program,
+'     assume they want English.
+' 3) If this is the user's first time running PhotoDemon, estimate what language to present based on the
+'     current system language.  If a matching language is available, present that.  (If not, present English.)
 Friend Sub DetermineLanguage()
 
-    'FOR TESTING PURPOSES ONLY: uncomment the line below to trick the program into thinking it is being run for the first time.
-    ' This will also initiate the language engine's analysis of the current system language, and it will do its best to match
-    ' the system language to the best available language in PhotoDemon's language folder.
-    ' This process only happens once, at first run - after that the user must initiate any language changes.
+    'FOR TESTING PURPOSES ONLY:
+    ' uncomment the line below to trick the program into thinking it is being run for the first time.
+    ' This will also initiate the language engine's analysis of the current system language,
+    ' and it will do its best to match the system language to the best available language in PD's collection.
+    ' This process only happens once, at first run - after that the user must manually initiate language changes.
     'g_IsFirstRun = True
 
     'By default, do not display a language selection dialog
     m_needToShowLanguageDialog = False
 
-    'Is this the first time PhotoDemon has been run?  If it is, check the system language - we'll use that to determine
-    ' which available PhotoDemon language file is the best match for this user.
+    'Is this the first time PhotoDemon has been run?  If it is, check the system language - we'll use that
+    ' to determine which available PhotoDemon language file is the best match for this user.
     If g_IsFirstRun Then
     
         Dim curLangID As String
@@ -352,7 +373,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
     Dim listOfFiles As pdStringStack
     Set listOfFiles = New pdStringStack
     
-    If m_FSO.RetrieveAllFiles(srcFolder, listOfFiles, False, False, "xml") Then
+    If Files.RetrieveAllFiles(srcFolder, listOfFiles, False, False, "xml") Then
         
         'We need to checksum various files, so prep a crypto object in advance
         Set m_Crypto = New pdCrypto
@@ -441,7 +462,7 @@ Private Function GetLangFileChecksum(ByRef srcFile As String) As String
 
     'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
     Dim strHashSource As String
-    strHashSource = srcFile & "|" & CStr(m_FSO.FileLenW(srcFile)) & "|" & CStr(m_FSO.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
+    strHashSource = srcFile & "|" & CStr(Files.FileLenW(srcFile)) & "|" & CStr(Files.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
     
     'A dedicated crypto class handles the actual hashing
     GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource, 64)
@@ -728,8 +749,8 @@ Private Sub PreProcessText(ByRef srcString As String)
     srcString = Trim$(srcString)
     
     '2) Check for a trailing "..."
-    m_hasDotDotDot = (Right$(srcString, 3) = "...")
-    If m_hasDotDotDot Then srcString = Left$(srcString, Len(srcString) - 3)
+    m_hasEllipsis = (Right$(srcString, 3) = "...")
+    If m_hasEllipsis Then srcString = Left$(srcString, Len(srcString) - 3)
     
     '3) Check for a trailing colon ":"
     m_hasTrailingColon = (Right$(srcString, 1) = ":")
@@ -746,9 +767,9 @@ Private Sub PostProcessText(ByRef srcString As String)
     If (LenB(srcString) <> 0) Then
     
         '2) If the original had a trailing "...", restore it now
-        If m_hasDotDotDot Then
+        If m_hasEllipsis Then
             srcString = srcString & "..."
-            m_hasDotDotDot = False
+            m_hasEllipsis = False
         End If
         
         '3) If the original had a trailing colon, restore it now
@@ -831,8 +852,8 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         searchString = srcMessage
         newString = GetTranslationTagFromCaption(searchString)
     
-        'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
-        ' even if translation text is missing.
+        'If no translation was found, return the original message as the "translation".
+        ' (This makes the program usable if a translation file is incomplete.)
         If (LenB(newString) = 0) Then
             
             'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
@@ -864,12 +885,10 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     'The last step is to replace any optional parameters in the text
     If (UBound(ExtraText) >= LBound(ExtraText)) Then
-    
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
             newString = Replace$(newString, "%" & CStr(i + 1), ExtraText(i), , , vbBinaryCompare)
         Next i
-    
     End If
     
     'Return the fully translated string
@@ -879,65 +898,6 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     m_NetTranslateTime = m_NetTranslateTime + VBHacks.GetTimerDifferenceNow(startTime)
     
 End Function
-
-'Given a translated string, return the original English version of said string.
-'
-'Returns: ORIGINAL ENGLISH VERSION of string, if such a thing exists; ORIGINAL STRING otherwise.
-Friend Function RestoreMessage(ByRef srcMessage As String) As String
-    
-    Dim searchString As String, newString As String
-    searchString = srcMessage
-    newString = GetOriginalTagFromTranslation(searchString)
-    
-    'If a new string was found, apply it to the object's caption
-    If (LenB(newString) <> 0) Then RestoreMessage = newString Else RestoreMessage = srcMessage
-    
-End Function
-
-'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file
-Friend Sub TranslateObjectCaption(ByRef srcObject As Control)
-
-    Dim searchString As String, newString As String
-    
-    If TranslationActive Then
-        searchString = srcObject.Caption
-        newString = GetTranslationTagFromCaption(searchString)
-    Else
-        newString = srcObject.Caption
-    End If
-    
-    'If a new string was found, apply it to the object's caption
-    If (LenB(newString) <> 0) Then
-        
-        'Form captions look better with a prepended space
-        If (TypeOf srcObject Is Form) Then
-            srcObject.Caption = " " & newString
-        Else
-            srcObject.Caption = newString
-        End If
-    End If
-
-End Sub
-
-'Given an object with a guaranteed .Caption property (command button, label, etc.), replace a translated caption with the original
-Friend Sub RestoreObjectCaption(ByRef srcObject As Control)
-
-    Dim searchString As String, newString As String
-    searchString = srcObject.Caption
-    newString = GetOriginalTagFromTranslation(searchString)
-    
-    'If a new string was found, apply it to the object's caption
-    If (LenB(newString) <> 0) Then
-        
-        'Form captions look better with a prepended space
-        If (TypeOf srcObject Is Form) Then
-            srcObject.Caption = " " & newString
-        Else
-            srcObject.Caption = newString
-        End If
-    End If
-
-End Sub
 
 'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
 Friend Sub UndoTranslations(ByRef srcForm As Form)
@@ -995,11 +955,3 @@ End Sub
 Friend Function GetNetTranslationTime() As Double
     GetNetTranslationTime = m_NetTranslateTime
 End Function
-
-Private Sub Class_Initialize()
-    Set m_FSO = New pdFSO
-End Sub
-
-Private Sub Class_Terminate()
-    Set m_FSO = Nothing
-End Sub
