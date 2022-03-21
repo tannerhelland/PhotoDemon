@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1332</langversion>
+<langversion>9.0.1340</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -940,7 +940,7 @@
 
 <phrase>
 <original>Ripple</original>
-<translation>Kleine Welle</translation>
+<translation>Ripple</translation>
 </phrase>
 
 <phrase>
@@ -1530,7 +1530,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>Zählen der Anzahl der eindeutigen Farben in diesem Bild</translation>
+<translation>Zählen der Anzahl eindeutiger Farben in diesem Bild</translation>
 </phrase>
 
 <phrase>
@@ -4544,12 +4544,12 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>pixels / inch (PPI)</original>
-<translation>Pixel / Inch (ppi)</translation>
+<translation>Pixel / Inch (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
-<translation>Pixel / Zentimeter (px/cm)</translation>
+<translation>Pixel / Zentimeter (PPCM)</translation>
 </phrase>
 
 <phrase>
@@ -5666,7 +5666,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>Bild für wahren Kontrast samplen (langsamer, aber genauer)</translation>
+<translation>Bild für echten Kontrast samplen (langsamer, aber genauer)</translation>
 </phrase>
 
 <phrase>
@@ -5831,7 +5831,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>number of gray shades</original>
-<translation>Anzahl der Grauschattierungen</translation>
+<translation>Anzahl von Grauschattierungen</translation>
 </phrase>
 
 <phrase>
@@ -6321,7 +6321,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>midpoint</original>
-<translation>Mittelpunkt -</translation>
+<translation>Mittelpunkt</translation>
 </phrase>
 
 <phrase>
@@ -7657,7 +7657,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>contrast midpoint</original>
-<translation>Mittelpunkt kontrastieren</translation>
+<translation>Kontrastmittelpunkt</translation>
 </phrase>
 
 <phrase>
@@ -7701,7 +7701,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>number of mirrors</original>
-<translation>Anzahl der Spiegel</translation>
+<translation>Anzahl von Spiegeln</translation>
 </phrase>
 
 <phrase>
@@ -8011,12 +8011,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>automatically normalize divisor and offset</original>
-<translation>Teiler und Offset automatisch normalisieren</translation>
+<translation>Divisor und Offset automatisch normalisieren</translation>
 </phrase>
 
 <phrase>
 <original>divisor</original>
-<translation>Teiler</translation>
+<translation>Divisor</translation>
 </phrase>
 
 <phrase>
@@ -8212,12 +8212,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>height of ripples (amplitude)</original>
-<translation>Höhe kleiner Wellen (Amplitude)</translation>
+<translation>Höhe der Ripples (Amplitude)</translation>
 </phrase>
 
 <phrase>
 <original>length of ripples (wavelength)</original>
-<translation>Länge kleiner Wellen (Wellenlänge)</translation>
+<translation>Länge der Ripples (Wellenlänge)</translation>
 </phrase>
 
 <phrase>
@@ -8227,7 +8227,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Simulating ripples across image surface</original>
-<translation>Kleine Wellen werden über Bildoberfläche simuliert</translation>
+<translation>Ripples werden über Bildoberfläche simuliert</translation>
 </phrase>
 
 <!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8508,7 +8508,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>number of rays</original>
-<translation>Anzahl der Strahlen</translation>
+<translation>Anzahl von Strahlen</translation>
 </phrase>
 
 <phrase>
@@ -8752,7 +8752,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>number of fragments</original>
-<translation>Anzahl der Fragmente</translation>
+<translation>Anzahl von Fragmenten</translation>
 </phrase>
 
 <phrase>
@@ -11924,7 +11924,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>center offset</original>
-<translation></translation>
+<translation>Zentrum versetzen</translation>
 </phrase>
 
 <phrase>
@@ -11971,7 +11971,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>rotate 90</original>
-<translation>Drehen 90°</translation>
+<translation>90° drehen</translation>
 </phrase>
 
 <phrase>
@@ -12880,7 +12880,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation>Maximal zu merkende Anzahl der zuletzt verwendeten Dateien</translation>
+<translation>Zu merkende maximale Anzahl zuletzt verwendeter Dateien</translation>
 </phrase>
 
 <phrase>
