@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Fast Histogram class (focused on RGB/A support), using hash-table + separate chaining (linked-list) for collisions
 'Copyright 2022-2022 by Tanner Helland
 'Created: 07/March/22
-'Last updated: 08/March/22
-'Last update: add dynamic resizing if/when overflow table overflows
+'Last updated: 22/March/22
+'Last update: fix bug on properly resetting overflow index after table resize
 '
 'A number of RGB/A-based image processing functions can be accelerated using histograms.
 ' For RGB images, a naive 16-million-color array can be used to track unique colors, but this
@@ -236,6 +236,7 @@ Private Sub IncreaseTableSize()
     
     ReDim m_hashTable(0 To newTableSize - 1) As MergedEntry
     ReDim m_overflowTable(0 To newTableSize - 1) As MergedEntry
+    m_idxOverflow = 1
     
     'Re-add all items to the new, larger hash table
     Dim i As Long
