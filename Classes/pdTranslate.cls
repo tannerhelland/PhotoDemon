@@ -990,7 +990,9 @@ Friend Sub PrintAdditionalDebugInfo()
     
     'Since we moved to a hash table for retrieved translations, I'm interested in what percentage
     ' of retrievals hit that table vs the original XML file.
-    PDDebug.LogAction "Translation cache had " & m_CacheHits & " hits and " & m_CacheMisses & " misses (" & IIf(m_CacheMisses <> 0, Format$(m_CacheHits / (m_CacheHits + m_CacheMisses), "0%"), vbNullString) & ")"
+    If (m_CacheMisses <> 0) Then
+        PDDebug.LogAction "Translation cache had " & m_CacheHits & " hits and " & m_CacheMisses & " misses (" & Format$(m_CacheHits / (m_CacheHits + m_CacheMisses), "0%") & ")"
+    End If
     
     'If the fast translation cache exists, it may have additional debug info to report
     If (Not m_FoundTranslations Is Nothing) Then m_FoundTranslations.PrintAdditionalDebugInfo
