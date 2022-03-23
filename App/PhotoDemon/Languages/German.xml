@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1340</langversion>
+<langversion>9.0.1340-1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1818,7 +1818,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>clamp</original>
-<translation>Anheften</translation>
+<translation>Klammern</translation>
 </phrase>
 
 <phrase>
@@ -1828,7 +1828,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>wrap</original>
-<translation>Umwickeln</translation>
+<translation>Einwickeln</translation>
 </phrase>
 
 <phrase>
@@ -7782,7 +7782,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation>Bild wird in Plastik gewickelt</translation>
+<translation>Bild wird in Plastik eingewickelt</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8927,7 +8927,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>wrap edge values</original>
-<translation>Kantenwerte umwickeln</translation>
+<translation>Kantenwerte einwickeln</translation>
 </phrase>
 
 <phrase>
@@ -9231,7 +9231,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>Bild wird rundum Kugel gewickelt</translation>
+<translation>Bild wird rundum Kugel eingewickelt</translation>
 </phrase>
 
 <phrase>

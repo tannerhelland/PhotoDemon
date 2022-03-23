@@ -164,7 +164,9 @@ Public Function GetStandardInteractionDistance(Optional ByRef srcImageForCanvasD
     GetStandardInteractionDistance = Interface.FixDPIFloat(INTERACTION_DISTANCE_96_PPI)
 End Function
 
-'Generate a unique interface ID string that describes the current visual theme + language combination
+'Generate a unique interface ID string that describes the current visual theme + language combination.
+' UI elements can query this via GetCurrentInterfaceID() before rendering to see if they need to
+' revisit layout and/or color decisions.
 Public Sub GenerateInterfaceID()
     
     m_CurrentInterfaceID = vbNullString

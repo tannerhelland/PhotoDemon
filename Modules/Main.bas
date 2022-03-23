@@ -723,7 +723,10 @@ Public Sub FinalShutdown()
     
     'Report final profiling data
     Viewport.ReportViewportProfilingData
-    If (Not g_Language Is Nothing) Then PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
+    If (Not g_Language Is Nothing) Then
+        PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
+        g_Language.PrintAdditionalDebugInfo
+    End If
     
     'Free any other resources we're manually managing
     PDDebug.LogAction "Releasing VB-specific hackarounds..."

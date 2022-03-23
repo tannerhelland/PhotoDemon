@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2022 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 16/March/22
-'Last update: code clean-up in preparation for new features
+'Last updated: 22/March/22
+'Last update: start integrating fast hash table for translation retrieval
 '
 'In 2012, Frank Donckers made a significant contribution to PhotoDemon: a prototype for a run-time
 ' localization engine.  This may not sound like much, but VB6 does not provide native support for
@@ -100,6 +100,13 @@ Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
 
 'Performance is tracked by developer builds
 Private m_NetTranslateTime As Double
+
+'When a translation is successfully retrieved, we cache it in a fast string collection.
+' Subsequent requests can query the table for greatly improved performance.
+Private m_FoundTranslations As pdStringHash
+
+'In debug mode we track extra profiling data
+Private m_CacheHits As Long, m_CacheMisses As Long
 
 'External functions can request the a copy of all found languages.  The caller must provide
 ' a pdLanguageFile array; this function will fill it (with data retrieved by CheckAvailableLanguages()).
@@ -291,10 +298,13 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
         Set m_XMLEngine = New pdXML
         m_XMLEngine.LoadXMLFile m_AvailableLanguages(m_currentLanguage).FileName
         
-        'New as of August '14 is use of binary text comparisons when matching translations.  This provides a large
-        ' performance boost, and also results in correct captioning when the same word is used in multiple places
-        ' with different cases (e.g. menus vs sliders).
+        'PhotoDemon uses stict binary text comparisons when matching translations.  This provides a large
+        ' performance boost, and is necessary to produce correct captioning when the same word is used in
+        ' multiple places with different cases (e.g. titlecase in menus vs lowercase in other UI elements).
         m_XMLEngine.SetTextCompareMode vbBinaryCompare
+        
+        'Reset the fast translation cache whenever the language changes
+        If (m_FoundTranslations Is Nothing) Then Set m_FoundTranslations = New pdStringHash Else m_FoundTranslations.Reset
         
     End If
     
@@ -785,7 +795,7 @@ End Sub
 Private Function GetOriginalTagFromTranslation(ByVal curCaption As String) As String
 
     'If translations aren't active, return the requested caption as-is
-    If TranslationActive Then
+    If Me.TranslationActive Then
 
         'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
         PreProcessText curCaption
@@ -847,26 +857,42 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     VBHacks.GetHighResTime startTime
     
     Dim searchString As String, newString As String
-    If Me.TranslationActive() Then
+    If Me.TranslationActive And (LenB(srcMessage) <> 0) Then
         
-        searchString = srcMessage
-        newString = GetTranslationTagFromCaption(searchString)
-    
+        'Always start by querying the fast translation cache.  Previously accessed translations
+        ' will be stored there.
+        Dim fastTranslationWorked As Boolean
+        If (m_FoundTranslations Is Nothing) Then
+            Set m_FoundTranslations = New pdStringHash
+        Else
+            fastTranslationWorked = m_FoundTranslations.GetItemByKey(srcMessage, newString)
+        End If
+        
+        If fastTranslationWorked Then m_CacheHits = m_CacheHits + 1 Else m_CacheMisses = m_CacheMisses + 1
+        
+        'If we didn't find the requested translation, pop into the full translation file to grab it.
+        If (LenB(newString) = 0) Then
+            searchString = srcMessage
+            newString = GetTranslationTagFromCaption(searchString)
+        End If
+        
         'If no translation was found, return the original message as the "translation".
         ' (This makes the program usable if a translation file is incomplete.)
         If (LenB(newString) = 0) Then
             
-            'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+            'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again.
+            ' (This solves issues when software - including 3rd-party Git clients - modifies line endings on
+            '  localization files.)
             If (InStr(1, searchString, vbCrLf, vbBinaryCompare) <> 0) Then
                 
-                newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
+                newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
                 
                 If (LenB(newString) = 0) Then
                     newString = srcMessage
                 Else
                 
                     'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
-                    newString = Replace$(newString, vbLf, vbCrLf, , , vbBinaryCompare)
+                    newString = Replace$(newString, vbLf, vbCrLf, 1, -1, vbBinaryCompare)
                 
                 End If
                 
@@ -875,7 +901,11 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
             End If
             
         End If
-    
+        
+        'If the fast translation cache didn't contain this translation, add the manually retrieved value now.
+        ' (This makes subsequent lookups very fast.)
+        If (Not fastTranslationWorked) Then m_FoundTranslations.AddItem srcMessage, newString
+        
     'If translations are not active, just use the existing string "as-is"
     Else
         newString = srcMessage
@@ -955,3 +985,14 @@ End Sub
 Friend Function GetNetTranslationTime() As Double
     GetNetTranslationTime = m_NetTranslateTime
 End Function
+
+Friend Sub PrintAdditionalDebugInfo()
+    
+    'Since we moved to a hash table for retrieved translations, I'm interested in what percentage
+    ' of retrievals hit that table vs the original XML file.
+    PDDebug.LogAction "Translation cache had " & m_CacheHits & " hits and " & m_CacheMisses & " misses (" & IIf(m_CacheMisses <> 0, Format$(m_CacheHits / (m_CacheHits + m_CacheMisses), "0%"), vbNullString) & ")"
+    
+    'If the fast translation cache exists, it may have additional debug info to report
+    If (Not m_FoundTranslations Is Nothing) Then m_FoundTranslations.PrintAdditionalDebugInfo
+    
+End Sub
