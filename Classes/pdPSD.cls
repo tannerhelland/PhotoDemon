@@ -15,10 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 04/August/20
-'Last update: add support for layer groups!  PhotoDemon loads these as blank 1x1 "dummy" layers, but that's
-'             enough for us to safely (and losslessly) round-trip group data from PSD files.  The user can
-'             also add/edit/delete groups using their dummy layers, and PD will write a correct PSD regardless.
+'Last updated: 24/March/22
+'Last update: add support for retrieving layer group masks!  PhotoDemon can now parse these from file and
+'             optionally load these as the "image" of a layer group.  This is activated via debug constant;
+'             next I'm going to try tagging these as optional layer data, then using those tags at export
+'             time to create a compatible PSD.
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -68,6 +69,13 @@ Private Const PSD_DEBUG_VERBOSE As Boolean = False
 ' we need to modify some writing behavior.)
 Private Const PSD_GROUPS_AS_DUMMY_LAYERS As Boolean = True
 Private m_ExportGroups As Boolean
+
+'Similarly, layer groups can contain additional features like masks.  If we allow round-tripping layer groups,
+' we should also allow round-tripping layer group masks, but how to handle this in PD is tricky.  (If we just
+' load the mask as a layer group's pixel data, the image doesn't display correctly.)  This debug will do
+' just that - load group masks, if present, as layer data - so you can inspect the results, but I do not
+' recommend using this in production code just yet.
+Private Const PSD_LOAD_GROUP_MASKS_AS_PIXELS As Boolean = False
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -1031,6 +1039,12 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     Dim curGroupVisibility As Boolean
     curGroupVisibility = True
     
+    'Layers representing group markers do not normally have images associated with them,
+    ' *unless* the group has a layer mask.  If it does, we'll need to retrieve it and
+    ' (TBD - at present, since we don't support groups, maybe just apply the mask to
+    ' all layers within the group...?)
+    Dim groupDIB As pdDIB
+    
     'Now we need to iterate through layers and convert their data from PSD format to PD format.
     ' Note that we deliberately iterate layers *backward*.  I made this change because we need
     ' to iterate layer group *start* markers before the layers in that group, and Adobe lists
@@ -1105,10 +1119,12 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
         ' it may be a group marker.  Set group flags accordingly.
         Else
             
-            'If pixel data is unusable AND this is not a group marker, add a debug warning
+            'If pixel data is unusable AND this is not a group marker, we'll use this flag to
+            ' add some debug data at the end of this block.
             Dim layerDataRelevant As Boolean
             
-            'Layer groups may require a dummy DIB as their backing surface (a blank 1x1 transparent DIB)
+            'Layer groups may require a dummy DIB as their backing surface (a blank 1x1 transparent DIB).
+            ' This may be replaced with a layer group mask, as relevant.
             Dim dummyDIB As pdDIB
             
             'When a new layer group, increment our group depth counter
@@ -1142,7 +1158,19 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                         dummyDIB.SetInitialAlphaPremultiplicationState True
                     End If
                     
-                    tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group start:") & " " & m_Layers(i).GetLayerName, dummyDIB, True
+                    'Photoshop allows layer groups to have their own masks (a nice feature).  If we encountered
+                    ' a mask while loading this group, use the mask image instead of the dummy DIB.
+                    If (m_Layers(i).GetLayerDIB Is Nothing) Then
+                        Set groupDIB = dummyDIB
+                    Else
+                        If PSD_LOAD_GROUP_MASKS_AS_PIXELS Then
+                            Set groupDIB = m_Layers(i).GetLayerDIB
+                        Else
+                            Set groupDIB = dummyDIB
+                        End If
+                    End If
+                    
+                    tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group start:") & " " & m_Layers(i).GetLayerName, groupDIB, True
                     
                     'Fill in any remaining layer properties
                     With m_Layers(i)
@@ -1200,6 +1228,9 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                         dummyDIB.CreateBlank 1, 1, 32, 0, 0
                     End If
                     
+                    'For layer *start* markers, this is where we'd check for a mask and process it as relevant.
+                    ' Layer *end* markers do not typically carry meaningful data.  (I can always revisit this if
+                    ' a new PSD shows up with contradictory behavior!)
                     tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group end:") & " " & groupNames(curGroupDepth), dummyDIB, True
                     
                     'Fill in any remaining layer properties
@@ -1541,8 +1572,12 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         ' type (e.g. layer masks differ from color channels) and compression type.
         For i = 0 To Abs(m_numOfLayers) - 1
             
-            'To avoid wasting time, skip layers with null sizes
-            If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then GoTo skipLayer
+            'To avoid wasting time, skip layers with null sizes - but *only* if the layer is *not* a group.
+            ' (Layer group markers have width/height of 0, but they *are* allowed to store masks.)
+            
+            If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then
+                If (Not m_Layers(i).IsLayerGroupStart) And (Not m_Layers(i).IsLayerGroupEnd) Then GoTo skipLayer
+            End If
             
             If (m_Layers(i).DecodeChannels(m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, Me) < psd_Failure) Then
             

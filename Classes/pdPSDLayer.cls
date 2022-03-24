@@ -15,11 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 09/July/20
-'Last update: retrieve section boundary data when parsing layer resources; these can include
-'             info on layer groups (start/stop markers) which is important for making sure
-'             child layers inherit parent group visibility state, even though PD doesn't fully
-'             support layers (yet).  Thank you to @Fivavoa for reporting this on GitHub.
+'Last updated: 24/March/22
+'Last update: retrieve masks for layer groups, if present.  This is a little tricky as layer groups
+'             do not provide any layer pixel data, but they do embed an optional mask channel, so
+'             you have to work carefully around this special case
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -308,13 +307,20 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     ' masks present in the image.  (The data in layer masks is not contingent on the image's color mode, but they
     ' *are* contingent on color depth, so we can deal with them in a roughly uniform manner regardless of how
     ' channel data was encoded.)
+    '
+    'Note that this step is especially important for layer *groups*, as they will not have any layer pixel data,
+    ' but they *may* have a mask associated with them.
     If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(warningStack, imageIsPSB, bitsPC, imgColorMode, parentPSD, m_LayerHasAlpha)
     
-    'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now
-    If m_LayerHasAlpha Then
-        m_LayerDIB.SetAlphaPremultiplication True
-    Else
-        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+    'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now.
+    ' (Note that we must check for the presence of a layer DIB; layer groups can potentially construct a mask
+    ' in this step, but not an actual layer DIB.)
+    If (Not m_LayerDIB Is Nothing) Then
+        If m_LayerHasAlpha Then
+            m_LayerDIB.SetAlphaPremultiplication True
+        Else
+            m_LayerDIB.SetInitialAlphaPremultiplicationState True
+        End If
     End If
     
     If PSD_DEBUG_VERBOSE Then
@@ -395,6 +401,18 @@ Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal 
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Failsafe check for bad layer dimensions.  See detailed comments in ConstructImage_RGB(),
+    ' which is where this layer group exception is most relevant.
+    If (layerWidth <= 0) Or (layerHeight <= 0) Then
+        If (Not Me.IsLayerGroupStart) And (Not Me.IsLayerGroupEnd) Then
+            InternalError "ConstructImage_CMYK", "bad layer width/height"
+            ConstructImage_CMYK = psd_Warning
+        Else
+            ConstructImage_CMYK = psd_Success
+        End If
+        Exit Function
+    End If
     
     'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
     Dim channelSize As Long
@@ -582,6 +600,18 @@ Private Function ConstructImage_Lab(ByRef warningStack As pdStringStack, ByVal i
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Failsafe check for bad layer dimensions.  See detailed comments in ConstructImage_RGB(),
+    ' which is where this layer group exception is most relevant.
+    If (layerWidth <= 0) Or (layerHeight <= 0) Then
+        If (Not Me.IsLayerGroupStart) And (Not Me.IsLayerGroupEnd) Then
+            InternalError "ConstructImage_Lab", "bad layer width/height"
+            ConstructImage_Lab = psd_Warning
+        Else
+            ConstructImage_Lab = psd_Success
+        End If
+        Exit Function
+    End If
     
     'Determine the size of a single channel scanline; we'll need this to calculate offsets into our planar
     ' assembly array
@@ -792,6 +822,18 @@ Private Function ConstructImage_Multichannel(ByRef warningStack As pdStringStack
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
     
+    'Failsafe check for bad layer dimensions.  See detailed comments in ConstructImage_RGB(),
+    ' which is where this layer group exception is most relevant.
+    If (layerWidth <= 0) Or (layerHeight <= 0) Then
+        If (Not Me.IsLayerGroupStart) And (Not Me.IsLayerGroupEnd) Then
+            InternalError "ConstructImage_Multichannel", "bad layer width/height"
+            ConstructImage_Multichannel = psd_Warning
+        Else
+            ConstructImage_Multichannel = psd_Success
+        End If
+        Exit Function
+    End If
+    
     'A unique target DIB will be created for each discovered channel.  Initialize our collection in advance.
     m_FinalChannelCount = 0
     ReDim m_FinalChannelDIBs(0) As pdDIB
@@ -974,6 +1016,20 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Failsafe check for bad layer dimensions.  Note that this case *will* be triggered by layer groups
+    ' with a layer mask, and that's okay - we provide special handling for this in the mask retrieval code.
+    ' (We still want to exit here, however, because there will not be any useable layer pixel data beyond
+    ' this point.)
+    If (layerWidth <= 0) Or (layerHeight <= 0) Then
+        If (Not Me.IsLayerGroupStart) And (Not Me.IsLayerGroupEnd) Then
+            InternalError "ConstructImage_RGB", "bad layer width/height"
+            ConstructImage_RGB = psd_Warning
+        Else
+            ConstructImage_RGB = psd_Success
+        End If
+        Exit Function
+    End If
     
     'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
     Dim channelSize As Long
@@ -1210,6 +1266,18 @@ Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStac
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Failsafe check for bad layer dimensions.  See detailed comments in ConstructImage_RGB(),
+    ' which is where this layer group exception is most relevant.
+    If (layerWidth <= 0) Or (layerHeight <= 0) Then
+        If (Not Me.IsLayerGroupStart) And (Not Me.IsLayerGroupEnd) Then
+            InternalError "ConstructImage_SingleChannel", "bad layer width/height"
+            ConstructImage_SingleChannel = psd_Warning
+        Else
+            ConstructImage_SingleChannel = psd_Success
+        End If
+        Exit Function
+    End If
     
     'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
     Dim channelSize As Long
@@ -1517,18 +1585,36 @@ InternalVBError:
 End Function
 
 Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
-
+    
+    Const FUNC_NAME As String = "ConstructLayerMasks"
+    
     ConstructLayerMasks = psd_Success
     On Error GoTo InternalVBError
     
     'Perform a few failsafe checks to detect any issues that arose during channel assembly
     Dim exitEarly As Boolean: exitEarly = False
-    If (m_LayerDIB Is Nothing) Then exitEarly = True
-    If (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Then exitEarly = True
+    If (m_LayerDIB Is Nothing) Then
+        exitEarly = True
+    Else
+        If (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Then exitEarly = True
+    End If
     
     'Multichannel images have unique constraints; I have not seen a multichannel + mask image "in the wild",
     ' and I'd like to have one for testing before enabling mask + multichannel behavior.
     If (imgColorMode = cm_Multichannel) Then exitEarly = True
+    
+    'After all that "exit early" business, we now need to handle a special case - layer groups with masks.
+    ' Layer groups will not have a layer image, but they *may* have a mask.  This is a valid case, and we
+    ' want to cover it (as best we can, at least until we support proper groups and masks).
+    Dim specialLayerGroupMaskCase As Boolean
+    specialLayerGroupMaskCase = False
+    
+    If exitEarly Then
+        If (Me.IsLayerGroupStart Or Me.IsLayerGroupEnd) Then
+            exitEarly = False
+            specialLayerGroupMaskCase = True
+        End If
+    End If
     
     If exitEarly Then
         ConstructLayerMasks = psd_Warning
@@ -1561,12 +1647,16 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
     ' have a pre-defined value of 0 or 255 (defined by a separate value in the underlying PSD).
     Dim maskWidth As Long, maskHeight As Long
     
-    'Prep pointers into the destination image; we'll obviously need these to properly apply the layer mask
+    'Prep pointers into the destination image; we'll obviously need these to properly apply the layer mask.
+    ' (Note that we don't yet have a DIB object for masks on layer groups - this will be handled as a
+    ' special case, later in the function.)
     Dim x As Long, y As Long
     Dim tmpBytes() As Byte, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    If (Not m_LayerDIB Is Nothing) Then
+        scanStart = m_LayerDIB.GetDIBPointer()
+        scanWidth = m_LayerDIB.GetDIBStride()
+    End If
     
     'Iterate through all channels, looking for mask data
     Dim chIndex As Long
@@ -1600,6 +1690,16 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             
             If maskDisabled Then GoTo SkipChannel
             
+            'If this is a *layer group*, we have not created a layer DIB yet (because no layer image data exists).
+            ' As such, this is our chance to finally create one at the size specified by the mask.
+            If specialLayerGroupMaskCase Then
+                If (Not m_LayerDIB Is Nothing) Then InternalError FUNC_NAME, "layer image exists for group?"
+                Set m_LayerDIB = New pdDIB
+                m_LayerDIB.CreateBlank maskWidth, maskHeight, 32, vbWhite, 255
+                scanStart = m_LayerDIB.GetDIBPointer()
+                scanWidth = m_LayerDIB.GetDIBStride()
+            End If
+            
             'There are a lot of different ways to go about applying the mask to the image.  AFAIK, no guarantees
             ' are made about things like rect intersections between the mask and layer, although common sense
             ' suggests the layer is typically inclusive of the mask... but this is a PSD, so expect the worst.
@@ -1617,7 +1717,7 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             
             'There's a bit in the layer flags that supposedly indicates whether the mask position is in absolute
             ' vs relative coordinates (to its parent layer).  Limited testing shows that this bit doesn't seem
-            ' to matter, but if someone can turn up an image that shows otherwise, I'd be happy to modify this code.
+            ' to matter, but if someone can turn up an image that shows otherwise, I'm happy to modify this code.
             Dim rIntersect As RectL
             Dim srcMaskRect As RectL
             If (.ciID = cidUserLayerMask) Then srcMaskRect = m_LayerMaskData.lmRect Else srcMaskRect = m_RealLayerMaskData.lmRect
@@ -1629,7 +1729,9 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             srcMaskRect.Top = srcMaskRect.Top - m_Rect.Top
             srcMaskRect.Bottom = srcMaskRect.Bottom - m_Rect.Top
             
-            'Ensure the layer and mask overlap (and also, *where* they overlap)
+            'On a normal layer, ensure the layer and mask overlap (and also, *where* they overlap).
+            ' (On a layer group mask, this step is technically irrelevant, because the layer DIB will have
+            ' been created according to the mask's dimensions.)
             If PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect) Then
             
                 'We now need to merge the mask data with the "default color" array.  Handling varies by
@@ -1719,8 +1821,8 @@ SkipChannel:
     Exit Function
     
 InternalVBError:
-    InternalError "ConstructLayerMasks", "internal VB error #" & Err.Number & ": " & Err.Description
-    warningStack.AddString "Internal error in ConstructLayerMasks , #" & Err.Number & ": " & Err.Description
+    InternalError FUNC_NAME, "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in " & FUNC_NAME & ", #" & Err.Number & ": " & Err.Description
     ConstructLayerMasks = psd_Failure
     
 End Function
@@ -1831,7 +1933,7 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                 
                 'Prep a temporary output buffer
                 Dim x As Long, y As Long
-                If PSD_DEBUG_VERBOSE Then
+                If PSD_DEBUG_VERBOSE Or Me.IsLayerGroupEnd Or Me.IsLayerGroupStart Then
                     PDDebug.LogAction "Channel #" & i & " (ID=" & .ciID & ") has compression type: " & .ciCompression
                     Dim decodeStartTime As Currency
                     VBHacks.GetHighResTime decodeStartTime
