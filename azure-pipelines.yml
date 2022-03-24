@@ -1,5 +1,5 @@
 trigger:
-  - master
+  - main
 
 # PRs are not currently built (https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers?view=azure-devops&tabs=yaml)
 pr: none
