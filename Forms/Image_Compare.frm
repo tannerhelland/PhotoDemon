@@ -241,7 +241,7 @@ Public Sub CompareImages(ByRef listOfParameters As String)
         'Copy the DIB into a temporary layer object
         Set cmpLayer = New pdLayer
         cmpLayer.CopyExistingLayer tmpLayer
-        Set cmpLayer.GetLayerDIB = tmpDIB
+        cmpLayer.SetLayerDIB tmpDIB
         
     End If
     
@@ -374,7 +374,7 @@ Public Sub CompareImages(ByRef listOfParameters As String)
         srcImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("difference between %1 and %2", srcLayer.GetLayerName, cmpLayer.GetLayerName)
         
         'Replace the (temporary) DIB it created with the merged DIB we just created
-        Set srcImage.GetLayerByID(newLayerID).GetLayerDIB = baseDIB
+        srcImage.GetLayerByID(newLayerID).SetLayerDIB baseDIB
         
         'Make the duplicate layer the active layer
         srcImage.SetActiveLayerByID newLayerID

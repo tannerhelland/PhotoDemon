@@ -382,7 +382,7 @@ Friend Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long
     Else
         
         'Rebuild the composite cache
-        imgCompositor.GetCompositedImage Me, CompositeBuffer, , renderScratchLayerIndex
+        imgCompositor.GetCompositedImage Me, CompositeBuffer, True, renderScratchLayerIndex
         
         'Mark the cache as clean.  (NOTE: this is disabled pending further testing; I'm not sure that all changes
         ' are being tracked correctly, so composites are currently generated on every request as a workaround)

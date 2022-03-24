@@ -524,14 +524,13 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 tmpDIB.SetInitialAlphaPremultiplicationState True
                 
                 'Update the target layer's backing surface with the newly composited result
-                Set tmpLayerRef.GetLayerDIB = tmpDIB
+                tmpLayerRef.SetLayerDIB tmpDIB
                 
                 'Update the layer's offsets to match.
                 If (targetLayerIndex = -1) Then
                     tmpLayerRef.SetLayerOffsetX newLayerRect.Left - selBounds.Left
                     tmpLayerRef.SetLayerOffsetY newLayerRect.Top - selBounds.Top
                 Else
-                    Debug.Print newLayerRect.Left, newLayerRect.Top, selBounds.Left, selBounds.Top
                     tmpLayerRef.SetLayerOffsetX newLayerRect.Left
                     tmpLayerRef.SetLayerOffsetY newLayerRect.Top
                 End If

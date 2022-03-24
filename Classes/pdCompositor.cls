@@ -302,10 +302,7 @@ End Sub
 ' which is the region of the paint layer where painting has occurred.  (In most cases, this will be significantly smaller than the
 ' full layer rect - and note that it will already be cropped to the image dimensions, as necessary.)
 '
-'Just like a regular merge operation, the optional parameter "bottomLayerIsFullSize" can be set to TRUE if the bottom layer is the
-' same size as the current image.  This saves processing time as we can skip certain rect intersection tests.
-'
-'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge,
+'Unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge,
 ' paint ops on a vector layer are placed into a completely new raster layer.
 Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
     
@@ -439,7 +436,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             bottomLayer.SetLayerOffsetY finalRect.Top
             
             'Assign this temporary DIB as the new bottom layer DIB.
-            Set bottomLayer.GetLayerDIB = tmpDIB
+            bottomLayer.SetLayerDIB tmpDIB
             
             'Calculate new offsets for the top layer, then carry on with business as usual!
             xOffset = topRect.Left - finalRect.Left
@@ -509,8 +506,9 @@ End Sub
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
 '
-'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer at the
-' requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
+'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered
+' atop the layer at the requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the
+' background layer.)
 Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True, Optional ByVal paintScratchLayerIndex As Long = -1)
     
     'Start by creating the destination DIB, as necessary
@@ -526,7 +524,7 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     
     'Subsequent steps are going to use a helper function.  This helper function makes it simple to "insert" paint operations
     ' into the current layer stack, without fucking up the existing layer order.
-        
+    
     'If the image has additional layers, proceed to merge the rest of them, starting from the bottom and working our way up.
     ' Note that if a layer is invisible, we simply skip it - this is the most performance-friendly way to handle them.
     Dim i As Long
@@ -567,12 +565,6 @@ End Sub
 'For performance reasons, the module-level m_tmpDIB object is used.  This is by design, because images that have only one
 ' special-treatment layer (e.g. non-destructive FX, resizing, custom blend modes, etc) can avoid the creation of multiple temporary DIBs.
 Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByVal srcLayerIndex As Long)
-    
-    'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
-    
-    'Some variables are potentially used in multiple branches of this function
-    Dim intLayerOffsetX As Long, intLayerOffsetY As Long
-    Dim layerBoundariesOkay As Boolean
     
     'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
     srcLayer.SyncInternalDIB
@@ -625,7 +617,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         
         End If
     
-    'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BM_Normal)..."
+    'This Else statement represents the case "If (srcLayer.GetLayerBlendMode <> BM_Normal)..."
     Else
     
         'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
@@ -642,8 +634,10 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             Else
             
                 'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
+                Dim intLayerOffsetX As Long, intLayerOffsetY As Long
+                Dim layerBoundariesOkay As Boolean
                 layerBoundariesOkay = .GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
-            
+                
                 'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
                 If layerBoundariesOkay Then CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
                 

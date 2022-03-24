@@ -1350,19 +1350,22 @@ Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, 
                     
                     'Success!  Create a new layer in the destination image, then copy the pixel data and
                     ' timestamp into it.
-                    Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer
+                    Dim newLayerID As Long, newLayerName As String, tmpLayer As pdLayer, tmpDIB As pdDIB
                     newLayerID = dstImage.CreateBlankLayer()
                     Set tmpLayer = dstImage.GetLayerByID(newLayerID)
                     newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
                     tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
                     tmpLayer.SetLayerVisibility (idxFrame = 0)
                     
-                    If (tmpLayer.GetLayerDIB Is Nothing) Then Set tmpLayer.GetLayerDIB = New pdDIB
-                    tmpLayer.GetLayerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
-                    CopyMemoryStrict tmpLayer.GetLayerDIB.GetDIBPointer, ptrPixels, tmpLayer.GetLayerDIB.GetDIBStride * tmpLayer.GetLayerDIB.GetDIBHeight
+                    Set tmpDIB = New pdDIB
+                    tmpDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
+                    CopyMemoryStrict tmpDIB.GetDIBPointer, ptrPixels, tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight
                     
                     'We explicitly request premultiplied data, so we don't need to manually premultiply now
-                    tmpLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
+                    tmpDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    'Assign the finished layer image
+                    tmpLayer.SetLayerDIB tmpDIB
                     
                     'As part of storing frametime, update the layer's name with ([time] ms) at the end
                     frameTimeInMS = frameTimestamp - lastFrameTimestamp
