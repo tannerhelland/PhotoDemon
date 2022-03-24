@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1349</langversion>
+<langversion>9.0.1352</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1459,7 +1459,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Bitte reduzieren Sie die angeforderte Größe und versuchen es erneut.</translation>
+<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Bitte reduzieren Sie die gewünschte Größe und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2607,7 +2607,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Scan canceled at the user's request.</original>
-<translation>Scan auf Wunsch des Benutzers abgebrochen.</translation>
+<translation>Scan auf Anfrage des Benutzers abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -9631,7 +9631,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen systemfremden (Nicht-System), uneingeschränkten Ordner für den Batch-Prozess.</translation>
+<translation>PhotoDemon kann nicht auf den gewünschten Ausgabeordner zugreifen. Bitte selektieren Sie einen systemfremden (Nicht-System), uneingeschränkten Ordner für den Batch-Prozess.</translation>
 </phrase>
 
 <phrase>
@@ -10910,7 +10910,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation>Dieses Tag zur Entfernung markieren</translation>
+<translation>Dieses Tag zum Entfernen markieren</translation>
 </phrase>
 
 <phrase>
@@ -10925,7 +10925,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Mark this entire group for removal</original>
-<translation>Diese gesamte Gruppe zur Entfernung markieren</translation>
+<translation>Diese gesamte Gruppe zum Entfernen markieren</translation>
 </phrase>
 
 <phrase>
@@ -10990,7 +10990,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation>Dieses Tag ist beschränkt. Es kann nicht bearbeitet werden, und Entfernungsanfragen werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
+<translation>Dieses Tag ist beschränkt. Es kann nicht bearbeitet werden, und Anfragen zum Entfernen werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
 </phrase>
 
 <phrase>
@@ -13469,7 +13469,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Da PhotoDemon eine portable Applikation ist, kann diese nur nach Updates suchen, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
+<translation>Da PhotoDemon eine portable Applikation ist, kann diese nur nach Updates suchen, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz auf Wunsch reduzieren.</translation>
 </phrase>
 
 <phrase>
