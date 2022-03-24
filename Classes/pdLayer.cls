@@ -200,6 +200,10 @@ Friend Function GetLayerDIB() As pdDIB
     Set GetLayerDIB = m_layerDIB
 End Function
 
+Friend Sub SetLayerDIB(ByRef newDIB As pdDIB)
+    Set m_layerDIB = newDIB
+End Sub
+
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
 ' parent image (including persistence when writing image data to/from file).
 '
@@ -848,8 +852,8 @@ Friend Function AffineTransformsActive(Optional ByVal includeScaling As Boolean 
     
 End Function
 
-'If one or more affine transformations are active (rotation, skew, etc), you can call this function to retrieve three corner points
-' of the layer *IN IMAGE COORDINATES*.
+'If one or more affine transformations are active (rotation, skew, etc), you can call this function to retrieve
+' three corner points of the layer *IN IMAGE COORDINATES*.
 '
 'dstPoints needs to have the bounds (0, 2) or (0, 3).  It will be filled with the following points in this order:
 ' 0) Top-Left
@@ -1067,7 +1071,7 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     'During this step, we will also calculate fractional values I call "normalizeX/Y".
     ' PD's internal compositor can only render to integer offsets, for performance reasons.
     ' Affine transformations almost always result in an image with fractional offsets;
-    ' to make sure these offsets are preserved, we "normalize" the coordinates by offseting
+    ' to make sure these offsets are preserved, we "normalize" the coordinates by offsetting
     ' them by their fractional amount.  This ensures that the final composite looks identical
     ' between GDI+ and PD's internal compositing code.
     
@@ -1077,22 +1081,22 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     
     If (minX < 0) Then
         dstX = 0
-        normalizeX = 0
-        intLayerWidth = Int(maxX + 0.999)
+        normalizeX = 0!
+        intLayerWidth = Int(maxX + 0.9999)
     Else
         dstX = Int(minX)
         normalizeX = minX - dstX
-        intLayerWidth = Int(layerRect.Width + 0.999 + normalizeX)
+        intLayerWidth = Int(layerRect.Width + 0.9999 + normalizeX)
     End If
     
     If (minY < 0) Then
         dstY = 0
-        normalizeY = 0
-        intLayerHeight = Int(maxY + 0.999)
+        normalizeY = 0!
+        intLayerHeight = Int(maxY + 0.9999)
     Else
         dstY = Int(minY)
         normalizeY = minY - dstY
-        intLayerHeight = Int(layerRect.Height + 0.999 + normalizeY)
+        intLayerHeight = Int(layerRect.Height + 0.9999 + normalizeY)
     End If
     
     'Next, replace the results of (2) or (3) with (1), as relevant
@@ -1130,7 +1134,7 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         If Me.AffineTransformsActive(False) Then
             GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, m_layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         Else
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.GetLayerWidth(True), Me.GetLayerHeight(True), m_layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, layerRect.Left + (normalizeX - dstX), layerRect.Top + (normalizeY - dstY), Me.GetLayerWidth(True), Me.GetLayerHeight(True), m_layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         End If
         
         dstDIB.SetInitialAlphaPremultiplicationState True
@@ -1870,7 +1874,7 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     
         'Replace our current layer DIB with the temporary DIB
         tmpPaddingDIB.SetInitialAlphaPremultiplicationState m_layerDIB.GetAlphaPremultiplication
-        Set Me.GetLayerDIB = tmpPaddingDIB
+        Set m_layerDIB = tmpPaddingDIB
         
         'Reset layer offset values
         myLayerData.l_OffsetX = 0&
