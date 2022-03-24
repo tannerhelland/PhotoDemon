@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1340-1</langversion>
+<langversion>9.0.1349</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2070,12 +2070,12 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Group start</original>
-<translation>Gruppenstart</translation>
+<translation>Beginn der Gruppe</translation>
 </phrase>
 
 <phrase>
 <original>Group end</original>
-<translation>Gruppenende</translation>
+<translation>Ende der Gruppe</translation>
 </phrase>
 
 <phrase>
@@ -3988,7 +3988,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Removing metadata with potential privacy concerns</original>
-<translation>Entfernung der Metadaten mit potentiellen Bedenken hinsichtl. der Privatsphäre</translation>
+<translation>Entfernung von Metadaten mit potentiellen Bedenken hinsichtl. der Privatsphäre</translation>
 </phrase>
 
 <phrase>
@@ -5592,7 +5592,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Removing existing translation</original>
-<translation>Entfernung der vorhandenen Übersetzung</translation>
+<translation>Entfernung von vorhandener Übersetzung</translation>
 </phrase>
 
 <phrase>
@@ -6270,7 +6270,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Removing haze from image</original>
-<translation>Entfernung des Dunstes aus Bild</translation>
+<translation>Entfernung von Dunst aus Bild</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7696,7 +7696,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>render emphasis</original>
-<translation>Render-Betonung</translation>
+<translation>Render-Schwerpunkt</translation>
 </phrase>
 
 <phrase>
@@ -7873,7 +7873,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Manhattan (walking)</original>
-<translation>Manhattan (laufend)</translation>
+<translation>Manhattan (Walking)</translation>
 </phrase>
 
 <phrase>
@@ -10910,7 +10910,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation>Dieses Tag zum Entfernen markieren</translation>
+<translation>Dieses Tag zur Entfernung markieren</translation>
 </phrase>
 
 <phrase>
@@ -10925,7 +10925,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Mark this entire group for removal</original>
-<translation>Diese gesamte Gruppe zum Entfernen markieren</translation>
+<translation>Diese gesamte Gruppe zur Entfernung markieren</translation>
 </phrase>
 
 <phrase>
@@ -10935,7 +10935,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Reset entire group to its original values</original>
-<translation>Gesamte Gruppe auf ihre Original-Werte zurücksetzen</translation>
+<translation>Gesamte Gruppe auf deren Original-Werte zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -11343,7 +11343,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Removing transparency</original>
-<translation>Entfernung der Transparenz</translation>
+<translation>Entfernung von Transparenz</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13130,7 +13130,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>start over</original>
-<translation>Von vorn beginnen</translation>
+<translation>Von vorne beginnen</translation>
 </phrase>
 
 <phrase>
