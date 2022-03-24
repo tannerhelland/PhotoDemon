@@ -2235,9 +2235,15 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Layers.MergeVisibleLayers
         Process_ImageMenu = True
         
-    'Flatten image
+    'Flatten image.  This dialog is a little weird because we don't *always* show it.  If an image has
+    ' no transparency, we don't need to prompt for transparency handling - so we always check state in
+    ' advance, rather than bother the user with an unnecessary prompt.
     ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
+        If raiseDialog Then
+            If Layers.IsFlattenDialogRelevant() Then ShowPDDialog vbModal, FormLayerFlatten Else Processor.Process "Flatten image", False, vbNullString, UNDO_Image
+        Else
+            Layers.FlattenImage processParameters
+        End If
         Process_ImageMenu = True
     
     'Modify animation settings

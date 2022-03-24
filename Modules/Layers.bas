@@ -349,7 +349,7 @@ Public Function AddLayerFromVisibleLayers(Optional replaceActiveLayerInstead As 
     
         'Updating the layer is as simple as replacing its existing surface reference with tmpDIB.
         ' (Just make sure not to mess with or forcibly free tmpDIB after this point!)
-        Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
+        PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB tmpDIB
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
     Else
@@ -543,7 +543,7 @@ Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal 
             If replaceActiveLayerInstead Then
                 
                 'Easy-peasy - just replace the current layer's contents with the contents from the newly loaded file
-                Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB tmpDIB
                 PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
                 
             'If we are creating a new layer from scratch, the process is a bit more complicated.
@@ -1571,6 +1571,43 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
 
 End Sub
 
+'Flattening an image with transparency should raise a dialog, so the user can decide whether to
+' 1) Keep transparency in the final flatten, or...
+' 2) Replace transparency with a new background color.
+'
+'If an image does NOT have exposed transparency, such a dialog is irrelevant.  Call this function to
+' decide whether to suppress or raise the flatten dialog prior to flattening.  (TRUE means raise the
+' Flatten dialog, FALSE means suppress it.)
+Public Function IsFlattenDialogRelevant() As Boolean
+    
+    IsFlattenDialogRelevant = True
+    
+    'Grab a small copy of the composite image, and if it doesn't contain meaningful transparency,
+    ' recommend suppressing the flatten dialog.
+    If PDImages.IsImageActive() Then
+        
+        Dim newWidth As Long, newHeight As Long
+        PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 256, 256, newWidth, newHeight
+        
+        Dim tmpRectF As RectF
+        With tmpRectF
+            .Left = 0
+            .Top = 0
+            .Width = newWidth
+            .Height = newHeight
+        End With
+        
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+        PDImages.GetActiveImage.RequestThumbnail tmpDIB, 256, False, VarPtr(tmpRectF)
+        
+        IsFlattenDialogRelevant = DIBs.IsDIBTransparent(tmpDIB)
+        
+    End If
+    
+End Function
+
 'Given a multi-layered image, merge all visible layers, while ignoring any hidden ones.  Note that flattening does *not*
 ' remove alpha!  It simply merges all visible layers.
 Public Sub MergeVisibleLayers()
@@ -1645,7 +1682,7 @@ Public Function ReplaceLayerWithClipboard() As Boolean
     
         'The paste operation succeeded.  Overwrite the active layer's contents with whatever we retrieved
         ' from the clipboard, and notify the parent image of the change.
-        Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
+        PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB tmpDIB
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
