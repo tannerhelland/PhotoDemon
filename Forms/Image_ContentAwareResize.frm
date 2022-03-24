@@ -292,7 +292,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         If (Not tmpDIB.GetAlphaPremultiplication) Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
-        PDImages.GetActiveImage.GetActiveLayer.layerDIB.CreateFromExistingDIB tmpDIB
+        PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.CreateFromExistingDIB tmpDIB
         Set tmpDIB = Nothing
         
         'Notify the parent of the change

@@ -310,10 +310,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             End If
             
             'Rotate the new image into place
-            GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.GetDIBWidth, tmpLayerRef.layerDIB.GetDIBHeight, , , False, True
+            GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, tmpLayerRef.GetLayerDIB, 0, 0, tmpLayerRef.GetLayerDIB.GetDIBWidth, tmpLayerRef.GetLayerDIB.GetDIBHeight, , , False, True
             
             'Copy the resized DIB into its parent layer
-            tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
+            tmpLayerRef.GetLayerDIB.CreateFromExistingDIB finalDIB
             
             'If resizing the entire image, remove any null-padding now
             If (thingToRotate = pdat_Image) Then tmpLayerRef.CropNullPaddedLayer

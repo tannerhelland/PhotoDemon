@@ -968,8 +968,8 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
                     ImageImporter.LoadUndo GenerateUndoFilename(relevantDiffIndex), m_UndoStack(relevantDiffIndex).srcProcCall.pcUndoType, UNDO_Layer, affectedLayerID, True, tmpLayer
                 End If
                 
-                'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
-                Set dstDIB = tmpLayer.layerDIB
+                'tmpLayer will now contain a copy of the relevant DIB (inside .GetLayerDIB).  Copy it into the destination DIB, then exit.
+                Set dstDIB = tmpLayer.GetLayerDIB
                 Set tmpLayer = Nothing
                 
             End If

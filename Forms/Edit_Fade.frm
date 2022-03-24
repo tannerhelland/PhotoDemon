@@ -142,7 +142,7 @@ Private Sub Form_Load()
     'Also retrieve a copy of the layer being operated on, as it appears right now; this is faster than re-retrieving a copy
     ' every time we need to redraw the preview box.
     Set m_curLayerDIB = New pdDIB
-    m_curLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).layerDIB
+    m_curLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).GetLayerDIB
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me, True, True
@@ -214,7 +214,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
     'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else
         
-        PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).layerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
+        PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).GetLayerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
         
         'Notify the parent of the change
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetLayerIndexFromID(m_relevantLayerID)

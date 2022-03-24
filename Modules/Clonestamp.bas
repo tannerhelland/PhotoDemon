@@ -370,7 +370,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         PDImages.GetActiveImage.ScratchLayer.SetLayerOpacity m_BrushOpacity
         PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
-        PDImages.GetActiveImage.ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+        PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
         
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX
@@ -389,7 +389,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         End If
         
         'Initialize any relevant GDI+ objects for the current brush
-        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC
+        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC
         
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
@@ -403,7 +403,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             mergeShortcutOK = (PDImages.GetImageByID(m_SourceImageID).GetNumOfLayers = 1)
             If mergeShortcutOK Then mergeShortcutOK = (Not PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).AffineTransformsActive(True))
             If mergeShortcutOK Then
-                Set m_SampleMergedCopy = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+                Set m_SampleMergedCopy = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerDIB
             Else
                 If (m_SampleMergedCopy Is Nothing) Then Set m_SampleMergedCopy = New pdDIB
                 PDImages.GetImageByID(m_SourceImageID).GetCompositedImage m_SampleMergedCopy, True
@@ -567,7 +567,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             If m_SourceLayerIsTransformed Then
                 Set srcDIB = m_SourceLayerTransformed
             Else
-                Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+                Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerDIB
             End If
         End If
         
@@ -586,7 +586,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         ' masking a minimal amount of the brush.
         Dim srcRectL As RectL_WH, dstRectL As RectL_WH
         Dim dstX As Long, dstY As Long
-        If CalculateSrcDstRects(Int(srcX + 0.5), Int(srcY + 0.5), dstX, dstY, srcRectL, dstRectL, srcDIB, PDImages.GetActiveImage.ScratchLayer.layerDIB) Then
+        If CalculateSrcDstRects(Int(srcX + 0.5), Int(srcY + 0.5), dstX, dstY, srcRectL, dstRectL, srcDIB, PDImages.GetActiveImage.ScratchLayer.GetLayerDIB) Then
             
             'Retrieve the relevant portion of the source image, then make an *untouched* copy of it
             m_Sample.SetInitialAlphaPremultiplicationState True
@@ -685,7 +685,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             
             'Apply the dab
             Dim dstDIB As pdDIB
-            Set dstDIB = PDImages.GetActiveImage.ScratchLayer.layerDIB
+            Set dstDIB = PDImages.GetActiveImage.ScratchLayer.GetLayerDIB
             m_Sample.AlphaBlendToDCEx dstDIB.GetDIBDC, dstX, dstY, dstRectL.Width, dstRectL.Height, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, dabOpacity * 255
             
             'We now need to do something special for semi-transparent pixels.  These pixels *cannot* be allowed

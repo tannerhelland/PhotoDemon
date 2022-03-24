@@ -499,7 +499,7 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
                     .GetAffineTransformedDIB tmpDIB, xOffset, yOffset
                 Else
                     Set tmpDIB = New pdDIB
-                    tmpDIB.CreateFromExistingDIB .layerDIB
+                    tmpDIB.CreateFromExistingDIB .GetLayerDIB
                     xOffset = .GetLayerOffsetX
                     yOffset = .GetLayerOffsetY
                 End If

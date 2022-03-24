@@ -232,7 +232,7 @@ Public Property Let ResizeTarget(newTarget As PD_ActionTarget)
             PDImages.GetActiveImage.GetActiveLayer.GetAffineTransformedDIB m_SrcComposite, 0, 0
         Else
             Set m_SrcComposite = New pdDIB
-            m_SrcComposite.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.layerDIB
+            m_SrcComposite.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB
         End If
     End If
 End Property
@@ -538,7 +538,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         If (thingToResize = pdat_Image) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
-        ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
+        ' place a resized version of tmpLayerRef.GetLayerDIB into tmpDIB.
         
         Select Case resampleMethod
             
@@ -548,63 +548,63 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
                 ' for a fast resize.)
                 If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
-                    tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
+                    tmpDIB.CreateFromExistingDIB tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
                 
                 'For a slower, but more mathematically accurate approach, you could also use our internal scaler
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Box, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
                 
             'Bilinear and bicubic resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
             Case rf_BilinearTriangle
                 If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.GetLayerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_BilinearTriangle, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_CubicBSpline
                 If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.GetLayerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_CubicBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             'All remaining methods rely on our own internal resampling engine
             Case rf_Mitchell
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_CatmullRom
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_Lanczos
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_Cosine
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Cosine, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_Hermite
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Hermite, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_Bell
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Bell, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Bell, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_Quadratic
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_Quadratic, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_QuadraticBSpline
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_QuadraticBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_CubicConvolution
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution, allowApproximation, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.GetLayerDIB, fitWidth, fitHeight, rf_CubicConvolution, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             'This failsafe should never be triggered
             Case Else
                 PDDebug.LogAction "WARNING: FormResize.ResizeImage encountered an unknown resize filter: " & resampleMethod
                 If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+                GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.GetLayerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
             
         End Select
         
@@ -622,7 +622,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             Case ResizeFitStretch
         
                 'Very simple - just copy the resized image back into the main DIB
-                tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
+                tmpLayerRef.GetLayerDIB.CreateFromExistingDIB tmpDIB
         
             'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
             ' blank space - that space is filled by the background color parameter passed in (or transparency,
@@ -630,7 +630,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             Case ResizeFitInclusive
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.CreateBlank imgWidth, imgHeight, 32, 0
+                tmpLayerRef.GetLayerDIB.CreateBlank imgWidth, imgHeight, 32, 0
                 
                 'BitBlt the old image, centered, onto the new DIB
                 If (srcAspect > dstAspect) Then
@@ -641,15 +641,15 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     dstY = 0
                 End If
                 
-                GDI.BitBltWrapper tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
+                GDI.BitBltWrapper tmpLayerRef.GetLayerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
             
             'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
             ' blank space - but parts of the image may get cropped out.
             Case ResizeFitExclusive
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.CreateBlank imgWidth, imgHeight, 32, 0
+                tmpLayerRef.GetLayerDIB.CreateBlank imgWidth, imgHeight, 32, 0
             
                 'BitBlt the old image, centered, onto the new DIB
                 If (srcAspect < dstAspect) Then
@@ -660,8 +660,8 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     dstY = 0
                 End If
                 
-                GDI.BitBltWrapper tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
+                GDI.BitBltWrapper tmpLayerRef.GetLayerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
                 
         End Select
         

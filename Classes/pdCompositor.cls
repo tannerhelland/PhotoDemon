@@ -176,11 +176,11 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
         
             If (bottomLayer.GetLayerOpacity = 100) Then
                 With bottomLayer
-                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
             Else
                 With bottomLayer
-                    .layerDIB.AlphaBlendToDC tmpDIB.GetDIBDC, .GetLayerOpacity * 2.55, xOffset, yOffset
+                    .GetLayerDIB.AlphaBlendToDC tmpDIB.GetDIBDC, .GetLayerOpacity * 2.55, xOffset, yOffset
                 End With
             End If
         
@@ -191,7 +191,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
             If (Not bottomLayer.AffineTransformsActive(False)) Then
             
                 With bottomLayer
-                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 End With
             
             'If rotation or other affine transforms are active, a more complicated solution is required.
@@ -208,7 +208,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
                 
                 'Render the transformed DIB now.
                 With bottomLayer
-                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 End With
             
             End If
@@ -229,7 +229,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
         
         'Copy the temporary DIB into the bottom layer.  (We can't simply reference it as we're likely to need a temporary DIB for
         ' processing the top layer as well.)
-        bottomLayer.layerDIB.CreateFromExistingDIB tmpDIB
+        bottomLayer.GetLayerDIB.CreateFromExistingDIB tmpDIB
         tmpDIB.EraseDIB
         
         'Reset the layer's opacity, as we have already applied it in the previous steps.
@@ -252,9 +252,9 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
         
         'We don't even need a temporary DIB - just composite the current layer as-is
         If ((topLayer.GetLayerBlendMode = BM_Normal) And (topLayer.GetLayerAlphaMode = AM_Normal)) Then
-            topLayer.layerDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
+            topLayer.GetLayerDIB.AlphaBlendToDC bottomLayer.GetLayerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
-            CompositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
+            CompositeAndBlendDIBs topLayer.GetLayerDIB, bottomLayer.GetLayerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
         End If
     
     'Non-destructive transforms are active, so we must prep a temporary DIB for the top layer (containing a transformed copy of its DIB)
@@ -266,7 +266,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
             With topLayer
                 tmpDIB.CreateBlank .GetLayerWidth(True), .GetLayerHeight(True), 32, 0
                 tmpDIB.SetInitialAlphaPremultiplicationState True
-                GDIPlusResizeDIB tmpDIB, 0, 0, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerResizeQuality_GDIPlus
+                GDIPlusResizeDIB tmpDIB, 0, 0, .GetLayerWidth(True), .GetLayerHeight(True), .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerResizeQuality_GDIPlus
             End With
         
         'Full affine transforms are hairier
@@ -285,9 +285,9 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer)
         
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
         If (topLayer.GetLayerBlendMode = BM_Normal) And (topLayer.GetLayerAlphaMode = AM_Normal) Then
-            tmpDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
+            tmpDIB.AlphaBlendToDC bottomLayer.GetLayerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
-            CompositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
+            CompositeAndBlendDIBs tmpDIB, bottomLayer.GetLayerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
         End If
                 
     End If
@@ -338,7 +338,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     Dim bottomLayerIsFullSize As Boolean
     If (Not parentImage Is Nothing) Then
         With bottomLayer
-            bottomLayerIsFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = parentImage.Width) And (.layerDIB.GetDIBHeight = parentImage.Height))
+            bottomLayerIsFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.GetLayerDIB.GetDIBWidth = parentImage.Width) And (.GetLayerDIB.GetDIBHeight = parentImage.Height))
         End With
     End If
     
@@ -392,7 +392,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             If (Not bottomLayer.AffineTransformsActive(True)) Then
             
                 With bottomLayer
-                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
                 
             'Active transforms must be made permanent prior to a merge.
@@ -402,7 +402,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
                 If (Not bottomLayer.AffineTransformsActive(False)) Then
                 
                     With bottomLayer
-                        GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus, , , , True
+                        GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus, , , , True
                     End With
                 
                 'If rotation or other affine transforms are active, a more complicated solution is required.
@@ -419,7 +419,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
                     
                     'Render the transformed DIB now.
                     With bottomLayer
-                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus
+                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus
                     End With
                 
                 End If
@@ -439,7 +439,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             bottomLayer.SetLayerOffsetY finalRect.Top
             
             'Assign this temporary DIB as the new bottom layer DIB.
-            Set bottomLayer.layerDIB = tmpDIB
+            Set bottomLayer.GetLayerDIB = tmpDIB
             
             'Calculate new offsets for the top layer, then carry on with business as usual!
             xOffset = topRect.Left - finalRect.Left
@@ -459,7 +459,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         If parentImage.IsSelectionActive Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
-            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.MainSelection.GetCompositeMaskDIB, ptrToPaintbrushRectF
+            m_Blender.ApplyMaskToTopDIB paintLayer.GetLayerDIB, parentImage.MainSelection.GetCompositeMaskDIB, ptrToPaintbrushRectF
             
         End If
     End If
@@ -470,7 +470,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     quickBlendOkay = ((paintLayer.GetLayerBlendMode = BM_Normal) And (paintLayer.GetLayerAlphaMode = AM_Normal) And (Not (bottomLayer.GetLayerAlphaMode = AM_Locked)))
     
     If quickBlendOkay Then
-        GDIPlus_StretchBlt bottomLayer.layerDIB, xOffset, yOffset, topRect.Width, topRect.Height, paintLayer.layerDIB, topRect.Left, topRect.Top, topRect.Width, topRect.Height, paintLayer.GetLayerOpacity * 0.01, GP_IM_NearestNeighbor, , True
+        GDIPlus_StretchBlt bottomLayer.GetLayerDIB, xOffset, yOffset, topRect.Width, topRect.Height, paintLayer.GetLayerDIB, topRect.Left, topRect.Top, topRect.Width, topRect.Height, paintLayer.GetLayerOpacity * 0.01, GP_IM_NearestNeighbor, , True
     Else
         
         'If *either* the paintbrush or the target layer has requested locked alpha, honor that now
@@ -481,7 +481,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             targetAlphaMode = AM_Normal
         End If
             
-        Me.CompositeAndBlendDIBs paintLayer.layerDIB, bottomLayer.layerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity * 0.01, targetAlphaMode, paintLayer.GetLayerAlphaMode, VarPtr(topRect)
+        Me.CompositeAndBlendDIBs paintLayer.GetLayerDIB, bottomLayer.GetLayerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity * 0.01, targetAlphaMode, paintLayer.GetLayerAlphaMode, VarPtr(topRect)
         
     End If
     
@@ -598,7 +598,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         If (Not srcLayer.AffineTransformsActive(True)) Then
         
             With srcLayer
-                .layerDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
+                .GetLayerDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
             End With
         
         Else
@@ -608,7 +608,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             
                 'If scaling is the only active affine transformation, we can use a special, optimized render function
                 If (Not srcLayer.AffineTransformsActive(False)) Then
-                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth(True), .GetLayerHeight(True), .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 
                 'If non-scaling affine transforms are active, we must perform a full affine transformation.
                 Else
@@ -617,7 +617,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                     .GetLayerCornerCoordinates m_PlgPoints
                     
                     'Apply a full parallelogram transformation
-                    GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .GetLayerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                     
                 End If
                 
@@ -635,7 +635,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             If (Not .AffineTransformsActive(True)) Then
             
                 'Perform an all-in-one composite and blend using PD's awesome all-in-one function
-                CompositeAndBlendDIBs .layerDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
+                CompositeAndBlendDIBs .GetLayerDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
             
             'One or more affine transforms are present.  We have no choice but to create a temporary intermediate DIB,
             ' prior to full compositing.
@@ -893,7 +893,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         Set lodDIB = srcLayer.TmpLODDIB(levelOfDetail)
         
         Dim srcDIB As pdDIB
-        Set srcDIB = srcLayer.layerDIB
+        Set srcDIB = srcLayer.GetLayerDIB
         
         'Several conditions require us to create a temporary DIB prior to actually compositing this layer:
         ' 1) Non-destructive effects
@@ -1357,7 +1357,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         
         'Also, point a reference at the target layer's DIB
         Dim srcDIB As pdDIB
-        Set srcDIB = srcLayer.layerDIB
+        Set srcDIB = srcLayer.GetLayerDIB
         
         'For this first stage, we are going to ignore all specialized layer settings (e.g. blend mode, alpha mode, opacity).
         ' We only want the raw image bytes, resized to match the current viewport.  We will then composite the paint stroke
@@ -1603,7 +1603,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         ' Paint strokes work a bit differently, however, as we always know that *some* portion of the cache must be regenerated.
         ' If this is the first event in the current stroke, we need to generate the entire cache for the paint layer.  If this
         ' is *not* the first event, however, we can simply repaint the portion of the cache that's changed since the last event.
-        Set srcDIB = srcImage.ScratchLayer.layerDIB
+        Set srcDIB = srcImage.ScratchLayer.GetLayerDIB
         
         'Because non-standard blend and/or alpha modes require us to use our internal compositor, we may need to use a temporary
         ' LOD DIB to hold our resized results.  Cache that reference now

@@ -3844,7 +3844,7 @@ Private Sub MnuTest_Click()
     
     'Test code goes here
     
-    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
+    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB,
     ' then uncomment these two lines:
     'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
     'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)

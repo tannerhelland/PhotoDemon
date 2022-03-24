@@ -15,31 +15,28 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 25/August/20
-'Last update: start storing frame time as a persistent setting (instead of relying solely on layer name)
+'Last updated: 24/March/22
+'Last update: start work on layer masks as a persistent layer data element
 '
-'Once upon a time, the pdLayer class was simply a pixel array wrapper.  Once PhotoDemon grew into
+'Once upon a time, the pdLayer class was a simple pixel array wrapper.  Once PhotoDemon grew into
 ' a full layer-based photo editor, however, it became necessary to separate Layer-specific functions
 ' from generic pixel array functions.
 '
-'The current pdLayer class is a comprehensive wrapper for all types of PhotoDemon layers.
-' All layers share some key components, like offsets and blend mode, and all raster layers (and some
-' vector layers - I know, it's confusing) also provide a copy of the layer's contents in pdDIB format.
-' The main viewport renderer doesn't care how layer raster data is created - e.g. whether it comes
-' from text or pixel arrays or something fancy like vector rendering - it just cares that the
-' associated pdDIB object is present and appropriately sized for its contents.
+'The current pdLayer class is a comprehensive wrapper for all PhotoDemon layers, regardless of type.
+' All layers share key components, like opacity and blend mode, and all raster layers (and vector
+' layers, for performance reasons) also provide a copy of the layer's contents in pdDIB format.
+' Note that PD's main viewport renderer doesn't care how layer raster data is created - e.g. whether
+' it comes from text or pixel arrays or vector data - it just cares that the associated pdDIB object
+' is present and appropriately sized for its contents.
 '
-'Because layers interact heavily with PDI files (PhotoDemon's custom file format), each layer must
+'Because layers interact heavily with PDI files (PhotoDemon's internal file format), each layer must
 ' be capable of serializing all meaningful properties to XML, and recreating itself from such an XML
 ' packet when requested.  Layer pixel data is always handled separately, as some layer types may need
 ' to recreate their raster contents on-the-fly (e.g. rasterizing text layers).
 '
-'Layer blend modes are declared here, but the actual blending of layers happens inside the
-' pdCompositor class.  This was done to enable the blending of arbitrary DIBs not attached to layers,
-' and to simplify this class (which is already quite large).  Note also that pdLayer objects have no
-' knowledge of their parent pdImage object, by design.  If interaction with the parent object is
-' required, functions will explicitly request a pdImage reference as part of their function
-' parameters, and you are always guaranteed that the reference will only be used locally.
+'pdLayer objects have no knowledge of their parent pdImage object, by design.  If interaction with
+' the parent object is required, functions should explicitly request a pdImage reference as a
+' function parameter, and you should always guarantee that the reference will only be used locally.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -49,8 +46,9 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Layer type is set at creation time.  Once a layer has been created, its type should not be changed.
-' The one exception to this rule is converting vector layers (text, etc) to image layers.  This can be done, but it is a one-way conversion.
-' Once a layer is converted to PDL_IMAGE type, it cannot be reverted.
+' (The one exception to this rule is converting vector layers (text, etc) to image layers. This can
+'  be done, but it is a one-way conversion. Once a layer is converted to PDL_IMAGE type, it cannot
+'  be reverted.)
 Private m_LayerType As PD_LayerType
 
 'Canonical ID value for this layer.  This value is set once, at layer creation time,
@@ -63,9 +61,11 @@ Private m_LayerType As PD_LayerType
 ' LayerData struct (whose data *can* be modified).
 Private m_layerID As Long
 
-'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
-' Default values will be set at creation time, but never assume that these values are constant, and never attempt to reference
-'  a layer by one of these properties (INCLUDING NAME, as it can be modified without warning)
+'Layers store a lot of layer-type-agnostic metadata.
+' **All of these entries can be changed by the user at run-time.**
+' Default values are set at creation time, but never assume that these values are constant,
+' and never attempt to reference a layer by one of these properties (INCLUDING NAME, as it can be
+' modified without warning)
 Private Type PD_LayerData
     l_Name As String                    'Layer name, as entered by the user
     l_GroupID As Long                   'Layer group (0 if not assigned to a group)
@@ -83,6 +83,7 @@ Private Type PD_LayerData
     l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
     l_Visibility As Boolean             'Layer visibility
+    l_MaskActive As Boolean             'Layer mask exists and is active
     l_FrameTimeInMS As Long             'Frame time, in MS; relevant only for images flagged as animated
 End Type
 
@@ -98,34 +99,40 @@ End Type
 
 Private myVectorData As GenericVectorData
 
-'Vector layers must be converted into raster format for rendering on the screen.  If the DIB is synched against the
-' the current vector contents, this will be set to TRUE.  If it is FALSE, the DIB must be generated prior to display.
+'Vector layers must be converted into raster format for rendering on the screen.
+' If the DIB is synched against the the current vector contents, this value will be TRUE.
+' If it is FALSE, the DIB must be (re)generated prior to display.
 Private m_VectorDIBSynched As Boolean
 
-'Next comes various structs for vector data in a specific format.  These structs must be comprehensive, because their data
-' is used to reconstruct the raster copy of the layer between sessions.
+'Next comes various structs for vector data in a specific format.
+' These structs must be comprehensive, because their data is used to reconstruct a raster copy
+' of this layer between sessions.
 
 'TEXT LAYER STRUCTS
 
-'A dedicated text renderer is used to render the backer layer for text layers.  It also manages all relevant text data.
+'A dedicated text renderer is used to render the backer layer for text layers.
+' This object also manages all relevant text/typography layer data.
 Private myTextRenderer As pdTextRenderer
 
-'A DIB that stores the contents of the layer, in DIB format.
-' - For image layers, the layer contents will be stored in this DIB.
-' - For non-image layers, a rendering of the layer contents will be stored in this DIB.  This DIB is used to render the layer
-'    onto the viewport, rather than constantly recreating whatever the layer's contents may be (text, etc)
-' - For adjustment and other non-data layers, this DIB will remain unused.
+'All layers are ultimately backed by a pdDIB surface.
+' - For image layers, the layer's pixel contents are stored here.
+' - For non-image layers, a pixel-level rendering of the layer contents are stored here.
+'   This DIB is used to render the layer onto the viewport, rather than constantly recreating whatever
+'   the layer's contents may be (text, etc)
+' - For adjustment and other non-data layers, this object may not be used at all.
 '
-'For performance reasons, I have chosen to make layer DIBs publicly accessible.  This allows edit functions to directly modify
-' them as necessary.  That said, any function that directly modifies the DIB must also take care of any management functions
-' as well (e.g. redrawing the viewport), because layers have no way to propagate change notifications up to their parent image.
-' This is typically handled by a called to the parent's .notifyImageChanged function, and passing the relevant layer index.
-Public layerDIB As pdDIB
+'For performance reasons, outside callers can modify this object freely via the GetLayerDIB() function.
+' That said, any function that directly modifies the DIB must also take care of any management functions
+' (e.g. redrawing the viewport), because layers have no way to propagate change notifications up to a
+' parent pdImage object. (This propagation is typically handled by a call to the parent pdImage's
+' .NotifyImageChanged function(), while passing the relevant layer index.)
+Private m_layerDIB As pdDIB
 
-'Temporary level-of-detail (LOD) compositing DIB(s).  These DIBs are only used under certain circumstances; at present, they are
-' restricted to use by the pdCompositor class.  Because it's often necessary to generate temporary DIBs on a per-layer basis,
-' these level-of-detail DIBs can save us a ton of time during performance-crucial operations (e.g. painting).
-Private lodDIB() As pdDIB
+'Temporary level-of-detail (LOD) compositing DIB(s).
+' At present, use of these DIBs is restricted to the pdCompositor class.  Because it's often necessary to
+' generate temporary DIBs on a per-layer basis, these level-of-detail DIBs can save a ton of time during
+' performance-crucial operations (e.g. painting, compositing).
+Private m_lodDIB() As pdDIB
 
 'Layer thumbnail.  A DIB of this size is cached locally, then passed to external functions only when necessary.
 ' Note that requests for sizes larger than the hard-coded thumb size (in either dimension) will force creation of a
@@ -185,6 +192,13 @@ Friend Sub NotifyOfDestructiveChanges()
     m_VectorDIBSynched = False
     
 End Sub
+
+'Direct access to the underlying DIB object.  Do not access for vector layers, as any changes will
+' be overwritten by the vector engine.  Also, remember to notify the parent image of changes via
+' its .NotifyImageChanged() function.
+Friend Function GetLayerDIB() As pdDIB
+    Set GetLayerDIB = m_layerDIB
+End Function
 
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
 ' parent image (including persistence when writing image data to/from file).
@@ -388,7 +402,7 @@ End Sub
 ' for raster layers, they must be handled manually.  (The exception, of course, being the non-destructive X/Y canvas modifier values, which exist
 ' for this explicit purpose!)
 '
-'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the layerDIB object's dimensions,
+'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the m_layerDIB object's dimensions,
 ' and multiplying them by the current canvas x/y modifiers.  The caller can override the canvas modifier calculation by passing FALSE to the function.
 Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
@@ -398,13 +412,13 @@ Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_Image
             
-            If (Not layerDIB Is Nothing) Then
+            If (Not m_layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    GetLayerWidth = layerDIB.GetDIBWidth * GetLayerCanvasXModifier
+                    GetLayerWidth = m_layerDIB.GetDIBWidth * GetLayerCanvasXModifier
                     If (GetLayerWidth < 1#) Then GetLayerWidth = 1#
                 Else
-                    GetLayerWidth = layerDIB.GetDIBWidth
+                    GetLayerWidth = m_layerDIB.GetDIBWidth
                 End If
                 
             Else
@@ -429,13 +443,13 @@ Friend Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_Image
             
-            If (Not layerDIB Is Nothing) Then
+            If (Not m_layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    GetLayerHeight = layerDIB.GetDIBHeight * GetLayerCanvasYModifier
+                    GetLayerHeight = m_layerDIB.GetDIBHeight * GetLayerCanvasYModifier
                     If (GetLayerHeight < 1#) Then GetLayerHeight = 1#
                 Else
-                    GetLayerHeight = layerDIB.GetDIBHeight
+                    GetLayerHeight = m_layerDIB.GetDIBHeight
                 End If
                 
             Else
@@ -743,7 +757,7 @@ Friend Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
             Me.GetAffineTransformedDIB tmpTransformDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
             
             'Update our internal DIB and offsets to match
-            Set Me.layerDIB = tmpTransformDIB
+            Set m_layerDIB = tmpTransformDIB
             With myLayerData
                 .l_OffsetX = newOffsetX
                 .l_OffsetY = newOffsetY
@@ -761,10 +775,10 @@ Friend Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
             
             With tmpTransformDIB
                 .CreateBlank GetLayerWidth(True), GetLayerHeight(True), 32, 0
-                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, layerDIB, 0, 0, GetLayerWidth(False), GetLayerHeight(False), Me.GetLayerResizeQuality_GDIPlus
+                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, m_layerDIB, 0, 0, GetLayerWidth(False), GetLayerHeight(False), Me.GetLayerResizeQuality_GDIPlus
             End With
             
-            Set Me.layerDIB = tmpTransformDIB
+            Set m_layerDIB = tmpTransformDIB
             
             'Reset the width/height modifiers for this layer
             With myLayerData
@@ -1114,9 +1128,9 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
         ' presence of more complicated affine functions, which require a parallelogram-style blit process).
         If Me.AffineTransformsActive(False) Then
-            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, m_layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         Else
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.GetLayerWidth(True), Me.GetLayerHeight(True), Me.layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.GetLayerWidth(True), Me.GetLayerHeight(True), m_layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         End If
         
         dstDIB.SetInitialAlphaPremultiplicationState True
@@ -1206,16 +1220,16 @@ Private Sub Class_Initialize()
     Set myTextRenderer = New pdTextRenderer
     
     'Initialize the layer's DIB
-    Set layerDIB = New pdDIB
+    Set m_layerDIB = New pdDIB
     
     'Initialize all temporary LOD compositing DIBs and corresponding hashes
     ReDim m_ViewportStateHashes(0 To NUM_OF_LOD_CACHES - 1) As Long
     ReDim m_DIBChangedSinceLastHash(0 To NUM_OF_LOD_CACHES - 1) As Boolean
     
-    ReDim lodDIB(0 To NUM_OF_LOD_CACHES - 1) As pdDIB
+    ReDim m_lodDIB(0 To NUM_OF_LOD_CACHES - 1) As pdDIB
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        Set lodDIB(i) = New pdDIB
+        Set m_lodDIB(i) = New pdDIB
     Next i
     
     'Initialize the layer thumbnail and note that it is not clean, which will force a regeneration when the thumbnail is next requested.
@@ -1235,13 +1249,13 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    Set layerDIB = Nothing
+    Set m_layerDIB = Nothing
     Set m_LayerThumbnail = Nothing
     Set myTextRenderer = Nothing
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        Set lodDIB(i) = Nothing
+        Set m_lodDIB(i) = Nothing
     Next i
     
 End Sub
@@ -1308,7 +1322,7 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
         ' (This produces very small undo/redo files when e.g. layer visibility is toggled.)
         If (Not createNonDestructively) Then
         
-            Set layerDIB = New pdDIB
+            Set m_layerDIB = New pdDIB
             With xmlEngine
                 
                 'Validate width/height and other layer parameters
@@ -1336,10 +1350,10 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
                         srfAlphaPremult = .GetBool("px-alpha-premultiplied", True, True)
                         
                         'Create the surface!
-                        layerDIB.CreateBlank srfWidth, srfHeight, srfColorDepth, 0, 0
+                        m_layerDIB.CreateBlank srfWidth, srfHeight, srfColorDepth, 0, 0
                         
                         'Mark alpha premultiplication in advance
-                        layerDIB.SetInitialAlphaPremultiplicationState srfAlphaPremult
+                        m_layerDIB.SetInitialAlphaPremultiplicationState srfAlphaPremult
                         
                         'Return success; note that we create a backing surface even for vector layers,
                         ' as it's required for features like adjustment layers that sit above this one.
@@ -1418,16 +1432,16 @@ Friend Function GetLayerHeaderAsXML() As String
     'Next, write out enough information for us to reconstruct the underlying pixel data for this layer
     ' (if any).  Note that we always write these values, even for a vector layer,
     With xmlEngine
-        .AddParam "px-color-depth", layerDIB.GetDIBColorDepth, True, True
-        If (layerDIB.GetDIBColorDepth = 32) Then
+        .AddParam "px-color-depth", m_layerDIB.GetDIBColorDepth, True, True
+        If (m_layerDIB.GetDIBColorDepth = 32) Then
             .AddParam "px-color-details", "b8g8r8a8", True, True
         Else
             .AddParam "px-color-details", "b8g8r8", True, True
         End If
-        .AddParam "px-width", layerDIB.GetDIBWidth, True, True
-        .AddParam "px-height", layerDIB.GetDIBHeight, True, True
-        .AddParam "px-stride", layerDIB.GetDIBStride, True, True
-        .AddParam "px-alpha-premultiplied", layerDIB.GetAlphaPremultiplication, True, True
+        .AddParam "px-width", m_layerDIB.GetDIBWidth, True, True
+        .AddParam "px-height", m_layerDIB.GetDIBHeight, True, True
+        .AddParam "px-stride", m_layerDIB.GetDIBStride, True, True
+        .AddParam "px-alpha-premultiplied", m_layerDIB.GetAlphaPremultiplication, True, True
     End With
     
     'Close the initial pdLayer tag
@@ -1559,14 +1573,14 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
     
     'If passed, create a local copy of the passed DIB.
     If cloneSourceLayerLocally Then
-        Set layerDIB = New pdDIB
-        If (Not srcDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcDIB
+        Set m_layerDIB = New pdDIB
+        If (Not srcDIB Is Nothing) Then m_layerDIB.CreateFromExistingDIB srcDIB
     Else
-        If (Not srcDIB Is Nothing) Then Set layerDIB = srcDIB Else Set layerDIB = New pdDIB
+        If (Not srcDIB Is Nothing) Then Set m_layerDIB = srcDIB Else Set m_layerDIB = New pdDIB
     End If
     
     'Keep GDI object count down as much as possible
-    layerDIB.FreeFromDC
+    m_layerDIB.FreeFromDC
     
     'Set default offsets
     myLayerData.l_OffsetX = 0
@@ -1609,7 +1623,7 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     End With
     
     'Copy the source layer's DIB, if one exists.
-    If Not (srcLayer.layerDIB Is Nothing) Then Me.layerDIB.CreateFromExistingDIB srcLayer.layerDIB
+    If Not (srcLayer.GetLayerDIB Is Nothing) Then Me.GetLayerDIB.CreateFromExistingDIB srcLayer.GetLayerDIB
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
@@ -1647,17 +1661,17 @@ Friend Function CropNullPaddedLayer() As Boolean
     
     'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
     ' edge error conditions).
-    If (layerDIB.GetDIBDC <> 0) And (layerDIB.GetDIBWidth <> 0) And (layerDIB.GetDIBHeight <> 0) And (layerDIB.GetDIBColorDepth = 32) Then
+    If (m_layerDIB.GetDIBDC <> 0) And (m_layerDIB.GetDIBWidth <> 0) And (m_layerDIB.GetDIBHeight <> 0) And (m_layerDIB.GetDIBColorDepth = 32) Then
     
         'Point an array at the layer's DIB data
         Dim srcImageData() As Byte, srcSA As SafeArray2D
-        layerDIB.WrapArrayAroundDIB srcImageData, srcSA
+        m_layerDIB.WrapArrayAroundDIB srcImageData, srcSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = layerDIB.GetDIBWidth - 1
-        finalY = layerDIB.GetDIBHeight - 1
+        finalX = m_layerDIB.GetDIBWidth - 1
+        finalY = m_layerDIB.GetDIBHeight - 1
         
         'Each edge will be scanned independently, and these variables will be calculated with the new bounding
         ' RECT for this layer.
@@ -1669,7 +1683,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         If (srcImageData(3, 0) <> 0) And (srcImageData(finalX * 4 + 3, 0) <> 0) And (srcImageData(3, finalY) <> 0) And (srcImageData(finalX * 4 + 3, finalY) <> 0) Then
             
             'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
-            layerDIB.UnwrapArrayFromDIB srcImageData
+            m_layerDIB.UnwrapArrayFromDIB srcImageData
             Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
             CropNullPaddedLayer = True
             Exit Function
@@ -1708,7 +1722,7 @@ Friend Function CropNullPaddedLayer() As Boolean
     
         'Check for case (1) and exit if it occurred
         If (Not pixelFails) Then
-            layerDIB.UnwrapArrayFromDIB srcImageData
+            m_layerDIB.UnwrapArrayFromDIB srcImageData
             Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
             CropNullPaddedLayer = False
             Exit Function
@@ -1781,7 +1795,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         newRight = x
         
         'Safely deallocate imageData()
-        layerDIB.UnwrapArrayFromDIB srcImageData
+        m_layerDIB.UnwrapArrayFromDIB srcImageData
         
         'If we made it all the way here, our search for null borders completed successfully.
         
@@ -1795,14 +1809,14 @@ Friend Function CropNullPaddedLayer() As Boolean
             Dim tmpCropDIB As pdDIB
             Set tmpCropDIB = New pdDIB
             tmpCropDIB.CreateBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
-            GDI.BitBltWrapper tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
-            tmpCropDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
+            GDI.BitBltWrapper tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, m_layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
+            tmpCropDIB.SetInitialAlphaPremultiplicationState m_layerDIB.GetAlphaPremultiplication
             
             'Want to know what was cropped?  Use this line to report:
             'Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
             
             'Replace the current layer DIB with our temporary DIB
-            Set layerDIB = tmpCropDIB
+            Set m_layerDIB = tmpCropDIB
             
             'Modify our layer offsets to reflect our new size
             myLayerData.l_OffsetX = newLeft
@@ -1852,11 +1866,11 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         tmpPaddingDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
-        GDI.BitBltWrapper tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, m_layerDIB.GetDIBWidth, m_layerDIB.GetDIBHeight, m_layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
-        tmpPaddingDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
-        Set Me.layerDIB = tmpPaddingDIB
+        tmpPaddingDIB.SetInitialAlphaPremultiplicationState m_layerDIB.GetAlphaPremultiplication
+        Set Me.GetLayerDIB = tmpPaddingDIB
         
         'Reset layer offset values
         myLayerData.l_OffsetX = 0&
@@ -1874,8 +1888,8 @@ End Sub
 Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'If the layer has not been instantiated properly, reject the thumbnail request
-    If (layerDIB Is Nothing) Then Exit Sub
-    If (layerDIB.GetDIBWidth = 0) Or (layerDIB.GetDIBHeight = 0) Then Exit Sub
+    If (m_layerDIB Is Nothing) Then Exit Sub
+    If (m_layerDIB.GetDIBWidth = 0) Or (m_layerDIB.GetDIBHeight = 0) Then Exit Sub
     
     'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
     ' and then produce smaller copies on-demand.
@@ -1884,7 +1898,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Determine proper dimensions for the thumbnail image.
     Dim newThumbWidth As Long, newThumbHeight As Long
-    PDMath.ConvertAspectRatio layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, requiredSize, requiredSize, newThumbWidth, newThumbHeight
+    PDMath.ConvertAspectRatio m_layerDIB.GetDIBWidth, m_layerDIB.GetDIBHeight, requiredSize, requiredSize, newThumbWidth, newThumbHeight
     
     'Prepare the thumbnail DIB
     If (m_LayerThumbnail.GetDIBWidth <> newThumbWidth) Or (m_LayerThumbnail.GetDIBHeight <> newThumbHeight) Then
@@ -1895,7 +1909,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Retrieve a composited thumbnail.  (Note that the user's thumbnail performance setting affects the interpolation
     ' method used.)
-    GDI_Plus.GDIPlus_StretchBlt m_LayerThumbnail, 0!, 0!, newThumbWidth, newThumbHeight, layerDIB, 0!, 0!, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
+    GDI_Plus.GDIPlus_StretchBlt m_LayerThumbnail, 0!, 0!, newThumbWidth, newThumbHeight, m_layerDIB, 0!, 0!, m_layerDIB.GetDIBWidth, m_layerDIB.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     m_LayerThumbnail.SetInitialAlphaPremultiplicationState True
     
     'Before exiting, apply color-management.  This spares callers from needing to do it (and when wouldn't we want
@@ -1915,7 +1929,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Check the (rare) special case where the requested thumbnail size equals the layer's size;
     ' if this happens we can do a simple copy and exit immediately.
     If (thumbnailSize = Me.GetLayerWidth(True)) And (thumbnailSize = Me.GetLayerHeight(True)) And (Not Me.AffineTransformsActive) And (ptrToRectF = 0) Then
-        dstThumbnailDIB.CreateFromExistingDIB Me.layerDIB
+        dstThumbnailDIB.CreateFromExistingDIB Me.GetLayerDIB
         RequestThumbnail = True
         Exit Function
     End If
@@ -2054,7 +2068,7 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
         ' This saves us a lot of time, and we can use a special paint operation with edge-fixes for
         ' some GDI+ weaknesses.
         If (Me.GetLayerWidth = srcImage.Width) And (Me.GetLayerHeight = srcImage.Height) And (Not Me.AffineTransformsActive(True)) Then
-            GDI_Plus.GDIPlus_StretchBlt dstThumbnail, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, Me.layerDIB, 0, 0, Me.GetLayerWidth, Me.GetLayerHeight, interpolationType:=GP_IM_Bilinear, dstCopyIsOkay:=True
+            GDI_Plus.GDIPlus_StretchBlt dstThumbnail, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, Me.GetLayerDIB, 0, 0, Me.GetLayerWidth, Me.GetLayerHeight, interpolationType:=GP_IM_Bilinear, dstCopyIsOkay:=True
             RequestThumbnail_ImageCoords = True
             Exit Function
         End If
@@ -2091,17 +2105,17 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     ReDim cPoints(0 To 2) As PointFloat
     cPoints(0).x = 0
     cPoints(0).y = 0
-    cPoints(1).x = Me.layerDIB.GetDIBWidth - 1
+    cPoints(1).x = Me.GetLayerDIB.GetDIBWidth - 1
     cPoints(1).y = 0
     cPoints(2).x = 0
-    cPoints(2).y = Me.layerDIB.GetDIBHeight - 1
+    cPoints(2).y = Me.GetLayerDIB.GetDIBHeight - 1
     
     cTransform.ApplyTransformToPointFs VarPtr(cPoints(0)), 3
     
     'Prep both surfaces using pd2D (including a cropping region for transparent portions of the thumbnail-)
     Dim cSurfaceDst As pd2DSurface, cSurfaceSrc As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDIB cSurfaceDst, dstThumbnail, False
-    Drawing2D.QuickCreateSurfaceFromDIB cSurfaceSrc, Me.layerDIB, False
+    Drawing2D.QuickCreateSurfaceFromDIB cSurfaceSrc, Me.GetLayerDIB, False
     cSurfaceDst.SetSurfaceClip_FromRectF tmpRectF
     cSurfaceDst.SetSurfaceCompositing P2_CM_Overwrite
     cSurfaceDst.SetSurfacePixelOffset P2_PO_Half
@@ -2118,7 +2132,7 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     End If
     
     'Paint the thumbnail into place!
-    PD2D.DrawSurfaceTransformedF cSurfaceDst, cSurfaceSrc, cTransform, 0, 0, Me.layerDIB.GetDIBWidth, Me.layerDIB.GetDIBHeight
+    PD2D.DrawSurfaceTransformedF cSurfaceDst, cSurfaceSrc, cTransform, 0, 0, Me.GetLayerDIB.GetDIBWidth, Me.GetLayerDIB.GetDIBHeight
     Set cSurfaceDst = Nothing: Set cSurfaceSrc = Nothing
     dstThumbnail.SetInitialAlphaPremultiplicationState True
     
@@ -2274,17 +2288,17 @@ End Sub
 Friend Sub SuspendLayer(Optional ByVal suspendViewportToo As Boolean = False)
     
     'Layer DIB is the most obvious target for memory reduction
-    If (Not layerDIB Is Nothing) Then layerDIB.SuspendDIB cf_Lz4, False
+    If (Not m_layerDIB Is Nothing) Then m_layerDIB.SuspendDIB cf_Lz4, False
     
     'Thumbnail is an easy target too (since it's small, suspending is roughly instantaneous)
     If (Not m_LayerThumbnail Is Nothing) Then m_LayerThumbnail.SuspendDIB cf_Lz4, False
     
-    'Finally, lodDIBs can be suspended too, but be careful with these because there are meaningful
+    'Finally, LOD-DIBs can be suspended too, but be careful with these because there are meaningful
     ' perf implications for viewport rendering if these have to be swapped back in frequently.
     If suspendViewportToo Then
         Dim i As Long
-        For i = LBound(lodDIB) To UBound(lodDIB)
-            If (Not lodDIB(i) Is Nothing) Then lodDIB(i).SuspendDIB cf_Lz4, False
+        For i = LBound(m_lodDIB) To UBound(m_lodDIB)
+            If (Not m_lodDIB(i) Is Nothing) Then m_lodDIB(i).SuspendDIB cf_Lz4, False
         Next i
     End If
     
@@ -2325,20 +2339,20 @@ Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD
             End If
             
             'Initialize the backer DIB as necessary
-            If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
-            If (layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
-                layerDIB.CreateBlank Int(myVectorData.vd_Width + 0.9999), Int(myVectorData.vd_Height + 0.9999), 32, 0, 0
+            If (m_layerDIB Is Nothing) Then Set m_layerDIB = New pdDIB
+            If (m_layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (m_layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
+                m_layerDIB.CreateBlank Int(myVectorData.vd_Width + 0.9999), Int(myVectorData.vd_Height + 0.9999), 32, 0, 0
             Else
-                layerDIB.ResetDIB 0
+                m_layerDIB.ResetDIB 0
             End If
             
-            layerDIB.SetInitialAlphaPremultiplicationState True
+            m_layerDIB.SetInitialAlphaPremultiplicationState True
             
             'Use pdTextRenderer to paint the string onto the backer DIB
             Const REPORT_TEXT_RENDER_TIME As Boolean = False
             Dim startTime As Currency
             If REPORT_TEXT_RENDER_TIME Then VBHacks.GetHighResTime startTime
-            myTextRenderer.RenderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            myTextRenderer.RenderTextToDIB m_layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
             If REPORT_TEXT_RENDER_TIME Then PDDebug.LogAction "Text rendering took: " & VBHacks.GetTimeDiffNowAsString(startTime)
             
     End Select
@@ -2353,12 +2367,12 @@ End Function
 Friend Function EstimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
-    If Not (layerDIB Is Nothing) Then EstimateRAMUsage = layerDIB.GetDIBStride * layerDIB.GetDIBHeight
+    If Not (m_layerDIB Is Nothing) Then EstimateRAMUsage = m_layerDIB.GetDIBStride * m_layerDIB.GetDIBHeight
     If Not (m_LayerThumbnail Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + m_LayerThumbnail.GetDIBStride * m_LayerThumbnail.GetDIBHeight
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        If Not (lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + lodDIB(i).GetDIBStride * lodDIB(i).GetDIBHeight
+        If Not (m_lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + m_lodDIB(i).GetDIBStride * m_lodDIB(i).GetDIBHeight
     Next i
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
@@ -2417,7 +2431,7 @@ End Function
 
 'Access a specific level-of-detail (LOD) cache.
 Friend Function TmpLODDIB(Optional ByVal cacheID As PD_CompositorLOD = CLC_Generic) As pdDIB
-    Set TmpLODDIB = lodDIB(cacheID)
+    Set TmpLODDIB = m_lodDIB(cacheID)
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
@@ -2485,12 +2499,12 @@ Private Function CreateNewLayerFromXML_Legacy(ByRef xmlString As String, Optiona
         ' current layer DIB.
         If (Not createNonDestructively) Then
         
-            Set layerDIB = New pdDIB
+            Set m_layerDIB = New pdDIB
             With xmlEngine
-                layerDIB.CreateBlank .GetUniqueTag_Long("DIB_Width", 1), .GetUniqueTag_Long("DIB_Height", 1), .GetUniqueTag_Long("DIB_ColorDepth", 32)
+                m_layerDIB.CreateBlank .GetUniqueTag_Long("DIB_Width", 1), .GetUniqueTag_Long("DIB_Height", 1), .GetUniqueTag_Long("DIB_ColorDepth", 32)
                 
                 'Mark alpha premultiplication in advance
-                layerDIB.SetInitialAlphaPremultiplicationState .GetUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
+                m_layerDIB.SetInitialAlphaPremultiplicationState .GetUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
             
             End With
             

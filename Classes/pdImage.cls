@@ -509,7 +509,7 @@ End Function
 ' need quick access to the current layer's DIB.
 Friend Function GetActiveDIB() As pdDIB
     If (m_numOfLayers <> 0) Then
-        Set GetActiveDIB = imgLayers(m_curLayer).layerDIB
+        Set GetActiveDIB = imgLayers(m_curLayer).GetLayerDIB
     Else
         Set GetActiveDIB = Nothing
     End If
@@ -1412,7 +1412,7 @@ Friend Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
     
     'Normal layers are very simple: create the destination DIB and paint us directly into position.
     Else
-        GDI.BitBltWrapper dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).GetLayerDIB.GetDIBDC, 0, 0, vbSrcCopy
     End If
     
     'The target DIB will *always* be premultiplied
@@ -1569,7 +1569,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     
     For y = topBound To bottomBound
         MainSelection.GetCompositeMaskDIB.WrapArrayAroundScanline selData, selSA, y
-        imgLayers(targetLayerIndex).layerDIB.WrapArrayAroundScanline dstImageData, dstSA, y
+        imgLayers(targetLayerIndex).GetLayerDIB.WrapArrayAroundScanline dstImageData, dstSA, y
     For x = leftBound To rightBound
     
         selQuickX = x * 4
@@ -1612,7 +1612,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     
     'Clear all array references
     MainSelection.GetCompositeMaskDIB.UnwrapArrayFromDIB selData
-    imgLayers(targetLayerIndex).layerDIB.UnwrapArrayFromDIB dstImageData
+    imgLayers(targetLayerIndex).GetLayerDIB.UnwrapArrayFromDIB dstImageData
     
     'Shrink the layer to its maximum relevant size
     imgLayers(targetLayerIndex).CropNullPaddedLayer
@@ -1709,11 +1709,11 @@ Friend Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = F
     End If
     
     'By design, the scratch layer should always match the current image size.
-    If (ScratchLayer.layerDIB.GetDIBWidth <> Me.Width) Or (ScratchLayer.layerDIB.GetDIBHeight <> Me.Height) Then
-        ScratchLayer.layerDIB.CreateBlank Me.Width, Me.Height, 32, 0, 0
-        ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+    If (ScratchLayer.GetLayerDIB.GetDIBWidth <> Me.Width) Or (ScratchLayer.GetLayerDIB.GetDIBHeight <> Me.Height) Then
+        ScratchLayer.GetLayerDIB.CreateBlank Me.Width, Me.Height, 32, 0, 0
+        ScratchLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
     Else
-        ScratchLayer.layerDIB.ResetDIB 0
+        ScratchLayer.GetLayerDIB.ResetDIB 0
     End If
     
     'No other scratch layer attributes are set by this function, unless specifically requested

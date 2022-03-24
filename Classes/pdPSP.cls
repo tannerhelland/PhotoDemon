@@ -1027,11 +1027,11 @@ Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcIma
     Dim srcChannelBytes() As Byte
     
     'Un-premultiply the source image before writing it to file
-    tmpLayer.layerDIB.SetAlphaPremultiplication False
+    tmpLayer.GetLayerDIB.SetAlphaPremultiplication False
     
     'Write each channel in turn
     For i = 0 To 3
-        okToProceed = ExportStep4b_WriteChannel(cStream, tmpLayer.layerDIB, i, srcChannelBytes, dstCompressionLevel)
+        okToProceed = ExportStep4b_WriteChannel(cStream, tmpLayer.GetLayerDIB, i, srcChannelBytes, dstCompressionLevel)
         If (okToProceed >= psp_Failure) Then Exit For
     Next i
     

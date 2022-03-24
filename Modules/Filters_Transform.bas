@@ -453,10 +453,10 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 'To remove the need for a copy of the original layer bits, we are now going to copy the relevant
                 ' portion of the source layer into the temporary surface we just created.  As a nice perf bonus,
                 ' this will greatly reduce cache misses while applying any per-pixel selection mask processing.
-                GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, newLayerRect.Width, newLayerRect.Height, tmpLayerRef.layerDIB.GetDIBDC, newLayerRect.Left - origLayerRect.Left, newLayerRect.Top - origLayerRect.Top, vbSrcCopy
+                GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, newLayerRect.Width, newLayerRect.Height, tmpLayerRef.GetLayerDIB.GetDIBDC, newLayerRect.Left - origLayerRect.Left, newLayerRect.Top - origLayerRect.Top, vbSrcCopy
                 
                 'We no longer need the source layer's pixel data.  Free it.
-                tmpLayerRef.layerDIB.EraseDIB
+                tmpLayerRef.GetLayerDIB.EraseDIB
                 
                 'Alias a VB6 array around the temporary surface
                 Dim dstImageData() As RGBQuad, dstSA As SafeArray1D, tmpQuad As RGBQuad
@@ -524,7 +524,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 tmpDIB.SetInitialAlphaPremultiplicationState True
                 
                 'Update the target layer's backing surface with the newly composited result
-                Set tmpLayerRef.layerDIB = tmpDIB
+                Set tmpLayerRef.GetLayerDIB = tmpDIB
                 
                 'Update the layer's offsets to match.
                 If (targetLayerIndex = -1) Then
@@ -548,8 +548,8 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 tmpLayerRef.MakeCanvasTransformsPermanent
                 
                 'Next, create a blank layer at the size of the current selection
-                tmpLayerRef.layerDIB.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
-                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
+                tmpLayerRef.GetLayerDIB.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
+                tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState True
                 
                 'Reset layer offsets to match the new size.  If we are resizing *all* layers,
                 ' set the offset to the top-left of the new image, but if we are only cropping
@@ -648,7 +648,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
         
         'Flip it
-        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, 0, tmpLayerRef.GetLayerHeight(False) - 1, tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.GetLayerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerDIB.GetDIBDC, 0, tmpLayerRef.GetLayerHeight(False) - 1, tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
@@ -701,7 +701,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
         
         'Mirror it
-        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, 0, -tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.GetLayerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, 0, -tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
@@ -769,16 +769,16 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
+        tmpDIB.CreateFromExistingDIB tmpLayerRef.GetLayerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
+        tmpLayerRef.GetLayerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.GetLayerDIB, GP_RF_90FlipNone
         
         'Mark the correct alpha state and remove any null-padding
-        tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
+        tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState True
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change
@@ -839,7 +839,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
         
         'Rotate it by inverting both directions of a StretchBlt call
-        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, tmpLayerRef.GetLayerHeight(False) - 1, -tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.GetLayerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, tmpLayerRef.GetLayerHeight(False) - 1, -tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
@@ -906,16 +906,16 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
+        tmpDIB.CreateFromExistingDIB tmpLayerRef.GetLayerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
+        tmpLayerRef.GetLayerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.GetLayerDIB, GP_RF_270FlipNone
         
         'Mark the correct alpha state and remove any null-padding
-        tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
+        tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState True
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change

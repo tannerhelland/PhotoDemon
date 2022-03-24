@@ -244,28 +244,28 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
                 'If the user wants us to fill the border regions of the rotated image with color, we only obey their command
                 ' for the base layer.  Layers atop the base layer can receive transparency in their border regions without trouble.
                 If (thingToRotate = pdat_Image) And (Not rotationTransparent) And (i > lInit) Then
-                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, True
+                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.GetLayerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, True
                 Else
-                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, rotationTransparent, rotationBackColor
+                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.GetLayerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, rotationTransparent, rotationBackColor
                 End If
                 
             Else
                 If (tmpDIB.GetDIBWidth <> PDImages.GetActiveImage.Width) Or (tmpDIB.GetDIBHeight <> PDImages.GetActiveImage.Height) Then
-                    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, tmpLayerRef.layerDIB.GetDIBColorDepth, 0, 0
+                    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, tmpLayerRef.GetLayerDIB.GetDIBColorDepth, 0, 0
                 Else
                     tmpDIB.ResetDIB 0
                 End If
                 
                 If (thingToRotate = pdat_Image) And (Not rotationTransparent) And (i > lInit) Then
-                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, True
+                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.GetLayerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, True
                 Else
-                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, rotationTransparent, rotationBackColor
+                    GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.GetLayerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, rotationTransparent, rotationBackColor
                 End If
                 
             End If
             
             'Copy the end result into the source layer
-            tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
+            tmpLayerRef.GetLayerDIB.CreateFromExistingDIB tmpDIB
             
             'If resizing the entire image, remove any null-padding now
             If thingToRotate = pdat_Image Then

@@ -1933,10 +1933,10 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
                 
                 'Un-premultiply alpha, if any
-                tmpLayer.layerDIB.SetAlphaPremultiplication False
+                tmpLayer.GetLayerDIB.SetAlphaPremultiplication False
                 
                 'Point a DIB wrapper at the fully processed layer
-                Set tmpLayerDIB = tmpLayer.layerDIB
+                Set tmpLayerDIB = tmpLayer.GetLayerDIB
                 
                 If autoColorModeActive Or autoTransparencyModeActive Then
                     autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpLayerDIB, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)

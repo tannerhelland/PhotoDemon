@@ -146,7 +146,7 @@ Private m_Opacity As Byte, m_Clipping As Byte, m_Flags As Byte, m_Visible As Boo
 Private m_LayerNameANSI As String, m_LayerNameUnicode As String, m_GroupState As PSD_LayerGroupState
 
 'The final result of all channel decoding is this pdDIB object, ready for attachment to a pdLayer.
-Private m_LayerDIB As pdDIB
+Private m_layerDIB As pdDIB
 
 'If the original layer contained transparency data (whether in an alpha channel or layer mask),
 ' this will be set to TRUE.  PD hard-converts everything to RGBA format during loading, but when exporting,
@@ -180,7 +180,7 @@ Friend Function DoesLayerHaveUsableData() As Boolean
         If (m_ColorMode = cm_Multichannel) Then
             DoesLayerHaveUsableData = (m_FinalChannelCount > 0)
         Else
-            DoesLayerHaveUsableData = (Not m_LayerDIB Is Nothing)
+            DoesLayerHaveUsableData = (Not m_layerDIB Is Nothing)
         End If
     End If
 End Function
@@ -200,7 +200,7 @@ Friend Function GetLayerClipping() As Boolean
 End Function
 
 Friend Function GetLayerDIB() As pdDIB
-    Set GetLayerDIB = m_LayerDIB
+    Set GetLayerDIB = m_layerDIB
 End Function
 
 Friend Function GetLayerName() As String
@@ -315,11 +315,11 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now.
     ' (Note that we must check for the presence of a layer DIB; layer groups can potentially construct a mask
     ' in this step, but not an actual layer DIB.)
-    If (Not m_LayerDIB Is Nothing) Then
+    If (Not m_layerDIB Is Nothing) Then
         If m_LayerHasAlpha Then
-            m_LayerDIB.SetAlphaPremultiplication True
+            m_layerDIB.SetAlphaPremultiplication True
         Else
-            m_LayerDIB.SetInitialAlphaPremultiplicationState True
+            m_layerDIB.SetInitialAlphaPremultiplicationState True
         End If
     End If
     
@@ -431,16 +431,16 @@ Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal 
     channelScanlineSize = bytesPerChannel * layerWidth
     
     'To simplify handling if channels are missing, start with a white, opaque destination.
-    Set m_LayerDIB = New pdDIB
-    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+    Set m_layerDIB = New pdDIB
+    If (Not m_layerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
         InternalError "ConstructImage_CMYK", "Couldn't allocate image buffer; image is likely too large."
         ConstructImage_CMYK = psd_Failure
         Exit Function
     End If
     
     Dim scanStart As Long, scanWidth As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    scanStart = m_layerDIB.GetDIBPointer()
+    scanWidth = m_layerDIB.GetDIBStride()
     
     'Figure out how many source channels we have and where their indices lie.  (Channel order isn't
     ' necessarily guaranteed in PSDs.)
@@ -624,16 +624,16 @@ Private Function ConstructImage_Lab(ByRef warningStack As pdStringStack, ByVal i
     ReDim labBuffer(0 To channelScanlineSize * 3 - 1) As Byte
     
     'Prep the RGBA buffer in advance; it *does* need to be allocated into a single contiguous chunk.
-    Set m_LayerDIB = New pdDIB
-    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+    Set m_layerDIB = New pdDIB
+    If (Not m_layerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
         InternalError "ConstructImage_Lab", "Couldn't allocate image buffer; image is likely too large."
         ConstructImage_Lab = psd_Failure
         Exit Function
     End If
     
     Dim scanStart As Long, scanWidth As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    scanStart = m_layerDIB.GetDIBPointer()
+    scanWidth = m_layerDIB.GetDIBStride()
     
     'Prep all required color management objects.  Note that special flags are set to mark the source data
     ' as planar instead of interleaved, and to specify transform parameters that more closely mimic the
@@ -717,7 +717,7 @@ Private Function ConstructImage_Lab(ByRef warningStack As pdStringStack, ByVal i
                 If (.ciID = cidAlpha) Or (.ciID > cidLabB) Then
                     
                     Dim ySrcOffset As Long, xLoopEnd As Long
-                    m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                    m_layerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
                     xLoopEnd = layerWidth - 1
                     
                     '8-bit channel (most common case)
@@ -766,7 +766,7 @@ Private Function ConstructImage_Lab(ByRef warningStack As pdStringStack, ByVal i
                     
                     'Manually free our unsafe array wrapper before proceeding, and immediately free our source data
                     ' to relieve memory pressure
-                    m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                    m_layerDIB.UnwrapArrayFromDIB tmpBytes
                     Erase .ciDataDecoded
             
                 End If
@@ -851,8 +851,8 @@ Private Function ConstructImage_Multichannel(ByRef warningStack As pdStringStack
     Dim x As Long, y As Long
     Dim tmpLongs() As Long, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    scanStart = m_layerDIB.GetDIBPointer()
+    scanWidth = m_layerDIB.GetDIBStride()
     
     'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
     ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
@@ -1036,8 +1036,8 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
     channelSize = bytesPerChannel * layerWidth * layerHeight
     
     'To simplify handling if channels are missing, start with a white, opaque destination.
-    Set m_LayerDIB = New pdDIB
-    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+    Set m_layerDIB = New pdDIB
+    If (Not m_layerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
         InternalError "ConstructImage_RGB", "Couldn't allocate image buffer; image is likely too large."
         ConstructImage_RGB = psd_Failure
         Exit Function
@@ -1051,8 +1051,8 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
     Dim x As Long, y As Long
     Dim tmpBytes() As Byte, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    scanStart = m_layerDIB.GetDIBPointer()
+    scanWidth = m_layerDIB.GetDIBStride()
     
     'We now branch down two paths, depending on the presence of an ICC profile.  If an ICC profile exists,
     ' we can merge color management, interleaving, and swizzling into a single step, reducing import time
@@ -1168,7 +1168,7 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
                     
                 'Actually painting the color channel data is extremely simple; just copy the byte into its
                 ' relevant position in the target DIB.
-                m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                m_layerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
                 xLoopEnd = layerWidth - 1
                 
                 '8-bit channel (most common case)
@@ -1202,7 +1202,7 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
                 
                 'Manually free our unsafe array wrapper before proceeding, and immediately free our source data
                 ' to relieve memory pressure
-                m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                m_layerDIB.UnwrapArrayFromDIB tmpBytes
                 Erase .ciDataDecoded
                 
             End With
@@ -1284,8 +1284,8 @@ Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStac
     channelSize = bytesPerChannel * layerWidth * layerHeight
     
     'To simplify handling if channels are missing, start with a white, opaque destination.
-    Set m_LayerDIB = New pdDIB
-    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+    Set m_layerDIB = New pdDIB
+    If (Not m_layerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
         InternalError "ConstructImage_SingleChannel", "Couldn't allocate image buffer; image is likely too large."
         ConstructImage_SingleChannel = psd_Failure
         Exit Function
@@ -1299,8 +1299,8 @@ Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStac
     Dim x As Long, y As Long
     Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
-    scanStart = m_LayerDIB.GetDIBPointer()
-    scanWidth = m_LayerDIB.GetDIBStride()
+    scanStart = m_layerDIB.GetDIBPointer()
+    scanWidth = m_layerDIB.GetDIBStride()
     
     'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
     ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
@@ -1406,7 +1406,7 @@ Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStac
                     GetMem4 VarPtr(imgPalette(x)), palLookup(x)
                 Next x
                 
-                m_LayerDIB.WrapLongArrayAroundScanline tmpLongs, tmpSA, 0
+                m_layerDIB.WrapLongArrayAroundScanline tmpLongs, tmpSA, 0
                 xLoopEnd = layerWidth - 1
                 
                 '8-bit channel
@@ -1452,7 +1452,7 @@ Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStac
                     
                 End If
                 
-                m_LayerDIB.UnwrapLongArrayFromDIB tmpLongs
+                m_layerDIB.UnwrapLongArrayFromDIB tmpLongs
                 
                 'Immediately free the source channel data to relieve memory pressure
                 Erase .ciDataDecoded
@@ -1478,7 +1478,7 @@ SkipChannel:
                 'Alpha channel found
                 If (.ciID > cidIndexed) Or (.ciID = cidAlpha) Then
             
-                    m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                    m_layerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
                     xLoopEnd = layerWidth - 1
                     
                     Const ONE_DIV_255 As Single = 1! / 255!
@@ -1531,7 +1531,7 @@ SkipChannel:
                         
                     End If
                 
-                    m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                    m_layerDIB.UnwrapArrayFromDIB tmpBytes
                     
                     'Immediately free the source channel data to relieve memory pressure
                     Erase .ciDataDecoded
@@ -1561,7 +1561,7 @@ SkipChannelAlpha:
         
         'Explicitly request blackpoint compensation to produce results similar to Adobe's CMM
         lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_BGRA_8, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
-        lcmsTransform.ApplyTransformToPDDib m_LayerDIB
+        lcmsTransform.ApplyTransformToPDDib m_layerDIB
         
         'Transforms can consume a surprising amount of memory, depending on the way the ICC is built.  (For example,
         ' files can define giant 3D mapping tables - and this approach is actually very common in CMYK images.)
@@ -1593,10 +1593,10 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
     
     'Perform a few failsafe checks to detect any issues that arose during channel assembly
     Dim exitEarly As Boolean: exitEarly = False
-    If (m_LayerDIB Is Nothing) Then
+    If (m_layerDIB Is Nothing) Then
         exitEarly = True
     Else
-        If (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Then exitEarly = True
+        If (m_layerDIB.GetDIBWidth <= 0) Or (m_layerDIB.GetDIBHeight <= 0) Then exitEarly = True
     End If
     
     'Multichannel images have unique constraints; I have not seen a multichannel + mask image "in the wild",
@@ -1653,9 +1653,9 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
     Dim x As Long, y As Long
     Dim tmpBytes() As Byte, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
-    If (Not m_LayerDIB Is Nothing) Then
-        scanStart = m_LayerDIB.GetDIBPointer()
-        scanWidth = m_LayerDIB.GetDIBStride()
+    If (Not m_layerDIB Is Nothing) Then
+        scanStart = m_layerDIB.GetDIBPointer()
+        scanWidth = m_layerDIB.GetDIBStride()
     End If
     
     'Iterate through all channels, looking for mask data
@@ -1693,11 +1693,11 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             'If this is a *layer group*, we have not created a layer DIB yet (because no layer image data exists).
             ' As such, this is our chance to finally create one at the size specified by the mask.
             If specialLayerGroupMaskCase Then
-                If (Not m_LayerDIB Is Nothing) Then InternalError FUNC_NAME, "layer image exists for group?"
-                Set m_LayerDIB = New pdDIB
-                m_LayerDIB.CreateBlank maskWidth, maskHeight, 32, vbWhite, 255
-                scanStart = m_LayerDIB.GetDIBPointer()
-                scanWidth = m_LayerDIB.GetDIBStride()
+                If (Not m_layerDIB Is Nothing) Then InternalError FUNC_NAME, "layer image exists for group?"
+                Set m_layerDIB = New pdDIB
+                m_layerDIB.CreateBlank maskWidth, maskHeight, 32, vbWhite, 255
+                scanStart = m_layerDIB.GetDIBPointer()
+                scanWidth = m_layerDIB.GetDIBStride()
             End If
             
             'There are a lot of different ways to go about applying the mask to the image.  AFAIK, no guarantees
@@ -1708,11 +1708,11 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             ' via the "default color" mask byte), let's prep a full buffer at the size of the layer, fill it with
             ' the default value, then simply overwrite the relevant rect with the mask's actual data.
             Dim tmpBuffer() As Byte
-            ReDim tmpBuffer(0 To m_LayerDIB.GetDIBWidth - 1, 0 To m_LayerDIB.GetDIBHeight - 1) As Byte
+            ReDim tmpBuffer(0 To m_layerDIB.GetDIBWidth - 1, 0 To m_layerDIB.GetDIBHeight - 1) As Byte
             If (.ciID = cidUserLayerMask) Then
-                FillMemory VarPtr(tmpBuffer(0, 0)), m_LayerDIB.GetDIBWidth * m_LayerDIB.GetDIBHeight, m_LayerMaskData.lmDefaultColor
+                FillMemory VarPtr(tmpBuffer(0, 0)), m_layerDIB.GetDIBWidth * m_layerDIB.GetDIBHeight, m_LayerMaskData.lmDefaultColor
             ElseIf (.ciID = cidRealUserLayerMask) Then
-                FillMemory VarPtr(tmpBuffer(0, 0)), m_LayerDIB.GetDIBWidth * m_LayerDIB.GetDIBHeight, m_RealLayerMaskData.lmDefaultColor
+                FillMemory VarPtr(tmpBuffer(0, 0)), m_layerDIB.GetDIBWidth * m_layerDIB.GetDIBHeight, m_RealLayerMaskData.lmDefaultColor
             End If
             
             'There's a bit in the layer flags that supposedly indicates whether the mask position is in absolute
@@ -1732,7 +1732,7 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             'On a normal layer, ensure the layer and mask overlap (and also, *where* they overlap).
             ' (On a layer group mask, this step is technically irrelevant, because the layer DIB will have
             ' been created according to the mask's dimensions.)
-            If PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect) Then
+            If PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_layerDIB.GetDIBWidth - 1, m_layerDIB.GetDIBHeight - 1), srcMaskRect) Then
             
                 'We now need to merge the mask data with the "default color" array.  Handling varies by
                 ' parent layer color depth.
@@ -1789,10 +1789,10 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             'Actually applying the mask is very simple.  We simply want to multiply any existing alpha values
             ' by the values found in the mask.
             Dim layerWidth As Long, layerHeight As Long
-            layerWidth = m_LayerDIB.GetDIBWidth
-            layerHeight = m_LayerDIB.GetDIBHeight
+            layerWidth = m_layerDIB.GetDIBWidth
+            layerHeight = m_layerDIB.GetDIBHeight
             
-            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+            m_layerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
             xLoopEnd = layerWidth - 1
             
             Const ONE_DIV_255 As Single = 1! / 255!
@@ -1806,7 +1806,7 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             Next x
             Next y
             
-            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+            m_layerDIB.UnwrapArrayFromDIB tmpBytes
                     
         End With
 
@@ -3135,7 +3135,7 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
                 Exit Sub
             End If
         Else
-            tmpLayerDIB.CreateFromExistingDIB srcLayer.layerDIB
+            tmpLayerDIB.CreateFromExistingDIB srcLayer.GetLayerDIB
             layerOffsetX = srcLayer.GetLayerOffsetX()
             layerOffsetY = srcLayer.GetLayerOffsetY()
         End If

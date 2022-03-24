@@ -322,8 +322,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             'Crop the relevant portion of the layer out, using the selection boundary as a guide.  (We will only
             ' process the selection rectangle area for the effect; pixels outside that rectangle will be ignored.)
             workingDIB.CreateBlank selBounds.Width, selBounds.Height, PDImages.GetActiveImage.GetActiveDIB().GetDIBColorDepth
-            GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
-            workingDIB.SetInitialAlphaPremultiplicationState PDImages.GetActiveImage.GetActiveLayer.layerDIB.GetAlphaPremultiplication
+            GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.GetLayerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
+            workingDIB.SetInitialAlphaPremultiplicationState PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetAlphaPremultiplication
             
         Else
             workingDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB()
@@ -423,7 +423,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection.
                 If previewTarget.ViewportFitFullImage Then
                     workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
-                    GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, newWidth, newHeight, tmpLayer.layerDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , GP_IM_Bilinear
+                    GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, newWidth, newHeight, tmpLayer.GetLayerDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , GP_IM_Bilinear
                     
                 'The user is operating at 100% zoom.  Retrieve a subsection of the selected area, but do not scale it.
                 Else
@@ -433,8 +433,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                     vOffset = previewTarget.GetOffsetY
                     workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
                     
-                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpLayer.layerDIB.GetDIBDC, hOffset + selBounds.Left, vOffset + selBounds.Top, vbSrcCopy
-                    workingDIB.SetInitialAlphaPremultiplicationState tmpLayer.layerDIB.GetAlphaPremultiplication
+                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpLayer.GetLayerDIB.GetDIBDC, hOffset + selBounds.Left, vOffset + selBounds.Top, vbSrcCopy
+                    workingDIB.SetInitialAlphaPremultiplicationState tmpLayer.GetLayerDIB.GetAlphaPremultiplication
                     
                 End If
                 

@@ -349,7 +349,7 @@ Public Function AddLayerFromVisibleLayers(Optional replaceActiveLayerInstead As 
     
         'Updating the layer is as simple as replacing its existing surface reference with tmpDIB.
         ' (Just make sure not to mess with or forcibly free tmpDIB after this point!)
-        Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+        Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
     Else
@@ -543,7 +543,7 @@ Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal 
             If replaceActiveLayerInstead Then
                 
                 'Easy-peasy - just replace the current layer's contents with the contents from the newly loaded file
-                Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+                Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
                 PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
                 
             'If we are creating a new layer from scratch, the process is a bit more complicated.
@@ -679,7 +679,7 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
             'For image layers, force the layer DIB to all zeroes
             Case PDL_Image
                 With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
-                    .layerDIB.CreateBlank .GetLayerWidth(False), .GetLayerHeight(False), 32, 0, 0
+                    .GetLayerDIB.CreateBlank .GetLayerWidth(False), .GetLayerHeight(False), 32, 0, 0
                 End With
             
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
@@ -1645,7 +1645,7 @@ Public Function ReplaceLayerWithClipboard() As Boolean
     
         'The paste operation succeeded.  Overwrite the active layer's contents with whatever we retrieved
         ' from the clipboard, and notify the parent image of the change.
-        Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+        Set PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB = tmpDIB
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
@@ -1905,7 +1905,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
     Dim tmpLayerRef As pdLayer
     Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
         
-    If (layerX >= 0) And (layerY >= 0) And (layerX < tmpLayerRef.layerDIB.GetDIBWidth) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
+    If (layerX >= 0) And (layerY >= 0) And (layerX < tmpLayerRef.GetLayerDIB.GetDIBWidth) And (layerY < tmpLayerRef.GetLayerDIB.GetDIBHeight) Then
     
         'The point lies inside the layer, which means we need to figure out the color at this position
         GetRGBAPixelFromLayer = True
@@ -1914,20 +1914,20 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
         ' Retrieve the color (and alpha, if relevant) at that point.
         Dim tmpData() As Byte
         Dim tSA As SafeArray2D
-        PrepSafeArray tSA, tmpLayerRef.layerDIB
+        PrepSafeArray tSA, tmpLayerRef.GetLayerDIB
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
         Dim xStride As Long
-        xStride = layerX * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
+        xStride = layerX * (tmpLayerRef.GetLayerDIB.GetDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((xStride + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
+        If ((xStride + 3) < tmpLayerRef.GetLayerDIB.GetDIBStride) And (layerY < tmpLayerRef.GetLayerDIB.GetDIBHeight) Then
         
             With dstQuad
                 .Blue = tmpData(xStride, layerY)
                 .Green = tmpData(xStride + 1, layerY)
                 .Red = tmpData(xStride + 2, layerY)
-                If (tmpLayerRef.layerDIB.GetDIBColorDepth = 32) Then .Alpha = tmpData(xStride + 3, layerY)
+                If (tmpLayerRef.GetLayerDIB.GetDIBColorDepth = 32) Then .Alpha = tmpData(xStride + 3, layerY)
             End With
             
         End If
@@ -2103,8 +2103,8 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
     With srcRectF
         If (.Left < 0) Then .Left = 0
         If (.Top < 0) Then .Top = 0
-        If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
-        If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
+        If (.Width > PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBWidth
+        If (.Height > PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBHeight
     End With
     
     Dim undoType As PD_UndoType
@@ -2128,7 +2128,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         
         'Reset the scratch layer (if it hasn't already been freed)
         If (Not PDImages.GetActiveImage.ScratchLayer Is Nothing) Then
-            If (Not PDImages.GetActiveImage.ScratchLayer.layerDIB Is Nothing) Then PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+            If (Not PDImages.GetActiveImage.ScratchLayer.GetLayerDIB Is Nothing) Then PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.ResetDIB 0
         End If
         
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
@@ -2141,7 +2141,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
             'A selection is active.  Pre-mask the paint scratch layer against it.
             Dim cBlender As pdPixelBlender
             Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, VarPtr(srcRectF)
+            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.GetLayerDIB, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, VarPtr(srcRectF)
             
         End If
         

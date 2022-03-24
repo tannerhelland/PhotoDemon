@@ -216,7 +216,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushColor, , True
         
         'Initialize any relevant GDI+ objects for the current brush
-        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
+        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
         
         'If we're directly using GDI+ for painting (by calling various GDI+ line commands), we need to explicitly set
         ' half-pixel offsets, so each pixel "coordinate" is treated as the *center* of the pixel instead of the top-left corner.

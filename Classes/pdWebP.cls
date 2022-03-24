@@ -722,7 +722,7 @@ Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOpti
         
         'Convert this frame into a WebP picture object
         Dim wpPicture As PD_WebPPicture
-        If GetWebPPicture(tmpLayer.layerDIB, wpPicture, True) Then
+        If GetWebPPicture(tmpLayer.GetLayerDIB, wpPicture, True) Then
             
             'Calculate a timestamp for this frame.  WebP doesn't use frame times; instead, it uses
             ' a (0-based, presumably?) additive timestamp and auto-calculates frame times from that.
@@ -1357,12 +1357,12 @@ Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, 
                     tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
                     tmpLayer.SetLayerVisibility (idxFrame = 0)
                     
-                    If (tmpLayer.layerDIB Is Nothing) Then Set tmpLayer.layerDIB = New pdDIB
-                    tmpLayer.layerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
-                    CopyMemoryStrict tmpLayer.layerDIB.GetDIBPointer, ptrPixels, tmpLayer.layerDIB.GetDIBStride * tmpLayer.layerDIB.GetDIBHeight
+                    If (tmpLayer.GetLayerDIB Is Nothing) Then Set tmpLayer.GetLayerDIB = New pdDIB
+                    tmpLayer.GetLayerDIB.CreateBlank m_AnimationInfo.canvas_width, m_AnimationInfo.canvas_height, 32, 0, 0
+                    CopyMemoryStrict tmpLayer.GetLayerDIB.GetDIBPointer, ptrPixels, tmpLayer.GetLayerDIB.GetDIBStride * tmpLayer.GetLayerDIB.GetDIBHeight
                     
                     'We explicitly request premultiplied data, so we don't need to manually premultiply now
-                    tmpLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+                    tmpLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
                     
                     'As part of storing frametime, update the layer's name with ([time] ms) at the end
                     frameTimeInMS = frameTimestamp - lastFrameTimestamp

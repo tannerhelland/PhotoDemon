@@ -953,6 +953,7 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     m_LastShowDialogResult = vbIgnore
     
     'Start by loading the form and hiding it
+    If (dialogForm Is Nothing) Then Load dialogForm
     dialogForm.Visible = False
     
     'Store a reference to this dialog; if subsequent dialogs are loaded, this dialog will be given ownership over them

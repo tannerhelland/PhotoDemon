@@ -810,7 +810,7 @@ Public Function GetOptimizedPaletteIncAlpha_AllLayers(ByRef srcImage As pdImage,
     For i = 0 To srcImage.GetNumOfLayers - 1
     
         'Limit the size of the source layer to MAX_PIXELS_PER_LAYER
-        If DIBs.ResizeDIBByPixelCount(srcImage.GetLayerByIndex(i).layerDIB, tmpDIB, MAX_PIXELS_PER_LAYER) Then
+        If DIBs.ResizeDIBByPixelCount(srcImage.GetLayerByIndex(i).GetLayerDIB, tmpDIB, MAX_PIXELS_PER_LAYER) Then
         
             'Wrap an array around the temporary DIB copy
             tmpDIB.WrapLongArrayAroundDIB_1D srcPixels, tmpSA

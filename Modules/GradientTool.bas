@@ -330,7 +330,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     'Notify the scratch layer of our updates
     If mouseButtonDown Or isLastStroke Then
         
-        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+        PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.ResetDIB 0
         
         If (g_ViewportPerformance >= PD_PERF_BALANCED) And (Not isLastStroke) Then
             PreviewRenderer srcCanvas, m_Points(0), m_Points(1), curBackend
@@ -342,9 +342,9 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
             End If
             
             If (curBackend = gr_GDIPlus) Then
-                GdipRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
+                GdipRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.GetLayerDIB
             ElseIf (curBackend = gr_Internal) Then
-                InternalRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
+                InternalRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.GetLayerDIB
             End If
             
             If PROFILE_GRADIENT_PERF Then PDDebug.LogAction "Gradient rendered by " & GetNameOfRenderer(curBackend) & " in " & VBHacks.GetTimeDiffNowAsString(gradStartTime)
@@ -1300,8 +1300,8 @@ Public Sub CommitGradientResults()
     With tmpRectF
         .Left = 0
         .Top = 0
-        .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
-        .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
+        .Width = PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBWidth
+        .Height = PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBHeight
     End With
     
     Layers.CommitScratchLayer "Gradient tool", tmpRectF

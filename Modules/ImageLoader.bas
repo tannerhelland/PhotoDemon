@@ -152,9 +152,9 @@ Public Function LoadPDI_Normal(ByRef pdiPath As String, ByRef dstDIB As pdDIB, B
                     If dstImage.GetLayerByIndex(curLayerIndex).IsLayerRaster Then
                     
                         'Decompress directly into a DIB buffer
-                        If (Not dstImage.GetLayerByIndex(curLayerIndex).layerDIB Is Nothing) Then
-                            dstImage.GetLayerByIndex(curLayerIndex).layerDIB.SetInitialAlphaPremultiplicationState True
-                            dstImage.GetLayerByIndex(curLayerIndex).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                        If (Not dstImage.GetLayerByIndex(curLayerIndex).GetLayerDIB Is Nothing) Then
+                            dstImage.GetLayerByIndex(curLayerIndex).GetLayerDIB.SetInitialAlphaPremultiplicationState True
+                            dstImage.GetLayerByIndex(curLayerIndex).GetLayerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                             If (tmpDIBLength <> 0) Then
                                 layerInitializedOK = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer, tmpDIBLength)
                                 If (Not layerInitializedOK) Then PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because GetNextChunk failed!"
@@ -487,11 +487,11 @@ Public Function LoadPDI_SingleLayer(ByRef pdiPath As String, ByRef dstLayer As p
                                     If dstLayer.IsLayerRaster Then
                                     
                                         'Decompress directly into a DIB buffer
-                                        If (Not dstLayer.layerDIB Is Nothing) Then
+                                        If (Not dstLayer.GetLayerDIB Is Nothing) Then
                                             
                                             Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                                            dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
-                                            dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                                            dstLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
+                                            dstLayer.GetLayerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                                             
                                             If (tmpDIBPointer <> 0) Then
                                                 chunkLoaded = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer, tmpDIBLength)
@@ -617,8 +617,8 @@ Private Function LoadPDLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer,
                 
                     'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                     Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                    dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
-                    dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                    dstLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
+                    dstLayer.GetLayerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                     
                     'Because we already know the decompressed size of the pixel data, we don't need to
                     ' double-allocate it - instead, decompress it directly from its (memory-mapped)

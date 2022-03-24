@@ -515,7 +515,7 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
     tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(0)
     tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
     
-    sourceIsFullColor = (Palettes.GetDIBColorCount_FastAbort(tmpLayer.layerDIB, imgPalette) > 256)
+    sourceIsFullColor = (Palettes.GetDIBColorCount_FastAbort(tmpLayer.GetLayerDIB, imgPalette) > 256)
     If autoDither Then useDithering = sourceIsFullColor
     
     'If we detect two identical back-to-back frames (surprisingly common in GIFs "in the wild"),
@@ -552,12 +552,12 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
         
         'Ensure we have a target DIB to operate on; the final, optimized frame will be stored here.
         If (curFrameBackup Is Nothing) Then Set curFrameBackup = New pdDIB
-        curFrameBackup.CreateFromExistingDIB tmpLayer.layerDIB
+        curFrameBackup.CreateFromExistingDIB tmpLayer.GetLayerDIB
         Set m_allFrames(i).frameDIB = New pdDIB
         
         'Force alpha to 0 or 255 only (this is a GIF requirement). It simplifies
         ' subsequent steps to handle this up-front.
-        DIBs.ApplyAlphaCutoff_Gif tmpLayer.layerDIB, gifAlphaCutoff, gifMatteColor
+        DIBs.ApplyAlphaCutoff_Gif tmpLayer.GetLayerDIB, gifAlphaCutoff, gifMatteColor
         
         'The first frame in the file should always be full-size, which limits what we can do
         ' to optimize it.  (Technically, you *could* write GIFs whose first frame is smaller
@@ -569,11 +569,11 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
             ' the animation, and the fallback "static" image for decoders that don't
             ' understand animated GIFs.  (Also, after creating it, we immediately suspend
             ' the DIB to a compressed array to reduce memory constraints.)
-            m_allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.layerDIB
+            m_allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.GetLayerDIB
             m_allFrames(i).frameDIB.SuspendDIB cf_Lz4, False
             
             'Initialize the frame buffer to be the same as the first frame...
-            bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
+            bufferFrame.CreateFromExistingDIB tmpLayer.GetLayerDIB
             
             '...and initialize the "previous" frame buffer to pure transparency (this is complicated
             ' for GIFs because the recommendation is to avoid this disposal method entirely - due to
@@ -582,7 +582,7 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
             ' In PNGs, the spec says to use transparent black but GIFs may not support transparency
             ' at all... so I'm not sure what to do.  For now, I'm using the same strategy as PNGs
             ' and will revisit if problems arise.
-            prevFrame.CreateBlank tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight, 32, 0, 0
+            prevFrame.CreateBlank tmpLayer.GetLayerDIB.GetDIBWidth, tmpLayer.GetLayerDIB.GetDIBHeight, 32, 0, 0
             
             'Finally, mark this as the "last good frame" (in case subsequent frames are duplicates
             ' of this one, we'll need to refer back to the "last good frame" index)
@@ -602,7 +602,7 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
             '(Note also that if this check fails, it means that this frame is 100% identical
             ' to the frame that came before it.)
             Dim dupArea As RectF
-            If DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, bufferFrame, dupArea) Then
+            If DIBs.GetRectOfInterest_Overlay(tmpLayer.GetLayerDIB, bufferFrame, dupArea) Then
                 
                 'This frame contains at least one unique pixel, so it needs to be added to the file.
                 
@@ -619,7 +619,7 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
                 ' this frame at all, we can simply store a lone transparent pixel and paint it "over"
                 ' the corresponding frame buffer - maximum file size savings!  (This works very well on
                 ' blinking-style animations, for example.)
-                If DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, prevFrame, prevFrameArea) Then
+                If DIBs.GetRectOfInterest_Overlay(tmpLayer.GetLayerDIB, prevFrame, prevFrameArea) Then
                 
                     'With an overlap rectangle calculated for both cases, determine a "winner"
                     ' (where "winner" equals "least number of pixels"), store its frame rectangle,
@@ -1035,7 +1035,7 @@ End Function
 Private Function AnimatedGIF_CheckDisposalBkgd(ByRef tmpLayer As pdLayer, ByVal frameIndex As Long, ByVal idxLastGoodFrame As Long) As Boolean
     
     Dim trnsRect As RectF
-    If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsRect) Then
+    If DIBs.GetRectOfInterest(tmpLayer.GetLayerDIB, trnsRect) Then
     
         'If this frame is smaller than the previous "winner", switch to using this op instead.
         If (trnsRect.Width * trnsRect.Height) < (m_allFrames(frameIndex).rectOfInterest.Width * m_allFrames(frameIndex).rectOfInterest.Height) Then
@@ -1047,7 +1047,7 @@ Private Function AnimatedGIF_CheckDisposalBkgd(ByRef tmpLayer As pdLayer, ByVal 
         ' for this frame.
         With m_allFrames(frameIndex).rectOfInterest
             m_allFrames(frameIndex).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
-            GDI.BitBltWrapper m_allFrames(frameIndex).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+            GDI.BitBltWrapper m_allFrames(frameIndex).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.GetLayerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
         End With
     
     'This weird (but valid) branch means that the current frame is 100% transparent.  For this
@@ -1273,7 +1273,7 @@ Private Function AnimatedGIF_CheckPixelBlanking(ByRef tmpLayer As pdLayer, ByRef
         With m_allFrames(frameIndex).rectOfInterest
             
             Dim trnsRect As RectF
-            If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsRect) Then
+            If DIBs.GetRectOfInterest(tmpLayer.GetLayerDIB, trnsRect) Then
                 .Left = trnsRect.Left
                 .Top = trnsRect.Top
                 .Width = trnsRect.Width
@@ -1290,7 +1290,7 @@ Private Function AnimatedGIF_CheckPixelBlanking(ByRef tmpLayer As pdLayer, ByRef
             'Crop the "winning" region into a separate DIB, and store it as the formal
             ' pixel buffer for this frame.
             m_allFrames(frameIndex).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
-            GDI.BitBltWrapper m_allFrames(frameIndex).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+            GDI.BitBltWrapper m_allFrames(frameIndex).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.GetLayerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
         
         End With
         

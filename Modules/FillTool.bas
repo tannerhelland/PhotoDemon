@@ -162,7 +162,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         ' the incoming (x, y) coordinates into layer-space coordinates.
         Else
             
-            Set fillSrc = PDImages.GetActiveImage.GetActiveLayer.layerDIB
+            Set fillSrc = PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB
             
             'To improve performance when variable fill blend and alpha modes are in place, we always render the fill to
             ' a temporary image, then perform a standard merge of that DIB onto the target layer.  This lets the bucket
@@ -256,10 +256,10 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
             'When filling a merged region, we render the result directly onto the current image's scratch layer.
             ' The full scratch layer will then be merged with the layer beneath it.
-            PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
-            PDImages.GetActiveImage.ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+            PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.ResetDIB 0
+            PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.SetInitialAlphaPremultiplicationState True
             
-            tmpSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.ScratchLayer.layerDIB
+            tmpSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.ScratchLayer.GetLayerDIB
             If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
             tmpSurface.SetSurfacePixelOffset P2_PO_Half
             

@@ -192,7 +192,7 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
     ' (This makes it trivially mergeable.)
     Dim fxDIB As pdDIB
     PDImages.GetActiveImage.GetLayerByIndex(idxLayer).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
-    Set fxDIB = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).layerDIB
+    Set fxDIB = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerDIB
     
     'We also need a scratch layer for compositing.
     Dim scratchDIB As pdDIB
@@ -220,15 +220,15 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
             
             If m_InBackgroundMode Then
                 fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
-                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
+                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
             Else
-                PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
+                PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
                 m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode()
             End If
             
             'Replace the layer with the newly composited image, then shrink the top layer to its smallest
             ' possible size (un-null-pad it)
-            PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.CreateFromExistingDIB scratchDIB
+            PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.CreateFromExistingDIB scratchDIB
             PDImages.GetActiveImage.GetLayerByIndex(i).CropNullPaddedLayer
             
             'Notify the parent image of the change

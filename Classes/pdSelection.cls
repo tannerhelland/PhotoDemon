@@ -2443,7 +2443,7 @@ Private Sub CreateSelectionMask()
                     Set tmpLayer = New pdLayer
                     tmpLayer.CopyExistingLayer m_parentPDImage.GetActiveLayer
                     tmpLayer.ConvertToNullPaddedLayer m_parentPDImage.Width, m_parentPDImage.Height
-                    Set m_WandImage = tmpLayer.layerDIB
+                    Set m_WandImage = tmpLayer.GetLayerDIB
                     Set tmpLayer = Nothing
                     
                 End If

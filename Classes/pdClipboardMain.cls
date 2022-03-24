@@ -1688,7 +1688,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
                 PDImages.GetActiveImage.GetActiveLayer.GetAffineTransformedDIB m_ClipboardDIB, 0, 0
             Else
                 If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
-                m_ClipboardDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.layerDIB
+                m_ClipboardDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB
             End If
         End If
         

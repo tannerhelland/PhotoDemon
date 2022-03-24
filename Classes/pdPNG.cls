@@ -2429,7 +2429,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         Set tmpLayer = New pdLayer
         tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
         tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
-        curFrameBackup.CreateFromExistingDIB tmpLayer.layerDIB
+        curFrameBackup.CreateFromExistingDIB tmpLayer.GetLayerDIB
         
         'Ensure we have a target DIB to operate on; the final, optimized frame will be stored here.
         Set allFrames(i).frameDIB = New pdDIB
@@ -2440,15 +2440,15 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         
             'Cache the temporary layer DIB as-is; it serves as both the first frame in the animation,
             ' and the fallback "static" image for decoders that don't understand APNGs.
-            allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.layerDIB
+            allFrames(i).frameDIB.CreateFromExistingDIB tmpLayer.GetLayerDIB
             
             'Initialize the frame buffer to be the same as the first frame...
-            bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
+            bufferFrame.CreateFromExistingDIB tmpLayer.GetLayerDIB
             
             '...and initialize the "previous" frame buffer to pure transparency (this is the
             ' recommended behavior per the spec, on the assumption that the buffer always begins as
             ' transparent black)
-            prevFrame.CreateBlank tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight, 32, 0, 0
+            prevFrame.CreateBlank tmpLayer.GetLayerDIB.GetDIBWidth, tmpLayer.GetLayerDIB.GetDIBHeight, 32, 0, 0
             
             'Finally, mark this as the "last good frame" (in case subsequent frames are duplicates
             ' of this one, we'll need to refer back to the "last good frame" index)
@@ -2468,7 +2468,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             '(If this check fails, it means that this frame is 100% identical to the frame that came
             ' before it.)
             Dim dupArea As RectF
-            If DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, bufferFrame, dupArea) Then
+            If DIBs.GetRectOfInterest_Overlay(tmpLayer.GetLayerDIB, bufferFrame, dupArea) Then
                 
                 'This frame contains at least one unique pixel, so it needs to be added to the file.
                 
@@ -2483,7 +2483,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                 ' is 100% identical the the frame that preceded the previous frame.  Rather than encode this
                 ' frame at all, we can simply store a lone transparent pixel and paint it "over" the
                 ' corresponding frame buffer - maximum file size savings!
-                If DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, prevFrame, prevFrameArea) Then
+                If DIBs.GetRectOfInterest_Overlay(tmpLayer.GetLayerDIB, prevFrame, prevFrameArea) Then
                 
                     'With an overlap rectangle calculated for both cases, determine a "winner"
                     ' (where "winner" equals "least number of pixels), store its frame rectangle,
@@ -2516,7 +2516,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                     ' then use the "erase" disposal op before displaying it, thus forgoing any connection
                     ' whatsoever to preceding frames.
                     Dim trnsRect As RectF
-                    If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsRect) Then
+                    If DIBs.GetRectOfInterest(tmpLayer.GetLayerDIB, trnsRect) Then
                     
                         'If this frame is smaller than the previous "winner", switch to using this op instead.
                         If (trnsRect.Width * trnsRect.Height) < (allFrames(i).rectOfInterest.Width * allFrames(i).rectOfInterest.Height) Then
@@ -2529,7 +2529,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                         ' for this frame.
                         With allFrames(i).rectOfInterest
                             allFrames(i).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
-                            GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.layerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+                            GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), tmpLayer.GetLayerDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
                         End With
                     
                     'This weird (but valid) branch means that the current frame is 100% transparent.  For this
@@ -4275,7 +4275,7 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
         Message "Analyzing animation frame %1 of %2...", i + 1, srcPDImage.GetNumOfLayers(), "DONOTLOG"
         
         'Analyze the current frame
-        Export_AnalyzeImage srcPDImage.GetLayerByIndex(i).layerDIB, frameColorCount, frameIsGrayscale, frameAlphaStatus, localPalette, cColorCount, True
+        Export_AnalyzeImage srcPDImage.GetLayerByIndex(i).GetLayerDIB, frameColorCount, frameIsGrayscale, frameAlphaStatus, localPalette, cColorCount, True
         
         'If any one frame is *not* grayscale, no frames are grayscale.  (Note that PD doesn't currently
         ' do anything special with grayscale; instead, grayscale animations are deliberately identified

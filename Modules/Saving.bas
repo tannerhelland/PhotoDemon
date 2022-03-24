@@ -600,7 +600,7 @@ Private Function SavePDI_SingleLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As
     
     'Perform a few failsafe checks
     If (srcLayer Is Nothing) Then Exit Function
-    If (srcLayer.layerDIB Is Nothing) Then Exit Function
+    If (srcLayer.GetLayerDIB Is Nothing) Then Exit Function
     If (LenB(pdiPath) = 0) Then Exit Function
     
     'Enable for detailed profiling
@@ -672,7 +672,7 @@ Private Function WriteLayerDataToPackage(ByRef dstPackage As pdPackageChunky, By
     If srcLayer.IsLayerRaster Then
     
         Dim layerDIBPointer As Long, layerDIBLength As Long
-        srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+        srcLayer.GetLayerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
         dstPackage.AddChunk_WholeFromPtr "LDAT", layerDIBPointer, layerDIBLength, compressData, compressionLevel
         WriteLayerDataToPackage = True
         

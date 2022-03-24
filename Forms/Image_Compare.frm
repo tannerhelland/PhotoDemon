@@ -209,8 +209,8 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     End If
     
     Set srcLayer = tmpLayer
-    targetWidth = srcLayer.layerDIB.GetDIBWidth()
-    targetHeight = srcLayer.layerDIB.GetDIBHeight()
+    targetWidth = srcLayer.GetLayerDIB.GetDIBWidth()
+    targetHeight = srcLayer.GetLayerDIB.GetDIBHeight()
     
     'Repeat above steps for comparison layer, with the added step of resizing to
     ' match base layer dimensions (if necessary; we may also be cropping/enlarging it).
@@ -223,33 +223,33 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     
     Set cmpLayer = tmpLayer
     
-    If (cmpLayer.layerDIB.GetDIBWidth <> targetWidth) Or (cmpLayer.layerDIB.GetDIBHeight <> targetHeight) Then
+    If (cmpLayer.GetLayerDIB.GetDIBWidth <> targetWidth) Or (cmpLayer.GetLayerDIB.GetDIBHeight <> targetHeight) Then
         
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         
         'Resize into a temporary DIB
         If allowResize Then
-            tmpDIB.CreateFromExistingDIB cmpLayer.layerDIB, srcLayer.layerDIB.GetDIBWidth, srcLayer.layerDIB.GetDIBHeight, GP_IM_Bilinear
+            tmpDIB.CreateFromExistingDIB cmpLayer.GetLayerDIB, srcLayer.GetLayerDIB.GetDIBWidth, srcLayer.GetLayerDIB.GetDIBHeight, GP_IM_Bilinear
             
         'Crop/enlarge
         Else
             tmpDIB.CreateBlank targetWidth, targetHeight, 32, 0, 0
-            GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, cmpLayer.layerDIB.GetDIBWidth, cmpLayer.layerDIB.GetDIBHeight, cmpLayer.layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, cmpLayer.GetLayerDIB.GetDIBWidth, cmpLayer.GetLayerDIB.GetDIBHeight, cmpLayer.GetLayerDIB.GetDIBDC, 0, 0, vbSrcCopy
         End If
         
         'Copy the DIB into a temporary layer object
         Set cmpLayer = New pdLayer
         cmpLayer.CopyExistingLayer tmpLayer
-        Set cmpLayer.layerDIB = tmpDIB
+        Set cmpLayer.GetLayerDIB = tmpDIB
         
     End If
     
     'We now have a source and comparison layer that are guaranteed to have matching sizes
     ' (via either crop/padding or resampling).  This makes comparisons trivial.
     Dim baseDIB As pdDIB, cmpDIB As pdDIB
-    Set baseDIB = srcLayer.layerDIB
-    Set cmpDIB = cmpLayer.layerDIB
+    Set baseDIB = srcLayer.GetLayerDIB
+    Set cmpDIB = cmpLayer.GetLayerDIB
     
     'Un-premultiply both images
     baseDIB.SetAlphaPremultiplication False
@@ -374,7 +374,7 @@ Public Sub CompareImages(ByRef listOfParameters As String)
         srcImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("difference between %1 and %2", srcLayer.GetLayerName, cmpLayer.GetLayerName)
         
         'Replace the (temporary) DIB it created with the merged DIB we just created
-        Set srcImage.GetLayerByID(newLayerID).layerDIB = baseDIB
+        Set srcImage.GetLayerByID(newLayerID).GetLayerDIB = baseDIB
         
         'Make the duplicate layer the active layer
         srcImage.SetActiveLayerByID newLayerID

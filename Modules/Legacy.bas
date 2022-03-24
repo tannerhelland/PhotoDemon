@@ -123,10 +123,10 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                dstImage.GetLayerByIndex(i).GetLayerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
                 'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
-                dstImage.GetLayerByIndex(i).layerDIB.SetInitialAlphaPremultiplicationState True
+                dstImage.GetLayerByIndex(i).GetLayerDIB.SetInitialAlphaPremultiplicationState True
                 
                 nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
             
@@ -350,10 +350,10 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                dstImage.GetLayerByIndex(i).GetLayerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
                 'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
-                dstImage.GetLayerByIndex(i).layerDIB.SetInitialAlphaPremultiplicationState True
+                dstImage.GetLayerByIndex(i).GetLayerDIB.SetInitialAlphaPremultiplicationState True
                 
                 nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer)
             

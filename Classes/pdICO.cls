@@ -536,7 +536,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
     ' (and simpler!) to produce an icon-sized DIB, because all our coordinate math involves
     ' rectangles.
     Else
-        Set referenceDIB = srcLayer.layerDIB
+        Set referenceDIB = srcLayer.GetLayerDIB
     End If
     
     'Perform a quick shortcut check.  If the reference DIB is identical in size to the requested
