@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'GIF encoding library
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 26/October/21
-'Last update: final round of code clean-up for better modularity and performance
+'Last updated: 27/March/22
+'Last update: add optional palette sorter
 '
 'Most image exporters exist in the ImageExporter module.  GIF is a weird exception
 ' because animated GIFs require a ton of preprocessing (to optimize animation frames),
@@ -46,6 +46,14 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'Compile-time triggers:
+
+'Sort global palette by "importance".  If sorted nicely, we can check the "sort flag" in the global palette header.
+' This is mostly a historical curiosity, but I did write a sort algorithm that works well, so you can activate
+' if curious.  Note that this imposes an encoding-time perf penalty, but hypothetically decoding performance will
+' improve (due to better color locality).
+Private Const SORT_PALETTE_BY_IMPORTANCE As Boolean = False
 
 'Static GIF values:
 
@@ -367,7 +375,7 @@ Friend Function SaveGIF_ToStream_Static(ByRef srcPDImage As pdImage, ByRef dstSt
     'Next is the image bitstream!  Encoding happens elsewhere; we just pass the stream to them
     ' and let them encode away.
     ProgressBars.SetProgBarVal 5
-    ImageFormats_GIF_LZW.CompressLZW dstStream, VarPtr(m_ImgBytes(0, 0)), srcPDImage.Width * srcPDImage.Height, lzwCodeSize + 1
+    ImageFormats_GIF_LZW.CompressLZW dstStream, VarPtr(m_ImgBytes(0, 0)), srcPDImage.Width * srcPDImage.Height, lzwCodeSize + 1, True
     ProgressBars.SetProgBarVal 6
     
     'All that's left for this frame is to explicitly terminate the block
@@ -1002,6 +1010,12 @@ Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dst
     'Compression test buffer is no longer required; free it to regain some memory
     Erase m_cmpTestBuffer
     
+    'With all frames generated, we could now do an interesting legacy optimization: sorting the
+    ' palette by "importance", which would allow us to check the "Sort flag" in the GIF header.
+    ' Because this is fairly intensive (we have to analyze all frames that use the global palette),
+    ' I have disabled this feature in production code, but you can reactivate it if curious.
+    If SORT_PALETTE_BY_IMPORTANCE Then AnimatedGIF_CheckGlobalPaletteSort srcPDImage
+    
     Message "Finalizing image..."
     ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
     
@@ -1143,6 +1157,224 @@ Private Function AnimatedGIF_CheckGlobalPaletteCompressibility(ByVal frameIndex 
     AnimatedGIF_CheckGlobalPaletteCompressibility = True
     
 End Function
+
+'The GIF spec has this interesting (historically speaking) flag, called the "Sort Flag".
+' From the spec:
+' v) Sort Flag - Indicates whether the Global Color Table is sorted.
+'            If the flag is set, the Global Color Table is sorted, in order of
+'            decreasing importance. Typically, the order would be decreasing
+'            frequency, with most frequent color first. This assists a decoder,
+'            with fewer available colors, in choosing the best subset of colors;
+'            the decoder may use an initial segment of the table to render the
+'            graphic.
+'
+'            Values :    0 -   Not ordered.
+'                        1 -   Ordered by decreasing importance, most important color first.
+'
+'This sort value won't matter with modern decoders, but I was curious to see how I'd implement
+' such a feature.  Truth be told, I actually went a slightly different direction, by picking the
+' most popular color first and *then* sorting subsequent values by how many instances follow
+' the previous color in the palette.  This (hypothetically) produces the most perf-optimized
+' palette for decompression, but benchmarking has shown the final result to be inconclusively
+' useful, at least on the few decoders I tried.
+'
+'Anyway, this function only works on the global palette (which is the only palette with the "sort flag")
+' and I'm leaving it here because it's interesting!
+Private Sub AnimatedGIF_CheckGlobalPaletteSort(ByRef srcPDImage As pdImage)
+    
+    'Start by seeing how many frames in this image use the global palette.  If more than 10% do, let's sort
+    ' the global palette accordingly.  (If fewer frames use it, this image is clearly local-palette-dominated
+    ' and the global palette doesn't matter.)
+    Dim candidateForGlobalPaletteSort As Boolean
+    Dim numFramesGlobalPalette As Long, totalCount As Long
+    
+    Dim i As Long
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
+        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) Then
+            totalCount = totalCount + 1
+            If m_allFrames(i).usesGlobalPalette Then numFramesGlobalPalette = numFramesGlobalPalette + 1
+        End If
+    Next i
+    
+    If (totalCount > 0) Then
+        candidateForGlobalPaletteSort = ((numFramesGlobalPalette / totalCount) >= 0.1)
+    Else
+        candidateForGlobalPaletteSort = False
+    End If
+    
+    If (Not candidateForGlobalPaletteSort) Then Exit Sub
+    
+    'If we're still here, it's time to sort the global palette.
+    
+    'Unfortunately, sorting the global palette requires us to analyze every frame that uses the global palette...
+    ' so this can be kind of an intensive task!
+    
+    'Start by building a "next-palette-index" lookup table.  We want to know not just palette index popularity,
+    ' but which palette entries are most likely to follow each other.  To do this, we'll keep a simple running
+    ' histogram that tracks how many times each palette entry follows each other palette entry.
+    Dim palPopularity() As Long
+    ReDim palPopularity(0 To m_numColorsInGP - 1) As Long
+    Dim palFollows() As Long
+    ReDim palFollows(0 To m_numColorsInGP - 1, 0 To m_numColorsInGP - 1) As Long
+    
+    Dim x As Long, curIndex As Long, nextIndex As Long
+    Dim px1D() As Byte, pxSA As SafeArray1D
+    
+    'Scan all frames that use the global palette and populate both histograms accordingly.
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
+        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) And m_allFrames(i).usesGlobalPalette Then
+            
+            With m_allFrames(i)
+                
+                totalCount = .rectOfInterest.Width * .rectOfInterest.Height - 1
+                VBHacks.WrapArrayAroundPtr_Byte px1D, pxSA, VarPtr(.pixelData(0, 0)), totalCount + 1
+                
+                'Deliberately skip the last pixel in the image (we need to access "next pixels" and the
+                ' last pixel in the image doesn't have one)
+                For x = 0 To totalCount - 1
+                    curIndex = px1D(x)
+                    nextIndex = px1D(x + 1)
+                    palPopularity(curIndex) = palPopularity(curIndex) + 1
+                    palFollows(curIndex, nextIndex) = palFollows(curIndex, nextIndex) + 1
+                Next x
+                
+                VBHacks.UnwrapArrayFromPtr_Byte px1D
+                
+            End With
+            
+        End If
+    Next i
+    
+    'Histograms are now built.  We now want to sort the global palette by popularity,
+    ' but we're going to use kind of a cool criteria:
+    ' 1) Transparent index, if any, still gets primo spot 0 (this improves compatibility with old GIF decoders)
+    ' 2) The *most popular* color gets index 1
+    ' 3) All subsequent colors are placed according to how frequently they follow the previous color in the palette
+    '
+    'Obviously, we also need to build a remap table that notes where each palette index was, and where it is
+    ' in the new palette order.
+    Dim remapTable() As Byte
+    ReDim remapTable(0 To m_numColorsInGP - 1) As Byte
+    
+    'Start with the transparent index, if any
+    Dim idxRemap As Long
+    If (m_GlobalTrnsIndex >= 0) Then
+        remapTable(0) = 0
+        curIndex = 1
+        idxRemap = 1
+        
+        'Erase popularity data for position 0
+        palPopularity(0) = -1
+        For i = 0 To m_numColorsInGP - 1
+            palFollows(i, 0) = -1
+        Next i
+        
+    Else
+        curIndex = 0
+        idxRemap = 0
+    End If
+    
+    'Next, find the most popular color in the palette
+    Dim idxCurMax As Long, maxPopularity As Long, prevIndex As Long
+    idxCurMax = curIndex
+    maxPopularity = palPopularity(idxCurMax)
+    curIndex = curIndex + 1
+    
+    Do While (curIndex < m_numColorsInGP)
+        If (palPopularity(curIndex) > maxPopularity) Then
+            maxPopularity = palPopularity(curIndex)
+            idxCurMax = curIndex
+        End If
+        curIndex = curIndex + 1
+    Loop
+    
+    'idxCurMax now points to the "most popular" color across all frames that use the global palette.
+    ' Assign its place in the remap table, then erase its popularity data.
+    remapTable(idxCurMax) = idxRemap
+    idxRemap = idxRemap + 1
+    
+    palPopularity(idxCurMax) = -1
+    For i = 0 To m_numColorsInGP - 1
+        palFollows(i, idxCurMax) = -1
+    Next i
+    
+    'For all remaining colors, we now want to pick the "most popular color" that follows the previous color
+    ' in the table.  It is possible that *no* colors will follow the current color (just due to the way the
+    ' search algorithm works), and when that happens, we'll revert back to using the most-popular, currently
+    ' un-remapped color.
+    Do While (idxRemap < m_numColorsInGP)
+        
+        maxPopularity = -1
+        prevIndex = idxCurMax
+        
+        'Find the most popular color that follows the *previous* color in the table
+        For i = 0 To m_numColorsInGP - 1
+            If (palFollows(prevIndex, i) >= 0) Then
+                If (palFollows(prevIndex, i) > maxPopularity) Then
+                    maxPopularity = palFollows(prevIndex, i)
+                    idxCurMax = i
+                End If
+            End If
+        Next i
+        
+        'If the maximum popularity is 0, revert back to "most popular color"
+        If (maxPopularity < 0) Then
+            For i = 0 To m_numColorsInGP - 1
+                If (palPopularity(i) >= maxPopularity) Then
+                    maxPopularity = palPopularity(i)
+                    idxCurMax = i
+                End If
+            Next i
+        End If
+        
+        'We have our next remap candidate.  Place it in the remap table, then erase all popularity data
+        ' for this pixel (so we don't select it again).
+        remapTable(idxCurMax) = idxRemap
+        palPopularity(idxCurMax) = -1
+        For i = 0 To m_numColorsInGP - 1
+            palFollows(i, idxCurMax) = -1
+        Next i
+        
+        idxRemap = idxRemap + 1
+        
+    Loop
+    
+    'We now have our final remap table!  All that's left to do is...
+    ' 1) Construct a new, remapped global palette
+    ' 2) Remap all pixel streams accordingly
+    
+    'Start by remapping the global palette
+    Dim newPalette() As RGBQuad
+    ReDim newPalette(0 To m_numColorsInGP - 1) As RGBQuad
+    For i = 0 To m_numColorsInGP - 1
+        newPalette(remapTable(i)) = m_globalPalette(i)
+    Next i
+    
+    VBHacks.CopyMemoryStrict VarPtr(m_globalPalette(0)), VarPtr(newPalette(0)), m_numColorsInGP * 4
+    
+    'Next, remap all pixel streams that rely on the global palette
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
+        If (Not m_allFrames(i).frameIsDuplicateOrEmpty) And m_allFrames(i).usesGlobalPalette Then
+            
+            With m_allFrames(i)
+                
+                totalCount = .rectOfInterest.Width * .rectOfInterest.Height - 1
+                VBHacks.WrapArrayAroundPtr_Byte px1D, pxSA, VarPtr(.pixelData(0, 0)), totalCount + 1
+                
+                'Deliberately skip the last pixel in the image (we need to access "next pixels" and the
+                ' last pixel in the image doesn't have one)
+                For x = 0 To totalCount
+                    px1D(x) = remapTable(px1D(x))
+                Next x
+                
+                VBHacks.UnwrapArrayFromPtr_Byte px1D
+                
+            End With
+            
+        End If
+    Next i
+    
+End Sub
 
 'Different options are available for frames that use local palettes instead of global ones.
 ' Global palette optimization is actually easier because we can blank out pixels freely,
@@ -1624,7 +1856,7 @@ Private Function WriteOptimizedAGIFToFile_Internal(ByRef srcPDImage As pdImage, 
             
             'Next is the image bitstream!  Encoding happens elsewhere; we just pass the stream to them
             ' and let them encode away.
-            ImageFormats_GIF_LZW.CompressLZW dstStream, VarPtr(m_allFrames(i).pixelData(0, 0)), m_allFrames(i).rectOfInterest.Width * m_allFrames(i).rectOfInterest.Height, lzwCodeSize + 1
+            ImageFormats_GIF_LZW.CompressLZW dstStream, VarPtr(m_allFrames(i).pixelData(0, 0)), m_allFrames(i).rectOfInterest.Width * m_allFrames(i).rectOfInterest.Height, lzwCodeSize + 1, True
             
             'All that's left for this frame is to explicitly terminate the black
             dstStream.WriteByte 0
