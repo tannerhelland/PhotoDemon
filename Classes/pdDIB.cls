@@ -600,7 +600,7 @@ Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 Me.ResetDIB 0
             End If
             
-            CreateFromExistingDIB = GDI_Plus.GDIPlusResizeDIB(Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeModeIfNecessary)
+            CreateFromExistingDIB = GDI_Plus.GDIPlusResizeDIB(Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeModeIfNecessary, P2_PO_Half)
                 
             'Note that GDI+ *always* paints images with pre-multiplied alpha.  If our source image did *not*
             ' have premultiplied alpha, this will result in a mismatch; it's expected that the caller handles
