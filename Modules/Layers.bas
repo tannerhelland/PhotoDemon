@@ -48,12 +48,13 @@ Public Enum PD_LayerGenericProperty
     pgp_RotateCenterX = 15
     pgp_RotateCenterY = 16
     pgp_FrameTime = 17
-    pgp_HasMask = 18
+    pgp_MaskExists = 18
+    pgp_MaskActive = 19
 End Enum
 
 #If False Then
     Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
-    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16, pgp_FrameTime = 17, pgp_HasMask = 18
+    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16, pgp_FrameTime = 17, pgp_MaskExists = 18, pgp_MaskActive = 19
 #End If
 
 'Layer resize quality is defined different from other resampling options in the project.

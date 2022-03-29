@@ -38,8 +38,57 @@ Private m_MaskRectF As RectF
 'Actual mask bytes.  Dimensions are guaranteed to match GetMaskWidth/Height() values.
 Private m_MaskBytes() As Byte
 
+'Returns TRUE on successful clone, FALSE otherwise; FALSE usually means the source mask doesn't exist
+Friend Function CloneExistingMask(ByRef srcMask As pdLayerMask) As Boolean
+
+    'Undefined behavior?  We can either:
+    ' 1) Do not modify the existing mask on a failed clone, or...
+    ' 2) Erase the current mask on a failed clone
+    '
+    'Right now we do (2), but you can do (1) by simply omitting the .Reset command below
+    If (srcMask Is Nothing) Then
+        Me.Reset
+        CloneExistingMask = False
+    Else
+        
+        CloneExistingMask = True
+        
+        'If the source mask doesn't exist, we'll reset ourselves to match;
+        ' otherwise, clone all pertinent bits of information from the source.
+        If srcMask.DoesMaskExist() Then
+            
+            'Clone mask header
+            With m_MaskRectF
+                .Left = srcMask.GetMaskLeft
+                .Top = srcMask.GetMaskTop
+                .Width = srcMask.GetMaskWidth
+                .Height = srcMask.GetMaskHeight
+                
+                'Clone mask itself
+                If (.Width > 0) And (.Height > 0) Then
+                    ReDim m_MaskBytes(0 To .Width - 1, 0 To .Height - 1) As Byte
+                    If (srcMask.GetPtrToMaskBytes <> 0) Then VBHacks.CopyMemoryStrict VarPtr(m_MaskBytes(0, 0)), srcMask.GetPtrToMaskBytes, .Width * .Height
+                Else
+                    ReDim m_MaskBytes(0) As Byte
+                End If
+                
+            End With
+        
+        'If the source mask doesn't exist, that's fine - just reset our internal data to match
+        Else
+            Me.Reset
+        End If
+        
+    End If
+
+End Function
+
 Friend Function DoesMaskExist() As Boolean
     DoesMaskExist = m_MaskDataExists
+End Function
+
+Friend Function EstimateRAMUsage() As Double
+    EstimateRAMUsage = m_MaskRectF.Width * m_MaskRectF.Height
 End Function
 
 Friend Function GetMaskLeft() As Long

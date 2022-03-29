@@ -82,9 +82,11 @@ Private Type PD_LayerData
     l_ResizeQuality As PD_LayerResizeQuality   'Resampling algorithm used when non-destructive resizes are active
     l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
-    l_Visibility As Boolean             'Layer visibility
-    l_HasMask As Boolean                'Layer mask exists.  (For other mask attributes, query m_LayerMask.)
     l_FrameTimeInMS As Long             'Frame time, in MS; relevant only for images flagged as animated
+    l_Visibility As Boolean             'Layer visibility
+    l_MaskExists As Boolean             'Layer mask exists at all.
+    l_MaskActive As Boolean             'Layer mask is currently active (a mask may exist, but not be active)
+                                        ' (For other mask attributes, query m_LayerMask directly)
 End Type
 
 'Local instance of layer data for this layer
@@ -237,12 +239,20 @@ Friend Function GetLayerMask() As pdLayerMask
     Set GetLayerMask = m_LayerMask
 End Function
 
-Friend Function GetLayerMaskState() As Boolean
-    GetLayerMaskState = myLayerData.l_HasMask
+Friend Function GetLayerMaskActive() As Boolean
+    GetLayerMaskActive = myLayerData.l_MaskActive
 End Function
 
-Friend Sub SetLayerMaskState(ByVal newState As Boolean)
-    myLayerData.l_HasMask = newState
+Friend Sub SetLayerMaskActive(ByVal newState As Boolean)
+    myLayerData.l_MaskActive = newState
+End Sub
+
+Friend Function GetLayerMaskExists() As Boolean
+    GetLayerMaskExists = myLayerData.l_MaskExists
+End Function
+
+Friend Sub SetLayerMaskExists(ByVal newState As Boolean)
+    myLayerData.l_MaskExists = newState
 End Sub
 
 'Get layer type.
@@ -671,8 +681,11 @@ Friend Function GetGenericLayerProperty(ByVal desiredProperty As PD_LayerGeneric
         Case pgp_FrameTime
             GetGenericLayerProperty = myLayerData.l_FrameTimeInMS
         
-        Case pgp_HasMask
-            GetGenericLayerProperty = myLayerData.l_HasMask
+        Case pgp_MaskExists
+            GetGenericLayerProperty = myLayerData.l_MaskExists
+        
+        Case pgp_MaskActive
+            GetGenericLayerProperty = myLayerData.l_MaskActive
         
         Case Else
             GetGenericLayerProperty = 0
@@ -736,9 +749,12 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
         Case pgp_FrameTime
             myLayerData.l_FrameTimeInMS = CLng(newValue)
             
-        Case pgp_HasMask
-            myLayerData.l_HasMask = CBool(newValue)
+        Case pgp_MaskExists
+            myLayerData.l_MaskExists = CBool(newValue)
         
+        Case pgp_MaskActive
+            myLayerData.l_MaskActive = CBool(newValue)
+            
     End Select
     
 End Sub
@@ -1239,6 +1255,8 @@ Private Sub Class_Initialize()
         .l_ShearY = 0
         .l_AlphaMode = AM_Normal
         .l_FrameTimeInMS = 0
+        .l_MaskExists = False
+        .l_MaskActive = False
     End With
     
     With myVectorData
@@ -1339,6 +1357,19 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_RotateCenterY = xmlEngine.GetDouble("rotation-center-y", 0.5, True)
             .l_ResizeQuality = Layers.GetLayerResizeIDFromString(xmlEngine.GetString("sample-quality", Layers.GetLayerResizeStringFromID(LRQ_Bilinear), True))
             .l_FrameTimeInMS = xmlEngine.GetLong("frame-time-ms", 0, True)
+            .l_MaskExists = xmlEngine.GetBool("mask-exists", False, True)
+            
+            'If a mask exists, initialize the underlying mask class, but we need to wait for a later step
+            ' to actually fill the mask (as its full data is not crammed into this XML packet)
+            If .l_MaskExists Then
+                .l_MaskActive = xmlEngine.GetBool("mask-active", False, True)
+                Set m_LayerMask = New pdLayerMask
+                'TODO: un-serialize mask?  IDK, serializing the full mask to a string is stupid
+            Else
+                .l_MaskActive = False
+                Set m_LayerMask = Nothing
+            End If
+            
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank surface
@@ -1457,6 +1488,8 @@ Friend Function GetLayerHeaderAsXML() As String
         xmlEngine.AddParam "rotation-center-y", .l_RotateCenterY, True, True
         xmlEngine.AddParam "sample-quality", Layers.GetLayerResizeStringFromID(.l_ResizeQuality), True, True
         xmlEngine.AddParam "frame-time-ms", .l_FrameTimeInMS, True, True
+        xmlEngine.AddParam "mask-exists", .l_MaskExists, True, True
+        xmlEngine.AddParam "mask-active", .l_MaskActive, True, True
     End With
     
     'Next, write out enough information for us to reconstruct the underlying pixel data for this layer
@@ -1567,7 +1600,7 @@ End Function
 ' - For image-type layers, a DIB can be passed; the layer's raster contents will be initialized to match the DIB.
 '   (By default, this function will simply set a reference to the passed DIB; if you want a full clone, specify it
 '    via the final optional parameter.)
-Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal newLayerName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal cloneSourceLayerLocally As Boolean = False)
+Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal newLayerName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal cloneSrcDIBLocally As Boolean = False)
 
     'Mark the layer type.
     m_LayerType = newLayerType
@@ -1591,6 +1624,9 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
         .l_ShearY = 0#
         .l_AlphaMode = AM_Normal
         .l_FrameTimeInMS = 0
+        .l_MaskExists = False
+        .l_MaskActive = False
+        Set m_LayerMask = Nothing
     End With
     
     'Reset any vector-specific data
@@ -1602,7 +1638,7 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
     m_VectorDIBSynched = False
     
     'If passed, create a local copy of the passed DIB.
-    If cloneSourceLayerLocally Then
+    If cloneSrcDIBLocally Then
         Set m_LayerDIB = New pdDIB
         If (Not srcDIB Is Nothing) Then m_LayerDIB.CreateFromExistingDIB srcDIB
     Else
@@ -1650,6 +1686,18 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_ShearY = srcLayer.GetLayerShearY()
         .l_AlphaMode = srcLayer.GetLayerAlphaMode()
         .l_FrameTimeInMS = srcLayer.GetLayerFrameTimeInMS()
+        .l_MaskExists = srcLayer.GetGenericLayerProperty(pgp_MaskExists)
+        
+        'Only retrieve a mask if the source layer has one
+        If .l_MaskExists Then
+            .l_MaskActive = srcLayer.GetGenericLayerProperty(pgp_MaskActive)
+            Set m_LayerMask = New pdLayerMask
+            m_LayerMask.CloneExistingMask srcLayer.GetLayerMask
+        Else
+            .l_MaskActive = False
+            Set m_LayerMask = Nothing
+        End If
+        
     End With
     
     'Copy the source layer's DIB, if one exists.
@@ -1852,6 +1900,8 @@ Friend Function CropNullPaddedLayer() As Boolean
             myLayerData.l_OffsetX = newLeft
             myLayerData.l_OffsetY = newTop
             
+            'TODO: synchronize layer mask here, if one exists
+            
             'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
             CropNullPaddedLayer = True
             
@@ -1905,7 +1955,9 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         'Reset layer offset values
         myLayerData.l_OffsetX = 0&
         myLayerData.l_OffsetY = 0&
-    
+        
+        'TODO: synchronize layer mask here, if one exists
+        
         'Mark the layer as dirty
         Me.NotifyOfDestructiveChanges
     
@@ -1941,6 +1993,8 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     ' method used.)
     GDI_Plus.GDIPlus_StretchBlt m_LayerThumbnail, 0!, 0!, newThumbWidth, newThumbHeight, m_LayerDIB, 0!, 0!, m_LayerDIB.GetDIBWidth, m_LayerDIB.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     m_LayerThumbnail.SetInitialAlphaPremultiplicationState True
+    
+    'TODO: consider layer mask here?
     
     'Before exiting, apply color-management.  This spares callers from needing to do it (and when wouldn't we want
     ' a color-managed thumbnail anyway?)
@@ -2304,6 +2358,9 @@ Friend Sub ResetLayerParameters()
         .l_ShearX = 0#
         .l_ShearY = 0#
         .l_AlphaMode = AM_Normal
+        .l_MaskExists = False
+        .l_MaskActive = False
+        Set m_LayerMask = Nothing
     End With
     
     'Assign default vector layer values
@@ -2331,6 +2388,8 @@ Friend Sub SuspendLayer(Optional ByVal suspendViewportToo As Boolean = False)
             If (Not m_lodDIB(i) Is Nothing) Then m_lodDIB(i).SuspendDIB cf_Lz4, False
         Next i
     End If
+    
+    'TODO: layer mask here?
     
 End Sub
 
@@ -2405,6 +2464,9 @@ Friend Function EstimateRAMUsage() As Double
         If Not (m_lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + m_lodDIB(i).GetDIBStride * m_lodDIB(i).GetDIBHeight
     Next i
     
+    'If a layer mask exists, add it to the total
+    If (Not m_LayerMask Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + m_LayerMask.EstimateRAMUsage
+    
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
     EstimateRAMUsage = EstimateRAMUsage * 1.1
 
@@ -2427,9 +2489,10 @@ Friend Function GetViewportHash(ByVal cacheID As PD_CompositorLOD) As Long
     GetViewportHash = m_ViewportStateHashes(cacheID)
 End Function
 
-'Given a set of caller-specified parameters, generate a matching viewport hash.  This is used by the compositor to detect changes to the current layer.
-' Caller-specified params are relevant because the compositor will also pass viewport settings, and if *those* change (but the layer is unchanged),
-' we still need to regenerate the function.
+'Given a set of caller-specified parameters, generate a matching viewport hash.
+' This is used by the compositor to detect changes to the current layer.
+' Caller-specified params are relevant because the compositor will also pass viewport settings,
+' and if *those* change (but the layer is unchanged), we still need to regenerate the function.
 Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
     
     'First, generate a hash of relevant internals.
@@ -2517,6 +2580,9 @@ Private Function CreateNewLayerFromXML_Legacy(ByRef xmlString As String, Optiona
             .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
             .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
             .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", AM_Normal)
+            .l_MaskExists = False
+            .l_MaskActive = False
+            Set m_LayerMask = Nothing
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -2590,4 +2656,3 @@ Private Function SetVectorDataFromXML_Legacy(ByRef xmlString As String) As Boole
     End If
     
 End Function
-
