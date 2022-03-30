@@ -38,6 +38,13 @@ Private m_MaskRectF As RectF
 'Actual mask bytes.  Dimensions are guaranteed to match GetMaskWidth/Height() values.
 Private m_MaskBytes() As Byte
 
+'PSD files have a nice option where you can declare the area around the image as opaque or transparent,
+' giving you a way to swiftly track "cut-out" or "spot" masks with minimal file size.  Because the value
+' is encoded as a byte, you could hypothetically use it to make everything outside the mask e.g. "half-opaque",
+' but I've never seen this behavior in-the-wild and it may not even be supported by Photoshop, so we
+' currently lock the value to [0] or [max] when exporting to PSD.
+Private m_OpacityOutsideMask As Single
+
 'Returns TRUE on successful clone, FALSE otherwise; FALSE usually means the source mask doesn't exist
 Friend Function CloneExistingMask(ByRef srcMask As pdLayerMask) As Boolean
 
@@ -73,6 +80,9 @@ Friend Function CloneExistingMask(ByRef srcMask As pdLayerMask) As Boolean
                 End If
                 
             End With
+            
+            'Clone any other mask settings
+            Me.SetOpacityOutsideMask srcMask.GetOpacityOutsideMask
         
         'If the source mask doesn't exist, that's fine - just reset our internal data to match
         Else
@@ -120,6 +130,8 @@ Friend Sub Reset()
     
     Erase m_MaskBytes
     
+    m_OpacityOutsideMask = 0!
+    
 End Sub
 
 Friend Sub SetMaskRect(ByVal mLeft As Long, ByVal mTop As Long, ByVal mWidth As Long, ByVal mHeight As Long)
@@ -129,6 +141,15 @@ Friend Sub SetMaskRect(ByVal mLeft As Long, ByVal mTop As Long, ByVal mWidth As 
         .Width = mWidth
         .Height = mHeight
     End With
+End Sub
+
+'Opacity is always handled on the [0.0, 100.0] scale
+Friend Function GetOpacityOutsideMask() As Single
+    GetOpacityOutsideMask = m_OpacityOutsideMask
+End Function
+
+Friend Sub SetOpacityOutsideMask(ByVal newOpacity As Single)
+    m_OpacityOutsideMask = newOpacity
 End Sub
 
 'Do *NOT* call without first querying for non-zero mask width/height.

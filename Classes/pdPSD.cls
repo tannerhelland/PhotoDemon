@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 28/March/22
-'Last update: add support for retrieving layer group masks, and storing them via new mask-centric interfaces
+'Last updated: 30/March/22
+'Last update: layer group masks are now successfully round-tripped to/from PSD files!
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -656,9 +656,9 @@ Private Function ExportStep3a_WriteLayerInfo(ByRef cStream As pdStream, ByRef sr
         If (layerGroupTypes(i) = lgs_None) Then
             tmpPSDLayers(i).WriteChannelData cStream, compressionType, writePSB
         
-        'Group layers just write dummy values (2x4=8)
+        'Group layers just write dummy values (2x4=8) - UNLESS a mask is present (then they write more)
         Else
-            cStream.WritePadding 8
+            tmpPSDLayers(i).WriteChannelData_Group srcImage.GetLayerByIndex(i), cStream, compressionType, writePSB
         End If
         
     Next i
@@ -1187,6 +1187,7 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                                 
                                 tmpLayer.GetLayerMask.SetMaskRect srcMaskRectF.Left, srcMaskRectF.Top, srcMaskRectF.Width, srcMaskRectF.Height
                                 tmpLayer.GetLayerMask.SetMaskBytes srcMaskRectF.Width, srcMaskRectF.Height, m_Layers(i).GetMaskUnmergedPtr
+                                tmpLayer.GetLayerMask.SetOpacityOutsideMask CSng(m_Layers(i).GetMaskDefaultColor) / 2.55!
                                 
                             End If
                         End If
