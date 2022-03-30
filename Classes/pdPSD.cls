@@ -15,11 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 24/March/22
-'Last update: add support for retrieving layer group masks!  PhotoDemon can now parse these from file and
-'             optionally load these as the "image" of a layer group.  This is activated via debug constant;
-'             next I'm going to try tagging these as optional layer data, then using those tags at export
-'             time to create a compatible PSD.
+'Last updated: 28/March/22
+'Last update: add support for retrieving layer group masks, and storing them via new mask-centric interfaces
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -1177,6 +1174,23 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                         tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
                         tmpLayer.SetLayerOpacity .GetLayerOpacity()
                         tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+                        
+                        If (Not PSD_LOAD_GROUP_MASKS_AS_PIXELS) Then
+                            If (Not m_Layers(i).GetMaskMergedIntoDIB) And m_Layers(i).GetMaskExists And (m_Layers(i).GetMaskUnmergedSize <> 0) Then
+                                
+                                tmpLayer.SetGenericLayerProperty pgp_MaskExists, True
+                                
+                                'TODO: also mark the mask as active; this is disabled currently, pending full group support
+                                'tmpLayer.SetGenericLayerProperty pgp_MaskActive, True
+                                Dim srcMaskRectF As RectF
+                                srcMaskRectF = m_Layers(i).GetMaskRectF
+                                
+                                tmpLayer.GetLayerMask.SetMaskRect srcMaskRectF.Left, srcMaskRectF.Top, srcMaskRectF.Width, srcMaskRectF.Height
+                                tmpLayer.GetLayerMask.SetMaskBytes srcMaskRectF.Width, srcMaskRectF.Height, m_Layers(i).GetMaskUnmergedPtr
+                                
+                            End If
+                        End If
+                    
                     End With
                 
                     numUsableLayers = numUsableLayers + 1
@@ -1586,7 +1600,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 ' 8-bpc, converts the resulting channel collection from planar to 32-bpp interleaved
                 ' RGBA, and color-manages the results.  The end result is a PD-compatible image buffer
                 ' that can be directly associated with a pdLayer object.
-                If (Not m_Layers(i).ConstructImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+                If (Not m_Layers(i).ConstructImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me, PSD_LOAD_GROUP_MASKS_AS_PIXELS) < psd_Failure) Then
                     InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.ConstructImage() failed catastrophically"
                     Step4_GatherLayersAndMasks = psd_Failure
                     Exit Function
