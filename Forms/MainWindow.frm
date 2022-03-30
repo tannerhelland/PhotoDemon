@@ -2473,6 +2473,8 @@ End Sub
 ' and when it does, it will copy the metadata into the active pdImage object, then turn itself off.
 Private Sub m_MetadataTimer_Timer()
     
+    If g_ProgramShuttingDown Then Exit Sub
+    
     'Until ExifTool reports completion, we just need to poll in the background
     If ExifTool.IsMetadataFinished Then
     
@@ -2507,16 +2509,18 @@ End Sub
 'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can
 ' de/activate accordingly.
 Private Sub m_FocusDetector_GotFocusReliable()
-    HotkeyManager.RecaptureKeyStates
+    If (Not g_ProgramShuttingDown) Then HotkeyManager.RecaptureKeyStates
 End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
-    HotkeyManager.ResetKeyStates
+    If (Not g_ProgramShuttingDown) Then HotkeyManager.ResetKeyStates
 End Sub
 
 'This listener will raise events when PD is in single-session mode and another session is initiated.
 ' The other session will forward any "open this image" requests passed on its command line.
 Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
+    
+    If g_ProgramShuttingDown Then Exit Sub
     
     'This pipe is used by other PD sessions to forward their command-line contents to us,
     ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
