@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 01/March/22
-'Last update: add import support for SVG/Z images
+'Last updated: 30/March/22
+'Last update: start work on preliminary support for GIMP XCF images
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -16,12 +16,14 @@ Attribute VB_Name = "ImageFormats"
 ' some formats support multiple import engines (e.g. PNGs are preferentially loaded by an internal
 ' PNG decoder, but we could theoretically hand them off to GDI+ or FreeImage too).  From this
 ' module alone, it won't be clear which engine or third-party library (if any) is used to load a
-' given format - for that, you'd need to consult the relevant debug log after loading an image file.
+' given format - for that, consult the relevant debug log ([PD path]/Data/Debug) after loading an
+' image file.
 '
 'Note also that as of 2020, many formats use native PhotoDemon-specific encoder/decoder classes.
-' These formats are *always* available regardless of 3rd-party library status (but some formats
-' may still require third-party libraries, e.g. PNG files use internal PD parsers, but still need
-' an external library for DEFLATE de/compression).
+' These formats are *always* available regardless of 3rd-party library status, but some formats
+' may have add-on features that require third-party libraries - for example, PSD files are
+' typically RLE (PackBits) encoded, which PhotoDemon can decode natively, but HDR PSD images can
+' optionally use DEFLATE compression which requires PD to tap into a 3rd-party library (libdeflate).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -248,8 +250,9 @@ Public Sub GenerateInputFormats()
     'Note that the arbitrary 17123 build no. comes from this MS article:
     ' https://blogs.windows.com/windowsexperience/2018/03/16/announcing-windows-10-insider-preview-build-17123-for-fast/#UpPIwc3yVgJHc5Q8.97
     '
-    'Note also that libavif can load *some* but not *all* HEIF files (which are similar-but-not-
-    ' -identical to AVIF files) which is why PD lists HEIC/F as a separate entry in this list.
+    'Note also that libavif can load *some* but not *all* HEIF files (HEIF is just a container
+    ' format - what matters are the codec(s) used inside) which is why PD lists HEIC/F as a
+    ' separate entry in its import list.
     If (OS.IsWin10OrLater() And (OS.GetWin10Build >= 17123)) Or (Not OS.IsProgramCompiled) Then
         AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heic;*.heif", PDIF_HEIF
     End If
@@ -332,6 +335,9 @@ Public Sub GenerateInputFormats()
     
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
+    
+    'In v9.0, I wrote a custom XCF parser for PD
+    AddInputFormat "XCF - GIMP (GNU Image Manipulation Program)", "*.xcf", PDIF_XCF
     
     'Finish out the list with an obligatory "All files" option
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
@@ -576,6 +582,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "wmf"
         Case PDIF_XBM
             GetExtensionFromPDIF = "xbm"
+        Case PDIF_XCF
+            GetExtensionFromPDIF = "xcf"
         Case PDIF_XPM
             GetExtensionFromPDIF = "xpm"
         
@@ -683,6 +691,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_WMF
         Case "xbm"
             GetPDIFFromExtension = PDIF_XBM
+        Case "xcf"
+            GetPDIFFromExtension = PDIF_XCF
         Case "xpm"
             GetPDIFFromExtension = PDIF_XPM
         
@@ -734,6 +744,8 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_WEBP
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        Case PDIF_XCF
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case Else
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
     End Select

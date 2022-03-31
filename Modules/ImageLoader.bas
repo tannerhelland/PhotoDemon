@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 01/March/22
-'Last update: wrap up work on SVG import
+'Last updated: 30/March/22
+'Last update: start preliminary work on GIMP XCF support
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -30,6 +30,7 @@ Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
 Private Const USE_INTERNAL_PARSER_QOI As Boolean = True
+Private Const USE_INTERNAL_PARSER_XCF As Boolean = True
 
 'PNGs get some special preference due to their ubiquity; a persistent class enables better caching
 Private m_PNG As pdPNG
@@ -1046,8 +1047,17 @@ LibAVIFDidntWork:
         If CascadeLoadGenericImage Then
             decoderUsed = id_resvg
             dstImage.SetOriginalFileFormat PDIF_SVG
-                End If
         End If
+    End If
+        
+    'GIMP XCF support was added in v9.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_XCF Then
+        CascadeLoadGenericImage = LoadXCF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_XCFParser
+            dstImage.SetOriginalFileFormat PDIF_XCF
+        End If
+    End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
@@ -1511,15 +1521,19 @@ Private Function LoadQOI(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.NotifyImageChanged UNDO_Everything
         
         'QOI files are always 24- or 32-bpp
-        'TODO!
-        dstImage.SetOriginalColorDepth 32
+        If (cReader.GetOriginalChannelCount = 4) Then
+            dstImage.SetOriginalColorDepth 32
+        Else
+            dstImage.SetOriginalColorDepth 24
+        End If
+        
         dstImage.SetOriginalGrayscale False
         
-        'QOI headers can differentiate between 24- and 32-bpp sources
-        'TODO!
-        dstImage.SetOriginalAlpha True
+        'Use channel count to determine original alpha state
+        dstImage.SetOriginalAlpha (cReader.GetOriginalChannelCount = 4)
         
-        'QOI files don't really support color management, but can be flagged as sRGB vs linear
+        'QOI files don't really support color management, but can be flagged as sRGB vs linear;
+        ' handling this is TODO pending relevant test files
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
@@ -1612,6 +1626,34 @@ Private Function LoadWebP(ByRef srcFile As String, ByRef dstImage As pdImage, By
 
     Else
         PDDebug.LogAction "WARNING! LoadWebP() couldn't load source file."
+    End If
+    
+End Function
+
+Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadXCF = False
+    
+    'pdXCF handles all the dirty work for us
+    Dim cReader As pdXCF
+    Set cReader = New pdXCF
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadXCF = cReader.LoadXCF_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadXCF Then
+        
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_XCF
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        'These parameters are TODO pending support in pdXCF
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
     End If
     
 End Function
