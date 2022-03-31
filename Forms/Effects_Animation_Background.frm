@@ -28,10 +28,10 @@ Begin VB.Form FormAnimBackground
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkDelete 
       Height          =   495
-      Left            =   6240
+      Left            =   6360
       TabIndex        =   5
       Top             =   1080
-      Width           =   5655
+      Width           =   5535
       _ExtentX        =   9975
       _ExtentY        =   873
       Caption         =   "after processing, delete this layer"
@@ -96,6 +96,28 @@ Begin VB.Form FormAnimBackground
       _ExtentY        =   661
       StickyToggle    =   -1  'True
    End
+   Begin PhotoDemon.pdDropDown ddWhichFrame 
+      Height          =   855
+      Index           =   0
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   1800
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1508
+      Caption         =   "first frame for effect"
+   End
+   Begin PhotoDemon.pdDropDown ddWhichFrame 
+      Height          =   855
+      Index           =   1
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   2760
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1508
+      Caption         =   "last frame for effect"
+   End
 End
 Attribute VB_Name = "FormAnimBackground"
 Attribute VB_GlobalNameSpace = False
@@ -103,18 +125,18 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Effect > Animation > Add background
+'Effect > Animation > Add background/foreground
 'Copyright 2019-2022 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 13/November/20
-'Last update: actually implement permanent version of the effect!
+'Last updated: 31/March/22
+'Last update: new options, including first/last frame selection, details on animation slider, and more
 '
 'In v9.0, PhotoDemon started gaining effects involving animated images.  This necessitated a bunch
 ' of new preview and UI code, since previewing effects in real-time is such an intensive process,
 ' and PD's existing solution was only ever designed for static images.
 '
 'This dialog served as the testbed for the first animation-related effect, and its code is now
-' mirrored across many other places in the project.
+' mirrored across other places in the project.
 '
 'Note that unlike static effects, animated effects use very different code for preview vs final
 ' execution.  This is necessary because pre-computing the effect for all frames is very energy
@@ -187,6 +209,10 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
     Dim deleteLayerAfter As Boolean
     deleteLayerAfter = cParams.GetBool("delete-after", False, True)
     
+    Dim idxFirstFrame As Long, idxLastFrame As Long
+    idxFirstFrame = cParams.GetLong("idx-first-frame", 0)
+    idxLastFrame = cParams.GetLong("idx-last-frame", PDImages.GetActiveImage.GetNumOfLayers() - 1)
+    
     'Convert the target layer (background or foreground) to a null-padded layer, which is just a
     ' a layer at the same size as its parent image with no active transforms.
     ' (This makes it trivially mergeable.)
@@ -211,29 +237,34 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
         'Skip the target layer (obviously)
         If (i <> idxLayer) Then
             
-            'Convert this layer to a null-padded layer
-            PDImages.GetActiveImage.GetLayerByIndex(i).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
-            
-            'Merge the transformed DIB with the effect DIB, c/o pdCompositor.
-            ' (The order of merge is literally the only thing different between background and foreground mode!)
-            scratchDIB.ResetDIB 0
-            
-            If m_InBackgroundMode Then
-                fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
-                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
-            Else
-                PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
-                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode()
+            'Skip layers that are not in the target range
+            If (i >= idxFirstFrame) And (i <= idxLastFrame) Then
+                
+                'Convert this layer to a null-padded layer
+                PDImages.GetActiveImage.GetLayerByIndex(i).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+                
+                'Merge the transformed DIB with the effect DIB, c/o pdCompositor.
+                ' (The order of merge is literally the only thing different between background and foreground mode!)
+                scratchDIB.ResetDIB 0
+                
+                If m_InBackgroundMode Then
+                    fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
+                    m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
+                Else
+                    PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
+                    m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode()
+                End If
+                
+                'Replace the layer with the newly composited image, then shrink the top layer to its smallest
+                ' possible size (un-null-pad it)
+                PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.CreateFromExistingDIB scratchDIB
+                PDImages.GetActiveImage.GetLayerByIndex(i).CropNullPaddedLayer
+                
+                'Notify the parent image of the change
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
+                
             End If
-            
-            'Replace the layer with the newly composited image, then shrink the top layer to its smallest
-            ' possible size (un-null-pad it)
-            PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerDIB.CreateFromExistingDIB scratchDIB
-            PDImages.GetActiveImage.GetLayerByIndex(i).CropNullPaddedLayer
-            
-            'Notify the parent image of the change
-            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
-            
+                
         End If
         
     Next i
@@ -313,6 +344,10 @@ Private Sub ddLayer_Click()
     RenderAnimationFrame
 End Sub
 
+Private Sub ddWhichFrame_Click(Index As Integer)
+    RenderAnimationFrame
+End Sub
+
 Private Sub Form_Load()
     
     'Make sure our animation objects exist
@@ -328,14 +363,26 @@ Private Sub Form_Load()
     If PDImages.IsImageActive() Then
         
         ddLayer.SetAutomaticRedraws False
+        ddWhichFrame(0).SetAutomaticRedraws False
+        ddWhichFrame(1).SetAutomaticRedraws False
         
         For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
             ddLayer.AddItem PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName, i
+            ddWhichFrame(0).AddItem PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName, i
+            ddWhichFrame(1).AddItem PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName, i
         Next i
         
         ddLayer.ListIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+        ddWhichFrame(0).ListIndex = 0
+        ddWhichFrame(1).ListIndex = ddWhichFrame(1).ListCount - 1
+        
         cmdBar.RequestPresetNoLoad ddLayer
+        cmdBar.RequestPresetNoLoad ddWhichFrame(0)
+        cmdBar.RequestPresetNoLoad ddWhichFrame(1)
+        
         ddLayer.SetAutomaticRedraws True, True
+        ddWhichFrame(0).SetAutomaticRedraws True, True
+        ddWhichFrame(1).SetAutomaticRedraws True, True
     
     End If
     
@@ -555,6 +602,22 @@ Private Sub RenderAnimationFrame()
     
     alphaModeNormal = (bottomAlphaMode = AM_Normal) And (topAlphaMode = AM_Normal)
     
+    'The background/foreground effect will be limited to the user's specified range.
+    Dim firstFrameForEffect As Long, lastFrameForEffect As Long
+    If (ddWhichFrame(0).ListIndex < ddWhichFrame(1).ListIndex) Then
+        firstFrameForEffect = ddWhichFrame(0).ListIndex
+        lastFrameForEffect = ddWhichFrame(1).ListIndex
+    Else
+        firstFrameForEffect = ddWhichFrame(1).ListIndex
+        lastFrameForEffect = ddWhichFrame(0).ListIndex
+    End If
+    
+    If (firstFrameForEffect < m_BackgroundFrameIndex) Then firstFrameForEffect = firstFrameForEffect - 1
+    If (lastFrameForEffect < m_BackgroundFrameIndex) Then lastFrameForEffect = lastFrameForEffect - 1
+    
+    Dim thisFrameInEffectRange As Boolean
+    thisFrameInEffectRange = (idxFrame >= firstFrameForEffect) And (idxFrame <= lastFrameForEffect)
+    
     'Make sure the frame request is valid; if it isn't, exit immediately
     If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
         
@@ -562,7 +625,8 @@ Private Sub RenderAnimationFrame()
         m_AniFrame.ResetDIB 0
         m_AniFrame.SetInitialAlphaPremultiplicationState True
         
-        'Paint a stack consisting of: checkerboard background, background layer, current frame
+        'Paint a stack consisting of: checkerboard background, background layer, current frame.
+        ' (In foreground mode, the order of "background layer" and "current frame" will be switched.)
         With m_Frames(idxFrame)
             
             'Normal blend mode allows us to just alpha-blend everything; this is faster than using
@@ -573,7 +637,7 @@ Private Sub RenderAnimationFrame()
                 GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
                 
                 'When in background mode, paint the fixed background layer now
-                If m_InBackgroundMode Then
+                If (m_InBackgroundMode And thisFrameInEffectRange) Then
                     m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
                 End If
                 
@@ -583,7 +647,7 @@ Private Sub RenderAnimationFrame()
                 End If
                 
                 'If in foreground mode, we now need to paint the fixed top layer
-                If (Not m_InBackgroundMode) Then
+                If ((Not m_InBackgroundMode) And thisFrameInEffectRange) Then
                     m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
                 End If
                 
@@ -595,7 +659,7 @@ Private Sub RenderAnimationFrame()
                 
                 'We now need to copy the background layer (whatever it is) into the m_BlendMode DIB,
                 ' at the background layer's expected opacity.
-                If m_InBackgroundMode Then
+                If (m_InBackgroundMode And thisFrameInEffectRange) Then
                     m_BackgroundFrame.AlphaBlendToDC m_BlendDIB.GetDIBDC, targetOpacity, xOffset, yOffset
                 Else
                     If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
@@ -604,19 +668,21 @@ Private Sub RenderAnimationFrame()
                 End If
                 
                 'm_BlendDIB now contains the background layer.  Generate a similar foreground layer,
-                ' using m_AniFrame
+                ' using m_AniFrame.
                 If m_InBackgroundMode Then
                     If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
                         m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
                     End If
                 Else
-                    m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
+                    If thisFrameInEffectRange Then m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
                 End If
                 
                 'NOTE: opacity has already been handled for all frames.
                 
                 'Use pdCompositor to blend the two layers using the expected blendmode and alpha modes
-                m_Compositor.QuickMergeTwoDibsOfEqualSize m_BlendDIB, m_AniFrame, targetBlendMode, 100#, bottomAlphaMode, topAlphaMode
+                If thisFrameInEffectRange Then
+                    m_Compositor.QuickMergeTwoDibsOfEqualSize m_BlendDIB, m_AniFrame, targetBlendMode, 100#, bottomAlphaMode, topAlphaMode
+                End If
                 
                 'Finally, replace the contents of the top layer with the expected checkerboard background,
                 ' then merge the composited result atop that
@@ -633,6 +699,34 @@ Private Sub RenderAnimationFrame()
     'If our frame counter is invalid, end all animations
     Else
         m_Timer.StopTimer
+    End If
+    
+    'Finally, update the slider tooltip to make it easier for the user to zero-in on a given frame
+    If (Not g_Language Is Nothing) Then
+        
+        Dim numFrames As Long, curFrame As Long
+        numFrames = m_FrameCount
+        curFrame = idxFrame
+        
+        Dim totalTime As Long, curFrameTime As Long
+        Dim i As Long
+        For i = 0 To numFrames - 1
+            If (i <> m_BackgroundFrameIndex) Then
+                totalTime = totalTime + m_Frames(i).afFrameDelayMS
+                If (i < curFrame) Then curFrameTime = totalTime
+            End If
+        Next i
+        
+        If (curFrame > m_BackgroundFrameIndex) Then curFrame = curFrame - 1
+        
+        Dim frameToolText As pdString
+        Set frameToolText = New pdString
+        frameToolText.Append g_Language.TranslateMessage("Current frame: %1 of %2", curFrame + 1, numFrames - 1)
+        frameToolText.Append ", "
+        frameToolText.Append g_Language.TranslateMessage("%1 of %2", Strings.StrFromTimeInMS(curFrameTime, True), Strings.StrFromTimeInMS(totalTime, True))
+        
+        sldFrame.AssignTooltip frameToolText.ToString(), vbNullString, True
+        
     End If
         
 End Sub
@@ -675,6 +769,8 @@ Private Function GetLocalParamString() As String
         .AddParam "background-effect", m_InBackgroundMode
         .AddParam "target-layer-index", ddLayer.ListIndex
         .AddParam "delete-after", chkDelete.Value
+        .AddParam "idx-first-frame", ddWhichFrame(0).ListIndex
+        .AddParam "idx-last-frame", ddWhichFrame(1).ListIndex
     End With
     GetLocalParamString = cParams.GetParamString()
     
