@@ -485,6 +485,23 @@ Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As Rec
     imgCompositor.GetCompositedRect Me, dstDIB, dstViewportRect, srcImageRect, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex, ptrToAlternateScratch
 End Sub
 
+'See if a specific layer ID exists
+Friend Function DoesLayerIDExist(ByVal requestedID As Long) As Boolean
+    
+    DoesLayerIDExist = False
+    
+    Dim i As Long
+    For i = 0 To m_numOfLayers - 1
+        If (Not imgLayers(i) Is Nothing) Then
+            If (imgLayers(i).GetLayerID = requestedID) Then
+                DoesLayerIDExist = True
+                Exit Function
+            End If
+        End If
+    Next i
+    
+End Function
+
 'Get the currently active layer index
 Friend Function GetActiveLayerIndex() As Long
     GetActiveLayerIndex = m_curLayer

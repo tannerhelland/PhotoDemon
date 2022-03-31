@@ -3,8 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/September/21
-'Last update: refactor to allow text layers to remain editable after certain crop operations
+'Last updated: 31/March/22
+'Last update: add check for non-destructive property changes on layers that may have been deleted by the last effect
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -503,6 +503,11 @@ Public Function FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGener
     'Ignore all requests if no images are loaded
     If (Not PDImages.IsImageActive()) Then Exit Function
     
+    'Ignore requests for *previous* layers that no longer exist (some effects may remove layers)
+    If (prevGenericLayerID >= 0) Then
+        If (Not PDImages.GetActiveImage.DoesLayerIDExist(prevGenericLayerID)) Then Exit Function
+    End If
+    
     'See if the new setting value differs.  If it does, we need to issue a Process.Processor request to ensure the Undo/Redo chain
     ' is properly updated.  (As a side-effect, this also allows non-destructive actions to be tagged during macro recording.)
     If Strings.StringsNotEqual(CStr(layerSettingValue), CStr(prevGenericSetting(layerSettingID))) Then
@@ -541,38 +546,41 @@ End Sub
 'When a control tied to a non-destructive text effect loses focus, it should call this function with its current value (translated
 ' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this
 ' function will add an Undo entry and notify the macro recorder (if active).
-Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
+Public Function FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant) As Boolean
     
     'Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'Ignore all requests if no images are loaded
-    If PDImages.IsImageActive() Then
-    
-        'Ignore requests if the affected layer is not a text layer
-        If (Not PDImages.GetActiveImage.GetLayerByID(prevTextLayerID) Is Nothing) Then
-            If PDImages.GetActiveImage.GetLayerByID(prevTextLayerID).IsLayerText Then
-    
-                'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
-                ' (if they're currently being recorded, obviously)
-                If Strings.StringsNotEqual(CStr(textSettingValue), CStr(prevTextSetting(textSettingID))) Then
-                    
-                    'Raise a generic "text setting change" processor request
-                    Dim cParams As pdSerialize
-                    Set cParams = New pdSerialize
-                    With cParams
-                        .AddParam "id", textSettingID
-                        .AddParam "value", textSettingValue
-                    End With
-                    
-                    MiniProcess_NDFXOnly "Modify text layer", , cParams.GetParamString(), UNDO_Layer_VectorSafe, , , prevTextLayerID
-                    
-                End If
-                
-            End If
-        End If
+    If (Not PDImages.IsImageActive()) Then Exit Function
+        
+    'Ignore requests for *previous* layers that no longer exist (some effects may remove layers)
+    If (prevTextLayerID >= 0) Then
+        If (Not PDImages.GetActiveImage.DoesLayerIDExist(prevTextLayerID)) Then Exit Function
     End If
     
-End Sub
+    'Ignore requests if the affected layer is not a text layer
+    If (PDImages.GetActiveImage.GetLayerByID(prevTextLayerID) Is Nothing) Then Exit Function
+    If (Not PDImages.GetActiveImage.GetLayerByID(prevTextLayerID).IsLayerText) Then Exit Function
+    
+    'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
+    ' (if they're currently being recorded, obviously)
+    If Strings.StringsNotEqual(CStr(textSettingValue), CStr(prevTextSetting(textSettingID))) Then
+        
+        'Raise a generic "text setting change" processor request
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
+        With cParams
+            .AddParam "id", textSettingID
+            .AddParam "value", textSettingValue
+        End With
+        
+        MiniProcess_NDFXOnly "Modify text layer", , cParams.GetParamString(), UNDO_Layer_VectorSafe, , , prevTextLayerID
+            
+        FlagFinalNDFXState_Text = True
+            
+    End If
+    
+End Function
 
 'Micro processor to be used ONLY for non-destructive FX.  I have deliberately declared it as private to avoid using it elsewhere.
 Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional ByVal processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
