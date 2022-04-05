@@ -570,10 +570,13 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
                 
             '32-bit HDR
             Else
+                
+                'LCMS doesn't support 32-bit integer components.  We'll manually downsample to
+                ' 16-bit integer before loading.
                 If HasAlpha Then
-                    srcFormat = TYPE_RGBA_32_PLANAR
+                    srcFormat = TYPE_RGBA_16_PLANAR
                 Else
-                    srcFormat = TYPE_RGB_32_PLANAR
+                    srcFormat = TYPE_RGB_16_PLANAR
                 End If
             
             End If
@@ -639,12 +642,19 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     Debug.Print "xcfbytesperpixel", xcfBytesPerPixel
     Dim tileWidth As Long, tileHeight As Long, numTilePixels As Long
     
+    'HDR images require extra swizzling
+    Dim tmpSwizzle() As Byte
+    If (numBitsPerChannel > 8) Then ReDim tmpSwizzle(0 To maxDstSize - 1) As Byte
+    
     'Precalculate dimensions of the last row/column of tiles
     Dim tileWidthLast As Long, tileHeightLast As Long
     tileWidthLast = m_Layers(idxLayer).lWidth - ((m_Layers(idxLayer).lWidth \ 64) * 64)
     If (tileWidthLast <= 0) Then tileWidthLast = 64
     tileHeightLast = m_Layers(idxLayer).lHeight - ((m_Layers(idxLayer).lHeight \ 64) * 64)
     If (tileHeightLast <= 0) Then tileHeightLast = 64
+    
+    'Used for manual swizzling of shuffled float data
+    Dim x As Long, y As Long
     
     Debug.Print m_Layers(idxLayer).numTilesX, m_Layers(idxLayer).numTilesY, m_Layers(idxLayer).numTilesTotal
     
@@ -747,6 +757,37 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
                     Loop
                     
                 Next idxChannel
+                
+                'HDR images now require special swizzling.  Each byte of the source pixels is encoded as its
+                ' own RLE stream, e.g. the first 8-bits of every 16-bit color are encoded together, then the
+                ' second 8-bits, etc.  This means that our RLE decoding, above, has inadvertently separated
+                ' the source bytes into 2+ different planes.  We need to manually reassemble those planes.
+                If (numBitsPerChannel > 8) Then
+                    
+                    CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
+                    
+                    Dim swzOffset As Long
+                    swzOffset = numBitsPerChannel \ 8
+                    
+                    Dim srcOffset As Long
+                    For srcOffset = 0 To swzOffset - 1
+                        For x = 0 To numTilePixels - 1
+                            dstBytes(x * swzOffset + srcOffset) = tmpSwizzle(srcOffset * numTilePixels + x)
+                        Next x
+                        For x = 0 To numTilePixels - 1
+                            dstBytes(numTilePixels * swzOffset + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset + srcOffset * numTilePixels + x)
+                        Next x
+                        For x = 0 To numTilePixels - 1
+                            dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
+                        Next x
+                        If HasAlpha Then
+                            For x = 0 To numTilePixels - 1
+                                dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
+                            Next x
+                        End If
+                    Next srcOffset
+                    
+                End If
                     
             'Available as an optional setting in modern XCF files, but rare "in the wild"
             Case xcf_Compress_ZLib
@@ -776,16 +817,108 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         'Gray and true-color are handled by color profile
         Else
             
+            'HDR float formats are in big-endian notation.  We must manually swizzle before converting,
+            ' because LCMS does not support this format natively.
+            If (numBitsPerChannel > 8) Then
+            
+                'With swizzling finished, we now need to manually convert from big- to little-endian
+                ' for float formats.
+                If precisionFloat Then
+                    If (numBitsPerChannel = 16) Then
+                        VBHacks.SwapEndianness16 dstBytes
+                    ElseIf (numBitsPerChannel = 32) Then
+                        VBHacks.SwapEndianness32 dstBytes
+                    Else
+                        VBHacks.SwapEndianness64 dstBytes
+                    End If
+                End If
+                
+                '32-bit integer data has an additional consideration.  LCMS does not provide native
+                ' support for this color format (because it's a stupid and wasteful format, frankly,
+                ' when 32-bit float is RIGHT THERE), so we're going to downsample 32-bit integer data
+                ' to 16-bit data, since it's just going to get smushed down to 8-bit for PD anyway.
+                If precisionInt And (numBitsPerChannel > 16) Then
+                    
+                    Debug.Print "manual swapping"
+                    
+                    'Copy the two MSB from each channel into a single sub-image.
+                    CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
+                    'FillMemory VarPtr(dstBytes(0)), maxDstSize, 255
+                    
+                    If (srcCompression = xcf_Compress_ZLib) Then
+                        
+                        Debug.Print "RGBA lzib"
+                        Dim pxSize As Long
+                        If HasAlpha Then pxSize = 8 Else pxSize = 6
+                        
+                        For x = 0 To numTilePixels - 1
+                            dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
+                            dstBytes(x * pxSize + 1) = tmpSwizzle(x * pxSize * 2 + 0)
+                            dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
+                            dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
+                            dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
+                            dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
+                            If HasAlpha Then
+                                dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
+                                dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
+                            End If
+                        Next x
+                        
+                    Else
+                        
+                        For x = 0 To numTilePixels - 1
+                            dstBytes(x * 2 + 0) = tmpSwizzle(x * 4 + 1)
+                            dstBytes(x * 2 + 1) = tmpSwizzle(x * 4 + 0)
+                            
+                            dstBytes(numTilePixels * 2 + x * 2 + 0) = tmpSwizzle(numTilePixels * 4 + x * 4 + 1)
+                            dstBytes(numTilePixels * 2 + x * 2 + 1) = tmpSwizzle(numTilePixels * 4 + x * 4 + 0)
+                            
+                            dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
+                            dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
+                            
+                            If HasAlpha Then
+                                dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
+                                dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
+                            End If
+                        Next x
+                        
+                    End If
+                        
+                End If
+                
+            End If
+            
+            Dim lcmsBytesPerLine As Long, lcmsBytesPerPlane As Long
+            
+            If (srcCompression = xcf_Compress_ZLib) Then
+                If precisionInt And (numBitsPerChannel > 16) Then
+                    If HasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
+                    lcmsBytesPerPlane = 2 * tileWidth * tileHeight
+                Else
+                    lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
+                    lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
+                End If
+            Else
+                
+                '32-byte int data has been pre-downsampled to shorts
+                If precisionInt And (numBitsPerChannel > 16) Then
+                    Debug.Print "using shortcut"
+                    lcmsBytesPerLine = tileWidth * 2
+                    lcmsBytesPerPlane = 2 * tileWidth * tileHeight
+                Else
+                    lcmsBytesPerLine = tileWidth * (numBitsPerChannel \ 8)
+                    lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
+                End If
+                
+            End If
+            
             'Note that the creation of this transform is extremely specific.  In particular, we have to explicitly
             ' address planar-to-interleaved (on RLE-compressed images), and we are also rendering into a fixed-size
             ' 64x64 image buffer - but the incoming tile *may be smaller than this*, especially on row/column ends.
+            ' (So the source size floats, but the destination size does not.)
             '
             'We also have to deal with variable-length image precision, which is a whole other can of worms.
-            If (srcCompression = xcf_Compress_ZLib) Then
-                tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, tileWidth * xcfBytesPerPixel, 64 * 4, (numBitsPerChannel \ 8) * tileWidth * tileHeight, 0&
-            Else
-                tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, tileWidth * (numBitsPerChannel \ 8), 64 * 4, (numBitsPerChannel \ 8) * tileWidth * tileHeight, 0&
-            End If
+            tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, lcmsBytesPerLine, 64 * 4, lcmsBytesPerPlane, 0&
             
             'Non-color-managed (for testing ONLY) approach described below:
             

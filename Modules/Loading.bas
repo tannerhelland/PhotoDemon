@@ -814,6 +814,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "Internal PaintShop Pro parser"
         Case id_QOIParser
             GetDecoderName = "Internal QOI parser"
+        Case id_XCFParser
+            GetDecoderName = "Internal XCF parser"
         Case id_WIC
             GetDecoderName = "Windows Imaging Component"
         Case id_CharLS

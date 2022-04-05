@@ -79,9 +79,9 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_RGB_16_PLANAR = &H4101A
     TYPE_RGB_16_SE = &H4081A
     
-    '(Added by Tanner)
-    TYPE_RGB_32 = &H4001C
-    TYPE_RGB_32_PLANAR = &H4101C
+    '(Added by Tanner, but it turns out 32-bit integers are not supported!)
+    'TYPE_RGB_32 = &H4001C
+    'TYPE_RGB_32_PLANAR = &H4101C
     
     TYPE_BGR_16 = &H4041A
     TYPE_BGR_16_PLANAR = &H4141A
@@ -95,9 +95,9 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_RGBA_16_PLANAR = &H4109A
     TYPE_RGBA_16_SE = &H4089A
     
-    '(Added by Tanner)
-    TYPE_RGBA_32 = &H4009C
-    TYPE_RGBA_32_PLANAR = &H4109C
+    '(Added by Tanner, but it turns out 32-bit integers are not supported!)
+    'TYPE_RGBA_32 = &H4009C
+    'TYPE_RGBA_32_PLANAR = &H4109C
     
     TYPE_ARGB_8 = &H44099
     TYPE_ARGB_16 = &H4409A
