@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 04/April/22
+'Last updated: 05/April/22
 'Last update: continue work on initial build
 '
 'This class (and its associated pdXCF- child classes) handle GIMP XCF parsing duties.  It is custom-built
@@ -440,31 +440,37 @@ End Function
 
 'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
 '
-'Given a valid layer index, retrieve the pixels associated with that layer.
-' Incoming *and* outgoing stream pointer alignment is *not* guaranteed.  This function will move
-' the pointer around as necessary to decode each layer.  Pointer alignment, if required, must be
-' handled by the caller.
+'Given a valid layer index, retrieve the pixels associated with that layer.  This involves reading
+' all tiles for the layer, decompressing them (multiple compression schemes are possible), converting
+' from planar to interleaved formats, swapping endianness on HDR schemes, manually translating
+' unsupported formats like half-floats to VB-compatible ones, color-managing the resulting data from
+' a huge matrix of potential integer and/or floating-point representations to standard 32-bit sRGB,
+' then assembling a useable layer pixel stream from all that data.  FML!
+'
+'Incoming *and* outgoing stream pointer alignment is *not* guaranteed.  This function will move
+' the pointer around as necessary to decode individual tiles.  Pointer alignment, if required,
+' must be handled by the caller.
 Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
 
     Const FUNC_NAME As String = "Import_Stage4b_GenerateLayerPixels"
     Import_Stage4b_GenerateLayerPixels = True
     
-    'If we've made it this far, previous functions were able to retrieve a list of file offsets
-    ' to the individual 64x64 tiles that comprise this XCF file.  It is now our job to decompress
-    ' those tiles, and from the results, construct a useable pdDIB object.
+    'If we've made it this far, previous functions successfully retrieved a list of file offsets
+    ' for the individual 64x64 tiles that comprise this XCF file.  It is now our job to decompress
+    ' those tiles, and from the results, construct a useable layer pixel stream.
     
-    'Start by creating a blank tile object.  All tiles will first get "painted" into this placeholder,
-    ' and then this placeholder will be blt'ed into the target layer.
+    'Start by creating a blank tile object.  All tiles will first get "painted" into this placeholder.
     Set m_Tile = New pdDIB
     m_Tile.CreateBlank 64, 64, 32, vbBlack, 255
     
-    'Next, create the target layer DIB
+    'Next, create the target layer DIB.  The full-size layer image will be assembled tile-by-tile from
+    ' the placeholder m_Tile object, above.
     Set m_Layers(idxLayer).lDIB = New pdDIB
     m_Layers(idxLayer).lDIB.CreateBlank m_Layers(idxLayer).lWidth, m_Layers(idxLayer).lHeight, 32, vbBlack, 255
     
-    'We will need a ton of information from previous steps (like color-depth and compression mode)
-    ' to inform the handling of tile data.  We also need to be careful with right- and bottom- tiles,
-    ' as they may not have full 64x64 px dimensions.
+    'We need a ton of information from previous steps (like color-depth and compression mode)
+    ' to inform the processing of tile data.  We also need to be careful with right-most and
+    ' bottom-most tiles, because they are unlikely to have full 64x64 px dimensions.
     Dim xTileMax As Long, yTileMax As Long
     xTileMax = m_Layers(idxLayer).numTilesX - 1
     yTileMax = m_Layers(idxLayer).numTilesY - 1
@@ -489,175 +495,102 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     'XCF supports a complex matrix of potential color models and precisions.  Let's simplify the image-
     ' and layer-level flags into branchable toggles that simplify the process of converting to PD's internal
     ' 32-bpp BGRA requirement.  (Note also that some color model details are layer-specific, like alpha
-    ' channel presence, while others are image-specific, like int vs float encoding.)
-    Dim HasAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
-    With m_Layers(idxLayer)
-        HasAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
-        isGray = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_GrayX)
-        isIndexed = (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_IndexedX)
-    End With
-    
+    ' channel presence, while others are image-specific, like int vs float precisions.)
+    Dim hasAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
     Dim precisionInt As Boolean, precisionFloat As Boolean, isGamma As Boolean, isLinear As Boolean
-    precisionInt = (m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_08bitIntLinear) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_16bitIntLinear) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_32bitIntLinear)
-    precisionFloat = (Not precisionInt)
-    isGamma = (m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_64bitFltGamma)
-    isLinear = (Not isGamma)
-    
     Dim numBitsPerChannel As Long
-    If ((m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_08bitIntLinear)) Then
-        numBitsPerChannel = 8
-    ElseIf ((m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_16bitFltLinear) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_16bitIntLinear)) Then
-        numBitsPerChannel = 16
-    ElseIf ((m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_32bitFltLinear) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_32bitIntLinear)) Then
-        numBitsPerChannel = 32
-    Else
-        numBitsPerChannel = 64
-    End If
+    
+    FillPixelFormats idxLayer, hasAlpha, isGray, isIndexed, precisionInt, isGamma, numBitsPerChannel
+    isLinear = (Not isGamma)
+    precisionFloat = (Not precisionInt)
     
     'Source bits and destination bits will be stored in dedicated arrays.  We will "extract" source bytes
-    ' into this source array (which may contain unwanted trailing bytes, due to the way XCF works).
-    ' We will then blindly decompress the bytes into the destination array (whose size *is* known and fixed,
-    ' based on tile size and image color depth).  We will then swizzle and down/upsample the destination bytes
-    ' as necessary into the dedicated tile DIB, then finally blt that into the layer in "finished" form.
+    ' from the base XCF file into this local "source" array (this is important because we don't always know
+    ' the true size of a tile's data, so we just have to grab a "big enough" chunk from the file which will
+    ' almost always contain some amount of unwanted trailing bytes).
+    '
+    'We will then blindly decompress the bytes from our local "source" array into a "destination" array
+    ' (whose size *is* known and fixed, based on calculations we can make on tile size, color format, and
+    ' precision).  We will then swizzle and down/upsample destination bytes as necessary, then color-manage
+    ' everything into the dedicated tile DIB (which will ultimately get blted into the assembled "full layer
+    ' image" as you see it in the app).
     Dim xcfBytesPerPixel As Long
     xcfBytesPerPixel = m_Layers(idxLayer).lBytesPerPixel
     
-    'With the source tile decoded, we now need to swizzle and/or up/downsample the resulting
-    ' data into 32-bpp BGRA format.  This uses a complex set of branches, but the primary goal here
-    ' is just to set up an lcms transform that will handle the conversion for us.
+    'Some swizzling and up/downsampling can be performed with help from LCMS.  (Note that for many formats,
+    ' we still need to massage the data to get it to a place where LCMS can work with it - this is especially
+    ' true for formats unsupported by LCMS, like 32-bit integer channel precision.)
+    '
+    'To make this work, however, we need to define all possible LCMS color formats that we may be relying on.
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, tmpTransform As pdLCMSTransform
     Set srcProfile = New pdLCMSProfile
     
-    'TODO: use profile provided by the file here, if provided
+    'TODO: use color profile embedded in the file here, if one exists
+    
+    'Source data can be in linear or gamma-encoded format.  Gamma-encoded format is close to sRGB and the
+    ' spec recommends just assuming that on legacy files anyway
     If isLinear Then srcProfile.CreateLinearRGBProfile Else srcProfile.CreateSRGBProfile True
+    
+    'For now, do a hard-convert into sRGB format
     Set dstProfile = New pdLCMSProfile
     dstProfile.CreateSRGBProfile
     
+    'Some color modes (e.g. indexed images) don't require color management, so we must check for a
+    ' null-format before attempting to create a transform.
     Dim srcFormat As LCMS_PIXEL_FORMAT
-    
-    'Indexed mode is not handled via profile; it is handled manually
-    
-    'Gray (can be any bit-depth)
-    If isGray Then
-    
-        'TODO
-    
-    'RGB (can be any bit-depth)
-    Else
-    
-        'Next, split by precision
-        '
-        'Integer encoding
-        If precisionInt Then
-            
-            'SDR (this is the standard branch)
-            If (numBitsPerChannel = 8) Then
-                If HasAlpha Then
-                    PDDebug.LogAction "XCF has alpha"
-                    srcFormat = TYPE_RGBA_8_PLANAR
-                Else
-                    PDDebug.LogAction "XCF does not have alpha"
-                    srcFormat = TYPE_RGB_8_PLANAR
-                End If
-                
-            'HDR
-            ElseIf (numBitsPerChannel = 16) Then
-                If HasAlpha Then
-                    srcFormat = TYPE_RGBA_16_PLANAR
-                Else
-                    srcFormat = TYPE_RGB_16_PLANAR
-                End If
-                
-            '32-bit HDR
-            Else
-                
-                'LCMS doesn't support 32-bit integer components.  We'll manually downsample to
-                ' 16-bit integer before loading.
-                If HasAlpha Then
-                    srcFormat = TYPE_RGBA_16_PLANAR
-                Else
-                    srcFormat = TYPE_RGB_16_PLANAR
-                End If
-            
-            End If
-        
-        'Floating-point encoding
-        Else
-        
-            'Half-precision
-            If (numBitsPerChannel = 16) Then
-                If HasAlpha Then
-                    srcFormat = TYPE_RGBA_HALF_FLT_PLANAR
-                Else
-                    srcFormat = TYPE_RGB_HALF_FLT_PLANAR
-                End If
-                
-            'Standard precision
-            ElseIf (numBitsPerChannel = 32) Then
-                If HasAlpha Then
-                    srcFormat = TYPE_RGBA_FLT_PLANAR
-                Else
-                    srcFormat = TYPE_RGB_FLT_PLANAR
-                End If
-                
-            'Double-precision
-            Else
-                If HasAlpha Then
-                    srcFormat = TYPE_RGBA_DBL_PLANAR
-                Else
-                    srcFormat = TYPE_RGB_DBL_PLANAR
-                End If
-            
-            End If
-            
-        End If
-    
-    End If
-    
-    'If the image is in zLib format, it will use interleaved instead of planar format.
-    ' Deactivate that bit accordingly.
-    If (srcCompression = xcf_Compress_ZLib) Then srcFormat = srcFormat And (Not &H1000&)
+    srcFormat = GetSrcLCMSFormat(isIndexed, isGray, precisionInt, hasAlpha, numBitsPerChannel, srcCompression)
     
     If (srcFormat <> 0) Then
+        Dim flgTransform As LCMS_TRANSFORM_FLAGS
+        If hasAlpha Then flgTransform = cmsFLAGS_COPY_ALPHA Else flgTransform = 0
         Set tmpTransform = New pdLCMSTransform
-        tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, IIf(HasAlpha, cmsFLAGS_COPY_ALPHA, 0&)
+        tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, flgTransform
     End If
     
-    Dim srcSize As Long, dstSize As Long
-    Dim srcBytes() As Byte, dstBytes() As Byte
-    
     'Pre-calculate a "worst-case" source size.  This formula is arbitrary; maybe there is a better way,
-    ' but since we have to consider the worst-case possibilities of both GIMP's in-house RLE encoder
-    ' *and* DEFLATE, this seems like a safe amount of overhead.
-    Dim maxSrcSize As Long
-    maxSrcSize = 64 * 64 * xcfBytesPerPixel * 2
+    ' but I derived this from the following clue in the XCF spec:
+    '
+    '"The RLE encoding can cause degenerated encodings in which the original data stream may double in size
+    ' (or grow to arbitrarily large sizes if (128,0,0) operations are inserted). Such encodings must be avoided,
+    ' as GIMP's XCF reader expects that the size of an encoded tile is never more than 24 KB, which is only 1.5
+    ' times the unencoded size of a 64x64 RGBA tile.
+    '
+    'Based on this advice, I've gone with a similar formula of "50% overhead for worst-case compression".
+    Dim srcSize As Long, maxSrcSize As Long, srcBytes() As Byte
+    maxSrcSize = Int((64 * 64 * xcfBytesPerPixel) * 1.5 + 0.5)
     ReDim srcBytes(0 To maxSrcSize - 1) As Byte
     
-    'Destination size is fixed, thankfully, but note that not all tiles will use the full size.
-    ' (Right- and bottom-most tiles may be smaller.)  Note also that we are declaring this array
-    ' as "byte" but it may actually contain shorts, floats, etc.
-    Dim maxDstSize As Long
+    'Decompressed destination size is fixed, thankfully, but note that not all tiles will use the full
+    ' tile size.  Right- and bottom-most tiles may be smaller if the image dimensions are not a clean
+    ' multiple of 64.
+    '
+    'Note also that we declare this array as "byte" but it may actually contain shorts, floats, etc -
+    ' we'll alias it as necessary when the time comes.
+    Dim dstSize As Long, maxDstSize As Long, dstBytes() As Byte
     maxDstSize = 64 * 64 * xcfBytesPerPixel
     ReDim dstBytes(0 To maxDstSize - 1) As Byte
-    Debug.Print "xcfbytesperpixel", xcfBytesPerPixel
-    Dim tileWidth As Long, tileHeight As Long, numTilePixels As Long
     
-    'HDR images require extra swizzling
+    'Various HDR formats require extra handling because they either do not use LCMS-supported color formats
+    ' (e.g. 32-bit integer precision), or because they use silly big-endian encoding for floats (LCMS only
+    ' offers endianness swapping for int formats).  Due to the complexity of these transforms, we want an
+    ' additional swizzling buffer available for HDR formats, at the same size as the decompressed pixel data.
     Dim tmpSwizzle() As Byte
     If (numBitsPerChannel > 8) Then ReDim tmpSwizzle(0 To maxDstSize - 1) As Byte
     
-    'Precalculate dimensions of the last row/column of tiles
+    'Precalculate dimensions of the last row/column of tiles; this saves us some computation effort
+    ' inside the tile loop.
+    Dim tileWidth As Long, tileHeight As Long, numTilePixels As Long
+    
     Dim tileWidthLast As Long, tileHeightLast As Long
     tileWidthLast = m_Layers(idxLayer).lWidth - ((m_Layers(idxLayer).lWidth \ 64) * 64)
     If (tileWidthLast <= 0) Then tileWidthLast = 64
     tileHeightLast = m_Layers(idxLayer).lHeight - ((m_Layers(idxLayer).lHeight \ 64) * 64)
     If (tileHeightLast <= 0) Then tileHeightLast = 64
     
-    'Used for manual swizzling of shuffled float data
+    'A few final useful variables if we need to manually swizzle complex HDR data
     Dim x As Long, y As Long
     
-    Debug.Print m_Layers(idxLayer).numTilesX, m_Layers(idxLayer).numTilesY, m_Layers(idxLayer).numTilesTotal
-    
+    'Start iterating tiles
     Dim xTile As Long, yTile As Long
     For yTile = 0 To yTileMax
     For xTile = 0 To xTileMax
@@ -665,24 +598,33 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         'PDDebug.LogAction "Parsing tile (" & xTile & ", " & yTile & ")"
         
         'Unfortunately, GIMP does not encode compressed tile sizes into the XCF file.  We can infer the
-        ' size for most tiles (by subtracting this offset from the next offset), but for the final tile
-        ' in the image, we just have to grab a "worst-case" size from the file and hope for the best.
+        ' size for most tiles (by subtracting this tile's file offset from the next tile's offset),
+        ' but for the final tile in the image, we just have to grab a "worst-case" chunk of bytes from the
+        ' file and hope for the best.
         If (idxTile < numTilesTotal - 1) Then
             srcSize = m_Layers(idxLayer).ptrToTiles(idxTile + 1) - m_Layers(idxLayer).ptrToTiles(idxTile)
         Else
             srcSize = maxSrcSize
         End If
         
-        'Same goes for destination size
+        'Destination size is fixed, and contingent only on the current tile's dimensions and the color-depth
+        ' of the image.
         If (xTile < xTileMax) Then tileWidth = 64 Else tileWidth = tileWidthLast
         If (yTile < yTileMax) Then tileHeight = 64 Else tileHeight = tileHeightLast
         numTilePixels = tileWidth * tileHeight
         dstSize = numTilePixels * xcfBytesPerPixel
         
-        'Forcibly align the stream pointer for this tile, then pull the source byte count (with potentially
-        ' more bytes than we need) into a local array.
+        'Forcibly align the file stream pointer for this tile, then pull the required amount of source bytes
+        ' into a local array.  (Manual RLE decoding is faster this way, vs pulling byte-by-byte from the file.)
         m_Stream.SetPosition m_Layers(idxLayer).ptrToTiles(idxTile), FILE_BEGIN
+        
+        '(PD's stream object automatically protects against OOB reads, but I still prefer to check for EOF and
+        ' shrink the source buffer accordingly, especially since XCF requires such a huge "safety" margin for
+        ' RLE-compressed tiles.)
+        If (srcSize > m_Stream.GetStreamSize - m_Stream.GetPosition) Then srcSize = m_Stream.GetStreamSize - m_Stream.GetPosition
         srcSize = m_Stream.ReadBytesToBarePointer(VarPtr(srcBytes(0)), srcSize)
+        
+        'We are now done with the file stream and can happily ignore it until the next tile.
         
         'PDDebug.LogAction "Read " & srcSize & " bytes from position " & m_Layers(idxLayer).ptrToTiles(idxTile)
         
@@ -693,107 +635,19 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
             'Shouldn't exist in the wild; will revisit if I can find a way to produce such a file
             Case xcf_Compress_None
                 
-            'Default setting for XCF files
+            'Default setting for XCF files; after RLE decompression, HDR images require unshuffling
+            ' (since RLE operates on individual bytes, not channels)
             Case xcf_Compress_RLE
-            
-                'GIMP's RLE strategy uses a homebrew design (sigh).  As with most RLE schemes, channels are encoded
-                ' individually (planar not interleaved), and at higher bit-depths they are RLE-encoded byte-by-byte,
-                ' big-endian order, so we also need to sort that shit out.
-                '
-                'Even worse, the format provides no markers to align scanlines (or any source data whatsoever),
-                ' so we have to manually watch decompressed size and stop once all pixels have been assembled.
-                ' (Yes, this makes the format extremely susceptible to malicious encoding - but that's not
-                ' our fault!)
-                Dim idxRLE As Long, idxDst As Long
-                idxRLE = 0
-                idxDst = 0
-                
-                Dim rleMarker As Byte, rleMult As Long, endOfThisChannel As Long
-                
-                Dim idxChannel As Long
-                For idxChannel = 0 To xcfBytesPerPixel - 1
-                    
-                    'Align destination pointer on each new channel
-                    endOfThisChannel = (idxChannel + 1) * numTilePixels
-                    idxDst = idxChannel * numTilePixels
-                    
-                    Do While (idxDst < endOfThisChannel)
-                        
-                        'Always start with an RLE marker
-                        rleMarker = srcBytes(idxRLE)
-                        idxRLE = idxRLE + 1
-                        
-                        '"Short run of identical bytes"
-                        If (rleMarker <= 126) Then
-                            rleMarker = rleMarker + 1
-                            FillMemory VarPtr(dstBytes(idxDst)), rleMarker, srcBytes(idxRLE)
-                            idxRLE = idxRLE + 1
-                            idxDst = idxDst + rleMarker
-                            
-                        '"Long run of identical bytes"
-                        ElseIf (rleMarker = 127) Then
-                            rleMult = srcBytes(idxRLE)
-                            rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
-                            FillMemory VarPtr(dstBytes(idxDst)), rleMult, srcBytes(idxRLE + 2)
-                            idxRLE = idxRLE + 3
-                            idxDst = idxDst + rleMult
-                        
-                        '"Long run of different bytes"
-                        ElseIf (rleMarker = 128) Then
-                            rleMult = srcBytes(idxRLE)
-                            rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
-                            CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE + 2)), rleMult
-                            idxRLE = idxRLE + rleMult + 2
-                            idxDst = idxDst + rleMult
-                            
-                        '"Short run of different bytes"
-                        Else
-                            rleMarker = 256 - rleMarker
-                            CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE)), rleMarker
-                            idxRLE = idxRLE + rleMarker
-                            idxDst = idxDst + rleMarker
-                        End If
-                        
-                    Loop
-                    
-                Next idxChannel
-                
-                'HDR images now require special swizzling.  Each byte of the source pixels is encoded as its
-                ' own RLE stream, e.g. the first 8-bits of every 16-bit color are encoded together, then the
-                ' second 8-bits, etc.  This means that our RLE decoding, above, has inadvertently separated
-                ' the source bytes into 2+ different planes.  We need to manually reassemble those planes.
-                If (numBitsPerChannel > 8) Then
-                    
-                    CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
-                    
-                    Dim swzOffset As Long
-                    swzOffset = numBitsPerChannel \ 8
-                    
-                    Dim srcOffset As Long
-                    For srcOffset = 0 To swzOffset - 1
-                        For x = 0 To numTilePixels - 1
-                            dstBytes(x * swzOffset + srcOffset) = tmpSwizzle(srcOffset * numTilePixels + x)
-                        Next x
-                        For x = 0 To numTilePixels - 1
-                            dstBytes(numTilePixels * swzOffset + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset + srcOffset * numTilePixels + x)
-                        Next x
-                        For x = 0 To numTilePixels - 1
-                            dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
-                        Next x
-                        If HasAlpha Then
-                            For x = 0 To numTilePixels - 1
-                                dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
-                            Next x
-                        End If
-                    Next srcOffset
-                    
-                End If
+                DecompressRLE xcfBytesPerPixel, numTilePixels, srcBytes, dstBytes
+                If (numBitsPerChannel > 8) Then UnshuffleHDRChannels numBitsPerChannel, numTilePixels, hasAlpha, tmpSwizzle, dstBytes, maxDstSize
                     
             'Available as an optional setting in modern XCF files, but rare "in the wild"
             Case xcf_Compress_ZLib
                 
                 'zLib compression is straightforward: decode the source bytes directly into the destination array,
-                ' using a pre-calculated destination size as our fixed indicator for "completion".
+                ' using a pre-calculated destination size as our fixed indicator for "completion".  (Note that we
+                ' may still need to swap endianness after decompression, but we at least won't have to deal with
+                ' planar-to-interleaved conversion.)
                 Dim dcmpResult As Long
                 dcmpResult = Plugin_libdeflate.Decompress_ZLib(VarPtr(dstBytes(0)), dstSize, VarPtr(srcBytes(0)), srcSize)
                 If (dcmpResult <> 0) Then InternalError FUNC_NAME, "bad decompress: " & dcmpResult
@@ -807,7 +661,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         If isIndexed Then
         
             'Indexed color mode does support alpha, but it is encoded as an independent channel
-            If HasAlpha Then
+            If hasAlpha Then
             
             'Normal, non-alpha palette
             Else
@@ -817,130 +671,28 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         'Gray and true-color are handled by color profile
         Else
             
-            'HDR float formats are in big-endian notation.  We must manually swizzle before converting,
-            ' because LCMS does not support this format natively.
-            If (numBitsPerChannel > 8) Then
+            'Manually handle BE to LE conversion for HDR float formats (and 32-bit integer, which is not
+            ' natively supported by LCMS)
+            SwapEndiannessHDR srcCompression, numBitsPerChannel, precisionFloat, numTilePixels, hasAlpha, tmpSwizzle, dstBytes, maxDstSize
             
-                'With swizzling finished, we now need to manually convert from big- to little-endian
-                ' for float formats.
-                If precisionFloat Then
-                    If (numBitsPerChannel = 16) Then
-                        VBHacks.SwapEndianness16 dstBytes
-                    ElseIf (numBitsPerChannel = 32) Then
-                        VBHacks.SwapEndianness32 dstBytes
-                    Else
-                        VBHacks.SwapEndianness64 dstBytes
-                    End If
-                End If
-                
-                '32-bit integer data has an additional consideration.  LCMS does not provide native
-                ' support for this color format (because it's a stupid and wasteful format, frankly,
-                ' when 32-bit float is RIGHT THERE), so we're going to downsample 32-bit integer data
-                ' to 16-bit data, since it's just going to get smushed down to 8-bit for PD anyway.
-                If precisionInt And (numBitsPerChannel > 16) Then
-                    
-                    Debug.Print "manual swapping"
-                    
-                    'Copy the two MSB from each channel into a single sub-image.
-                    CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
-                    'FillMemory VarPtr(dstBytes(0)), maxDstSize, 255
-                    
-                    If (srcCompression = xcf_Compress_ZLib) Then
-                        
-                        Debug.Print "RGBA lzib"
-                        Dim pxSize As Long
-                        If HasAlpha Then pxSize = 8 Else pxSize = 6
-                        
-                        For x = 0 To numTilePixels - 1
-                            dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
-                            dstBytes(x * pxSize + 1) = tmpSwizzle(x * pxSize * 2 + 0)
-                            dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
-                            dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
-                            dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
-                            dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
-                            If HasAlpha Then
-                                dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
-                                dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
-                            End If
-                        Next x
-                        
-                    Else
-                        
-                        For x = 0 To numTilePixels - 1
-                            dstBytes(x * 2 + 0) = tmpSwizzle(x * 4 + 1)
-                            dstBytes(x * 2 + 1) = tmpSwizzle(x * 4 + 0)
-                            
-                            dstBytes(numTilePixels * 2 + x * 2 + 0) = tmpSwizzle(numTilePixels * 4 + x * 4 + 1)
-                            dstBytes(numTilePixels * 2 + x * 2 + 1) = tmpSwizzle(numTilePixels * 4 + x * 4 + 0)
-                            
-                            dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
-                            dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
-                            
-                            If HasAlpha Then
-                                dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
-                                dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
-                            End If
-                        Next x
-                        
-                    End If
-                        
-                End If
-                
-            End If
-            
+            'Finalize plane and scanline calculations for LCMS conversion
             Dim lcmsBytesPerLine As Long, lcmsBytesPerPlane As Long
-            
-            If (srcCompression = xcf_Compress_ZLib) Then
-                If precisionInt And (numBitsPerChannel > 16) Then
-                    If HasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
-                    lcmsBytesPerPlane = 2 * tileWidth * tileHeight
-                Else
-                    lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
-                    lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
-                End If
-            Else
-                
-                '32-byte int data has been pre-downsampled to shorts
-                If precisionInt And (numBitsPerChannel > 16) Then
-                    Debug.Print "using shortcut"
-                    lcmsBytesPerLine = tileWidth * 2
-                    lcmsBytesPerPlane = 2 * tileWidth * tileHeight
-                Else
-                    lcmsBytesPerLine = tileWidth * (numBitsPerChannel \ 8)
-                    lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
-                End If
-                
-            End If
+            FinalizeLCMSTransform lcmsBytesPerLine, lcmsBytesPerPlane, srcCompression, precisionInt, hasAlpha, tileWidth, tileHeight, xcfBytesPerPixel, numBitsPerChannel
             
             'Note that the creation of this transform is extremely specific.  In particular, we have to explicitly
             ' address planar-to-interleaved (on RLE-compressed images), and we are also rendering into a fixed-size
             ' 64x64 image buffer - but the incoming tile *may be smaller than this*, especially on row/column ends.
-            ' (So the source size floats, but the destination size does not.)
+            ' (So the source size is allowed to float per tile size, but the destination size is *not*.)
             '
-            'We also have to deal with variable-length image precision, which is a whole other can of worms.
+            'This is all dealt with in previous steps, but I mention it here because the input settings to this call
+            ' vary *wildly* by source pixel format and color mode, and this line is a potential source of headaches
+            ' for anyone who wants to adapt this code for their own purposes.
             tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, lcmsBytesPerLine, 64 * 4, lcmsBytesPerPlane, 0&
-            
-            'Non-color-managed (for testing ONLY) approach described below:
-            
-'            Dim x As Long, pSrc As Long
-'            Dim pxTile() As Byte, pxSA As SafeArray1D
-'
-'            m_Tile.WrapArrayAroundDIB_1D pxTile, pxSA
-'            For x = 0 To tileWidth * tileHeight - 1
-'                pxTile(x * 4 + 2) = dstBytes(x)
-'                pxTile(x * 4 + 1) = dstBytes(tileWidth * tileHeight + x)
-'                pxTile(x * 4) = dstBytes(tileWidth * tileHeight * 2 + x)
-'                If HasAlpha Then
-'                    pxTile(x * 4 + 3) = dstBytes(tileWidth * tileHeight * 3 + x)
-'                Else
-'                    pxTile(x * 4 + 3) = 255
-'                End If
-'            Next x
-'            m_Tile.UnwrapArrayFromDIB pxTile
             
         End If
         
-        'Blt the finished tile onto the actual layer!
+        'This tile is now fully rendered in color-managed 32-bit BGRA format!
+        ' Blt it into its final location in the merged layer surface.
         GDI.BitBltWrapper m_Layers(idxLayer).lDIB.GetDIBDC, xTile * 64, yTile * 64, tileWidth, tileHeight, m_Tile.GetDIBDC, 0, 0, vbSrcCopy
         
         'Increment our pointer into the source tile offset table
@@ -955,6 +707,317 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     Import_Stage4b_GenerateLayerPixels = True
     
 End Function
+
+'A number of support functions for tile decompression follow
+Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal hasAlpha As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
+
+    If (srcCompression = xcf_Compress_ZLib) Then
+        If precisionInt And (numBitsPerChannel > 16) Then
+            If hasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
+            lcmsBytesPerPlane = 2 * tileWidth * tileHeight
+        Else
+            lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
+            lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
+        End If
+    Else
+        
+        '32-byte int data has been pre-downsampled to shorts
+        If precisionInt And (numBitsPerChannel > 16) Then
+            lcmsBytesPerLine = tileWidth * 2
+            lcmsBytesPerPlane = 2 * tileWidth * tileHeight
+        Else
+            lcmsBytesPerLine = tileWidth * (numBitsPerChannel \ 8)
+            lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChannel As Long, ByVal precisionFloat As Boolean, ByVal numTilePixels As Long, ByVal hasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+
+    'HDR float formats are in big-endian notation.  We must manually swizzle before converting,
+    ' because LCMS does not support this format natively.
+    If (numBitsPerChannel > 8) Then
+    
+        'With swizzling finished, we now need to manually convert from big- to little-endian
+        ' for float formats.
+        If precisionFloat Then
+            If (numBitsPerChannel = 16) Then
+                VBHacks.SwapEndianness16 dstBytes
+            ElseIf (numBitsPerChannel = 32) Then
+                VBHacks.SwapEndianness32 dstBytes
+            Else
+                VBHacks.SwapEndianness64 dstBytes
+            End If
+        
+        'Integer precision
+        Else
+        
+            '32-bit integer data has an additional consideration.  LCMS does not provide native
+            ' support for this color format (because it's a stupid and wasteful format, frankly,
+            ' when 32-bit floats are RIGHT THERE), so we're going to downsample 32-bit integer data
+            ' to 16-bit data, since it's just going to get smushed down to 8-bit for PD anyway.
+            If (numBitsPerChannel > 16) Then
+                
+                Dim x As Long
+                
+                'Swap buffers again, for simplicity's sake
+                CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
+                
+                If (srcCompression = xcf_Compress_ZLib) Then
+                    
+                    Dim pxSize As Long
+                    If hasAlpha Then pxSize = 8 Else pxSize = 6
+                    
+                    For x = 0 To numTilePixels - 1
+                        dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
+                        dstBytes(x * pxSize + 1) = tmpSwizzle(x * pxSize * 2 + 0)
+                        dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
+                        dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
+                        dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
+                        dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
+                        If hasAlpha Then
+                            dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
+                            dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
+                        End If
+                    Next x
+                    
+                Else
+                    
+                    For x = 0 To numTilePixels - 1
+                        dstBytes(x * 2 + 0) = tmpSwizzle(x * 4 + 1)
+                        dstBytes(x * 2 + 1) = tmpSwizzle(x * 4 + 0)
+                        
+                        dstBytes(numTilePixels * 2 + x * 2 + 0) = tmpSwizzle(numTilePixels * 4 + x * 4 + 1)
+                        dstBytes(numTilePixels * 2 + x * 2 + 1) = tmpSwizzle(numTilePixels * 4 + x * 4 + 0)
+                        
+                        dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
+                        dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
+                        
+                        If hasAlpha Then
+                            dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
+                            dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
+                        End If
+                    Next x
+                    
+                End If
+                
+            End If
+                    
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal hasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+
+    'When compressed via RLE, HDR images require special un-shuffling.  Each byte of the source pixels
+    ' was encoded as its own RLE stream, e.g. the first 8-bits of each 16-bit red pixel were RLE-ed together,
+    ' then the second 8-bits, etc.  This means that our RLE decoding, above, has inadvertently separated
+    ' the source bytes into 2+ different planes.  We need to manually reassemble those planes.
+    If (numBitsPerChannel > 8) Then
+        
+        CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
+        
+        Dim swzOffset As Long
+        swzOffset = numBitsPerChannel \ 8
+        
+        Dim x As Long, srcOffset As Long
+        For srcOffset = 0 To swzOffset - 1
+            For x = 0 To numTilePixels - 1
+                dstBytes(x * swzOffset + srcOffset) = tmpSwizzle(srcOffset * numTilePixels + x)
+            Next x
+            For x = 0 To numTilePixels - 1
+                dstBytes(numTilePixels * swzOffset + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset + srcOffset * numTilePixels + x)
+            Next x
+            For x = 0 To numTilePixels - 1
+                dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
+            Next x
+            If hasAlpha Then
+                For x = 0 To numTilePixels - 1
+                    dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
+                Next x
+            End If
+        Next srcOffset
+        
+    End If
+    
+End Sub
+
+Private Sub DecompressRLE(ByVal xcfBytesPerPixel As Long, ByVal numTilePixels As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
+
+    'GIMP's RLE strategy uses a homebrew design (sigh).  As with most RLE schemes, channels are encoded
+    ' individually (planar not interleaved), and at higher bit-depths they are RLE-encoded byte-by-byte,
+    ' big-endian order, so we also need to sort that shit out.
+    '
+    'Even worse, the format provides no markers to align scanlines (or any source data whatsoever),
+    ' so we have to manually watch decompressed size and stop once all pixels have been assembled.
+    ' (Yes, this makes the format extremely susceptible to malicious encoding - but that's not
+    ' our fault!)
+    Dim idxRLE As Long, rleMarker As Byte, rleMult As Long
+    
+    'I call this "idxChannel" but really, it operates on a byte-level.  HDR images (which are encoded
+    ' as RLE by default, ugh) place each byte of a given channel into its own plain - so in a 32-bit
+    ' RGBA channel, all the 1st R bytes will be placed together, then the 2nd R bytes, etc.
+    Dim idxChannel As Long
+    For idxChannel = 0 To xcfBytesPerPixel - 1
+        
+        'As a failsafe against faulty RLE runs, forcibly align the destination pointer at the start
+        ' of each "channel" (but leave the source pointer where it is).
+        Dim endOfThisChannel As Long
+        endOfThisChannel = (idxChannel + 1) * numTilePixels
+        
+        Dim idxDst As Long
+        idxDst = idxChannel * numTilePixels
+        
+        'Success is noted by reaching the end of the destination channel.  Note that we do *not* always
+        ' validate destination size before writing (because that kills performance).  Instead, we are
+        ' content to simply crash-out on faulty RLE runs.
+        Do While (idxDst < endOfThisChannel)
+            
+            'Always start with an RLE marker
+            rleMarker = srcBytes(idxRLE)
+            idxRLE = idxRLE + 1
+            
+            '"Short run of identical bytes"
+            If (rleMarker <= 126) Then
+                rleMarker = rleMarker + 1
+                FillMemory VarPtr(dstBytes(idxDst)), rleMarker, srcBytes(idxRLE)
+                idxRLE = idxRLE + 1
+                idxDst = idxDst + rleMarker
+                
+            '"Long run of identical bytes"
+            ElseIf (rleMarker = 127) Then
+                rleMult = srcBytes(idxRLE)
+                rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
+                FillMemory VarPtr(dstBytes(idxDst)), rleMult, srcBytes(idxRLE + 2)
+                idxRLE = idxRLE + 3
+                idxDst = idxDst + rleMult
+            
+            '"Long run of different bytes"
+            ElseIf (rleMarker = 128) Then
+                rleMult = srcBytes(idxRLE)
+                rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
+                CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE + 2)), rleMult
+                idxRLE = idxRLE + rleMult + 2
+                idxDst = idxDst + rleMult
+                
+            '"Short run of different bytes"
+            Else
+                rleMarker = 256 - rleMarker
+                CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE)), rleMarker
+                idxRLE = idxRLE + rleMarker
+                idxDst = idxDst + rleMarker
+            End If
+            
+        Loop
+        
+    Next idxChannel
+
+End Sub
+
+Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal hasAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
+
+    'Indexed mode is not handled via profile; it is handled manually so we don't check for it here
+    If isIndexed Then
+        GetSrcLCMSFormat = 0
+        Exit Function
+    End If
+    
+    'Gray (can be any bit-depth)
+    If isGray Then
+    
+        'TODO
+    
+    'RGB (can be any bit-depth)
+    Else
+        If precisionInt Then
+            If (numBitsPerChannel = 8) Then
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_8_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_8_PLANAR
+                End If
+            ElseIf (numBitsPerChannel = 16) Then
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
+                End If
+            Else
+                
+                'LCMS doesn't support 32-bit integer components.  We will manually downsample to
+                ' 16-bit integer prior to color-management, so expressly request 16-bit here.
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
+                End If
+            
+            End If
+        
+        'Floating-point encoding
+        Else
+            If (numBitsPerChannel = 16) Then
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_HALF_FLT_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_HALF_FLT_PLANAR
+                End If
+            ElseIf (numBitsPerChannel = 32) Then
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_FLT_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_FLT_PLANAR
+                End If
+            Else
+                
+                'Double-precision is only "theoretically" supported today, because GIMP doesn't actually
+                ' allow you to specify double-precision inside the app (though the spec allows for it as a
+                ' valid color-depth).
+                If hasAlpha Then
+                    GetSrcLCMSFormat = TYPE_RGBA_DBL_PLANAR
+                Else
+                    GetSrcLCMSFormat = TYPE_RGB_DBL_PLANAR
+                End If
+            
+            End If
+            
+        End If
+    
+    End If
+    
+    'If the image is in zLib format, it was encoded using normal interleaved format (RGBARGBARGBA)
+    ' instead of planar format (RRRGGGBBBAAA).  Deactivate that bit accordingly.
+    If (srcCompression = xcf_Compress_ZLib) Then GetSrcLCMSFormat = GetSrcLCMSFormat And (Not &H1000&)
+    
+End Function
+
+Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef hasAlpha As Boolean, ByRef isGray As Boolean, ByRef isIndexed As Boolean, ByRef precisionInt As Boolean, ByRef isGamma As Boolean, ByRef numBitsPerChannel As Long)
+    
+    With m_Layers(idxLayer)
+        hasAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
+        isGray = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_GrayX)
+        isIndexed = (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_IndexedX)
+    End With
+    
+    precisionInt = (m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_08bitIntLinear) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_16bitIntLinear) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_32bitIntLinear)
+    isGamma = (m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_64bitFltGamma)
+    
+    If ((m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_08bitIntLinear)) Then
+        numBitsPerChannel = 8
+    ElseIf ((m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_16bitFltLinear) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_16bitIntLinear)) Then
+        numBitsPerChannel = 16
+    ElseIf ((m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_32bitFltLinear) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_32bitIntLinear)) Then
+        numBitsPerChannel = 32
+    Else
+        numBitsPerChannel = 64
+    End If
+    
+End Sub
+
 
 'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
 '
@@ -977,28 +1040,29 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     'GIMP uses an (unnecessarily) complicated mechanism for encoding pixel data.  To wit:
     ' Each layer provides an offset to a...
     ' "Hierarchy" (their term), which is a small header followed by an array of pointers to...
-    ' "Levels" (their term), which is a small header followed by an array of pointers to...
+    ' "Levels" (their term), which are small headers followed by an array of pointers to...
     ' "Tiles", which are exactly what they sound like (and contain actual pixel data).
     '
     'As part of this setup, GIMP files appear to have been designed with mipmapping in mind,
     ' but that's never actually been implemented so there is just one "actual" level of pixel data
-    ' followed by an arbitrary amount of "junk" layers (with null tile pointers).
+    ' followed by an arbitrary amount of "dummy" layers (with null tile pointers to non-existent
+    ' mipmaps).
     '
-    'Similarly, tiles are only meaningful for that one "actual" level of pixels, and tiles are
+    'So actual pixel tiles are only meaningful for one "actual" level of pixels, and tiles are
     ' additionally cumbersome to work with because we don't actually know the length of source data
     ' available for each tile except through inference (difference between neighboring offsets,
-    ' which works for all tiles except the final one so special handling is required anyway!)
-    ' This ill-conceived design means we must manually track output bytes and simply stop processing
-    ' once an expected "tile size" worth of pixels is decoded.
+    ' which works for all tiles except the final one so special handling is required anyway).
+    ' This ill-conceived design means we must manually track output bytes and stop processing
+    ' once an expected "tile size" worth of destination pixels is decoded.
     '
-    'On top of all this mess is a huge array of potential incoming color-spaces and precisions
+    'On top of all this mess is a huge matrix of potential incoming color-spaces and precisions
     ' (from 8-bit grayscale to 256-bit double-precision RGBA) with no clear spec limitations on
     ' which compression schemes work with which depths, so we're mostly stuck flailing around
     ' on our own to try and solve all combinations.  Yay?
-    
-    'First step: parse this layer's "hierarchy" block.  This is a short header (for validation)
-    ' followed by a list of pointers to "levels".  We only want the first pointer; all others
-    ' are dummy placeholders per the current GIF spec (April 2022).
+    '
+    'But I'm getting ahead of myself.  In this step, we want to parse this layer's "hierarchy"
+    ' block, then the relevant "levels" block, then retrieve all tile pointers and cache them
+    ' in a persistent table (that subsequent steps can use to actually retrieve tile data).
     
     'Start by forcibly aligning the hierarchy pointer.
     m_Stream.SetPosition m_Layers(idxLayer).ptrToPixels, FILE_BEGIN
@@ -1028,6 +1092,10 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     ReDim lstLevels(0 To INIT_LEVEL_COUNT - 1) As Long
     numLevels = 0
     
+    'Pointers in this function are confusing.  In most cases, they are variable-size like other pointers
+    ' in an XCF file (64-bit on modern XCF files, 32-bit on earlier version).  However, on some of the
+    ' "dummy" structs GIMP insists on writing, pointers remain 32-bit regardless of file version.
+    ' Pay close attention to where we use which pointer length.
     Dim ptrNext As Long, ptrH As Long
     If ptrIs64bit Then ptrH = m_Stream.ReadLong_BE()
     ptrNext = m_Stream.ReadLong_BE()
@@ -1062,7 +1130,7 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     For idxLevel = 0 To numLevels - 1
         
         'Hard branch for now; you can inspect non-base levels if curious, but they do not contain
-        ' useful data (as of April 2022)
+        ' useful data (as of April 2022).
         If (idxLevel > 0) Then Exit For
         
         'Move to the specified level offset
@@ -1104,9 +1172,11 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
         
         Dim idxTile As Long
         For idxTile = 0 To m_Layers(idxLayer).numTilesTotal - 1
-            If ptrIs64bit Then ptrFileH = m_Stream.ReadLong_BE()
+            
+            'Only the base level uses 64-bit pointers; subsequent "dummy" levels use uint32 no matter what
+            If (idxLevel = 0) And ptrIs64bit Then ptrFileH = m_Stream.ReadLong_BE()
             m_Layers(idxLayer).ptrToTiles(idxTile) = m_Stream.ReadLong_BE()
-            'PDDebug.LogAction m_Layers(idxLayer).ptrToTiles(idxTile)
+            
         Next idxTile
         
         'With all tiles received, the tile list must be terminated by a null pointer
