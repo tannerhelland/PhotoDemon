@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 03/April/22
+'Last updated: 04/April/22
 'Last update: continue work on initial build
 '
 'This class (and its associated pdXCF- child classes) handle GIMP XCF parsing duties.  It is custom-built
@@ -503,15 +503,15 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     isGamma = (m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_64bitFltGamma)
     isLinear = (Not isGamma)
     
-    Dim BitsPerChannel As Long
+    Dim numBitsPerChannel As Long
     If ((m_imagePrecision = xcf_08bitIntGamma) Or (m_imagePrecision = xcf_08bitIntLinear)) Then
-        BitsPerChannel = 8
+        numBitsPerChannel = 8
     ElseIf ((m_imagePrecision = xcf_16bitFltGamma) Or (m_imagePrecision = xcf_16bitFltLinear) Or (m_imagePrecision = xcf_16bitIntGamma) Or (m_imagePrecision = xcf_16bitIntLinear)) Then
-        BitsPerChannel = 16
+        numBitsPerChannel = 16
     ElseIf ((m_imagePrecision = xcf_32bitFltGamma) Or (m_imagePrecision = xcf_32bitFltLinear) Or (m_imagePrecision = xcf_32bitIntGamma) Or (m_imagePrecision = xcf_32bitIntLinear)) Then
-        BitsPerChannel = 32
+        numBitsPerChannel = 32
     Else
-        BitsPerChannel = 64
+        numBitsPerChannel = 64
     End If
     
     'Source bits and destination bits will be stored in dedicated arrays.  We will "extract" source bytes
@@ -551,7 +551,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         If precisionInt Then
             
             'SDR (this is the standard branch)
-            If (BitsPerChannel = 8) Then
+            If (numBitsPerChannel = 8) Then
                 If HasAlpha Then
                     PDDebug.LogAction "XCF has alpha"
                     srcFormat = TYPE_RGBA_8_PLANAR
@@ -561,7 +561,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
                 End If
                 
             'HDR
-            ElseIf (BitsPerChannel = 16) Then
+            ElseIf (numBitsPerChannel = 16) Then
                 If HasAlpha Then
                     srcFormat = TYPE_RGBA_16_PLANAR
                 Else
@@ -582,7 +582,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         Else
         
             'Half-precision
-            If (BitsPerChannel = 16) Then
+            If (numBitsPerChannel = 16) Then
                 If HasAlpha Then
                     srcFormat = TYPE_RGBA_HALF_FLT_PLANAR
                 Else
@@ -590,7 +590,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
                 End If
                 
             'Standard precision
-            ElseIf (BitsPerChannel = 32) Then
+            ElseIf (numBitsPerChannel = 32) Then
                 If HasAlpha Then
                     srcFormat = TYPE_RGBA_FLT_PLANAR
                 Else
@@ -617,7 +617,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     
     If (srcFormat <> 0) Then
         Set tmpTransform = New pdLCMSTransform
-        tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA
+        tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, IIf(HasAlpha, cmsFLAGS_COPY_ALPHA, 0&)
     End If
     
     Dim srcSize As Long, dstSize As Long
@@ -636,8 +636,8 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     Dim maxDstSize As Long
     maxDstSize = 64 * 64 * xcfBytesPerPixel
     ReDim dstBytes(0 To maxDstSize - 1) As Byte
-    
-    Dim tileWidth As Long, tileHeight As Long
+    Debug.Print "xcfbytesperpixel", xcfBytesPerPixel
+    Dim tileWidth As Long, tileHeight As Long, numTilePixels As Long
     
     'Precalculate dimensions of the last row/column of tiles
     Dim tileWidthLast As Long, tileHeightLast As Long
@@ -646,11 +646,13 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     tileHeightLast = m_Layers(idxLayer).lHeight - ((m_Layers(idxLayer).lHeight \ 64) * 64)
     If (tileHeightLast <= 0) Then tileHeightLast = 64
     
+    Debug.Print m_Layers(idxLayer).numTilesX, m_Layers(idxLayer).numTilesY, m_Layers(idxLayer).numTilesTotal
+    
     Dim xTile As Long, yTile As Long
     For yTile = 0 To yTileMax
     For xTile = 0 To xTileMax
         
-        PDDebug.LogAction "Parsing tile (" & xTile & ", " & yTile & ")"
+        'PDDebug.LogAction "Parsing tile (" & xTile & ", " & yTile & ")"
         
         'Unfortunately, GIMP does not encode compressed tile sizes into the XCF file.  We can infer the
         ' size for most tiles (by subtracting this offset from the next offset), but for the final tile
@@ -664,14 +666,15 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         'Same goes for destination size
         If (xTile < xTileMax) Then tileWidth = 64 Else tileWidth = tileWidthLast
         If (yTile < yTileMax) Then tileHeight = 64 Else tileHeight = tileHeightLast
-        dstSize = tileWidth * tileHeight * xcfBytesPerPixel
+        numTilePixels = tileWidth * tileHeight
+        dstSize = numTilePixels * xcfBytesPerPixel
         
         'Forcibly align the stream pointer for this tile, then pull the source byte count (with potentially
         ' more bytes than we need) into a local array.
         m_Stream.SetPosition m_Layers(idxLayer).ptrToTiles(idxTile), FILE_BEGIN
         srcSize = m_Stream.ReadBytesToBarePointer(VarPtr(srcBytes(0)), srcSize)
         
-        PDDebug.LogAction "Read " & srcSize & " bytes from position " & m_Layers(idxLayer).ptrToTiles(idxTile)
+        'PDDebug.LogAction "Read " & srcSize & " bytes from position " & m_Layers(idxLayer).ptrToTiles(idxTile)
         
         'What happens next varies according to compression mode.  For DEFLATE, for example, we can just
         ' decompress as-is.  For RLE, however, we need to manually handle decompression.
@@ -682,15 +685,78 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
                 
             'Default setting for XCF files
             Case xcf_Compress_RLE
+            
+                'GIMP's RLE strategy uses a homebrew design (sigh).  As with most RLE schemes, channels are encoded
+                ' individually (planar not interleaved), and at higher bit-depths they are RLE-encoded byte-by-byte,
+                ' big-endian order, so we also need to sort that shit out.
+                '
+                'Even worse, the format provides no markers to align scanlines (or any source data whatsoever),
+                ' so we have to manually watch decompressed size and stop once all pixels have been assembled.
+                ' (Yes, this makes the format extremely susceptible to malicious encoding - but that's not
+                ' our fault!)
+                Dim idxRLE As Long, idxDst As Long
+                idxRLE = 0
+                idxDst = 0
                 
+                Dim rleMarker As Byte, rleMult As Long, endOfThisChannel As Long
+                
+                Dim idxChannel As Long
+                For idxChannel = 0 To xcfBytesPerPixel - 1
+                    
+                    'Align destination pointer on each new channel
+                    endOfThisChannel = (idxChannel + 1) * numTilePixels
+                    idxDst = idxChannel * numTilePixels
+                    
+                    Do While (idxDst < endOfThisChannel)
+                        
+                        'Always start with an RLE marker
+                        rleMarker = srcBytes(idxRLE)
+                        idxRLE = idxRLE + 1
+                        
+                        '"Short run of identical bytes"
+                        If (rleMarker <= 126) Then
+                            rleMarker = rleMarker + 1
+                            FillMemory VarPtr(dstBytes(idxDst)), rleMarker, srcBytes(idxRLE)
+                            idxRLE = idxRLE + 1
+                            idxDst = idxDst + rleMarker
+                            
+                        '"Long run of identical bytes"
+                        ElseIf (rleMarker = 127) Then
+                            rleMult = srcBytes(idxRLE)
+                            rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
+                            FillMemory VarPtr(dstBytes(idxDst)), rleMult, srcBytes(idxRLE + 2)
+                            idxRLE = idxRLE + 3
+                            idxDst = idxDst + rleMult
+                        
+                        '"Long run of different bytes"
+                        ElseIf (rleMarker = 128) Then
+                            rleMult = srcBytes(idxRLE)
+                            rleMult = rleMult * 256 + srcBytes(idxRLE + 1)
+                            CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE + 2)), rleMult
+                            idxRLE = idxRLE + rleMult + 2
+                            idxDst = idxDst + rleMult
+                            
+                        '"Short run of different bytes"
+                        Else
+                            rleMarker = 256 - rleMarker
+                            CopyMemoryStrict VarPtr(dstBytes(idxDst)), VarPtr(srcBytes(idxRLE)), rleMarker
+                            idxRLE = idxRLE + rleMarker
+                            idxDst = idxDst + rleMarker
+                        End If
+                        
+                    Loop
+                    
+                Next idxChannel
+                    
             'Available as an optional setting in modern XCF files, but rare "in the wild"
             Case xcf_Compress_ZLib
                 
                 'zLib compression is straightforward: decode the source bytes directly into the destination array,
                 ' using a pre-calculated destination size as our fixed indicator for "completion".
-                PDDebug.LogAction "Attempting to decompress " & dstSize & " bytes"
-                PDDebug.LogAction Plugin_libdeflate.Decompress_ZLib(VarPtr(dstBytes(0)), dstSize, VarPtr(srcBytes(0)), srcSize)
-            
+                Dim dcmpResult As Long
+                dcmpResult = Plugin_libdeflate.Decompress_ZLib(VarPtr(dstBytes(0)), dstSize, VarPtr(srcBytes(0)), srcSize)
+                If (dcmpResult <> 0) Then InternalError FUNC_NAME, "bad decompress: " & dcmpResult
+                
         End Select
         
         'If the source image is in indexed mode, we must handle it manually; otherwise, we can use
@@ -709,10 +775,39 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
             
         'Gray and true-color are handled by color profile
         Else
-            PDDebug.LogAction tmpTransform.ApplyTransformToArbitraryMemoryEx(VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, tileWidth * xcfBytesPerPixel, tileWidth * 4, (BitsPerChannel \ 8) * tileWidth * tileHeight, 0&)
+            
+            'Note that the creation of this transform is extremely specific.  In particular, we have to explicitly
+            ' address planar-to-interleaved (on RLE-compressed images), and we are also rendering into a fixed-size
+            ' 64x64 image buffer - but the incoming tile *may be smaller than this*, especially on row/column ends.
+            '
+            'We also have to deal with variable-length image precision, which is a whole other can of worms.
+            If (srcCompression = xcf_Compress_ZLib) Then
+                tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, tileWidth * xcfBytesPerPixel, 64 * 4, (numBitsPerChannel \ 8) * tileWidth * tileHeight, 0&
+            Else
+                tmpTransform.ApplyTransformToArbitraryMemoryEx VarPtr(dstBytes(0)), m_Tile.GetDIBPointer, tileWidth, tileHeight, tileWidth * (numBitsPerChannel \ 8), 64 * 4, (numBitsPerChannel \ 8) * tileWidth * tileHeight, 0&
+            End If
+            
+            'Non-color-managed (for testing ONLY) approach described below:
+            
+'            Dim x As Long, pSrc As Long
+'            Dim pxTile() As Byte, pxSA As SafeArray1D
+'
+'            m_Tile.WrapArrayAroundDIB_1D pxTile, pxSA
+'            For x = 0 To tileWidth * tileHeight - 1
+'                pxTile(x * 4 + 2) = dstBytes(x)
+'                pxTile(x * 4 + 1) = dstBytes(tileWidth * tileHeight + x)
+'                pxTile(x * 4) = dstBytes(tileWidth * tileHeight * 2 + x)
+'                If HasAlpha Then
+'                    pxTile(x * 4 + 3) = dstBytes(tileWidth * tileHeight * 3 + x)
+'                Else
+'                    pxTile(x * 4 + 3) = 255
+'                End If
+'            Next x
+'            m_Tile.UnwrapArrayFromDIB pxTile
+            
         End If
         
-        'Blt the finished tile onto the final layer!
+        'Blt the finished tile onto the actual layer!
         GDI.BitBltWrapper m_Layers(idxLayer).lDIB.GetDIBDC, xTile * 64, yTile * 64, tileWidth, tileHeight, m_Tile.GetDIBDC, 0, 0, vbSrcCopy
         
         'Increment our pointer into the source tile offset table
@@ -720,6 +815,9 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         
     Next xTile
     Next yTile
+    
+    'Premultiply alpha before exiting
+    m_Layers(idxLayer).lDIB.SetAlphaPremultiplication True
     
     Import_Stage4b_GenerateLayerPixels = True
     
@@ -852,30 +950,30 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
         'Before doing this, calculate the number of tiles in the x and y direction.
         ' GIMP always uses 64x64 px tiles regardless of image size, with only the right/bottom
         ' tiles allowed to encode fewer pixels than this.
-        m_Layers(idxLevel).numTilesX = (checkWidth + 63) \ 64
-        m_Layers(idxLevel).numTilesY = (checkHeight + 63) \ 64
+        m_Layers(idxLayer).numTilesX = (checkWidth + 63) \ 64
+        m_Layers(idxLayer).numTilesY = (checkHeight + 63) \ 64
         
         'Use these to retrieve all tile pointers
-        m_Layers(idxLevel).numTilesTotal = m_Layers(idxLevel).numTilesX * m_Layers(idxLevel).numTilesY
+        m_Layers(idxLayer).numTilesTotal = m_Layers(idxLayer).numTilesX * m_Layers(idxLayer).numTilesY
         
         'Failsafe checks before allocation
         If ((m_Layers(idxLayer).numTilesX <= 0) Or (m_Layers(idxLayer).numTilesY <= 0)) Then
             InternalError FUNC_NAME, "null tile count"
             Import_Stage4a_ParseLayerTiles = False
             Exit Function
-        ElseIf (m_Layers(idxLevel).numTilesTotal <= 0) Then
+        ElseIf (m_Layers(idxLayer).numTilesTotal <= 0) Then
             InternalError FUNC_NAME, "bad tile count"
             Import_Stage4a_ParseLayerTiles = False
             Exit Function
         End If
         
-        ReDim m_Layers(idxLevel).ptrToTiles(0 To m_Layers(idxLevel).numTilesTotal - 1) As Long
+        ReDim m_Layers(idxLayer).ptrToTiles(0 To m_Layers(idxLayer).numTilesTotal - 1) As Long
         
         Dim idxTile As Long
-        For idxTile = 0 To m_Layers(idxLevel).numTilesTotal - 1
+        For idxTile = 0 To m_Layers(idxLayer).numTilesTotal - 1
             If ptrIs64bit Then ptrFileH = m_Stream.ReadLong_BE()
-            m_Layers(idxLevel).ptrToTiles(idxTile) = m_Stream.ReadLong_BE()
-            PDDebug.LogAction m_Layers(idxLevel).ptrToTiles(idxTile)
+            m_Layers(idxLayer).ptrToTiles(idxTile) = m_Stream.ReadLong_BE()
+            'PDDebug.LogAction m_Layers(idxLayer).ptrToTiles(idxTile)
         Next idxTile
         
         'With all tiles received, the tile list must be terminated by a null pointer
