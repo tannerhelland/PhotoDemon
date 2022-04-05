@@ -869,8 +869,9 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     ' 2) Precise palette color count of 8-bpp non-PNG images (because FreeImage always
     '    assumes palettes have 256 colors, which is both stupid and obnoxious).
     ' 3) Multipage TIFFs that may have per-page information stored (like page names)
-    ' 4) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can).  This is
-    '    limited to esoteric ICC+format combinations like GIF.
+    ' 4) ICC Profiles that various image parsers are unable to retrieve (but ExifTool can).
+    '    This is limited to esoteric ICC+format combinations like GIF, which can *technically*
+    '    be created (by non-traditional means) but which lack official support.
     
     
     'Because of this, we only need to proceed if the image meets some very specific criteria.

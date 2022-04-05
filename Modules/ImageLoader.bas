@@ -1646,19 +1646,34 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         'Set format flags and reset internal image caches
         dstImage.SetOriginalFileFormat PDIF_XCF
+        dstImage.SetDPI cReader.GetOriginalDPI, cReader.GetOriginalDPI
         dstImage.NotifyImageChanged UNDO_Everything
         
-        'These parameters are TODO pending support in pdXCF
-        dstImage.SetOriginalColorDepth 32
-        dstImage.SetOriginalGrayscale False
-        dstImage.SetOriginalAlpha True
-        dstDIB.SetColorManagementState cms_ProfileConverted
-        
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        dstDIB.CreateBlank 16, 16, 32, 0
-        dstDIB.SetColorManagementState cms_ProfileConverted
+        'Mark any other image-level properties
+        dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
+        dstImage.SetOriginalGrayscale cReader.isGrayscale()
+        dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
+
+        'Before exiting, ensure all color management data has been added to PD's central cache
+        Dim profHash As String
+        If (Not cReader.GetICCProfile() Is Nothing) Then
+            profHash = ColorManagement.AddProfileToCache(cReader.GetICCProfile(), True, False, False)
+            dstImage.SetColorProfile_Original profHash
+            
+            'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+            ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            dstDIB.CreateBlank 16, 16, 32, 0
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it - will have been
+            ' hard-converted to sRGB, so we don't want to associate the destination DIB with its source profile.
+            ' Instead, note that it is currently sRGB.
+            profHash = ColorManagement.GetSRGBProfileHash()
+            dstDIB.SetColorProfileHash profHash
+            dstDIB.SetColorManagementState cms_ProfileConverted
+
+        End If
         
     End If
     

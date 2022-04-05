@@ -195,6 +195,9 @@ End Type
 
 Private m_Channels() As xcf_Channel, m_numOfChannels As Long
 
+'Embedded ICC profiles are read and used by PD.
+Private m_Profile As pdICCProfile
+
 'GIMP encodes images as individual 64x64 tiles (only right/bottom tiles are allowed to be
 ' smaller than this).  To avoid repeat memory allocations, we reuse a single persistent
 ' tile DIB during image assembly.
@@ -206,6 +209,15 @@ Private m_numImageProperties As Long, m_ImageProperties() As xcf_Property
 'Canvas width/height, color model, and precision all come from the file header
 Private m_ImageWidth As Long, m_ImageHeight As Long
 Private m_imageColorMode As xcf_ColorMode, m_imagePrecision As xcf_Precision
+Private m_imageResolutionPPI As Single
+
+'Palette, if any
+Private m_numPaletteColors As Long, m_Palette() As RGBQuad
+
+'XCF allows all color modes and precisions to include alpha, and alpha is actually *mandatory*
+' for all layers above the base layer.  However, a single-layer image *is* allowed to drop its
+' alpha channel if desired.
+Private m_OriginalAlphaState As Boolean
 
 'XCF version is critical to correct parsing; different versions have different fields in different places,
 ' and use different sizes for low-level values like internal file pointers
@@ -247,7 +259,72 @@ Friend Function IsFileXCF(ByRef srcFilename As String, Optional ByVal requireVal
     
 End Function
 
-'Validate and load a candidate QOI file
+'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
+Friend Function GetICCProfile() As pdICCProfile
+    Set GetICCProfile = m_Profile
+End Function
+
+'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
+Friend Function GetOriginalAlphaState() As Boolean
+    If (m_numOfLayers > 1) Then
+        GetOriginalAlphaState = True
+    Else
+        GetOriginalAlphaState = (m_Layers(0).lColorMode = xcf_GrayA) Or (m_Layers(0).lColorMode = xcf_IndexedA) Or (m_Layers(0).lColorMode = xcf_RGBA)
+    End If
+End Function
+
+'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
+Friend Function GetOriginalColorDepth() As Long
+    If (m_imageColorMode = xcf_Indexed) Then
+        GetOriginalColorDepth = 8
+    Else
+    
+        Select Case m_imagePrecision
+            Case xcf_08bitIntLinear
+                GetOriginalColorDepth = 8
+            Case xcf_08bitIntGamma
+                GetOriginalColorDepth = 8
+            Case xcf_16bitIntLinear
+                GetOriginalColorDepth = 16
+            Case xcf_16bitIntGamma
+                GetOriginalColorDepth = 16
+            Case xcf_32bitIntLinear
+                GetOriginalColorDepth = 32
+            Case xcf_32bitIntGamma
+                GetOriginalColorDepth = 32
+            Case xcf_16bitFltLinear
+                GetOriginalColorDepth = 16
+            Case xcf_16bitFltGamma
+                GetOriginalColorDepth = 16
+            Case xcf_32bitFltLinear
+                GetOriginalColorDepth = 32
+            Case xcf_32bitFltGamma
+                GetOriginalColorDepth = 32
+            Case xcf_64bitFltLinear
+                GetOriginalColorDepth = 64
+            Case xcf_64bitFltGamma
+                GetOriginalColorDepth = 64
+        End Select
+        
+        If (m_imageColorMode = xcf_RGB) Then
+            If Me.GetOriginalAlphaState Then GetOriginalColorDepth = GetOriginalColorDepth * 4 Else GetOriginalColorDepth = GetOriginalColorDepth * 3
+        End If
+        
+    End If
+    
+End Function
+
+'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
+Friend Function GetOriginalDPI() As Single
+    GetOriginalDPI = m_imageResolutionPPI
+End Function
+
+'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
+Friend Function isGrayscale() As Boolean
+    isGrayscale = (m_imageColorMode = xcf_Grayscale)
+End Function
+
+'Validate and load a candidate XCF file
 Friend Function LoadXCF_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
     Const FUNC_NAME As String = "LoadXCF_FromFile"
@@ -262,7 +339,7 @@ Friend Function LoadXCF_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         LoadXCF_FromFile = Import_Stage1_ParseHeader(srcFile, dstImage, dstDIB)
         If (Not LoadXCF_FromFile) Then Exit Function
         
-        'Still here?  Header looks okay.  Time to proceed with image properties!
+        'Still here?  Header looks okay.  Time to proceed with image property retrieval!
         LoadXCF_FromFile = Import_Stage2_LoadProps(srcFile, dstImage, dstDIB)
         If (Not LoadXCF_FromFile) Then Exit Function
         
@@ -276,7 +353,7 @@ Friend Function LoadXCF_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         LoadXCF_FromFile = Import_Stage4_ParseLayerHeaders(srcFile, dstImage, dstDIB)
         If (Not LoadXCF_FromFile) Then Exit Function
         
-        'Final step is assembling a complete pdImage object from the assembled layers!
+        'Final step is assembling a complete pdImage object from the retrieved layers!
         LoadXCF_FromFile = Import_Stage5_BuildImage(srcFile, dstImage, dstDIB)
         
     'No penalty on failed validation; exit immediately
@@ -496,11 +573,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     ' and layer-level flags into branchable toggles that simplify the process of converting to PD's internal
     ' 32-bpp BGRA requirement.  (Note also that some color model details are layer-specific, like alpha
     ' channel presence, while others are image-specific, like int vs float precisions.)
-    Dim hasAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
+    Dim HasAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
     Dim precisionInt As Boolean, precisionFloat As Boolean, isGamma As Boolean, isLinear As Boolean
     Dim numBitsPerChannel As Long
     
-    FillPixelFormats idxLayer, hasAlpha, isGray, isIndexed, precisionInt, isGamma, numBitsPerChannel
+    FillPixelFormats idxLayer, HasAlpha, isGray, isIndexed, precisionInt, isGamma, numBitsPerChannel
     isLinear = (Not isGamma)
     precisionFloat = (Not precisionInt)
     
@@ -525,11 +602,34 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, tmpTransform As pdLCMSTransform
     Set srcProfile = New pdLCMSProfile
     
-    'TODO: use color profile embedded in the file here, if one exists
+    'If the XCF embedded a color profile, use that; otherwise, we'll supply a generic source profile
+    ' (based on the linear or gamma color space encoding supplied by the header)
+    Dim usedBasicProfile As Boolean: usedBasicProfile = False
     
-    'Source data can be in linear or gamma-encoded format.  Gamma-encoded format is close to sRGB and the
-    ' spec recommends just assuming that on legacy files anyway
-    If isLinear Then srcProfile.CreateLinearRGBProfile Else srcProfile.CreateSRGBProfile True
+    If (Not m_Profile Is Nothing) Then
+        
+        'If the source profile is broken, fall back to a default one.
+        If (Not srcProfile.CreateFromPDICCObject(m_Profile)) Then
+            usedBasicProfile = True
+            If isLinear Then srcProfile.CreateLinearRGBProfile Else srcProfile.CreateSRGBProfile True
+        End If
+        
+    Else
+        
+        'Source data can be in linear or gamma-encoded format.  Gamma-encoded format is close to sRGB and the
+        ' spec recommends just assuming that on legacy files anyway.
+        usedBasicProfile = True
+        If isLinear Then srcProfile.CreateLinearRGBProfile Else srcProfile.CreateSRGBProfile True
+        
+    End If
+    
+    'If we had to create our own color profile on-the-fly, override the class-level color profile
+    ' with the one we created; we will cache the profile in PD's central cache so other color-managed
+    ' portions of the program can access it.
+    If usedBasicProfile Then
+        Set m_Profile = New pdICCProfile
+        m_Profile.LoadICCFromLCMSProfile srcProfile
+    End If
     
     'For now, do a hard-convert into sRGB format
     Set dstProfile = New pdLCMSProfile
@@ -538,11 +638,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     'Some color modes (e.g. indexed images) don't require color management, so we must check for a
     ' null-format before attempting to create a transform.
     Dim srcFormat As LCMS_PIXEL_FORMAT
-    srcFormat = GetSrcLCMSFormat(isIndexed, isGray, precisionInt, hasAlpha, numBitsPerChannel, srcCompression)
+    srcFormat = GetSrcLCMSFormat(isIndexed, isGray, precisionInt, HasAlpha, numBitsPerChannel, srcCompression)
     
     If (srcFormat <> 0) Then
         Dim flgTransform As LCMS_TRANSFORM_FLAGS
-        If hasAlpha Then flgTransform = cmsFLAGS_COPY_ALPHA Else flgTransform = 0
+        If HasAlpha Then flgTransform = cmsFLAGS_COPY_ALPHA Else flgTransform = 0
         Set tmpTransform = New pdLCMSTransform
         tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, flgTransform
     End If
@@ -639,7 +739,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
             ' (since RLE operates on individual bytes, not channels)
             Case xcf_Compress_RLE
                 DecompressRLE xcfBytesPerPixel, numTilePixels, srcBytes, dstBytes
-                If (numBitsPerChannel > 8) Then UnshuffleHDRChannels numBitsPerChannel, numTilePixels, hasAlpha, tmpSwizzle, dstBytes, maxDstSize
+                If (numBitsPerChannel > 8) Then UnshuffleHDRChannels numBitsPerChannel, numTilePixels, HasAlpha, tmpSwizzle, dstBytes, maxDstSize
                     
             'Available as an optional setting in modern XCF files, but rare "in the wild"
             Case xcf_Compress_ZLib
@@ -661,7 +761,7 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         If isIndexed Then
         
             'Indexed color mode does support alpha, but it is encoded as an independent channel
-            If hasAlpha Then
+            If HasAlpha Then
             
             'Normal, non-alpha palette
             Else
@@ -673,11 +773,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
             
             'Manually handle BE to LE conversion for HDR float formats (and 32-bit integer, which is not
             ' natively supported by LCMS)
-            SwapEndiannessHDR srcCompression, numBitsPerChannel, precisionFloat, numTilePixels, hasAlpha, tmpSwizzle, dstBytes, maxDstSize
+            SwapEndiannessHDR srcCompression, numBitsPerChannel, precisionFloat, numTilePixels, HasAlpha, tmpSwizzle, dstBytes, maxDstSize
             
             'Finalize plane and scanline calculations for LCMS conversion
             Dim lcmsBytesPerLine As Long, lcmsBytesPerPlane As Long
-            FinalizeLCMSTransform lcmsBytesPerLine, lcmsBytesPerPlane, srcCompression, precisionInt, hasAlpha, tileWidth, tileHeight, xcfBytesPerPixel, numBitsPerChannel
+            FinalizeLCMSTransform lcmsBytesPerLine, lcmsBytesPerPlane, srcCompression, precisionInt, HasAlpha, tileWidth, tileHeight, xcfBytesPerPixel, numBitsPerChannel
             
             'Note that the creation of this transform is extremely specific.  In particular, we have to explicitly
             ' address planar-to-interleaved (on RLE-compressed images), and we are also rendering into a fixed-size
@@ -709,11 +809,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
 End Function
 
 'A number of support functions for tile decompression follow
-Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal hasAlpha As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
+Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal HasAlpha As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
 
     If (srcCompression = xcf_Compress_ZLib) Then
         If precisionInt And (numBitsPerChannel > 16) Then
-            If hasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
+            If HasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
             lcmsBytesPerPlane = 2 * tileWidth * tileHeight
         Else
             lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
@@ -734,7 +834,7 @@ Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsByte
     
 End Sub
 
-Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChannel As Long, ByVal precisionFloat As Boolean, ByVal numTilePixels As Long, ByVal hasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChannel As Long, ByVal precisionFloat As Boolean, ByVal numTilePixels As Long, ByVal HasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
 
     'HDR float formats are in big-endian notation.  We must manually swizzle before converting,
     ' because LCMS does not support this format natively.
@@ -768,7 +868,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                 If (srcCompression = xcf_Compress_ZLib) Then
                     
                     Dim pxSize As Long
-                    If hasAlpha Then pxSize = 8 Else pxSize = 6
+                    If HasAlpha Then pxSize = 8 Else pxSize = 6
                     
                     For x = 0 To numTilePixels - 1
                         dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
@@ -777,7 +877,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                         dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
                         dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
                         dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
-                        If hasAlpha Then
+                        If HasAlpha Then
                             dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
                             dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
                         End If
@@ -795,7 +895,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                         dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
                         dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
                         
-                        If hasAlpha Then
+                        If HasAlpha Then
                             dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
                             dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
                         End If
@@ -811,7 +911,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
     
 End Sub
 
-Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal hasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal HasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
 
     'When compressed via RLE, HDR images require special un-shuffling.  Each byte of the source pixels
     ' was encoded as its own RLE stream, e.g. the first 8-bits of each 16-bit red pixel were RLE-ed together,
@@ -835,7 +935,7 @@ Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTileP
             For x = 0 To numTilePixels - 1
                 dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
             Next x
-            If hasAlpha Then
+            If HasAlpha Then
                 For x = 0 To numTilePixels - 1
                     dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
                 Next x
@@ -918,7 +1018,7 @@ Private Sub DecompressRLE(ByVal xcfBytesPerPixel As Long, ByVal numTilePixels As
 
 End Sub
 
-Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal hasAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
+Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal HasAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
 
     'Indexed mode is not handled via profile; it is handled manually so we don't check for it here
     If isIndexed Then
@@ -935,13 +1035,13 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     Else
         If precisionInt Then
             If (numBitsPerChannel = 8) Then
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_8_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_8_PLANAR
                 End If
             ElseIf (numBitsPerChannel = 16) Then
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
@@ -950,7 +1050,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 
                 'LCMS doesn't support 32-bit integer components.  We will manually downsample to
                 ' 16-bit integer prior to color-management, so expressly request 16-bit here.
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
@@ -961,13 +1061,13 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
         'Floating-point encoding
         Else
             If (numBitsPerChannel = 16) Then
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_HALF_FLT_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_HALF_FLT_PLANAR
                 End If
             ElseIf (numBitsPerChannel = 32) Then
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_FLT_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_FLT_PLANAR
@@ -977,7 +1077,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 'Double-precision is only "theoretically" supported today, because GIMP doesn't actually
                 ' allow you to specify double-precision inside the app (though the spec allows for it as a
                 ' valid color-depth).
-                If hasAlpha Then
+                If HasAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_DBL_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_DBL_PLANAR
@@ -995,10 +1095,10 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     
 End Function
 
-Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef hasAlpha As Boolean, ByRef isGray As Boolean, ByRef isIndexed As Boolean, ByRef precisionInt As Boolean, ByRef isGamma As Boolean, ByRef numBitsPerChannel As Long)
+Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef HasAlpha As Boolean, ByRef isGray As Boolean, ByRef isIndexed As Boolean, ByRef precisionInt As Boolean, ByRef isGamma As Boolean, ByRef numBitsPerChannel As Long)
     
     With m_Layers(idxLayer)
-        hasAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
+        HasAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
         isGray = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_GrayX)
         isIndexed = (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_IndexedX)
     End With
@@ -1298,6 +1398,124 @@ Private Function Import_Stage3_LoadLayersAndChannels(ByRef srcFile As String, By
     
 End Function
 
+'Only call from Import_Stage2_LoadProps!
+Private Function Import_Stage2a_CacheKeyProps(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    Const FUNC_NAME As String = "Import_Stage2a_CacheKeyProps"
+    Import_Stage2a_CacheKeyProps = True
+    
+    'GIMP embeds property lists for the image, individual layers, and individual channels.  Some properties
+    ' are restricted to only a specific subset; others are available anywhere.
+    
+    'This function only traverses and caches key properties from the IMAGE property list.  These are particularly
+    ' crucial to cache, because they can affect the subsequent decoding of layers and/or channels.
+    Dim tmpStream As pdStream
+    Set tmpStream = New pdStream
+    
+    'Let's start with the global palette, if any.
+    Dim idxProp As Long
+    idxProp = GetIndexOfProperty(xcf_PROP_COLORMAP, m_ImageProperties)
+    If (idxProp >= 0) Then
+        
+        'Wrap a pdStream object around the property array for convenient traversal
+        tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=m_ImageProperties(idxProp).propSize, baseFilePointerOffset:=VarPtr(m_ImageProperties(idxProp).propData(0))
+        
+        'First 4 bytes are color count
+        m_numPaletteColors = tmpStream.ReadLong_BE()
+        ReDim m_Palette(0 To m_numPaletteColors - 1) As RGBQuad
+        
+        'Colors are stored as RGB trios - NOT quads - so we need to manually traverse the struct
+        Dim i As Long
+        For i = 0 To m_numPaletteColors - 1
+            With m_Palette(i)
+                .Red = tmpStream.ReadByte()
+                .Green = tmpStream.ReadByte()
+                .Blue = tmpStream.ReadByte()
+                .Alpha = 255    'Indexed images can use alpha, but it's encoded as a separate channel
+            End With
+        Next i
+        
+        'Free the temporary stream (before potential reuse)
+        tmpStream.StopStream
+        
+    End If
+    
+    'Next, image resolution
+    m_imageResolutionPPI = 96!
+    
+    idxProp = GetIndexOfProperty(xcf_PROP_RESOLUTION, m_ImageProperties)
+    If (idxProp >= 0) Then
+    
+        tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=m_ImageProperties(idxProp).propSize, baseFilePointerOffset:=VarPtr(m_ImageProperties(idxProp).propData(0))
+        
+        'Floats need to be converted from BE to LE before we can interpret them
+        Dim srcBytes() As Byte
+        tmpStream.ReadBytes srcBytes, 8, True
+        VBHacks.SwapEndianness32 srcBytes
+        
+        Dim hRes As Single, vRes As Single
+        VBHacks.GetMem4_Ptr VarPtr(srcBytes(0)), VarPtr(hRes)
+        VBHacks.GetMem4_Ptr VarPtr(srcBytes(4)), VarPtr(vRes)
+        
+        m_imageResolutionPPI = (hRes + vRes) / 2!
+        
+        tmpStream.StopStream
+        
+    End If
+    
+    'Next, ICC profile.  This one must be manually retrieved, because it's stored as a parasite - NOT a property.
+    ' (Retrieving it will require us to traverse a separate parasite tree.)
+    idxProp = GetIndexOfProperty(xcf_PROP_PARASITES, m_ImageProperties)
+    If (idxProp >= 0) Then
+    
+        tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=m_ImageProperties(idxProp).propSize, baseFilePointerOffset:=VarPtr(m_ImageProperties(idxProp).propData(0))
+        
+        'Parasites are their own sub-tree within the larger "parasite" property.  They use string IDs
+        ' and are individual, variable-length custom storage items.
+        Do While tmpStream.GetPosition() < tmpStream.GetStreamSize() - 4
+            
+            'Parasite names are encoded as a "GIMP string", which are UTF-8 strings preceded by a 4-byte length
+            Dim strParasite As String, lenName As Long
+            lenName = tmpStream.ReadLong_BE()    'this value *includes* a null-terminator, so string itself is [n-1] chars
+            If (lenName > 0) Then strParasite = tmpStream.ReadString_UTF8(lenName - 1)
+            
+            '+1 for null terminator
+            tmpStream.SetPosition 1, FILE_CURRENT
+            
+            '4-byte flags follow (unnecessary) followed by 4-byte length (extremely necessary)
+            Dim sizeOfData As Long
+            tmpStream.ReadLong_BE
+            sizeOfData = tmpStream.ReadLong_BE()
+                
+            Dim origOffset As Long
+            origOffset = tmpStream.GetPosition
+            
+            If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "Found image parasite: " & strParasite & " (" & sizeOfData & " bytes)"
+            If (LCase$(strParasite) = "icc-profile") Then
+                
+                If (sizeOfData > 0) Then
+                    If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "Found ICC profile: " & sizeOfData & " bytes"
+                    Set m_Profile = New pdICCProfile
+                    m_Profile.LoadICCFromPtr sizeOfData, tmpStream.ReadBytes_PointerOnly(sizeOfData)
+                End If
+                
+                'We could exit the loop here, but I'm leaving it for now in case we want to utilize
+                ' other parasites in the future
+                'Exit Do
+                
+            End If
+            
+            tmpStream.SetPosition origOffset, FILE_BEGIN
+            tmpStream.SetPosition sizeOfData, FILE_CURRENT
+            
+        Loop
+        
+        tmpStream.StopStream
+        
+    End If
+    
+End Function
+
 'Import step 2: load all image "properties".  After this step, the stream pointer will be aligned with the
 ' start of the layer segment.
 Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
@@ -1312,14 +1530,14 @@ Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage
     ' how to address this and the spec is unclear, so this is TODO pending further testing)/
     
     'In this step, we basically just want to iterate all properties and copy them into a local collection.
-    Dim curPropID As Long, curPropSize As Long
+    Dim curPropID As xcf_PropertyID, curPropSize As Long
     curPropID = m_Stream.ReadLong_BE()
     
     'Start with an arbitrary collection size
     Const INIT_PROP_LIST_COUNT As Long = 16
     ReDim m_ImageProperties(0 To INIT_PROP_LIST_COUNT - 1) As xcf_Property
     
-    Do While (curPropID <> 0)
+    Do While (curPropID <> xcf_PROP_END)
         
         'Ensure we have room for this property, then store the new ID
         If (m_numImageProperties > UBound(m_ImageProperties)) Then ReDim Preserve m_ImageProperties(0 To m_numImageProperties * 2 - 1) As xcf_Property
@@ -1329,8 +1547,24 @@ Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage
         curPropSize = m_Stream.ReadLong_BE()
         m_ImageProperties(m_numImageProperties).propSize = curPropSize
         
-        'Special handling for legacy properties with potentially invalid payload sizes could go here
+        'Special handling for legacy properties with potentially invalid payload sizes follows.
+        Dim ptrOrig As Long
+        ptrOrig = m_Stream.GetPosition()
         
+            'The XCF spec specifically calls out image palettes as a place to watch for bad length markers.
+            ' Specifically, it says:
+            ' "Beware that the payload length of the PROP_COLORMAP in particular cannot be trusted: some historic
+            '  releases of GIMP erroneously wrote n+4 instead of 3*n+4 into the length word (but still actually
+            '  followed it by 3*n+4 bytes of payload)."
+            '
+            'For this property, we want to manually retrieve the number of colors, and use the larger of 3*n+4
+            ' and the actual encoded property.
+            If (curPropID = xcf_PROP_COLORMAP) Then
+                curPropSize = PDMath.Max2Int(m_Stream.ReadLong_BE() * 3 + 4, curPropSize)
+                m_ImageProperties(m_numImageProperties).propSize = curPropSize
+                m_Stream.SetPosition ptrOrig, FILE_BEGIN
+            End If
+            
         'After ID comes payload
         If (curPropSize > 0) Then m_Stream.ReadBytes m_ImageProperties(m_numImageProperties).propData, curPropSize, True
         
@@ -1354,6 +1588,9 @@ Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage
     'PROP_END has ID 0, but it is still followed by a length indicator (always 0).  We have not yet
     ' read the length indicator, so we must do so now - and we also need to validate that it is, indeed, 0.
     If Import_Stage2_LoadProps Then Import_Stage2_LoadProps = (m_Stream.ReadLong_BE() = 0)
+    
+    'After successful traversal of the full property list, we want to cache some key properties in useable structs.
+    If Import_Stage2_LoadProps Then Import_Stage2_LoadProps = Import_Stage2a_CacheKeyProps(srcFile, dstImage, dstDIB)
     
 End Function
 
