@@ -781,7 +781,11 @@ Public Function OSVersionAsString() As String
     Select Case m_OSVI.dwMajorVersion
         
         Case 10
-            osName = "Windows 10"
+            If (OS.GetWin10Build >= 22000) Then
+                osName = "Windows 11"
+            Else
+                osName = "Windows 10"
+            End If
         
         Case 6
             
