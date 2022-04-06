@@ -875,7 +875,7 @@ End Function
 Friend Function ReadFloat_BE() As Single
     Dim tmpLong As Long
     tmpLong = ntohl(Me.ReadLong())
-    CopyMemoryStrict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
+    GetMem4_Ptr VarPtr(tmpLong), VarPtr(ReadFloat_BE)
 End Function
 
 Friend Function ReadDouble() As Double
