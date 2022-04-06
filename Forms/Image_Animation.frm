@@ -147,14 +147,15 @@ Attribute VB_Exposed = False
 'Animation settings dialog
 'Copyright 2019-2022 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 19/November/20
-'Last update: convert to new, modernized run-time resize engine
+'Last updated: 06/April/22
+'Last update: add localized tooltips to the playback scrubber
 '
-'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  This dialog exposes relevant
-' animation settings to the user, including allowing them to turn multilayer non-animated images into
-' animated ones (or vice-versa).
+'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  (Later, this would grow
+' to include animated WebP too.)  This dialog exposes relevant animation settings to the user,
+' including allowing them to turn multilayer non-animated images into animated ones (or vice-versa).
 '
-'Significantly, it also offers a large, resizable canvas for previewing animations.
+'Significantly, it also offers a large, resizable canvas for previewing animations.  This canvas
+' served as the test-bed for most of PD's run-time animation display capabilities.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -226,8 +227,14 @@ Private Sub btsAnimated_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
+    
     NotifyNewFrameTimes
     ReflowInterface
+    
+    'Ensure an up-to-date tooltip on the scrubber (because clicking this button switches between
+    ' native and fixed frame times)
+    UpdateScrubberTooltip
+    
 End Sub
 
 Private Sub btsLoop_Click(ByVal buttonIndex As Long)
@@ -621,7 +628,10 @@ Private Sub RenderAnimationFrame()
     Else
         m_Timer.StopTimer
     End If
-        
+    
+    'Finally, update the slider tooltip to make it easier for the user to zero-in on a given frame
+    UpdateScrubberTooltip
+    
 End Sub
 
 Private Sub m_Timer_EndOfAnimation()
@@ -709,7 +719,13 @@ Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False
 End Sub
 
 Private Sub sldFrameTime_Change()
+    
     NotifyNewFrameTimes
+    
+    'Ensure an up-to-date tooltip on the scrubber (because clicking this button switches between
+    ' native and fixed frame times)
+    UpdateScrubberTooltip
+    
 End Sub
 
 Private Sub NotifyNewFrameTimes()
@@ -726,6 +742,43 @@ Private Sub NotifyNewFrameTimes()
             m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
         End If
     Next i
+    
+End Sub
+
+'The scrubber tooltip needs to be updated whenever we change frame time settings (since that will also
+' change the net animation time, which is reflected in the tooltip)
+Private Sub UpdateScrubberTooltip()
+    
+    If (Not g_Language Is Nothing) Then
+        
+        Dim numFrames As Long, curFrame As Long
+        numFrames = m_FrameCount
+        curFrame = m_Timer.GetCurrentFrame()
+        
+        Dim useFixedTime As Boolean, fixedTimeMS As Long
+        useFixedTime = (btsFrameTimes.ListIndex = 0)
+        fixedTimeMS = sldFrameTime.Value
+        
+        Dim totalTime As Long, curFrameTime As Long
+        Dim i As Long
+        For i = 0 To numFrames - 1
+            If (m_Frames(i).afFrameDelayMS = 0) Or useFixedTime Then
+                totalTime = totalTime + fixedTimeMS
+            Else
+                totalTime = totalTime + m_Frames(i).afFrameDelayMS
+            End If
+            If (i < curFrame) Then curFrameTime = totalTime
+        Next i
+        
+        Dim frameToolText As pdString
+        Set frameToolText = New pdString
+        frameToolText.Append g_Language.TranslateMessage("Current frame: %1 of %2", curFrame + 1, numFrames)
+        frameToolText.Append ", "
+        frameToolText.Append g_Language.TranslateMessage("%1 of %2", Strings.StrFromTimeInMS(curFrameTime, True), Strings.StrFromTimeInMS(totalTime, True))
+        
+        sldFrame.AssignTooltip frameToolText.ToString(), vbNullString, True
+        
+    End If
     
 End Sub
 
