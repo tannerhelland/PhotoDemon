@@ -223,7 +223,15 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_LabV2_8 = &H1E0019
     TYPE_ALabV2_8 = &H1E0499
     TYPE_LabV2_16 = &H1E001A
-
+    
+    '(Added by Tanner)
+    TYPE_GRAYA_HALF_FLT = &H43008A
+    TYPE_GRAYA_FLT = &H43008C
+    TYPE_GRAYA_DBL = &H430088
+    TYPE_GRAYA_HALF_FLT_PLANAR = &H43108A
+    TYPE_GRAYA_FLT_PLANAR = &H43108C
+    TYPE_GRAYA_DBL_PLANAR = &H431088
+    
     TYPE_GRAY_HALF_FLT = &H43000A
     TYPE_RGB_HALF_FLT = &H44001A
     TYPE_RGBA_HALF_FLT = &H44009A
@@ -709,9 +717,9 @@ Public Function LCMS_LoadCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVa
     
 End Function
 
-Public Function LCMS_LoadStockGrayProfile() As Long
+Public Function LCMS_LoadStockGrayProfile(Optional ByVal useGamma As Double = 1#) As Long
     Dim tmpToneCurve As Long
-    tmpToneCurve = LCMS_GetBasicToneCurve(1#)
+    tmpToneCurve = LCMS_GetBasicToneCurve(useGamma)
     LCMS_LoadStockGrayProfile = cmsCreateGrayProfile(cmsD50_xyY(), tmpToneCurve)
     LittleCMS.LCMS_FreeToneCurve tmpToneCurve
 End Function

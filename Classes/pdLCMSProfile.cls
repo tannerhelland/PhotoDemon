@@ -51,9 +51,9 @@ Friend Function CreateFromPDICCObject(ByRef srcProfile As pdICCProfile) As Boole
     
 End Function
 
-Friend Function CreateGenericGrayscaleProfile() As Boolean
+Friend Function CreateGenericGrayscaleProfile(Optional ByVal useGamma As Double = 1#) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
-    m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
+    m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile(useGamma)
     CreateGenericGrayscaleProfile = (m_ProfileHandle <> 0)
 End Function
 
