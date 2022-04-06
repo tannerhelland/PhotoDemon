@@ -558,6 +558,11 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
     
 End Function
 
+'Return a copy of the stream, starting from the current stream position (which you can/should move prior to reading,
+' as relevant) and extending the supplied readLength amount of bytes.  If readLength is not supplied, a full copy of
+' the entire stream from the current position to the end will be returned.
+'
+'RETURNS: number of bytes read if successful; zero otherwise.
 Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal readLength As Long = -1) As Long
 
     If m_Open Then
@@ -870,7 +875,7 @@ End Function
 Friend Function ReadFloat_BE() As Single
     Dim tmpLong As Long
     tmpLong = ntohl(Me.ReadLong())
-    CopyMemoryStrict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
+    GetMem4_Ptr VarPtr(tmpLong), VarPtr(ReadFloat_BE)
 End Function
 
 Friend Function ReadDouble() As Double
@@ -1023,8 +1028,9 @@ End Function
 'Read a series of UTF-8 bytes from the stream, and return them as a standard BSTR.
 ' If the requested length is invalid (i.e. it extends beyond the end of the stream), a partial string will be returned.
 ' Optionally, the lengthIsEmbedded parameter can be set to TRUE; if it is, a 4-byte UTF-8 length will first be read,
-' followed by the UTF-8 bytes.  The numOfBytes parameter will be ignored (e.g. just pass zero).  This makes it
-' symmetrical with the WriteString_UTF8 function if its optional embedded length parameter is also set.
+' using little-endian notation, followed by that number of UTF-8 bytes.  The numOfBytes parameter will be ignored
+' by this use-case (e.g. just pass zero).  This makes it symmetrical with the WriteString_UTF8 function if its optional
+' embedded length parameter is also set.
 Friend Function ReadString_UTF8(ByVal numOfBytes As Long, Optional ByVal lengthIsEmbedded As Boolean = False) As String
     
     If m_Open Then

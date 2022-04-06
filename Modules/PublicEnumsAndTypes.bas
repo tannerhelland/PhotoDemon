@@ -300,9 +300,10 @@ Public Enum PD_ImageDecoder
     id_PSDParser
     id_PSPParser
     id_QOIParser
+    id_XCFParser
     id_WIC
     id_libavif
-	id_CharLS
+    id_CharLS
     id_libwebp
     id_resvg
 End Enum
@@ -310,7 +311,7 @@ End Enum
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
     Private Const id_CBZParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0, id_PNGParser = 0
-    Private Const id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0
+    Private Const id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_XCFParser = 0
     Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0
 #End If
 
@@ -576,6 +577,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_AVIF = 119     'Modern high-efficiency images (AV1 frames) were added in 9.0 nightly builds
     PDIF_JLS = 120      'JPEG-LS was added in 9.0 nightly builds
     PDIF_QOI = 121      'QOI was added in 9.0 nightly builds
+    PDIF_XCF = 122      'GIMP XCF was added in 9.0 nightly builds
     
 End Enum
 
@@ -588,7 +590,7 @@ End Enum
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116, PDIF_PSP = 117
-    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121
+    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121, PDIF_XCF = 122
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

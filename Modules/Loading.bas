@@ -248,6 +248,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_WEBP) And (decoderUsed = id_libwebp))
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_XCF)
             
             If (Not layersAlreadyLoaded) Then
                 
@@ -333,7 +334,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: some multipage formats (like PSD, ORA, ICO, etc) load all pages/frames in the initial
         ' load function.  This "separate multipage loader function" approach primarily exists for
         ' legacy functions where a 3rd-party library is responsible for parsing the extra pages.
-        
         If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF)) Then
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
@@ -649,6 +649,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB)
             End If
         
+        Case "XCF"
+            Dim cXCF As pdXCF
+            Set cXCF = New pdXCF
+            If cXCF.IsFileXCF(imagePath) Then loadSuccessful = cXCF.LoadXCF_FromFile(imagePath, tmpPDImage, targetDIB)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
         'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
         ' copying of the official libavif exe binaries (for example,
         ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
@@ -813,6 +819,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "Internal PaintShop Pro parser"
         Case id_QOIParser
             GetDecoderName = "Internal QOI parser"
+        Case id_XCFParser
+            GetDecoderName = "Internal XCF parser"
         Case id_WIC
             GetDecoderName = "Windows Imaging Component"
         Case id_CharLS

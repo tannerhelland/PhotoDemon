@@ -78,6 +78,11 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_RGB_16 = &H4001A
     TYPE_RGB_16_PLANAR = &H4101A
     TYPE_RGB_16_SE = &H4081A
+    
+    '(Added by Tanner, but it turns out 32-bit integers are not supported!)
+    'TYPE_RGB_32 = &H4001C
+    'TYPE_RGB_32_PLANAR = &H4101C
+    
     TYPE_BGR_16 = &H4041A
     TYPE_BGR_16_PLANAR = &H4141A
     TYPE_BGR_16_SE = &H40C1A
@@ -89,6 +94,11 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_RGBA_16 = &H4009A
     TYPE_RGBA_16_PLANAR = &H4109A
     TYPE_RGBA_16_SE = &H4089A
+    
+    '(Added by Tanner, but it turns out 32-bit integers are not supported!)
+    'TYPE_RGBA_32 = &H4009C
+    'TYPE_RGBA_32_PLANAR = &H4109C
+    
     TYPE_ARGB_8 = &H44099
     TYPE_ARGB_16 = &H4409A
     TYPE_ABGR_8 = &H40499
@@ -213,7 +223,15 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_LabV2_8 = &H1E0019
     TYPE_ALabV2_8 = &H1E0499
     TYPE_LabV2_16 = &H1E001A
-
+    
+    '(Added by Tanner)
+    TYPE_GRAYA_HALF_FLT = &H43008A
+    TYPE_GRAYA_FLT = &H43008C
+    TYPE_GRAYA_DBL = &H430088
+    TYPE_GRAYA_HALF_FLT_PLANAR = &H43108A
+    TYPE_GRAYA_FLT_PLANAR = &H43108C
+    TYPE_GRAYA_DBL_PLANAR = &H431088
+    
     TYPE_GRAY_HALF_FLT = &H43000A
     TYPE_RGB_HALF_FLT = &H44001A
     TYPE_RGBA_HALF_FLT = &H44009A
@@ -223,6 +241,14 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_BGR_HALF_FLT = &H44041A
     TYPE_BGRA_HALF_FLT = &H44449A
     TYPE_ABGR_HALF_FLT = &H44041A
+    
+    '(Added by Tanner)
+    TYPE_RGB_HALF_FLT_PLANAR = &H44101A
+    TYPE_RGBA_HALF_FLT_PLANAR = &H44109A
+    TYPE_RGB_FLT_PLANAR = &H44101C
+    TYPE_RGBA_FLT_PLANAR = &H44109C
+    TYPE_RGB_DBL_PLANAR = &H441018
+    TYPE_RGBA_DBL_PLANAR = &H441098
     
     'These flags are *not* automatically defined by LCMS; I've defined them to allow for OR'ing with
     ' existing constants (since VB makes bit-shifting such a PITA)
@@ -691,9 +717,9 @@ Public Function LCMS_LoadCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVa
     
 End Function
 
-Public Function LCMS_LoadStockGrayProfile() As Long
+Public Function LCMS_LoadStockGrayProfile(Optional ByVal useGamma As Double = 1#) As Long
     Dim tmpToneCurve As Long
-    tmpToneCurve = LCMS_GetBasicToneCurve(1#)
+    tmpToneCurve = LCMS_GetBasicToneCurve(useGamma)
     LCMS_LoadStockGrayProfile = cmsCreateGrayProfile(cmsD50_xyY(), tmpToneCurve)
     LittleCMS.LCMS_FreeToneCurve tmpToneCurve
 End Function

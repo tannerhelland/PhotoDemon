@@ -1933,7 +1933,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     
     If allowedToProceed Then
         
-        Const ONE_DIV_255 As Double = 1# / 255#
+        Const ONE_DIV_255 As Single = 1! / 255!
         
         'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
         ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
@@ -1941,7 +1941,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Dim i As Long
         For i = 0 To 255
             If applyPremultiplication Then
-                intToFloat(i) = CSng(CDbl(i) * ONE_DIV_255)
+                intToFloat(i) = CSng(i) * ONE_DIV_255
             Else
                 If (i <> 0) Then intToFloat(i) = CSng(255! / CDbl(i))
             End If

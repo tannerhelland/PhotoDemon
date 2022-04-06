@@ -489,6 +489,36 @@ Public Sub SwapEndianness16(ByRef srcData() As Byte)
     Next i
 End Sub
 
+Public Sub SwapEndianness32(ByRef srcData() As Byte)
+    Dim i As Long, tmpValue As Long
+    For i = 0 To UBound(srcData) Step 4
+        tmpValue = srcData(i)
+        srcData(i) = srcData(i + 3)
+        srcData(i + 3) = tmpValue
+        tmpValue = srcData(i + 1)
+        srcData(i + 1) = srcData(i + 2)
+        srcData(i + 2) = tmpValue
+    Next i
+End Sub
+
+Public Sub SwapEndianness64(ByRef srcData() As Byte)
+    Dim i As Long, tmpValue As Long
+    For i = 0 To UBound(srcData) Step 8
+        tmpValue = srcData(i)
+        srcData(i) = srcData(i + 7)
+        srcData(i + 7) = tmpValue
+        tmpValue = srcData(i + 1)
+        srcData(i + 1) = srcData(i + 6)
+        srcData(i + 6) = tmpValue
+        tmpValue = srcData(i + 2)
+        srcData(i + 2) = srcData(i + 5)
+        srcData(i + 5) = tmpValue
+        tmpValue = srcData(i + 3)
+        srcData(i + 3) = srcData(i + 4)
+        srcData(i + 4) = tmpValue
+    Next i
+End Sub
+
 'Un-shuffle data that was previously shuffled by the ShuffleBytes_4 function.
 ' (Look there for comments.)
 'As always, make sure your source and destination pointers are accurate!

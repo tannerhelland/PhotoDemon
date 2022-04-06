@@ -111,6 +111,11 @@ Private m_qoiColorSpace As QOI_ColorSpace
 ' the core data stream to local arrays before certain parsing duties (for perf reasons)
 Private m_Stream As pdStream
 
+'Only returns valid information after a successful call to LoadQOI
+Friend Function GetOriginalChannelCount() As Long
+    GetOriginalChannelCount = m_qoiChannelCount
+End Function
+
 'Validate a source filename as QOI format.  Validation *does* touch the file - we must validate
 ' a "magic number" in the header.
 Friend Function IsFileQOI(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True, Optional ByVal onSuccessLeaveStreamOpen As Boolean = False) As Boolean
@@ -133,7 +138,7 @@ Friend Function IsFileQOI(ByRef srcFilename As String, Optional ByVal requireVal
             
             'The first 4 bytes of a QOI file must be the ASCII values "qoif"
             potentiallyQOI = (m_Stream.ReadString_ASCII(4) = "qoif")
-            If (potentiallyQOI And QOI_DEBUG_VERBOSE) Then PDDebug.LogAction "Valid QOI file found!"
+            If (potentiallyQOI And QOI_DEBUG_VERBOSE) Then PDDebug.LogAction "Valid QOI file found"
             
         End If
         
@@ -239,7 +244,7 @@ Private Function LoadQOI_ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     Dim dstPixels() As RGBQuad, dstSA As SafeArray1D
     dstDIB.WrapRGBQuadArrayAroundDIB_1D dstPixels, dstSA
     
-    'Pixel offsets will be tracked to avoid OOB on bad files
+    'Pixel offsets are tracked to avoid OOB on bad files
     Dim dstOffset As Long: dstOffset = 0
     Dim numPixels As Long: numPixels = m_qoiWidth * m_qoiHeight
     Dim nextByte As Long, curRun As Long
