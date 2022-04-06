@@ -573,11 +573,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     ' and layer-level flags into branchable toggles that simplify the process of converting to PD's internal
     ' 32-bpp BGRA requirement.  (Note also that some color model details are layer-specific, like alpha
     ' channel presence, while others are image-specific, like int vs float precisions.)
-    Dim HasAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
+    Dim isAlpha As Boolean, isGray As Boolean, isIndexed As Boolean
     Dim precisionInt As Boolean, precisionFloat As Boolean, isGamma As Boolean, isLinear As Boolean
     Dim numBitsPerChannel As Long
     
-    FillPixelFormats idxLayer, HasAlpha, isGray, isIndexed, precisionInt, isGamma, numBitsPerChannel
+    FillPixelFormats idxLayer, isAlpha, isGray, isIndexed, precisionInt, isGamma, numBitsPerChannel
     isLinear = (Not isGamma)
     precisionFloat = (Not precisionInt)
     
@@ -638,11 +638,11 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     'Some color modes (e.g. indexed images) don't require color management, so we must check for a
     ' null-format before attempting to create a transform.
     Dim srcFormat As LCMS_PIXEL_FORMAT
-    srcFormat = GetSrcLCMSFormat(isIndexed, isGray, precisionInt, HasAlpha, numBitsPerChannel, srcCompression)
+    srcFormat = GetSrcLCMSFormat(isIndexed, isGray, precisionInt, isAlpha, numBitsPerChannel, srcCompression)
     
     If (srcFormat <> 0) Then
         Dim flgTransform As LCMS_TRANSFORM_FLAGS
-        If HasAlpha Then flgTransform = cmsFLAGS_COPY_ALPHA Else flgTransform = 0
+        If isAlpha Then flgTransform = cmsFLAGS_COPY_ALPHA Else flgTransform = 0
         Set tmpTransform = New pdLCMSTransform
         tmpTransform.CreateTwoProfileTransform srcProfile, dstProfile, srcFormat, TYPE_BGRA_8, INTENT_PERCEPTUAL, flgTransform
     End If
@@ -739,8 +739,8 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
             ' (since RLE operates on individual bytes, not channels)
             Case xcf_Compress_RLE
                 DecompressRLE xcfBytesPerPixel, numTilePixels, srcBytes, dstBytes
-                If (numBitsPerChannel > 8) Then UnshuffleHDRChannels numBitsPerChannel, numTilePixels, HasAlpha, tmpSwizzle, dstBytes, maxDstSize
-                    
+                If (numBitsPerChannel > 8) Then UnshuffleHDRChannels numBitsPerChannel, numTilePixels, isAlpha, tmpSwizzle, dstBytes, maxDstSize
+                
             'Available as an optional setting in modern XCF files, but rare "in the wild"
             Case xcf_Compress_ZLib
                 
@@ -759,25 +759,18 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
         
         'Indexed (can only by 8-bpp)
         If isIndexed Then
+            RenderIndexedColor dstBytes, tileWidth, tileHeight, isAlpha
         
-            'Indexed color mode does support alpha, but it is encoded as an independent channel
-            If HasAlpha Then
-            
-            'Normal, non-alpha palette
-            Else
-            
-            End If
-            
         'Gray and true-color are handled by color profile
         Else
             
             'Manually handle BE to LE conversion for HDR float formats (and 32-bit integer, which is not
             ' natively supported by LCMS)
-            SwapEndiannessHDR srcCompression, numBitsPerChannel, precisionFloat, numTilePixels, HasAlpha, tmpSwizzle, dstBytes, maxDstSize
+            SwapEndiannessHDR srcCompression, numBitsPerChannel, precisionFloat, numTilePixels, isAlpha, tmpSwizzle, dstBytes, maxDstSize
             
             'Finalize plane and scanline calculations for LCMS conversion
             Dim lcmsBytesPerLine As Long, lcmsBytesPerPlane As Long
-            FinalizeLCMSTransform lcmsBytesPerLine, lcmsBytesPerPlane, srcCompression, precisionInt, HasAlpha, tileWidth, tileHeight, xcfBytesPerPixel, numBitsPerChannel
+            FinalizeLCMSTransform lcmsBytesPerLine, lcmsBytesPerPlane, srcCompression, precisionInt, isAlpha, tileWidth, tileHeight, xcfBytesPerPixel, numBitsPerChannel
             
             'Note that the creation of this transform is extremely specific.  In particular, we have to explicitly
             ' address planar-to-interleaved (on RLE-compressed images), and we are also rendering into a fixed-size
@@ -809,11 +802,38 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
 End Function
 
 'A number of support functions for tile decompression follow
-Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal HasAlpha As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
+Private Sub RenderIndexedColor(ByRef dstBytes() As Byte, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal isAlpha As Boolean)
+
+    'Indexed color images must be manually assembled into a 32-bpp BGRA tile.
+    Dim pxTile() As RGBQuad, pxSA As SafeArray2D
+    m_Tile.WrapRGBQuadArrayAroundDIB pxTile, pxSA
+    
+    Dim idxSrc As Long
+    idxSrc = 0
+    
+    Dim x As Long, y As Long
+    For y = 0 To tileHeight - 1
+    For x = 0 To tileWidth - 1
+        If isAlpha Then
+            pxTile(x, y) = m_Palette(dstBytes(idxSrc))
+            pxTile(x, y).Alpha = dstBytes(tileWidth * tileHeight + idxSrc)
+            idxSrc = idxSrc + 1
+        Else
+            pxTile(x, y) = m_Palette(dstBytes(idxSrc))
+            idxSrc = idxSrc + 1
+        End If
+    Next x
+    Next y
+    
+    m_Tile.UnwrapRGBQuadArrayFromDIB pxTile
+    
+End Sub
+
+Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal isAlpha As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
 
     If (srcCompression = xcf_Compress_ZLib) Then
         If precisionInt And (numBitsPerChannel > 16) Then
-            If HasAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
+            If isAlpha Then lcmsBytesPerLine = tileWidth * 8 Else lcmsBytesPerLine = tileWidth * 6
             lcmsBytesPerPlane = 2 * tileWidth * tileHeight
         Else
             lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
@@ -834,7 +854,7 @@ Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsByte
     
 End Sub
 
-Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChannel As Long, ByVal precisionFloat As Boolean, ByVal numTilePixels As Long, ByVal HasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChannel As Long, ByVal precisionFloat As Boolean, ByVal numTilePixels As Long, ByVal isAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
 
     'HDR float formats are in big-endian notation.  We must manually swizzle before converting,
     ' because LCMS does not support this format natively.
@@ -868,7 +888,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                 If (srcCompression = xcf_Compress_ZLib) Then
                     
                     Dim pxSize As Long
-                    If HasAlpha Then pxSize = 8 Else pxSize = 6
+                    If isAlpha Then pxSize = 8 Else pxSize = 6
                     
                     For x = 0 To numTilePixels - 1
                         dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
@@ -877,7 +897,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                         dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
                         dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
                         dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
-                        If HasAlpha Then
+                        If isAlpha Then
                             dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
                             dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
                         End If
@@ -895,7 +915,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                         dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
                         dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
                         
-                        If HasAlpha Then
+                        If isAlpha Then
                             dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
                             dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
                         End If
@@ -911,7 +931,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
     
 End Sub
 
-Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal HasAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
+Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal isAlpha As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
 
     'When compressed via RLE, HDR images require special un-shuffling.  Each byte of the source pixels
     ' was encoded as its own RLE stream, e.g. the first 8-bits of each 16-bit red pixel were RLE-ed together,
@@ -935,7 +955,7 @@ Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTileP
             For x = 0 To numTilePixels - 1
                 dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
             Next x
-            If HasAlpha Then
+            If isAlpha Then
                 For x = 0 To numTilePixels - 1
                     dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
                 Next x
@@ -1018,7 +1038,7 @@ Private Sub DecompressRLE(ByVal xcfBytesPerPixel As Long, ByVal numTilePixels As
 
 End Sub
 
-Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal HasAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
+Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal isAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
 
     'Indexed mode is not handled via profile; it is handled manually so we don't check for it here
     If isIndexed Then
@@ -1035,13 +1055,13 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     Else
         If precisionInt Then
             If (numBitsPerChannel = 8) Then
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_8_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_8_PLANAR
                 End If
             ElseIf (numBitsPerChannel = 16) Then
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
@@ -1050,7 +1070,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 
                 'LCMS doesn't support 32-bit integer components.  We will manually downsample to
                 ' 16-bit integer prior to color-management, so expressly request 16-bit here.
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
@@ -1061,13 +1081,13 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
         'Floating-point encoding
         Else
             If (numBitsPerChannel = 16) Then
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_HALF_FLT_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_HALF_FLT_PLANAR
                 End If
             ElseIf (numBitsPerChannel = 32) Then
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_FLT_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_FLT_PLANAR
@@ -1077,7 +1097,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 'Double-precision is only "theoretically" supported today, because GIMP doesn't actually
                 ' allow you to specify double-precision inside the app (though the spec allows for it as a
                 ' valid color-depth).
-                If HasAlpha Then
+                If isAlpha Then
                     GetSrcLCMSFormat = TYPE_RGBA_DBL_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_RGB_DBL_PLANAR
@@ -1095,10 +1115,10 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     
 End Function
 
-Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef HasAlpha As Boolean, ByRef isGray As Boolean, ByRef isIndexed As Boolean, ByRef precisionInt As Boolean, ByRef isGamma As Boolean, ByRef numBitsPerChannel As Long)
+Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef isAlpha As Boolean, ByRef isGray As Boolean, ByRef isIndexed As Boolean, ByRef precisionInt As Boolean, ByRef isGamma As Boolean, ByRef numBitsPerChannel As Long)
     
     With m_Layers(idxLayer)
-        HasAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
+        isAlpha = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_RGBA)
         isGray = (.lColorMode = xcf_GrayA) Or (.lColorMode = xcf_GrayX)
         isIndexed = (.lColorMode = xcf_IndexedA) Or (.lColorMode = xcf_IndexedX)
     End With
