@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 06/April/22
-'Last update: wrap up initial build
+'Last updated: 07/April/22
+'Last update: minor code cleanup now that the dust has settled on my initial build
 '
 'This class handles GIMP XCF format parsing duties.  It is custom-built for PhotoDemon, with an emphasis
 ' on performance and proper color-management of all imported data.
@@ -233,11 +233,6 @@ Private m_imageResolutionPPI As Single
 'Palette, if any
 Private m_numPaletteColors As Long, m_Palette() As RGBQuad
 
-'XCF allows all color modes and precisions to include alpha, and alpha is actually *mandatory*
-' for all layers above the base layer.  However, a single-layer image *is* allowed to drop its
-' alpha channel if desired.
-Private m_OriginalAlphaState As Boolean
-
 'XCF version is critical to correct parsing; different versions have different fields in different places,
 ' and use different sizes for low-level values like internal file pointers
 Private m_xcfVersion As Long
@@ -346,7 +341,6 @@ End Function
 'Validate and load a candidate XCF file
 Friend Function LoadXCF_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
-    Const FUNC_NAME As String = "LoadXCF_FromFile"
     LoadXCF_FromFile = False
     
     'Validate the file
@@ -392,6 +386,8 @@ Private Function Import_Stage5_BuildImage(ByRef srcFile As String, ByRef dstImag
     
     Const FUNC_NAME As String = "Import_Stage5_BuildImage"
     Import_Stage5_BuildImage = True
+    
+    On Error GoTo BrokenImage
     
     'We now have everything we need out of the XCF file.  Time to build a pdImage object!
     
@@ -439,6 +435,12 @@ Private Function Import_Stage5_BuildImage(ByRef srcFile As String, ByRef dstImag
         End If
     Next i
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage5_BuildImage = False
+    
 End Function
 
 'Import step 4: parse layer headers (and properties).  Offsets to each layer block were retrieved in the
@@ -450,6 +452,8 @@ Private Function Import_Stage4_ParseLayerHeaders(ByRef srcFile As String, ByRef 
     
     Const FUNC_NAME As String = "Import_Stage4_ParseLayerHeaders"
     Import_Stage4_ParseLayerHeaders = True
+    
+    On Error GoTo BrokenImage
     
     'Modern GIMP files use 64-bit pointers; legacy use 32-bit
     Dim ptrIs64bit As Boolean, ptrFileH As Long
@@ -556,6 +560,12 @@ Private Function Import_Stage4_ParseLayerHeaders(ByRef srcFile As String, ByRef 
     ' it will be forcibly reset by the next layer pass).
     Next i
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage4_ParseLayerHeaders = False
+    
 End Function
 
 'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
@@ -569,6 +579,8 @@ Private Function Import_Stage4c_DecodeLayerProps(ByVal idxLayer As Long, ByRef d
 
     Const FUNC_NAME As String = "Import_Stage4c_DecodeLayerProps"
     Import_Stage4c_DecodeLayerProps = True
+    
+    On Error GoTo BrokenImage
     
     'This step is pretty simple: iterate the property list and parse any meaningful properties,
     ' then translate them into their nearest PhotoDemon equivalent.
@@ -676,6 +688,12 @@ Private Function Import_Stage4c_DecodeLayerProps(ByVal idxLayer As Long, ByRef d
         
     Next i
 
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage4c_DecodeLayerProps = False
+    
 End Function
 
 'Private helper(s) for the layer property parser, above.
@@ -890,6 +908,8 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     Const FUNC_NAME As String = "Import_Stage4b_GenerateLayerPixels"
     Import_Stage4b_GenerateLayerPixels = True
     
+    On Error GoTo BrokenImage
+    
     'If we've made it this far, previous functions successfully retrieved a list of file offsets
     ' for the individual 64x64 tiles that comprise this XCF file.  It is now our job to decompress
     ' those tiles, and from the results, construct a useable layer pixel stream.
@@ -1049,9 +1069,6 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     tileHeightLast = m_Layers(idxLayer).lHeight - ((m_Layers(idxLayer).lHeight \ 64) * 64)
     If (tileHeightLast <= 0) Then tileHeightLast = 64
     
-    'A few final useful variables if we need to manually swizzle complex HDR data
-    Dim x As Long, y As Long
-    
     'Start iterating tiles
     Dim xTile As Long, yTile As Long
     For yTile = 0 To yTileMax
@@ -1160,6 +1177,12 @@ Private Function Import_Stage4b_GenerateLayerPixels(ByVal idxLayer As Long, ByRe
     m_Layers(idxLayer).lDIB.SetAlphaPremultiplication True
     
     Import_Stage4b_GenerateLayerPixels = True
+    
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage4b_GenerateLayerPixels = False
     
 End Function
 
@@ -1606,6 +1629,8 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     Const FUNC_NAME As String = "Import_Stage4a_ParseLayerTiles"
     Import_Stage4a_ParseLayerTiles = True
     
+    On Error GoTo BrokenImage
+    
     'Modern GIMP files use 64-bit pointers; legacy use 32-bit
     Dim ptrIs64bit As Boolean, ptrFileH As Long
     ptrIs64bit = (m_xcfVersion >= 11)
@@ -1766,6 +1791,12 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
         
     Import_Stage4a_ParseLayerTiles = True
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage4a_ParseLayerTiles = False
+    
 End Function
 
 'Import step 3: load all layers.  After this step, the stream pointer is no longer relevant.  (It will likely
@@ -1778,6 +1809,8 @@ Private Function Import_Stage3_LoadLayersAndChannels(ByRef srcFile As String, By
     'This stage will only fail if we encounter 2+ GB files; otherwise, we assume success
     ' (and won't know otherwise until we start parsing layers+channels from their file offsets)
     Import_Stage3_LoadLayersAndChannels = True
+    
+    On Error GoTo BrokenImage
     
     'XCF files encode all layers as pointers to dedicated layer segments.  We need to track proper
     ' stream alignment here since we'll be jumping all over the file.
@@ -1869,6 +1902,12 @@ Private Function Import_Stage3_LoadLayersAndChannels(ByRef srcFile As String, By
         End If
     End If
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage3_LoadLayersAndChannels = False
+    
 End Function
 
 'Only call from Import_Stage2_LoadProps!
@@ -1876,6 +1915,8 @@ Private Function Import_Stage2a_CacheKeyProps(ByRef srcFile As String, ByRef dst
 
     Const FUNC_NAME As String = "Import_Stage2a_CacheKeyProps"
     Import_Stage2a_CacheKeyProps = True
+    
+    On Error GoTo BrokenImage
     
     'GIMP embeds property lists for the image, individual layers, and individual channels.  Some properties
     ' are restricted to only a specific subset; others are available anywhere.
@@ -1987,6 +2028,12 @@ Private Function Import_Stage2a_CacheKeyProps(ByRef srcFile As String, ByRef dst
         
     End If
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage2a_CacheKeyProps = False
+    
 End Function
 
 'Import step 2: load all image "properties".  After this step, the stream pointer will be aligned with the
@@ -1997,6 +2044,8 @@ Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage
     ' is a malformed file)
     Const FUNC_NAME As String = "Import_Stage2_LoadProps"
     Import_Stage2_LoadProps = True
+    
+    On Error GoTo BrokenImage
     
     'Properties are basically a list of chunks with numeric IDs.  Each chunk self-describes
     ' its own length (although some historic XCF files may not report size correctly - I'm not sure
@@ -2065,6 +2114,12 @@ Private Function Import_Stage2_LoadProps(ByRef srcFile As String, ByRef dstImage
     'After successful traversal of the full property list, we want to cache some key properties in useable structs.
     If Import_Stage2_LoadProps Then Import_Stage2_LoadProps = Import_Stage2a_CacheKeyProps(srcFile, dstImage, dstDIB)
     
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage2_LoadProps = False
+    
 End Function
 
 'Import step 1: after "magic number" validation, parse the short XCF header and validate core members
@@ -2073,7 +2128,9 @@ Private Function Import_Stage1_ParseHeader(ByRef srcFile As String, ByRef dstIma
     
     Const FUNC_NAME As String = "Import_Stage1_ParseHeader"
     Import_Stage1_ParseHeader = False
-
+    
+    On Error GoTo BrokenImage
+    
     'Magic number is followed by version (as a string).  We remap this to a long for convenience.
     Dim strVersion As String
     strVersion = LCase$(m_Stream.ReadString_ASCII(4))
@@ -2156,6 +2213,12 @@ Private Function Import_Stage1_ParseHeader(ByRef srcFile As String, ByRef dstIma
     'Still here?  Header looks okay!
     If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "XCF is " & m_ImageWidth & "x" & m_ImageHeight & " with color mode " & m_imageColorMode & " and precision " & m_imagePrecision
     Import_Stage1_ParseHeader = True
+    
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage1_ParseHeader = False
     
 End Function
 

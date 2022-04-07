@@ -3,7 +3,7 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2022 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 06/April/21
+'Last updated: 06/April/22
 'Last update: use PD-specific repo for avifdec/enc since the libavif authors keep changing release availability;
 '             also, enable fast PNG writing thanks to an issue I submitted!
 '

@@ -18,7 +18,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ![Screenshot](https://photodemon.org/media/PD_9.0_screenshot.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -64,6 +64,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### File formats
 
 - Comprehensive import and export support for [Corel Paintshop Pro (psp, pspimage) images](https://en.wikipedia.org/wiki/PaintShop_Pro), including many text and vector layer features.
+- Comprehensive import support for [GIMP XCF images](https://en.wikipedia.org/wiki/GIMP), including full coverage for all color modes, precisions (integer and float), and XCF versions.
 - Comprehensive import and export support for the brand-new [AVIF file format](https://en.wikipedia.org/wiki/AV1#AV1_Image_File_Format_(AVIF)), c/o the [open-source libavif library](https://github.com/AOMediaCodec/libavif).  AVIF file support is incredibly complex (the stock encoder+decoder apps are almost 3x larger than PhotoDemon!) and they are only available for 64-bit systems, so PhotoDemon does not ship these libraries by default.  If you attempt to open or save an AVIF file, PhotoDemon will offer to download a local copy of libavif for you.  
 - Comprehensive import and export support for [animated WebP images](https://developers.google.com/speed/webp), including direct export to animated WebP from PhotoDemon's built-in screen recorder tool (`Tools > Animated screen capture`)
 - Comprehensive import and export support for [lossless QOI ("quite OK image") files](https://qoiformat.org/).

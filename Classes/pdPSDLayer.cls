@@ -3589,7 +3589,7 @@ Friend Sub PrepBareMaskForWrite(ByRef srcLayer As pdLayer, ByVal channelCompress
     
     VBHacks.WrapArrayAroundPtr_Byte tmpBytes, tmpSA, scanStart, maskWidth * maskHeight
     
-    Dim x As Long, y As Long
+    Dim y As Long
     Dim dstOffset As Long
     
     Dim xLoopSrc As Long, yLoopSrc As Long
@@ -3617,7 +3617,7 @@ Friend Sub PrepBareMaskForWrite(ByRef srcLayer As pdLayer, ByVal channelCompress
             'To simplify the PackBits algorithm, we'll manually pull RGBA bytes into their own planar arrays
             ' before packing them.  We'll also use a temporary destination array that is plenty long enough
             ' to hold any pathologically bad lines.
-            Dim tmpSrcBytes() As Byte, tmpDstBytes() As Byte, srcOffset As Long, dstSize As Long
+            Dim tmpSrcBytes() As Byte, tmpDstBytes() As Byte, dstSize As Long
             ReDim tmpSrcBytes(0 To maskWidth - 1) As Byte
             ReDim tmpDstBytes(0 To maskWidth * 2) As Byte
             
