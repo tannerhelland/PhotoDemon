@@ -708,10 +708,48 @@ Private Sub chkRecentFiles_Click()
     End If
 End Sub
 
+Private Sub chkRecentFiles_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        newTargetHwnd = cmdStart(cmdStart.UBound).hWnd
+    Else
+        If (chkRecentFiles.Value And cmdRecent(cmdRecent.lBound).Visible) Then
+            newTargetHwnd = cmdRecent(cmdRecent.lBound).hWnd
+        Else
+            newTargetHwnd = cmdStart(cmdStart.lBound).hWnd
+        End If
+    End If
+    
+End Sub
+
 Private Sub cmdRecent_Click(Index As Integer)
     If (Not g_RecentFiles Is Nothing) Then
         If (LenB(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
     End If
+End Sub
+
+Private Sub cmdRecent_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        
+        If (Index > 0) Then
+            newTargetHwnd = cmdRecent(Index - 1).hWnd
+        Else
+            newTargetHwnd = chkRecentFiles.hWnd
+        End If
+        
+    Else
+        If (Index < cmdRecent.UBound) Then
+            If cmdRecent(Index + 1).Visible Then
+                newTargetHwnd = cmdRecent(Index + 1).hWnd
+            Else
+                newTargetHwnd = hypRecentFiles.hWnd
+            End If
+        Else
+            newTargetHwnd = hypRecentFiles.hWnd
+        End If
+    End If
+    
 End Sub
 
 Private Sub cmdStart_Click(Index As Integer)
@@ -729,9 +767,55 @@ Private Sub cmdStart_Click(Index As Integer)
 
 End Sub
 
+Private Sub cmdStart_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        If (Index > cmdStart.lBound) Then
+            newTargetHwnd = cmdStart(Index - 1).hWnd
+        Else
+            If hypRecentFiles.Visible Then
+                newTargetHwnd = hypRecentFiles.hWnd
+            Else
+                newTargetHwnd = chkRecentFiles.hWnd
+            End If
+        End If
+    Else
+        If (Index < cmdStart.UBound) Then
+            newTargetHwnd = cmdStart(Index + 1).hWnd
+        Else
+            newTargetHwnd = chkRecentFiles.hWnd
+        End If
+    End If
+    
+End Sub
+
 Private Sub hypRecentFiles_Click()
     If (Not g_RecentFiles Is Nothing) Then g_RecentFiles.ClearList
     LayoutNoImages
+End Sub
+
+Private Sub hypRecentFiles_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If (cmdRecent.UBound >= 0) Then
+            
+            'Find the highest-index visible recent file button
+            Dim i As Long
+            For i = cmdRecent.UBound To cmdRecent.lBound Step -1
+                If cmdRecent(i).Visible Then
+                    newTargetHwnd = cmdRecent(i).hWnd
+                    Exit Sub
+                End If
+            Next i
+            
+            'If we failed to find a visible recent file button, set focus to the left column
+            newTargetHwnd = chkRecentFiles.hWnd
+            
+        Else
+            newTargetHwnd = chkRecentFiles.hWnd
+        End If
+    Else
+        newTargetHwnd = cmdStart(cmdStart.lBound).hWnd
+    End If
 End Sub
 
 Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
