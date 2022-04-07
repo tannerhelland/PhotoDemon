@@ -53,8 +53,8 @@ End Enum
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_AVIFE_VERSION As String = "0.9.0"
-Private Const EXPECTED_AVIFI_VERSION As String = "0.9.0"
+Private Const EXPECTED_AVIFE_VERSION As String = "0.10.0"
+Private Const EXPECTED_AVIFI_VERSION As String = "0.10.0"
 Private Const EXPECTED_CHARLS_VERSION As String = "2.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.16"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"

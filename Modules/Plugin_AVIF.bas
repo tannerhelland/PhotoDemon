@@ -3,8 +3,9 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2022 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 03/August/21
-'Last update: wrap up work on AVIF export
+'Last updated: 06/April/21
+'Last update: use PD-specific repo for avifdec/enc since the libavif authors keep changing release availability;
+'             also, enable fast PNG writing thanks to an issue I submitted!
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
@@ -15,7 +16,7 @@ Attribute VB_Name = "Plugin_AVIF"
 '
 ' https://github.com/AOMediaCodec/libavif
 '
-'PhotoDemon has been designed against v0.9.0 (22 Feb '21).  It may not work with other versions.
+'PhotoDemon has been designed against v0.10.0 (06 April '22).  It may not work with other versions.
 ' Additional documentation regarding the use of libavif is available as part of the official library,
 ' downloadable from https://github.com/AOMediaCodec/libavif.  You can also run the exe files manually
 ' with the -h extension for details on how they work.
@@ -77,9 +78,9 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append "-j "
     shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
     
-    'TODO: when a new version of libavif drops, we can request uncompressed PNGs here
-    ' (see https://github.com/AOMediaCodec/libavif/issues/706)
-    'shellCmd.Append "--png-compress 0 "
+    'In April 2022 a new version of libavif finally dropped, meaning I can *finally* request uncompressed PNGs
+    ' (see https://github.com/AOMediaCodec/libavif/issues/706 for my feature request on this point)
+    If (GetVersion(True) <> "0.9.0") Then shellCmd.Append "--png-compress 0 "
     
     'Append space-safe source image
     shellCmd.Append """"
@@ -366,7 +367,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         Set uiMsg = New pdString
         uiMsg.AppendLine g_Language.TranslateMessage("AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.")
         uiMsg.AppendLineBreak
-        uiMsg.AppendLine g_Language.TranslateMessage("The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.")
+        uiMsg.AppendLine g_Language.TranslateMessage("The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.", 20, 40)
         uiMsg.AppendLineBreak
         uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?")
         
@@ -406,7 +407,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         'We need to download both the import and export library.  Steps are the same for both.
         
         'Start with import.
-        srcURL = "https://github.com/AOMediaCodec/libavif/releases/download/v0.9.0/avifdec.exe"
+        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-9.0-alpha.1/avifdec.exe"
         dstFileDecoder = PluginManager.GetPluginPath() & "avifdec.exe"
         
         'If the destination file does exist, kill it (maybe it's broken or bad)
@@ -421,7 +422,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         
         'Repeat for the encoder
         Dim dstFileEncoder As String
-        srcURL = "https://github.com/AOMediaCodec/libavif/releases/download/v0.9.0/avifenc.exe"
+        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-9.0-alpha.1/avifenc.exe"
         dstFileEncoder = PluginManager.GetPluginPath() & "avifenc.exe"
         Files.FileDeleteIfExists dstFileEncoder
         

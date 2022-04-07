@@ -2502,8 +2502,8 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 </phrase>
 
 <phrase>
-<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation>L'alliance for Open Media fournit des bibliothèques d'encodage et de décodage AVIF 64 bits gratuites et à code source ouvert.  Ces bibliothèques font environ 10 Mo chacune (20 Mo au total).  Une fois téléchargées, elles permettront à PhotoDemon d'importer et d'exporter des fichiers AVIF sur tout système 64 bits.</translation>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<translation>L'alliance for Open Media fournit des bibliothèques d'encodage et de décodage AVIF 64 bits gratuites et à code source ouvert.  Ces bibliothèques font environ %1 Mo chacune (%2 Mo au total).  Une fois téléchargées, elles permettront à PhotoDemon d'importer et d'exporter des fichiers AVIF sur tout système 64 bits.</translation>
 </phrase>
 
 <phrase>
