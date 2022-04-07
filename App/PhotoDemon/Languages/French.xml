@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.574</langversion>
+<langversion>6.7.575</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2997,7 +2997,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Processor.bas contains 126 phrases. 67 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -7516,6 +7516,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>first frame for effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last frame for effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying background</original>
 <translation>Application de l'arrière plan</translation>
 </phrase>
@@ -7535,7 +7545,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>calque de premier plan</translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -10750,7 +10760,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>activer l'animation  (nécessite 2 calques ou plus)</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11228,7 +11238,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>supprimer la transparence</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>after importing source images</original>
@@ -13770,10 +13780,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2602</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5400 phrases. -->
-<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
-<!-- These 2602 phrases contain approximately 11786 total words. -->
+<!-- As of this build, PhotoDemon contains 5410 phrases. -->
+<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 11794 total words. -->
 
 </pdData>

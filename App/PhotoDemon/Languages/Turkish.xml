@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.66</langversion>
+<langversion>1.0.67</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -2501,7 +2501,7 @@ Görsellerin varolduğuna ve desteklenen bir formatta (JPEG, PNG) olduğundan em
 </phrase>
 
 <phrase>
-<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
 <translation></translation>
 </phrase>
 
@@ -2982,7 +2982,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation></translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Processor.bas contains 126 phrases. 67 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -7486,6 +7486,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>first frame for effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last frame for effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying background</original>
 <translation></translation>
 </phrase>
@@ -7505,7 +7515,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -10716,7 +10726,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 24 phrases. 23 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -11194,7 +11204,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>after importing source images</original>
@@ -13707,10 +13717,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2602</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5400 phrases. -->
-<!-- 2798 are duplicates, so only 2602 unique phrases have been written to file. -->
-<!-- These 2602 phrases contain approximately 11786 total words. -->
+<!-- As of this build, PhotoDemon contains 5410 phrases. -->
+<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 11794 total words. -->
 
 </pdData>
