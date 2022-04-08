@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1353</langversion>
+<langversion>9.0.1411</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -225,7 +225,7 @@
 
 <phrase>
 <original>Fit canvas around all layers</original>
-<translation>Leinwand rundum alle Layer anpassen</translation>
+<translation>Leinwand rund um alle Layer anpassen</translation>
 </phrase>
 
 <phrase>
@@ -1665,7 +1665,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>Bildleinwand wird rundum Layer angepasst</translation>
+<translation>Bildleinwand wird rund um Layer angepasst</translation>
 </phrase>
 
 <phrase>
@@ -1818,7 +1818,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>clamp</original>
-<translation>Klammern</translation>
+<translation>Abschneiden (Clamp)</translation>
 </phrase>
 
 <phrase>
@@ -1828,7 +1828,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>wrap</original>
-<translation>Einwickeln</translation>
+<translation>Zyklisch wiederholen (Wrap)</translation>
 </phrase>
 
 <phrase>
@@ -2887,12 +2887,12 @@ Deskription: %2
 
 <phrase>
 <original>hinting</original>
-<translation>Andeutend</translation>
+<translation>Hinting</translation>
 </phrase>
 
 <phrase>
 <original>word wrap</original>
-<translation>Zeilenumbruch</translation>
+<translation>Wortumbruch</translation>
 </phrase>
 
 <phrase>
@@ -7502,7 +7502,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effektkollektion hinzu.</translation>
+<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekte-Kollektion hinzu.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -7519,12 +7519,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>first frame for effect</original>
-<translation></translation>
+<translation>Erstes Frame für Effekt</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation></translation>
+<translation>Letztes Frame für Effekt</translation>
 </phrase>
 
 <phrase>
@@ -7792,7 +7792,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation>Bild wird in Plastik eingewickelt</translation>
+<translation>Wickeln des Bildes in Plastik</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8937,7 +8937,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>wrap edge values</original>
-<translation>Kantenwerte einwickeln</translation>
+<translation>Kantenwerte umbrechen</translation>
 </phrase>
 
 <phrase>
@@ -9126,7 +9126,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying pan and zoom (Ken Burns) effect</original>
-<translation>Anwenden des Schwenk- und Zoomeffektes (Ken Burns)</translation>
+<translation>Anwenden des Schwenk- und Zoom- (Ken Burns) Effektes</translation>
 </phrase>
 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9241,7 +9241,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>Bild wird rundum Kugel eingewickelt</translation>
+<translation>Wickeln des Bildes rund um Kugel</translation>
 </phrase>
 
 <phrase>
