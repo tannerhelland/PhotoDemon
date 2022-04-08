@@ -242,8 +242,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2022 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 18/September/20
-'Last update: middle-mouse-button now silently activates the HAND (pan) tool, regardless of current tool
+'Last updated: 08/April/22
+'Last update: fix tab order of start screen (vertical columns are not handled correctly by PD's auto-tab-key algorithm)
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was

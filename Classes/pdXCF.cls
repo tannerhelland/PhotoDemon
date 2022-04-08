@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 07/April/22
-'Last update: minor code cleanup now that the dust has settled on my initial build
+'Last updated: 08/April/22
+'Last update: restructure importer to prepare for layer mask support
 '
 'This class handles GIMP XCF format parsing duties.  It is custom-built for PhotoDemon, with an emphasis
 ' on performance and proper color-management of all imported data.
@@ -159,11 +159,25 @@ End Enum
 
 'Theses structs are implemented in a PhotoDemon-specific way.  They are not meant to store *all* GIMP features;
 ' just the ones PD is capable of using.  (Note also that they deliberately store things like 32-bit pointers
-' instead of 64-bit ones; these are the kinds of implementation details that are PD-specific.)
+' instead of 64-bit ones; these are the type of implementation details that are PD-specific.)
 Private Type xcf_Property
     propID As xcf_PropertyID
     propSize As Long
     propData() As Byte
+End Type
+
+Private Type xcf_Channel
+    ptrInFile As Long
+    cWidth As Long      'Must match width of parent object (layer or image)
+    cHeight As Long     'Must match height of parent object (layer or image)
+    cName As String
+    cNumProperties As Long
+    cProperties() As xcf_Property
+    cBytesPerPixel As Long
+    numTilesX As Long
+    numTilesY As Long
+    numTilesTotal As Long
+    ptrToTiles() As Long
 End Type
 
 Private Type xcf_Layer
@@ -189,7 +203,12 @@ Private Type xcf_Layer
     numTilesTotal As Long
     ptrToTiles() As Long    'Guaranteed dimensioned to [0 to numTilesTotal - 1], IIF numTilesX/Y are non-zero
     
-    'These members are retrieved from individual layer property blocks (many of which are optional)
+    'The layer mask, if any, will be stored here:
+    lMask As xcf_Channel
+    
+    'These members are retrieved from individual layer property blocks (many of which are optional).
+    ' They must also be translated from GIMP values to PD ones; see the Import_Stage4c_DecodeLayerProps function
+    ' for detailsl
     lOpacity As Single
     lOffsetX As Long
     lOffsetY As Long
@@ -208,10 +227,10 @@ End Type
 
 Private m_Layers() As xcf_Layer, m_numOfLayers As Long
 
-Private Type xcf_Channel
-    ptrInFile As Long
-End Type
-
+'The image itself can embed channels (selections are one example).  Currently the pointers of all
+' channels are retrieved during parsing, but image-wide channels are *not* processed further.
+' Layer-specific channels (like masks) *are* parsed, but they are stored inside their parent
+' xcf_Layer object, not in this "image-level" array.
 Private m_Channels() As xcf_Channel, m_numOfChannels As Long
 
 'Embedded ICC profiles are read and used by PD.
@@ -526,26 +545,29 @@ Private Function Import_Stage4_ParseLayerHeaders(ByRef srcFile As String, ByRef 
             If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "Found layer: " & .lName & " - (" & .lWidth & "x" & .lHeight & "), " & .lNumProperties & " props and ptrs are " & .ptrToPixels & ", " & .ptrToMask
             
             'GIMP files are typically structured with interleaved layer and pixel data, so a (complex) hierarchy
-            ' of pixel mapping structs will appear here, before the next layer.  To improve performance, we will
-            ' grab that hierarchy of pixel mappings before moving our file pointer.
-            If Import_Stage4_ParseLayerHeaders Then Import_Stage4_ParseLayerHeaders = Import_Stage4a_ParseLayerTiles(i, dstImage, dstDIB)
-            
-            'With all pixel mapping data retrieved, we now have enough information to retrieve and parse
-            ' individual pixel tiles for this layer.  (GIMP encodes all images as 64x64 px tiles.)
-            ' This next step will generate a ready-to-go layer DIB from the source GIMP tiles, with full
-            ' support for all known color-depths and precision values.
-            If Import_Stage4_ParseLayerHeaders Then Import_Stage4_ParseLayerHeaders = Import_Stage4b_GenerateLayerPixels(i, dstImage, dstDIB)
+            ' of pixel mapping structs will appear here, before the next layer.  To improve performance, we want
+            ' to grab the full hierarchy of pixel mappings before moving the file pointer to the next layer block.
+            If Import_Stage4_ParseLayerHeaders Then Import_Stage4_ParseLayerHeaders = Import_Stage4a_PrepTileRetrieval(.ptrToPixels, .lWidth, .lHeight, .lBytesPerPixel, .numTilesX, .numTilesY, .numTilesTotal, .ptrToTiles)
             
         End With
         
+        'With all pixel mapping data retrieved, we now have enough information to retrieve and parse
+        ' individual pixel tiles for this layer.  (GIMP encodes all images as 64x64 px tiles.)
+        ' This next step will generate a ready-to-go layer DIB from the source GIMP tiles, with full
+        ' support for all known color-depths and precision values.
+        If Import_Stage4_ParseLayerHeaders Then Import_Stage4_ParseLayerHeaders = Import_Stage4b_GenerateLayerPixels(i, dstImage, dstDIB)
+        
         'In the future, we could look at (gracefully?) recovering if one XCF layer is bad,
-        ' but for now, let's abandon parsing if any individual layer is bad.  (This simplifies
-        ' testing parsing robustness.)
+        ' but for now, let's abandon parsing if any individual layer is bad.
+        ' (This simplifies testing parsing robustness.)
         If (Not Import_Stage4_ParseLayerHeaders) Then Exit Function
         
         'If this layer was constructed successfully, it's time to pull meaningful properties from the
         ' property list.  This includes things like layer offsets, blend modes, opacity, visibility, etc.
         Import_Stage4_ParseLayerHeaders = Import_Stage4c_DecodeLayerProps(i, dstImage, dstDIB)
+        
+        'If this layer has a mask, we also want to retrieve it before exiting.
+        If (m_Layers(i).ptrToMask <> 0) Then Import_Stage4_ParseLayerHeaders = Import_Stage4d_DecodeLayerMask(i, dstImage, dstDIB)
         
         'Errors during property parsing are not critical; we will simply supply default properties
         ' at pdLayer generation time.
@@ -570,7 +592,115 @@ End Function
 
 'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
 '
-'Given a valid layer index, iterate all properties retrieved fro that layer and try to recover as many
+'Given a valid layer index with a non-zero mask pointers, retrieve the associated mask and store it inside a
+' layer-level pdLayerMask object.
+'
+'Note that this function will move the file stream pointer.  The caller *must* correctly reposition the
+' stream pointer, if desired, when this function returns.
+Private Function Import_Stage4d_DecodeLayerMask(ByVal idxLayer As Long, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    Const FUNC_NAME As String = "Import_Stage4d_DecodeLayerMask"
+    Import_Stage4d_DecodeLayerMask = True
+    
+    On Error GoTo BrokenImage
+    
+    'Failsafe check for a valid layer pointer for the requested index
+    If (m_Layers(idxLayer).ptrToMask = 0) Then
+        Import_Stage4d_DecodeLayerMask = False
+        Exit Function
+    End If
+    
+    'Modern GIMP files use 64-bit pointers; legacy use 32-bit
+    Dim ptrIs64bit As Boolean, ptrFileH As Long
+    ptrIs64bit = (m_xcfVersion >= 11)
+    
+    'Retrieving a layer mask is much like retrieving the layer itself, but with slightly different structs
+    ' (because we are retrieving a channel, not a layer).
+    
+    'Start by moving the file pointer to the mask offset
+    m_Stream.SetPosition m_Layers(idxLayer).ptrToMask, FILE_BEGIN
+    
+    'The stream now (theoretically) points at a channel structure describing the mask.  Retrieve the various members,
+    ' and validate as-we-go.  (This is helpful because if attributes like mask width/height don't match the parent
+    ' layer's width/height, we know the file is corrupt.)
+    m_Layers(idxLayer).lMask.cWidth = m_Stream.ReadLong_BE()
+    m_Layers(idxLayer).lMask.cHeight = m_Stream.ReadLong_BE()
+    
+    'Validate dimensions before proceeding
+    If (m_Layers(idxLayer).lMask.cWidth <> m_Layers(idxLayer).lWidth) Or (m_Layers(idxLayer).lMask.cHeight <> m_Layers(idxLayer).lHeight) Then
+        InternalError FUNC_NAME, "mask and layer dimensions don't match"
+        Import_Stage4d_DecodeLayerMask = False
+        Exit Function
+    End If
+    
+    'Still here?  Channel name comes next (this does not have relevance in PD, but we retrieve it anyway).
+    
+    'Layer name is encoded as a "GIMP string", which are UTF-8 strings preceded by a 4-byte length
+    Dim lenName As Long
+    lenName = m_Stream.ReadLong_BE()    'this value *includes* a null-terminator, so string itself is [n-1] chars
+    If (lenName > 0) Then m_Layers(idxLayer).lMask.cName = m_Stream.ReadString_UTF8(lenName - 1)
+    
+    '+1 for null terminator
+    m_Stream.SetPosition 1, FILE_CURRENT
+    
+    'Next is a standard list of GIMP properties.  These mostly include UI-type attributes specific to GIMP,
+    ' but we retrieve them "just in case" there is useful data in the collection.  Note that this is a
+    ' variable-length list that we must iterate until we reach the special PROP_END marker (0 ID followed
+    ' by 0 length).
+    Const INIT_PROP_COUNT As Long = 16
+    m_Layers(idxLayer).lMask.cNumProperties = 0
+    ReDim m_Layers(idxLayer).lMask.cProperties(0 To INIT_PROP_COUNT - 1) As xcf_Property
+    
+    Dim propID As xcf_PropertyID
+    propID = m_Stream.ReadLong_BE()
+    
+    With m_Layers(idxLayer).lMask
+        
+        Do While (propID <> xcf_PROP_END)
+                
+            'Store this property ID, then retrieve length and payload
+            If (.cNumProperties > UBound(.cProperties)) Then ReDim Preserve .cProperties(0 To .cNumProperties * 2 - 1) As xcf_Property
+            .cProperties(.cNumProperties).propID = propID
+            .cProperties(.cNumProperties).propSize = m_Stream.ReadLong_BE()
+            If (.cProperties(.cNumProperties).propSize > 0) Then m_Stream.ReadBytes .cProperties(.cNumProperties).propData, .cProperties(.cNumProperties).propSize, True
+            .cNumProperties = .cNumProperties + 1
+            
+            'Retrieve the next property ID
+            propID = m_Stream.ReadLong_BE()
+            
+        Loop
+        
+    End With
+    
+    'The last ID we found was PROP_END.  It will still be followed by a 0-length marker.
+    If (m_Stream.ReadLong_BE() <> 0) Then InternalError FUNC_NAME, "PROP_END had a non-zero payload"
+    
+    'Fix the property collection to its final size
+    If (m_Layers(idxLayer).lMask.cNumProperties < UBound(m_Layers(idxLayer).lMask.cProperties) + 1) Then ReDim Preserve m_Layers(idxLayer).lMask.cProperties(0 To m_Layers(idxLayer).lMask.cNumProperties - 1) As xcf_Property
+    
+    'After the property list comes a pointer (file offset) to the pixel hierarchy for this channel
+    If ptrIs64bit Then ptrFileH = m_Stream.ReadLong_BE()
+    Dim ptrToTileHierarchy As Long
+    ptrToTileHierarchy = m_Stream.ReadLong_BE()
+    
+    'Parsing the full hierarchy is a complex job, so let's pass it off to a dedicated function.
+    With m_Layers(idxLayer)
+        Import_Stage4d_DecodeLayerMask = Import_Stage4a_PrepTileRetrieval(ptrToTileHierarchy, .lWidth, .lHeight, .lMask.cBytesPerPixel, .lMask.numTilesX, .lMask.numTilesY, .lMask.numTilesTotal, .lMask.ptrToTiles)
+    End With
+    
+    
+    
+    Exit Function
+    
+BrokenImage:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    Import_Stage4d_DecodeLayerMask = False
+    
+End Function
+
+'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
+'
+'Given a valid layer index, iterate all properties retrieved from that layer and try to recover as many
 ' useful layer attributes as we can.
 '
 'Unlike other functions, this one does *not* touch the master stream pointer.  It only operates on the
@@ -1614,7 +1744,6 @@ Private Sub FillPixelFormats(ByVal idxLayer As Long, ByRef isAlpha As Boolean, B
     
 End Sub
 
-
 'ONLY CALL THIS FUNCTION FROM Import_Stage4, above.
 '
 'Given a valid layer index, traverse the complex pixel hierarchy associated with said layer.
@@ -1624,10 +1753,10 @@ End Sub
 'Incoming *and* outgoing stream pointer alignment is *not* guaranteed.  This function will move
 ' the pointer around as necessary to decode layer information.  Pointer alignment, if required,
 ' *must* be handled by the caller.
-Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+Private Function Import_Stage4a_PrepTileRetrieval(ByVal ptrStart As Long, ByVal validationWidth As Long, ByVal validationHeight As Long, ByRef dstBytesPerPixel As Long, ByRef dstNumTilesX As Long, ByRef dstNumTilesY As Long, ByRef dstNumTilesTotal As Long, ByRef dstTilePtrs() As Long) As Boolean
 
-    Const FUNC_NAME As String = "Import_Stage4a_ParseLayerTiles"
-    Import_Stage4a_ParseLayerTiles = True
+    Const FUNC_NAME As String = "Import_Stage4a_PrepTileRetrieval"
+    Import_Stage4a_PrepTileRetrieval = True
     
     On Error GoTo BrokenImage
     
@@ -1663,23 +1792,23 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     ' in a persistent table (that subsequent steps can use to actually retrieve tile data).
     
     'Start by forcibly aligning the hierarchy pointer.
-    m_Stream.SetPosition m_Layers(idxLayer).ptrToPixels, FILE_BEGIN
+    m_Stream.SetPosition ptrStart, FILE_BEGIN
     
     'Validate the hierarchy header
     Dim checkWidth As Long, checkHeight As Long
     checkWidth = m_Stream.ReadLong_BE()
     checkHeight = m_Stream.ReadLong_BE()
-    m_Layers(idxLayer).lBytesPerPixel = m_Stream.ReadLong_BE()
+    dstBytesPerPixel = m_Stream.ReadLong_BE()
     
-    If (checkWidth <> m_Layers(idxLayer).lWidth) Or (checkHeight <> m_Layers(idxLayer).lHeight) Then
+    If (checkWidth <> validationWidth) Or (checkHeight <> validationHeight) Then
         InternalError FUNC_NAME, "bad hierarchy dimensions"
-        Import_Stage4a_ParseLayerTiles = False
+        Import_Stage4a_PrepTileRetrieval = False
         Exit Function
     End If
     
-    If (m_Layers(idxLayer).lBytesPerPixel <= 0) Then
+    If (dstBytesPerPixel <= 0) Then
         InternalError FUNC_NAME, "bad bytes-per-pixel"
-        Import_Stage4a_ParseLayerTiles = False
+        Import_Stage4a_PrepTileRetrieval = False
         Exit Function
     End If
     
@@ -1709,14 +1838,14 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
     'Files over 2GB are not useable in PD
     If (ptrH <> 0) Then
         InternalError FUNC_NAME, "2 GB limit exceeded"
-        Import_Stage4a_ParseLayerTiles = False
+        Import_Stage4a_PrepTileRetrieval = False
         Exit Function
     End If
     
     'Ensure the first retrieved level pointer is valid
     If (lstLevels(0) = 0) Then
         InternalError FUNC_NAME, "null base level"
-        Import_Stage4a_ParseLayerTiles = False
+        Import_Stage4a_PrepTileRetrieval = False
         Exit Function
     End If
     
@@ -1738,9 +1867,9 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
         checkWidth = m_Stream.ReadLong_BE()
         checkHeight = m_Stream.ReadLong_BE()
         
-        If (checkWidth <> m_Layers(idxLayer).lWidth) Or (checkHeight <> m_Layers(idxLayer).lHeight) Then
+        If (checkWidth <> validationWidth) Or (checkHeight <> validationHeight) Then
             InternalError FUNC_NAME, "bad hierarchy dimensions"
-            Import_Stage4a_ParseLayerTiles = False
+            Import_Stage4a_PrepTileRetrieval = False
             Exit Function
         End If
         
@@ -1749,53 +1878,53 @@ Private Function Import_Stage4a_ParseLayerTiles(ByVal idxLayer As Long, ByRef ds
         'Before doing this, calculate the number of tiles in the x and y direction.
         ' GIMP always uses 64x64 px tiles regardless of image size, with only the right/bottom
         ' tiles allowed to encode fewer pixels than this.
-        m_Layers(idxLayer).numTilesX = (checkWidth + 63) \ 64
-        m_Layers(idxLayer).numTilesY = (checkHeight + 63) \ 64
+        dstNumTilesX = (checkWidth + 63) \ 64
+        dstNumTilesY = (checkHeight + 63) \ 64
         
         'Use these to retrieve all tile pointers
-        m_Layers(idxLayer).numTilesTotal = m_Layers(idxLayer).numTilesX * m_Layers(idxLayer).numTilesY
+        dstNumTilesTotal = dstNumTilesX * dstNumTilesY
         
         'Failsafe checks before allocation
-        If ((m_Layers(idxLayer).numTilesX <= 0) Or (m_Layers(idxLayer).numTilesY <= 0)) Then
+        If ((dstNumTilesX <= 0) Or (dstNumTilesY <= 0)) Then
             InternalError FUNC_NAME, "null tile count"
-            Import_Stage4a_ParseLayerTiles = False
+            Import_Stage4a_PrepTileRetrieval = False
             Exit Function
-        ElseIf (m_Layers(idxLayer).numTilesTotal <= 0) Then
+        ElseIf (dstNumTilesTotal <= 0) Then
             InternalError FUNC_NAME, "bad tile count"
-            Import_Stage4a_ParseLayerTiles = False
+            Import_Stage4a_PrepTileRetrieval = False
             Exit Function
         End If
         
-        ReDim m_Layers(idxLayer).ptrToTiles(0 To m_Layers(idxLayer).numTilesTotal - 1) As Long
+        ReDim dstTilePtrs(0 To dstNumTilesTotal - 1) As Long
         
         Dim idxTile As Long
-        For idxTile = 0 To m_Layers(idxLayer).numTilesTotal - 1
+        For idxTile = 0 To dstNumTilesTotal - 1
             
             'Only the base level uses 64-bit pointers; subsequent "dummy" levels use uint32 no matter what
             If (idxLevel = 0) And ptrIs64bit Then ptrFileH = m_Stream.ReadLong_BE()
-            m_Layers(idxLayer).ptrToTiles(idxTile) = m_Stream.ReadLong_BE()
+            dstTilePtrs(idxTile) = m_Stream.ReadLong_BE()
             
         Next idxTile
         
         'With all tiles received, the tile list must be terminated by a null pointer
         If (m_Stream.ReadLong_BE() <> 0) Then
             InternalError FUNC_NAME, "tile segment terminated unexpectedly"
-            Import_Stage4a_ParseLayerTiles = False
+            Import_Stage4a_PrepTileRetrieval = False
             Exit Function
         End If
         
     Next idxLevel
     
     'If we're still here, tile extraction was (presumably) successful!
-    If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "Successfully retrieved " & m_Layers(idxLayer).numTilesTotal & " tile pointers for " & m_Layers(idxLayer).lName
+    If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "Successfully retrieved " & dstNumTilesX & "x" & dstNumTilesY & " (" & dstNumTilesTotal & ") tile pointers"
         
-    Import_Stage4a_ParseLayerTiles = True
+    Import_Stage4a_PrepTileRetrieval = True
     
     Exit Function
     
 BrokenImage:
     InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
-    Import_Stage4a_ParseLayerTiles = False
+    Import_Stage4a_PrepTileRetrieval = False
     
 End Function
 
