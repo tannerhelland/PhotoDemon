@@ -3,9 +3,9 @@ Attribute VB_Name = "Resampling"
 'Image Resampling engine
 'Copyright 2021-2022 by Tanner Helland
 'Created: 16/August/21
-'Last updated: 23/August/21
-'Last update: new integer-based resampler (ResampleImageI), which provides a great performance boost over the
-'             floating-point version with minimal impact to quality (results are 99.9% similar per PSNR).
+'Last updated: 09/April/22
+'Last update: modify the integer-based resampler (ResampleImageI) to use a fixed power-of-two for scaling
+'             so that we can use bit-shifting on the inner loop (instead of arbitrary integer division).
 '
 'For many years, PhotoDemon relied on external libraries (GDI+, FreeImage) for its resampling algorithms.
 ' As of v9.0, however, PD now ships with two native resampling engines (one floating-point-based, one integer-based).
@@ -28,7 +28,7 @@ Attribute VB_Name = "Resampling"
 Option Explicit
 
 'Timing reports are helpful during debugging.  Do not enable in production.
-Private Const REPORT_RESAMPLE_PERF As Boolean = False, REPORT_DETAILED_PERF As Boolean = False
+Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = False
 
 'Float- and integer-based methods are tracked separately
 Private m_NetTimeF As Double, m_IterationsF As Long, m_NetTimeI As Double, m_IterationsI As Long
@@ -768,6 +768,16 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     ' maximum weight value in the table; we'll use this to normalize all weights against LONG_MAX.)
     Const ONE_DIV_255 As Double = 1# / 255#
     
+    'VB6's ancient compiler is smart enough to swap-in bit-shifts for fixed powers-of-two.  Because this is
+    ' a COMPILE-time optimization, we can't calculate an ideal power-of-two at run-time - instead, we need
+    ' to use a fixed value that's big enough to minimize quality loss, but small enough to ensure we do
+    ' not accidentally overflow when resizing drastically different amounts (e.g. 1x1 <-> 5000x5000).
+    ' Fortunately, PD's support for image sizes is predictable, so we can guarantee a good power-of-two
+    ' at compile-time, which lets the compiler generate fast bit-shifts instead of integer divides on
+    ' the inner loop!
+    Dim oldSum As Long
+    Const LARGE_POWER_OF_TWO As Long = 2097152   '2 ^ 21 is a good compromise between expected range and high safety margin
+    
     'Horizontal downsampling
     If (xScale < 1#) Then
         
@@ -823,24 +833,21 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
             Next j
             
-'            'There is one last trick we could do, but because VB6 doesn't support bit-shift operations, I've
-'            ' commented it out (but I may rewrite this in C someday and I don't want to forget that this works!)
-'            ' Let's round our total weight (which we need to divide each color component by) down to the nearest
-'            ' power-of-two, which lets us use bit-shifting instead of integer division.  (The PowerOfTwo function
-'            ' in PD returns the nearest power-of-two *ABOVE* the current number, but we want the lower number -
-'            ' so shift down accordingly).
-'            Dim oldSum As Long
-'            oldSum = contribI(i).weightSum
-'            contribI(i).weightSum = PDMath.NearestPowerOfTwo(oldSum) \ 2
-'
-'            'Because changing the weighted sum has also changed the scale of the entire calculation, we need
-'            ' to do one last pass through the data to reassign it to this new numerical range.
-'            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
-'            For j = 0 To contribI(i).nCount - 1
-'                contribI(i).p(j).pixel = contrib(i).p(j).pixel
-'                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
-'                'contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
-'            Next j
+            'The existing formula works as-is, but for even better performance we can do one additional change.
+            ' Instead of using a custom weight for this table, let's use a fixed power-of-two which allows the
+            ' compiler to preferentially choose bit-shifts instead of integer divides when resolving table weights.
+            ' This provides a large relative speed-up at a minor hit to calculation quality.
+            oldSum = contribI(i).weightSum
+            contribI(i).weightSum = LARGE_POWER_OF_TWO
+            
+            'Because changing the weighted sum has also changed the scale of the entire calculation,
+            ' we need to take one last pass through the data to reassign it to this new numerical range.
+            ' (Again, this imposes a minor quality hit, but greatly improves relative performance.)
+            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+            Next j
             
         Next i
     
@@ -890,6 +897,17 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
             Next j
             
+            'Finally, scale the final integer results against a fixed power-of-two for even better performance.
+            ' (See notes, above, for further details.)
+            oldSum = contribI(i).weightSum
+            contribI(i).weightSum = LARGE_POWER_OF_TWO
+            
+            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+            Next j
+            
         Next i
     
     '/End up- vs downsampling.  Note that the special case of xScale = 1.0 (e.g. horizontal width
@@ -937,13 +955,11 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                     iA = iA + weightI * imgPixels(idxPixel + 3)
                 Next j
                 
-                'Weight and clamp final RGBA values.  (Note that the integer divide could be replaced
-                ' by a much-faster bit-shift in other languages; see comments above for details.)
-                wSumI = contribI(i).weightSum
-                b = iB \ wSumI
-                g = iG \ wSumI
-                r = iR \ wSumI
-                a = iA \ wSumI
+                'Weight and clamp final RGBA values.
+                b = iB \ LARGE_POWER_OF_TWO
+                g = iG \ LARGE_POWER_OF_TWO
+                r = iR \ LARGE_POWER_OF_TWO
+                a = iA \ LARGE_POWER_OF_TWO
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
@@ -1050,6 +1066,17 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
             Next j
             
+            'Finally, scale the final integer results against a fixed power-of-two for even better performance.
+            ' (See notes, above, for further details.)
+            oldSum = contribI(i).weightSum
+            contribI(i).weightSum = LARGE_POWER_OF_TWO
+            
+            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+            Next j
+            
         'Next row...
         Next i
     
@@ -1095,6 +1122,17 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 contribI(i).p(j).pixel = contrib(i).p(j).pixel
                 contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
                 contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
+            Next j
+            
+            'Finally, scale the final integer results against a fixed power-of-two for even better performance.
+            ' (See notes, above, for further details.)
+            oldSum = contribI(i).weightSum
+            contribI(i).weightSum = LARGE_POWER_OF_TWO
+            
+            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
             Next j
             
         'Next row...
@@ -1144,13 +1182,11 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                     iA = iA + weightI * m_tmpPixels(idxPixel + 3)
                 Next j
                 
-                'Weight and clamp final RGBA values.  (Note that the integer divide could be replaced
-                ' by a much-faster bit-shift in other languages; see comments above for details.)
-                wSumI = contribI(i).weightSum
-                b = iB \ wSumI
-                g = iG \ wSumI
-                r = iR \ wSumI
-                a = iA \ wSumI
+                'Weight and clamp final RGBA values.
+                b = iB \ LARGE_POWER_OF_TWO
+                g = iG \ LARGE_POWER_OF_TWO
+                r = iR \ LARGE_POWER_OF_TWO
+                a = iA \ LARGE_POWER_OF_TWO
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
