@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 30/March/22
-'Last update: layer group masks are now successfully round-tripped to/from PSD files!
+'Last updated: 09/April/22
+'Last update: fix off-by-one problem in masks that extend to the right/bottom corner of a layer
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -1816,8 +1816,8 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
                 With rIntersect
                     .Left = 0
                     .Top = 0
-                    .Right = maskWidth '- 1
-                    .Bottom = maskHeight '- 1
+                    .Right = maskWidth
+                    .Bottom = maskHeight
                 End With
             Else
                 intersectOK = PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect)
@@ -1840,8 +1840,8 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
                 '8-bit channel
                 If (bytesPerChannel = 1) Then
                     
-                    For y = rIntersect.Top To rIntersect.Bottom - 1
-                    For x = rIntersect.Left To rIntersect.Right - 1
+                    For y = rIntersect.Top To rIntersect.Bottom
+                    For x = rIntersect.Left To rIntersect.Right
                         tmpBuffer(x, y) = .ciDataDecoded((y - mOffsetTop) * maskWidth + (x - mOffsetLeft))
                     Next x
                     Next y
