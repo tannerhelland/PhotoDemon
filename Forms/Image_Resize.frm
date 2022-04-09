@@ -124,8 +124,9 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright 2001-2022 by Tanner Helland
 'Created: 12/December/01
-'Last updated: 23/August/21
-'Last update: finalize work on live previews of current resize options
+'Last updated: 09/April/22
+'Last update: ensure at least 1x1 source pixels exist when generating a preview (this solves an issue where
+'             previews could disappear when resizing from e.g. 1x1 to 5000x5000)
 '
 'Standard image resize dialog.  A number of resample algorithms are provided, with some being provided
 ' by the 3rd-party FreeImage library.  PD also supports three different modes of "fitting" the resized
@@ -965,7 +966,10 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
         yScale = ucResize.ResizeHeightInPixels / srcHeight
         
         'Failsafe check
-        If (xScale <= 0#) Or (yScale <= 0#) Then Exit Sub
+        If (xScale <= 0#) Or (yScale <= 0#) Then
+            Debug.Print "bad scale; can't preview"
+            Exit Sub
+        End If
         
         'Working backward from the destination image (whose size is fixed, since it's tied to the preview box),
         ' calculate a corresponding rectangle in the source image that matches the current scale factor.
@@ -1025,6 +1029,11 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
             End If
             
         End With
+        
+        'Ensure at least one pixel is being used from the source!  (This is necessary to ensure a preview
+        ' if resizing from e.g. 1x1 to 5000x5000.)
+        If (m_SrcRectF.Width < 1!) Then m_SrcRectF.Width = 1!
+        If (m_SrcRectF.Height < 1!) Then m_SrcRectF.Height = 1!
         
         'Left and top boundaries for the source rectangle are now properly cropped, as are width/height.
         ' This means we have the source rectangle we want to use.
