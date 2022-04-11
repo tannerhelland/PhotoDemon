@@ -249,6 +249,7 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_RGBA_FLT_PLANAR = &H44109C
     TYPE_RGB_DBL_PLANAR = &H441018
     TYPE_RGBA_DBL_PLANAR = &H441098
+    TYPE_RGBA_DBL = &H440098
     
     'These flags are *not* automatically defined by LCMS; I've defined them to allow for OR'ing with
     ' existing constants (since VB makes bit-shifting such a PITA)

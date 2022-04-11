@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 08/April/22
-'Last update: restructure importer to prepare for layer mask support
+'Last updated: 11/April/22
+'Last update: finally solve issues when importing half-float precision w/ RLE compression
 '
 'This class handles GIMP XCF format parsing duties.  It is custom-built for PhotoDemon, with an emphasis
 ' on performance and proper color-management of all imported data.
@@ -28,14 +28,15 @@ Attribute VB_Exposed = False
 ' will have to wait until GIMP allows me to generate them!
 '
 'As with all 3rd-party XCF engines, GIMP has many features that don't have direct analogs in PhotoDemon.
-' Many of these features are still extracted by this class, but they may not "appear" in the final image.
-' My ongoing goal is to expand support as various GIMP features are implemented in PD itself.
+' Many of these features are still parsed by this class (making it simple to support them in the future),
+' but they may not "appear" in PhotoDemon's current version, at least not in a way users can easily access.
+' My ongoing goal is to expose these features directly as they are implemented in PD itself.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" XCF spec at this URL (link good as of March 2022):
 ' https://gitlab.gnome.org/GNOME/gimp/-/blob/master/devel-docs/specifications/xcf.txt
 '
-'Many thanks to the authors of the XCF spec - it was *immensely* helpful in understanding various
+'Many thanks to the authors of that XCF spec - it was *immensely* helpful in understanding various
 ' quirks of the XCF format (which are many).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
@@ -688,7 +689,7 @@ Private Function Import_Stage4d_DecodeLayerMask(ByVal idxLayer As Long, ByRef ds
         Import_Stage4d_DecodeLayerMask = Import_Stage4a_PrepTileRetrieval(ptrToTileHierarchy, .lWidth, .lHeight, .lMask.cBytesPerPixel, .lMask.numTilesX, .lMask.numTilesY, .lMask.numTilesTotal, .lMask.ptrToTiles)
     End With
     
-    
+    'TODO: actually decode the mask and (optionally) apply it to its target layer
     
     Exit Function
     
@@ -1345,37 +1346,35 @@ Private Sub RenderIndexedColor(ByRef dstBytes() As Byte, ByVal tileWidth As Long
 End Sub
 
 Private Sub FinalizeLCMSTransform(ByRef lcmsBytesPerLine As Long, ByRef lcmsBytesPerPlane As Long, ByVal srcCompression As xcf_Compression, ByVal precisionInt As Boolean, ByVal isAlpha As Boolean, ByVal isGray As Boolean, ByVal tileWidth As Long, ByVal tileHeight As Long, ByVal xcfBytesPerPixel As Long, ByVal numBitsPerChannel As Long)
-
-    If (srcCompression = xcf_Compress_ZLib) Then
-        If precisionInt And (numBitsPerChannel > 16) Then
-            If isAlpha Then
-                If isGray Then
-                    lcmsBytesPerLine = tileWidth * 4
-                Else
-                    lcmsBytesPerLine = tileWidth * 8
-                End If
-            Else
-                If isGray Then
-                    lcmsBytesPerLine = tileWidth * 2
-                Else
-                    lcmsBytesPerLine = tileWidth * 6
-                End If
-            End If
-            lcmsBytesPerPlane = 2 * tileWidth * tileHeight
-        Else
+    
+    'We need to specify some custom values here because XCF files support some precisions that are not
+    ' natively supported by LCMS (like 32-bit integer).
+    If (numBitsPerChannel = 8) Then
+        
+        '8-bit XCF data has not been preprocessed by us (unlike HDR data).  This means that it will
+        ' still be in planar mode if compressed via RLE.
+        If (srcCompression = xcf_Compress_ZLib) Then
             lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
+            lcmsBytesPerPlane = tileWidth * tileHeight
+        Else
+            lcmsBytesPerLine = tileWidth
             lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
         End If
+    
+    'HDR data has been preprocessed by us (whether coming from zLib or RLE compression),
+    ' but we still need to declare some "special" modes that LCMS doesn't support (and which we have
+    ' manually solved in a previous step)
     Else
         
         '32-byte int data has been pre-downsampled to shorts
         If precisionInt And (numBitsPerChannel > 16) Then
-            lcmsBytesPerLine = tileWidth * 2
-            lcmsBytesPerPlane = 2 * tileWidth * tileHeight
-        Else
-            lcmsBytesPerLine = tileWidth * (numBitsPerChannel \ 8)
-            lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
+            numBitsPerChannel = 16
+            xcfBytesPerPixel = xcfBytesPerPixel \ 2
         End If
+            
+        'Everything else has been manually converted from planar to interleaved and endianness-swapped as necessary
+        lcmsBytesPerLine = tileWidth * xcfBytesPerPixel
+        lcmsBytesPerPlane = (numBitsPerChannel \ 8) * tileWidth * tileHeight
         
     End If
     
@@ -1400,7 +1399,7 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
         
         'Integer precision
         Else
-        
+            
             '32-bit integer data has an additional consideration.  LCMS does not provide native
             ' support for this color format (because it's a stupid and wasteful format, frankly,
             ' when 32-bit floats are RIGHT THERE), so we're going to downsample 32-bit integer data
@@ -1409,60 +1408,33 @@ Private Sub SwapEndiannessHDR(ByVal srcCompression As Long, ByVal numBitsPerChan
                 
                 Dim x As Long
                 
-                'Swap buffers again, for simplicity's sake
+                'Swap buffers again, for simplicity's sake.  (Note that the array size check is a failsafe only.)
+                If (UBound(tmpSwizzle) <> UBound(dstBytes)) Then ReDim tmpSwizzle(0 To UBound(dstBytes)) As Byte
                 CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
                 
-                If (srcCompression = xcf_Compress_ZLib) Then
-                    
-                    Dim pxSize As Long
-                    If isAlpha Then pxSize = 8 Else pxSize = 6
-                    
-                    For x = 0 To numTilePixels - 1
-                        dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
-                        dstBytes(x * pxSize + 1) = tmpSwizzle(x * pxSize * 2 + 0)
-                        If isGray Then
-                            If isAlpha Then
-                                dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
-                                dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
-                            End If
-                        Else
+                Dim pxSize As Long
+                If isGray Then pxSize = 2 Else pxSize = 6
+                If isAlpha Then pxSize = pxSize + 2
+                
+                For x = 0 To numTilePixels - 1
+                    dstBytes(x * pxSize + 0) = tmpSwizzle(x * pxSize * 2 + 1)
+                    dstBytes(x * pxSize + 1) = tmpSwizzle(x * pxSize * 2 + 0)
+                    If isGray Then
+                        If isAlpha Then
                             dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
                             dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
-                            dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
-                            dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
-                            If isAlpha Then
-                                dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
-                                dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
-                            End If
                         End If
-                    Next x
-                    
-                Else
-                    
-                    For x = 0 To numTilePixels - 1
-                        dstBytes(x * 2 + 0) = tmpSwizzle(x * 4 + 1)
-                        dstBytes(x * 2 + 1) = tmpSwizzle(x * 4 + 0)
-                        
-                        If isGray Then
-                            If isAlpha Then
-                                dstBytes(numTilePixels * 2 + x * 2 + 0) = tmpSwizzle(numTilePixels * 4 + x * 4 + 1)
-                                dstBytes(numTilePixels * 2 + x * 2 + 1) = tmpSwizzle(numTilePixels * 4 + x * 4 + 0)
-                            End If
-                        Else
-                            dstBytes(numTilePixels * 2 + x * 2 + 0) = tmpSwizzle(numTilePixels * 4 + x * 4 + 1)
-                            dstBytes(numTilePixels * 2 + x * 2 + 1) = tmpSwizzle(numTilePixels * 4 + x * 4 + 0)
-                            
-                            dstBytes(numTilePixels * 4 + x * 2 + 0) = tmpSwizzle(numTilePixels * 8 + x * 4 + 1)
-                            dstBytes(numTilePixels * 4 + x * 2 + 1) = tmpSwizzle(numTilePixels * 8 + x * 4 + 0)
-                            
-                            If isAlpha Then
-                                dstBytes(numTilePixels * 6 + x * 2 + 0) = tmpSwizzle(numTilePixels * 12 + x * 4 + 1)
-                                dstBytes(numTilePixels * 6 + x * 2 + 1) = tmpSwizzle(numTilePixels * 12 + x * 4 + 0)
-                            End If
+                    Else
+                        dstBytes(x * pxSize + 2) = tmpSwizzle(x * pxSize * 2 + 5)
+                        dstBytes(x * pxSize + 3) = tmpSwizzle(x * pxSize * 2 + 4)
+                        dstBytes(x * pxSize + 4) = tmpSwizzle(x * pxSize * 2 + 9)
+                        dstBytes(x * pxSize + 5) = tmpSwizzle(x * pxSize * 2 + 8)
+                        If isAlpha Then
+                            dstBytes(x * pxSize + 6) = tmpSwizzle(x * pxSize * 2 + 13)
+                            dstBytes(x * pxSize + 7) = tmpSwizzle(x * pxSize * 2 + 12)
                         End If
-                    Next x
-                    
-                End If
+                    End If
+                Next x
                 
             Else
                 
@@ -1480,43 +1452,38 @@ End Sub
 
 Private Sub UnshuffleHDRChannels(ByVal numBitsPerChannel As Long, ByVal numTilePixels As Long, ByVal isAlpha As Boolean, ByVal isGray As Boolean, ByRef tmpSwizzle() As Byte, ByRef dstBytes() As Byte, ByVal maxDstSize As Long)
 
-    'When compressed via RLE, HDR images require special un-shuffling.  Each byte of the source pixels
-    ' was encoded as its own RLE stream, e.g. the first 8-bits of each 16-bit red pixel were RLE-ed together,
-    ' then the second 8-bits, etc.  This means that our RLE decoding, above, has inadvertently separated
-    ' the source bytes into 2+ different planes.  We need to manually reassemble those planes.
     If (numBitsPerChannel > 8) Then
         
+        'Half-float RGB/A data appears to behave differently.  I'm not sure why?
         CopyMemoryStrict VarPtr(tmpSwizzle(0)), VarPtr(dstBytes(0)), maxDstSize
         
-        Dim swzOffset As Long
-        swzOffset = numBitsPerChannel \ 8
+        'Channels vary by color model (gray vs RGB)
+        Dim nChannels As Long
+        If isGray Then
+            nChannels = 1
+        Else
+            nChannels = 3
+        End If
         
-        Dim x As Long, srcOffset As Long
-        For srcOffset = 0 To swzOffset - 1
+        'Alpha is always encoded as an additional channel
+        If isAlpha Then nChannels = nChannels + 1
+        
+        'From final channel count, figure out the size of a single pixel *in bytes*
+        Dim nBytesPerPixel As Long
+        nBytesPerPixel = nChannels * (numBitsPerChannel \ 8)
+        
+        Dim nBytesPerChannel As Long
+        nBytesPerChannel = numBitsPerChannel \ 8
+        
+        'Unshuffle accordingly
+        Dim idxSrcOffset As Long
+        For idxSrcOffset = 0 To nBytesPerPixel - 1
+            Dim x As Long
             For x = 0 To numTilePixels - 1
-                dstBytes(x * swzOffset + srcOffset) = tmpSwizzle(srcOffset * numTilePixels + x)
+                dstBytes(x * nBytesPerPixel + idxSrcOffset) = tmpSwizzle(idxSrcOffset * numTilePixels + x)
             Next x
-            If isGray Then
-                If isAlpha Then
-                    For x = 0 To numTilePixels - 1
-                        dstBytes(numTilePixels * swzOffset + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset + srcOffset * numTilePixels + x)
-                    Next x
-                End If
-            Else
-                For x = 0 To numTilePixels - 1
-                    dstBytes(numTilePixels * swzOffset + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset + srcOffset * numTilePixels + x)
-                Next x
-                For x = 0 To numTilePixels - 1
-                    dstBytes(numTilePixels * swzOffset * 2 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 2 + srcOffset * numTilePixels + x)
-                Next x
-                If isAlpha Then
-                    For x = 0 To numTilePixels - 1
-                        dstBytes(numTilePixels * swzOffset * 3 + x * swzOffset + srcOffset) = tmpSwizzle(numTilePixels * swzOffset * 3 + srcOffset * numTilePixels + x)
-                    Next x
-                End If
-            End If
-        Next srcOffset
-        
+        Next idxSrcOffset
+    
     End If
     
 End Sub
@@ -1595,7 +1562,7 @@ End Sub
 
 Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Boolean, ByVal precisionInt As Boolean, ByVal isAlpha As Boolean, ByVal numBitsPerChannel As Long, ByVal srcCompression As xcf_Compression) As LCMS_PIXEL_FORMAT
 
-    'Indexed mode is not handled via profile; it is handled manually so we don't check for it here
+    'Indexed mode is not handled via profile; it is handled manually so we don't need to handle it here
     If isIndexed Then
         GetSrcLCMSFormat = 0
         Exit Function
@@ -1603,16 +1570,22 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     
     'Gray (can be any bit-depth)
     If isGray Then
+        
         If precisionInt Then
+            
+            'Normal 8-bit data will be planar, by default.  We manually convert HDR images to interleaved while
+            ' swapping between big-endian and little-endian source values, so in this function you'll notice that
+            ' 8-bit data is left planar, while HDR data uses normal interleaved mode (because we handled interleaving).
             If (numBitsPerChannel = 8) Then
                 If isAlpha Then
                     GetSrcLCMSFormat = TYPE_GRAYA_8_PLANAR
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_8
                 End If
+                
             ElseIf (numBitsPerChannel = 16) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_GRAYA_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_GRAYA_16
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_16
                 End If
@@ -1621,7 +1594,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 'LCMS doesn't support 32-bit integer components.  We will manually downsample to
                 ' 16-bit integer prior to color-management, so expressly request 16-bit here.
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_GRAYA_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_GRAYA_16
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_16
                 End If
@@ -1632,13 +1605,13 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
         Else
             If (numBitsPerChannel = 16) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_GRAYA_HALF_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_GRAYA_HALF_FLT
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_HALF_FLT
                 End If
             ElseIf (numBitsPerChannel = 32) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_GRAYA_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_GRAYA_FLT
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_FLT
                 End If
@@ -1648,7 +1621,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 ' allow you to specify double-precision inside the app (though the spec allows for it as a
                 ' valid color-depth).
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_GRAYA_DBL_PLANAR
+                    GetSrcLCMSFormat = TYPE_GRAYA_DBL
                 Else
                     GetSrcLCMSFormat = TYPE_GRAY_DBL
                 End If
@@ -1668,18 +1641,18 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 End If
             ElseIf (numBitsPerChannel = 16) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGBA_16
                 Else
-                    GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGB_16
                 End If
             Else
                 
                 'LCMS doesn't support 32-bit integer components.  We will manually downsample to
                 ' 16-bit integer prior to color-management, so expressly request 16-bit here.
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_RGBA_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGBA_16
                 Else
-                    GetSrcLCMSFormat = TYPE_RGB_16_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGB_16
                 End If
             
             End If
@@ -1688,15 +1661,15 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
         Else
             If (numBitsPerChannel = 16) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_RGBA_HALF_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGBA_HALF_FLT
                 Else
-                    GetSrcLCMSFormat = TYPE_RGB_HALF_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGB_HALF_FLT
                 End If
             ElseIf (numBitsPerChannel = 32) Then
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_RGBA_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGBA_FLT
                 Else
-                    GetSrcLCMSFormat = TYPE_RGB_FLT_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGB_FLT
                 End If
             Else
                 
@@ -1704,9 +1677,9 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
                 ' allow you to specify double-precision inside the app (though the spec allows for it as a
                 ' valid color-depth).
                 If isAlpha Then
-                    GetSrcLCMSFormat = TYPE_RGBA_DBL_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGBA_DBL
                 Else
-                    GetSrcLCMSFormat = TYPE_RGB_DBL_PLANAR
+                    GetSrcLCMSFormat = TYPE_RGB_DBL
                 End If
             
             End If
@@ -1716,7 +1689,7 @@ Private Function GetSrcLCMSFormat(ByVal isIndexed As Boolean, ByVal isGray As Bo
     End If
     
     'If the image is in zLib format, it was encoded using normal interleaved format (RGBARGBARGBA)
-    ' instead of planar format (RRRGGGBBBAAA).  Deactivate that bit accordingly.
+    ' instead of planar format (RRRGGGBBBAAA), even in normal 8-bit color mode.  Deactivate that bit accordingly.
     If (srcCompression = xcf_Compress_ZLib) Then GetSrcLCMSFormat = GetSrcLCMSFormat And (Not &H1000&)
     
 End Function
