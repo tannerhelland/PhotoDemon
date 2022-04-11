@@ -45,6 +45,11 @@ Private m_MaskBytes() As Byte
 ' currently lock the value to [0] or [max] when exporting to PSD.
 Private m_OpacityOutsideMask As Single
 
+'If the mask came from an outside file format (like PSD), it may behave differently than a normal PhotoDemon mask.
+' As of 2022, this is relevant for layer group masks because PD does not support layer groups yet.  These flag(s)
+' can be used to note special mask properties that affect the way this mask is handled internally.
+Private m_MaskBelongsToPSGroup As Boolean
+
 'Returns TRUE on successful clone, FALSE otherwise; FALSE usually means the source mask doesn't exist
 Friend Function CloneExistingMask(ByRef srcMask As pdLayerMask) As Boolean
 
@@ -132,6 +137,14 @@ Friend Sub Reset()
     
     m_OpacityOutsideMask = 0!
     
+End Sub
+
+Friend Function IsMaskFlag_PSGroup() As Boolean
+    IsMaskFlag_PSGroup = m_MaskBelongsToPSGroup
+End Function
+
+Friend Sub SetMaskFlag_PSGroup()
+    m_MaskBelongsToPSGroup = True
 End Sub
 
 Friend Sub SetMaskRect(ByVal mLeft As Long, ByVal mTop As Long, ByVal mWidth As Long, ByVal mHeight As Long)

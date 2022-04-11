@@ -1189,6 +1189,10 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                                 tmpLayer.GetLayerMask.SetMaskBytes srcMaskRectF.Width, srcMaskRectF.Height, m_Layers(i).GetMaskUnmergedPtr
                                 tmpLayer.GetLayerMask.SetOpacityOutsideMask CSng(m_Layers(i).GetMaskDefaultColor) / 2.55!
                                 
+                                'For now, we also need to flag the mask with a special "came from PSD layer group" marker,
+                                ' so that PhotoDemon knows how to handle the mask.
+                                tmpLayer.GetLayerMask.SetMaskFlag_PSGroup
+                                
                             End If
                         End If
                     
