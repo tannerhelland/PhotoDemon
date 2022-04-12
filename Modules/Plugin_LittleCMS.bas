@@ -443,7 +443,7 @@ Private Declare Function cmsGetPCS Lib "lcms2" (ByVal hProfile As Long) As LCMS_
 Private Declare Function cmsGetColorSpace Lib "lcms2" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
 Private Declare Sub cmsSetProfileVersion Lib "lcms2" (ByVal hProfile As Long, ByVal newVersion As Double)
  
-'Tone curve creation/destruction.  (Note all are used right now.)
+'Tone curve creation/destruction.  (Not all are used right now.)
 'Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal contextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
 Private Declare Function cmsBuildGamma Lib "lcms2" (ByVal contextID As Long, ByVal gammaValue As Double) As Long
 Private Declare Sub cmsFreeToneCurve Lib "lcms2" (ByVal srcToneCurve As Long)

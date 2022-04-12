@@ -28,7 +28,7 @@ Attribute VB_Name = "Resampling"
 Option Explicit
 
 'Timing reports are helpful during debugging.  Do not enable in production.
-Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = False
+Private Const REPORT_RESAMPLE_PERF As Boolean = False, REPORT_DETAILED_PERF As Boolean = False
 
 'Float- and integer-based methods are tracked separately
 Private m_NetTimeF As Double, m_IterationsF As Long, m_NetTimeI As Double, m_IterationsI As Long
