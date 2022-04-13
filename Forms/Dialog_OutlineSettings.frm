@@ -46,19 +46,13 @@ Begin VB.Form dialog_OutlineSettings
       _ExtentY        =   2143
       Caption         =   "color and opacity"
    End
-   Begin VB.PictureBox picPenPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdPictureBox picPenPreview 
       Height          =   2535
       Left            =   120
-      ScaleHeight     =   167
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   823
-      TabIndex        =   2
       Top             =   480
       Width           =   12375
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -141,7 +135,7 @@ Begin VB.Form dialog_OutlineSettings
       CausesValidation=   0   'False
       Height          =   705
       Left            =   6480
-      TabIndex        =   8
+      TabIndex        =   2
       Top             =   6360
       Width           =   6060
       _ExtentX        =   10689
@@ -164,11 +158,11 @@ Attribute VB_Exposed = False
 'Pen Selection Dialog
 'Copyright 2015-2022 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 30/June/15
-'Last update: start migrating pen creation bits into this singular dialog
+'Last updated: 13/April/22
+'Last update: replace lingering picture box with pdPictureBox
 '
-'Comprehensive pen selection dialog.  This dialog is currently based around the properties of GDI+ pens, but it could
-' easily be expanded in the future due to its modular design.
+'Comprehensive pen selection dialog.  This dialog is currently based around the properties of GDI+ pens,
+' but it could easily be expanded in the future due to its modular design.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -178,7 +172,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'OK/Cancel result from the dialog
-Private userAnswer As VbMsgBoxResult
+Private m_UserAnswer As VbMsgBoxResult
 
 'The original pen when the dialog was first loaded
 Private m_OldPen As String
@@ -188,7 +182,7 @@ Private m_PenPreview As pd2DPen
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send pen updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentPenControl As pdPenSelector
+Private m_parentPenControl As pdPenSelector
 
 'Pen previews are rendered using a pd2DPath as the sample
 Private m_PreviewPath As pd2DPath
@@ -208,7 +202,7 @@ Private m_SuspendRedraws As Boolean
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = userAnswer
+    DialogResult = m_UserAnswer
 End Property
 
 'The newly selected pen (if any) is returned via this property
@@ -220,10 +214,10 @@ End Property
 Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl As pdPenSelector = Nothing)
     
     'Store a reference to the calling control (if any)
-    Set parentPenControl = callingControl
+    Set m_parentPenControl = callingControl
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
-    userAnswer = vbCancel
+    m_UserAnswer = vbCancel
     
     'Cache the initial pen parameters so we can access it elsewhere
     m_OldPen = initialPen
@@ -231,7 +225,7 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     m_PenPreview.SetPenPropertiesFromXML initialPen
     m_PenPreview.CreatePen
     
-    If Len(initialPen) = 0 Then initialPen = m_PenPreview.GetPenPropertiesAsXML
+    If (LenB(initialPen) = 0) Then initialPen = m_PenPreview.GetPenPropertiesAsXML
     
     'Sync all controls to the initial pen parameters
     SyncControlsToOutlineObject
@@ -277,7 +271,7 @@ End Sub
 
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
-    userAnswer = vbCancel
+    m_UserAnswer = vbCancel
     Me.Hide
 End Sub
 
@@ -290,7 +284,7 @@ Private Sub cmdBar_OKClick()
     'TODO: save the current list of recently used pens
     'SaveRecentPenList
     
-    userAnswer = vbOK
+    m_UserAnswer = vbOK
     Me.Visible = False
 
 End Sub
@@ -344,8 +338,8 @@ Private Sub Form_Load()
     cboCorner.ListIndex = 0
     
     If PDMain.IsProgramRunning() Then
-        If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
-        If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pd2DPath
+        If (m_PenPreview Is Nothing) Then Set m_PenPreview = New pd2DPen
+        If (m_PreviewPath Is Nothing) Then Set m_PreviewPath = New pd2DPath
         Set m_PreviewDIB = New pdDIB
     End If
     
@@ -384,8 +378,8 @@ Private Sub UpdatePreview()
         'Prep the preview DIB
         If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
         
-        If (m_PreviewDIB.GetDIBWidth <> Me.picPenPreview.ScaleWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picPenPreview.ScaleHeight) Then
-            m_PreviewDIB.CreateBlank Me.picPenPreview.ScaleWidth, Me.picPenPreview.ScaleHeight, 24, 0
+        If (m_PreviewDIB.GetDIBWidth <> Me.picPenPreview.GetWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picPenPreview.GetHeight) Then
+            m_PreviewDIB.CreateBlank Me.picPenPreview.GetWidth, Me.picPenPreview.GetHeight, 24, 0
         Else
             m_PreviewDIB.ResetDIB
         End If
@@ -393,7 +387,7 @@ Private Sub UpdatePreview()
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
         Dim tmpRect As RectF, hPadding As Single, vPadding As Single
         
-        hPadding = m_PenPreview.GetPenWidth() * 2
+        hPadding = m_PenPreview.GetPenWidth() * 2!
         If (hPadding > Interface.FixDPIFloat(12)) Then hPadding = Interface.FixDPIFloat(12)
         vPadding = hPadding
         
@@ -413,14 +407,27 @@ Private Sub UpdatePreview()
         PD2D.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
         
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        cSurface.SetSurfacePixelOffset P2_PO_Half
         PD2D.DrawPath cSurface, m_PenPreview, m_PreviewPath
+        
+        'Paint a border around the control before exiting
+        Dim cPenBorder As pd2DPen
+        Set cPenBorder = New pd2DPen
+        cPenBorder.SetPenWidth 1!
+        cPenBorder.SetPenLineJoin P2_LJ_Miter
+        If (Not g_Themer Is Nothing) Then cPenBorder.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+        
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        PD2D.DrawRectangleI cSurface, cPenBorder, 0, 0, m_PreviewDIB.GetDIBWidth - 1, m_PreviewDIB.GetDIBHeight - 1
+        
         Set cSurface = Nothing
         
-        'Copy the preview image to the screen
-        m_PreviewDIB.RenderToPictureBox Me.picPenPreview
+        'Request a redraw from the picture box
+        picPenPreview.RequestRedraw True
         
         'Notify our parent of the update
-        If Not (parentPenControl Is Nothing) Then parentPenControl.NotifyOfLivePenChange m_PenPreview.GetPenPropertiesAsXML
+        If Not (m_parentPenControl Is Nothing) Then m_parentPenControl.NotifyOfLivePenChange m_PenPreview.GetPenPropertiesAsXML
         
     End If
     
@@ -446,6 +453,10 @@ Private Sub SyncControlsToOutlineObject()
         
     m_SuspendRedraws = False
     
+End Sub
+
+Private Sub picPenPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_PreviewDIB Is Nothing) Then m_PreviewDIB.AlphaBlendToDC targetDC
 End Sub
 
 Private Sub sltMiterLimit_Change()
