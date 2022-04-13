@@ -394,7 +394,7 @@ Public Function GetLeft() As Long
 End Function
 
 Public Sub SetLeft(ByVal newLeft As Long)
-    ucSupport.RequestNewPosition newLeft, , True
+    ucSupport.RequestNewPosition newLeft, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Function GetTop() As Long
@@ -402,7 +402,7 @@ Public Function GetTop() As Long
 End Function
 
 Public Sub SetTop(ByVal newTop As Long)
-    ucSupport.RequestNewPosition , newTop, True
+    ucSupport.RequestNewPosition newTop:=newTop, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Function GetWidth() As Long
@@ -410,7 +410,7 @@ Public Function GetWidth() As Long
 End Function
 
 Public Sub SetWidth(ByVal newWidth As Long)
-    ucSupport.RequestNewSize newWidth, , True
+    ucSupport.RequestNewSize newWidth, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Function GetHeight() As Long
@@ -418,7 +418,7 @@ Public Function GetHeight() As Long
 End Function
 
 Public Sub SetHeight(ByVal newHeight As Long)
-    ucSupport.RequestNewSize , newHeight, True
+    ucSupport.RequestNewSize newHeight:=newHeight, alsoNotifyMeViaEvent:=True
 End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
@@ -651,10 +651,10 @@ End Sub
 ' instead, it relies on functions like UpdateColorDepthVisibility() to do that in advance.
 Private Sub ReflowColorPanel()
 
-    Dim curHeight As Long, maxHeight As Long
+    Dim curHeight As Long
     curHeight = ucSupport.GetBackBufferHeight
     
-    Dim yOffset As Long, yPadding As Long
+    Dim yPadding As Long, yOffset As Long
     yPadding = Interface.FixDPI(8)
     yOffset = cboColorModel.GetTop + cboColorModel.GetHeight + yPadding
     
@@ -671,6 +671,7 @@ Private Sub ReflowColorPanel()
         yOffset = yOffset + sldColorCount.GetHeight + yPadding
     End If
     
+    Dim maxHeight As Long
     maxHeight = yOffset
     
     'Now restart at the top, and perform the same steps for the "alpha settings column" of controls
@@ -706,8 +707,8 @@ Private Sub UpdateControlLayout()
     
     'A lot of controls on this dialog sit "side-by-side", so set their width proportionally.
     Dim halfWidth As Long, uiItemWidth As Long, pxPadding As Long
-    pxPadding = Interface.FixDPI(4)
     halfWidth = bWidth \ 2
+    pxPadding = Interface.FixDPI(4)
     uiItemWidth = halfWidth - pxPadding * 2
     
     'Sync all widths to match the current buffer width

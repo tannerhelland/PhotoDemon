@@ -925,7 +925,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     'With weights successfully calculated, we can now filter horizontally from the input image
     ' to the temporary "working" copy.
     Dim imgPixels() As Byte, srcSA As SafeArray1D
-    Dim idxPixel As Long, wSumI As Long
+    Dim idxPixel As Long
     
     'If the image is changing size, perform resampling now
     If (xScale <> 1#) Then
