@@ -26,19 +26,13 @@ Begin VB.Form dialog_FillSettings
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picBrushPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdPictureBox picBrushPreview 
       Height          =   1815
       Left            =   270
-      ScaleHeight     =   119
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   789
-      TabIndex        =   2
       Top             =   480
       Width           =   11865
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -221,7 +215,7 @@ Begin VB.Form dialog_FillSettings
          Height          =   405
          Index           =   1
          Left            =   9060
-         TabIndex        =   12
+         TabIndex        =   2
          Top             =   1200
          Width           =   2940
          _ExtentX        =   5186
@@ -242,8 +236,8 @@ Attribute VB_Exposed = False
 'Brush Selection Dialog
 'Copyright 2015-2022 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 16/June/16
-'Last update: overhaul UI to make better use of available space
+'Last updated: 13/April/22
+'Last update: replace lingering picture box with pdPictureBox
 '
 'Comprehensive brush selection dialog.  This dialog is currently based around the properties of GDI+ brushes, but it
 ' could easily be expanded in the future thanks to its modular design.
@@ -256,7 +250,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'OK/Cancel result from the dialog
-Private userAnswer As VbMsgBoxResult
+Private m_userAnswer As VbMsgBoxResult
 
 'The original brush when the dialog was first loaded
 Private m_OldBrush As String
@@ -269,7 +263,7 @@ Private m_Gradient As pd2DGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send brush updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentBrushControl As pdBrushSelector
+Private m_parentBrushControl As pdBrushSelector
 
 'Recently used brushes are loaded to/saved from a custom XML file
 Private m_XMLEngine As pdXML
@@ -312,7 +306,7 @@ Private m_Colors As pdThemeColors
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = userAnswer
+    DialogResult = m_userAnswer
 End Property
 
 'The newly selected brush (if any) is returned via this property
@@ -324,10 +318,10 @@ End Property
 Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingControl As pdBrushSelector = Nothing)
     
     'Store a reference to the calling control (if any)
-    Set parentBrushControl = callingControl
+    Set m_parentBrushControl = callingControl
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
-    userAnswer = vbCancel
+    m_userAnswer = vbCancel
     
     'Cache the initial brush parameter so we can access it elsewhere
     m_OldBrush = initialBrush
@@ -379,7 +373,7 @@ End Sub
 
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
-    userAnswer = vbCancel
+    m_userAnswer = vbCancel
     Me.Hide
 End Sub
 
@@ -392,7 +386,7 @@ Private Sub cmdBar_OKClick()
     'TODO: save the current list of recently used brushes
     'SaveRecentBrushList
     
-    userAnswer = vbOK
+    m_userAnswer = vbOK
     Me.Visible = False
 
 End Sub
@@ -524,8 +518,8 @@ Private Sub UpdatePreview()
         'Make sure our fill object is up-to-date
         UpdateFillObject
         
-        'Retrieve a matching brush handle
-        Dim gdipBrush As Long, cBounds As RectF
+        'Gradient fills require a boundary rect (to establish the "size" of the gradient)
+        Dim cBounds As RectF
         
         With cBounds
             .Left = 0
@@ -535,28 +529,36 @@ Private Sub UpdatePreview()
         End With
         
         m_Filler.SetBoundaryRect cBounds
-        gdipBrush = m_Filler.GetHandle
         
         'Prep the preview DIB
         If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
-        If (m_PreviewDIB.GetDIBWidth <> Me.picBrushPreview.ScaleWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picBrushPreview.ScaleHeight) Then
-            m_PreviewDIB.CreateBlank Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight, 24, 0
+        If (m_PreviewDIB.GetDIBWidth <> Me.picBrushPreview.GetWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picBrushPreview.GetHeight) Then
+            m_PreviewDIB.CreateBlank Me.picBrushPreview.GetWidth, Me.picBrushPreview.GetHeight, 24, 0
         Else
             m_PreviewDIB.ResetDIB
         End If
         
-        'Create the preview image
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, g_CheckerboardPattern
-        GDI_Plus.GDIPlusFillDC_Brush m_PreviewDIB.GetDIBDC, gdipBrush, 0, 0, Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight
+        'Render a checkerboard background and brush preview
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB m_PreviewDIB
         
-        'Copy the preview image to the screen
-        m_PreviewDIB.RenderToPictureBox Me.picBrushPreview
+        PD2D.FillRectangleI cSurface, g_CheckerboardBrush, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
+        PD2D.FillRectangleI cSurface, m_Filler, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
         
-        'Release our GDI+ handle
-        m_Filler.ReleaseBrush
+        'Render a border around the outside
+        Dim cPenBorder As pd2DPen
+        Set cPenBorder = New pd2DPen
+        cPenBorder.SetPenWidth 1
+        cPenBorder.SetPenLineJoin P2_LJ_Miter
+        If (Not g_Themer Is Nothing) Then cPenBorder.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+        PD2D.DrawRectangleI cSurface, cPenBorder, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
+        
+        'Request a picture box redraw
+        Me.picBrushPreview.RequestRedraw True
         
         'Notify our parent of the update
-        If Not (parentBrushControl Is Nothing) Then parentBrushControl.NotifyOfLiveBrushChange m_Filler.GetBrushPropertiesAsXML
+        If (Not m_parentBrushControl Is Nothing) Then m_parentBrushControl.NotifyOfLiveBrushChange m_Filler.GetBrushPropertiesAsXML
         
     End If
     
@@ -633,6 +635,10 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
     cPen.SetPenColor hatchBorderColor
     PD2D.DrawRectangleF_FromRectF cSurface, cPen, hatchRect
     
+End Sub
+
+Private Sub picBrushPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    m_PreviewDIB.AlphaBlendToDC targetDC
 End Sub
 
 Private Sub sldGradientAngle_Change()
