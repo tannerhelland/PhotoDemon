@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Fill ("Brush" in GDI/GDI+ parlance) Class
 'Copyright 2014-2022 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 29/December/20
-'Last update: inline a bunch of GDI+ calls for improved performance
+'Last updated: 13/April/22
+'Last update: fix the way global opacity affects pattern brush opacity
 '
 'This class manages a single brush (fill) instance.  Brushes are used to fill shapes, regions, and/or paths.
 '
@@ -527,8 +527,21 @@ Friend Function CreateBrush() As Boolean
             
         'Pattern fill
         Case P2_BM_Pattern
-            GetMem4 VarPtr(m_PatternRGBA1), tmpLong
-            GetMem4 VarPtr(m_PatternRGBA2), tmpLong2
+            
+            'We need to pre-multiply individual pattern opacity values by the brush-wide opacity value before
+            ' creating the brush.
+            Dim tmpPatternRGBA1 As RGBQuad, tmpPatternRGBA2 As RGBQuad
+            tmpPatternRGBA1 = m_PatternRGBA1
+            tmpPatternRGBA2 = m_PatternRGBA2
+            
+            Dim newOpacity As Single
+            newOpacity = (CSng(tmpPatternRGBA1.Alpha) / 255!) * (CSng(m_BrushRGBA.Alpha) / 255!)
+            tmpPatternRGBA1.Alpha = Int(newOpacity * 255! + 0.5!)
+            newOpacity = (CSng(tmpPatternRGBA2.Alpha) / 255!) * (CSng(m_BrushRGBA.Alpha) / 255!)
+            tmpPatternRGBA2.Alpha = Int(newOpacity * 255! + 0.5!)
+            
+            GetMem4 VarPtr(tmpPatternRGBA1), tmpLong
+            GetMem4 VarPtr(tmpPatternRGBA2), tmpLong2
             CreateBrush = (GdipCreateHatchBrush(m_PatternStyle, tmpLong, tmpLong2, m_BrushHandle) = GP_OK)
             
         'Gradient fill
