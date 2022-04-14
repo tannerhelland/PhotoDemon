@@ -4,7 +4,7 @@ Begin VB.Form FormPrint
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print"
-   ClientHeight    =   5745
+   ClientHeight    =   5280
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   8745
@@ -23,15 +23,15 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   383
+   ScaleHeight     =   352
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdSlider sldCopies 
       Height          =   735
       Left            =   3960
-      TabIndex        =   9
-      Top             =   2400
+      TabIndex        =   0
+      Top             =   2040
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   1296
@@ -47,8 +47,8 @@ Begin VB.Form FormPrint
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
-      TabIndex        =   8
-      Top             =   5010
+      TabIndex        =   4
+      Top             =   4545
       Width           =   8745
       _ExtentX        =   15425
       _ExtentY        =   1296
@@ -56,8 +56,8 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.pdDropDown cbOrientation 
       Height          =   735
       Left            =   3960
-      TabIndex        =   4
-      Top             =   1560
+      TabIndex        =   1
+      Top             =   1200
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   1296
@@ -66,8 +66,8 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.pdDropDown cbQuality 
       Height          =   735
       Left            =   3960
-      TabIndex        =   5
-      Top             =   3240
+      TabIndex        =   2
+      Top             =   2880
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   1296
@@ -76,94 +76,25 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.pdDropDown cbPrinters 
       Height          =   735
       Left            =   3960
-      TabIndex        =   6
-      Top             =   720
+      TabIndex        =   3
+      Top             =   360
       Width           =   4575
       _ExtentX        =   7858
       _ExtentY        =   1296
       Caption         =   "printer"
    End
-   Begin VB.PictureBox picOut 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   615
-      Left            =   360
-      ScaleHeight     =   41
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   57
-      TabIndex        =   7
-      Top             =   2760
-      Visible         =   0   'False
-      Width           =   855
-   End
-   Begin VB.PictureBox picThumbFinal 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   960
-      ScaleHeight     =   15
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   15
-      TabIndex        =   3
-      Top             =   4920
-      Visible         =   0   'False
-      Width           =   255
-   End
-   Begin VB.PictureBox picThumb90 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   600
-      ScaleHeight     =   15
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   15
-      TabIndex        =   2
-      Top             =   4920
-      Visible         =   0   'False
-      Width           =   255
-   End
-   Begin VB.PictureBox picThumb 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   255
+   Begin PhotoDemon.pdPictureBox picPreview 
+      Height          =   3300
       Left            =   240
-      ScaleHeight     =   15
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   15
-      TabIndex        =   1
-      Top             =   4920
-      Visible         =   0   'False
-      Width           =   255
-   End
-   Begin VB.PictureBox iSrc 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ClipControls    =   0   'False
-      ForeColor       =   &H80000008&
-      Height          =   3900
-      Left            =   240
-      ScaleHeight     =   258
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   218
-      TabIndex        =   0
-      TabStop         =   0   'False
       Top             =   360
       Width           =   3300
+      _ExtentX        =   5821
+      _ExtentY        =   5821
    End
    Begin PhotoDemon.pdLabel lblPaperSize 
       Height          =   375
       Left            =   240
-      Top             =   4440
+      Top             =   3840
       Width           =   3300
       _ExtentX        =   0
       _ExtentY        =   0
@@ -182,10 +113,9 @@ Attribute VB_Exposed = False
 'Printer Interface (including Print Preview)
 'Copyright 2000-2022 by Tanner Helland
 'Created: 4/April/03
-'Last updated: 22/September/17
-'Last update: emergency fixes to restore printing support on XP.  Some features were stripped to enable compatibility
-'             with problematic recent Windows patches.  Because this is such a fringe case, better fixes are not planned
-'             until post-7.0's release.
+'Last updated: 13/April/22
+'Last update: restructure this horrifying dialog into something slightly less horrifying... and remove a bunch of
+'             VB picture boxes while I'm at it.
 '
 'Still needs: Internal paper size support via EnumForms.  At present, PageSetupDlg is used to handle paper size, but it's
 '              an inelegant solution at best.  One of its biggest problems is that it doesn't restrict page sizes to ones
@@ -199,9 +129,11 @@ Attribute VB_Exposed = False
 '              http://msdn.microsoft.com/en-us/library/microsoft.visualbasic.powerpacks.printing.compatibility.vb6.printer.papersize.aspx
 '              http://www.vbforums.com/showthread.php?t=451198
 '
-'Module for interfacing with the printer.  All settings are handled through the default VB printer object.
-' A key feature of this routine (PrintPictureToFitPage) is based off code first written by Waty Thierry
-' (http://www.ppreview.net/).
+'Very, very simplified interface for printing the active image.  This dialog is primarily reserved for
+' Windows XP systems because on Vista+ we can interface with the built-in Windows Print Wizard.
+'
+'This code is not a high point of PhotoDemon's design and I'm okay with that.  This pretty much exists just
+' to cover a bare-minimum usage case.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -213,34 +145,49 @@ Option Explicit
 'These usually exist in a common dialog object, but since we're manually handling all
 ' printer functionality we need to manually specify them
 Private Enum PrinterOrientationConstants
-    cdlLandscape = 2
     cdlPortrait = 1
+    cdlLandscape = 2
 End Enum
+
+#If False Then
+    Private Const cdlPortrait = 1, cdlLandscape = 2
+#End If
+
+'Persistently cached previews in upright and rotated modes.  This is convenient because we can leave the
+' on-screen "paper sized" preview the same dimensions, and simply switch between these two cached thumbnails.
+Private m_previewPage As pdDIB, m_previewPage90 As pdDIB
+
+'The final preview is rendered here, then "flipped" to the screen as necessary
+Private m_finalPreview As pdDIB
+
+'A composited copy of the current image is cached here
+Private m_CompositeImage As pdDIB
 
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
     UpdatePrintPreview
 End Sub
 
-'Allow the user to change the target printer
+'Allow the user to change the target printer.  We do no validation at this point - errors will have to wait
+' until the user actually attempts to print something.
 Private Sub cbPrinters_Click()
-
-    On Error GoTo PrinterNameProblem
-
-    Dim Prt As Printer
     
-    For Each Prt In Printers
-        If Strings.StringsEqual(Prt.DeviceName, cbPrinters.List(cbPrinters.ListIndex), True) Then
-            Set Printer = Prt
+    On Error GoTo PrinterNameProblem
+    
+    Dim srcPrinter As Printer
+    
+    For Each srcPrinter In Printers
+        If Strings.StringsEqual(srcPrinter.DeviceName, cbPrinters.List(cbPrinters.ListIndex), True) Then
+            Set Printer = srcPrinter
             Exit For
         End If
         
 PrinterNameProblem:
-    Next Prt
+    Next srcPrinter
     
     UpdatePaperSize
     UpdatePrintPreview
-
+    
 End Sub
 
 Private Sub cmdBar_CancelClick()
@@ -248,57 +195,63 @@ Private Sub cmdBar_CancelClick()
 End Sub
 
 Private Sub cmdBar_OKClick()
-
+    
     On Error GoTo PrintingFailed
     
     Message "Sending image to printer..."
     
-    'Set the number of copies
+    'Set all printer properties before attempting to print anything.  It's entirely possible
+    ' that this step will error out, which usually means that the selected printer is unreachable -
+    ' if we encounter errors like that, we'll abandon printing entirely.  (Solving such errors is
+    ' outside the purview of PhotoDemon!)
     Printer.Copies = sldCopies.Value
-      
-    'Assuming there have been no errors thus far (basically, assuming the user actually has a printer attatched)...
-    If (Err = 0) Then
-      
-        'Set print quality
-        Printer.PrintQuality = -(cbQuality.ListIndex + 1)
-          
-        'Assuming our quality option is valid (should be, but you never know)
-        If (Err = 0) Then
-          
-            'Print the image
-            If (Not PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1)) Then GoTo PrintingFailed
-            
-        End If
-    End If
+    Printer.PrintQuality = -(cbQuality.ListIndex + 1)
+    Printer.Orientation = cbOrientation.ListIndex + 1
     
+    'Attempt to print the image via standard GDI calls
+    If (Not PrintPictureToFitPage(Printer)) Then GoTo PrintingFailed
+    
+    'Finalize the print and hope for the best
     Printer.EndDoc
-    
     Message "Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)"
     
     Exit Sub
     
 PrintingFailed:
-
+    
     PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Error", "PhotoDemon", Printer.DeviceName
+    
+    'Give the user a chance to try again
     cmdBar.DoNotUnloadForm
     
 End Sub
 
-'LOAD form
 Private Sub Form_Load()
-
+    
+    'You'll see more error-handling than usual in this dialog.  A lot can go wrong while printing,
+    ' and we just have to roll with it as best we can
     On Error GoTo PrinterLoadError
     
+    'Retrieve a copy of the image-to-print
+    Dim tmpDIB As pdDIB
+    PDImages.GetActiveImage.GetCompositedImage tmpDIB, True
+    
+    Set m_CompositeImage = New pdDIB
+    m_CompositeImage.CreateBlank tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32, vbWhite, 255
+    m_CompositeImage.SetInitialAlphaPremultiplicationState True
+    tmpDIB.AlphaBlendToDC m_CompositeImage.GetDIBDC
+    Set tmpDIB = Nothing
+    
+    'Generate on-screen thumbnails for both portrait and landscape modes
     RebuildPreview
     
-    Dim x As Long
+    'Load a list of printers to the UI
+    Dim i As Long
+    For i = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(i).DeviceName
+    Next i
     
-    'Load a list of printers into the combo box
-    For x = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(x).DeviceName
-    Next x
-
-    'Pre-select the current printer
+    'Pre-select the current system printer
     Dim printerIndex As Long
     printerIndex = cbPrinters.ListIndexByString(Printer.DeviceName, vbTextCompare)
     If (printerIndex < 0) Then printerIndex = 0
@@ -311,8 +264,8 @@ Private Sub Form_Load()
     cbQuality.AddItem "medium", 2
     cbQuality.AddItem "high", 3
     cbQuality.ListIndex = 3
-
-    'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
+    
+    'Set default image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
     cbOrientation.AddItem "portrait", 0
     cbOrientation.AddItem "landscape", 1
     cbOrientation.ListIndex = 0
@@ -328,19 +281,9 @@ Private Sub Form_Load()
     End If
     
     UpdatePrintPreview
-
-    'Temporarily copy the image into an image box
-    picOut.Width = PDImages.GetActiveImage.Width
-    picOut.Height = PDImages.GetActiveImage.Height
-    picOut.ScaleMode = vbPixels
     
-    Dim tmpComposite As pdDIB
-    Set tmpComposite = New pdDIB
-    PDImages.GetActiveImage.GetCompositedImage tmpComposite
-    tmpComposite.RenderToPictureBox picOut, , , True
-    
-    picOut.ScaleMode = vbTwips
-    
+    'If something went wrong during initialization, still display the dialog because one or more printers
+    ' may have still been initialized successfully
 PrinterLoadError:
     
     'Apply translations and visual themes
@@ -348,111 +291,127 @@ PrinterLoadError:
     
 End Sub
 
-'This PrintPictureToFitPage function is based off code originally written by Waty Thierry.
-' (It has been heavily modified for use within PhotoDemon, but you may download the original at http://www.freevbcode.com/ShowCode.asp?ID=194)
-Private Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal iOrientation As PrinterOrientationConstants) As Boolean
-
-    Const vbHiMetric As Integer = 8
-
-    Dim e As Long
-    Dim PicRatio As Double
-    Dim PrnWidth As Double, PrnHeight As Double
-    Dim PrnRatio As Double
-    Dim PrnPicWidth As Double, PrnPicHeight As Double
-
-    Dim offsetX As Double, offsetY As Double
-
-    On Error Resume Next
-
-    'Set the printer orientation to match the orientation we were handed
-    Prn.Orientation = iOrientation
-    e = Err
-
-    'Calculate an aspect ratio for the image
-    PicRatio = pic.Width / pic.Height
-    e = e Or Err
-
-    'Calculate the printable dimensions (affected by page size)
-    PrnWidth = Prn.scaleX(Prn.ScaleWidth, Prn.ScaleMode, vbHiMetric)
-    PrnHeight = Prn.scaleY(Prn.ScaleHeight, Prn.ScaleMode, vbHiMetric)
-
-    'Calculate aspect ratio for the printed page
-    PrnRatio = PrnWidth / PrnHeight
-    e = e Or Err
+'Once upon a time, this PrintPictureToFitPage function was derived from code originally written by Waty Thierry.
+' It no longer resembles that original version whatsoever (and now relies upon various PhotoDemon-specific functions),
+' but you can still find Waty's original, general-purpose version here:
+' https://web.archive.org/web/20171112231338/http://www.freevbcode.com/ShowCode.asp?ID=194
+Private Function PrintPictureToFitPage(ByRef dstPrinter As Printer) As Boolean
     
-    'Otherwise, set the printable size and image size to the same dimensions
-    If (PicRatio >= PrnRatio) Then
-        PrnPicWidth = Prn.scaleX(PrnWidth, vbHiMetric, Prn.ScaleMode)
-        PrnPicHeight = Prn.scaleY(PrnWidth / PicRatio, vbHiMetric, Prn.ScaleMode)
+    'Printing is potentially rife with errors.  I have no plans for dealing with such errors,
+    ' so we're just gonna bail if anything goes wrong.
+    PrintPictureToFitPage = False
+    On Error GoTo PrintFailed
+    
+    'To coerce VB into printing (which triggers the StartDoc API equivalent), we need to send
+    ' *something* to the printer - so cheat and print a " ".  This will e.g. raise a Save File dialog
+    ' for the "Microsoft Print to PDF" printer.
+    Printer.Print " "
+    
+    'If we're still here, printing will likely succeed.
+    
+    'Calculate an aspect ratio for the source image
+    Dim picRatio As Double
+    picRatio = m_CompositeImage.GetDIBWidth / m_CompositeImage.GetDIBHeight
+    
+    'Retrieve print page dimensions and convert to pixels
+    Dim prnWidthPixels As Long, prnHeightPixels As Long
+    prnWidthPixels = dstPrinter.scaleX(dstPrinter.ScaleWidth, dstPrinter.ScaleMode, vbPixels)
+    prnHeightPixels = dstPrinter.scaleY(dstPrinter.ScaleHeight, dstPrinter.ScaleMode, vbPixels)
+    If (prnWidthPixels <= 0) Or (prnHeightPixels <= 0) Then Exit Function
+    
+    'Calculate aspect ratio for the printed page
+    Dim printerRatio As Double
+    printerRatio = prnWidthPixels / prnHeightPixels
+    
+    'Fit the aspect ratios to each other
+    Dim dstWidth As Long, dstHeight As Long
+    If (picRatio >= printerRatio) Then
+        dstWidth = prnWidthPixels
+        dstHeight = dstWidth / picRatio
     Else
-        PrnPicHeight = Prn.scaleY(PrnHeight, vbHiMetric, Prn.ScaleMode)
-        PrnPicWidth = Prn.scaleX(PrnHeight * PicRatio, vbHiMetric, Prn.ScaleMode)
+        dstHeight = prnHeightPixels
+        dstWidth = dstHeight * picRatio
     End If
     
-    'If the user has told us to center the image, calculate offsets
-    offsetX = (Prn.ScaleWidth - PrnPicWidth) \ 2
-    offsetY = (Prn.ScaleHeight - PrnPicHeight) \ 2
+    'Calculate offsets between the fitted size and the page size
+    Dim offsetX As Long, offsetY As Long
+    offsetX = (prnWidthPixels - dstWidth) \ 2
+    offsetY = (prnHeightPixels - dstHeight) \ 2
     
-    'Print the picture using VB's PaintPicture method
-    Prn.PaintPicture pic, offsetX, offsetY, PrnPicWidth, PrnPicHeight
-    e = e Or Err
-
-    PrintPictureToFitPage = (e = 0)
-    On Error GoTo 0
-
+    'StretchBlt that sucker into place!
+    GDI.StretchBltWrapper dstPrinter.hDC, offsetX, offsetY, dstWidth, dstHeight, m_CompositeImage.GetDIBDC, 0, 0, m_CompositeImage.GetDIBWidth, m_CompositeImage.GetDIBHeight, vbSrcCopy
+    
+    PrintPictureToFitPage = True
+    Exit Function
+    
+PrintFailed:
+    PrintPictureToFitPage = False
+    
 End Function
 
 'Redraw the Print Preview box based on the specified image orientation
 Private Sub UpdatePrintPreview()
     
-    On Error GoTo PrintPreviewError
-    
     'If the fit-to-page option is selected (which it is by default) this routine is very simple:
     If (cbOrientation.ListIndex = 0) Then
-        iSrc.Picture = picThumb.Picture
-        iSrc.Refresh
+        Set m_finalPreview = m_previewPage
     Else
-        iSrc.Picture = picThumbFinal.Picture
-        iSrc.Refresh
+        Set m_finalPreview = m_previewPage90
     End If
     
-PrintPreviewError:
-      
+    picPreview.RequestRedraw True
+    
 End Sub
 
-'This is called whenever the dimensions of the preview window change (for example, in response to a change in paper size)
+'This is called whenever the dimensions of the preview window change
+' (for example, in response to a change in paper size)
 Private Sub RebuildPreview()
-
-    'We're now going to create two temporary buffers; one contains the image resized to fit the "sheet of paper" preview
-    ' on the left.  This is portrait mode.  The second buffer will contain the same thing, but rotated 90 degrees -
-    ' e.g. landscape mode.  If the user clicks between those options, we can simply copy the buffers to the foreground
-    ' picture box.
     
-    'First is the easy one - Portrait Mode
-    picThumb.Picture = LoadPicture(vbNullString)
-    picThumb.Width = iSrc.Width
-    picThumb.Height = iSrc.Height
-    DrawPreviewImage picThumb, True
+    If (m_CompositeImage Is Nothing) Then Exit Sub
     
-    'Now we need to get the source image at the size expected post-rotation
-    picThumb90.Picture = LoadPicture(vbNullString)
-    picThumbFinal.Picture = LoadPicture(vbNullString)
-    picThumb90.Width = iSrc.Height
-    picThumb90.Height = iSrc.Width
-    picThumbFinal.Width = iSrc.Width
-    picThumbFinal.Height = iSrc.Height
-
-    DrawPreviewImage picThumb90, True
+    'We're now going to create two temporary buffers; one contains the image resized to fit the
+    ' "sheet of paper" preview on the left.  The second buffer will contain the same thing,
+    ' but rotated 90 degrees - e.g. landscape mode.  If the user clicks between those options,
+    ' we can simply repaint these prepared buffers to the foreground picture box.
+    Set m_previewPage = New pdDIB
+    m_previewPage.CreateBlank picPreview.GetWidth, picPreview.GetHeight, 32, vbWhite, 255
+    m_previewPage.SetInitialAlphaPremultiplicationState True
     
-    'Now comes the rotation itself.
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.CreateFromDC picThumb90.hDC, 0, 0, picThumb90.ScaleWidth, picThumb90.ScaleHeight, 32, True
+    'Calculate portrait mode dimensions, then paint the image into place
+    Dim newWidth As Long, newHeight As Long
+    PDMath.ConvertAspectRatio m_CompositeImage.GetDIBWidth, m_CompositeImage.GetDIBHeight, picPreview.GetWidth - 2, picPreview.GetHeight - 2, newWidth, newHeight, True
     
-    Dim dstDIB As pdDIB
-    Set dstDIB = New pdDIB
-    GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, dstDIB, GP_RF_90FlipNone
-    dstDIB.RenderToPictureBox picThumbFinal, False, False, True
+    Dim xOffset As Long, yOffset As Long
+    xOffset = (m_previewPage.GetDIBWidth - newWidth) \ 2
+    yOffset = (m_previewPage.GetDIBHeight - newHeight) \ 2
+    GDI_Plus.GDIPlus_StretchBlt m_previewPage, xOffset, yOffset, newWidth, newHeight, m_CompositeImage, 0, 0, m_CompositeImage.GetDIBWidth, m_CompositeImage.GetDIBHeight
+    
+    'We'll need a temporary placeholder for the rotated image, at the rotated dimensions
+    Dim tmpImage As pdDIB
+    Set tmpImage = New pdDIB
+    tmpImage.CreateBlank picPreview.GetHeight, picPreview.GetWidth, 32, vbWhite, 255
+    tmpImage.SetInitialAlphaPremultiplicationState True
+    
+    'Repeat the previous steps, then rotate the final result into the module-level DIB
+    PDMath.ConvertAspectRatio m_CompositeImage.GetDIBWidth, m_CompositeImage.GetDIBHeight, tmpImage.GetDIBWidth - 2, tmpImage.GetDIBHeight - 2, newWidth, newHeight, True
+    xOffset = (tmpImage.GetDIBWidth - newWidth) \ 2
+    yOffset = (tmpImage.GetDIBHeight - newHeight) \ 2
+    GDI_Plus.GDIPlus_StretchBlt tmpImage, xOffset, yOffset, newWidth, newHeight, m_CompositeImage, 0, 0, m_CompositeImage.GetDIBWidth, m_CompositeImage.GetDIBHeight
+    GDI_Plus.GDIPlusRotateFlipDIB tmpImage, m_previewPage90, GP_RF_90FlipNone
+    m_previewPage90.SetInitialAlphaPremultiplicationState True
+    
+    'We now want to paint a neutral border around both preview images
+    Dim cPenBorder As pd2DPen
+    Set cPenBorder = New pd2DPen
+    If (Not g_Themer Is Nothing) Then cPenBorder.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+    cPenBorder.SetPenWidth 1!
+    cPenBorder.SetPenLineJoin P2_LJ_Miter
+    
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_previewPage, False
+    PD2D.DrawRectangleI cSurface, cPenBorder, 0, 0, m_previewPage.GetDIBWidth - 1, m_previewPage.GetDIBHeight - 1
+    Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_previewPage90, False
+    PD2D.DrawRectangleI cSurface, cPenBorder, 0, 0, m_previewPage90.GetDIBWidth - 1, m_previewPage90.GetDIBHeight - 1
     
     'Initiate a redraw of the preview according to the print settings currently specified by the user
     UpdatePrintPreview
@@ -489,16 +448,16 @@ Private Sub UpdatePaperSize()
     ' We will rebuild the preview picture box according to the new aspect ratio and these size constraints.
     
     'If width is larger than height, assign width a size of 220 pixels and adjust height accordingly
-    If (aspectRatio >= 1) Then
-        iSrc.Width = 220
-        iSrc.Left = 16
-        iSrc.Height = 220 * aspectRatio
-        iSrc.Top = 16 + (260 - iSrc.Height) / 2
+    If (aspectRatio >= 1#) Then
+        picPreview.SetWidth 220
+        picPreview.SetLeft 16
+        picPreview.SetHeight 220 * aspectRatio
+        picPreview.SetTop 16 + (lblPaperSize.GetHeight - picPreview.GetHeight) \ 2
     Else
-        iSrc.Height = 220
-        iSrc.Top = 16
-        iSrc.Width = 220 * aspectRatio
-        iSrc.Left = 16 + (220 - iSrc.Width) / 2
+        picPreview.SetHeight 220
+        picPreview.SetTop lblPaperSize.GetTop - 16 - 220
+        picPreview.SetWidth 220 * aspectRatio
+        picPreview.SetLeft 16 + (220 - picPreview.GetWidth) \ 2
     End If
     
     'Automatically initiate a rebuild of the preview picture boxes
@@ -514,36 +473,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Used to draw the main image onto a preview picture box
-Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional forceWhiteBackground As Boolean = False)
-    
-    Dim tmpDIB As pdDIB
-    
-    'Start by calculating the aspect ratio of both the current image and the previewing picture box
-    Dim dstWidth As Double, dstHeight As Double
-    dstWidth = dstPicture.ScaleWidth
-    dstHeight = dstPicture.ScaleHeight
-    
-    Dim srcWidth As Double, srcHeight As Double
-    
-    'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
-    Dim srcDIB As pdDIB
-    PDImages.GetActiveImage.GetCompositedImage srcDIB
-    srcWidth = srcDIB.GetDIBWidth
-    srcHeight = srcDIB.GetDIBHeight
-            
-    'Now, use that aspect ratio to determine a proper size for our temporary DIB
-    Dim newWidth As Long, newHeight As Long
-    ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
-    
-    'Normally this will draw a preview of PDImages.GetActiveImage.containingForm's relevant image.  However, another picture source can be specified.
-    If srcDIB.GetDIBColorDepth = 32 Then
-        Set tmpDIB = New pdDIB
-        tmpDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight
-        If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-        tmpDIB.RenderToPictureBox dstPicture
-    Else
-        srcDIB.RenderToPictureBox dstPicture
-    End If
-    
+Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_finalPreview Is Nothing) Then m_finalPreview.AlphaBlendToDC targetDC
 End Sub
