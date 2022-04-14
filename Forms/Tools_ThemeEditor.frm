@@ -29,7 +29,7 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdCheckBox chkSort 
       Height          =   375
       Left            =   240
-      TabIndex        =   19
+      TabIndex        =   10
       Top             =   8280
       Width           =   3615
       _ExtentX        =   6376
@@ -99,19 +99,13 @@ Begin VB.Form FormThemeEditor
       Caption         =   "light theme color"
       FontSize        =   10
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00000000&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   2535
       Left            =   9600
-      ScaleHeight     =   167
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   231
-      TabIndex        =   10
       Top             =   4560
       Width           =   3495
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdCheckBox chkColoration 
       Height          =   375
@@ -308,8 +302,8 @@ Attribute VB_Exposed = False
 'Resource editor dialog
 'Copyright 2016-2022 by Tanner Helland
 'Created: 22/August/16
-'Last updated: 28/August/17
-'Last update: added option to compress individual resources using the faster (but lower-compression) LZ4HC algorithm
+'Last updated: 14/April/22
+'Last update: replace lingering picture box with pdPictureBox
 '
 'As of v7.0, PD finally supports visual themes using its internal theming engine.  As part of supporting
 ' visual themes, various PD controls need access to image resources at a size and color scheme appropriate
@@ -359,6 +353,9 @@ Private m_PreviewDIBOriginal As pdDIB, m_PreviewDIB As pdDIB
 
 Private m_SuspendUpdates As Boolean
 
+'Current preview image, if any
+Private m_previewImage As pdDIB
+
 Private Sub btsBackcolor_Click(ByVal buttonIndex As Long)
     UpdatePreview
 End Sub
@@ -394,9 +391,9 @@ Private Sub cmdAddResource_Click()
         lstResources.AddItem m_Resources(m_NumOfResources).ResourceName
         lstResources.ListIndex = m_NumOfResources
         
-        SyncUIAgainstCurrentResource
-        
         m_NumOfResources = m_NumOfResources + 1
+        
+        SyncUIAgainstCurrentResource
         
     End If
     
@@ -819,6 +816,10 @@ Private Sub lstResources_Click()
     SyncUIAgainstCurrentResource
 End Sub
 
+Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_previewImage Is Nothing) Then m_previewImage.AlphaBlendToDC targetDC
+End Sub
+
 Private Sub txtResourceLocation_LostFocusAPI()
     SyncResourceAgainstCurrentUI
 End Sub
@@ -971,7 +972,10 @@ Private Sub UpdatePreview()
             ElseIf (btsBackcolor.ListIndex = 2) Then
                 Colors.GetColorFromString "#ffffff", newColor, ColorHex
             End If
-            picPreview.BackColor = newColor
+            
+            'Prep a back buffer with the specified background color
+            If (m_previewImage Is Nothing) Then Set m_previewImage = New pdDIB
+            m_previewImage.CreateBlank picPreview.GetWidth, picPreview.GetHeight, 32, newColor, 255
             
             If Loading.QuickLoadImageToDIB(m_Resources(m_LastResourceIndex).ResFileLocation, m_PreviewDIBOriginal, False, False, True) Then
             
@@ -988,12 +992,30 @@ Private Sub UpdatePreview()
                     ElseIf (btsBackcolor.ListIndex = 2) Then
                         DIBs.ColorizeDIB m_PreviewDIB, csMenu.Color
                     End If
-                    m_PreviewDIB.RenderToPictureBox picPreview, False, True, True
+                    m_PreviewDIB.RenderToDIB m_previewImage, False, True, True
                     
                 'If coloration is *not* supported, just render the preview image as-is
                 Else
-                    m_PreviewDIBOriginal.RenderToPictureBox picPreview, False, True, True
+                    m_PreviewDIBOriginal.RenderToDIB m_previewImage, False, True, True
                 End If
+                
+                'Because the preview will appear on-screen, paint a border around it
+                Dim cPenBorder As pd2DPen
+                Set cPenBorder = New pd2DPen
+                cPenBorder.SetPenWidth 1!
+                cPenBorder.SetPenLineJoin P2_LJ_Miter
+                If (Not g_Themer Is Nothing) Then cPenBorder.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+                
+                Dim cSurface As pd2DSurface
+                Set cSurface = New pd2DSurface
+                cSurface.WrapSurfaceAroundPDDIB m_previewImage
+                cSurface.SetSurfaceAntialiasing P2_AA_None
+                PD2D.DrawRectangleI cSurface, cPenBorder, 0, 0, m_previewImage.GetDIBWidth - 1, m_previewImage.GetDIBHeight - 1
+                Set cPenBorder = Nothing
+                Set cSurface = Nothing
+                
+                'To reflect the new image, tequest a redraw from the target picture box
+                picPreview.RequestRedraw True
                 
             End If
             
