@@ -3,12 +3,12 @@ Attribute VB_Name = "ScreenCapture"
 'Screen Capture Interface
 'Copyright 1999-2022 by Tanner Helland
 'Created: 12/June/99
-'Last updated: 10/November/17
-'Last update: workarounds for Win 10 PrintWindow fails; some windows may be recoverable with a manual
-'             BitBlt workaround.
+'Last updated: 13/April/22
+'Last update: replace lingering picture box with pdPictureBox
 '
-'Description: this module captures the screen.  The options are fairly minimal - it only captures
-'             the entire screen, but it does give the user the option to minimize the form first.
+'Minimal code for capturing the screen.  Because this code has to work from XP through Win 11, it doesn't
+' attempt anything especially fancy - but note that myriad workarounds are *still* required for quirks
+' in various OS versions.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
