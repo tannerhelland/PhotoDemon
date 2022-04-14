@@ -97,9 +97,10 @@ Friend Function GetColorsFromSource(ByVal srcX As Double, ByVal srcY As Double, 
         If m_Interpolate Then
             GetColorsFromSource = BilinearInterpolate(srcX, srcY)
             
-        'Clamp to the nearest integer coordinate value
+        'Clamp to the nearest integer coordinate value, and note that we *cannot* round here
+        ' (because srcX and srcY may be e.g. 99.99 on a 99-px image, and rounding could cause access errors)
         Else
-            GetColorsFromSource = m_Pixels(Int(srcX + 0.5), Int(srcY + 0.5))
+            GetColorsFromSource = m_Pixels(Int(srcX), Int(srcY))
         End If
         
     End If
