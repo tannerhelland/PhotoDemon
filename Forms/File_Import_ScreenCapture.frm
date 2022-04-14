@@ -46,7 +46,7 @@ Begin VB.Form FormScreenCapture
       Begin PhotoDemon.pdListBox lstWindows 
          Height          =   3135
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   1
          Top             =   0
          Width           =   5775
          _ExtentX        =   10186
@@ -119,19 +119,13 @@ Begin VB.Form FormScreenCapture
       _ExtentX        =   23098
       _ExtentY        =   1323
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   4935
       Left            =   6120
-      ScaleHeight     =   327
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   455
-      TabIndex        =   1
       Top             =   600
       Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -166,8 +160,8 @@ Attribute VB_Exposed = False
 'Custom Screen Capture Dialog
 'Copyright 2012-2022 by Tanner Helland
 'Created: 01/January/12 (approx)
-'Last updated: 15/January/14
-'Last update: minor bugfixes to account for delays caused by window animations
+'Last updated: 13/April/22
+'Last update: replace lingering picture box with pdPictureBox and fix some minor annoyances
 '
 'Basic screen and window capture dialog.
 '
@@ -176,17 +170,22 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 
-
 Option Explicit
 
 'List of open application names and their top-level hWnds
-Private m_WindowNames As pdStringStack
-Private m_WindowHWnds As pdStringStack
+Private m_WindowNames As pdStringStack, m_WindowHWnds As pdStringStack
 
 'APIs for listing currently open applications (windows)
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
+'Back buffer for the preview (if any)
+Private m_PreviewDIB As pdDIB
+
+'Prevent recursive redraws
+Private m_SkipUpdate As Boolean
+
 Private Sub btsSource_Click(ByVal buttonIndex As Long)
+    
     UpdateVisibleContainer
     
     'If the user has selected "specific program", make sure a program is selected
@@ -257,7 +256,6 @@ Private Sub Form_Load()
     lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
     If Not (g_Themer Is Nothing) Then
         lblMinimizedWarning.ForeColor = g_Themer.GetGenericUIColor(UI_ErrorRed)
-        picPreview.BackColor = g_Themer.GetGenericUIColor(UI_Background)
     Else
         lblMinimizedWarning.ForeColor = RGB(232, 24, 20)
     End If
@@ -307,59 +305,103 @@ End Sub
 
 'Live previews of the screen capture are now provided
 Private Sub UpdatePreview()
-
+    
+    'Prevent recursive redraws
+    If m_SkipUpdate Then Exit Sub
+    
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-
+    
+    Dim captureOK As Boolean: captureOK = False
+    
     'Full screen capture was requested
     If (btsSource.ListIndex = 0) Then
         ScreenCapture.GetDesktopAsDIB tmpDIB
-        tmpDIB.RenderToPictureBox picPreview
-    
+        captureOK = True
+        
     'Specific window capture was requested
     Else
-        If (lstWindows.ListIndex > -1) Then
+    
+        If (lstWindows.ListIndex >= 0) Then
             
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
             Dim minimizeCheck As Boolean
-            If ScreenCapture.GetHwndContentsAsDIB(tmpDIB, CLng(m_WindowHWnds.GetString(lstWindows.ListIndex)), chkChrome, minimizeCheck) Then
-                tmpDIB.RenderToPictureBox picPreview, , True
+            captureOK = ScreenCapture.GetHwndContentsAsDIB(tmpDIB, CLng(m_WindowHWnds.GetString(lstWindows.ListIndex)), chkChrome, minimizeCheck)
+            
+            If captureOK Then
                 lblMinimizedWarning.Visible = minimizeCheck
             Else
-                lstWindows.RemoveItem lstWindows.ListIndex
+                
+                m_SkipUpdate = True
+                
+                'Remove the bad window from the UI and the background window name/hWnd lists
+                Dim curIndex As Long
+                curIndex = lstWindows.ListIndex
+                lstWindows.RemoveItem curIndex
+                m_WindowNames.RemoveStringByIndex curIndex
+                m_WindowHWnds.RemoveStringByIndex curIndex
+                
+                m_SkipUpdate = False
+                
                 lblMinimizedWarning.Visible = False
                 DisplayScreenCaptureError
+                
             End If
             
         End If
     
     End If
     
+    If captureOK Then
+    
+        If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+        If (Not g_Themer Is Nothing) Then
+        
+            m_PreviewDIB.CreateBlank picPreview.GetWidth, picPreview.GetHeight, 24, g_Themer.GetGenericUIColor(UI_Background)
+            
+            Dim dstWidth As Long, dstHeight As Long
+            PDMath.ConvertAspectRatio tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, dstWidth, dstHeight, True
+            
+            Dim dstX As Long, dstY As Long
+            dstX = (m_PreviewDIB.GetDIBWidth - dstWidth) \ 2
+            dstY = (m_PreviewDIB.GetDIBHeight - dstHeight) \ 2
+            
+            GDI_Plus.GDIPlus_StretchBlt m_PreviewDIB, dstX, dstY, dstWidth, dstHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, dstCopyIsOkay:=True
+            
+            Set tmpDIB = Nothing
+            picPreview.RequestRedraw True
+            
+        End If
+    
+    End If
+    
+    
 End Sub
 
 'If the user attempts to capture a window after it's been unloaded, warn them via this function
 Private Sub DisplayScreenCaptureError()
-
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+    
+    If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+    If (Not g_Themer Is Nothing) Then m_PreviewDIB.CreateBlank picPreview.GetWidth, picPreview.GetHeight, 24, g_Themer.GetGenericUIColor(UI_Background)
     
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
     notifyFont.SetFontFace Fonts.GetUIFontName()
     notifyFont.SetFontSize 14
-    notifyFont.SetFontColor 0
+    If (Not g_Themer Is Nothing) Then notifyFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextReadOnly)
     notifyFont.SetTextAlignment vbCenter
     notifyFont.CreateFontObject
-    notifyFont.AttachToDC tmpDIB.GetDIBDC
+    notifyFont.AttachToDC m_PreviewDIB.GetDIBDC
     
-    notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2 - notifyFont.GetHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
-    notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2, g_Language.TranslateMessage("Please select another one.")
-    tmpDIB.RenderToPictureBox picPreview
+    notifyFont.FastRenderText picPreview.GetWidth / 2, picPreview.GetHeight / 2 - notifyFont.GetHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
+    notifyFont.FastRenderText picPreview.GetWidth / 2, picPreview.GetHeight / 2, g_Language.TranslateMessage("Please select another one.")
     notifyFont.ReleaseFromDC
-    Set tmpDIB = Nothing
     
-    lblMinimizedWarning.Visible = False
+    picPreview.RequestRedraw True
     
+End Sub
+
+Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_PreviewDIB Is Nothing) Then m_PreviewDIB.AlphaBlendToDC targetDC
 End Sub
