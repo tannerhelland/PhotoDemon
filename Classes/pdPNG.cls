@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2022 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 13/October/21
-'Last update: fix rare edge-case bug when optimizing transparency in back-to-back APNG frames
+'Last updated: 14/April/22
+'Last update: fix rare edge-case bug when quick-loading a DIB with an embedded ICC profile
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -994,6 +994,12 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
     ' transparency values), only *now* can we notify the parent image of the original palette contents.
     If hasPalette And (Not dstImage Is Nothing) Then dstImage.SetOriginalPalette srcColors, numColors
     
+    'We're close enough to final processing that we can finally construct the DIB at its target size.
+    ' (Note that - regardless of PNG color depth - we *always* create the DIB as 32-bpp RGBA.)
+    Dim okToProceed As Boolean
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    okToProceed = dstDIB.CreateBlank(m_Header.Width, m_Header.Height, 32, vbWhite, 255)
+    
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
     Dim imgHasEmbeddedICC As Boolean
@@ -1022,12 +1028,6 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
         End If
         
     End If
-    
-    'We're close enough to final processing that we can finally construct the DIB at its target size.
-    ' (Note that - regardless of PNG color depth - we *always* create the DIB as 32-bpp RGBA.)
-    Dim okToProceed As Boolean
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    okToProceed = dstDIB.CreateBlank(m_Header.Width, m_Header.Height, 32, vbWhite, 255)
     
     'Ensure that all our previous steps completed successfully, and that we have a valid destination image to
     ' place our decoded data into.
