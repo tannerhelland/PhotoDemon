@@ -15,9 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2022 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 10/October/21
-'Last update: remove old CreateFromStdPicture function; it's only used one place (Drag/Drop from old
-'             bitmap sources), so I've sent it to the DIBs module instead
+'Last updated: 14/April/22
+'Last update: replace RenderToPictureBox with RenderToDIB; this legacy function was no longer used,
+'             but it's helpful to have a similar function for just "dumping" a DIB to another one,
+'             with support for auto-centering and fitting
 '
 'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
 ' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
@@ -1193,15 +1194,17 @@ Private Sub Class_Terminate()
     Me.EraseDIB True
 End Sub
 
-'Draw this DIB to a picture box. The image will be automatically centered and sized to fit.
-Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
-
-    'Erase any existing picture
-    If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture(vbNullString) Else dstPicture.Cls
+'Render this DIB to some other DIB, with automatic center- and fit- behavior.
+' Do NOT supply a null DIB as the target; if you do, this function will crash.
+' If the targetDIB is a backbuffer designed for screen display, enable color management as relevant.
+' (Similarly, this function will auto-paint a checkerboard background if desired, but if this is suspended,
+' the caller must handle any backdrop preparation.)
+Friend Sub RenderToDIB(ByRef dstDIB As pdDIB, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
     
+    'Calculate destination width/height
     Dim dstWidth As Double, dstHeight As Double
-    dstWidth = dstPicture.ScaleWidth
-    dstHeight = dstPicture.ScaleHeight
+    dstWidth = dstDIB.GetDIBWidth
+    dstHeight = dstDIB.GetDIBHeight
     
     Dim srcWidth As Double, srcHeight As Double
     srcWidth = m_dibWidth
@@ -1219,23 +1222,23 @@ Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         End If
     End If
     
-    'Calculate the aspect ratio of this DIB and the target picture box
+    'Calculate the aspect ratio of this DIB and the target picture box, then calculate a proper fit-size
     Dim srcAspect As Double, dstAspect As Double
-    If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
-    If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
+    If (srcHeight > 0#) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
+    If (dstHeight > 0#) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
     
-    Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
-    PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
+    Dim newWidth As Long, newHeight As Long, previewX As Long, previewY As Long
+    PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
     If fitPrevented Then
-        previewX = (dstPicture.ScaleWidth - srcWidth) * 0.5
-        previewY = (dstPicture.ScaleHeight - srcHeight) * 0.5
+        previewX = (dstDIB.GetDIBWidth - srcWidth) \ 2
+        previewY = (dstDIB.GetDIBHeight - srcHeight) \ 2
     Else
         If (srcAspect > dstAspect) Then
-            previewY = Int((dstHeight - dHeight) * 0.5 + 0.5)
+            previewY = (dstHeight - newHeight) \ 2
             previewX = 0
         Else
-            previewX = Int((dstWidth - dWidth) * 0.5 + 0.5)
+            previewX = (dstWidth - newWidth) \ 2
             previewY = 0
         End If
     End If
@@ -1243,71 +1246,32 @@ Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     'Unsuspend this DIB (as necessary)
     If m_IsSuspended Then UnsuspendDIB
     
-    'We now branch according to active color management.  This is a hackish fix designed to work around some current
-    ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 8.2 release.
+    'We now branch according to active color management.  (Whether to color-manage the image is left to the caller;
+    ' only they have enough information to know if it's relevant for this op)
     If colorManagementMatters Then
         
         'Create a temporary DIB to house the stretched image.  Because the stretched image is typically smaller than
         ' the original image, this reduces color management time.
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.CreateBlank dWidth, dHeight, m_dibColorDepth, 0, 0
-        
-        If (m_dibColorDepth = 24) Then
-        
-            If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
-                SetStretchBltMode tmpDIB.GetDIBDC, STRETCHBLT_HALFTONE
-            Else
-                SetStretchBltMode tmpDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
-            End If
-            
-            StretchBlt tmpDIB.GetDIBDC, 0, 0, dWidth, dHeight, Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
-        
-        Else
-            GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight
-        End If
+        tmpDIB.CreateBlank newWidth, newHeight, m_dibColorDepth, 0, 0
+        tmpDIB.SetInitialAlphaPremultiplicationState False
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, newWidth, newHeight, Me, 0, 0, m_dibWidth, m_dibHeight
         
         'Apply display color management now
         ColorManagement.ApplyDisplayColorManagement tmpDIB
         
-        'Render the image to the picture box
-        If (m_dibColorDepth = 24) Then
-            BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-        Else
-            If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, , , dstPicture.hDC
-        End If
+        'Render the now-color-managed temporary image to the destination DIB
+        If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern dstDIB, previewX, previewY, newWidth, newHeight, g_CheckerboardPattern, fixBoundaryPainting:=True
+        GDI_Plus.GDIPlus_StretchBlt dstDIB, previewX, previewY, newWidth, newHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight
         
     'If color management is *not* required, we don't need a temporary DIB - just render directly onto the target.
     Else
-        
-        'For 24bpp images, simply copy over the current image data
-        If (m_dibColorDepth = 24) Then
-        
-            'If the target area is smaller than the DIB, request halftoning
-            If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
-                SetStretchBltMode dstPicture.hDC, STRETCHBLT_HALFTONE
-            Else
-                SetStretchBltMode dstPicture.hDC, STRETCHBLT_COLORONCOLOR
-            End If
-            
-            StretchBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
-        
-        'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
-        ' image onto it.
-        Else
-            If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight, , , dstPicture.hDC
-        End If
-        
-    End If
-        
-    If dstPicture.AutoRedraw Then
-        dstPicture.Picture = dstPicture.Image
-        dstPicture.Refresh
+        If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern dstDIB, previewX, previewY, newWidth, newHeight, g_CheckerboardPattern, fixBoundaryPainting:=True
+        GDI_Plus.GDIPlus_StretchBlt dstDIB, previewX, previewY, newWidth, newHeight, Me, 0, 0, m_dibWidth, m_dibHeight
     End If
     
-    'Minimize GDI resources by freeing our DC
+    'Minimize GDI resources by freeing our internal DC
     Me.FreeFromDC
     
 End Sub
