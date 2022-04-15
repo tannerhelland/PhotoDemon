@@ -65,6 +65,84 @@ Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRe
     End With
 End Function
 
+'Is an arbitrary polygon convex?  Algorithm adapted from an original algorithm by Rory Daulton as shared
+' at StackOverflow (link good as of April '22):
+' https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
+'
+'Note that this version is deliberately modified to allow points to sit on the same line (angle = 0);
+' because PhotoDemon always passes points in clockwise order, we don't need to worry about how this 0
+' would otherwise affect checks for directional changes in angle.
+'
+'Returns: TRUE if convex, FALSE otherwise
+Public Function IsPolygonConvex(ByRef listOfPoints() As PointFloat, ByVal numOfPoints As Long) As Boolean
+    
+    'Assume failure by default; there are many obvious fail states that allow us to abandon early
+    IsPolygonConvex = False
+    
+    'Errors are not expected, but if they occur FALSE will be returned
+    On Error GoTo NotConvex
+    
+    'Perform some preliminary failsafe checks
+    If (numOfPoints > UBound(listOfPoints) + 1) Then Exit Function
+    If (numOfPoints < 3) Then Exit Function
+    
+    'Populate initial values
+    Dim oldPoint As PointFloat, newPoint As PointFloat
+    oldPoint = listOfPoints(numOfPoints - 2)
+    newPoint = listOfPoints(numOfPoints - 1)
+    
+    Dim newDirection As Double, oldDirection As Double, angle As Double, angleSum As Double
+    newDirection = PDMath.Atan2(newPoint.y - oldPoint.y, newPoint.x - oldPoint.x)
+    angleSum = 0#
+    
+    Dim orientation As Double
+    
+    'Check each point (specifically, the polygon side that terminates at each point)
+    ' along with both that point's angle *and* the accumulated angles in the full polygon.
+    Dim i As Long
+    For i = 0 To numOfPoints - 1
+        
+        'Update points
+        oldDirection = newDirection
+        oldPoint = newPoint
+        newPoint = listOfPoints(i)
+        newDirection = PDMath.Atan2(newPoint.y - oldPoint.y, newPoint.x - oldPoint.x)
+        
+        'If consecutive points match, reject the polygon
+        If (oldPoint.x = newPoint.x) And (oldPoint.y = newPoint.y) Then Exit Function
+        
+        'Calculate and check direction-change angles.  (We will normalize the angle to ensure correct behavior.)
+        angle = newDirection - oldDirection
+        If (angle <= -PI) Then
+            angle = angle + PI_DOUBLE
+        ElseIf (angle > PI) Then
+            angle = angle - PI_DOUBLE
+        End If
+        
+        'First time through the loop, initialize orientation
+        If (i = 0) Then
+            If (angle >= 0#) Then orientation = 1# Else orientation = -1#
+        
+        'On subsequent passes, look for orientation changes
+        Else
+            If (orientation * angle <= 0#) Then Exit Function
+        End If
+        
+        'Accumulate angles
+        angleSum = angleSum + angle
+        
+    Next i
+    
+    'Check that the total number of full turns is +/- 1
+    If Abs(Int(angleSum / PI_DOUBLE + 0.5)) = 1 Then IsPolygonConvex = True
+    
+    Exit Function
+    
+NotConvex:
+    IsPolygonConvex = False
+    
+End Function
+
 Public Function PopulateRectL(ByVal srcLeft As Long, ByVal srcTop As Long, ByVal srcRight As Long, ByVal srcBottom As Long) As RectL
     PopulateRectL.Left = srcLeft
     PopulateRectL.Top = srcTop

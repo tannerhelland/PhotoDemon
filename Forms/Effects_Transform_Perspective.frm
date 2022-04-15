@@ -99,24 +99,30 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2022 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 14/April/22
-'Last update: replace lingering picture box with pdPictureBox, other UI improvements
+'Last updated: 15/April/22
+'Last update: significantly improved UI, including preview of the transformed image *right there* in the
+'             interactive area, with proper support for checkerboarding on transparent images
 '
-'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
-' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
-' For a more detailed explanation of the math and theory behind projective transforms, please visit:
+'This tool allows the user to remap their image (or layer) to any arbitrary quadrilateral.  The code is
+' fairly standard linear algebra, as a series of equations must be solved to generate the homography matrix
+' required by the transform.  For a more detailed explanation of the math and theory behind this transformation,
+' called a "projective transform", see Wikipedia:
 '
 ' https://en.wikipedia.org/wiki/Homography
 '
-'As with all distorts, reverse-mapping plus supersampling is supported for high-quality antialiasing.
+'As with all distort tools in PhotoDemon, reverse-mapping plus supersampling is supported for high-quality
+' antialiasing.  A "bonus" simpler remapping function is also provided for generating the on-screen preview
+' of the effect; this may be a more useful reference for beginners, although it only operates at a fixed
+' quality with much more limited processing options.
 '
-'I used a number of projects as references while build this tool.  Thank you to the following:
+'I learned from a number of helpful references while building this tool.  Thank you to the following resources:
 '
 ' http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
 ' http://www.imagemagick.org/Usage/distorts/#perspective
 ' http://stackoverflow.com/questions/169902/projective-transformation
 ' http://freespace.virgin.net/hugo.elias/graphics/x_persp.htm
 ' http://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d?lq=1
+' https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -157,12 +163,17 @@ Private m_ActivePoint As Long, m_HoverPoint As Long
 'Buffer to which the current interactive "perspective" control is rendered.
 Private m_Buffer As pdDIB
 
+'Overlay for the interactive buffer where we pre-render a fast, lower-quality version of the
+' "perspective" copy of the image.  Must be zeroed before rendering.
+Private m_Overlay As pdDIB
+
 'The current mouse coordinates are rendered to a dedicated image, which is then overlaid atop the interactive box
 Private m_mouseCoordFont As pdFont, m_mouseCoordDIB As pdDIB
 
-Private Sub cboEdges_Click()
-    UpdatePreview
-End Sub
+'At load-time we'll generate a fixed-size copy of the source layer at a proportional size to the
+' interactive tool area.  This improves performance by limiting the amount of memory that we have to
+' "dip into" while rendering the on-screen preview.
+Private m_ProportionalSource As pdDIB
 
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: the coordinates of the four corners of the transformed image, stored inside a "|"-delimited string.  To see how
@@ -507,7 +518,205 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
+    
+End Sub
+
+'Greatly simplified perspective renderer for rendering a high-speed preview image onto the interactive area.
+' Note that some special handling is required for things like the transparency grid (which is
+Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef listOfPoints() As PointFloat)
+    
+    'Zero out the destination DIB before doing any actual rendering
+    dstDIB.ResetDIB 0
+    Dim dstImageData() As RGBQuad, dstSA1D As SafeArray1D
+    Dim srcImageData() As RGBQuad, srcSA As SafeArray2D
+    
+    srcDIB.WrapRGBQuadArrayAroundDIB srcImageData, srcSA
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    
+    'Calculate min/max values for the destination points.  We only need to render within this area.
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    minX = listOfPoints(0).x
+    maxX = listOfPoints(0).x
+    minY = listOfPoints(0).y
+    minY = listOfPoints(0).y
+    
+    For x = 1 To 3
+        If (listOfPoints(x).x < minX) Then minX = listOfPoints(x).x
+        If (listOfPoints(x).x > maxX) Then maxX = listOfPoints(x).x
+        If (listOfPoints(x).y < minY) Then minY = listOfPoints(x).y
+        If (listOfPoints(x).y > maxY) Then maxY = listOfPoints(x).y
+    Next x
+    
+    'Clamp to dimensions of the destination image
+    initX = minX
+    initY = minY
+    finalX = maxX
+    finalY = maxY
+    
+    If (initX < 0) Then initX = 0
+    If (initY < 0) Then initY = 0
+    If (finalX > dstDIB.GetDIBWidth - 1) Then finalX = dstDIB.GetDIBWidth - 1
+    If (finalY > dstDIB.GetDIBHeight - 1) Then finalY = dstDIB.GetDIBHeight - 1
+    
+    'Paint a checkerboard over the target area.  (We will blank it out as relevant.)
+    GDI_Plus.GDIPlusFillDIBRect_Pattern dstDIB, initX, initY, finalX - initX, finalY - initY, g_CheckerboardPattern, fixBoundaryPainting:=True, noAntialiasing:=True
+    
+    'Store destination and source width and height; we use these for all calculations to ensure correct
+    ' scaling between surfaces.
+    Dim dstWidth As Double, dstHeight As Double
+    dstWidth = maxX - minX
+    If (dstWidth < 1#) Then dstWidth = 1#
+    dstHeight = maxY - minY
+    If (dstHeight < 1#) Then dstHeight = 1#
+    
+    Dim srcWidth As Double, srcHeight As Double
+    srcWidth = srcDIB.GetDIBWidth
+    srcHeight = srcDIB.GetDIBHeight
+    
+    'Calculate translations between source/destination sizes and the unit square
+    Dim invDstWidth As Double, invDstHeight As Double, invSrcWidth As Double, invSrcHeight As Double
+    If (dstWidth > 0#) Then invDstWidth = 1# / dstWidth Else invDstWidth = 999999999#
+    If (dstHeight > 0#) Then invDstHeight = 1# / dstHeight Else invDstHeight = 999999999#
+    If (srcWidth > 0#) Then invSrcWidth = 1# / srcWidth Else invSrcWidth = 999999999#
+    If (srcHeight > 0#) Then invSrcHeight = 1# / srcHeight Else invSrcHeight = 999999999#
+    
+    'Copy the points given by the user (which are currently strings) into individual floating-point variables
+    Dim x0 As Double, x1 As Double, x2 As Double, x3 As Double
+    Dim y0 As Double, y1 As Double, y2 As Double, y3 As Double
+    
+    'Scale the incoming points relative to minimum coordinate values (so that [0, 0] becomes the new minimum)
+    x0 = (listOfPoints(0).x - minX) * invDstWidth
+    y0 = (listOfPoints(0).y - minY) * invDstHeight
+    x1 = (listOfPoints(1).x - minX) * invDstWidth
+    y1 = (listOfPoints(1).y - minY) * invDstHeight
+    x2 = (listOfPoints(2).x - minX) * invDstWidth
+    y2 = (listOfPoints(2).y - minY) * invDstHeight
+    x3 = (listOfPoints(3).x - minX) * invDstWidth
+    y3 = (listOfPoints(3).y - minY) * invDstHeight
+    
+    'Start calculating the projection homography between the source image (full size) and the arbitrary
+    ' quadrilateral we were handed.
+    Dim dx1 As Double, dy1 As Double, dx2 As Double, dy2 As Double, dx3 As Double, dy3 As Double
+    dx1 = x1 - x2
+    dy1 = y1 - y2
+    dx2 = x3 - x2
+    dy2 = y3 - y2
+    dx3 = x0 - x1 + x2 - x3
+    dy3 = y0 - y1 + y2 - y3
+    
+    'Technically, these are points in a matrix - and they could be defined as an array.  But VB accesses
+    ' individual data types more quickly than an array, so we declare them separately.
+    Dim h11 As Double, h21 As Double, h31 As Double
+    Dim h12 As Double, h22 As Double, h32 As Double
+    Dim h13 As Double, h23 As Double, h33 As Double
+    
+    'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to
+    ' an arbitrary, extremely small value
+    Dim chkDenom As Double
+    chkDenom = (dx1 * dy2 - dy1 * dx2)
+    If (chkDenom < 1E-20) And (chkDenom > -1 * 1E-20) Then chkDenom = 1E-20
+    
+    h13 = (dx3 * dy2 - dx2 * dy3) / chkDenom
+    h23 = (dx1 * dy3 - dy1 * dx3) / chkDenom
+    h11 = x1 - x0 + h13 * x1
+    h21 = x3 - x0 + h23 * x3
+    h31 = x0
+    h12 = y1 - y0 + h13 * y1
+    h22 = y3 - y0 + h23 * y3
+    h32 = y0
+    h33 = 1
+    
+    'Next, we need to calculate the key set of transformation parameters, using the reverse-map data
+    ' we just generated.  (We don't want a forward map - we want a *reverse* map from the destination
+    ' to the source image, so we can interpolate as relevant.)
+    Dim hA As Double, hB As Double, hC As Double
+    Dim hD As Double, hE As Double, hF As Double
+    Dim hG As Double, hH As Double, hI As Double
+    
+    hA = h22 * h33 - h32 * h23
+    hB = h31 * h23 - h21 * h33
+    hC = h21 * h32 - h31 * h22
+    hD = h32 * h13 - h12 * h33
+    hE = h11 * h33 - h31 * h13
+    hF = h31 * h12 - h11 * h32
+    hG = h12 * h23 - h22 * h13
+    hH = h21 * h13 - h11 * h23
+    hI = h11 * h22 - h21 * h12
+    
+    'With all this data calculated in advanced, we can now proceed with the actual transform - and it's quite simple!
+    Dim srcX As Double, srcY As Double, srcXInt As Long, srcYInt As Long
+    Dim newX As Double, newY As Double
+    
+    'We're going to manually blank out pixels "outside" the quadrilateral
+    Dim zeroQuad As RGBQuad
+    zeroQuad.Red = 0
+    zeroQuad.Green = 0
+    zeroQuad.Blue = 0
+    zeroQuad.Alpha = 0
+    
+    Dim newAlpha As Single
+    
+    'Loop through each pixel in the image, converting values as we go.
+    For y = initY To finalY
+        dstDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
+    
+        'Scale coordinates to the unit square
+        newX = (x - minX) * invDstWidth
+        newY = (y - minY) * invDstHeight
         
+        'Reverse-map the coordinates back onto the original image (to allow for resampling)
+        chkDenom = (hG * newX + hH * newY + hI)
+        If (chkDenom <> 0#) Then chkDenom = 1# / chkDenom
+        
+        srcX = (hA * newX + hB * newY + hC) * chkDenom * srcWidth
+        srcY = (hD * newX + hE * newY + hF) * chkDenom * srcHeight
+        
+        'Check boundaries and assign pixels accordingly
+        If (srcX >= 0) And (srcY >= 0) Then
+            If (srcX < srcWidth) And (srcY < srcHeight) Then
+                
+                srcXInt = Int(srcX)
+                srcYInt = Int(srcY)
+                
+                If (srcImageData(srcXInt, srcYInt).Alpha = 255) Then
+                    dstImageData(x) = srcImageData(srcXInt, srcYInt)
+                Else
+                
+                    'Alpha-blend the source pixel against the checkerboard we rendered onto the surface
+                    With srcImageData(srcXInt, srcYInt)
+                        
+                        newAlpha = .Alpha / 255!
+                        dstImageData(x).Blue = Int(.Blue) + Int(dstImageData(x).Blue) * (1! - newAlpha)
+                        dstImageData(x).Green = Int(.Green) + Int(dstImageData(x).Green) * (1! - newAlpha)
+                        dstImageData(x).Red = Int(.Red) + Int(dstImageData(x).Red) * (1! - newAlpha)
+                        
+                        'Because the destination is guaranteed to only have opaque pixels,
+                        ' we don't need to deal with alpha here.
+                        
+                    End With
+                
+                End If
+                
+            Else
+                dstImageData(x) = zeroQuad
+            End If
+        Else
+            dstImageData(x) = zeroQuad
+        End If
+        
+    Next x
+    Next y
+    
+    'Safely deallocate all image arrays
+    srcDIB.UnwrapRGBQuadArrayFromDIB srcImageData
+    dstDIB.UnwrapRGBQuadArrayFromDIB dstImageData
+    
+End Sub
+
+Private Sub cboEdges_Click()
+    UpdatePreview
 End Sub
 
 Private Sub cboMapping_Click()
@@ -532,7 +741,16 @@ Private Sub cmdBar_AddCustomPresetData()
 End Sub
 
 Private Sub cmdBar_OKClick()
+    
+    'Free all preview-related DIBs before continuing, since they consume meaningful resource amounts that
+    ' are no longer required
+    If (Not m_Buffer Is Nothing) Then m_Buffer.EraseDIB True
+    If (Not m_Overlay Is Nothing) Then m_Overlay.EraseDIB True
+    If (Not m_mouseCoordDIB Is Nothing) Then m_mouseCoordDIB.EraseDIB True
+    If (Not m_ProportionalSource Is Nothing) Then m_ProportionalSource.EraseDIB True
+    
     Process "Perspective", , GetPerspectiveParamString, UNDO_Layer
+    
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -599,6 +817,11 @@ Private Sub Form_Load()
     
     Set m_Buffer = New pdDIB
     m_Buffer.CreateBlank picDraw.GetWidth, picDraw.GetHeight, 32, 0, 255
+    m_Buffer.SetInitialAlphaPremultiplicationState True
+    Set m_Overlay = New pdDIB
+    m_Overlay.CreateBlank picDraw.GetWidth, picDraw.GetHeight, 32, 0, 0
+    m_Overlay.SetInitialAlphaPremultiplicationState True
+    CacheSourceImageForPreview
     
     'Initialize the dynamic mouse coordinate font and DIB display
     Set m_mouseCoordDIB = New pdDIB
@@ -702,18 +925,28 @@ Private Sub RedrawEditor()
     'Reset opacity before continuing
     cPen.SetPenOpacity 100!
     
+    Dim i As Long
+    
     'Next, we will do one of two things:
-    ' 1) For forward mapping, draw a silhouette around the original image outline.
-    ' 2) For reverse mapping, just draw the image itself.
+    ' 1) For forward mapping, draw a silhouette and high-speed preview of the "perspective" image,
+    '    overlaid by the original image outline.
+    ' 2) For reverse mapping, just draw the image itself (since the user needs to target some quad within that image).
     If (cboMapping.ListIndex = 0) Then
         
-        Dim i As Long
+        'Render a high-speed preview of the transform to a dedicated overlay DIB, then alpha-blend that
+        ' against the full interactive area buffer.
+        If PDMath.IsPolygonConvex(m_nPoints, 4) Then
+            RenderImageToArbitraryQuad m_ProportionalSource, m_Overlay, m_nPoints
+            m_Overlay.AlphaBlendToDC m_Buffer.GetDIBDC
+        End If
+        
         For i = 0 To 3
             
-            'For all points but the first, connect point (n) to (n+1); on the last point,
-            ' reconnect to (0)
+            'For all points but the first, connect point (n) to (n+1)...
             If (i < 3) Then
                 PD2D.DrawLineI cSurface, cPen, m_oPoints(i).x, m_oPoints(i).y, m_oPoints(i + 1).x, m_oPoints(i + 1).y
+            
+            '...and on the last point, reconnect to (0)
             Else
                 PD2D.DrawLineI cSurface, cPen, m_oPoints(i).x, m_oPoints(i).y, m_oPoints(0).x, m_oPoints(0).y
             End If
@@ -731,6 +964,7 @@ Private Sub RedrawEditor()
             Set cSrcSurface = New pd2DSurface
             cSrcSurface.WrapSurfaceAroundPDDIB workingDIB
             
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_Buffer, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, g_CheckerboardPattern, fixBoundaryPainting:=True, noAntialiasing:=True
             PD2D.DrawSurfaceResizedCroppedF cSurface, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, cSrcSurface, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
             
         End If
@@ -783,6 +1017,12 @@ Private Sub RedrawEditor()
     cPen.SetPenOpacity 50!
     PD2D.DrawLineF cSurface, cPen, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y
     PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
+    
+    'Before exiting, draw a border around the "finished" interactive buffer.
+    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+    cPen.SetPenWidth 1!
+    cPen.SetPenLineJoin P2_LJ_Miter
+    PD2D.DrawRectangleI cSurface, cPen, 0, 0, m_Buffer.GetDIBWidth - 1, m_Buffer.GetDIBHeight - 1
     
     'Finally, if a node is hovered, display a live coordinate overlay for that coordinate *in layer space*.
     If (m_HoverPoint >= 0) Then
@@ -892,7 +1132,6 @@ Private Sub RedrawEditor()
         m_mouseCoordDIB.AlphaBlendToDC m_Buffer.GetDIBDC, 192, coordX, coordY
         
     End If
-    
     
     'Flip the completed buffer to the screen
     Set cSurface = Nothing
@@ -1042,12 +1281,33 @@ Private Sub picDraw_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal 
 End Sub
 
 Private Sub picDraw_Resize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If (Not m_Buffer Is Nothing) Then
+    If (Not m_Buffer Is Nothing) And PDMain.IsProgramRunning() Then
         m_Buffer.CreateBlank newWidth, newHeight, 32, 0, 255
+        m_Buffer.SetInitialAlphaPremultiplicationState True
+        m_Overlay.CreateBlank newWidth, newHeight, 32, 0, 0
+        m_Overlay.SetInitialAlphaPremultiplicationState True
+        CacheSourceImageForPreview
         RedrawEditor
     End If
 End Sub
 
 Private Sub sltQuality_Change()
     UpdatePreview
+End Sub
+
+'Scale the source layer (which is potentially enormous) to a maximum size of the interactive area;
+' this lets us perform faster mapping for the on-screen effect preview
+Private Sub CacheSourceImageForPreview()
+    
+    If (m_ProportionalSource Is Nothing) Then Set m_ProportionalSource = New pdDIB
+    
+    Dim newWidth As Long, newHeight As Long
+    With PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB
+        PDMath.ConvertAspectRatio .GetDIBWidth, .GetDIBHeight, picDraw.GetWidth, picDraw.GetHeight, newWidth, newHeight
+    End With
+    
+    m_ProportionalSource.CreateBlank newWidth, newHeight, 32, 0, 0
+    GDI_Plus.GDIPlus_StretchBlt m_ProportionalSource, 0, 0, newWidth, newHeight, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB, 0, 0, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBHeight, dstCopyIsOkay:=True
+    m_ProportionalSource.SetInitialAlphaPremultiplicationState PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetAlphaPremultiplication()
+    
 End Sub
