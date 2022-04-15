@@ -26,19 +26,13 @@ Begin VB.Form FormPerspective
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   945
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picDraw 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBoxInteractive picDraw 
       Height          =   8040
       Left            =   6000
-      ScaleHeight     =   534
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   534
-      TabIndex        =   4
       Top             =   120
       Width           =   8040
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -68,7 +62,7 @@ Begin VB.Form FormPerspective
    Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   735
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   7440
       Width           =   5775
       _ExtentX        =   10186
@@ -105,8 +99,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2022 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 19/February/20
-'Last update: large performance improvements, overhaul UI to properly support theming
+'Last updated: 14/April/22
+'Last update: replace lingering picture box with pdPictureBox, other UI improvements
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -149,6 +143,11 @@ Private m_srcDIB As pdDIB
 Private m_oPoints(0 To 3) As PointFloat
 Private m_nPoints(0 To 3) As PointFloat
 
+'The perspective function can report-back the coordinates of the perspective transform, translated into
+' "final" destination space.  We use these to raise a useful tooltip for the user, so they can see precise
+' measurements of each point.
+Private m_dstLayerSpacePoints(0 To 3) As PointFloat
+
 'Mouse status is tracked between MouseDown and MouseMove events; this allows for drag events.
 Private m_isMouseDown As Boolean
 
@@ -157,6 +156,9 @@ Private m_ActivePoint As Long, m_HoverPoint As Long
 
 'Buffer to which the current interactive "perspective" control is rendered.
 Private m_Buffer As pdDIB
+
+'The current mouse coordinates are rendered to a dedicated image, which is then overlaid atop the interactive box
+Private m_mouseCoordFont As pdFont, m_mouseCoordDIB As pdDIB
 
 Private Sub cboEdges_Click()
     UpdatePreview
@@ -509,8 +511,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
 End Sub
 
 Private Sub cboMapping_Click()
-    RedrawEditor
     UpdatePreview
+    RedrawEditor
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
@@ -540,8 +542,8 @@ Private Sub cmdBar_RandomizeClick()
     'Set the points in the current area to random values - not much to see here!
     Dim i As Long
     For i = 0 To 3
-        m_nPoints(i).x = Rnd * picDraw.ScaleWidth
-        m_nPoints(i).y = Rnd * picDraw.ScaleHeight
+        m_nPoints(i).x = Rnd * picDraw.GetWidth
+        m_nPoints(i).y = Rnd * picDraw.GetHeight
     Next i
     
 End Sub
@@ -567,8 +569,8 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    RedrawEditor
     UpdatePreview
+    RedrawEditor
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -586,8 +588,8 @@ Private Sub cmdBar_ResetClick()
         m_nPoints(i).y = m_oPoints(i).y
     Next i
         
-    RedrawEditor
     UpdatePreview
+    RedrawEditor
     
 End Sub
 
@@ -596,7 +598,19 @@ Private Sub Form_Load()
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     Set m_Buffer = New pdDIB
-    m_Buffer.CreateBlank picDraw.ScaleWidth, picDraw.ScaleHeight, 32, 0, 255
+    m_Buffer.CreateBlank picDraw.GetWidth, picDraw.GetHeight, 32, 0, 255
+    
+    'Initialize the dynamic mouse coordinate font and DIB display
+    Set m_mouseCoordDIB = New pdDIB
+    Set m_mouseCoordFont = New pdFont
+    
+    With m_mouseCoordFont
+        .SetFontColor RGB(25, 25, 25)
+        .SetFontBold True
+        .SetFontSize 10
+        .CreateFontObject
+        .SetTextAlignment vbLeftJustify
+    End With
     
     'Disable all previews while we initialize the dialog
     cmdBar.SetPreviewStatus False
@@ -613,15 +627,15 @@ Private Sub Form_Load()
     'Note the current image's width and height, which is needed to map between the on-screen interactive UI area,
     ' and the final transform.
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, True, pdFxPreview, , , True
+    EffectPrep.PrepImageData tmpSA, True, pdFxPreview, doNotUnPremultiplyAlpha:=True
     m_PreviewWidth = curDIBValues.Width
     m_PreviewHeight = curDIBValues.Height
     m_OrigImageWidth = curDIBValues.Width / curDIBValues.previewModifier
     m_OrigImageHeight = curDIBValues.Height / curDIBValues.previewModifier
     
     'Determine initial points for the draw area
-    m_oPoints(0).x = (picDraw.ScaleWidth - m_PreviewWidth) / 2
-    m_oPoints(0).y = (picDraw.ScaleHeight - m_PreviewHeight) / 2
+    m_oPoints(0).x = (picDraw.GetWidth - m_PreviewWidth) / 2
+    m_oPoints(0).y = (picDraw.GetHeight - m_PreviewHeight) / 2
     
     m_oPoints(1).x = m_oPoints(0).x + m_PreviewWidth
     m_oPoints(1).y = m_oPoints(0).y
@@ -649,8 +663,8 @@ Private Sub Form_Load()
         
     'Create the preview
     cmdBar.SetPreviewStatus True
-    RedrawEditor
     UpdatePreview
+    RedrawEditor
     
 End Sub
 
@@ -685,12 +699,13 @@ Private Sub RedrawEditor()
     PD2D.DrawLineI cSurface, cPen, 0!, m_Buffer.GetDIBHeight \ 2, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight \ 2
     PD2D.DrawLineI cSurface, cPen, m_Buffer.GetDIBHeight \ 2, 0, m_Buffer.GetDIBWidth \ 2, m_Buffer.GetDIBHeight
     
+    'Reset opacity before continuing
+    cPen.SetPenOpacity 100!
+    
     'Next, we will do one of two things:
     ' 1) For forward mapping, draw a silhouette around the original image outline.
     ' 2) For reverse mapping, just draw the image itself.
     If (cboMapping.ListIndex = 0) Then
-        
-        cPen.SetPenOpacity 100!
         
         Dim i As Long
         For i = 0 To 3
@@ -769,76 +784,120 @@ Private Sub RedrawEditor()
     PD2D.DrawLineF cSurface, cPen, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y
     PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
     
+    'Finally, if a node is hovered, display a live coordinate overlay for that coordinate *in layer space*.
+    If (m_HoverPoint >= 0) Then
+    
+        'Generate two strings: the "name" of this point (e.g. top-right) and the coordinate of this point.
+        ' We generate these separately, because we want to calculate width independently for each string,
+        ' and use the larger of the two as our bounding rect for the coordinate overlay.
+        Dim strFinal As String, strName As String, strCoord As String
+        Dim coordRelativeX As Double, coordRelativeY As Double
+        
+        'Note that coordActualX/Y are calculated by the param string generator - we rely on its work
+        ' for these values!
+        strCoord = "(" & Int(m_dstLayerSpacePoints(m_HoverPoint).x + 0.5) & ", " & Int(m_dstLayerSpacePoints(m_HoverPoint).y + 0.5) & ")"
+        
+        'The "name" of the selected point is a fixed string
+        Select Case m_HoverPoint
+            Case 0
+                strName = g_Language.TranslateMessage("top-left")
+            Case 1
+                strName = g_Language.TranslateMessage("top-right")
+            Case 2
+                strName = g_Language.TranslateMessage("bottom-right")
+            Case 3
+                strName = g_Language.TranslateMessage("bottom-left")
+        End Select
+        
+        'Find the larger of the two strings
+        Dim maxStringWidth As Long
+        maxStringWidth = m_mouseCoordFont.GetWidthOfString(strName)
+        If (m_mouseCoordFont.GetWidthOfString(strCoord) > maxStringWidth) Then maxStringWidth = m_mouseCoordFont.GetWidthOfString(strCoord)
+        
+        'Concatenate the two strings
+        strFinal = strName & vbCrLf & strCoord
+        
+        'Calculate the size of the concatenated input/output string (in pixels, both width and height, with the width limited
+        ' to the larger of the original two strings)
+        Dim strFinalWidth As Long, strFinalHeight As Long
+        strFinalWidth = maxStringWidth
+        strFinalHeight = m_mouseCoordFont.GetHeightOfWordwrapString(strFinal, strFinalWidth + 1)
+        
+        'Create a new DIB at the size of the string (with a slight bit of padding on all sides)
+        Dim coordBoxWidth As Long, coordBoxHeight As Long
+        coordBoxWidth = strFinalWidth + Interface.FixDPI(8)
+        coordBoxHeight = strFinalHeight + Interface.FixDPI(5)
+        
+        'Normally we would never want to (knowingly) create a 24-bpp DIB, but GDI font rendering is broken
+        ' on 32-bpp targets so we *must* use 24-bpp here
+        If (m_mouseCoordDIB Is Nothing) Then Set m_mouseCoordDIB = New pdDIB
+        m_mouseCoordDIB.CreateBlank coordBoxWidth, coordBoxHeight, 24, vbWhite
+        m_mouseCoordDIB.SetInitialAlphaPremultiplicationState True
+        
+        'Render the coordinate string onto the temporary DIB
+        m_mouseCoordFont.AttachToDC m_mouseCoordDIB.GetDIBDC
+        m_mouseCoordFont.FastRenderMultilineText Interface.FixDPI(4), Interface.FixDPI(2), strFinal
+        m_mouseCoordFont.ReleaseFromDC
+        
+        'Render a 1px border around the coordinate overlay
+        cSurface.WrapSurfaceAroundPDDIB m_mouseCoordDIB
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        cPen.SetPenColor vbBlack
+        cPen.SetPenOpacity 100!
+        cPen.SetPenWidth 1!
+        cPen.SetPenLineJoin P2_LJ_Miter
+        PD2D.DrawRectangleI cSurface, cPen, 0, 0, m_mouseCoordDIB.GetDIBWidth - 1, m_mouseCoordDIB.GetDIBHeight - 1
+        
+        'Calculate render coordinates for the coordinate box.  These vary according to point, but generally
+        ' we want to be on the "outside corner" of the given point.
+        Dim boxPadding As Long
+        boxPadding = Interface.FixDPI(12)
+        
+        Dim startPoint As PointFloat
+        startPoint = m_nPoints(m_HoverPoint)
+        
+        Dim coordX As Long, coordY As Long
+        Select Case m_HoverPoint
+            'top-left
+            Case 0
+                coordX = startPoint.x - (m_mouseCoordDIB.GetDIBWidth + boxPadding)
+                coordY = startPoint.y - (m_mouseCoordDIB.GetDIBHeight + boxPadding)
+                
+            'top-right
+            Case 1
+                coordX = startPoint.x + boxPadding
+                coordY = startPoint.y - (m_mouseCoordDIB.GetDIBHeight + boxPadding)
+                
+            'bottom-right
+            Case 2
+                coordX = startPoint.x + boxPadding
+                coordY = startPoint.y + boxPadding
+                
+            'bottom-left
+            Case 3
+                coordX = startPoint.x - (m_mouseCoordDIB.GetDIBWidth + boxPadding)
+                coordY = startPoint.y + boxPadding
+                
+        End Select
+        
+        'Fit the final coordinates in-bounds
+        If (coordX < 0) Then coordX = 0
+        If (coordY < 0) Then coordY = 0
+        If (coordX + m_mouseCoordDIB.GetDIBWidth > picDraw.GetWidth) Then coordX = picDraw.GetWidth - m_mouseCoordDIB.GetDIBWidth
+        If (coordY + m_mouseCoordDIB.GetDIBHeight > picDraw.GetHeight) Then coordY = picDraw.GetHeight - m_mouseCoordDIB.GetDIBHeight
+        
+        'Render the completed coordinate overlay DIB onto the main interactive box
+        m_mouseCoordDIB.AlphaBlendToDC m_Buffer.GetDIBDC, 192, coordX, coordY
+        
+    End If
+    
+    
     'Flip the completed buffer to the screen
     Set cSurface = Nothing
-    GDI.BitBltWrapper picDraw.hDC, 0, 0, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight, m_Buffer.GetDIBDC, 0, 0, vbSrcCopy
-    Set picDraw.Picture = picDraw.Image
-    picDraw.Refresh
-
-End Sub
-
-Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    picDraw.RequestRedraw True
     
-    m_isMouseDown = True
-    
-    'If the mouse is over a point, mark it as the active point
-    m_ActivePoint = CheckClick(x, y)
-    
-End Sub
-
-Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'If the mouse is not down, indicate to the user that points can be moved
-    If (Not m_isMouseDown) Then
-        
-        Dim origHoverPoint As Long
-        origHoverPoint = m_HoverPoint
-        
-        'If the user is close to a knot, change the mousepointer to 'move'
-        m_HoverPoint = CheckClick(x, y)
-        If (m_HoverPoint >= 0) Then
-        
-            If (picDraw.MousePointer <> vbSizePointer) Then picDraw.MousePointer = vbSizePointer
-            
-            'Display a tool-tip (helpful when the user wants a severely distorted transform matrix)
-            Select Case CheckClick(x, y)
-                Case 0
-                    picDraw.ToolTipText = g_Language.TranslateMessage("top-left")
-                Case 1
-                    picDraw.ToolTipText = g_Language.TranslateMessage("top-right")
-                Case 2
-                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-right")
-                Case 3
-                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-left")
-                    
-            End Select
-            
-        Else
-            If (picDraw.MousePointer <> vbDefault) Then picDraw.MousePointer = vbDefault
-            picDraw.ToolTipText = vbNullString
-        End If
-        
-        If (origHoverPoint <> m_HoverPoint) Then RedrawEditor
-    
-    'If the mouse is down, move the current point and redraw the preview
-    Else
-        
-        m_HoverPoint = m_ActivePoint
-        
-        If (m_ActivePoint >= 0) Then
-            m_nPoints(m_ActivePoint).x = x
-            m_nPoints(m_ActivePoint).y = y
-            RedrawEditor
-            UpdatePreview
-        End If
-    
-    End If
-
-End Sub
-
-Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-    m_isMouseDown = False
-    m_ActivePoint = -1
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
@@ -886,24 +945,32 @@ Private Function GetPerspectiveParamString() As String
     tmpY = (m_nPoints(0).y - m_oPoints(0).y) * yModifier
     cParams.AddParam "topleftx", tmpX
     cParams.AddParam "toplefty", tmpY
+    m_dstLayerSpacePoints(0).x = tmpX
+    m_dstLayerSpacePoints(0).y = tmpY
     
     'Top-right
     tmpX = m_OrigImageWidth + ((m_nPoints(1).x - m_oPoints(1).x) * xModifier)
     tmpY = (m_nPoints(1).y - m_oPoints(1).y) * yModifier
     cParams.AddParam "toprightx", tmpX
     cParams.AddParam "toprighty", tmpY
+    m_dstLayerSpacePoints(1).x = tmpX
+    m_dstLayerSpacePoints(1).y = tmpY
     
     'Bottom-right
     tmpX = m_OrigImageWidth + ((m_nPoints(2).x - m_oPoints(2).x) * xModifier)
     tmpY = m_OrigImageHeight + (m_nPoints(2).y - m_oPoints(2).y) * yModifier
     cParams.AddParam "bottomrightx", tmpX
     cParams.AddParam "bottomrighty", tmpY
+    m_dstLayerSpacePoints(2).x = tmpX
+    m_dstLayerSpacePoints(2).y = tmpY
     
     'Bottom-left
     tmpX = (m_nPoints(3).x - m_oPoints(3).x) * xModifier
     tmpY = m_OrigImageHeight + (m_nPoints(3).y - m_oPoints(3).y) * yModifier
     cParams.AddParam "bottomleftx", tmpX
     cParams.AddParam "bottomlefty", tmpY
+    m_dstLayerSpacePoints(3).x = tmpX
+    m_dstLayerSpacePoints(3).y = tmpY
     
     'Next, note the type of mapping (quadrilateral to square, or square to quadrilateral)
     cParams.AddParam "mapping", cboMapping.ListIndex
@@ -921,9 +988,62 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub picDraw_Resize()
+Private Sub picDraw_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.BitBltWrapper targetDC, 0, 0, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight, m_Buffer.GetDIBDC, 0, 0, vbSrcCopy
+End Sub
+
+Private Sub picDraw_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    m_isMouseDown = True
+    
+    'If the mouse is over a point, mark it as the active point
+    m_ActivePoint = CheckClick(x, y)
+    
+End Sub
+
+Private Sub picDraw_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'If the mouse is not down, indicate to the user that points can be moved
+    If (Not m_isMouseDown) Then
+        
+        Dim origHoverPoint As Long
+        origHoverPoint = m_HoverPoint
+        
+        'If the user is close to a knot, change the mousepointer to 'move'
+        m_HoverPoint = CheckClick(x, y)
+        If (m_HoverPoint >= 0) Then
+            picDraw.RequestCursor IDC_HAND
+        Else
+            picDraw.RequestCursor IDC_DEFAULT
+            picDraw.AssignTooltip vbNullString, raiseTipsImmediately:=False
+        End If
+        
+        If (origHoverPoint <> m_HoverPoint) Then RedrawEditor
+    
+    'If the mouse is down, move the current point and redraw the preview
+    Else
+        
+        m_HoverPoint = m_ActivePoint
+        
+        If (m_ActivePoint >= 0) Then
+            m_nPoints(m_ActivePoint).x = x
+            m_nPoints(m_ActivePoint).y = y
+            UpdatePreview
+            RedrawEditor
+        End If
+    
+    End If
+
+End Sub
+
+Private Sub picDraw_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    m_isMouseDown = False
+    m_ActivePoint = -1
+End Sub
+
+Private Sub picDraw_Resize(ByVal newWidth As Long, ByVal newHeight As Long)
     If (Not m_Buffer Is Nothing) Then
-        m_Buffer.CreateBlank picDraw.ScaleWidth, picDraw.ScaleHeight, 32, 0, 255
+        m_Buffer.CreateBlank newWidth, newHeight, 32, 0, 255
         RedrawEditor
     End If
 End Sub
