@@ -31,8 +31,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2022 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 14/May/19
-'Last update: using up/down keys in the edit box now moves the current control value up/down to match
+'Last updated: 15/April/22
+'Last update: add a "before reset" event so controls can suspend behavior accordingly (this is used by the
+'             Effects > Transform > Perspective tool, which resets x/y coordinates in pairs)
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -68,6 +69,7 @@ Option Explicit
 ' the mouse button is released, which makes it ideal for syncing things like time-consuming UI elements.
 Public Event Change()
 Public Event FinalChange()
+Public Event BeforeResetClick()
 Public Event ResetClick()
 Public Event Resize()
 Public Event GotFocusAPI()
@@ -455,6 +457,7 @@ End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If PDMath.IsPointInRectF(x, y, m_ResetRect) Then
+        RaiseEvent BeforeResetClick
         Me.Reset
         RaiseEvent ResetClick
         RaiseEvent FinalChange

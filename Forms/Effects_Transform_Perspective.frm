@@ -4,7 +4,7 @@ Begin VB.Form FormPerspective
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Perspective"
-   ClientHeight    =   9060
+   ClientHeight    =   9525
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   14175
@@ -22,33 +22,56 @@ Begin VB.Form FormPerspective
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   604
+   ScaleHeight     =   635
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   945
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   0
+      Left            =   240
+      TabIndex        =   5
+      Top             =   6000
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   120
+      Top             =   5520
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
+      Caption         =   "coordinates (x, y)"
+      FontSize        =   12
+   End
    Begin PhotoDemon.pdPictureBoxInteractive picDraw 
-      Height          =   8040
+      Height          =   8475
       Left            =   6000
       Top             =   120
       Width           =   8040
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14182
+      _ExtentY        =   14949
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   5625
+      Height          =   4305
       Left            =   120
       TabIndex        =   2
       Top             =   120
       Width           =   5745
       _ExtentX        =   10134
-      _ExtentY        =   9922
+      _ExtentY        =   7594
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   120
       TabIndex        =   3
-      Top             =   6660
+      Top             =   6960
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1270
@@ -60,20 +83,20 @@ Begin VB.Form FormPerspective
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   735
+      Height          =   855
       Left            =   120
       TabIndex        =   4
-      Top             =   7440
+      Top             =   7800
       Width           =   5775
       _ExtentX        =   10186
-      _ExtentY        =   1296
+      _ExtentY        =   1508
       Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdDropDown cboMapping 
       Height          =   735
       Left            =   120
       TabIndex        =   1
-      Top             =   5850
+      Top             =   4560
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
@@ -84,10 +107,97 @@ Begin VB.Form FormPerspective
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   8310
+      Top             =   8775
       Width           =   14175
       _ExtentX        =   25003
       _ExtentY        =   1323
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   1
+      Left            =   1440
+      TabIndex        =   6
+      Top             =   6000
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   2
+      Left            =   3360
+      TabIndex        =   7
+      Top             =   6000
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   3
+      Left            =   4560
+      TabIndex        =   8
+      Top             =   6000
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   6
+      Left            =   240
+      TabIndex        =   9
+      Top             =   6480
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   7
+      Left            =   1440
+      TabIndex        =   10
+      Top             =   6480
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   4
+      Left            =   3360
+      TabIndex        =   11
+      Top             =   6480
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner spnCoords 
+      Height          =   375
+      Index           =   5
+      Left            =   4560
+      TabIndex        =   12
+      Top             =   6480
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   661
+      Min             =   -32000
+      Max             =   32000
    End
 End
 Attribute VB_Name = "FormPerspective"
@@ -174,6 +284,9 @@ Private m_mouseCoordFont As pdFont, m_mouseCoordDIB As pdDIB
 ' interactive tool area.  This improves performance by limiting the amount of memory that we have to
 ' "dip into" while rendering the on-screen preview.
 Private m_ProportionalSource As pdDIB
+
+'Prevent recursive redraws when synchronizing text UI elements
+Private m_SuspendSync As Boolean
 
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: the coordinates of the four corners of the transformed image, stored inside a "|"-delimited string.  To see how
@@ -847,14 +960,17 @@ Private Sub Form_Load()
     cboMapping.AddItem "forward (outline defines destination area)", 0
     cboMapping.AddItem "reverse (outline defines source area)", 1
     
-    'Note the current image's width and height, which is needed to map between the on-screen interactive UI area,
-    ' and the final transform.
-    Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, True, pdFxPreview, doNotUnPremultiplyAlpha:=True
-    m_PreviewWidth = curDIBValues.Width
-    m_PreviewHeight = curDIBValues.Height
-    m_OrigImageWidth = curDIBValues.Width / curDIBValues.previewModifier
-    m_OrigImageHeight = curDIBValues.Height / curDIBValues.previewModifier
+    'Determine a good scale for the interactive area.  We want the dimensions to fill roughly half the
+    ' available area, with aspect ratio preserved, so that the user has plenty of space to move around
+    ' the corner nodes.
+    Dim targetWidth As Long, targetHeight As Long
+    targetWidth = picDraw.GetWidth \ 2
+    targetHeight = picDraw.GetHeight \ 2
+    
+    m_OrigImageWidth = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+    m_OrigImageHeight = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
+    
+    PDMath.ConvertAspectRatio m_OrigImageWidth, m_OrigImageHeight, targetWidth, targetHeight, m_PreviewWidth, m_PreviewHeight
     
     'Determine initial points for the draw area
     m_oPoints(0).x = (picDraw.GetWidth - m_PreviewWidth) / 2
@@ -869,7 +985,9 @@ Private Sub Form_Load()
     m_oPoints(3).x = m_oPoints(0).x
     m_oPoints(3).y = m_oPoints(0).y + m_PreviewHeight
     
-    'Copy those values into the "current values" point array
+    'Copy those values into the "current values" point array, and back them up to the "original values" array.
+    ' (The scale between these two values is passed to the renderer, which allows us to generalize transforms
+    ' across image sizes when recorded as part of a macro.)
     Dim i As Long
     For i = 0 To 3
         m_nPoints(i).x = m_oPoints(i).x
@@ -920,7 +1038,7 @@ Private Sub RedrawEditor()
     If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDefault)
     
     PD2D.DrawLineI cSurface, cPen, 0!, m_Buffer.GetDIBHeight \ 2, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight \ 2
-    PD2D.DrawLineI cSurface, cPen, m_Buffer.GetDIBHeight \ 2, 0, m_Buffer.GetDIBWidth \ 2, m_Buffer.GetDIBHeight
+    PD2D.DrawLineI cSurface, cPen, m_Buffer.GetDIBWidth \ 2, 0, m_Buffer.GetDIBWidth \ 2, m_Buffer.GetDIBHeight
     
     'Reset opacity before continuing
     cPen.SetPenOpacity 100!
@@ -1019,7 +1137,7 @@ Private Sub RedrawEditor()
     PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
     
     'Before exiting, draw a border around the "finished" interactive buffer.
-    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDark)
     cPen.SetPenWidth 1!
     cPen.SetPenLineJoin P2_LJ_Miter
     PD2D.DrawRectangleI cSurface, cPen, 0, 0, m_Buffer.GetDIBWidth - 1, m_Buffer.GetDIBHeight - 1
@@ -1136,6 +1254,18 @@ Private Sub RedrawEditor()
     'Flip the completed buffer to the screen
     Set cSurface = Nothing
     picDraw.RequestRedraw True
+    
+    'Finally, sync the text boxes to the current corner dimensions
+    m_SuspendSync = True
+    
+    For i = 0 To 3
+        spnCoords(i * 2).Value = m_dstLayerSpacePoints(i).x
+        VBHacks.DoEvents_SingleHwnd spnCoords(i * 2).hWnd
+        spnCoords(i * 2 + 1).Value = m_dstLayerSpacePoints(i).y
+        VBHacks.DoEvents_SingleHwnd spnCoords(i * 2 + 1).hWnd
+    Next i
+    
+    m_SuspendSync = False
     
 End Sub
 
@@ -1270,7 +1400,7 @@ Private Sub picDraw_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVa
             UpdatePreview
             RedrawEditor
         End If
-    
+        
     End If
 
 End Sub
@@ -1309,5 +1439,75 @@ Private Sub CacheSourceImageForPreview()
     m_ProportionalSource.CreateBlank newWidth, newHeight, 32, 0, 0
     GDI_Plus.GDIPlus_StretchBlt m_ProportionalSource, 0, 0, newWidth, newHeight, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB, 0, 0, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBHeight, dstCopyIsOkay:=True
     m_ProportionalSource.SetInitialAlphaPremultiplicationState PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetAlphaPremultiplication()
+    
+End Sub
+
+Private Sub spnCoords_BeforeResetClick(Index As Integer)
+    m_SuspendSync = True
+End Sub
+
+Private Sub spnCoords_Change(Index As Integer)
+    
+    'Prevent recursive setting propagation
+    If (Not m_SuspendSync) Then ReflectNewTextChanges Index
+    
+End Sub
+
+Private Sub spnCoords_ResetClick(Index As Integer)
+    
+    'Assign x-values first, and *do not* refresh the screen until the second value is set
+    m_SuspendSync = True
+    
+    Select Case Index
+        Case 1
+            spnCoords(0).Value = 0
+            spnCoords(1).Value = 0
+        Case 3
+            spnCoords(2).Value = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+            spnCoords(3).Value = 0
+        Case 5
+            spnCoords(4).Value = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+            spnCoords(5).Value = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
+        Case 7
+            spnCoords(6).Value = 0
+            spnCoords(7).Value = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
+    End Select
+    
+    m_SuspendSync = False
+    ReflectNewTextChanges Index
+    
+End Sub
+
+Private Sub ReflectNewTextChanges(ByVal Index As Long)
+    
+    'Any changes to text boxes require us to mirror said changes to the m_nPoints() array.
+    Dim origCoords As PointFloat
+    Select Case (Index \ 2)
+        Case 0
+            origCoords.x = 0
+            origCoords.y = 0
+        Case 1
+            origCoords.x = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+            origCoords.y = 0
+        Case 2
+            origCoords.x = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+            origCoords.y = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
+        Case 3
+            origCoords.x = 0
+            origCoords.y = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
+    End Select
+    
+    Dim xModifier As Double, yModifier As Double
+    If (m_PreviewWidth <> 0#) Then xModifier = (m_OrigImageWidth / m_PreviewWidth) Else xModifier = 1#
+    If (m_PreviewHeight <> 0#) Then yModifier = (m_OrigImageHeight / m_PreviewHeight) Else yModifier = 1#
+    
+    Dim spnIndexX As Long, spnIndexY As Long
+    spnIndexX = (Index \ 2) * 2
+    spnIndexY = spnIndexX + 1
+    m_nPoints(Index \ 2).x = m_oPoints(Index \ 2).x + (spnCoords(spnIndexX).Value - origCoords.x) / xModifier
+    m_nPoints(Index \ 2).y = m_oPoints(Index \ 2).y + (spnCoords(spnIndexY).Value - origCoords.y) / yModifier
+    
+    UpdatePreview
+    RedrawEditor
     
 End Sub
