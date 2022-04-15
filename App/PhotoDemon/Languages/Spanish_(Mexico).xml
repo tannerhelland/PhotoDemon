@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.93</langversion>
+<langversion>8.0.94</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -6770,6 +6770,26 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
+<original>current node settings</original>
+<translation>configuración actual del nodo</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>posición</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>editor de nodos</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>sí</translation>
+</phrase>
+
+<phrase>
 <original>generate new pattern</original>
 <translation>generar un nuevo patrón</translation>
 </phrase>
@@ -6822,26 +6842,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>your collection</original>
 <translation>tu colección</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>configuración actual del nodo</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>posición</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>editor de nodos</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>sí</translation>
 </phrase>
 
 <phrase>
@@ -9124,6 +9124,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>coordinates (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>transformation type</original>
 <translation>tipo de transformación</translation>
 </phrase>
@@ -9163,7 +9168,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>abajo a la izquierda</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -13759,10 +13764,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5410 phrases. -->
-<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 11794 total words. -->
+<!-- As of this build, PhotoDemon contains 5411 phrases. -->
+<!-- 2806 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 11797 total words. -->
 
 </pdData>

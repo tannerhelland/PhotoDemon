@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.388</langversion>
+<langversion>1.0.389</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -6770,6 +6770,26 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>current node settings</original>
+<translation>тековните поставки јазол</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>позиција</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>јазол уредник</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>Да</translation>
+</phrase>
+
+<phrase>
 <original>generate new pattern</original>
 <translation></translation>
 </phrase>
@@ -6822,26 +6842,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>your collection</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>тековните поставки јазол</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>позиција</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>јазол уредник</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>Да</translation>
 </phrase>
 
 <phrase>
@@ -9124,6 +9124,11 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>coordinates (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>transformation type</original>
 <translation>тип трансформација</translation>
 </phrase>
@@ -9163,7 +9168,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>долу-лево</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -13759,10 +13764,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5410 phrases. -->
-<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 11794 total words. -->
+<!-- As of this build, PhotoDemon contains 5411 phrases. -->
+<!-- 2806 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 11797 total words. -->
 
 </pdData>

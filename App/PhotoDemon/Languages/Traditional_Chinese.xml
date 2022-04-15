@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.262</langversion>
+<langversion>7.0.263</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -6736,6 +6736,26 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>current node settings</original>
+<translation>目前控制點設定</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>位置</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>控制點編輯器</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>是</translation>
+</phrase>
+
+<phrase>
 <original>generate new pattern</original>
 <translation></translation>
 </phrase>
@@ -6788,26 +6808,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>your collection</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>目前控制點設定</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>位置</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>控制點編輯器</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>是</translation>
 </phrase>
 
 <phrase>
@@ -9088,6 +9088,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>coordinates (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>transformation type</original>
 <translation></translation>
 </phrase>
@@ -9127,7 +9132,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>左下</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -13711,10 +13716,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5410 phrases. -->
-<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 11794 total words. -->
+<!-- As of this build, PhotoDemon contains 5411 phrases. -->
+<!-- 2806 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 11797 total words. -->
 
 </pdData>

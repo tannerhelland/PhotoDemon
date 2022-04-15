@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.95</langversion>
+<langversion>8.0.96</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -6767,6 +6767,26 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>current node settings</original>
+<translation>Bieżące ustawienia węzła</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>Pozycja</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>Edytor węzła</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>Tak</translation>
+</phrase>
+
+<phrase>
 <original>generate new pattern</original>
 <translation>Generuj nowy wzór</translation>
 </phrase>
@@ -6819,26 +6839,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>your collection</original>
 <translation>Twoja kolekcja</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>Bieżące ustawienia węzła</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>Pozycja</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>Edytor węzła</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>Tak</translation>
 </phrase>
 
 <phrase>
@@ -9121,6 +9121,11 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>coordinates (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>transformation type</original>
 <translation>Typ transformacji</translation>
 </phrase>
@@ -9160,7 +9165,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>dół-lewa</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -13756,10 +13761,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5410 phrases. -->
-<!-- 2806 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 11794 total words. -->
+<!-- As of this build, PhotoDemon contains 5411 phrases. -->
+<!-- 2806 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 11797 total words. -->
 
 </pdData>
