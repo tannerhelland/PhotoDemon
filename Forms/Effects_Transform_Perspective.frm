@@ -209,9 +209,9 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2022 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 15/April/22
-'Last update: significantly improved UI, including preview of the transformed image *right there* in the
-'             interactive area, with proper support for checkerboarding on transparent images
+'Last updated: 16/April/22
+'Last update: significantly improved UI, including preview of the transformed image in the interactive area,
+'             new spin controls for precise point control, and support for moving all quad points in unison
 '
 'This tool allows the user to remap their image (or layer) to any arbitrary quadrilateral.  The code is
 ' fairly standard linear algebra, as a series of equations must be solved to generate the homography matrix
@@ -287,6 +287,10 @@ Private m_ProportionalSource As pdDIB
 
 'Prevent recursive redraws when synchronizing text UI elements
 Private m_SuspendSync As Boolean
+
+'The user can also move all four points simultaneously.  To enable this, we have to cache initial point positions
+' at _MouseDown.
+Private m_PointsAtMoveStart(0 To 3) As PointFloat, m_InitPoint As PointFloat, m_MoveActive As Boolean
 
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: the coordinates of the four corners of the transformed image, stored inside a "|"-delimited string.  To see how
@@ -1295,6 +1299,19 @@ Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
     
 End Function
 
+'Is a point (from the interactive area) inside the perspective-corrected image's quad?
+Private Function IsPointInQuad(ByVal x As Long, ByVal y As Long) As Boolean
+    
+    'Build a path from the current list of points
+    Dim cShape As pd2DPath
+    Set cShape = New pd2DPath
+    cShape.AddPolygon 4, VarPtr(m_nPoints(0)), True, False
+    
+    'Let the path do the rest!
+    IsPointInQuad = cShape.IsPointInsidePathL(x, y)
+    
+End Function
+
 'Take the current tool settings and merge them into a parameter string
 Private Function GetPerspectiveParamString() As String
     
@@ -1368,11 +1385,30 @@ Private Sub picDraw_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVa
     'If the mouse is over a point, mark it as the active point
     m_ActivePoint = CheckClick(x, y)
     
+    'If the user *didn't* click a point, look for move operations (in the interior of the quad)
+    If (m_ActivePoint < 0) Then
+    
+        m_MoveActive = IsPointInQuad(x, y)
+        
+        If m_MoveActive Then
+            
+            m_InitPoint.x = x
+            m_InitPoint.y = y
+            
+            Dim i As Long
+            For i = 0 To 3
+                m_PointsAtMoveStart(i) = m_nPoints(i)
+            Next i
+            
+        End If
+            
+    End If
+    
 End Sub
 
 Private Sub picDraw_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
-    'If the mouse is not down, indicate to the user that points can be moved
+    'If the mouse is not down, indicate to the user that points (and the shape itself) can be moved
     If (Not m_isMouseDown) Then
         
         Dim origHoverPoint As Long
@@ -1383,8 +1419,16 @@ Private Sub picDraw_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVa
         If (m_HoverPoint >= 0) Then
             picDraw.RequestCursor IDC_HAND
         Else
-            picDraw.RequestCursor IDC_DEFAULT
+            
+            'If the cursor is inside the quadrilateral, allow the user to move *all* points simultaneously
+            If IsPointInQuad(x, y) Then
+                picDraw.RequestCursor IDC_SIZEALL
+            Else
+                picDraw.RequestCursor IDC_DEFAULT
+            End If
+            
             picDraw.AssignTooltip vbNullString, raiseTipsImmediately:=False
+            
         End If
         
         If (origHoverPoint <> m_HoverPoint) Then RedrawEditor
@@ -1392,13 +1436,29 @@ Private Sub picDraw_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVa
     'If the mouse is down, move the current point and redraw the preview
     Else
         
+        'Mirror the hover point to match the active point
         m_HoverPoint = m_ActivePoint
         
+        'If the user is dragging a corner node, update that node's position and redraw accordingly
         If (m_ActivePoint >= 0) Then
+        
             m_nPoints(m_ActivePoint).x = x
             m_nPoints(m_ActivePoint).y = y
             UpdatePreview
             RedrawEditor
+        
+        'Similarly, if the user is moving the entire quad, update *all* node positions
+        ElseIf m_MoveActive Then
+            
+            Dim i As Long
+            For i = 0 To 3
+                m_nPoints(i).x = m_PointsAtMoveStart(i).x + (x - m_InitPoint.x)
+                m_nPoints(i).y = m_PointsAtMoveStart(i).y + (y - m_InitPoint.y)
+            Next i
+            
+            UpdatePreview
+            RedrawEditor
+        
         End If
         
     End If
@@ -1407,6 +1467,7 @@ End Sub
 
 Private Sub picDraw_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_isMouseDown = False
+    m_MoveActive = False
     m_ActivePoint = -1
 End Sub
 
