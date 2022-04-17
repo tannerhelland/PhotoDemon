@@ -142,17 +142,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'These usually exist in a common dialog object, but since we're manually handling all
-' printer functionality we need to manually specify them
-Private Enum PrinterOrientationConstants
-    cdlPortrait = 1
-    cdlLandscape = 2
-End Enum
-
-#If False Then
-    Private Const cdlPortrait = 1, cdlLandscape = 2
-#End If
-
 'Persistently cached previews in upright and rotated modes.  This is convenient because we can leave the
 ' on-screen "paper sized" preview the same dimensions, and simply switch between these two cached thumbnails.
 Private m_previewPage As pdDIB, m_previewPage90 As pdDIB

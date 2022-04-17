@@ -1053,11 +1053,17 @@ Private Sub RedrawEditor()
     ' 1) For forward mapping, draw a silhouette and high-speed preview of the "perspective" image,
     '    overlaid by the original image outline.
     ' 2) For reverse mapping, just draw the image itself (since the user needs to target some quad within that image).
+    '
+    'For case (1), extreme quad orientations may *not* actually render the image (basically, if rendering would
+    ' result in the image being "outside" the quad's boundaries), and we track this case so that we can render
+    ' additional orientation markers in subsequent steps.
+    Dim livePreviewRendered As Boolean: livePreviewRendered = False
     If (cboMapping.ListIndex = 0) Then
         
         'Render a high-speed preview of the transform to a dedicated overlay DIB, then alpha-blend that
         ' against the full interactive area buffer.
         If PDMath.IsPolygonConvex(m_nPoints, 4) Then
+            livePreviewRendered = True
             RenderImageToArbitraryQuad m_ProportionalSource, m_Overlay, m_nPoints
             m_Overlay.AlphaBlendToDC m_Buffer.GetDIBDC
         End If
@@ -1088,12 +1094,13 @@ Private Sub RedrawEditor()
             
             GDI_Plus.GDIPlusFillDIBRect_Pattern m_Buffer, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, g_CheckerboardPattern, fixBoundaryPainting:=True, noAntialiasing:=True
             PD2D.DrawSurfaceResizedCroppedF cSurface, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, cSrcSurface, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+            Set cSrcSurface = Nothing
             
         End If
         
     End If
     
-    'Next, draw connecting lines to form an image outline.  Use GDI+ for superior results (e.g. antialiasing).
+    'Next, draw connecting lines to form an image outline.
     cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
     
     If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
@@ -1133,12 +1140,15 @@ Private Sub RedrawEditor()
         
     Next i
     
-    'Finally, draw the center cross to help the user orient to the center point of the perspective effect
-    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
-    cPen.SetPenWidth 1!
-    cPen.SetPenOpacity 50!
-    PD2D.DrawLineF cSurface, cPen, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y
-    PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
+    'Finally, draw the center cross to help the user orient to the center point of the perspective effect.
+    ' (Note that we only do this if a full preview was *not* rendered.)
+    If (Not livePreviewRendered) Then
+        If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
+        cPen.SetPenWidth 1!
+        cPen.SetPenOpacity 50!
+        PD2D.DrawLineF cSurface, cPen, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y
+        PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
+    End If
     
     'Before exiting, draw a border around the "finished" interactive buffer.
     If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDark)
@@ -1153,7 +1163,6 @@ Private Sub RedrawEditor()
         ' We generate these separately, because we want to calculate width independently for each string,
         ' and use the larger of the two as our bounding rect for the coordinate overlay.
         Dim strFinal As String, strName As String, strCoord As String
-        Dim coordRelativeX As Double, coordRelativeY As Double
         
         'Note that coordActualX/Y are calculated by the param string generator - we rely on its work
         ' for these values!
@@ -1222,6 +1231,7 @@ Private Sub RedrawEditor()
         
         Dim coordX As Long, coordY As Long
         Select Case m_HoverPoint
+        
             'top-left
             Case 0
                 coordX = startPoint.x - (m_mouseCoordDIB.GetDIBWidth + boxPadding)

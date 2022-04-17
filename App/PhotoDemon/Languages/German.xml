@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1412</langversion>
+<langversion>9.0.1454</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1210,7 +1210,7 @@
 
 <phrase>
 <original>Polar conversion</original>
-<translation>Polar-Konvertierung</translation>
+<translation>Polar-Konversion</translation>
 </phrase>
 
 <phrase>
@@ -2115,7 +2115,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Conversion complete.</original>
-<translation>Konvertierung abgeschlossen.</translation>
+<translation>Konversion abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -5609,7 +5609,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Monochrome Conversion</original>
-<translation>Monochrome Konvertierung</translation>
+<translation>Monochrome Konversion</translation>
 </phrase>
 
 <phrase>
@@ -5969,7 +5969,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
-<translation>Verbindliche Hipster, um Sepia-Konvertierung durchzuführen</translation>
+<translation>Verbindliche Hipster, um Sepia-Konversion durchzuführen</translation>
 </phrase>
 
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9133,7 +9133,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>coordinates (x, y)</original>
-<translation></translation>
+<translation>Koordinaten (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9185,12 +9185,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>conversion</original>
-<translation>Konvertierung</translation>
+<translation>Konversion</translation>
 </phrase>
 
 <phrase>
 <original>Performing polar coordinate conversion</original>
-<translation>Polarkoordinaten-Konvertierung wird durchgeführt</translation>
+<translation>Durchführen der Polarkoordinaten-Konversion</translation>
 </phrase>
 
 <phrase>
@@ -9427,7 +9427,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
-<translation>(Batch-Konvertierungsprozess wird bei Laufzeit hier erscheinen)</translation>
+<translation>(Batch-Konversionsprozess wird bei Laufzeit hier erscheinen)</translation>
 </phrase>
 
 <phrase>
@@ -9856,7 +9856,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>Batch-Konvertierung abgebrochen. %1 Bild(er) wurde(n) vor der Löschung verarbeitet. Zuletzt verarbeitetes Bild war "%2".</translation>
+<translation>Batch-Konversion abgebrochen. %1 Bild(er) wurde(n) vor der Löschung verarbeitet. Zuletzt verarbeitetes Bild war "%2".</translation>
 </phrase>
 
 <phrase>
