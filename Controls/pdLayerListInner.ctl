@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layer Listbox (inner portion only)
 'Copyright 2014-2022 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 16/August/20
-'Last update: whole bunch of minor UI and UX improvements; see https://github.com/tannerhelland/PhotoDemon/issues/311
+'Last updated: 18/April/22
+'Last update: fix UI glitch when starting to move layer that is *not* the active layer
 '
 'In a surprise to precisely no one, PhotoDemon has many unique UI/UX needs - needs that the
 ' intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize"
@@ -157,7 +157,7 @@ Private m_InOLEDragDropMode As Boolean
 'While in our own custom layer box drag/drop mode (e.g. rearranging layers), this will be set to TRUE.
 ' Also, the layer-to-be-moved is tracked, as is the initial layer index (which is required for processing the final
 ' action, e.g. the one that triggers Undo/Redo creation).
-Private m_LayerRearrangingMode As Boolean, m_LayerIndexToRearrange As Long, m_InitialLayerIndex As Long
+Private m_LayerRearrangingMode As Boolean, m_LayerMovingID As Long, m_LayerIndexToRearrange As Long, m_InitialLayerIndex As Long
 
 'When the user is in "edit layer name" mode, this will be set to TRUE
 Private m_LayerNameEditMode As Boolean
@@ -676,13 +676,19 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     'Don't proceed unless the user has the mouse over a valid layer
     If (clickedLayer >= 0) And PDImages.IsImageActive() Then
         
-        'If the image is a multilayer image, and they're using the left mouse button, initiate drag/drop layer reordering
-        If (PDImages.GetActiveImage.GetNumOfLayers > 1) And (Button = pdLeftButton) Then
-        
+        'If the image is a multilayer image, and they're using the left mouse button,
+        ' initiate drag/drop layer reordering - but *only* if the mouse is not in the
+        ' "visibility toggle" segment of the control.
+        If (PDImages.GetActiveImage.GetNumOfLayers > 1) And (Button = pdLeftButton) And (Not PDMath.IsPointInRect(x, y, m_VisibilityRect)) Then
+            
             'Enter layer rearranging mode
             m_LayerRearrangingMode = True
             
+            'If the selected layer is not the active one, make it so
+            If (clickedLayer <> PDImages.GetActiveImage.GetActiveLayerIndex) Then Layers.SetActiveLayerByIndex clickedLayer, False
+            
             'Note the layer being rearranged
+            m_LayerMovingID = PDImages.GetActiveImage.GetLayerByIndex(clickedLayer, True).GetLayerID
             m_LayerIndexToRearrange = clickedLayer
             m_InitialLayerIndex = m_LayerIndexToRearrange
         
@@ -1244,7 +1250,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
                         'If the user is currently dragging this layer into a new position, we want to indent
                         ' it horizontally by an arbitrary pixel amount; this makes it more obvious that its
                         ' current state is "abnormal".
-                        If (m_LayerRearrangingMode And layerIsSelected) Then offsetX = offsetX + (HORIZONTAL_ITEM_PADDING * 6)
+                        If (m_LayerRearrangingMode And (m_LayerMovingID = tmpLayerRef.GetLayerID)) Then offsetX = offsetX + (HORIZONTAL_ITEM_PADDING * 6)
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
                         ' layout decisions.
