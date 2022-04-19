@@ -462,12 +462,13 @@ Public Sub InitializeMenus()
         AddMenuItem "Trace contour...", "effects_tracecontour", 6, 3, 5
     AddMenuItem "Light and shadow", "effects_lightandshadow", 6, 4
         AddMenuItem "Black light...", "effects_blacklight", 6, 4, 0
-        AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 4, 1
-        AddMenuItem "Rainbow...", "effects_rainbow", 6, 4, 2
-        AddMenuItem "Sunshine...", "effects_sunshine", 6, 4, 3
-        AddMenuItem "-", "-", 6, 4, 4
-        AddMenuItem "Dilate...", "effects_dilate", 6, 4, 5
-        AddMenuItem "Erode...", "effects_erode", 6, 4, 6
+        AddMenuItem "Bump map...", "effects_bumpmap", 6, 4, 1
+        AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 4, 2
+        AddMenuItem "Rainbow...", "effects_rainbow", 6, 4, 3
+        AddMenuItem "Sunshine...", "effects_sunshine", 6, 4, 4
+        AddMenuItem "-", "-", 6, 4, 5
+        AddMenuItem "Dilate...", "effects_dilate", 6, 4, 6
+        AddMenuItem "Erode...", "effects_erode", 6, 4, 7
     AddMenuItem "Natural", "effects_natural", 6, 5
         AddMenuItem "Atmosphere...", "effects_atmosphere", 6, 5, 0
         AddMenuItem "Fog...", "effects_fog", 6, 5, 1

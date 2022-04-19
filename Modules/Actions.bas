@@ -960,6 +960,9 @@ Private Function Launch_ByName_MenuEffects(ByRef srcMenuName As String, Optional
             Case "effects_blacklight"
                 Process "Black light", True
                 
+            Case "effects_bumpmap"
+                Process "Bump map", True
+                
             Case "effects_crossscreen"
                 Process "Cross-screen", True
             

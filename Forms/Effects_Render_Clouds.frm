@@ -298,7 +298,7 @@ End Sub
 
 Private Sub Form_Load()
 
-    'Disable previews
+    'Disable previews during initialization
     cmdBar.SetPreviewStatus False
     
     'Populate the blend mode drop-down
@@ -317,7 +317,7 @@ Private Sub Form_Load()
     cboGenerator.ListIndex = 1
     cboGenerator.SetAutomaticRedraws True, True
     
-    'Apply visual themes and translations
+    'Apply visual themes and translations, then enable previews
     ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
