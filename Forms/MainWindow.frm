@@ -1250,28 +1250,32 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Cross-screen..."
+            Caption         =   "Bump map..."
             Index           =   1
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Rainbow..."
+            Caption         =   "Cross-screen..."
             Index           =   2
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Sunshine..."
+            Caption         =   "Rainbow..."
             Index           =   3
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "-"
+            Caption         =   "Sunshine..."
             Index           =   4
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Dilate..."
+            Caption         =   "-"
             Index           =   5
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Erode..."
+            Caption         =   "Dilate..."
             Index           =   6
+         End
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Erode..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3442,16 +3446,18 @@ Private Sub MnuLightShadow_Click(Index As Integer)
         Case 0
             Actions.LaunchAction_ByName "effects_blacklight"
         Case 1
-            Actions.LaunchAction_ByName "effects_crossscreen"
+            Actions.LaunchAction_ByName "effects_bumpmap"
         Case 2
-            Actions.LaunchAction_ByName "effects_rainbow"
+            Actions.LaunchAction_ByName "effects_crossscreen"
         Case 3
-            Actions.LaunchAction_ByName "effects_sunshine"
+            Actions.LaunchAction_ByName "effects_rainbow"
         Case 4
-            '(separator)
+            Actions.LaunchAction_ByName "effects_sunshine"
         Case 5
-            Actions.LaunchAction_ByName "effects_dilate"
+            '(separator)
         Case 6
+            Actions.LaunchAction_ByName "effects_dilate"
+        Case 7
             Actions.LaunchAction_ByName "effects_erode"
     End Select
 End Sub

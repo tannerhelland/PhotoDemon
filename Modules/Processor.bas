@@ -1662,8 +1662,6 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     'Blur
-    
-    'Standard blur filters
     ElseIf Strings.StringsEqual(processID, "Box blur", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormBoxBlur Else FormBoxBlur.BoxBlurFilter processParameters
         Process_EffectsMenu = True
@@ -1676,7 +1674,6 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilateralFilter_Central processParameters
         Process_EffectsMenu = True
         
-    'Motion (directional) blurs
     ElseIf Strings.StringsEqual(processID, "Motion blur", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormMotionBlur Else FormMotionBlur.MotionBlurFilter processParameters
         Process_EffectsMenu = True
@@ -1773,6 +1770,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     'Light and shadow filters
     ElseIf Strings.StringsEqual(processID, "Black light", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Bump map", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormBumpMap Else FormBumpMap.ApplyBumpMapEffect processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Cross-screen", True) Then

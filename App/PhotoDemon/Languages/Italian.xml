@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.87</langversion>
+<langversion>8.0.88</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -999,6 +999,11 @@
 </phrase>
 
 <phrase>
+<original>Bump map</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Cross-screen</original>
 <translation>Schermo incrociato</translation>
 </phrase>
@@ -1283,7 +1288,7 @@
 <translation>Cancella le immagini dalla lista nei recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 261 phrases. 7 were duplicates of existing phrases, so only 254 new phrases were written to file. -->
+<!-- Actions.bas contains 262 phrases. 7 were duplicates of existing phrases, so only 255 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5601,7 +5606,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 384 phrases. 203 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 385 phrases. 204 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -8477,6 +8482,18 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
+<original>ambient light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating bump map</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>spokes</original>
@@ -13777,10 +13794,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2605</phrasecount>
+<phrasecount>2608</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5411 phrases. -->
-<!-- 2806 are duplicates, so only 2605 unique phrases have been written to file. -->
-<!-- These 2605 phrases contain approximately 11797 total words. -->
+<!-- As of this build, PhotoDemon contains 5425 phrases. -->
+<!-- 2817 are duplicates, so only 2608 unique phrases have been written to file. -->
+<!-- These 2608 phrases contain approximately 11804 total words. -->
 
 </pdData>
