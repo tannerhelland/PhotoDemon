@@ -1118,6 +1118,9 @@ Private Function Launch_ByName_MenuEffects(ByRef srcMenuName As String, Optional
                 
             Case "effects_animation_foreground"
                 Process "Animation foreground", True
+            
+            Case "effects_animation_speed"
+                Process "Animation playback speed", True
                 
         Case "effects_customfilter"
             Process "Custom filter", True

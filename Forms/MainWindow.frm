@@ -1489,6 +1489,10 @@ Begin VB.Form FormMain
             Caption         =   "Foreground..."
             Index           =   1
          End
+         Begin VB.Menu MnuEffectAnimation 
+            Caption         =   "Playback speed..."
+            Index           =   2
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Custom filter..."
@@ -2927,6 +2931,8 @@ Private Sub MnuEffectAnimation_Click(Index As Integer)
             Actions.LaunchAction_ByName "effects_animation_background"
         Case 1
             Actions.LaunchAction_ByName "effects_animation_foreground"
+        Case 2
+            Actions.LaunchAction_ByName "effects_animation_speed"
     End Select
 End Sub
 

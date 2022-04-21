@@ -522,6 +522,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Animation...", "effects_animation", 6, 13
         AddMenuItem "Background...", "effects_animation_background", 6, 13, 0
         AddMenuItem "Foreground...", "effects_animation_foreground", 6, 13, 1
+        AddMenuItem "Playback speed...", "effects_animation_speed", 6, 13, 2
     AddMenuItem "Custom filter...", "effects_customfilter", 6, 14
     AddMenuItem "Photoshop (8bf) plugin...", "effects_8bf", 6, 15
     

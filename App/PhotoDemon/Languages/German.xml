@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1455</langversion>
+<langversion>9.0.1461</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Bump map</original>
-<translation></translation>
+<translation>Bump-Map</translation>
 </phrase>
 
 <phrase>
@@ -8489,12 +8489,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ambient light</original>
-<translation></translation>
+<translation>Umgebungslicht</translation>
 </phrase>
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>Generierung der Bump-Map</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
