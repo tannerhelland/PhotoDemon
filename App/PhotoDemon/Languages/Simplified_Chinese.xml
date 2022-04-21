@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.135</langversion>
+<langversion>8.2.136</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1244,6 +1244,11 @@
 </phrase>
 
 <phrase>
+<original>Animation playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Custom filter</original>
 <translation>自定义滤镜</translation>
 </phrase>
@@ -1288,7 +1293,7 @@
 <translation>清除最近的图像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 262 phrases. 7 were duplicates of existing phrases, so only 255 new phrases were written to file. -->
+<!-- Actions.bas contains 263 phrases. 7 were duplicates of existing phrases, so only 256 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5273,6 +5278,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Tools</original>
 <translation>工具</translation>
 </phrase>
@@ -5599,7 +5609,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 385 phrases. 204 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 386 phrases. 204 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7543,6 +7553,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>speed modifier</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -13775,10 +13792,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2608</phrasecount>
+<phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5425 phrases. -->
-<!-- 2817 are duplicates, so only 2608 unique phrases have been written to file. -->
-<!-- These 2608 phrases contain approximately 11804 total words. -->
+<!-- As of this build, PhotoDemon contains 5439 phrases. -->
+<!-- 2828 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 11811 total words. -->
 
 </pdData>

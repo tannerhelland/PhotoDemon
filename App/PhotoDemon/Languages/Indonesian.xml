@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.536</langversion>
+<langversion>6.6.537</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1249,6 +1249,11 @@
 </phrase>
 
 <phrase>
+<original>Animation playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Custom filter</original>
 <translation>Memakai Penyaring</translation>
 </phrase>
@@ -1293,7 +1298,7 @@
 <translation>bersih baru-baru ini Daftar Gambar</translation>
 </phrase>
 
-<!-- Actions.bas contains 262 phrases. 7 were duplicates of existing phrases, so only 255 new phrases were written to file. -->
+<!-- Actions.bas contains 263 phrases. 7 were duplicates of existing phrases, so only 256 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5281,6 +5286,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Tools</original>
 <translation>alat</translation>
 </phrase>
@@ -5608,7 +5618,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 385 phrases. 204 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 386 phrases. 204 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7551,6 +7561,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>speed modifier</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -13787,10 +13804,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2608</phrasecount>
+<phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5425 phrases. -->
-<!-- 2817 are duplicates, so only 2608 unique phrases have been written to file. -->
-<!-- These 2608 phrases contain approximately 11804 total words. -->
+<!-- As of this build, PhotoDemon contains 5439 phrases. -->
+<!-- 2828 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 11811 total words. -->
 
 </pdData>
