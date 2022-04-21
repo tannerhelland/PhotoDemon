@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.390</langversion>
+<langversion>1.0.391</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1244,6 +1244,11 @@
 </phrase>
 
 <phrase>
+<original>Animation playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Custom filter</original>
 <translation>сопствен филтер</translation>
 </phrase>
@@ -1288,7 +1293,7 @@
 <translation>Clear recent листа на сликата</translation>
 </phrase>
 
-<!-- Actions.bas contains 262 phrases. 7 were duplicates of existing phrases, so only 255 new phrases were written to file. -->
+<!-- Actions.bas contains 263 phrases. 7 were duplicates of existing phrases, so only 256 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5275,6 +5280,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Playback speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Tools</original>
 <translation>алатки</translation>
 </phrase>
@@ -5602,7 +5612,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 385 phrases. 204 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 386 phrases. 204 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7545,6 +7555,13 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
+<original>speed modifier</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -13781,10 +13798,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2608</phrasecount>
+<phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5425 phrases. -->
-<!-- 2817 are duplicates, so only 2608 unique phrases have been written to file. -->
-<!-- These 2608 phrases contain approximately 11804 total words. -->
+<!-- As of this build, PhotoDemon contains 5439 phrases. -->
+<!-- 2828 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 11811 total words. -->
 
 </pdData>

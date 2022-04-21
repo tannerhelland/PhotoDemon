@@ -1977,6 +1977,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then Dialogs.PromptEffect_Animation False Else FormAnimBackground.ApplyAnimationBackground processParameters
         Process_EffectsMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Animation playback speed", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAnimSpeed Else FormAnimSpeed.ApplyNewPlaybackSpeed processParameters
+        Process_EffectsMenu = True
+        
     'Custom filters
     ElseIf Strings.StringsEqual(processID, "Custom filter", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
