@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1462</langversion>
+<langversion>9.0.1463</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1235,17 +1235,17 @@
 
 <phrase>
 <original>Animation background</original>
-<translation>Animation Hintergrund</translation>
+<translation>Hintergrund der Animation</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation>Animation Vordergrund</translation>
+<translation>Vordergrund der Animation</translation>
 </phrase>
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>Playback-Geschwindigkeit der Animation</translation>
 </phrase>
 
 <phrase>
@@ -5289,7 +5289,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Playback speed</original>
-<translation></translation>
+<translation>Playback-Geschwindigkeit</translation>
 </phrase>
 
 <phrase>
@@ -7566,7 +7566,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>speed modifier</original>
-<translation></translation>
+<translation>Geschwindigkeitsmodifikator</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
