@@ -204,14 +204,18 @@ Public Sub InitializeMenus()
     AddMenuItem "Copy", "edit_copylayer", 1, 9, , "edit_copy"
     AddMenuItem "Copy merged", "edit_copymerged", 1, 10
     AddMenuItem "Paste", "edit_pasteaslayer", 1, 11, , "edit_paste"
-    AddMenuItem "Paste to cursor", "edit_pastetocursor", 1, 12
-    AddMenuItem "Paste to new image", "edit_pasteasimage", 1, 13
-    AddMenuItem "Special", "edit_specialtop", 1, 14
-    AddMenuItem "Cut special...", "edit_specialcut", 1, 14, 0, "edit_cut"
-    AddMenuItem "Copy special...", "edit_specialcopy", 1, 14, 1, "edit_copy"
-    AddMenuItem "Paste special...", "edit_specialpaste", 1, 14, 2, "edit_paste"
-    AddMenuItem "-", "-", 1, 15
-    AddMenuItem "Empty clipboard", "edit_emptyclipboard", 1, 16
+    AddMenuItem "Paste to new image", "edit_pasteasimage", 1, 12
+    AddMenuItem "Special", "edit_specialtop", 1, 13
+    AddMenuItem "Cut special...", "edit_specialcut", 1, 13, 0, "edit_cut"
+    AddMenuItem "Copy special...", "edit_specialcopy", 1, 13, 1, "edit_copy"
+    AddMenuItem "Paste special...", "edit_specialpaste", 1, 13, 2, "edit_paste"
+    AddMenuItem "-", "-", 1, 13, 3
+    AddMenuItem "Empty clipboard", "edit_emptyclipboard", 1, 13, 4
+    AddMenuItem "-", "-", 1, 14
+    AddMenuItem "Clear", "edit_clear", 1, 15, , "paint_erase"
+    AddMenuItem "Content-aware fill...", "edit_contentawarefill", 1, 16
+    AddMenuItem "Fill...", "edit_fill", 1, 17, , "paint_fill"
+    AddMenuItem "Stroke...", "edit_stroke", 1, 18, , "paint_softbrush"
     
     'Image Menu
     AddMenuItem "Image", "image_top", 2

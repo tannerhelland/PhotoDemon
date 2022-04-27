@@ -262,16 +262,12 @@ Begin VB.Form FormMain
          Index           =   11
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste to cursor"
+         Caption         =   "Paste to new image"
          Index           =   12
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste to new image"
-         Index           =   13
-      End
-      Begin VB.Menu MnuEdit 
          Caption         =   "Special"
-         Index           =   14
+         Index           =   13
          Begin VB.Menu MnuEditSpecial 
             Caption         =   "Cut special..."
             Index           =   0
@@ -282,17 +278,37 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuEditSpecial 
             Caption         =   "Paste special..."
+            Enabled         =   0   'False
             Index           =   2
-            Visible         =   0   'False
+         End
+         Begin VB.Menu MnuEditSpecial 
+            Caption         =   "-"
+            Index           =   3
+         End
+         Begin VB.Menu MnuEditSpecial 
+            Caption         =   "Empty clipboard"
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "-"
+         Index           =   14
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "Clear"
          Index           =   15
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Empty clipboard"
+         Caption         =   "Content-aware fill..."
          Index           =   16
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "Fill..."
+         Index           =   17
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "Stroke..."
+         Index           =   18
       End
    End
    Begin VB.Menu MnuImageTop 
@@ -2902,15 +2918,19 @@ Private Sub MnuEdit_Click(Index As Integer)
         Case 11
             Actions.LaunchAction_ByName "edit_pasteaslayer"
         Case 12
-            Actions.LaunchAction_ByName "edit_pastetocursor"
-        Case 13
             Actions.LaunchAction_ByName "edit_pasteasimage"
-        Case 14
+        Case 13
             'Top-level "cut/copy/paste special"
-        Case 15
+        Case 14
             '(separator)
+        Case 15
+            Actions.LaunchAction_ByName "edit_clear"
         Case 16
-            Actions.LaunchAction_ByName "edit_emptyclipboard"
+            Actions.LaunchAction_ByName "edit_contentawarefill"
+        Case 17
+            Actions.LaunchAction_ByName "edit_fill"
+        Case 18
+            Actions.LaunchAction_ByName "edit_stroke"
     End Select
 End Sub
 
@@ -2921,7 +2941,12 @@ Private Sub MnuEditSpecial_Click(Index As Integer)
         Case 1
             Actions.LaunchAction_ByName "edit_specialcopy"
         Case 2
+            'TODO
             'Actions.LaunchAction_ByName "edit_specialpaste"
+        Case 3
+            'separator
+        Case 4
+            Actions.LaunchAction_ByName "edit_emptyclipboard"
     End Select
 End Sub
 
