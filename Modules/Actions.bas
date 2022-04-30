@@ -346,7 +346,8 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
         Case "edit_clear"
             'TODO
         Case "edit_contentawarefill"
-            'TODO
+            Process "Content-aware fill", True, vbNullString, UNDO_Nothing
+            
         Case "edit_fill"
             'TODO
         Case "edit_stroke"

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 26/April/22
-'Last update: wrap up initial build (seamless tile mode only, since it's so much simpler conceptually!)
+'Last updated: 30/April/22
+'Last update: get inpainting mode working - and not just working, but working well!
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -57,6 +57,20 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'The current inpainting mode.  Different modes require different behaviors throughout the inpainter;
+' note also that some options and settings are only compatible with a single mode (e.g. edge-wrapping
+' pixels is an essential part of seamless tile generation, but it makes no sense during mask inpainting).
+Private Enum PD_InpaintingMode
+    im_SeamlessTile = 0
+    im_InpaintByMask = 1
+End Enum
+
+#If False Then
+    Private Const im_SeamlessTile = 0, im_InpaintByMask = 1
+#End If
+
+Private m_CurMode As PD_InpaintingMode
 
 'When comparing pixels against each other, it improves locality to store coordinates and colors
 ' next to each other.  Note that we need to store two sets of coordinates - a base coordinate
@@ -182,6 +196,12 @@ Private m_MaxRandomCandidates As Long
 'The suggested default value in the paper is 0.75.
 Private m_Refinement As Double
 
+'Potential search radius when matching pixels.  In a perfect world, we'd search the whole image until we
+' find enough pixels to reach our test threshold, but because we have to build a sorted list of offsets,
+' this becomes problematic on large images.  Instead, we need to limit the potential search radius to some
+' reasonable size around each pixel.
+Private m_ComparatorRadius As Long
+
 'If you want to create a tileable texture (instead of just inpainting), set this value to TRUE.  Note that
 ' this incurs different performance penalties than regular in-painting, so you may want to avoid it on
 ' large input images (as it may take an extremely long time to complete).  Finding a way to prevent the user
@@ -206,6 +226,10 @@ Private m_Random As pdRandomize
 'The current best-match candidate (both its coordinates, and its "difference" from the test point,
 ' where a difference of 0 means "perfect match")
 Private m_BestMatchPt As PointLong, m_BestMatchDiff As Long
+
+'In inpainting mode, we need class-level access to the passed mask and a rectangle that defines its boundaries
+' (relative to the *source* image, since that's where the pixels are coming from).
+Private m_MaskBytes() As Byte, m_MaskRectL As RectL
 
 'To improve pixel matching behavior, we need a list of neighboring pixel positions to choose from,
 ' sorted in ascending order from "nearest to [0, 0]".
@@ -247,47 +271,69 @@ Private Sub AttemptResynthesisAlgorithm()
         curPoint = m_PointsRemaining(i)
         
         'Generate a list of nearby pixels that we can test to evaluate the "goodness" of the target pixel.
-        ' We need to generate a custom list because
-        ' 1) Not all pixels have been synthesized yet (so many won't have a color), and...
-        ' 2) Neighboring pixels to this one may be out-of-bounds (so we can't use them)
+        ' We need to generate a custom list because...
+        ' 1) Not all pixels have been synthesized yet (so many won't have a color), so there's no magic
+        '    "fixed" list of valid neighbors that works for every pixel, and...
+        ' 2) Even if this pixel has a lot of good neighbors, some pixels nearby may be out-of-bounds
+        '    (so we don't want to use them as comparators).  Note that this criteria is only relevant
+        '    for in-painting - for seamless tile generation, there are no boundaries because we just
+        '    wrap OOB pixels.
         '
-        'This step reads pixel values *out of the destination image*, by design, because it's trying to
-        ' evaluate the quality of pixels that have already been synthesized.  (The step after this one
-        ' will compare this point against random points from the *source image* to see if any of those
-        ' perform better; if they do, the existing synthesized value, if any, will be replaced - this is
-        ' why this algorithm must iterate, because data is constantly being reevaluated in-place.)
+        'Anyway, this stage tries to build a list of valid neighboring pixel offsets *in the destination image*.
+        ' That's important, because if we have neighbors that have already been synthesized, we'll use them.
+        ' What we're trying to do is see if this "patch" of pixels (this one plus its neighbors) can be replaced
+        ' by a more coherent "patch" from elsewhere in the image.  So first, we're going to figure out what pixels
+        ' constitute this "patch", how good a "patch" this is, and whether there's a better one out there.
+        '
+        'At the end of the day, only one pixel will potentially be synthesized (the target one, curPoint),
+        ' but how we determine what to replace it with depends on the list of coordinates we're about to
+        ' assemble - the coordinates that constitute a novel "patch" on this specific iteration.
+        ' (Each iteration generates a new patch of the nearest [n] valid pixels.)
         m_CurNumNeighbors = 0
         
-        '(Note that we can skip this step on the first pixel, because it is 100% guaranteed to have no
-        ' valid neighbors!)
-        If (i > 0) Then
+        '(Note that in seamless tile mode, we can skip this step on the first pixel because it is 100% guaranteed
+        ' to have no valid neighbors!)
+        Dim runThisIteration As Boolean: runThisIteration = True
+        If (m_CurMode = im_SeamlessTile) Then runThisIteration = (i > 0)
+        
+        If runThisIteration Then
             
+            'Search as deep into the m_NearestOffsets() list (the sorted list of *potential* offsets) as we must
+            ' until we assemble a full list of [m_maxNumNeighbors] valid pixels.  These pixels constitute the
+            ' current "patch", which we will try to maximize the quality of.
             Dim j As Long
             For j = 0 To m_numNearestOffsets - 1
                 
-                'Comparison points are stored as offsets (not absolute points).  Thus we need to add coords
+                'Comparison points are stored as offsets (not absolute points).  Thus we need to add offsets
                 ' to the current point to produce the absolute coordinates of the point-to-test.
                 testPoint.x = curPoint.x + m_NearestOffsets(j).x
                 testPoint.y = curPoint.y + m_NearestOffsets(j).y
                 
-                'Ensure the target pixel is:
+                'Before choosing this offset as a potential comparator, we must ensure the target pixel is:
                 ' 1) in-bounds on the destination image
                 '    (note: this is *not* relevant for seamless tile mode, because all boundaries get wrapped)
-                ' 2) synthesized!  (If it *hasn't* been synthesized yet we obviously need to ignore it.)
+                ' 2) already synthesized!  (If it *hasn't* been synthesized yet we obviously don't want to use
+                '    it as a comparator, because we can't evaluate its "fit quality" yet.)
                 If IsPixelInBounds(testPoint) Then
+                    
+                    'Synthesis state is stored as a special flag value inside a separate tracking array.
+                    ' Validate it before continuing.  (Note that the behavior of this settings varies by mode.
+                    ' In seamless tile mode, it means the point has been synthesized already.  In content-aware
+                    ' fill mode, it means either this point has been synthesized, *or* it lies outside the mask
+                    ' and is fine to use as-is.)
                     tmpPoint = m_SynthesisState(testPoint.x, testPoint.y)
                     If (tmpPoint.x <> LONG_MAX) Then
                         
-                        'Store the coordinates and color of this pixel (both are required during the comparison stage)
+                        'This point has been synthesized (or in content-aware fill mode, it's not masked).
+                        
+                        'Store the offsets (relative to the target pixel) and current color of this pixel;
+                        ' both will be used in the following step to produce a "goodness of fit" metric.
                         With m_Comparators(m_CurNumNeighbors)
                             .cOffsets = m_NearestOffsets(j)
                             .cColor = m_DstPixels(testPoint.x, testPoint.y)
                             
                             'We also want to know what this pixel's current *synthesized" coordinate is in the source
-                            ' image (because we're going to compare its against neighbors in a later step).  This is
-                            ' an important value to clone directly from the state array because the synthesized
-                            ' coordinate may have a special flag value LONG_MAX which means this pixel has *not* been
-                            ' synthesized yet.
+                            ' image (because we're going to compare its against neighbors in a later step).
                             .cCoordinates = tmpPoint
                         End With
                         
@@ -305,43 +351,75 @@ Private Sub AttemptResynthesisAlgorithm()
         '/i = 0
         End If
         
-        'Reset the "best" distance to an impossibly large value
+        'Reset the "best" distance to an impossibly large value.
         m_BestMatchDiff = LONG_MAX
-            
-        'Ensure we actually have at least one neighboring pixel to compare
-        If (m_CurNumNeighbors > 0) Then
         
-            'Search through the assembled list of neighboring pixels and calculate a net sum of the
-            ' differences between pixel values.  The smallest net sum represents the best candidate pixel.
+        'Ensure we actually have at least one neighboring pixel to compare.  (For very large masks with small
+        ' search radii, we may not, and that's fine - instead we'll just rely on the next step, sampling
+        ' random pixels from the source image, to find a good first candidate for synthesizing this pixel.)
+        If (m_CurNumNeighbors > 0) Then
+            
+            'A general rule-of-thumb with patch matching is that the best replacement for a given pixel is
+            ' liekly a pixel that's relatively nearby in the source brush.  (This is the instinctive behavior
+            ' for most users with a clone-brush tool, for example - use it to grab a nearby patch of pixels
+            ' to overwrite the problematic one.)
+            '
+            'So rather than rely *solely* on randomly sampled pixels from the input image, let's first
+            ' evaluate the nice list of neighboring pixels we've already assembled, because chances are that
+            ' we can find a well-fitting pixel from that list!
             j = 0
             For j = 0 To m_CurNumNeighbors - 1
                 
-                'Because the stored value for this pixel is an absolute coordinate into the source image,
-                ' we need to *subtract* the current offset from it to arrive at a comparison pixel coordinate.
-                ' (The call to EvaluatePixel(), below, will add individual offsets *back* onto the base
-                ' coordinate during evalution.)
+                'When we built our offset list, we cleverly grabbed the *synthesized* (or original, depending
+                ' on mode) coordinate used by this offset pixel.  We now want to use that coordinate, along with
+                ' the offset associated with this pixel, to choose a good pixel to sample.  To do so, we'll take
+                ' the original coordinate of this pixel, and then subtract the current offset to see what pixel
+                ' lies to [-offsetX, -offsetY] of this neighboring pixel.  Hypothetically, that should be an
+                ' excellent replacement for the current pixel - right?
                 With m_Comparators(j)
                     testPoint.x = .cCoordinates.x - .cOffsets.x
                     testPoint.y = .cCoordinates.y - .cOffsets.y
                 End With
                 
-                'TODO: consider move these checks up, so we can bail immediately after evaluating x
-                ' (without wasting time on y)
-                If (testPoint.x < 0) Or (testPoint.y < 0) Then GoTo NextNeighbor
-                If (testPoint.x >= m_SrcWidth) Or (testPoint.y >= m_SrcHeight) Then GoTo NextNeighbor
+                'Just because the *source* point exists at this coordinate doesn't mean that our newly calculated
+                ' test point does, so we need to repeat all bounds- and mask-checks from the previous step.
+                '
+                '(Again, note that VB does not short-circuit checks so we manually break each check out.)
+                If (testPoint.x < 0) Then GoTo NextNeighbor
+                If (testPoint.y < 0) Then GoTo NextNeighbor
+                If (testPoint.x >= m_SrcWidth) Then GoTo NextNeighbor
+                If (testPoint.y >= m_SrcHeight) Then GoTo NextNeighbor
                 
-'                // skip computing differences of points
-'                // we've already done this iteration. not mandatory.
-'                if (*image_atc(s->tried, point) == i) continue;
+                'In mask mode, we also want to ensure the target point is not within the mask.  (If it is,
+                ' we don't want to consider it as a potential replacement!)
+                If (m_CurMode = im_InpaintByMask) Then
+                    If (testPoint.x >= m_MaskRectL.Left) Then
+                    If (testPoint.x <= m_MaskRectL.Right) Then
+                    If (testPoint.y >= m_MaskRectL.Top) Then
+                    If (testPoint.y <= m_MaskRectL.Bottom) Then
+                        If (m_MaskBytes(testPoint.x - m_MaskRectL.Left, testPoint.y - m_MaskRectL.Top) <> 0) Then GoTo NextNeighbor
+                    End If
+                    End If
+                    End If
+                    End If
+                End If
+                
+                'If we've already compared this point this iteration, skip it.  This is a likely scenario as
+                ' patches become well-established, since neighboring pixels are likely taken from the same
+                ' "patch" in the original image.  (Also, EvaluatePixel, below, is highly expensive since we
+                ' have to compare the target pixel to *each* entry in the comparator list - so skipping it is
+                ' a huge perf win.)
                 If (m_LastChecked(testPoint.x, testPoint.y) <> i) Then
                     
-                    'Evaluate the pixel at this location, which will update the running sum for this pixel
+                    'Evaluate the test pixel; if it's a better fit than the current one, EvaluatePixel will
+                    ' update the class-level running sum accordingly.
                     EvaluatePixel testPoint
                     
-                    'If this point is a perfect match, stop searching
+                    'If this point is a perfect match against the current comparator list, stop searching because
+                    ' we're not going to find anything better this time around.
                     If (m_BestMatchDiff = 0) Then Exit For
                     
-                    'Note that this pixel has already been checked during this pass
+                    'Flag this pixel as "checked during this pass" so we can skip it if we encounter it again.
                     m_LastChecked(testPoint.x, testPoint.y) = i
                     
                 End If
@@ -352,36 +430,44 @@ NextNeighbor:
         '/no valid neighbors
         End If
         
-        'If we already have a perfect match, we don't need to compare random candidates for this pixel
+        'If we already have a "perfect" match, we don't need to compare random candidates for this pixel
+        ' (because the current one is already as-good-as-it-gets).
         If (m_BestMatchDiff > 0) Then
             
-            'We're now going to compare the quality of this point to the quality of some randomly sampled
-            ' points from the source image.  This is critical for early pixels because they don't have
-            ' enough neighbors to determine whether they're a good match or not (so randomly selected
-            ' pixels will likely perform better!).
+            'We're now going to compare the best quality we've found so far to the quality of some randomly
+            ' sampled points from the source image.  This is critical for early pixels because they don't
+            ' have enough neighbors to determine whether they're a good match or not (so randomly selected
+            ' pixels will likely perform better).
             '
             'As we get deeper into the pixel list, however, this step becomes less and less relevant
             ' because random pixels are unlikely to outperform pixels that have already survived previous
             ' iterations.  As such, we automatically scale-down the number of random candidates that we
-            ' try as we get deeper and deeper into the list.
+            ' consider as we get deeper and deeper into the list.
             Dim numRandomCandidatesToTry As Long
             numRandomCandidatesToTry = m_MaxRandomCandidates
             
             'Scale down by how many points we have already processed, so that we're only doing 25%
             ' as many random comparisons by the end of the list (because those points are likely
-            ' well-matched after multiple iterations)
+            ' well-matched after multiple iterations).  This is an optimization of my own creation so
+            ' please do not blame the original Resynthesis paper for this behavior!
             numRandomCandidatesToTry = numRandomCandidatesToTry * (0.25 + 0.75 * ((m_numPointsLeft - i) / m_numPointsLeft))
             
-            'Iterate random pixels and see if any outperform our current "winner"
+            'Iterate that many random pixels and see if any outperform our current "winning" choice
             For j = 0 To numRandomCandidatesToTry - 1
-            
-                'Grab a random pixel from the list of valid source image points and evaluate it.
-                ' Note that this function will replace m_BestMatch if this random point is better.
-                EvaluatePixel m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
                 
-                'If this randomly selected pixel proved to be a "perfect" candidate
-                ' (unlikely but not impossible), stop searching.
-                If (m_BestMatchDiff = 0) Then Exit For
+                'There is a very small (but non-zero!) chance that we'll have evaluated this random point already
+                ' in the previous step.  This is particularly likely if the user set an aggressively small radius.
+                ' We may as well do a quick check and skip this point if it's already been checked.
+                testPoint = m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
+                If (m_LastChecked(testPoint.x, testPoint.y) <> i) Then
+                    
+                    EvaluatePixel testPoint
+                    
+                    'If this randomly selected pixel proved to be a "perfect" candidate (unlikely but
+                    ' not impossible), stop searching.
+                    If (m_BestMatchDiff = 0) Then Exit For
+                    
+                End If
                 
             Next j
             
@@ -459,24 +545,66 @@ Private Sub InitializeInpainter()
     ' the user to "paint" regions with either "use" or "dont use" flags?)
     '
     'Note that unlike the list of destination points, this one will never *exceed* the total number of source
-    ' image coordinates.
+    ' image coordinates, but it can be *smaller* than the total number of source image coordinates.
     ReDim m_ValidSourcePoints(0 To m_SrcWidth * m_SrcHeight - 1) As PointLong
     
     Dim x As Long, y As Long, idxDst As Long
     idxDst = 0
     
-    For y = 0 To m_SrcHeight - 1
-    For x = 0 To m_SrcWidth - 1
-    
-        'TODO: obviously on inpainting mode we will need to check the mask to ensure this point can be used!
-        With m_ValidSourcePoints(idxDst)
-            .x = x
-            .y = y
-        End With
-        idxDst = idxDst + 1
+    'Potential places to draw sample points from varies by mode....
+    ' 1) In seamless tile mode, we want to sample from the full source image.
+    ' 2) In content-aware fill mode, the user can set a sample radius.  Do not exceed this.
+    If (m_CurMode = im_SeamlessTile) Then
         
-    Next x
-    Next y
+        For y = 0 To m_SrcHeight - 1
+        For x = 0 To m_SrcWidth - 1
+            With m_ValidSourcePoints(idxDst)
+                .x = x
+                .y = y
+            End With
+            idxDst = idxDst + 1
+        Next x
+        Next y
+              
+    ElseIf (m_CurMode = im_InpaintByMask) Then
+        
+        Dim xStart As Long, xEnd As Long
+        xStart = m_MaskRectL.Left - m_ComparatorRadius
+        If (xStart < 0) Then xStart = 0
+        xEnd = m_MaskRectL.Right + m_ComparatorRadius
+        If (xEnd >= m_SrcWidth) Then xEnd = m_SrcWidth - 1
+        
+        Dim yStart As Long, yEnd As Long
+        yStart = m_MaskRectL.Top - m_ComparatorRadius
+        If (yStart < 0) Then yStart = 0
+        yEnd = m_MaskRectL.Bottom + m_ComparatorRadius
+        If (yEnd >= m_SrcHeight) Then yEnd = m_SrcHeight - 1
+            
+        For y = yStart To yEnd
+        For x = xStart To xEnd
+                    
+            'Check mask boundaries.  If a pixel is masked, do *not* include it as a valid source sample
+            Dim pxMasked As Boolean
+            pxMasked = False
+            
+            If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
+                If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
+                    pxMasked = (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) <> 0)
+                End If
+            End If
+            
+            If (Not pxMasked) Then
+                With m_ValidSourcePoints(idxDst)
+                    .x = x
+                    .y = y
+                End With
+                idxDst = idxDst + 1
+            End If
+            
+        Next x
+        Next y
+        
+    End If
     
     m_boundValidSourcePoints = idxDst - 1
     If (UBound(m_ValidSourcePoints) <> m_boundValidSourcePoints) Then ReDim Preserve m_ValidSourcePoints(0 To m_boundValidSourcePoints) As PointLong
@@ -505,15 +633,56 @@ Private Sub InitializeInpainter()
     For y = 0 To m_DstHeight - 1
     For x = 0 To m_DstWidth - 1
         
-        'Flag all destination pixels as being "not synthesized" (yet)
-        m_SynthesisState(x, y).x = LONG_MAX
-        
         'While we're here, dump this destination point to its storage queue too
-        With m_PointsRemaining(idxDst)
-            .x = x
-            .y = y
-        End With
-        idxDst = idxDst + 1
+        ' (dependent on current inpainting mode)
+        Select Case m_CurMode
+            
+            'In seamless tile mode, *all* source pixels are valid and available
+            Case im_SeamlessTile
+                
+                'Flag *all* destination pixels as being "not synthesized" (yet)
+                m_SynthesisState(x, y).x = LONG_MAX
+                
+                With m_PointsRemaining(idxDst)
+                    .x = x
+                    .y = y
+                End With
+                idxDst = idxDst + 1
+            
+            'In in-painting mode, we must manually exclude the pixels being synthesized
+            Case im_InpaintByMask
+                
+                'Check for pixels within mask boundaries
+                If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
+                    If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
+                    
+                        'Only add masked points
+                        If (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) > 0) Then
+                            
+                            'Flag as un-synthesized
+                            m_SynthesisState(x, y).x = LONG_MAX
+                            
+                            With m_PointsRemaining(idxDst)
+                                .x = x
+                                .y = y
+                            End With
+                            idxDst = idxDst + 1
+                            
+                        Else
+                            m_SynthesisState(x, y).x = x
+                            m_SynthesisState(x, y).y = y
+                        End If
+                        
+                    Else
+                        m_SynthesisState(x, y).x = x
+                        m_SynthesisState(x, y).y = y
+                    End If
+                Else
+                    m_SynthesisState(x, y).x = x
+                    m_SynthesisState(x, y).y = y
+                End If
+                
+        End Select
         
     Next x
     Next y
@@ -626,7 +795,7 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
     Dim totalDiff As Long, curDiff As Long
     
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim x As Long, y As Long
+    Dim x As Long, y As Long, numPixelsCompared As Long
     
     Dim i As Long
     For i = 0 To m_CurNumNeighbors - 1
@@ -643,18 +812,40 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
         If (x >= 0) And (y >= 0) Then
             If (x < m_SrcWidth) And (y < m_SrcHeight) Then
                 
-                'Use the pre-constructed Cauchy table to calculate distance
-                Dim origColor As RGBQuad, candidateColor As RGBQuad
-                origColor = m_SrcPixels(x, y)
-                candidateColor = m_Comparators(i).cColor
+                'In masked mode, we also need to ensure this pixel is *not* part of the mask.
+                ' (We're indexing into the source image, and selected pixels will *still retain their
+                ' original contents*.)
+                Dim okToUsePixel As Boolean: okToUsePixel = True
+                If (m_CurMode = im_InpaintByMask) Then
+                    If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
+                    If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
+                        okToUsePixel = (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) = 0)
+                    End If
+                    End If
+                End If
                 
-                'Swap chars into ints to prevent VB from overflowing on char arithmetic
-                b = candidateColor.Blue
-                g = candidateColor.Green
-                r = candidateColor.Red
-                a = candidateColor.Alpha
-                curDiff = m_Cauchy(b - origColor.Blue) + m_Cauchy(g - origColor.Green) + m_Cauchy(r - origColor.Red) + m_Cauchy(a - origColor.Alpha)
-            
+                If okToUsePixel Then
+                    
+                    'Use the pre-constructed Cauchy table to calculate distance
+                    Dim origColor As RGBQuad, candidateColor As RGBQuad
+                    origColor = m_SrcPixels(x, y)
+                    candidateColor = m_Comparators(i).cColor
+                    
+                    'Swap chars into ints to prevent VB from overflowing on char arithmetic
+                    b = candidateColor.Blue
+                    g = candidateColor.Green
+                    r = candidateColor.Red
+                    a = candidateColor.Alpha
+                    curDiff = m_Cauchy(b - origColor.Blue) + m_Cauchy(g - origColor.Green) + m_Cauchy(r - origColor.Red) + m_Cauchy(a - origColor.Alpha)
+                    
+                Else
+                    If (numPixelsCompared <> 0) Then
+                        curDiff = totalDiff \ numPixelsCompared
+                    Else
+                        curDiff = m_Cauchy(256) * 4
+                    End If
+                End If
+                
             'If this pixel lies outside the original image's boundaries, assign it a fixed-size penalty.
             ' (We could also ignore the pixel, but this creates unwanted favoritism for edge pixels because
             ' they simply won't have as many neighboring pixels to compare - so this is a better compromise
@@ -669,6 +860,7 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
         'Tally the running sum of differences, and if we exceed the current best candidate bail immediately
         totalDiff = totalDiff + curDiff
         If (totalDiff >= m_BestMatchDiff) Then Exit Sub
+        numPixelsCompared = numPixelsCompared + 1
 
     Next i
     
@@ -700,6 +892,12 @@ Private Sub InitializeOffsetList()
     Dim minWidth As Long, minHeight As Long
     minWidth = PDMath.Min2Int(m_SrcWidth, m_DstWidth)
     minHeight = PDMath.Min2Int(m_SrcHeight, m_DstHeight)
+    
+    'In in-painting mode, we want to limit the search radius artificially
+    If (m_CurMode = im_InpaintByMask) Then
+        minWidth = PDMath.Min2Int(minWidth, m_ComparatorRadius)
+        minHeight = PDMath.Min2Int(minHeight, m_ComparatorRadius)
+    End If
     
     'Ensure available space for the offset list (x4 is needed because there are four quadrants of offsets)
     ReDim m_NearestOffsets(0 To minWidth * minHeight * 4 - 1) As PointLong
@@ -868,7 +1066,11 @@ End Sub
 
 'From an arbitrary source image, create a seamlessly tiling new image
 Friend Sub MakeSeamlessTile(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB)
-    
+        
+    'Set the class-wide mode indicator.  This will toggle a number of different behaviors during
+    ' different inpainting steps.
+    m_CurMode = im_SeamlessTile
+        
     'The process for inpainting and generating tileable textures is 95+% similar.  One of the only differences
     ' when generating tileable textures is that you need to scan the whole input image, and *wrap* pixels when
     ' scanning for neighbor matches (so that the resulting tile has cleanly tiling boundaries).
@@ -920,14 +1122,79 @@ Friend Sub MakeSeamlessTile(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB)
     
 End Sub
 
+'Given a source image, mask (and associated boundary rect), and destination image, create a new
+' destination image where all masked pixels have been replaced via texture synthesis.
+'
+'For this first draft, the destination and source DIBs will be initialized to the same size.
+' It is up to the caller to crop out the relevant destination DIB portion, then blend it as wanted.
+' (This simplifies testing, and will likely be revisited in later commits.)
+Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, ByRef maskRectF As RectF)
+    
+    m_CurMode = im_InpaintByMask
+    
+    'In content-aware fill mode, we do *not* want to tile pixels during comparisons.
+    m_TileMode = False
+    
+    'The next set of variables all come from the user
+    m_MaxNumNeighbors = 25  '30
+    m_MaxRandomCandidates = 80
+    m_Refinement = 0.75
+    m_AllowOutliers = 30# / 256#
+    m_ComparatorRadius = 300
+    
+    'Unsafely wrap a class-level array around the user mask
+    With m_MaskRectL
+        .Left = Int(maskRectF.Left)
+        .Top = Int(maskRectF.Top)
+        .Right = .Left + Int(maskRectF.Width) - 1
+        .Bottom = .Top + Int(maskRectF.Height) - 1
+    End With
+    
+    Dim maskSA2D As SafeArray2D
+    With maskSA2D
+        .cbElements = 1
+        .cDims = 2
+        .cLocks = 1
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = Int(maskRectF.Height)
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = Int(maskRectF.Width)
+        .pvData = VarPtr(srcMask(0, 0))
+    End With
+    PutMem4 VarPtrArray(m_MaskBytes()), VarPtr(maskSA2D)
+    
+    'Prep input image
+    m_SrcWidth = srcDIB.GetDIBWidth
+    m_SrcHeight = srcDIB.GetDIBHeight
+    srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
+    
+    'Prep output image (TODO: make this the size of the mask, instead!)
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    m_DstWidth = srcDIB.GetDIBWidth
+    m_DstHeight = srcDIB.GetDIBHeight
+    
+    'dstDIB.CreateBlank m_DstWidth, m_DstHeight, 32, 0, 0
+    'dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
+    dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
+    
+    'Perform filter
+    AttemptResynthesisAlgorithm
+    
+    'Unalias all unsafe array wrappers
+    PutMem4 VarPtrArray(m_MaskBytes), 0&
+    srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
+    dstDIB.UnwrapRGBQuadArrayFromDIB m_DstPixels
+    
+End Sub
+
 Private Sub Class_Initialize()
 
     Set m_Random = New pdRandomize
     
     'Eventually we will want to seed the randomizer randomly, but it's helpful during testing to
     ' use a fixed value to ensure that I haven't broken anything since the last revision lol
-    m_Random.SetSeed_Int 0
+    'm_Random.SetSeed_Int 0
     
-    'm_Random.SetSeed_AutomaticAndRandom
+    m_Random.SetSeed_AutomaticAndRandom
     
 End Sub

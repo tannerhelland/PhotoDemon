@@ -456,3 +456,44 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     End If
     
 End Sub
+
+'TODO: UI for settings
+Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
+    
+    'Ensure a selection exists
+    If (Not Selections.SelectionsAllowed(False)) Then Exit Sub
+    
+    If displayDialog Then
+        Processor.Process "Content-aware fill", False, vbNullString, UNDO_Layer
+    Else
+            
+        'If this is a vector layer, rasterize it
+        If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector Then Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        'Retrieve the current selection mask as a simple byte array.  Note that the array *will* likely be smaller
+        ' than the current image/layer/whatever.
+        '
+        'TODO: clone the region of the selection mask that overlays the current layer, then work from there.
+        ' (The current solution only works on single-layer images.)
+        Dim srcMask() As Byte, srcMaskRect As RectF
+        srcMaskRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
+        DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(srcMaskRect)
+        
+        'Execute the fill
+        Dim newLayerDIB As pdDIB
+        Set newLayerDIB = New pdDIB
+        newLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+        
+        Dim cInpaint As pdInpaint
+        Set cInpaint = New pdInpaint
+        cInpaint.ContentAwareFill PDImages.GetActiveImage.GetActiveDIB, newLayerDIB, srcMask, srcMaskRect
+        
+        'Assign the new image and notify the parent image of the change
+        PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB newLayerDIB
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        
+    End If
+    
+End Sub

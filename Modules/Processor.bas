@@ -1460,8 +1460,8 @@ End Function
 ' additional return details may be supplied in the returnDetails string parameter.
 Private Function Process_EditMenu(ByRef processID As String, Optional ByVal raiseDialog As Boolean = False, Optional ByRef processParameters As String = vbNullString, Optional ByRef createUndo As PD_UndoType = UNDO_Nothing, Optional ByRef relevantTool As Long = -1, Optional ByRef recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
-    'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
-    ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
+    'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.
+    ' (This allows us to detect changes to said settings, and create new Undo/Redo data accordingly.)
     Dim undoOrRedoUsed As Boolean
 
     If Strings.StringsEqual(processID, "Undo", True) Then
@@ -1572,6 +1572,10 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
     
     ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
         g_Clipboard.ClipboardEmpty
+        Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Content-aware fill", True) Then
+        SelectionFilters.Selection_ContentAwareFill raiseDialog
         Process_EditMenu = True
         
     End If

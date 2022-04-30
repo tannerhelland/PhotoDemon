@@ -218,6 +218,8 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbAltMask, "edit_pastetocursor"
     Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbShiftMask, "edit_pasteasimage"
     
+    Hotkeys.AddHotkey vbKeyF5, vbCtrlMask Or vbShiftMask, "edit_contentawarefill"
+    
     'Image menu
     Hotkeys.AddHotkey vbKeyA, vbCtrlMask Or vbShiftMask, "image_duplicate"
     Hotkeys.AddHotkey vbKeyR, vbCtrlMask, "image_resize"
