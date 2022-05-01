@@ -3893,16 +3893,6 @@ Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest
     
-    Dim tmpDIB As pdDIB
-    
-    Dim cInpaint As pdInpaint
-    Set cInpaint = New pdInpaint
-    cInpaint.MakeSeamlessTile PDImages.GetActiveImage.GetActiveDIB, tmpDIB
-    PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB tmpDIB
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
-    
     'Report timing results:
     PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
     

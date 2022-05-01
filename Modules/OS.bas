@@ -1139,4 +1139,3 @@ Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber A
         PDDebug.LogAction "WARNING!  OS module internal error: " & errComment
     End If
 End Sub
-

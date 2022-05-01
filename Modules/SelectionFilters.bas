@@ -46,7 +46,7 @@ End Function
 'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
 ' the "exterior"/"interior" options on the main form.
 ' TODO: swap exterior/interior automatically, if a valid option
-Public Sub InvertCurrentSelection()
+Public Sub Selection_Invert()
 
     'Unlock any existing selection, and condense any composite selections down to a single raster layer.
     PDImages.GetActiveImage.MainSelection.LockRelease
@@ -111,7 +111,7 @@ Public Sub InvertCurrentSelection()
 End Sub
 
 'Feather the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
+Public Sub Selection_Blur(ByVal displayDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If displayDialog Then
@@ -166,7 +166,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
 End Sub
 
 'Sharpen (un-feather?) the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
+Public Sub Selection_Sharpen(ByVal displayDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If displayDialog Then
@@ -274,7 +274,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
 End Sub
 
 'Grow the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal growSize As Double = 0#)
+Public Sub Selection_Grow(ByVal displayDialog As Boolean, Optional ByVal growSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If displayDialog Then
@@ -330,7 +330,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
 End Sub
 
 'Shrink the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
+Public Sub Selection_Shrink(ByVal displayDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If displayDialog Then
@@ -385,7 +385,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
 End Sub
 
 'Convert the current selection to border-type.  Note that this will make a transformable selection non-transformable.
-Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
+Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If displayDialog Then
@@ -466,18 +466,74 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
     If displayDialog Then
         Processor.Process "Content-aware fill", False, vbNullString, UNDO_Layer
     Else
-            
+        
         'If this is a vector layer, rasterize it
         If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector Then Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
         
-        'Retrieve the current selection mask as a simple byte array.  Note that the array *will* likely be smaller
-        ' than the current image/layer/whatever.
-        '
-        'TODO: clone the region of the selection mask that overlays the current layer, then work from there.
-        ' (The current solution only works on single-layer images.)
+        'If the layer has affine transforms active, make them permanent
+        If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True) Then PDImages.GetActiveImage.GetActiveLayer.MakeCanvasTransformsPermanent
+        
+        'Next, we need to retrieve the current selection mask as a simple byte array.  Before doing this,
+        ' we also need to calculate proper overlap between the current selection and the current layer
+        ' (to ensure correct handling of layers that are *not* the same size as the parent image).
+        Dim layerNotFullSize As Boolean
+        layerNotFullSize = (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX <> 0)
+        layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY <> 0)
+        layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True) <> PDImages.GetActiveImage.Width)
+        layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True) <> PDImages.GetActiveImage.Height)
+        layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True))
+        
         Dim srcMask() As Byte, srcMaskRect As RectF
-        srcMaskRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
-        DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(srcMaskRect)
+        If layerNotFullSize Then
+        
+            'Calculate overlap between the current layer and the parent image
+            Dim imageRect As RectF
+            With imageRect
+                .Left = 0
+                .Top = 0
+                .Width = PDImages.GetActiveImage.Width
+                .Height = PDImages.GetActiveImage.Height
+            End With
+            
+            Dim origLayerRect As RectF
+            PDImages.GetActiveImage.GetActiveLayer.GetLayerBoundaryRect origLayerRect
+            
+            'If the layer and image don't overlap (or the layer and selection don't overlap), exit immediately
+            Dim overlapRect As RectF
+            If (Not GDI_Plus.IntersectRectF(overlapRect, origLayerRect, imageRect)) Then Exit Sub
+            
+            'Similarly, if the layer and active selection don't overlap, exit immediately (since there won't
+            ' be anything for us to fill)
+            Dim layerOverlapRect As RectF, origSelRect As RectF
+            origSelRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
+            If (Not GDI_Plus.IntersectRectF(layerOverlapRect, origLayerRect, origSelRect)) Then Exit Sub
+            
+            'We now need to crop out the relevant portion of the selection mask into a temporary DIB.
+            ' Note that the selection mask treats transparent blank as "unselected", so we will initialize
+            ' the DIB to that state (in case part of the layer lies off-image).
+            Dim tmpOverlayMask As pdDIB
+            Set tmpOverlayMask = New pdDIB
+            tmpOverlayMask.CreateBlank PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, 0, 0
+            
+            With PDImages.GetActiveImage.GetActiveLayer
+                GDI.BitBltWrapper tmpOverlayMask.GetDIBDC, Int(overlapRect.Left) - .GetLayerOffsetX, Int(overlapRect.Top) - .GetLayerOffsetY, Int(overlapRect.Width), Int(overlapRect.Height), PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBDC, Int(overlapRect.Left), Int(overlapRect.Top), vbSrcCopy
+            End With
+            
+            'Populate the relevant mask rect (for the inpainter), then retrieve the mask as a 1-byte-per-pixel array
+            With srcMaskRect
+                .Left = Int(layerOverlapRect.Left) - PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX
+                .Top = Int(layerOverlapRect.Top) - PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY
+                .Width = layerOverlapRect.Width
+                .Height = layerOverlapRect.Height
+            End With
+            
+            DIBs.GetSingleChannel_2D tmpOverlayMask, srcMask, 0, VarPtr(srcMaskRect)
+            
+        'Layer is the size of the image, which makes this step much easier!
+        Else
+            srcMaskRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
+            DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(srcMaskRect)
+        End If
         
         'Execute the fill
         Dim newLayerDIB As pdDIB

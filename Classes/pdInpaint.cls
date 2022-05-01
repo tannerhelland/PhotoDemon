@@ -58,6 +58,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'During debugging, it is helpful to report detailed process information.  Please disable this constant
+' in production builds.
+Private Const DEBUG_VERBOSE As Boolean = True
+
 'The current inpainting mode.  Different modes require different behaviors throughout the inpainter;
 ' note also that some options and settings are only compatible with a single mode (e.g. edge-wrapping
 ' pixels is an essential part of seamless tile generation, but it makes no sense during mask inpainting).
@@ -228,8 +232,15 @@ Private m_Random As pdRandomize
 Private m_BestMatchPt As PointLong, m_BestMatchDiff As Long
 
 'In inpainting mode, we need class-level access to the passed mask and a rectangle that defines its boundaries
-' (relative to the *source* image, since that's where the pixels are coming from).
+' (relative to the *source* image, since that's where the pixels are coming from).  The mask is a byte array,
+' but the synthesizer will treat all 0 values as "do not synthesize" and all non-zero values as "synthesize".
+' It does not perform any blending, by design - antialiasing or feathering must be handled by the caller
+' after this class finishes its work.
 Private m_MaskBytes() As Byte, m_MaskRectL As RectL
+
+'When applying the final version of the filter, progress-bar updates are important (because the function
+' can be kinda slow, especially on huge on huge images).
+Private m_ShowProgressUI As Boolean
 
 'To improve pixel matching behavior, we need a list of neighboring pixel positions to choose from,
 ' sorted in ascending order from "nearest to [0, 0]".
@@ -248,18 +259,43 @@ Private m_qsStackPtr As Long
 
 'Use our version of the "Resynthesizer" algorithm for texture synthesis.
 ' All relevant parameters MUST BE SET PRIOR TO CALLING!
-Private Sub AttemptResynthesisAlgorithm()
+Private Function AttemptResynthesisAlgorithm() As Boolean
+    
+    AttemptResynthesisAlgorithm = False
+    
+    Const FUNC_NAME As String = "AttemptResynthesisAlgorithm"
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
+    'Start by showing an arbitrary progress bar.  We won't have an *actual* upper-limit for progress reports
+    ' until we finish initialization (because we don't know how many pixels need to be replaced) but we
+    ' can guess based on mask boundaries.
+    If m_ShowProgressUI Then
+        With m_MaskRectL
+            ProgressBars.SetProgBarMax (.Right - .Left) * (.Bottom - .Top)
+            ProgressBars.SetProgBarVal 1
+            Message "Analyzing image..."
+        End With
+    End If
+    
     'Initialization for this function is non-trivial (from a perf standpoint).
     ' TODO: minimize initialization steps if params haven't changed from a previous run.
-    InitializeInpainter
+    If (Not InitializeInpainter) Then
+        InternalError FUNC_NAME, "initialization failed"
+        Exit Function
+    End If
     
-    PDDebug.LogAction "pdInpaint: initialization took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    PDDebug.LogAction m_numPointsLeft & " points will be synthesized"
+    If DEBUG_VERBOSE Then PDDebug.LogAction "pdInpaint: initialization took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction m_numPointsLeft & " points need to be synthesized"
     VBHacks.GetHighResTime startTime
+    
+    Dim progCheck As Long
+    If m_ShowProgressUI Then
+        ProgressBars.SetProgBarMax m_numPointsLeft
+        progCheck = ProgressBars.FindBestProgBarValue()
+        Message "Repainting selected regions..."
+    End If
     
     'Initialization prepared a list of all points in the destination image that need to be inpainted.
     ' We are now going to evaluate that list one-at-a-time until all pixels have been successfully
@@ -409,6 +445,11 @@ Private Sub AttemptResynthesisAlgorithm()
                 ' "patch" in the original image.  (Also, EvaluatePixel, below, is highly expensive since we
                 ' have to compare the target pixel to *each* entry in the comparator list - so skipping it is
                 ' a huge perf win.)
+                '
+                'NOTE: this idea came from https://github.com/notwa/resynth which I was benchmarking against
+                ' PD's implementation, and I could not for the life of me figure out why it kept crushing me
+                ' in performance on texture synthesis.  Thank you to those authors for the clever optimization
+                ' strategy (it may actually be adopted from earlier resynthesizer work, idk).
                 If (m_LastChecked(testPoint.x, testPoint.y) <> i) Then
                     
                     'Evaluate the test pixel; if it's a better fit than the current one, EvaluatePixel will
@@ -480,18 +521,30 @@ NextNeighbor:
         ' be replaced with a better alternative in subsequent passes, as more points get filled-in.)
         m_SynthesisState(curPoint.x, curPoint.y) = m_BestMatchPt
         
-        'TODO: switch to progress bar, obviously
-        If ((i And 8191) = 8191) Then PDDebug.LogAction (i + 1) & " points complete"
+        'TODO: add cancellation support
+        If m_ShowProgressUI And ((i And progCheck) = 0) Then ProgressBars.SetProgBarVal i
+        'If Interface.UserPressedESC() Then Exit For
         
     Next i
     
-    PDDebug.LogAction "Full resynthesis took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    'If we raised the progress bar, hide it before exiting
+    If m_ShowProgressUI Then ProgressBars.ReleaseProgressBar
     
-End Sub
+    AttemptResynthesisAlgorithm = True
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Full resynthesis took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+End Function
 
 'Inpainting requires a large amount of prep work (and prep resources).
 ' Try to minimize initialization calls if you can.
-Private Sub InitializeInpainter()
+Private Function InitializeInpainter() As Boolean
+    
+    Const FUNC_NAME As String = "InitializeInpainter"
+    On Error GoTo InitializationFailed
+    
+    'Assume failure; if we reach the end without any fail states, we will reset this to TRUE
+    InitializeInpainter = False
     
     'This function is profiled fairly aggressively, since it incurs a disproportionate performance penalty,
     ' especially when the source and/or destination image is large.  (This is especially true in "seamless tile" mode.)
@@ -531,13 +584,13 @@ Private Sub InitializeInpainter()
         m_Cauchy(i) = 0
     End If
     
-    PDDebug.LogAction "Initializing cauchy table took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing cauchy table took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'Prepare a sorted list of offsets to search when evaluating pixel quality.  This step has a non-trivial
     ' startup cost due to the sort requirement.
     InitializeOffsetList
-    PDDebug.LogAction "Making and sorting offset list took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Making and sorting offset list took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'Generate a list of valid source points to sample *from*.  Points may be disqualified either implicitly
@@ -608,7 +661,7 @@ Private Sub InitializeInpainter()
     
     m_boundValidSourcePoints = idxDst - 1
     If (UBound(m_ValidSourcePoints) <> m_boundValidSourcePoints) Then ReDim Preserve m_ValidSourcePoints(0 To m_boundValidSourcePoints) As PointLong
-    PDDebug.LogAction "Initializing source point list took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing source point list took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'The list of "comparators" (neighboring pixels that we try to evaluate on every synthesis)
@@ -690,8 +743,12 @@ Private Sub InitializeInpainter()
     'Because we deliberately over-sized the destination list, we need to flag how many points *actually*
     ' exist in the array
     m_numPointsLeft = idxDst
+    If (m_numPointsLeft = 0) Then
+        InternalError FUNC_NAME, "no points to synthesize!"
+        Exit Function
+    End If
     
-    PDDebug.LogAction "Initializing destination point list took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing destination point list (" & m_numPointsLeft & " points) took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'Next, we need to randomize the order of the initial list of "points to synthesize".
@@ -711,7 +768,7 @@ Private Sub InitializeInpainter()
         
     Next i
     
-    PDDebug.LogAction "Shuffling initial set of data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Shuffling initial set of data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'Now that we have generated a queue of pixels that need to be synthesized, we need to re-add the first
@@ -771,7 +828,7 @@ Private Sub InitializeInpainter()
         
     End If
     
-    PDDebug.LogAction "Appending repeat data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Appending repeat data points (" & m_numPointsLeft & " points) took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
     'See the top of this module for details, but basically, in seamless tile mode, multiple neighboring pixels
@@ -783,10 +840,16 @@ Private Sub InitializeInpainter()
     ReDim m_LastChecked(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As Long
     VBHacks.FillMemory VarPtr(m_LastChecked(0, 0)), m_SrcWidth * m_SrcHeight * 4, 255
     
-    PDDebug.LogAction "Initializing attempts array took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing attempts array took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
-End Sub
+    InitializeInpainter = True
+    Exit Function
+
+InitializationFailed:
+    InternalError FUNC_NAME, "internal error", Err.Number
+    
+End Function
 
 'Compare the pixel at a given coordinate to all pixels in the current Comparator list.  If this point is
 ' better than all previous ones we tested, update the module-level m_BestMatch value(s) to match.
@@ -1128,9 +1191,10 @@ End Sub
 'For this first draft, the destination and source DIBs will be initialized to the same size.
 ' It is up to the caller to crop out the relevant destination DIB portion, then blend it as wanted.
 ' (This simplifies testing, and will likely be revisited in later commits.)
-Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, ByRef maskRectF As RectF)
+Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, ByRef maskRectF As RectF, Optional ByVal reportProgress As Boolean = True)
     
     m_CurMode = im_InpaintByMask
+    m_ShowProgressUI = reportProgress
     
     'In content-aware fill mode, we do *not* want to tile pixels during comparisons.
     m_TileMode = False
@@ -1197,4 +1261,12 @@ Private Sub Class_Initialize()
     
     m_Random.SetSeed_AutomaticAndRandom
     
+End Sub
+
+Private Sub InternalError(ByRef funcName As String, ByRef errComment As String, Optional ByVal errNumber As Long = 0&)
+    If (errNumber <> 0) Then
+        PDDebug.LogAction "WARNING!  pdInpaint." & funcName & " VB error (#" & Err.Number & "): " & Err.Description & " || " & errComment
+    Else
+        PDDebug.LogAction "WARNING!  pdInpaint." & funcName & " reported: " & errComment
+    End If
 End Sub
