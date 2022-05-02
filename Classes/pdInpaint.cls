@@ -209,8 +209,8 @@ Private m_ComparatorRadius As Long
 
 'If you want to create a tileable texture (instead of just inpainting), set this value to TRUE.  Note that
 ' this incurs different performance penalties than regular in-painting, so you may want to avoid it on
-' large input images (as it may take an extremely long time to complete).  Finding a way to prevent the user
-' from abusing this is still TODO
+' large input images (as it may take an extremely long time to complete).  (Finding a way to prevent the user
+' from abusing this is still TODO.)
 Private m_TileMode As Boolean
 
 'Dimensions and pixel array for the source image.  Note that this array *unsafely* aliases the source image,
@@ -285,7 +285,7 @@ Private Function SynthesizeTexture() As Boolean
     End If
     
     'Initialization for this function is non-trivial (from a perf standpoint).
-    ' TODO: minimize initialization steps if params haven't changed from a previous run.
+    ' TODO: minimize initialization steps if params haven't changed from a previous run?
     If (Not InitializeInpainter) Then
         InternalError FUNC_NAME, "initialization failed"
         Exit Function
@@ -608,10 +608,8 @@ Private Function InitializeInpainter() As Boolean
         
         For y = 0 To m_SrcHeight - 1
         For x = 0 To m_SrcWidth - 1
-            With m_ValidSourcePoints(idxDst)
-                .x = x
-                .y = y
-            End With
+            m_ValidSourcePoints(idxDst).x = x
+            m_ValidSourcePoints(idxDst).y = y
             idxDst = idxDst + 1
         Next x
         Next y
@@ -622,10 +620,8 @@ Private Function InitializeInpainter() As Boolean
         For y = 0 To m_SrcHeight - 1
         For x = 0 To m_SrcWidth - 1
             If (m_MaskBytes(x, y) = 0) Then
-                With m_ValidSourcePoints(idxDst)
-                    .x = x
-                    .y = y
-                End With
+                m_ValidSourcePoints(idxDst).x = x
+                m_ValidSourcePoints(idxDst).y = y
                 idxDst = idxDst + 1
             End If
         Next x
@@ -654,8 +650,6 @@ Private Function InitializeInpainter() As Boolean
     ' (Because of this, we deliberately over-size this list to start.)
     ReDim m_PointsRemaining(0 To m_DstWidth * m_DstHeight * 4 - 1) As PointLong
     
-    'TODO: for actual in-painting, this will be a small subset rect of the actual image.
-    ' We'll need to factor x/y offsets into the image when doing anything with these arrays.
     idxDst = 0
     For y = 0 To m_DstHeight - 1
     For x = 0 To m_DstWidth - 1
@@ -667,26 +661,22 @@ Private Function InitializeInpainter() As Boolean
             'In seamless tile mode, *all* source pixels are valid and available
             Case im_SeamlessTile
                 
-                'Flag *all* destination pixels as being "not synthesized" (yet)
+                'Add *all* destination pixels to the "need to be synthesized "list
                 m_SynthesisState(x, y).x = LONG_MAX
-                
-                With m_PointsRemaining(idxDst)
-                    .x = x
-                    .y = y
-                End With
+                m_PointsRemaining(idxDst).x = x
+                m_PointsRemaining(idxDst).y = y
                 idxDst = idxDst + 1
             
-            'In in-painting mode, we must manually exclude all pixels being synthesized
+            'In in-painting mode, we must compare coordinates to the mask to see if they belong
+            ' in the "need-to-synthesize" point list.
             Case im_InpaintByMask
                 
+                'Masked pixels must be flagged as "not yet synthesized" and explicitly added to the
+                ' "need-to-synthesize" list.
                 If (m_MaskBytes(x, y) <> 0) Then
-                    
-                    'Flag as un-synthesized and add the point to the "need-to-synthesize" list
                     m_SynthesisState(x, y).x = LONG_MAX
-                    With m_PointsRemaining(idxDst)
-                        .x = x
-                        .y = y
-                    End With
+                    m_PointsRemaining(idxDst).x = x
+                    m_PointsRemaining(idxDst).y = y
                     idxDst = idxDst + 1
                 
                 'Mark as "already synthesized" so the synthesizer loop knows to ignore this pixel.
@@ -714,18 +704,17 @@ Private Function InitializeInpainter() As Boolean
     
     'Next, we need to randomize the order of the initial list of "points to synthesize".
     ' Shuffle using standard Fisher-Yates.
+    Dim j As Long, tmpPoint As PointLong
+    
     Dim uBoundPoints As Long
     uBoundPoints = m_numPointsLeft - 1
     For i = uBoundPoints To 0 Step -1
         
-        Dim j As Long
+        'Swap the current point [i] with some random point [j] preceding it in the list.
         j = m_Random.GetRandomIntRange_WH(0, i)
-        
-        'Swap points i and j
-        Dim tmp As PointLong
-        tmp = m_PointsRemaining(i)
+        tmpPoint = m_PointsRemaining(i)
         m_PointsRemaining(i) = m_PointsRemaining(j)
-        m_PointsRemaining(j) = tmp
+        m_PointsRemaining(j) = tmpPoint
         
     Next i
     
@@ -911,13 +900,12 @@ End Function
 Private Sub InitializeOffsetList()
     
     'In texture synthesis mode (and as a failsafe during inpainting), constrain by the smaller of the
-    ' source or destination's height.  TODO: revisit when implementing inpainting, as this will need
-    ' to be user-controlled there.
+    ' source or destination's height.
     Dim minWidth As Long, minHeight As Long
     minWidth = PDMath.Min2Int(m_SrcWidth, m_DstWidth)
     minHeight = PDMath.Min2Int(m_SrcHeight, m_DstHeight)
     
-    'In in-painting mode, we want to limit the search radius artificially
+    'In in-painting mode, we want to further limit the search radius by a user-supplied parameter
     If (m_CurMode = im_InpaintByMask) Then
         minWidth = PDMath.Min2Int(minWidth, m_ComparatorRadius)
         minHeight = PDMath.Min2Int(minHeight, m_ComparatorRadius)
@@ -926,37 +914,37 @@ Private Sub InitializeOffsetList()
     'Ensure available space for the offset list (x4 is needed because there are four quadrants of offsets)
     ReDim m_NearestOffsets(0 To minWidth * minHeight * 4 - 1) As PointLong
     
+    'Convert minimum values to fixed bounds for the forthcoming loops
+    minHeight = minHeight - 1
+    minWidth = minWidth - 1
+    
     Dim idxPoint As Long: idxPoint = 0
     
     'TODO: see if there is some algorithm for adding points in an already sorted way?
     Dim x As Long, y As Long
-    For y = -minHeight + 1 To minHeight - 1
-    For x = 0 To minWidth - 1
+    For y = -minHeight To minHeight
+    For x = 0 To minWidth
         
         'Don't add (0, 0); we don't want to compare points to themselves!
         If (x = 0) And (y = 0) Then GoTo SkipPoint
         
         'Add this point to the list, and its horizontal mirror.  (This improves sort perf by keeping
         ' similarly-distanced-points close together in the initial unsorted list.)
-        With m_NearestOffsets(idxPoint)
-            .x = x
-            .y = y
-        End With
+        m_NearestOffsets(idxPoint).x = x
+        m_NearestOffsets(idxPoint).y = y
         idxPoint = idxPoint + 1
         
         If (x > 0) Then
-            With m_NearestOffsets(idxPoint)
-                .x = -x
-                .y = y
-            End With
+            m_NearestOffsets(idxPoint).x = -x
+            m_NearestOffsets(idxPoint).y = y
             idxPoint = idxPoint + 1
         End If
-
+        
 SkipPoint:
     Next x
     Next y
     
-    'Size the list precisely, then sort it
+    'Size the list precisely
     m_numNearestOffsets = idxPoint
     If (UBound(m_NearestOffsets) <> m_numNearestOffsets - 1) Then ReDim Preserve m_NearestOffsets(0 To m_numNearestOffsets - 1) As PointLong
     
@@ -978,8 +966,7 @@ Private Function IsPixelInBounds(ByRef srcPoint As PointLong) As Boolean
     
     'We only wrap pixels when generating tileable textures.  (In regular in-painting mode, this produces
     ' weird results - while you could clamp pixels to boundary row/columns, this produces over-representation
-    ' of edge pixels.  It's typically better to just ignore OOB pixels.  TODO: double-check this once inpainting
-    ' code is finalized.)
+    ' of edge pixels.  Subjectively better results are produced by ignoring OOB pixels.)
     If m_TileMode Then
         
         If (srcPoint.x < 0) Then
@@ -1043,6 +1030,11 @@ Private Sub SortCoordinates()
     qsRemaining(0).sLB = 0
     qsRemaining(0).sUB = m_numNearestOffsets - 1
     
+    'Like most quick-sort implementations, VB6 sees a perf boost when switching over to insertion sort
+    ' when a quicksort sub-list is small.  This threshold could probably be refined after more
+    ' intensive study, but the usual default of 10 shows a ~20-30% perf improvement over baseline.
+    Const USE_INSERTION_SORT_THRESHOLD As Long = 10
+    
     'Execute the sort (just a bog-standard quick sort at present)
     Dim idxLow As Long, idxHigh As Long
     Dim v As QSEntry, vDist As Long
@@ -1053,43 +1045,60 @@ Private Sub SortCoordinates()
         idxLow = qsRemaining(qsStackPtr).sLB
         idxHigh = qsRemaining(qsStackPtr).sUB
         
-        'TODO: switch to insertion sort for low list counts?
-        
-        i = idxLow
-        j = idxHigh
-        vDist = sortList((i + j) \ 2).ptDistance
-        
-        'TODO: standard optimization of preferentially using insertion sort on small ranges
-        Do
-            Do While (sortList(i).ptDistance < vDist)
-                i = i + 1
-            Loop
-            Do While (sortList(j).ptDistance > vDist)
-                j = j - 1
-            Loop
-            
-            'Swap final indices as necessary
-            If (i <= j) Then
+        'Switch over to insertion sort when the sub-list is small
+        If (idxHigh - idxLow < USE_INSERTION_SORT_THRESHOLD) Then
+            i = idxLow + 1
+            Do While (i <= idxHigh)
                 v = sortList(i)
-                sortList(i) = sortList(j)
-                sortList(j) = v
+                vDist = v.ptDistance
+                j = i - 1
+                Do While (j >= idxLow) And (sortList(j).ptDistance > vDist)
+                    sortList(j + 1) = sortList(j)
+                    j = j - 1
+                Loop
+                sortList(j + 1) = v
                 i = i + 1
-                j = j - 1
+            Loop
+        
+        'On larger lists, use standard quicksort
+        Else
+            
+            i = idxLow
+            j = idxHigh
+            vDist = sortList((i + j) \ 2).ptDistance
+            
+            Do
+                Do While (sortList(i).ptDistance < vDist)
+                    i = i + 1
+                Loop
+                Do While (sortList(j).ptDistance > vDist)
+                    j = j - 1
+                Loop
+                
+                'Swap final indices as necessary
+                If (i <= j) Then
+                    v = sortList(i)
+                    sortList(i) = sortList(j)
+                    sortList(j) = v
+                    i = i + 1
+                    j = j - 1
+                End If
+                
+            Loop Until i > j
+            
+            'Conditionally add new entries to the processing stack
+            If (idxLow < j) Then
+                qsRemaining(qsStackPtr).sLB = idxLow
+                qsRemaining(qsStackPtr).sUB = j
+                qsStackPtr = qsStackPtr + 1
             End If
             
-        Loop Until i > j
-        
-        'Conditionally add new entries to the processing stack
-        If (idxLow < j) Then
-            qsRemaining(qsStackPtr).sLB = idxLow
-            qsRemaining(qsStackPtr).sUB = j
-            qsStackPtr = qsStackPtr + 1
-        End If
-        
-        If (i < idxHigh) Then
-            qsRemaining(qsStackPtr).sLB = i
-            qsRemaining(qsStackPtr).sUB = idxHigh
-            qsStackPtr = qsStackPtr + 1
+            If (i < idxHigh) Then
+                qsRemaining(qsStackPtr).sLB = i
+                qsRemaining(qsStackPtr).sUB = idxHigh
+                qsStackPtr = qsStackPtr + 1
+            End If
+            
         End If
         
         'Decrement the stack pointer and continue as long as new sub-lists were added
@@ -1105,6 +1114,10 @@ Private Sub SortCoordinates()
     
     For i = 0 To m_numNearestOffsets - 1
         m_NearestOffsets(i) = tmpPoints(sortList(i).idxOriginal)
+        'During development, it was helpful to verify sort correctness:
+        'If (i > 0) Then
+        '    If (m_NearestOffsets(i).x * m_NearestOffsets(i).x + m_NearestOffsets(i).y * m_NearestOffsets(i).y < m_NearestOffsets(i - 1).x * m_NearestOffsets(i - 1).x + m_NearestOffsets(i - 1).y * m_NearestOffsets(i - 1).y) Then Debug.Print "BAD SORT AT " & i
+        'End If
     Next i
     
 End Sub
@@ -1216,24 +1229,24 @@ Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     End With
     PutMem4 VarPtrArray(m_MaskBytes()), VarPtr(maskSA2D)
     
-    'Prep input image
+    'Ensure input and output image sizes match
     m_SrcWidth = srcDIB.GetDIBWidth
     m_SrcHeight = srcDIB.GetDIBHeight
-    srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
+    m_DstWidth = dstDIB.GetDIBWidth
+    m_DstHeight = dstDIB.GetDIBHeight
     
-    'Prep output image (TODO: make this the size of the mask, instead!)
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    m_DstWidth = srcDIB.GetDIBWidth
-    m_DstHeight = srcDIB.GetDIBHeight
+    If (m_SrcWidth = m_DstWidth) And (m_SrcHeight = m_DstHeight) Then
     
-    'dstDIB.CreateBlank m_DstWidth, m_DstHeight, 32, 0, 0
-    'dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
-    dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
+        'Wrap class-level arrays around both the source and destination image
+        srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
+        dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
     
-    'Perform filter
-    ContentAwareFill = SynthesizeTexture()
+        'Perform filter
+        ContentAwareFill = SynthesizeTexture()
+        
+    End If
     
-    'Regardless of success or failure, we *must* unalias all array wrappers before exiting
+    'Regardless of success or failure, we *must* unalias all array wrappers before exiting.
     PutMem4 VarPtrArray(m_MaskBytes), 0&
     srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
     dstDIB.UnwrapRGBQuadArrayFromDIB m_DstPixels
