@@ -231,12 +231,13 @@ Private m_Random As pdRandomize
 ' where a difference of 0 means "perfect match")
 Private m_BestMatchPt As PointLong, m_BestMatchDiff As Long
 
-'In inpainting mode, we need class-level access to the passed mask and a rectangle that defines its boundaries
-' (relative to the *source* image, since that's where the pixels are coming from).  The mask is a byte array,
-' but the synthesizer will treat all 0 values as "do not synthesize" and all non-zero values as "synthesize".
-' It does not perform any blending, by design - antialiasing or feathering must be handled by the caller
-' after this class finishes its work.
-Private m_MaskBytes() As Byte, m_MaskRectL As RectL
+'In inpainting mode, we need class-level access to the passed mask.  This class requires the mask array
+' to be the same size as the source and destination images; this greatly simplifies bounds-checking,
+' and provides a large performance boost relative to previous attempts (which took a separate mask rect)
+' as a parameter.  The mask is just a byte array, and the synthesizer will treat all 0 values as
+' "do not synthesize" and all non-zero values as "synthesize".  It does not perform any blending, by design -
+' antialiasing or feathering must be handled by the caller after this class finishes its work.
+Private m_MaskBytes() As Byte
 
 'When applying the final version of the filter, progress-bar updates are important (because the function
 ' can be kinda slow, especially on huge on huge images).
@@ -258,12 +259,15 @@ Private m_qsStack() As QSStack
 Private m_qsStackPtr As Long
 
 'Use our version of the "Resynthesizer" algorithm for texture synthesis.
-' All relevant parameters MUST BE SET PRIOR TO CALLING!
-Private Function AttemptResynthesisAlgorithm() As Boolean
+' All relevant parameters MUST BE SET PRIOR TO CALLING.
+'
+'Returns TRUE if successful, FALSE if the user cancels mid-way (or the supplied parameters are
+' invalid, or the mask is empty on a content-aware fill, etc).
+Private Function SynthesizeTexture() As Boolean
     
-    AttemptResynthesisAlgorithm = False
+    SynthesizeTexture = False
     
-    Const FUNC_NAME As String = "AttemptResynthesisAlgorithm"
+    Const FUNC_NAME As String = "SynthesizeTexture"
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -272,11 +276,10 @@ Private Function AttemptResynthesisAlgorithm() As Boolean
     ' until we finish initialization (because we don't know how many pixels need to be replaced) but we
     ' can guess based on mask boundaries.
     If m_ShowProgressUI Then
-        With m_MaskRectL
-            ProgressBars.SetProgBarMax (.Right - .Left) * (.Bottom - .Top)
-            ProgressBars.SetProgBarVal 1
-            Message "Analyzing image..."
-        End With
+        ProgressBars.SetProgBarMax 10000    'Arbitrary non-zero value just to initialize the progress bar;
+                                            ' we'll set a true value after we know how many pixels must be synthesized.
+        ProgressBars.SetProgBarVal 1
+        Message "Analyzing image..."
     End If
     
     'Initialization for this function is non-trivial (from a perf standpoint).
@@ -429,15 +432,7 @@ Private Function AttemptResynthesisAlgorithm() As Boolean
                 'In mask mode, we also want to ensure the target point is not within the mask.  (If it is,
                 ' we don't want to consider it as a potential replacement!)
                 If (m_CurMode = im_InpaintByMask) Then
-                    If (testPoint.x >= m_MaskRectL.Left) Then
-                    If (testPoint.x <= m_MaskRectL.Right) Then
-                    If (testPoint.y >= m_MaskRectL.Top) Then
-                    If (testPoint.y <= m_MaskRectL.Bottom) Then
-                        If (m_MaskBytes(testPoint.x - m_MaskRectL.Left, testPoint.y - m_MaskRectL.Top) <> 0) Then GoTo NextNeighbor
-                    End If
-                    End If
-                    End If
-                    End If
+                    If (m_MaskBytes(testPoint.x, testPoint.y) <> 0) Then GoTo NextNeighbor
                 End If
                 
                 'If we've already compared this point this iteration, skip it.  This is a likely scenario as
@@ -530,7 +525,7 @@ NextNeighbor:
     'If we raised the progress bar, hide it before exiting
     If m_ShowProgressUI Then ProgressBars.ReleaseProgressBar
     
-    AttemptResynthesisAlgorithm = True
+    SynthesizeTexture = True
     
     If DEBUG_VERBOSE Then PDDebug.LogAction "Full resynthesis took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
@@ -621,39 +616,16 @@ Private Function InitializeInpainter() As Boolean
               
     ElseIf (m_CurMode = im_InpaintByMask) Then
         
-        Dim xStart As Long, xEnd As Long
-        xStart = m_MaskRectL.Left - m_ComparatorRadius
-        If (xStart < 0) Then xStart = 0
-        xEnd = m_MaskRectL.Right + m_ComparatorRadius
-        If (xEnd >= m_SrcWidth) Then xEnd = m_SrcWidth - 1
-        
-        Dim yStart As Long, yEnd As Long
-        yStart = m_MaskRectL.Top - m_ComparatorRadius
-        If (yStart < 0) Then yStart = 0
-        yEnd = m_MaskRectL.Bottom + m_ComparatorRadius
-        If (yEnd >= m_SrcHeight) Then yEnd = m_SrcHeight - 1
-            
-        For y = yStart To yEnd
-        For x = xStart To xEnd
-                    
-            'Check mask boundaries.  If a pixel is masked, do *not* include it as a valid source sample
-            Dim pxMasked As Boolean
-            pxMasked = False
-            
-            If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
-                If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
-                    pxMasked = (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) <> 0)
-                End If
-            End If
-            
-            If (Not pxMasked) Then
+        'Only add unmasked pixels to the "valid source sample" list
+        For y = 0 To m_SrcHeight - 1
+        For x = 0 To m_SrcWidth - 1
+            If (m_MaskBytes(x, y) = 0) Then
                 With m_ValidSourcePoints(idxDst)
                     .x = x
                     .y = y
                 End With
                 idxDst = idxDst + 1
             End If
-            
         Next x
         Next y
         
@@ -702,34 +674,21 @@ Private Function InitializeInpainter() As Boolean
                 End With
                 idxDst = idxDst + 1
             
-            'In in-painting mode, we must manually exclude the pixels being synthesized
+            'In in-painting mode, we must manually exclude all pixels being synthesized
             Case im_InpaintByMask
                 
-                'Check for pixels within mask boundaries
-                If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
-                    If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
+                If (m_MaskBytes(x, y) <> 0) Then
                     
-                        'Only add masked points
-                        If (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) > 0) Then
-                            
-                            'Flag as un-synthesized
-                            m_SynthesisState(x, y).x = LONG_MAX
-                            
-                            With m_PointsRemaining(idxDst)
-                                .x = x
-                                .y = y
-                            End With
-                            idxDst = idxDst + 1
-                            
-                        Else
-                            m_SynthesisState(x, y).x = x
-                            m_SynthesisState(x, y).y = y
-                        End If
-                        
-                    Else
-                        m_SynthesisState(x, y).x = x
-                        m_SynthesisState(x, y).y = y
-                    End If
+                    'Flag as un-synthesized and add the point to the "need-to-synthesize" list
+                    m_SynthesisState(x, y).x = LONG_MAX
+                    With m_PointsRemaining(idxDst)
+                        .x = x
+                        .y = y
+                    End With
+                    idxDst = idxDst + 1
+                
+                'Mark as "already synthesized" so the synthesizer loop knows to ignore this pixel.
+                ' (And DO NOT add this coordinate to the "need-to-synthesize" list.)
                 Else
                     m_SynthesisState(x, y).x = x
                     m_SynthesisState(x, y).y = y
@@ -806,13 +765,19 @@ Private Function InitializeInpainter() As Boolean
             ' higher-quality output, but there is obviously a performance cost to this.  I think the
             ' trade-offs are worth it, and I think it's reasonable to *always* do two full passes over
             ' the target area (regardless of the user's refinement parameter).
+            '
+            'Thus, we will always re-add all destination points to the "points-to-be-processed" list,
+            ' and then we will add e.g. 75% of the pixels back for a 3rd pass (if the user's m_Refinement
+            ' parameter is 0.75), then 75% of *those* pixels back again, then 75% of each preceding group
+            ' over and over until we either reach 0 points added, or we exceed the maximum number of points
+            ' declared above.
             
             'Bulk copy this set of points into place (after ensuring sufficient storage space, obviously)
             If ((idxDst + numPointsToRefine) > UBound(m_PointsRemaining)) Then ReDim Preserve m_PointsRemaining(0 To UBound(m_PointsRemaining) * 2 + 1) As PointLong
             VBHacks.CopyMemoryStrict VarPtr(m_PointsRemaining(idxDst)), VarPtr(m_PointsRemaining(0)), numPointsToRefine * 8     '8 = LenB(PointLong)
             idxDst = idxDst + numPointsToRefine
             
-            'Stop adding points if we hit the pre-calculated max value
+            'Stop adding points if we've hit or surpassed the pre-calculated maximum number of points.
             If (idxDst >= maxNumPoints) Then Exit Do
             
             'Calculate how many points to add on the next iteration, and limit it to the max amount
@@ -879,13 +844,7 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
                 ' (We're indexing into the source image, and selected pixels will *still retain their
                 ' original contents*.)
                 Dim okToUsePixel As Boolean: okToUsePixel = True
-                If (m_CurMode = im_InpaintByMask) Then
-                    If (x >= m_MaskRectL.Left) And (x <= m_MaskRectL.Right) Then
-                    If (y >= m_MaskRectL.Top) And (y <= m_MaskRectL.Bottom) Then
-                        okToUsePixel = (m_MaskBytes(x - m_MaskRectL.Left, y - m_MaskRectL.Top) = 0)
-                    End If
-                    End If
-                End If
+                If (m_CurMode = im_InpaintByMask) Then okToUsePixel = (m_MaskBytes(x, y) = 0)
                 
                 If okToUsePixel Then
                     
@@ -1177,7 +1136,7 @@ Friend Sub MakeSeamlessTile(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB)
     dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
     
     'Perform filter
-    AttemptResynthesisAlgorithm
+    SynthesizeTexture
     
     'Unalias all unsafe array wrappers
     srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
@@ -1185,13 +1144,27 @@ Friend Sub MakeSeamlessTile(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB)
     
 End Sub
 
-'Given a source image, mask (and associated boundary rect), and destination image, create a new
+'Given a source image, destination image, and mask (ALL WITH THE SAME DIMENSIONS), create a new
 ' destination image where all masked pixels have been replaced via texture synthesis.
 '
-'For this first draft, the destination and source DIBs will be initialized to the same size.
-' It is up to the caller to crop out the relevant destination DIB portion, then blend it as wanted.
-' (This simplifies testing, and will likely be revisited in later commits.)
-Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, ByRef maskRectF As RectF, Optional ByVal reportProgress As Boolean = True)
+'The source image is treated as a const.  The mask array is also treated as a const.
+'
+'The destination image *will* be modified by this function, but *only in locations where the mask
+' has a non-zero value*.  (Any pixels with corresponding mask byte = 0 will be untouched.)  Note that
+' the synthesizer does not blend pixels, so mask values between 0 and 255 are treated the same.
+' It is up to the caller to blend the results if desired (for e.g. feathered selections).
+'
+'Originally, this function allowed the selection mask to be smaller than the source/destination images,
+' and a rect needed to be passed to define the mask boundary.  However, this had large perf implications
+' because *every* mask access needed to be bounds-checked.  By forcing the mask to be the same size as
+' the source and destination images, we can skip boundary checking and get a large speed boost.
+'
+'If the passed reportProgress parameter is TRUE, progress bar updates will be supplied to the main window.
+'
+'Returns TRUE if the operations completed successfully, FALSE otherwise.  FALSE can mean several things
+' (user canceled the result, there were no pixels marked to fill, etc), but regardless of the underlying
+' reason you must ignore the contents of dstDIB when FALSE is returned, as its state is not guaranteed.
+Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, Optional ByVal reportProgress As Boolean = True) As Boolean
     
     m_CurMode = im_InpaintByMask
     m_ShowProgressUI = reportProgress
@@ -1200,29 +1173,22 @@ Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     m_TileMode = False
     
     'The next set of variables all come from the user
-    m_MaxNumNeighbors = 25  '30
+    m_MaxNumNeighbors = 25      '30 is the default in the original resynthesizer paper.  It's overkill for most applications.
     m_MaxRandomCandidates = 80
     m_Refinement = 0.75
     m_AllowOutliers = 30# / 256#
     m_ComparatorRadius = 300
     
     'Unsafely wrap a class-level array around the user mask
-    With m_MaskRectL
-        .Left = Int(maskRectF.Left)
-        .Top = Int(maskRectF.Top)
-        .Right = .Left + Int(maskRectF.Width) - 1
-        .Bottom = .Top + Int(maskRectF.Height) - 1
-    End With
-    
     Dim maskSA2D As SafeArray2D
     With maskSA2D
         .cbElements = 1
         .cDims = 2
         .cLocks = 1
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = Int(maskRectF.Height)
+        .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = Int(maskRectF.Width)
+        .Bounds(1).cElements = srcDIB.GetDIBWidth
         .pvData = VarPtr(srcMask(0, 0))
     End With
     PutMem4 VarPtrArray(m_MaskBytes()), VarPtr(maskSA2D)
@@ -1242,24 +1208,110 @@ Friend Sub ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
     
     'Perform filter
-    AttemptResynthesisAlgorithm
+    ContentAwareFill = SynthesizeTexture()
     
-    'Unalias all unsafe array wrappers
+    'Regardless of success or failure, we *must* unalias all array wrappers before exiting
     PutMem4 VarPtrArray(m_MaskBytes), 0&
     srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
     dstDIB.UnwrapRGBQuadArrayFromDIB m_DstPixels
     
+End Function
+
+'At initialization, all parameters will be set to their default values.  You can change any of these values
+' prior to calling the main SynthesizeTexture() function.
+Friend Sub SetDefaultParameterValues()
+    
+    'How many neighbors to compare when evaluating the quality of a synthesized pixel.  30 is the default value
+    ' given in the original resynthesizer paper.  It's probably overkill for most applications.
+    '
+    'Because neighbors will always be searched in nearest-to-furthest order, changing this doesn't change the
+    ' quality of pixel matching, per se - it just controls how far outward the algorithm evaluates during the
+    ' EvaluatePixel process.
+    m_MaxNumNeighbors = 25
+    
+    'A key part of the "resynthesize" algorithm is testing a set of random pixels against each potential
+    ' candidate.  This is unavoidable seeing as 1) comparing every pixel in the source image would take years,
+    ' and 2) testing replacement pixels in an orderly fashion (by scanline, for example) produces noticeable
+    ' banding in the final result.  80 random candidates is the suggested default in the original
+    ' resynthesizer paper.
+    '
+    'Note that my implementation uses this maximum value early in the resynthesize process, but scales it down
+    ' as better matches are found.  This is an easy optimization because as we near the end of the synthesize
+    ' process, existing pixels have already survived multiple iterations and are less and less likely to be
+    ' "outperformed" by a random pixel from elsewhere in the image.
+    m_MaxRandomCandidates = 80
+    
+    'After synthesizing each pixel at least once, we then re-refine the earliest synthesized pixels to try
+    ' and improve their match quality against their neighbors (who didn't exist yet on the first pass).
+    ' This refinement is thus a percentage value, where e.g. 0.75 means "re-test the first 75% of synthesized
+    ' pixels AGAIN after all pixels have been synthesized".
+    '
+    'The default value in the original synthesize paper is 0.75.  Note that PhotoDemon, by design, synthesizes
+    ' all points TWICE before this value kicks in.  I do this because repeat testing shows a significant
+    ' (subjective) quality improvement after revisiting each pixel at least once.  Thus if you have 10,000 pixels
+    ' to synthesize, PhotoDemon will synthesize all 10,000 once, then re-synthesize them AGAIN, and then
+    ' resynthesize the first e.g. 75% of pixels a third time.
+    '
+    'This value is used repeatedly, so after e.g. 75% of pixels have been re-synthesized a third time, the first
+    ' 75% of *those* 75% of pixels (e.g. 56.25% of the full original set) are then re-synthesized a fourth time.
+    ' This continues until we reach "0% of pixels", so the total number of pixels synthesized will be much
+    ' larger than the actual size of the mask.  This is the only way to ensure a high-quality output.
+    m_Refinement = 0.75
+    
+    'The original paper calls this value "sigma", and I'm fairly certain GIMP's Resynthesize plugin renames it
+    ' "sensitivity to outliers".  This value controls the spread of the Cauchy distribution look-up table we
+    ' generate and unlike previous parameters, it has no performance implications.  (All possible values,
+    ' from 0.0 to 1.0, have the same performance.)
+    '
+    'Instead, this value determines how "good" of a match a synthesized pixel needs to be to its neighbors
+    ' before we decide to keep it.  A value of 0 means that the new pixel must match its original patch
+    ' neighbors identically.  This is not really desirable because the filled patch starts to look like an
+    ' obvious copy of sub-patches from elsewhere in the image.
+    '
+    'Conversely, a value of 1.0 means that random patches are totally fine.  This leads to areas of obviously
+    ' mismatched pixels alongside very good matches (because random sampling still provides some nice fits)
+    ' and again, usually isn't desirable.
+    '
+    'It's hard to provide a "one-size fits all" value here, however, because it depends a lot on the current
+    ' image.  For example, synthesizing something very noisy - like a top-down view of beach sand - can
+    ' actually look great with a max value of 1.0, because the underlying texture is basically noise.
+    ' Similarly, a highly repeatable geometric texture (like tiles or bricks, perhaps) may do better with
+    ' a value closer to 0.
+    '
+    'The default value in the original resynthesizer paper is 30 / 256 (~0.12).
+    m_AllowOutliers = 30# / 256#
+    
+    'Because the original paper is primarily focused on full texture synthesis (where you create a novel
+    ' seamless texture from some source), it doesn't deal a lot with specifics for content-aware filling.
+    ' Instead, it shows some examples and sort of says "the same ideas work for this concept, too!"
+    '
+    'One of the things that quickly became apparent during my own implementation attempt was that you
+    ' don't want content-aware fill pulling pixels from too far away in the image.  Otherwise, you may end
+    ' up mistakenly replacing something like sky with something like water - because they're *close enough*
+    ' in color to confuse the algorithm.
+    '
+    'So I added an option to restrict the radius where the synthesizer looks for replacement pixels.
+    ' Note that this value is based on the size of the underlying mask, so if you have three tiny fill
+    ' areas spread across an image, it is the union rect of *all* those areas that is used for the
+    ' underlying radius calculation.  (Basically, any pixel within 300 pixels of the boundary rect is OK
+    ' to use.)  As such, you're better off replacing individual objects one-at-a-time rather than selecting
+    ' them all and then batch-replacing them.
+    m_ComparatorRadius = 300
+    
 End Sub
 
 Private Sub Class_Initialize()
-
+    
+    'Initialize a random number generator
     Set m_Random = New pdRandomize
     
-    'Eventually we will want to seed the randomizer randomly, but it's helpful during testing to
-    ' use a fixed value to ensure that I haven't broken anything since the last revision lol
-    'm_Random.SetSeed_Int 0
-    
+    'At present, PhotoDemon seeds the inpainter randomly.  You could also allow the user to provide their
+    ' own random seed, which would ensure identical results every time the function is called (with the
+    ' same inputs and mask, obviously).
     m_Random.SetSeed_AutomaticAndRandom
+    
+    'Set all parameters to their default values
+    SetDefaultParameterValues
     
 End Sub
 

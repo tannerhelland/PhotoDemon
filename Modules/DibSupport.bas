@@ -2411,6 +2411,8 @@ Public Sub GetSingleChannel_2D(ByRef srcDIB As pdDIB, ByRef dstBytes() As Byte, 
         newBoundX = Int(tmpRectF.Width) - 1
         newBoundY = Int(tmpRectF.Height) - 1
     Else
+        srcOffsetX = 0
+        srcOffsetY = 0
         newBoundX = srcDIB.GetDIBWidth - 1
         newBoundY = srcDIB.GetDIBHeight - 1
     End If

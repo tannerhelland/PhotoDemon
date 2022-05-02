@@ -467,23 +467,85 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         Processor.Process "Content-aware fill", False, vbNullString, UNDO_Layer
     Else
         
+        'Prepare the source layer for in-painting.
+        
+        'IMPORTANT NOTE: in early drafts, this feature passed the full-size source layer to pdInpaint.
+        ' This works fine, but it isn't necessary, and it consumes extra memory because the destination
+        ' image (and the mask) and a bunch of temporary structures inside pdInpaint must all be created
+        ' at the same size as the source image.
+        '
+        'So instead, we now create a temporary copy of the source layer at the minimum size required by
+        ' the inpainter.  This minimum size is easy to calculate - it's just the rectangle of the target
+        ' area (the area "to be filled" as defined by the mask) expanded by the user's sampling radius.
+        '
+        'This greatly reduces memory requirements of the inpainter and it's much faster to prepare the
+        ' cropped version here, rather than adding extra boundary checks to the inpainter (which has to
+        ' analyze pixels millions of times on the average fill).
+        '
+        'Anyway, I mention this up-front because you can easily pass a full-size source image,
+        ' destination image, and mask to the inpainter and it will work great.  It will just consume
+        ' more memory.
+        
         'If this is a vector layer, rasterize it
         If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector Then Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
         
-        'If the layer has affine transforms active, make them permanent
+        'If the layer has any active affine transforms, make them permanent
         If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True) Then PDImages.GetActiveImage.GetActiveLayer.MakeCanvasTransformsPermanent
         
-        'Next, we need to retrieve the current selection mask as a simple byte array.  Before doing this,
-        ' we also need to calculate proper overlap between the current selection and the current layer
-        ' (to ensure correct handling of layers that are *not* the same size as the parent image).
+        'These are the source and destination DIBs we're ultimately going to fill, as well as the
+        ' mask byte array (and rectangle defining the mask boundary area), but how we fill these
+        ' depends on the size of the active layer vs the size of its parent image.
+        Dim tmpSrcCopy As pdDIB, tmpDstCopy As pdDIB
+        Dim srcMask() As Byte, srcMaskRect As RectF
+        
+        Set tmpSrcCopy = New pdDIB
+        Set tmpDstCopy = New pdDIB
+        
+        'Next, retrieve the boundary rectangle of the "to-be-filled region".  (This comes directly
+        ' from PhotoDemon's selection engine.)
+        Dim baseFillRect As RectF
+        baseFillRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
+        If (baseFillRect.Width <= 0) Or (baseFillRect.Height <= 0) Then Exit Sub
+        
+        'The source and destination images need to be the same size as this "to-be-filled region",
+        ' but expanded by the [user's sampling radius] in all directions.
+        '
+        'TODO: pull this from a UI
+        Const userSampleRadius As Long = 300
+        
+        Dim expandedFillRect As RectF
+        expandedFillRect.Left = baseFillRect.Left - userSampleRadius
+        expandedFillRect.Top = baseFillRect.Top - userSampleRadius
+        expandedFillRect.Width = baseFillRect.Width + userSampleRadius * 2
+        expandedFillRect.Height = baseFillRect.Height + userSampleRadius * 2
+        
+        'The user is allowed to inpaint along image boundaries (this is actually a common use-case),
+        ' so crop the target rectangle to the boundaries of the parent image.
+        If (expandedFillRect.Left < 0) Then expandedFillRect.Left = 0
+        If (expandedFillRect.Top < 0) Then expandedFillRect.Top = 0
+        If (expandedFillRect.Left + expandedFillRect.Width > PDImages.GetActiveImage.Width()) Then expandedFillRect.Width = (PDImages.GetActiveImage.Width() - expandedFillRect.Left)
+        If (expandedFillRect.Top + expandedFillRect.Height > PDImages.GetActiveImage.Height()) Then expandedFillRect.Height = (PDImages.GetActiveImage.Height() - expandedFillRect.Top)
+        
+        'We now have a properly expanded target rectangle.  This rectangle is the size we want the
+        ' source image, destination image, and mask to be.
+        
+        'Note, however, that this rectangle is in *IMAGE* coordinates - not *LAYER* coordinates.
+        ' If the active layer and image are the same size, great - we can use this as-is.  If the
+        ' current layer is a different size than the parent image, however, we're gonna need to
+        ' perform additional math (and modify the above rectangle accordingly).
+        
+        'To determine whether that extra math is necessary, check if the current layer is the same
+        ' size as the parent image (as in e.g. a normal single-layer JPEG), or whether it's a different
+        ' size or has non-zero offsets (as in e.g. a PSD).
         Dim layerNotFullSize As Boolean
         layerNotFullSize = (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX <> 0)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY <> 0)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True) <> PDImages.GetActiveImage.Width)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True) <> PDImages.GetActiveImage.Height)
-        layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True))
         
-        Dim srcMask() As Byte, srcMaskRect As RectF
+        'If the layer is a different size than its parent image (or if it has non-zero position offsets),
+        ' we need to further modify the target rectangle, to ensure it doesn't exceed the boundaries of the
+        ' underlying layer.
         If layerNotFullSize Then
         
             'Calculate overlap between the current layer and the parent image
@@ -529,25 +591,45 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
             
             DIBs.GetSingleChannel_2D tmpOverlayMask, srcMask, 0, VarPtr(srcMaskRect)
             
-        'Layer is the size of the image, which makes this step much easier!
+        'Layer is the size of the image (e.g. a single-layer JPEG), which makes this step much easier!
         Else
-            srcMaskRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
-            DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(srcMaskRect)
+            
+            'The boundary rectangle we have already calculated will work fine.  Crop out the relevant
+            ' region from the source image and clone it to the destination image.
+            tmpSrcCopy.CreateBlank Int(expandedFillRect.Width), Int(expandedFillRect.Height), 32, 0, 0
+            GDI.BitBltWrapper tmpSrcCopy.GetDIBDC, 0, 0, Int(expandedFillRect.Width), Int(expandedFillRect.Height), PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(expandedFillRect.Left), Int(expandedFillRect.Top), vbSrcCopy
+            tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
+            
+            'Retrieve the selection mask using the same rect.
+            DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(expandedFillRect)
+            
         End If
         
-        'Execute the fill
-        Dim newLayerDIB As pdDIB
-        Set newLayerDIB = New pdDIB
-        newLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
-        
+        'Execute the content-aware fill
         Dim cInpaint As pdInpaint
         Set cInpaint = New pdInpaint
-        cInpaint.ContentAwareFill PDImages.GetActiveImage.GetActiveDIB, newLayerDIB, srcMask, srcMaskRect
+        cInpaint.ContentAwareFill tmpSrcCopy, tmpDstCopy, srcMask, True
         
-        'Assign the new image and notify the parent image of the change
-        PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB newLayerDIB
+        'TODO: check success/fail after adding user-cancellation support
+        
+        'With the fill finished, we now need to blend the results against the original layer.  Note that
+        ' non-masked pixels (0) and fully-masked pixels (255) have already been dealt with - it's values
+        ' between 0 and 255 that we need to handle here.  (The inpainter only fills whole pixels, so any
+        ' feathering needs to be manually handled now.)
+        '
+        '(Note also that this version of the code assumes premultiplied alpha, but alpha doesn't *need*
+        ' to be premultiplied - the code below just performs a weighted average of the before-and-after
+        ' results, same as normal selection blending.)
+        
+        'TODO
+        If layerNotFullSize Then
+        
+        Else
+            GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, expandedFillRect.Left, expandedFillRect.Top, expandedFillRect.Width, expandedFillRect.Height, tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
+        End If
+        
+        'Notify the parent image of the change, then redraw the viewport before exiting
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-        
         Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
