@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionFilters"
 'Selection Tools: Filters
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 18/February/22
-'Last update: minor updates to fix compatibility with new "multiple selections" features
+'Last updated: 02/May/22
+'Last update: new content-aware fill feature
 '
 'This module should only contain selection filters (e.g. "grow", "border", etc).
 '
@@ -458,7 +458,7 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
 End Sub
 
 'TODO: UI for settings
-Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
+Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String)
     
     'Ensure a selection exists
     If (Not Selections.SelectionsAllowed(False)) Then Exit Sub
@@ -598,14 +598,77 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         
         'With the fill finished, we now need to blend the results against the original layer.  Note that
         ' non-masked pixels (0) and fully-masked pixels (255) have already been dealt with - it's values
-        ' between 0 and 255 that we need to handle here.  (The inpainter only fills whole pixels, so any
-        ' feathering needs to be manually handled now.)
+        ' between 0 and 255 that we must handle here.  (The inpainter only fills whole pixels, so any
+        ' feathering needs to be manually handled by the caller.)
         '
-        '(Note also that this version of the code assumes premultiplied alpha, but alpha doesn't *need*
-        ' to be premultiplied - the code below just performs a weighted average of the before-and-after
-        ' results, same as normal selection blending.)
+        'Note also that this version of the code works with both straight and premultiplied alpha.
+        ' It doesn't actually perform alpha-blending - it only performs a weighted average of the
+        ' before-and-after results.  This is deliberate to produce correct results when blending
+        ' semi-transparent pixels that are only partially selected.
+        Dim x As Long, y As Long, xOffset As Long, selValue As Byte
+        Dim xMax As Long, yMax As Long
+        xMax = tmpSrcCopy.GetDIBWidth - 1
+        yMax = tmpSrcCopy.GetDIBHeight - 1
         
-        'TODO
+        Dim pxSrc() As Byte, saSrc As SafeArray1D, ptrSrc As Long, strideSrc As Long
+        tmpSrcCopy.WrapArrayAroundScanline pxSrc, saSrc, 0
+        ptrSrc = saSrc.pvData
+        strideSrc = saSrc.cElements
+        
+        Dim pxDst() As Byte, saDst As SafeArray1D, ptrDst As Long, strideDst As Long
+        tmpDstCopy.WrapArrayAroundScanline pxDst, saDst, 0
+        ptrDst = saDst.pvData
+        strideDst = saDst.cElements
+        
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim oldR As Long, oldG As Long, oldB As Long, oldA As Long
+        
+        Dim blendAmount As Double
+        Const ONE_DIV_255 As Double = 1# / 255#
+        
+        For y = 0 To yMax
+            
+            'Update array pointers to point at the current line in both the source and destination images
+            saSrc.pvData = ptrSrc + strideSrc * y
+            saDst.pvData = ptrDst + strideDst * y
+            
+        For x = 0 To xMax
+            
+            selValue = srcMask(x, y)
+            If (selValue > 0) Then
+                If (selValue < 255) Then
+                    
+                    xOffset = x * 4
+                    
+                    newB = pxDst(xOffset)
+                    newG = pxDst(xOffset + 1)
+                    newR = pxDst(xOffset + 2)
+                    newA = pxDst(xOffset + 3)
+                    
+                    oldB = pxSrc(xOffset)
+                    oldG = pxSrc(xOffset + 1)
+                    oldR = pxSrc(xOffset + 2)
+                    oldA = pxSrc(xOffset + 3)
+                    
+                    'Calculate a weighted blend of the old and new pixel values and replace the destination
+                    ' value with the result.
+                    blendAmount = selValue * ONE_DIV_255
+                    pxDst(xOffset) = (blendAmount * newB) + oldB * (1# - blendAmount)
+                    pxDst(xOffset + 1) = (blendAmount * newG) + oldG * (1# - blendAmount)
+                    pxDst(xOffset + 2) = (blendAmount * newR) + oldR * (1# - blendAmount)
+                    pxDst(xOffset + 3) = (blendAmount * newA) + oldA * (1# - blendAmount)
+                    
+                End If
+            End If
+            
+        Next x
+        Next y
+        
+        'Free unsafe array wrappers!
+        tmpSrcCopy.UnwrapArrayFromDIB pxSrc
+        tmpDstCopy.UnwrapArrayFromDIB pxDst
+        
+        'Copy the finished result *back* into the active source layer
         If layerNotFullSize Then
             GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(overlapRectLayer.Left), Int(overlapRectLayer.Top), Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
         Else

@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 30/April/22
-'Last update: get inpainting mode working - and not just working, but working well!
+'Last updated: 02/May/22
+'Last update: overhaul boundary strategy for masks; this brings large performance improvements, but the
+'             passed mask array must now be the same size as the source and destination images
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -190,12 +191,12 @@ Private m_MaxRandomCandidates As Long
 ' pixels. For these reasons, the algorithm re-chooses early chosen pixel values once later pixel values
 ' have been chosen."
 '
-'He then goes on to suggest a strategy of iteratively re-checking some fraction [p] of the image, where [p]
-' is a value on the range [0, 1], and you re-check the first [p * n] pixels placed into the destination image
-' in light of a larger collection of synthesized neighbors since the last iteration.  (The theory is that the
-' final pixels you synthesize have the benefit of *tons* of well-placed neighbors, so they are likely to look
-' good with minimal further iteration, but the first few pixels were effectively random and likely need to be
-' reevaluated again.)
+'He then goes on to suggest a strategy of iteratively re-checking some fraction [p] of the image,
+' where [p] is a value on the range [0, 1], and you re-check the first [p * n] pixels placed into the
+' destination image in light of a larger collection of well-synthesized neighbors.  (The theory is that
+' the final pixels you synthesize have the benefit of *tons* of well-placed neighbors, so they likely
+' look good on their initial synthesis, but the first few pixels were effectively random and must be
+' reevaluated after more neighbors exist.)
 '
 'The suggested default value in the paper is 0.75.
 Private m_Refinement As Double

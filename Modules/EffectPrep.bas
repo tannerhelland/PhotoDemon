@@ -693,7 +693,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 ' (Note that this is *not* an alpha-blend operation!  It is a weighted average between the old and
                 '  new pixel results, which produces a totally different output.)
                 Else
-                
+                    
                     blendAlpha = thisAlpha * ONE_DIV_255
                     
                     'Retrieve the old (original, unmodified) RGB values
