@@ -255,9 +255,10 @@ Private Type QSStack
     sUB As Long
 End Type
 
-Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
-Private m_qsStack() As QSStack
-Private m_qsStackPtr As Long
+Private Type QSEntry
+    ptDistance As Long
+    idxOriginal As Long
+End Type
 
 'Use our version of the "Resynthesizer" algorithm for texture synthesis.
 ' All relevant parameters MUST BE SET PRIOR TO CALLING.
@@ -1011,53 +1012,67 @@ Private Function ModuloInt(ByVal quotient As Long, ByVal divisor As Long) As Lon
     If (ModuloInt < 0&) Then ModuloInt = ModuloInt + divisor
 End Function
 
-'Potential neighbor offsets are sorted by their Euclidean distance from the origin
-Private Function PointDistanceFrom00(ByVal idxSorted As Long) As Long
-    With m_NearestOffsets(idxSorted)
-        PointDistanceFrom00 = .x * .x + .y * .y
-    End With
-End Function
-
 Private Sub SortCoordinates()
     
     If (m_numNearestOffsets <= 0) Then Exit Sub
-
-    'Prep our internal stack (this is faster and more reliable than recursion)
-    ReDim m_qsStack(0 To INIT_QUICKSORT_STACK_SIZE - 1) As QSStack
-    m_qsStackPtr = 0
-    m_qsStack(0).sLB = 0
-    m_qsStack(0).sUB = m_numNearestOffsets - 1
+    
+    'To improve performance, we're not gonna sort the coordinate list in-place.
+    ' Instead, we're going to pre-calculate all distances, sort just the distance list,
+    ' then rebuild the original coordinate array accordingly.
+    Dim sortList() As QSEntry
+    ReDim sortList(0 To m_numNearestOffsets - 1) As QSEntry
+    
+    Dim i As Long, j As Long
+    For i = 0 To m_numNearestOffsets - 1
+        sortList(i).idxOriginal = i
+        With m_NearestOffsets(i)
+            'Potential neighbor offsets are sorted by their Euclidean distance from the origin.
+            ' (We only need relative values, so don't waste energy on a square-root.)
+            sortList(i).ptDistance = .x * .x + .y * .y
+        End With
+    Next i
+    
+    'Prep our internal stack (this is faster and more reliable than recursion).  Note that because
+    ' we are using a fixed potential list of sort candidates, this upper limit is guaranteed safe
+    ' for this application - but it may *not* be safe for all quick sort ops, so if you change things
+    ' like the maximum upper limit for search radius, you may need to increase stack size accordingly.
+    Const INIT_QUICKSORT_STACK_SIZE As Long = 256
+    Dim qsRemaining() As QSStack, qsStackPtr As Long
+    ReDim qsRemaining(0 To INIT_QUICKSORT_STACK_SIZE - 1) As QSStack
+    qsStackPtr = 0
+    qsRemaining(0).sLB = 0
+    qsRemaining(0).sUB = m_numNearestOffsets - 1
     
     'Execute the sort (just a bog-standard quick sort at present)
     Dim idxLow As Long, idxHigh As Long
-    Dim i As Long, j As Long
-    Dim v As PointLong, vDist As Long
+    Dim v As QSEntry, vDist As Long
     
-    'TODO: consider pre-calculating all distances so we don't have to repeatedly calculate them during sorting.
     Do
         
         'Load the next set of boundaries, and reset all pivots
-        idxLow = m_qsStack(m_qsStackPtr).sLB
-        idxHigh = m_qsStack(m_qsStackPtr).sUB
+        idxLow = qsRemaining(qsStackPtr).sLB
+        idxHigh = qsRemaining(qsStackPtr).sUB
+        
+        'TODO: switch to insertion sort for low list counts?
         
         i = idxLow
         j = idxHigh
-        vDist = PointDistanceFrom00((i + j) \ 2)
+        vDist = sortList((i + j) \ 2).ptDistance
         
         'TODO: standard optimization of preferentially using insertion sort on small ranges
         Do
-            Do While (PointDistanceFrom00(i) < vDist)
+            Do While (sortList(i).ptDistance < vDist)
                 i = i + 1
             Loop
-            Do While (PointDistanceFrom00(j) > vDist)
+            Do While (sortList(j).ptDistance > vDist)
                 j = j - 1
             Loop
             
             'Swap final indices as necessary
             If (i <= j) Then
-                v = m_NearestOffsets(i)
-                m_NearestOffsets(i) = m_NearestOffsets(j)
-                m_NearestOffsets(j) = v
+                v = sortList(i)
+                sortList(i) = sortList(j)
+                sortList(j) = v
                 i = i + 1
                 j = j - 1
             End If
@@ -1066,24 +1081,31 @@ Private Sub SortCoordinates()
         
         'Conditionally add new entries to the processing stack
         If (idxLow < j) Then
-            m_qsStack(m_qsStackPtr).sLB = idxLow
-            m_qsStack(m_qsStackPtr).sUB = j
-            m_qsStackPtr = m_qsStackPtr + 1
+            qsRemaining(qsStackPtr).sLB = idxLow
+            qsRemaining(qsStackPtr).sUB = j
+            qsStackPtr = qsStackPtr + 1
         End If
         
         If (i < idxHigh) Then
-            m_qsStack(m_qsStackPtr).sLB = i
-            m_qsStack(m_qsStackPtr).sUB = idxHigh
-            m_qsStackPtr = m_qsStackPtr + 1
+            qsRemaining(qsStackPtr).sLB = i
+            qsRemaining(qsStackPtr).sUB = idxHigh
+            qsStackPtr = qsStackPtr + 1
         End If
         
         'Decrement the stack pointer and continue as long as new sub-lists were added
-        m_qsStackPtr = m_qsStackPtr - 1
+        qsStackPtr = qsStackPtr - 1
         
-    Loop While (m_qsStackPtr >= 0)
+    Loop While (qsStackPtr >= 0)
     
-    'Free the stack before exiting
-    Erase m_qsStack
+    'The coordinate list has been successfully sorted.  Clone the original list, then copy each entry
+    ' from that temporary clone into its final position in the "official" list.
+    Dim tmpPoints() As PointLong
+    ReDim tmpPoints(0 To m_numNearestOffsets - 1) As PointLong
+    CopyMemoryStrict VarPtr(tmpPoints(0)), VarPtr(m_NearestOffsets(0)), 8 * m_numNearestOffsets
+    
+    For i = 0 To m_numNearestOffsets - 1
+        m_NearestOffsets(i) = tmpPoints(sortList(i).idxOriginal)
+    Next i
     
 End Sub
 
