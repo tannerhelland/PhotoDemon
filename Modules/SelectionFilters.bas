@@ -480,7 +480,8 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         '
         'This greatly reduces memory requirements of the inpainter and it's much faster to prepare the
         ' cropped version here, rather than adding extra boundary checks to the inpainter (which has to
-        ' analyze pixels millions of times on the average fill).
+        ' analyze pixels millions of times on the average fill - and bounds-checking every one of those
+        ' accesses is hugely expensive).
         '
         'Anyway, I mention this up-front because you can easily pass a full-size source image,
         ' destination image, and mask to the inpainter and it will work great.  It will just consume
@@ -494,21 +495,22 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         
         'These are the source and destination DIBs we're ultimately going to fill, as well as the
         ' mask byte array (and rectangle defining the mask boundary area), but how we fill these
-        ' depends on the size of the active layer vs the size of its parent image.
+        ' depends on the size and position of the active layer vs its parent image.
         Dim tmpSrcCopy As pdDIB, tmpDstCopy As pdDIB
         Dim srcMask() As Byte, srcMaskRect As RectF
         
         Set tmpSrcCopy = New pdDIB
         Set tmpDstCopy = New pdDIB
         
-        'Next, retrieve the boundary rectangle of the "to-be-filled region".  (This comes directly
-        ' from PhotoDemon's selection engine.)
+        'Retrieve the boundary rectangle of the "to-be-filled region".  (This comes directly from
+        ' PhotoDemon's selection engine - it's just the boundary of the current selection, in image
+        ' coordinate space.)
         Dim baseFillRect As RectF
         baseFillRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
         If (baseFillRect.Width <= 0) Or (baseFillRect.Height <= 0) Then Exit Sub
         
         'The source and destination images need to be the same size as this "to-be-filled region",
-        ' but expanded by the [user's sampling radius] in all directions.
+        ' but expanded by the user's [sampling radius] in all directions.
         '
         'TODO: pull this from a UI
         Const userSampleRadius As Long = 300
@@ -520,7 +522,7 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         expandedFillRect.Height = baseFillRect.Height + userSampleRadius * 2
         
         'The user is allowed to inpaint along image boundaries (this is actually a common use-case),
-        ' so crop the target rectangle to the boundaries of the parent image.
+        ' so pre-trim the target rectangle to the boundaries of the parent image.
         If (expandedFillRect.Left < 0) Then expandedFillRect.Left = 0
         If (expandedFillRect.Top < 0) Then expandedFillRect.Top = 0
         If (expandedFillRect.Left + expandedFillRect.Width > PDImages.GetActiveImage.Width()) Then expandedFillRect.Width = (PDImages.GetActiveImage.Width() - expandedFillRect.Left)
@@ -534,62 +536,44 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         ' current layer is a different size than the parent image, however, we're gonna need to
         ' perform additional math (and modify the above rectangle accordingly).
         
-        'To determine whether that extra math is necessary, check if the current layer is the same
-        ' size as the parent image (as in e.g. a normal single-layer JPEG), or whether it's a different
-        ' size or has non-zero offsets (as in e.g. a PSD).
+        'To determine whether that extra math is necessary, see if the current layer is the same
+        ' size as the parent image (as in e.g. a normal single-layer JPEG), or whether it's a
+        ' different size or has non-zero offsets (as in e.g. a PSD).
         Dim layerNotFullSize As Boolean
         layerNotFullSize = (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX <> 0)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY <> 0)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True) <> PDImages.GetActiveImage.Width)
         layerNotFullSize = layerNotFullSize Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True) <> PDImages.GetActiveImage.Height)
         
-        'If the layer is a different size than its parent image (or if it has non-zero position offsets),
-        ' we need to further modify the target rectangle, to ensure it doesn't exceed the boundaries of the
-        ' underlying layer.
         If layerNotFullSize Then
-        
-            'Calculate overlap between the current layer and the parent image
-            Dim imageRect As RectF
-            With imageRect
-                .Left = 0
-                .Top = 0
-                .Width = PDImages.GetActiveImage.Width
-                .Height = PDImages.GetActiveImage.Height
-            End With
             
+            'This layer has non-zero offsets or a size that varies from its parent image.  We need to calculate
+            ' an intersection between it and the target rectangle we calculated above.
             Dim origLayerRect As RectF
             PDImages.GetActiveImage.GetActiveLayer.GetLayerBoundaryRect origLayerRect
             
-            'If the layer and image don't overlap (or the layer and selection don't overlap), exit immediately
-            Dim overlapRect As RectF
-            If (Not GDI_Plus.IntersectRectF(overlapRect, origLayerRect, imageRect)) Then Exit Sub
+            Dim overlapRectImage As RectF
+            If (Not GDI_Plus.IntersectRectF(overlapRectImage, origLayerRect, expandedFillRect)) Then Exit Sub
             
-            'Similarly, if the layer and active selection don't overlap, exit immediately (since there won't
-            ' be anything for us to fill)
-            Dim layerOverlapRect As RectF, origSelRect As RectF
-            origSelRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
-            If (Not GDI_Plus.IntersectRectF(layerOverlapRect, origLayerRect, origSelRect)) Then Exit Sub
-            
-            'We now need to crop out the relevant portion of the selection mask into a temporary DIB.
-            ' Note that the selection mask treats transparent blank as "unselected", so we will initialize
-            ' the DIB to that state (in case part of the layer lies off-image).
-            Dim tmpOverlayMask As pdDIB
-            Set tmpOverlayMask = New pdDIB
-            tmpOverlayMask.CreateBlank PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, 0, 0
-            
+            'We're still here, so the current layer and the target selection overlap, and that region of
+            ' overlap is stored in overlapRectImage (so-named because it's in IMAGE coordinates).
+            ' Calculate the same rect, but in layer coordinates.
+            Dim overlapRectLayer As RectF
             With PDImages.GetActiveImage.GetActiveLayer
-                GDI.BitBltWrapper tmpOverlayMask.GetDIBDC, Int(overlapRect.Left) - .GetLayerOffsetX, Int(overlapRect.Top) - .GetLayerOffsetY, Int(overlapRect.Width), Int(overlapRect.Height), PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBDC, Int(overlapRect.Left), Int(overlapRect.Top), vbSrcCopy
+                overlapRectLayer.Left = overlapRectImage.Left - .GetLayerOffsetX
+                overlapRectLayer.Top = overlapRectImage.Top - .GetLayerOffsetY
+                overlapRectLayer.Width = overlapRectImage.Width
+                overlapRectLayer.Height = overlapRectImage.Height
             End With
             
-            'Populate the relevant mask rect (for the inpainter), then retrieve the mask as a 1-byte-per-pixel array
-            With srcMaskRect
-                .Left = Int(layerOverlapRect.Left) - PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX
-                .Top = Int(layerOverlapRect.Top) - PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY
-                .Width = layerOverlapRect.Width
-                .Height = layerOverlapRect.Height
-            End With
+            'We have everything we need to prepare the inpainter!  Pull the relevant rectangle from the
+            ' source layer and mirror it into the destination DIB.
+            tmpSrcCopy.CreateBlank Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), 32, 0, 0
+            GDI.BitBltWrapper tmpSrcCopy.GetDIBDC, 0, 0, Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBDC, Int(overlapRectLayer.Left), Int(overlapRectLayer.Top), vbSrcCopy
+            tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
             
-            DIBs.GetSingleChannel_2D tmpOverlayMask, srcMask, 0, VarPtr(srcMaskRect)
+            'Pull the relevant rect out of the selection mask as well
+            DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(overlapRectImage)
             
         'Layer is the size of the image (e.g. a single-layer JPEG), which makes this step much easier!
         Else
@@ -623,7 +607,7 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean)
         
         'TODO
         If layerNotFullSize Then
-        
+            GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(overlapRectLayer.Left), Int(overlapRectLayer.Top), Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
         Else
             GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, expandedFillRect.Left, expandedFillRect.Top, expandedFillRect.Width, expandedFillRect.Height, tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
         End If
