@@ -6,17 +6,19 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdInpaint"
+Attribute VB_Name = "pdMakeTexture"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Inpainting (Texture Synthesis) class
+'PhotoDemon Seamless Texture Generation class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
 'Last updated: 02/May/22
-'Last update: split seamless texture mode into a separate class
+'Last update: split into separate class from in-painter; these two functions share a lot of code,
+'             but there are some tight perf-sensitive loops that greatly benefit from specialized
+'             optimization strategies that necessitate more code separation.
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -61,6 +63,20 @@ Option Explicit
 'During debugging, it is helpful to report detailed process information.  Please disable this constant
 ' in production builds.
 Private Const DEBUG_VERBOSE As Boolean = True
+
+'The current inpainting mode.  Different modes require different behaviors throughout the inpainter;
+' note also that some options and settings are only compatible with a single mode (e.g. edge-wrapping
+' pixels is an essential part of seamless tile generation, but it makes no sense during mask inpainting).
+Private Enum PD_InpaintingMode
+    im_SeamlessTile = 0
+    im_InpaintByMask = 1
+End Enum
+
+#If False Then
+    Private Const im_SeamlessTile = 0, im_InpaintByMask = 1
+#End If
+
+Private m_CurMode As PD_InpaintingMode
 
 'When comparing pixels against each other, it improves locality to store coordinates and colors
 ' next to each other.  Note that we need to store two sets of coordinates - a base coordinate
@@ -192,6 +208,12 @@ Private m_Refinement As Double
 ' reasonable size around each pixel.
 Private m_ComparatorRadius As Long
 
+'If you want to create a tileable texture (instead of just inpainting), set this value to TRUE.  Note that
+' this incurs different performance penalties than regular in-painting, so you may want to avoid it on
+' large input images (as it may take an extremely long time to complete).  (Finding a way to prevent the user
+' from abusing this is still TODO.)
+Private m_TileMode As Boolean
+
 'Dimensions and pixel array for the source image.  Note that this array *unsafely* aliases the source image,
 ' and *must* be manually unaliased before any class functions exit.
 Private m_SrcWidth As Long, m_SrcHeight As Long
@@ -310,62 +332,66 @@ Private Function SynthesizeTexture() As Boolean
         ' assemble - the coordinates that constitute a novel "patch" on this specific iteration.
         ' (Each iteration generates a new patch of the nearest [n] valid pixels.)
         m_CurNumNeighbors = 0
-    
-        'Search as deep into the m_NearestOffsets() list (the sorted list of *potential* offsets) as we must
-        ' until we assemble a full list of [m_maxNumNeighbors] valid pixels.  These pixels constitute the
-        ' current "patch", which we will try to maximize the quality of.
-        Dim j As Long
-        For j = 0 To m_numNearestOffsets - 1
-            
-            'Comparison points are stored as offsets (not absolute points).  Thus we need to add offsets
-            ' to the current point to produce the absolute coordinates of the point-to-test.
-            testPoint.x = curPoint.x + m_NearestOffsets(j).x
-            testPoint.y = curPoint.y + m_NearestOffsets(j).y
-            
-            'Before choosing this offset as a potential comparator, we must ensure the target pixel is:
-            ' 1) in-bounds on the destination image
-            '    (note: this is *not* relevant for seamless tile mode, because all boundaries get wrapped)
-            ' 2) already synthesized!  (If it *hasn't* been synthesized yet we obviously don't want to use
-            '    it as a comparator, because we can't evaluate its "fit quality" yet.)
-            If (testPoint.x >= 0) Then
-            If (testPoint.x < m_DstWidth) Then
-            If (testPoint.y >= 0) Then
-            If (testPoint.y < m_DstHeight) Then
-                
-                'Synthesis state is stored as a special flag value inside a separate tracking array.
-                ' Validate it before continuing.  Note that this special flag means one of two things:
-                ' either this point has already been successfully synthesized, *or* it lies outside the
-                ' mask and is fine to use as-is.
-                tmpPoint = m_SynthesisState(testPoint.x, testPoint.y)
-                If (tmpPoint.x <> LONG_MAX) Then
-                    
-                    'This point has been synthesized (or in content-aware fill mode, it's not masked).
-                    
-                    'Store the offsets (relative to the target pixel) and current color of this pixel;
-                    ' both will be used in the following step to produce a "goodness of fit" metric.
-                    With m_Comparators(m_CurNumNeighbors)
-                        .cOffsets = m_NearestOffsets(j)
-                        .cColor = m_DstPixels(testPoint.x, testPoint.y)
-                        
-                        'We also want to know what this pixel's current *synthesized" coordinate is in the source
-                        ' image (because we're going to compare its against neighbors in a later step).
-                        .cCoordinates = tmpPoint
-                    End With
-                    
-                    m_CurNumNeighbors = m_CurNumNeighbors + 1
-                    
-                    'We must never exceed the user's max neighbor value (because that's the upper limit for
-                    ' all tracking arrays)
-                    If (m_CurNumNeighbors >= m_MaxNumNeighbors) Then Exit For
-                    
-                End If
-                
-            End If
-            End If
-            End If
-            End If
         
-        Next j
+        '(Note that in seamless tile mode, we can skip this step on the first pixel because it is 100% guaranteed
+        ' to have no valid neighbors!)
+        Dim runThisIteration As Boolean: runThisIteration = True
+        If (m_CurMode = im_SeamlessTile) Then runThisIteration = (i > 0)
+        
+        If runThisIteration Then
+            
+            'Search as deep into the m_NearestOffsets() list (the sorted list of *potential* offsets) as we must
+            ' until we assemble a full list of [m_maxNumNeighbors] valid pixels.  These pixels constitute the
+            ' current "patch", which we will try to maximize the quality of.
+            Dim j As Long
+            For j = 0 To m_numNearestOffsets - 1
+                
+                'Comparison points are stored as offsets (not absolute points).  Thus we need to add offsets
+                ' to the current point to produce the absolute coordinates of the point-to-test.
+                testPoint.x = curPoint.x + m_NearestOffsets(j).x
+                testPoint.y = curPoint.y + m_NearestOffsets(j).y
+                
+                'Before choosing this offset as a potential comparator, we must ensure the target pixel is:
+                ' 1) in-bounds on the destination image
+                '    (note: this is *not* relevant for seamless tile mode, because all boundaries get wrapped)
+                ' 2) already synthesized!  (If it *hasn't* been synthesized yet we obviously don't want to use
+                '    it as a comparator, because we can't evaluate its "fit quality" yet.)
+                If IsPixelInBounds(testPoint) Then
+                    
+                    'Synthesis state is stored as a special flag value inside a separate tracking array.
+                    ' Validate it before continuing.  (Note that the behavior of this settings varies by mode.
+                    ' In seamless tile mode, it means the point has been synthesized already.  In content-aware
+                    ' fill mode, it means either this point has been synthesized, *or* it lies outside the mask
+                    ' and is fine to use as-is.)
+                    tmpPoint = m_SynthesisState(testPoint.x, testPoint.y)
+                    If (tmpPoint.x <> LONG_MAX) Then
+                        
+                        'This point has been synthesized (or in content-aware fill mode, it's not masked).
+                        
+                        'Store the offsets (relative to the target pixel) and current color of this pixel;
+                        ' both will be used in the following step to produce a "goodness of fit" metric.
+                        With m_Comparators(m_CurNumNeighbors)
+                            .cOffsets = m_NearestOffsets(j)
+                            .cColor = m_DstPixels(testPoint.x, testPoint.y)
+                            
+                            'We also want to know what this pixel's current *synthesized" coordinate is in the source
+                            ' image (because we're going to compare its against neighbors in a later step).
+                            .cCoordinates = tmpPoint
+                        End With
+                        
+                        m_CurNumNeighbors = m_CurNumNeighbors + 1
+                        
+                        'We must never exceed the user's max neighbor value (because that's the upper limit for
+                        ' all tracking arrays)
+                        If (m_CurNumNeighbors >= m_MaxNumNeighbors) Then Exit For
+                        
+                    End If
+                End If
+            
+            Next j
+            
+        '/i = 0
+        End If
         
         'Reset the "best" distance to an impossibly large value.
         m_BestMatchDiff = LONG_MAX
@@ -402,13 +428,15 @@ Private Function SynthesizeTexture() As Boolean
                 '
                 '(Again, note that VB does not short-circuit checks so we manually break each check out.)
                 If (testPoint.x < 0) Then GoTo NextNeighbor
-                If (testPoint.x >= m_SrcWidth) Then GoTo NextNeighbor
                 If (testPoint.y < 0) Then GoTo NextNeighbor
+                If (testPoint.x >= m_SrcWidth) Then GoTo NextNeighbor
                 If (testPoint.y >= m_SrcHeight) Then GoTo NextNeighbor
                 
-                'We also want to ensure the target point is not masked.  (If it is, we don't want to consider it
-                ' as a potential replacement!)
-                If (m_MaskBytes(testPoint.x, testPoint.y) <> 0) Then GoTo NextNeighbor
+                'In mask mode, we also want to ensure the target point is not within the mask.  (If it is,
+                ' we don't want to consider it as a potential replacement!)
+                If (m_CurMode = im_InpaintByMask) Then
+                    If (m_MaskBytes(testPoint.x, testPoint.y) <> 0) Then GoTo NextNeighbor
+                End If
                 
                 'If we've already compared this point this iteration, skip it.  This is a likely scenario as
                 ' patches become well-established, since neighboring pixels are likely taken from the same
@@ -574,16 +602,33 @@ Private Function InitializeInpainter() As Boolean
     Dim x As Long, y As Long, idxDst As Long
     idxDst = 0
     
-    'All unmasked pixels get added to the "valid potential replacement pixel" list.
-    For y = 0 To m_SrcHeight - 1
-    For x = 0 To m_SrcWidth - 1
-        If (m_MaskBytes(x, y) = 0) Then
+    'Potential places to draw sample points from varies by mode....
+    ' 1) In seamless tile mode, we want to sample from the full source image.
+    ' 2) In content-aware fill mode, the user can set a sample radius.  Do not exceed this.
+    If (m_CurMode = im_SeamlessTile) Then
+        
+        For y = 0 To m_SrcHeight - 1
+        For x = 0 To m_SrcWidth - 1
             m_ValidSourcePoints(idxDst).x = x
             m_ValidSourcePoints(idxDst).y = y
             idxDst = idxDst + 1
-        End If
-    Next x
-    Next y
+        Next x
+        Next y
+              
+    ElseIf (m_CurMode = im_InpaintByMask) Then
+        
+        'Only add unmasked pixels to the "valid source sample" list
+        For y = 0 To m_SrcHeight - 1
+        For x = 0 To m_SrcWidth - 1
+            If (m_MaskBytes(x, y) = 0) Then
+                m_ValidSourcePoints(idxDst).x = x
+                m_ValidSourcePoints(idxDst).y = y
+                idxDst = idxDst + 1
+            End If
+        Next x
+        Next y
+        
+    End If
     
     m_boundValidSourcePoints = idxDst - 1
     If (UBound(m_ValidSourcePoints) <> m_boundValidSourcePoints) Then ReDim Preserve m_ValidSourcePoints(0 To m_boundValidSourcePoints) As PointLong
@@ -610,20 +655,39 @@ Private Function InitializeInpainter() As Boolean
     For y = 0 To m_DstHeight - 1
     For x = 0 To m_DstWidth - 1
         
-        'Masked pixels must be flagged as "not yet synthesized" and explicitly added to the
-        ' "need-to-synthesize" list.
-        If (m_MaskBytes(x, y) <> 0) Then
-            m_SynthesisState(x, y).x = LONG_MAX
-            m_PointsRemaining(idxDst).x = x
-            m_PointsRemaining(idxDst).y = y
-            idxDst = idxDst + 1
-        
-        'Mark as "already synthesized" so the synthesizer loop knows to ignore this pixel.
-        ' (And DO NOT add this coordinate to the "need-to-synthesize" list.)
-        Else
-            m_SynthesisState(x, y).x = x
-            m_SynthesisState(x, y).y = y
-        End If
+        'While we're here, dump this destination point to its storage queue too
+        ' (dependent on current inpainting mode)
+        Select Case m_CurMode
+            
+            'In seamless tile mode, *all* source pixels are valid and available
+            Case im_SeamlessTile
+                
+                'Add *all* destination pixels to the "need to be synthesized "list
+                m_SynthesisState(x, y).x = LONG_MAX
+                m_PointsRemaining(idxDst).x = x
+                m_PointsRemaining(idxDst).y = y
+                idxDst = idxDst + 1
+            
+            'In in-painting mode, we must compare coordinates to the mask to see if they belong
+            ' in the "need-to-synthesize" point list.
+            Case im_InpaintByMask
+                
+                'Masked pixels must be flagged as "not yet synthesized" and explicitly added to the
+                ' "need-to-synthesize" list.
+                If (m_MaskBytes(x, y) <> 0) Then
+                    m_SynthesisState(x, y).x = LONG_MAX
+                    m_PointsRemaining(idxDst).x = x
+                    m_PointsRemaining(idxDst).y = y
+                    idxDst = idxDst + 1
+                
+                'Mark as "already synthesized" so the synthesizer loop knows to ignore this pixel.
+                ' (And DO NOT add this coordinate to the "need-to-synthesize" list.)
+                Else
+                    m_SynthesisState(x, y).x = x
+                    m_SynthesisState(x, y).y = y
+                End If
+                
+        End Select
         
     Next x
     Next y
@@ -768,10 +832,13 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
         If (x >= 0) And (y >= 0) Then
             If (x < m_SrcWidth) And (y < m_SrcHeight) Then
                 
-                'We also need to ensure this pixel is *not* part of the mask.
+                'In masked mode, we also need to ensure this pixel is *not* part of the mask.
                 ' (We're indexing into the source image, and selected pixels will *still retain their
                 ' original contents*.)
-                If (m_MaskBytes(x, y) = 0) Then
+                Dim okToUsePixel As Boolean: okToUsePixel = True
+                If (m_CurMode = im_InpaintByMask) Then okToUsePixel = (m_MaskBytes(x, y) = 0)
+                
+                If okToUsePixel Then
                     
                     'Use the pre-constructed Cauchy table to calculate distance
                     Dim origColor As RGBQuad, candidateColor As RGBQuad
@@ -835,14 +902,15 @@ Private Sub InitializeOffsetList()
     
     'In texture synthesis mode (and as a failsafe during inpainting), constrain by the smaller of the
     ' source or destination's height.
-    ' TODO: src/dest should be the same
     Dim minWidth As Long, minHeight As Long
     minWidth = PDMath.Min2Int(m_SrcWidth, m_DstWidth)
     minHeight = PDMath.Min2Int(m_SrcHeight, m_DstHeight)
     
     'In in-painting mode, we want to further limit the search radius by a user-supplied parameter
-    minWidth = PDMath.Min2Int(minWidth, m_ComparatorRadius)
-    minHeight = PDMath.Min2Int(minHeight, m_ComparatorRadius)
+    If (m_CurMode = im_InpaintByMask) Then
+        minWidth = PDMath.Min2Int(minWidth, m_ComparatorRadius)
+        minHeight = PDMath.Min2Int(minHeight, m_ComparatorRadius)
+    End If
     
     'Ensure available space for the offset list (x4 is needed because there are four quadrants of offsets)
     ReDim m_NearestOffsets(0 To minWidth * minHeight * 4 - 1) As PointLong
@@ -889,6 +957,42 @@ SkipPoint:
     SortCoordinates
     
 End Sub
+
+'Returns TRUE if a given pixel is in-bounds (per the DESTINATION image), FALSE otherwise.
+' (In tileable texture mode, this function ALWAYS returns true, by design - because any pixel coordinate
+' gets "wrapped" into a valid position.)
+Private Function IsPixelInBounds(ByRef srcPoint As PointLong) As Boolean
+    
+    IsPixelInBounds = False
+    
+    'We only wrap pixels when generating tileable textures.  (In regular in-painting mode, this produces
+    ' weird results - while you could clamp pixels to boundary row/columns, this produces over-representation
+    ' of edge pixels.  Subjectively better results are produced by ignoring OOB pixels.)
+    If m_TileMode Then
+        
+        If (srcPoint.x < 0) Then
+            srcPoint.x = ModuloInt(srcPoint.x, m_DstWidth)
+        ElseIf (srcPoint.x >= m_DstWidth) Then
+            srcPoint.x = ModuloInt(srcPoint.x, m_DstWidth)
+        End If
+        
+        If (srcPoint.y < 0) Then
+            srcPoint.y = ModuloInt(srcPoint.y, m_DstHeight)
+        ElseIf (srcPoint.y >= m_DstHeight) Then
+            srcPoint.y = ModuloInt(srcPoint.y, m_DstHeight)
+        End If
+    
+    'If we're *not* in tiling mode, exit immediately on any boundary failures
+    Else
+        If (srcPoint.x < 0) Then Exit Function
+        If (srcPoint.x >= m_DstWidth) Then Exit Function
+        If (srcPoint.y < 0) Then Exit Function
+        If (srcPoint.y >= m_DstHeight) Then Exit Function
+    End If
+    
+    IsPixelInBounds = True
+    
+End Function
 
 'This is a modified modulo function; it handles negative values differently from VB's built-in Mod
 Private Function ModuloInt(ByVal quotient As Long, ByVal divisor As Long) As Long
@@ -1019,6 +1123,64 @@ Private Sub SortCoordinates()
     
 End Sub
 
+'From an arbitrary source image, create a seamlessly tiling new image
+Friend Sub MakeSeamlessTile(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB)
+        
+    'Set the class-wide mode indicator.  This will toggle a number of different behaviors during
+    ' different inpainting steps.
+    m_CurMode = im_SeamlessTile
+        
+    'The process for inpainting and generating tileable textures is 95+% similar.  One of the only differences
+    ' when generating tileable textures is that you need to scan the whole input image, and *wrap* pixels when
+    ' scanning for neighbor matches (so that the resulting tile has cleanly tiling boundaries).
+    m_TileMode = True
+    
+    'Maximum neighbor count must ultimately be user-provided; the original paper default is 30.
+    ' (Note that these are the 30 *nearest* pixels to the target one.  Pixels that have not yet been filled
+    ' or are outside the image (in non-tiling mode) are not considered.  Randomly selected pixels will also
+    ' be evaluated to see if *they* are better matches; that count is specified separately.
+    m_MaxNumNeighbors = 30
+    
+    'After searching the [n] nearest pixels to see how well the current candidate matches, we next want to
+    ' sample some random subset of pixels from the image to see if they do any better than the current
+    ' candidate.  The original paper suggests a default value of 80.
+    m_MaxRandomCandidates = 80
+    
+    'Refinement is the fraction of pixels that we reevaluate after generating the output image.
+    ' Must be a positive value on the range [0, <1] (1.0 does *NOT* work - it must be less than 1!)
+    '
+    'We currently assume the same default as the original paper: 75%
+    m_Refinement = 0.75
+    
+    'The original paper suggests a sigma of "30" but this makes no sense, so I assume 30 is just an input
+    ' that is supposed to be scaled by 256 or 100?  (256 appears to produce better results here.)
+    m_AllowOutliers = 30# / 256#
+    
+    'Prep input image
+    m_SrcWidth = srcDIB.GetDIBWidth
+    m_SrcHeight = srcDIB.GetDIBHeight
+    srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
+    
+    'Prep output image
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    m_DstWidth = srcDIB.GetDIBWidth
+    m_DstHeight = srcDIB.GetDIBHeight
+    dstDIB.CreateBlank m_DstWidth, m_DstHeight, 32, 0, 0
+    
+    'Because no new pixel values will be created (we will only be "rearranging" existing pixels),
+    ' alpha premultiplication state matches the input image.
+    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
+    dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
+    
+    'Perform filter
+    SynthesizeTexture
+    
+    'Unalias all unsafe array wrappers
+    srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
+    dstDIB.UnwrapRGBQuadArrayFromDIB m_DstPixels
+    
+End Sub
+
 'Given a source image, destination image, and mask (ALL WITH THE SAME DIMENSIONS), create a new
 ' destination image where all masked pixels have been replaced via texture synthesis.
 '
@@ -1041,7 +1203,11 @@ End Sub
 ' reason you must ignore the contents of dstDIB when FALSE is returned, as its state is not guaranteed.
 Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, Optional ByVal reportProgress As Boolean = True) As Boolean
     
+    m_CurMode = im_InpaintByMask
     m_ShowProgressUI = reportProgress
+    
+    'In content-aware fill mode, we do *not* want to tile pixels during comparisons.
+    m_TileMode = False
     
     'The next set of variables all come from the user
     m_MaxNumNeighbors = 25      '30 is the default in the original resynthesizer paper.  It's overkill for most applications.
