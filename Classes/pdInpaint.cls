@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 02/May/22
-'Last update: split seamless texture mode into a separate class
+'Last updated: 03/May/22
+'Last update: merge some structs for improved cache locality
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -90,8 +90,17 @@ Private m_ValidSourcePoints() As PointLong, m_boundValidSourcePoints As Long
 
 'We need an array (at the same dimensions as the destination image) that tracks the synthesis state of
 ' each destination pixel.  Because it is also necessary to track the current synthesized point location,
-' we simply use a coordinate array, with unsynthesized pixels initialized to the magic value LONG_MAX.
-Private m_SynthesisState() As PointLong
+' we simply use a coordinate array, with unsynthesized pixels initialized to the magic value LONG_MAX
+' (stored in the x-coord).
+'
+'While we're here, we can also add an easy performance optimization.  When evaluating neighboring pixels,
+' we run the risk of evaluating the same pixel multiple times.  This is especially true near boundaries in
+' seamless tile mode, because wrapping ensures that each neighbor along a boundary appears in the neighbor
+' list 2x - once in its actual position, then again as the result of mirroring a corresponding pixel across
+' the nearby boundary line (consider [-1, 0] and [1, 0], for example).  Seamless tile mode can thus be
+' greatly accelerated by skipping pixels that have already been evaluated.  We do this by simply tracking
+' the index of the last iteration that touched a given pixel, in the .z value of this state tracker.
+Private m_SynthesisState() As PointLong3D
 
 'A central tenet of the original Resynthesizer paper is using the Cauchy distribution when calculating
 ' pixel differences (instead of e.g. a more traditional gaussian distribution).  Cauchy is a much
@@ -152,15 +161,6 @@ Private m_Comparators() As ip_Comparator
 ' of a large mask, but the user has specified a very small default radius - may prevent us from reaching
 ' the full neighbor count, so we also track the *actual* neighbor count for the current candidate pixel.)
 Private m_MaxNumNeighbors As Long, m_CurNumNeighbors As Long
-
-'When evaluating neighboring pixels, we run the risk of evaluating the same pixel multiple times.
-' This is especially true near boundaries in seamless tile mode, because wrapping ensures that
-' each neighbor along a boundary appears in the neighbor list 2x - once in its actual position,
-' then again as the result of mirroring a corresponding pixel mirrored across the boundary line
-' (consider [-1, 0] and [1, 0], for example).  Seamless tile mode can thus be greatly accelerated
-' by skipping pixels that have already been evaluated.  We do this by simply tracking the index of
-' the last iteration that touched a given pixel.
-Private m_LastChecked() As Long
 
 'After comparing the nearest [n] candidates, we also want to sample some number of random pixels to
 ' see if any of those work better than the one we selected.  This step is especially important for early
@@ -338,8 +338,7 @@ Private Function SynthesizeTexture() As Boolean
                 ' Validate it before continuing.  Note that this special flag means one of two things:
                 ' either this point has already been successfully synthesized, *or* it lies outside the
                 ' mask and is fine to use as-is.
-                tmpPoint = m_SynthesisState(testPoint.x, testPoint.y)
-                If (tmpPoint.x <> LONG_MAX) Then
+                If (m_SynthesisState(testPoint.x, testPoint.y).x <> LONG_MAX) Then
                     
                     'This point has been synthesized (or in content-aware fill mode, it's not masked).
                     
@@ -351,7 +350,8 @@ Private Function SynthesizeTexture() As Boolean
                         
                         'We also want to know what this pixel's current *synthesized" coordinate is in the source
                         ' image (because we're going to compare its against neighbors in a later step).
-                        .cCoordinates = tmpPoint
+                        .cCoordinates.x = m_SynthesisState(testPoint.x, testPoint.y).x
+                        .cCoordinates.y = m_SynthesisState(testPoint.x, testPoint.y).y
                     End With
                     
                     m_CurNumNeighbors = m_CurNumNeighbors + 1
@@ -422,7 +422,7 @@ Private Function SynthesizeTexture() As Boolean
                 ' PD's implementation, and I could not for the life of me figure out why it kept crushing me
                 ' in performance on texture synthesis.  Thank you to those authors for the clever optimization
                 ' strategy (it may actually be adopted from earlier resynthesizer work, idk).
-                If (m_LastChecked(testPoint.x, testPoint.y) <> i) Then
+                If (m_SynthesisState(testPoint.x, testPoint.y).z <> i) Then
                     
                     'Evaluate the test pixel; if it's a better fit than the current one, EvaluatePixel will
                     ' update the class-level running sum accordingly.
@@ -433,7 +433,7 @@ Private Function SynthesizeTexture() As Boolean
                     If (m_BestMatchDiff = 0) Then Exit For
                     
                     'Flag this pixel as "checked during this pass" so we can skip it if we encounter it again.
-                    m_LastChecked(testPoint.x, testPoint.y) = i
+                    m_SynthesisState(testPoint.x, testPoint.y).z = i
                     
                 End If
                 
@@ -457,30 +457,21 @@ NextNeighbor:
             ' iterations.  As such, we automatically scale-down the number of random candidates that we
             ' consider as we get deeper and deeper into the list.
             Dim numRandomCandidatesToTry As Long
-            numRandomCandidatesToTry = m_MaxRandomCandidates
             
             'Scale down by how many points we have already processed, so that we're only doing 25%
             ' as many random comparisons by the end of the list (because those points are likely
             ' well-matched after multiple iterations).  This is an optimization of my own creation so
             ' please do not blame the original Resynthesis paper for this behavior!
-            numRandomCandidatesToTry = numRandomCandidatesToTry * (0.25 + 0.75 * ((m_numPointsLeft - i) / m_numPointsLeft))
+            numRandomCandidatesToTry = m_MaxRandomCandidates * (0.25 + 0.75 * ((m_numPointsLeft - i) / m_numPointsLeft))
             
             'Iterate that many random pixels and see if any outperform our current "winning" choice
             For j = 0 To numRandomCandidatesToTry - 1
                 
-                'There is a very small (but non-zero!) chance that we'll have evaluated this random point already
-                ' in the previous step.  This is particularly likely if the user set an aggressively small radius.
-                ' We may as well do a quick check and skip this point if it's already been checked.
-                testPoint = m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
-                If (m_LastChecked(testPoint.x, testPoint.y) <> i) Then
-                    
-                    EvaluatePixel testPoint
-                    
-                    'If this randomly selected pixel proved to be a "perfect" candidate (unlikely but
-                    ' not impossible), stop searching.
-                    If (m_BestMatchDiff = 0) Then Exit For
-                    
-                End If
+                EvaluatePixel m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
+                
+                'If this randomly selected pixel proved to be a "perfect" candidate (unlikely but
+                ' not impossible), stop searching.
+                If (m_BestMatchDiff = 0) Then Exit For
                 
             Next j
             
@@ -491,7 +482,10 @@ NextNeighbor:
         
         'In our state array, note this pixel's current best-match coordinate.  (This coordinate may
         ' be replaced with a better alternative in subsequent passes, as more points get filled-in.)
-        m_SynthesisState(curPoint.x, curPoint.y) = m_BestMatchPt
+        With m_SynthesisState(curPoint.x, curPoint.y)
+            .x = m_BestMatchPt.x
+            .y = m_BestMatchPt.y
+        End With
         
         'TODO: add cancellation support
         If m_ShowProgressUI And ((i And progCheck) = 0) Then ProgressBars.SetProgBarVal i
@@ -600,7 +594,7 @@ Private Function InitializeInpainter() As Boolean
     
     'In the destination image, we need to track the synthesis state of each pixel-to-be-filled.
     ' (Pixels that have not yet been synthesized must be flagged, so we know to ignore them.)
-    ReDim m_SynthesisState(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As PointLong
+    ReDim m_SynthesisState(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As PointLong3D
     
     'Allocate the base set of points that need to be synthesizsed.  Note that this list will ultimately be
     ' larger than the set of incoming points, potentially *much* larger, because pixels selected early in
@@ -626,6 +620,8 @@ Private Function InitializeInpainter() As Boolean
             m_SynthesisState(x, y).x = x
             m_SynthesisState(x, y).y = y
         End If
+        
+        m_SynthesisState(x, y).z = -1
         
     Next x
     Next y
@@ -726,18 +722,6 @@ Private Function InitializeInpainter() As Boolean
     If DEBUG_VERBOSE Then PDDebug.LogAction "Appending repeat data points (" & m_numPointsLeft & " points) took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
-    'See the top of this module for details, but basically, in seamless tile mode, multiple neighboring pixels
-    ' will map to the same position in the image due to edge-wrapping (e.g. [-1, 0] and [1, 0] will both map
-    ' to [1, 0]).  We can save a lot of time by not checking duplicate values like these.
-    '
-    'To achieve this, we track the index of the last iteration that touched a given pixel, and if we see a
-    ' repeat we skip subsequent checks.
-    ReDim m_LastChecked(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As Long
-    VBHacks.FillMemory VarPtr(m_LastChecked(0, 0)), m_SrcWidth * m_SrcHeight * 4, 255
-    
-    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing attempts array took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    VBHacks.GetHighResTime startTime
-    
     InitializeInpainter = True
     Exit Function
 
@@ -786,7 +770,9 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
                     r = candidateColor.Red
                     a = candidateColor.Alpha
                     curDiff = m_Cauchy(b - origColor.Blue) + m_Cauchy(g - origColor.Green) + m_Cauchy(r - origColor.Red) + m_Cauchy(a - origColor.Alpha)
-                    
+                
+                'If this pixel has not yet been synthesized, add the *average* value of the current comparison
+                ' to the core.  (This effectively ignores this pixel without penalizing it.)
                 Else
                     If (numPixelsCompared <> 0) Then
                         curDiff = totalDiff \ numPixelsCompared
@@ -1182,4 +1168,3 @@ Private Sub InternalError(ByRef funcName As String, ByRef errComment As String, 
         PDDebug.LogAction "WARNING!  pdInpaint." & funcName & " reported: " & errComment
     End If
 End Sub
-
