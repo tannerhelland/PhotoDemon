@@ -470,9 +470,9 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         'Prepare the source layer for in-painting.
         
         'IMPORTANT NOTE: in early drafts, this feature passed the full-size source layer to pdInpaint.
-        ' This works fine, but it isn't necessary, and it consumes extra memory because the destination
-        ' image (and the mask) and a bunch of temporary structures inside pdInpaint must all be created
-        ' at the same size as the source image.
+        ' This works fine, but it isn't necessary, and it consumes extra memory because the mask and a
+        ' bunch of temporary structures inside pdInpaint must all be created at the same size as the
+        ' source image.
         '
         'So instead, we now create a temporary copy of the source layer at the minimum size required by
         ' the inpainter.  This minimum size is easy to calculate - it's just the rectangle of the target
@@ -481,11 +481,10 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         'This greatly reduces memory requirements of the inpainter and it's much faster to prepare the
         ' cropped version here, rather than adding extra boundary checks to the inpainter (which has to
         ' analyze pixels millions of times on the average fill - and bounds-checking every one of those
-        ' accesses is hugely expensive).
+        ' accesses becomes disproportionately expensive).
         '
-        'Anyway, I mention this up-front because you can easily pass a full-size source image,
-        ' destination image, and mask to the inpainter and it will work great.  It will just consume
-        ' more memory.
+        'Anyway, I mention this up-front because you can easily pass a full-size source image and mask
+        ' to the inpainter and it will work great.  It will just consume a lot more memory.
         
         'If this is a vector layer, rasterize it
         If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector Then Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
@@ -570,7 +569,6 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
             ' source layer and mirror it into the destination DIB.
             tmpSrcCopy.CreateBlank Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), 32, 0, 0
             GDI.BitBltWrapper tmpSrcCopy.GetDIBDC, 0, 0, Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetDIBDC, Int(overlapRectLayer.Left), Int(overlapRectLayer.Top), vbSrcCopy
-            tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
             
             'Pull the relevant rect out of the selection mask as well
             DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(overlapRectImage)
@@ -582,17 +580,21 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
             ' region from the source image and clone it to the destination image.
             tmpSrcCopy.CreateBlank Int(expandedFillRect.Width), Int(expandedFillRect.Height), 32, 0, 0
             GDI.BitBltWrapper tmpSrcCopy.GetDIBDC, 0, 0, Int(expandedFillRect.Width), Int(expandedFillRect.Height), PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(expandedFillRect.Left), Int(expandedFillRect.Top), vbSrcCopy
-            tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
             
             'Retrieve the selection mask using the same rect.
             DIBs.GetSingleChannel_2D PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcMask, 0, VarPtr(expandedFillRect)
             
         End If
         
+        'Clone the source DIB into a temporary "destination" DIB.  This DIB will contain the result of
+        ' the content-aware fill operation.  (But if the user cancels the operation, we must leave the
+        ' original layer DIB untouched.)
+        tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
+        
         'Execute the content-aware fill
         Dim cInpaint As pdInpaint
         Set cInpaint = New pdInpaint
-        cInpaint.ContentAwareFill tmpSrcCopy, tmpDstCopy, srcMask, True
+        cInpaint.ContentAwareFill tmpDstCopy, srcMask, True
         
         'TODO: check success/fail after adding user-cancellation support
         

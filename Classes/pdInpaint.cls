@@ -192,23 +192,25 @@ Private m_Refinement As Double
 ' reasonable size around each pixel.
 Private m_ComparatorRadius As Long
 
-'Dimensions and pixel array for the source image.  Note that this array *unsafely* aliases the source image,
-' and *must* be manually unaliased before any class functions exit.
+'Dimensions and pixel array for the source/destination image.  Note that this array *unsafely* aliases
+' the target image, and *must* be manually unaliased before any class functions exit.  (In early versions
+' of this code, separate images were used for source and destination pixel placement.  However, reworking
+' the class to use a single shared image greatly reduces cache pressure and meaningfully improved
+' performance, while also reducing memory requirements.)
 Private m_SrcWidth As Long, m_SrcHeight As Long
 Private m_SrcPixels() As RGBQuad, m_SrcSA As SafeArray2D
 
-'Dimensions and pixel array for the destination image.  Note that this array *unsafely* aliases the
-' destination image, and *must* be manually unaliased before any class functions exit.
-Private m_DstWidth As Long, m_DstHeight As Long
-Private m_DstPixels() As RGBQuad, m_DstSA As SafeArray2D
-
 'Point order needs to be semi-randomized for the algorithm to produce useful results.
-' (This is a key element described by the original paper.)  We use PD's internal randomizer
-' to accomplish this.
+' (This is a key element described by the original paper.)
+'
+'We use PD's internal randomizer to accomplish this, but you could also use Rnd() or similar.
 Private m_Random As pdRandomize
 
 'The current best-match candidate (both its coordinates, and its "difference" from the test point,
-' where a difference of 0 means "perfect match")
+' where a difference of 0 means "perfect match").  It's stored at module-level because separate functions
+' need to access it and this is faster than passing it frequently back-and-forth as a parameter.
+' (A multi-threaded redesign would also need to rework this; each thread would need to maintain its
+' own current best match, and then the best of *those* matches would need to be selected as the final value.)
 Private m_BestMatchPt As PointLong, m_BestMatchDiff As Long
 
 'In inpainting mode, we need class-level access to the passed mask.  This class requires the mask array
@@ -328,9 +330,9 @@ Private Function SynthesizeTexture() As Boolean
             ' 2) already synthesized!  (If it *hasn't* been synthesized yet we obviously don't want to use
             '    it as a comparator, because we can't evaluate its "fit quality" yet.)
             If (testPoint.x >= 0) Then
-            If (testPoint.x < m_DstWidth) Then
+            If (testPoint.x < m_SrcWidth) Then
             If (testPoint.y >= 0) Then
-            If (testPoint.y < m_DstHeight) Then
+            If (testPoint.y < m_SrcHeight) Then
                 
                 'Synthesis state is stored as a special flag value inside a separate tracking array.
                 ' Validate it before continuing.  Note that this special flag means one of two things:
@@ -345,7 +347,7 @@ Private Function SynthesizeTexture() As Boolean
                     ' both will be used in the following step to produce a "goodness of fit" metric.
                     With m_Comparators(m_CurNumNeighbors)
                         .cOffsets = m_NearestOffsets(j)
-                        .cColor = m_DstPixels(testPoint.x, testPoint.y)
+                        .cColor = m_SrcPixels(testPoint.x, testPoint.y)
                         
                         'We also want to know what this pixel's current *synthesized" coordinate is in the source
                         ' image (because we're going to compare its against neighbors in a later step).
@@ -485,7 +487,7 @@ NextNeighbor:
         End If
 
         'Assign the best-matching candidate to this destination pixel!
-        m_DstPixels(curPoint.x, curPoint.y) = m_SrcPixels(m_BestMatchPt.x, m_BestMatchPt.y)
+        m_SrcPixels(curPoint.x, curPoint.y) = m_SrcPixels(m_BestMatchPt.x, m_BestMatchPt.y)
         
         'In our state array, note this pixel's current best-match coordinate.  (This coordinate may
         ' be replaced with a better alternative in subsequent passes, as more points get filled-in.)
@@ -598,17 +600,17 @@ Private Function InitializeInpainter() As Boolean
     
     'In the destination image, we need to track the synthesis state of each pixel-to-be-filled.
     ' (Pixels that have not yet been synthesized must be flagged, so we know to ignore them.)
-    ReDim m_SynthesisState(0 To m_DstWidth - 1, 0 To m_DstHeight - 1) As PointLong
+    ReDim m_SynthesisState(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As PointLong
     
     'Allocate the base set of points that need to be synthesizsed.  Note that this list will ultimately be
     ' larger than the set of incoming points, potentially *much* larger, because pixels selected early in
     ' the process must be revisited later in the process, when more neighboring points have been filled.
     ' (Because of this, we deliberately over-size this list to start.)
-    ReDim m_PointsRemaining(0 To m_DstWidth * m_DstHeight * 4 - 1) As PointLong
+    ReDim m_PointsRemaining(0 To m_SrcWidth * m_SrcHeight * 4 - 1) As PointLong
     
     idxDst = 0
-    For y = 0 To m_DstHeight - 1
-    For x = 0 To m_DstWidth - 1
+    For y = 0 To m_SrcHeight - 1
+    For x = 0 To m_SrcWidth - 1
         
         'Masked pixels must be flagged as "not yet synthesized" and explicitly added to the
         ' "need-to-synthesize" list.
@@ -833,16 +835,11 @@ End Function
 '    (Offsets will be used as indices into either, and it's easier to just use min values here.)
 Private Sub InitializeOffsetList()
     
-    'In texture synthesis mode (and as a failsafe during inpainting), constrain by the smaller of the
-    ' source or destination's height.
+    'Constrain by the smaller of the source or destination's height, or the user-supplied radius parameter.
     ' TODO: src/dest should be the same
     Dim minWidth As Long, minHeight As Long
-    minWidth = PDMath.Min2Int(m_SrcWidth, m_DstWidth)
-    minHeight = PDMath.Min2Int(m_SrcHeight, m_DstHeight)
-    
-    'In in-painting mode, we want to further limit the search radius by a user-supplied parameter
-    minWidth = PDMath.Min2Int(minWidth, m_ComparatorRadius)
-    minHeight = PDMath.Min2Int(minHeight, m_ComparatorRadius)
+    minWidth = PDMath.Min2Int(m_SrcWidth, m_ComparatorRadius)
+    minHeight = PDMath.Min2Int(m_SrcHeight, m_ComparatorRadius)
     
     'Ensure available space for the offset list (x4 is needed because there are four quadrants of offsets)
     ReDim m_NearestOffsets(0 To minWidth * minHeight * 4 - 1) As PointLong
@@ -1019,27 +1016,29 @@ Private Sub SortCoordinates()
     
 End Sub
 
-'Given a source image, destination image, and mask (ALL WITH THE SAME DIMENSIONS), create a new
-' destination image where all masked pixels have been replaced via texture synthesis.
+'Given a source image (32-bpp only) and mask (a byte array with the SAME X/Y DIMENSIONS as the image),
+' replace any masked pixels in the source image with "texture synthesized" results taken from nearby
+' unmasked pixels.
 '
-'The source image is treated as a const.  The mask array is also treated as a const.
+'The mask array is also treated as a const.  The source image *will* be overwritten anywhere that
+' the mask array has a non-zero value.  (Pixels where the mask has a 0 value are guaranteed unchanged.)
 '
-'The destination image *will* be modified by this function, but *only in locations where the mask
-' has a non-zero value*.  (Any pixels with corresponding mask byte = 0 will be untouched.)  Note that
-' the synthesizer does not blend pixels, so mask values between 0 and 255 are treated the same.
-' It is up to the caller to blend the results if desired (for e.g. feathered selections).
+'Please note that the synthesizer does not blend pixels, so mask values from 1 to 255 are treated
+' the same. It is up to the caller to blend the results if desired (for e.g. feathered selections).
 '
-'Originally, this function allowed the selection mask to be smaller than the source/destination images,
-' and a rect needed to be passed to define the mask boundary.  However, this had large perf implications
-' because *every* mask access needed to be bounds-checked.  By forcing the mask to be the same size as
-' the source and destination images, we can skip boundary checking and get a large speed boost.
+'Originally, this function allowed the selection mask to be smaller than the source image, and a rect
+' needed to be passed to define the mask boundary.  However, this had large perf implications because
+' *every* mask access needed to be manually bounds-checked.  By forcing the mask to be the same size
+' as the source image, we can skip boundary checking for a meaningful performance boost.
 '
 'If the passed reportProgress parameter is TRUE, progress bar updates will be supplied to the main window.
 '
 'Returns TRUE if the operations completed successfully, FALSE otherwise.  FALSE can mean several things
 ' (user canceled the result, there were no pixels marked to fill, etc), but regardless of the underlying
-' reason you must ignore the contents of dstDIB when FALSE is returned, as its state is not guaranteed.
-Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcMask() As Byte, Optional ByVal reportProgress As Boolean = True) As Boolean
+' reason you must ignore the results of srcDIB when FALSE is returned, as its state is not guaranteed.
+' (It is STRONGLY RECOMMENDED to maintain a backup copy of srcDIB in case the user cancels, so you can
+' restore their original image.)
+Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef srcMask() As Byte, Optional ByVal reportProgress As Boolean = True) As Boolean
     
     m_ShowProgressUI = reportProgress
     
@@ -1064,27 +1063,17 @@ Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     End With
     PutMem4 VarPtrArray(m_MaskBytes()), VarPtr(maskSA2D)
     
-    'Ensure input and output image sizes match
+    'Wrap class-level arrays around the image itself
     m_SrcWidth = srcDIB.GetDIBWidth
     m_SrcHeight = srcDIB.GetDIBHeight
-    m_DstWidth = dstDIB.GetDIBWidth
-    m_DstHeight = dstDIB.GetDIBHeight
+    srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
     
-    If (m_SrcWidth = m_DstWidth) And (m_SrcHeight = m_DstHeight) Then
-    
-        'Wrap class-level arrays around both the source and destination image
-        srcDIB.WrapRGBQuadArrayAroundDIB m_SrcPixels, m_SrcSA
-        dstDIB.WrapRGBQuadArrayAroundDIB m_DstPixels, m_DstSA
-    
-        'Perform filter
-        ContentAwareFill = SynthesizeTexture()
-        
-    End If
+    'Perform filter
+    ContentAwareFill = SynthesizeTexture()
     
     'Regardless of success or failure, we *must* unalias all array wrappers before exiting.
     PutMem4 VarPtrArray(m_MaskBytes), 0&
     srcDIB.UnwrapRGBQuadArrayFromDIB m_SrcPixels
-    dstDIB.UnwrapRGBQuadArrayFromDIB m_DstPixels
     
 End Function
 
@@ -1193,3 +1182,4 @@ Private Sub InternalError(ByRef funcName As String, ByRef errComment As String, 
         PDDebug.LogAction "WARNING!  pdInpaint." & funcName & " reported: " & errComment
     End If
 End Sub
+
