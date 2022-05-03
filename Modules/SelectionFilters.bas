@@ -458,14 +458,19 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
 End Sub
 
 'TODO: UI for settings
-Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String)
+Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
     
     'Ensure a selection exists
     If (Not Selections.SelectionsAllowed(False)) Then Exit Sub
     
     If displayDialog Then
-        Processor.Process "Content-aware fill", False, vbNullString, UNDO_Layer
+        Interface.ShowPDDialog vbModal, FormFillContentAware
     Else
+        
+        'Prep a parameter retrieval class
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
+        cParams.SetParamString fxParams
         
         'Prepare the source layer for in-painting.
         
@@ -510,9 +515,10 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         
         'The source and destination images need to be the same size as this "to-be-filled region",
         ' but expanded by the user's [sampling radius] in all directions.
-        '
-        'TODO: pull this from a UI
-        Const userSampleRadius As Long = 300
+        Dim userSampleRadius As Long
+        userSampleRadius = cParams.GetLong("search-radius", 200)
+        If (userSampleRadius < 1) Then userSampleRadius = 1
+        If (userSampleRadius > 500) Then userSampleRadius = 500
         
         Dim expandedFillRect As RectF
         expandedFillRect.Left = baseFillRect.Left - userSampleRadius
@@ -591,9 +597,16 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         ' original layer DIB untouched.)
         tmpDstCopy.CreateFromExistingDIB tmpSrcCopy
         
-        'Execute the content-aware fill
+        'Pass all user parameters to the inpainting class
         Dim cInpaint As pdInpaint
         Set cInpaint = New pdInpaint
+        cInpaint.SetAllowOutliers cParams.GetDouble("allow-outliers", 0.15)
+        cInpaint.SetMaxNumNeighbors cParams.GetLong("patch-size", 20)
+        cInpaint.SetMaxRandomCandidates cParams.GetLong("random-candidates", 60)
+        cInpaint.SetRefinement cParams.GetDouble("refinement", 0.5)
+        cInpaint.SetSearchRadius cParams.GetLong("search-radius", 200)
+        
+        'Execute the content-aware fill
         cInpaint.ContentAwareFill tmpDstCopy, srcMask, True
         
         'TODO: check success/fail after adding user-cancellation support
@@ -674,7 +687,7 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         If layerNotFullSize Then
             GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(overlapRectLayer.Left), Int(overlapRectLayer.Top), Int(overlapRectLayer.Width), Int(overlapRectLayer.Height), tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
         Else
-            GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, expandedFillRect.Left, expandedFillRect.Top, expandedFillRect.Width, expandedFillRect.Height, tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, Int(expandedFillRect.Left), Int(expandedFillRect.Top), Int(expandedFillRect.Width), Int(expandedFillRect.Height), tmpDstCopy.GetDIBDC, 0, 0, vbSrcCopy
         End If
         
         'Notify the parent image of the change, then redraw the viewport before exiting

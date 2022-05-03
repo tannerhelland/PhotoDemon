@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
 'Last updated: 03/May/22
-'Last update: merge some structs for improved cache locality
+'Last update: build settings UI and various parameter set functions
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -24,32 +24,31 @@ Attribute VB_Exposed = False
 '
 'https://www.logarithmic.net/pfh-files/thesis/dissertation.pdf
 '
-'Paul wrote GIMP's "Resynthesizer" plugin to demonstrate his take on the algorithm, and as of 2022
-' his algorithm is still used in many GPL programs (and is still available in GIMP, too).
+'Paul wrote GIMP's "Resynthesizer" plugin to demonstrate his take on the algorithm, and as of 2022 his
+' algorithm is still used in many GPL programs (and is still available in GIMP, too).
 '
-'A few years after Paul's paper, Adobe released their take on the topic, in an algorithm called
-' "PatchMatch".  You can read PatchMatch's original paper here (link good as of April 2022):
+'A few years after Paul's paper, Adobe released their take on the topic in an algorithm called "PatchMatch".
+' You can read the original PatchMatch paper here (link good as of April 2022):
 '
 'https://gfx.cs.princeton.edu/pubs/Barnes_2009_PAR/patchmatch.pdf
 '
 'Note that both Resynthesizer and PatchMatch have "official" implementations by their original authors,
 ' but these implementations are license-incompatible with PhotoDemon.  Argh.
 '
-'So, I have taken the more challenging road and implemented my own version of Paul's "Resynthesizer"
-' algorithm, as I understand it from his original paper.  While not as fast or potentially high-quality
-' as GIMP's implementation (20 years of subsequent improvements are hard to beat), my version still works
-' well enough to hopefully make it a reasonable take on Paul's thesis.  I definitely consider it good
-' enough to warrant inclusion in PhotoDemon, and I'm particularly proud of the performance this version
-' achieves, especially given VB's limitations.
+'So I have gone ahead and implemented my own version of Paul's "Resynthesizer" algorithm, as I understand
+' it from his original paper.  I think the resulting code works pretty damn well, with very favorable
+' results compared to both the modern GIMP Resynthesizer plugin and Adobe's official content-aware fill
+' tool.  I'm especially proud of the performance this class achieves despite VB6's limitations.
 '
-'More than anything, though, I'm hoping that this BSD-licensed version of the algorithm draws attention
-' from others who can help me improve it further, particularly performance-wise.  It seems a shame to
+'More than anything, though, I hope that this BSD-licensed version of the algorithm draws attention
+' from others who can help improve it further, particularly performance-wise.  It seems a shame to
 ' let Paul's interesting algorithm languish in GIMP alone instead of being further developed by many
-' different open-source developers.
+' different open-source projects.
 '
-'Broader integration of this feature into PhotoDemon itself is still a WIP, and some extended features
-' available in GIMP (like "smart sharpening") are currently beyond my comprehension.  I will revisit in
-' the future as time and/or my mental capacity allows.
+'This algorithm can be accessed from the "Edit > Content-Aware Fill" menu.  Various settings can be toggled
+' from the matching dialog.  Note that GIMP exposes some additional features that this class does not
+' (such as an option for filling pixels in "outside-in" order instead of randomly); I may add analogs of
+' these options to PD as time allows.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -58,9 +57,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'During debugging, it is helpful to report detailed process information.  Please disable this constant
-' in production builds.
-Private Const DEBUG_VERBOSE As Boolean = True
+'During debugging, it is helpful to report detailed process information.
+' Please disable verbose debugging in production builds.
+Private Const DEBUG_VERBOSE As Boolean = False
 
 'When comparing pixels against each other, it improves locality to store coordinates and colors
 ' next to each other.  Note that we need to store two sets of coordinates - a base coordinate
@@ -103,30 +102,36 @@ Private m_ValidSourcePoints() As PointLong, m_boundValidSourcePoints As Long
 Private m_SynthesisState() As PointLong3D
 
 'A central tenet of the original Resynthesizer paper is using the Cauchy distribution when calculating
-' pixel differences (instead of e.g. a more traditional gaussian distribution).  Cauchy is a much
-' flatter distribution (https://en.wikipedia.org/wiki/Cauchy_distribution) which makes it more inclusive
-' of outliers.  This is favorable for inpainting because we don't want *perfect* matches on each pixel -
-' this will produce a noticeably artificial look.  Instead, we want lots of "good enough" matches which
-' will hide seams more organically.
+' pixel differences (vs e.g. a more traditional gaussian distribution).  Cauchy is a much flatter
+' distribution (https://en.wikipedia.org/wiki/Cauchy_distribution) which makes it more inclusive of
+' outliers.  This is favorable for inpainting because we don't want *perfect* matches on each pixel -
+' this will produce a noticeably "artificial" look.  Instead, we want lots of "good enough" matches
+' that can hide seams more organically.
 '
-'Unfortunately, Cauchy requires an expensive Log() calculation (as used here) and it cannot be hard-coded
-' because it relies on a critical input parameter "sigma" from the user - so we precalculate all possible
-' pixel differences in a fixed-size table during initialization, then use that table for all color
-' comparisons.  We also scale the default float-values by some arbitrary amount (currently 32768) to avoid
-' the need for expensive floating-point math on each comparison.
+'Unfortunately, Cauchy requires an expensive Log() calculation (as used here, so we can get away with
+' addition during summing) and it cannot be hard-coded at compile-time because it relies on a critical
+' input parameter "sigma" from the user - so we precalculate all possible pixel differences in a
+' fixed-size table during initialization, then use that table for all color comparisons.  Note that we
+' also scale the default float-values by some arbitrary integer amount (currently 32768) to avoid the
+' need for expensive floating-point math on each comparison.
 '
-'Note that the table is deliberately resized to an upper bound of 256, which we use as a special index to
-' indicate "maximum difference" (which discourages further matching since the penalty is so large).
+'Note that the table is deliberately resized to all possible values on the range [-255, 255], but we
+' also calculate a special "maximum value" (equal to a difference of 256) an upper bound of 256,
+' which can be used as a special sum to indicate "maximum difference" (which discourages further
+' matching since the penalty is so large).
 Private Const m_CauchyScale As Long = 32768
-Private m_Cauchy(-255 To 256) As Long
+Private m_Cauchy(-255 To 255) As Long
+Private m_CauchyMax As Long
 
 'This term is actually the "sigma" value from the original paper (pp 43), but I'm fairly it's the analog
 ' of the GIMP plugin feature "sensitivity to outliers".  The range must be [0.0, 1.0], with a value of 0
 ' penalizing outliers most severely.  As the original paper says, "...so long as we are only concerned
 ' with finding the most likely match, not relative likelihoods, the Euclidean distance metric may be
 ' simulated in this metric by choosing a very large [sigma]."  The paper suggests a default value of
-' 30 which makes no sense, so I assume it is meant to be "30 / 256".
+' 30 which makes no sense, so I assume it is meant to be "30 / 256" (~0.12).  In PhotoDemon I've bumped
+' the default value up slightly, to 0.15, purely for aesthetic reasons (it looks better in the UI lol).
 Private m_AllowOutliers As Double
+Private Const ALLOW_OUTLIERS_DEFAULT As Double = 0.15
 
 'Some fixed set of points around each pixel must be searched and compared to see if a newly placed
 ' pixel is a good match.  We can't do a naive raster-order search because we want to sort the pixels in
@@ -162,12 +167,31 @@ Private m_Comparators() As ip_Comparator
 ' the full neighbor count, so we also track the *actual* neighbor count for the current candidate pixel.)
 Private m_MaxNumNeighbors As Long, m_CurNumNeighbors As Long
 
+'After much testing, I've gone with a default radius of 21 for the neighbor comparison.  This results in
+' a circle of diameter 5 being used for fully-surrounded pixels, as in the following diagram:
+'  X X X
+'X X X X X
+'X X T X X
+'X X X X X
+'  X X X
+'
+'(The target pixel [T] is not evaluated, by design.)  This provides a significant speed improvement vs
+' the original paper's default of 30, but without a noticeable quality penalty, in my opinion.
+Private Const MAX_NEIGHBORS_DEFAULT As Long = 20
+
 'After comparing the nearest [n] candidates, we also want to sample some number of random pixels to
 ' see if any of those work better than the one we selected.  This step is especially important for early
 ' pixels, since they will not have *any* neighboring pixels available for comparisons (because the mask
 ' area has not been synthesized yet!).  This value represents a maximum upper bound for how many random
 ' pixels get compared.  More produces better results but with a corresponding performance penalty.
+'
+'The original paper used 80 random candidates but made no discussion as to the reasoning behind this.
+' For inpainting, I've found it preferable to use a smaller random pixel count combined with a higher
+' refinement threshold (to ensure each pixel is tested at least *twice* against the maximum number
+' of random candidates).  This produces excellent results with very good performance, and seems a
+' better fit for inpainting vs the seamless-tile emphasis of the original paper.
 Private m_MaxRandomCandidates As Long
+Private Const RANDOM_CANDIDATES_DEFAULT As Long = 60
 
 'In section 3.1.2 (pp 44), "Refining early-chosen pixel values", Paul makes the following observation:
 ' "Early-chosen pixel values are chosen on the basis of far-distant pixels, and may turn out to be
@@ -183,14 +207,31 @@ Private m_MaxRandomCandidates As Long
 ' look good on their initial synthesis, but the first few pixels were effectively random and must be
 ' reevaluated after more neighbors exist.)
 '
-'The suggested default value in the paper is 0.75.
+'The suggested default value in the paper is 0.75.  In PhotoDemon, I've chosen to handle this a little
+' differently.  Instead of doing a single pass over the image and then applying the refinement parameter,
+' my version does *two* passes over the image before applying the refinement parameter.  I've found this
+' to meaningfully reduce the likelihood of "garbage" patches that match very poorly, by ensuring that
+' every pixel gets refined at least once.  After that full second pass of the image, the refinement
+' parameter kicks in and the first [p * n] are revisited a 3rd time, then a 4th time, etc.  Because we
+' guarantee a full second pass over the image, a smaller default refinement threshold is acceptable.
 Private m_Refinement As Double
+Private Const REFINEMENT_DEFAULT As Double = 0.5
 
 'Potential search radius when matching pixels.  In a perfect world, we'd search the whole image until we
 ' find enough pixels to reach our test threshold, but because we have to build a sorted list of offsets,
 ' this becomes problematic on large images.  Instead, we need to limit the potential search radius to some
 ' reasonable size around each pixel.
+'
+'This value is my own creation (it's not present in the original paper, which focuses more on "full image
+' synthesis" while masked regions are mostly a side note).  GIMP's current Resynthesis plugin defaults
+' to a rather paltry 50 pixels, which I find too small for proper sampling on your average 12+ megapixel
+' JPEG.  Instead, we default to 200 pixels and allow for much larger radii if desired.
+'
+'Importantly, note that this radius *will be limited by the size of the incoming image*, so if you pass
+' a 64x64 image, a radius of 200 doesn't matter.  (The smaller of an image's width/height and this radius
+' will automatically be used.)
 Private m_ComparatorRadius As Long
+Private Const COMPARE_RADIUS_DEFAULT As Long = 200
 
 'Dimensions and pixel array for the source/destination image.  Note that this array *unsafely* aliases
 ' the target image, and *must* be manually unaliased before any class functions exit.  (In early versions
@@ -221,6 +262,11 @@ Private m_BestMatchPt As PointLong, m_BestMatchDiff As Long
 ' antialiasing or feathering must be handled by the caller after this class finishes its work.
 Private m_MaskBytes() As Byte
 
+'This class supports both 24-bpp RGB and 32-bpp RGBA matching.  If the source image is fully opaque
+' (a primary use-case) then we use a 24-bpp evaluator on the inner-loop for a welcome speed boost.
+' This behavior is automatically determined based on the opacity state of the source image.
+Private m_EvaluateRGBOnly As Boolean
+
 'When applying the final version of the filter, progress-bar updates are important (because the function
 ' can be kinda slow, especially on huge on huge images).
 Private m_ShowProgressUI As Boolean
@@ -240,6 +286,74 @@ Private Type QSEntry
     ptDistance As Long
     idxOriginal As Long
 End Type
+
+'Property set/get.  Bad values will automatically be clamped to valid ranges, with appropriate warnings
+' sent to the InternalError function (which you can handle as you please; by default they are dumped to
+' the debug window).
+Friend Sub SetAllowOutliers(ByVal newValue As Double)
+    
+    Const FUNC_NAME As String = "SetAllowOutliers"
+    
+    If (newValue < 0.01) Or (newValue > 1#) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [0.01, 1.0]"
+        m_AllowOutliers = ALLOW_OUTLIERS_DEFAULT
+    Else
+        m_AllowOutliers = newValue
+    End If
+    
+End Sub
+
+Friend Sub SetMaxNumNeighbors(ByVal newValue As Long)
+    
+    Const FUNC_NAME As String = "SetMaxNumNeighbors"
+    
+    If (newValue < 4) Or (newValue > 100) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [4, 100]"
+        m_MaxNumNeighbors = MAX_NEIGHBORS_DEFAULT
+    Else
+        m_MaxNumNeighbors = newValue
+    End If
+    
+End Sub
+
+Friend Sub SetMaxRandomCandidates(ByVal newValue As Long)
+    
+    Const FUNC_NAME As String = "SetMaxRandomCandidates"
+    
+    If (newValue < 5) Or (newValue > 200) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [5, 200]"
+        m_MaxRandomCandidates = RANDOM_CANDIDATES_DEFAULT
+    Else
+        m_MaxRandomCandidates = newValue
+    End If
+    
+End Sub
+
+Friend Sub SetRefinement(ByVal newValue As Double)
+    
+    Const FUNC_NAME As String = "SetRefinement"
+    
+    If (newValue < 0#) Or (newValue > 0.99) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [0.0, 0.99]"
+        m_Refinement = REFINEMENT_DEFAULT
+    Else
+        m_Refinement = newValue
+    End If
+    
+End Sub
+
+Friend Sub SetSearchRadius(ByVal newValue As Long)
+    
+    Const FUNC_NAME As String = "SetSearchRadius"
+    
+    If (newValue < 5) Or (newValue > 500) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [5, 500]"
+        m_ComparatorRadius = COMPARE_RADIUS_DEFAULT
+    Else
+        m_ComparatorRadius = newValue
+    End If
+    
+End Sub
 
 'Use our version of the "Resynthesizer" algorithm for texture synthesis.
 ' All relevant parameters MUST BE SET PRIOR TO CALLING.
@@ -262,7 +376,7 @@ Private Function SynthesizeTexture() As Boolean
         ProgressBars.SetProgBarMax 10000    'Arbitrary non-zero value just to initialize the progress bar;
                                             ' we'll set a true value after we know how many pixels must be synthesized.
         ProgressBars.SetProgBarVal 1
-        Message "Analyzing image..."
+        Message "Repainting selected regions..."
     End If
     
     'Initialization for this function is non-trivial (from a perf standpoint).
@@ -273,14 +387,13 @@ Private Function SynthesizeTexture() As Boolean
     End If
     
     If DEBUG_VERBOSE Then PDDebug.LogAction "pdInpaint: initialization took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    PDDebug.LogAction m_numPointsLeft & " points need to be synthesized"
+    PDDebug.LogAction m_numPointsLeft & " points will be synthesized"
     VBHacks.GetHighResTime startTime
     
     Dim progCheck As Long
     If m_ShowProgressUI Then
         ProgressBars.SetProgBarMax m_numPointsLeft
         progCheck = ProgressBars.FindBestProgBarValue()
-        Message "Repainting selected regions..."
     End If
     
     'Initialization prepared a list of all points in the destination image that need to be inpainted.
@@ -414,9 +527,9 @@ Private Function SynthesizeTexture() As Boolean
                 
                 'If we've already compared this point this iteration, skip it.  This is a likely scenario as
                 ' patches become well-established, since neighboring pixels are likely taken from the same
-                ' "patch" in the original image.  (Also, EvaluatePixel, below, is highly expensive since we
-                ' have to compare the target pixel to *each* entry in the comparator list - so skipping it is
-                ' a huge perf win.)
+                ' "patch" in the original image.  (Also, EvaluatePixel_RGB/A, below, is highly expensive since
+                ' we have to compare the target pixel to *each* entry in the comparator list - so skipping it
+                ' is a huge perf win.)
                 '
                 'NOTE: this idea came from https://github.com/notwa/resynth which I was benchmarking against
                 ' PD's implementation, and I could not for the life of me figure out why it kept crushing me
@@ -424,9 +537,13 @@ Private Function SynthesizeTexture() As Boolean
                 ' strategy (it may actually be adopted from earlier resynthesizer work, idk).
                 If (m_SynthesisState(testPoint.x, testPoint.y).z <> i) Then
                     
-                    'Evaluate the test pixel; if it's a better fit than the current one, EvaluatePixel will
+                    'Evaluate the test pixel; if it's a better fit than the current one, EvaluatePixel_RGBA will
                     ' update the class-level running sum accordingly.
-                    EvaluatePixel testPoint
+                    If m_EvaluateRGBOnly Then
+                        EvaluatePixel_RGB testPoint
+                    Else
+                        EvaluatePixel_RGBA testPoint
+                    End If
                     
                     'If this point is a perfect match against the current comparator list, stop searching because
                     ' we're not going to find anything better this time around.
@@ -467,7 +584,11 @@ NextNeighbor:
             'Iterate that many random pixels and see if any outperform our current "winning" choice
             For j = 0 To numRandomCandidatesToTry - 1
                 
-                EvaluatePixel m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
+                If m_EvaluateRGBOnly Then
+                    EvaluatePixel_RGB m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
+                Else
+                    EvaluatePixel_RGBA m_ValidSourcePoints(m_Random.GetRandomIntRange_WH(0, m_boundValidSourcePoints))
+                End If
                 
                 'If this randomly selected pixel proved to be a "perfect" candidate (unlikely but
                 ' not impossible), stop searching.
@@ -498,7 +619,7 @@ NextNeighbor:
     
     SynthesizeTexture = True
     
-    If DEBUG_VERBOSE Then PDDebug.LogAction "Full resynthesis took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Total inpainting process took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Function
 
@@ -537,18 +658,26 @@ Private Function InitializeInpainter() As Boolean
             
             'Scale by an arbitrary integer value for faster calculations on the inner loop
             tmpFloat = tmpFloat * m_CauchyScale
-            m_Cauchy(i) = Int(tmpFloat + 0.5)
+            If (i < 256) Then
+                m_Cauchy(i) = Int(tmpFloat + 0.5)
+            Else
+                m_CauchyMax = Int(tmpFloat + 0.5)
+            End If
             
         Next i
     
     'If the user requires perfect matches (ugh) then *any* difference will receive max penalty.
     ' (This approach really isn't recommended and honestly, I may just disable this option entirely.)
     Else
-        For i = -255 To 256
+        For i = -255 To 255
             m_Cauchy(i) = m_CauchyScale
         Next i
-        m_Cauchy(i) = 0
+        m_CauchyMax = m_CauchyScale
+        m_Cauchy(0) = 0
     End If
+    
+    'Scale the maximum cauchy value by 3 in RGB mode, 4 in RGBA mode
+    If m_EvaluateRGBOnly Then m_CauchyMax = m_CauchyMax * 3 Else m_CauchyMax = m_CauchyMax * 4
     
     If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing cauchy table took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
@@ -559,85 +688,91 @@ Private Function InitializeInpainter() As Boolean
     If DEBUG_VERBOSE Then PDDebug.LogAction "Making and sorting offset list took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
-    'Generate a list of valid source points to sample *from*.  Points may be disqualified either implicitly
-    ' (because they're inside the area-to-be-removed) or explicitly (maybe we could make a tool that allows
-    ' the user to "paint" regions with either "use" or "dont use" flags?)
-    '
-    'Note that unlike the list of destination points, this one will never *exceed* the total number of source
-    ' image coordinates, but it can be *smaller* than the total number of source image coordinates.
-    ReDim m_ValidSourcePoints(0 To m_SrcWidth * m_SrcHeight - 1) As PointLong
-    
-    Dim x As Long, y As Long, idxDst As Long
-    idxDst = 0
-    
-    'All unmasked pixels get added to the "valid potential replacement pixel" list.
-    For y = 0 To m_SrcHeight - 1
-    For x = 0 To m_SrcWidth - 1
-        If (m_MaskBytes(x, y) = 0) Then
-            m_ValidSourcePoints(idxDst).x = x
-            m_ValidSourcePoints(idxDst).y = y
-            idxDst = idxDst + 1
-        End If
-    Next x
-    Next y
-    
-    m_boundValidSourcePoints = idxDst - 1
-    If (UBound(m_ValidSourcePoints) <> m_boundValidSourcePoints) Then ReDim Preserve m_ValidSourcePoints(0 To m_boundValidSourcePoints) As PointLong
-    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing source point list took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    VBHacks.GetHighResTime startTime
-    
     'The list of "comparators" (neighboring pixels that we try to evaluate on every synthesis)
     ' has a fixed size specified by the user.  Note that we may not perform this many comparisons
     ' for *every* pixel, but this gives us a safe upper limit so we can ignore array bound checks
     ' on perf-sensitive inner loops.
     ReDim m_Comparators(0 To m_MaxNumNeighbors - 1) As ip_Comparator
     
-    'In the destination image, we need to track the synthesis state of each pixel-to-be-filled.
-    ' (Pixels that have not yet been synthesized must be flagged, so we know to ignore them.)
-    ReDim m_SynthesisState(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As PointLong3D
+    'Now we need to generate a bunch of different lists.
     
-    'Allocate the base set of points that need to be synthesizsed.  Note that this list will ultimately be
+    'First, a list of valid source points to sample *from*.  Points may be disqualified either implicitly
+    ' (because they're inside the area-to-be-removed) or explicitly (maybe we could make a tool that allows
+    ' the user to "paint" regions with either "use" or "dont use" flags, a la Photoshop?)
+    '
+    'Note that unlike the list of destination points, this one will never *exceed* the total number of source
+    ' image coordinates, but it can be *smaller* than the total number of source image coordinates.
+    ReDim m_ValidSourcePoints(0 To m_SrcWidth * m_SrcHeight - 1) As PointLong
+    
+    'We also need a list of points that need to be synthesizsed.  Note that this list will ultimately be
     ' larger than the set of incoming points, potentially *much* larger, because pixels selected early in
-    ' the process must be revisited later in the process, when more neighboring points have been filled.
-    ' (Because of this, we deliberately over-size this list to start.)
+    ' the process must be revisited again later in the process, when more neighboring points have been
+    ' synthesized.  (Because of this, we deliberately over-size this list to start, and may resize it
+    ' further as additional points are added.)
     ReDim m_PointsRemaining(0 To m_SrcWidth * m_SrcHeight * 4 - 1) As PointLong
     
+    'We also need to track the "synthesis state" of each pixel-to-be-filled.  (Pixels that have not yet
+    ' been synthesized must be flagged with a special value, so we know to ignore them during comparisons
+    ' between neighboring pixels.)
+    ReDim m_SynthesisState(0 To m_SrcWidth - 1, 0 To m_SrcHeight - 1) As PointLong3D
+    
+    Dim x As Long, y As Long, idxSrc As Long, idxDst As Long
+    idxSrc = 0
     idxDst = 0
+    
+    'All unmasked pixels get added to the "valid potential replacement pixel" list.
     For y = 0 To m_SrcHeight - 1
     For x = 0 To m_SrcWidth - 1
+    
+        'The user does *not* want this point synthesized
+        If (m_MaskBytes(x, y) = 0) Then
+            m_ValidSourcePoints(idxSrc).x = x
+            m_ValidSourcePoints(idxSrc).y = y
+            idxSrc = idxSrc + 1
+            
+            'Also flag the synthesis state tracker as "already synthesized by the pixel at this location"
+            m_SynthesisState(x, y).x = x
+            m_SynthesisState(x, y).y = y
         
-        'Masked pixels must be flagged as "not yet synthesized" and explicitly added to the
-        ' "need-to-synthesize" list.
-        If (m_MaskBytes(x, y) <> 0) Then
-            m_SynthesisState(x, y).x = LONG_MAX
+        'The user *does* want this point synthesized
+        Else
             m_PointsRemaining(idxDst).x = x
             m_PointsRemaining(idxDst).y = y
             idxDst = idxDst + 1
-        
-        'Mark as "already synthesized" so the synthesizer loop knows to ignore this pixel.
-        ' (And DO NOT add this coordinate to the "need-to-synthesize" list.)
-        Else
-            m_SynthesisState(x, y).x = x
-            m_SynthesisState(x, y).y = y
+            
+            'Flag the synthesis state tracker as "not synthesized yet"; we need to know this when comparing
+            ' potential pixels to their neighbors when evaluating patch quality (unsynthesized neighbors
+            ' must be ignored).
+            m_SynthesisState(x, y).x = LONG_MAX
+            
         End If
         
+        'Flag the synthesis state of each pixel as "not tested during this iteration".
+        ' (In the perf-sensitive inner loop, we use this flag to know if a pixel has already been evaluated,
+        ' which lets us skip additional tests until we switch to a new pixel.)
         m_SynthesisState(x, y).z = -1
         
     Next x
     Next y
     
+    'Resize the "valid source point list" to its precise boundary limit.  (We need to randomly select
+    ' points from this list during the synthesis process, and we're just going to grab random points
+    ' from this array to do it - since we already know every point in this list is valid!)
+    m_boundValidSourcePoints = idxSrc - 1
+    If (UBound(m_ValidSourcePoints) <> m_boundValidSourcePoints) Then ReDim Preserve m_ValidSourcePoints(0 To m_boundValidSourcePoints) As PointLong
+    
     'Because we deliberately over-sized the destination list, we need to flag how many points *actually*
-    ' exist in the array
+    ' exist in the array before appending additional points.
     m_numPointsLeft = idxDst
     If (m_numPointsLeft = 0) Then
         InternalError FUNC_NAME, "no points to synthesize!"
         Exit Function
     End If
     
-    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing destination point list (" & m_numPointsLeft & " points) took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing coordinate lists took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
-    'Next, we need to randomize the order of the initial list of "points to synthesize".
+    'Next, we need to randomize the order of the initial list of "points that must be synthesized".
     ' Shuffle using standard Fisher-Yates.
     Dim j As Long, tmpPoint As PointLong
     
@@ -732,12 +867,89 @@ End Function
 
 'Compare the pixel at a given coordinate to all pixels in the current Comparator list.  If this point is
 ' better than all previous ones we tested, update the module-level m_BestMatch value(s) to match.
-Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
+' (Per the name, this compares *color only*, and should only be used on 32-bpp sources with fully opaque pixels.)
+Private Sub EvaluatePixel_RGB(ByRef srcPoint As PointLong)
+    
+    Dim totalDiff As Long, curDiff As Long
+    
+    Dim r As Long, g As Long, b As Long
+    Dim x As Long, y As Long, numPixelsCompared As Long
+    
+    Dim i As Long
+    For i = 0 To m_CurNumNeighbors - 1
+        
+        'The comparator list stores offsets (not absolute values); add those offsets to the passed point
+        ' to produce an absolute coordinate into the source image
+        With m_Comparators(i).cOffsets
+            x = srcPoint.x + .x
+            y = srcPoint.y + .y
+        End With
+        
+        'Make sure the target point actually lies within the source image's boundaries.  (Note that this is
+        ' constructed weirdly because VB6 does not short-circuit.)
+        If (x >= 0) And (y >= 0) Then
+            If (x < m_SrcWidth) And (y < m_SrcHeight) Then
+                
+                'We also need to ensure this pixel is *not* part of the mask.
+                ' (We're indexing into the source image, and selected pixels will *still retain their
+                ' original contents*.)
+                If (m_MaskBytes(x, y) = 0) Then
+                    
+                    'Use the pre-constructed Cauchy table to calculate distance
+                    Dim origColor As RGBQuad, candidateColor As RGBQuad
+                    origColor = m_SrcPixels(x, y)
+                    candidateColor = m_Comparators(i).cColor
+                    
+                    'Swap chars into ints to prevent VB from overflowing on char arithmetic
+                    b = candidateColor.Blue
+                    g = candidateColor.Green
+                    r = candidateColor.Red
+                    curDiff = m_Cauchy(b - origColor.Blue) + m_Cauchy(g - origColor.Green) + m_Cauchy(r - origColor.Red)
+                
+                'If this pixel has not yet been synthesized, add the *average* value of the current comparison
+                ' to the core.  (This effectively ignores this pixel without penalizing it.)
+                Else
+                    If (numPixelsCompared <> 0) Then
+                        curDiff = totalDiff \ numPixelsCompared
+                    Else
+                        curDiff = m_CauchyMax
+                    End If
+                End If
+                
+            'If this pixel lies outside the original image's boundaries, assign it a fixed-size penalty.
+            ' (We could also ignore the pixel, but this creates unwanted favoritism for edge pixels because
+            ' they simply won't have as many neighboring pixels to compare - so this is a better compromise
+            ' for final quality.)
+            Else
+                curDiff = m_CauchyMax
+            End If
+        Else
+            curDiff = m_CauchyMax
+        End If
+        
+        'Tally the running sum of differences, and if we exceed the current best candidate bail immediately
+        totalDiff = totalDiff + curDiff
+        If (totalDiff >= m_BestMatchDiff) Then Exit Sub
+        numPixelsCompared = numPixelsCompared + 1
+
+    Next i
+    
+    'If we completed a full scan, the current point looks better than previous ones.  Store it!
+    m_BestMatchDiff = totalDiff
+    m_BestMatchPt = srcPoint
+    
+End Sub
+
+'Compare the pixel at a given coordinate to all pixels in the current Comparator list.  If this point is
+' better than all previous ones we tested, update the module-level m_BestMatch value(s) to match.
+' (Per the name, this compares color *and* alpha values, and must be used on 32-bpp sources with non-opaque pixels.)
+Private Sub EvaluatePixel_RGBA(ByRef srcPoint As PointLong)
     
     Dim totalDiff As Long, curDiff As Long
     
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim x As Long, y As Long, numPixelsCompared As Long
+    Dim x As Long, y As Long, numPixelsCompared As Long, maxPenalty As Long
+    maxPenalty = m_Cauchy(256) * 4
     
     Dim i As Long
     For i = 0 To m_CurNumNeighbors - 1
@@ -777,7 +989,7 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
                     If (numPixelsCompared <> 0) Then
                         curDiff = totalDiff \ numPixelsCompared
                     Else
-                        curDiff = m_Cauchy(256) * 4
+                        curDiff = m_CauchyMax
                     End If
                 End If
                 
@@ -786,10 +998,10 @@ Private Sub EvaluatePixel(ByRef srcPoint As PointLong)
             ' they simply won't have as many neighboring pixels to compare - so this is a better compromise
             ' for final quality.)
             Else
-                curDiff = m_Cauchy(256) * 4
+                curDiff = m_CauchyMax
             End If
         Else
-            curDiff = m_Cauchy(256) * 4
+            curDiff = m_CauchyMax
         End If
         
         'Tally the running sum of differences, and if we exceed the current best candidate bail immediately
@@ -891,12 +1103,16 @@ Private Sub SortCoordinates()
     
     Dim i As Long, j As Long
     For i = 0 To m_numNearestOffsets - 1
+        
         sortList(i).idxOriginal = i
         With m_NearestOffsets(i)
+            
             'Potential neighbor offsets are sorted by their Euclidean distance from the origin.
             ' (We only need relative values, so don't waste energy on a square-root.)
             sortList(i).ptDistance = .x * .x + .y * .y
+            
         End With
+        
     Next i
     
     'Prep our internal stack (this is faster and more reliable than recursion).  Note that because
@@ -932,9 +1148,10 @@ Private Sub SortCoordinates()
                 v = sortList(i)
                 vDist = v.ptDistance
                 j = i - 1
-                Do While (j >= idxLow) And (sortList(j).ptDistance > vDist)
+                Do While (sortList(j).ptDistance > vDist)
                     sortList(j + 1) = sortList(j)
                     j = j - 1
+                    If (j < idxLow) Then Exit Do
                 Loop
                 sortList(j + 1) = v
                 i = i + 1
@@ -1028,12 +1245,12 @@ Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef srcMask() As Byte,
     
     m_ShowProgressUI = reportProgress
     
-    'The next set of variables all come from the user
-    m_MaxNumNeighbors = 25      '30 is the default in the original resynthesizer paper.  It's overkill for most applications.
-    m_MaxRandomCandidates = 80
-    m_Refinement = 0.75
-    m_AllowOutliers = 30# / 256#
-    m_ComparatorRadius = 300
+    'To test with default values, uncomment the block below.
+    'm_MaxNumNeighbors = MAX_NEIGHBORS_DEFAULT
+    'm_MaxRandomCandidates = RANDOM_CANDIDATES_DEFAULT
+    'm_Refinement = REFINEMENT_DEFAULT
+    'm_AllowOutliers = ALLOW_OUTLIERS_DEFAULT
+    'm_ComparatorRadius = COMPARE_RADIUS_DEFAULT
     
     'Unsafely wrap a class-level array around the user mask
     Dim maskSA2D As SafeArray2D
@@ -1048,6 +1265,9 @@ Friend Function ContentAwareFill(ByRef srcDIB As pdDIB, ByRef srcMask() As Byte,
         .pvData = VarPtr(srcMask(0, 0))
     End With
     PutMem4 VarPtrArray(m_MaskBytes()), VarPtr(maskSA2D)
+    
+    'See if we can get away with 24-bpp RGB comparisons only (ignoring alpha)
+    m_EvaluateRGBOnly = (Not DIBs.IsDIBTransparent(srcDIB))
     
     'Wrap class-level arrays around the image itself
     m_SrcWidth = srcDIB.GetDIBWidth
@@ -1072,8 +1292,8 @@ Friend Sub SetDefaultParameterValues()
     '
     'Because neighbors will always be searched in nearest-to-furthest order, changing this doesn't change the
     ' quality of pixel matching, per se - it just controls how far outward the algorithm evaluates during the
-    ' EvaluatePixel process.
-    m_MaxNumNeighbors = 25
+    ' EvaluatePixel_RGBA process.
+    m_MaxNumNeighbors = MAX_NEIGHBORS_DEFAULT
     
     'A key part of the "resynthesize" algorithm is testing a set of random pixels against each potential
     ' candidate.  This is unavoidable seeing as 1) comparing every pixel in the source image would take years,
@@ -1085,7 +1305,7 @@ Friend Sub SetDefaultParameterValues()
     ' as better matches are found.  This is an easy optimization because as we near the end of the synthesize
     ' process, existing pixels have already survived multiple iterations and are less and less likely to be
     ' "outperformed" by a random pixel from elsewhere in the image.
-    m_MaxRandomCandidates = 80
+    m_MaxRandomCandidates = RANDOM_CANDIDATES_DEFAULT
     
     'After synthesizing each pixel at least once, we then re-refine the earliest synthesized pixels to try
     ' and improve their match quality against their neighbors (who didn't exist yet on the first pass).
@@ -1102,7 +1322,7 @@ Friend Sub SetDefaultParameterValues()
     ' 75% of *those* 75% of pixels (e.g. 56.25% of the full original set) are then re-synthesized a fourth time.
     ' This continues until we reach "0% of pixels", so the total number of pixels synthesized will be much
     ' larger than the actual size of the mask.  This is the only way to ensure a high-quality output.
-    m_Refinement = 0.75
+    m_Refinement = REFINEMENT_DEFAULT
     
     'The original paper calls this value "sigma", and I'm fairly certain GIMP's Resynthesize plugin renames it
     ' "sensitivity to outliers".  This value controls the spread of the Cauchy distribution look-up table we
@@ -1125,7 +1345,7 @@ Friend Sub SetDefaultParameterValues()
     ' a value closer to 0.
     '
     'The default value in the original resynthesizer paper is 30 / 256 (~0.12).
-    m_AllowOutliers = 30# / 256#
+    m_AllowOutliers = ALLOW_OUTLIERS_DEFAULT
     
     'Because the original paper is primarily focused on full texture synthesis (where you create a novel
     ' seamless texture from some source), it doesn't deal a lot with specifics for content-aware filling.
@@ -1139,10 +1359,10 @@ Friend Sub SetDefaultParameterValues()
     'So I added an option to restrict the radius where the synthesizer looks for replacement pixels.
     ' Note that this value is based on the size of the underlying mask, so if you have three tiny fill
     ' areas spread across an image, it is the union rect of *all* those areas that is used for the
-    ' underlying radius calculation.  (Basically, any pixel within 300 pixels of the boundary rect is OK
+    ' underlying radius calculation.  (Basically, any pixel within [n] pixels of the boundary rect is OK
     ' to use.)  As such, you're better off replacing individual objects one-at-a-time rather than selecting
     ' them all and then batch-replacing them.
-    m_ComparatorRadius = 300
+    m_ComparatorRadius = COMPARE_RADIUS_DEFAULT
     
 End Sub
 
