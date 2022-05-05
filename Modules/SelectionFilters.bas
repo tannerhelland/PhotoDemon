@@ -43,15 +43,6 @@ Public Function DisplaySelectionDialog(ByVal typeOfDialog As PD_SelectionDialog,
 
 End Function
 
-'Fill the selected area of the target layer.  (If a selection is *not* active, just fill the whole layer.)
-Public Sub Selection_Fill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
-    If displayDialog Then
-        Interface.ShowPDDialog vbModal, FormFill
-    Else
-        FormFill.ApplyFillEffect fxParams, False
-    End If
-End Sub
-
 'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
 ' the "exterior"/"interior" options on the main form.
 ' TODO: swap exterior/interior automatically, if a valid option
@@ -466,7 +457,29 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
     
 End Sub
 
-'TODO: UI for settings
+Public Sub Selection_Clear(ByVal displayDialog As Boolean)
+    
+    'Ignore the "display dialog" setting; there's no UI for this tool
+    If displayDialog Then
+        Process "Clear", False, vbNullString, UNDO_Layer
+    Else
+        
+        'If a selection is active, use it as the basis for the clear
+        If PDImages.GetActiveImage.IsSelectionActive() Then
+            Selections.EraseSelectedArea PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        'If a selection is *not* active, simply erase the current layer
+        Else
+            PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.ResetDIB 0
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        End If
+        
+    End If
+    
+End Sub
+
+'Content-aware fill (aka "Heal Selection") was added in v9.0
 Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
     
     'Ensure a selection exists
@@ -706,3 +719,22 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
     End If
     
 End Sub
+
+'Fill the selected area of the target layer.  (If a selection is *not* active, just fill the whole layer.)
+Public Sub Selection_Fill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
+    If displayDialog Then
+        Interface.ShowPDDialog vbModal, FormFill
+    Else
+        FormFill.ApplyFillEffect fxParams, False
+    End If
+End Sub
+
+'Stroke the boundary of the target layer.  (If a selection is *not* active, stroke the boundary of the current layer.)
+Public Sub Selection_Stroke(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
+    If displayDialog Then
+        'Interface.ShowPDDialog vbModal, FormFill
+    Else
+        'FormFill.ApplyFillEffect fxParams, False
+    End If
+End Sub
+

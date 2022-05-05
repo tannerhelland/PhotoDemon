@@ -805,11 +805,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             Menus.SetMenuEnabled "layer_cropselection", newState
             
             'The content-aware fill option in the edit menu also requires an active selection.
-            ' TODO: allow clear / fill / stroke *without* a selection, and just apply to the whole layer
-            Menus.SetMenuEnabled "edit_clear", newState
             Menus.SetMenuEnabled "edit_contentawarefill", newState
-            'Menus.SetMenuEnabled "edit_fill", newState
-            Menus.SetMenuEnabled "edit_stroke", newState
             
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms

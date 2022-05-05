@@ -1574,6 +1574,10 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
         g_Clipboard.ClipboardEmpty
         Process_EditMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Clear", True) Then
+        SelectionFilters.Selection_Clear raiseDialog
+        Process_EditMenu = True
+    
     ElseIf Strings.StringsEqual(processID, "Content-aware fill", True) Then
         SelectionFilters.Selection_ContentAwareFill raiseDialog, processParameters
         Process_EditMenu = True
@@ -1583,7 +1587,9 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
         Process_EditMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Stroke", True) Then
-    
+        SelectionFilters.Selection_Stroke raiseDialog, processParameters
+        Process_EditMenu = True
+        
     End If
     
     If undoOrRedoUsed Then
