@@ -121,8 +121,8 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
         'Simply copy m_PreviousPreviewCopy into workingDIB
         workingDIB.CreateFromExistingDIB m_PreviousPreviewCopy
         
-    'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated, so we try
-    ' to avoid it whenever possible.)
+    'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated,
+    ' so we try to avoid it whenever possible.)
     Else
     
         If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
