@@ -2372,8 +2372,31 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
 
 End Function
 
-'Sometimes, it is helpful to reset all non-destructive parameters to their default values.  (For example, after flattening
-' an image, we want to reset the base layer.)  Use this function to do so.
+'Some operations may remove affine transforms from the current layer, typically by making them permanent.
+' Call this function to reset all affine transform settings to their default (inactive) state.
+Friend Sub ResetAffineTransformProperties()
+    
+    With myLayerData
+        .l_CanvasXModifier = 1#
+        .l_CanvasYModifier = 1#
+        .l_Angle = 0#
+        .l_RotateCenterX = 0.5
+        .l_RotateCenterY = 0.5
+        .l_ResizeQuality = LRQ_Bilinear
+        .l_ShearX = 0#
+        .l_ShearY = 0#
+    End With
+    
+    'While here, also assign default vector layer values
+    With myVectorData
+        .vd_Width = 0
+        .vd_Height = 0
+    End With
+    
+End Sub
+
+'Sometimes, it is helpful to reset all non-destructive parameters to their default values.
+' (For example, after flattening an image, we want to reset the base layer.)
 Friend Sub ResetLayerParameters()
 
     'Assign default values to this instance's header

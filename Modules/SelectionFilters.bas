@@ -43,32 +43,13 @@ Public Function DisplaySelectionDialog(ByVal typeOfDialog As PD_SelectionDialog,
 
 End Function
 
-'Fill the selected area of the target layer.
+'Fill the selected area of the target layer.  (If a selection is *not* active, just fill the whole layer.)
 Public Sub Selection_Fill(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
-    
-    'Ensure a selection exists
-    If (Not Selections.SelectionsAllowed(False)) Then Exit Sub
-    
     If displayDialog Then
         Interface.ShowPDDialog vbModal, FormFill
     Else
-        
-        'There are several potential ways to fill a selection:
-        ' 1) The Photoshop way.  The full selection is filled onto a new layer, and then that layer is merged
-        '    atop the current layer.  This can change the layer size.
-        ' 2) The GIMP way.  The selection is only filled where it touches the current layer.  The current layer's
-        '    size does not change.
-        '
-        'There's not really a good or bad choice here - it's more a matter of "sometimes one is useful,
-        ' sometimes the other is useful."
-        
-        'TODO
-        'PDImages.GetActiveImage.EraseProcessedSelection targetLayerIndex
+        FormFill.ApplyFillEffect fxParams, False
     End If
-    
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
 End Sub
 
 'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
