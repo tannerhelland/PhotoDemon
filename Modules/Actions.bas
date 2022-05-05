@@ -344,14 +344,16 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
             Process "Empty clipboard", False, vbNullString, UNDO_Nothing, recordAction:=False
         
         Case "edit_clear"
-            'TODO
+            Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
+            
         Case "edit_contentawarefill"
-            Process "Content-aware fill", True, vbNullString, UNDO_Nothing
+            Process "Content-aware fill", True
             
         Case "edit_fill"
-            'TODO
+            Process "Fill", True
+            
         Case "edit_stroke"
-            'TODO
+            Process "Stroke", True
         
         Case Else
             cmdFound = False

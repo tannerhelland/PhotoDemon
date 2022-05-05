@@ -1577,7 +1577,13 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
     ElseIf Strings.StringsEqual(processID, "Content-aware fill", True) Then
         SelectionFilters.Selection_ContentAwareFill raiseDialog, processParameters
         Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Fill", True) Then
+        SelectionFilters.Selection_Fill raiseDialog, processParameters
+        Process_EditMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Stroke", True) Then
+    
     End If
     
     If undoOrRedoUsed Then
