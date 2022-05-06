@@ -316,7 +316,7 @@ Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("edge-threshold", sldThreshold.Value, "edge-type", btsEdgeType.ListIndex, "background-color", csBackground.Color, "pen-style", pnsOutline.Pen)
 End Function
 
-Private Sub pnsOutline_PenChanged()
+Private Sub pnsOutline_PenChanged(ByVal isFinalChange As Boolean)
     UpdatePreview
 End Sub
 

@@ -95,7 +95,7 @@ Public Function IsPolygonConvex(ByRef listOfPoints() As PointFloat, ByVal numOfP
     newDirection = PDMath.Atan2(newPoint.y - oldPoint.y, newPoint.x - oldPoint.x)
     angleSum = 0#
     
-    Dim orientation As Double
+    Dim curOrientation As Double
     
     'Check each point (specifically, the polygon side that terminates at each point)
     ' along with both that point's angle *and* the accumulated angles in the full polygon.
@@ -121,11 +121,11 @@ Public Function IsPolygonConvex(ByRef listOfPoints() As PointFloat, ByVal numOfP
         
         'First time through the loop, initialize orientation
         If (i = 0) Then
-            If (angle >= 0#) Then orientation = 1# Else orientation = -1#
+            If (angle >= 0#) Then curOrientation = 1# Else curOrientation = -1#
         
         'On subsequent passes, look for orientation changes
         Else
-            If (orientation * angle <= 0#) Then Exit Function
+            If (curOrientation * angle <= 0#) Then Exit Function
         End If
         
         'Accumulate angles
@@ -783,12 +783,19 @@ End Function
 ' some amount closer together (user-specified, defaults to 1/10th of a pixel) will be merged to
 ' improve performance and display quality.
 '
-'Pass your list of points and the number of points in the array.  (Upper array bound doesn't matter;
-' it's ignored.)  This function will return the number of points removed; if it returns 0, no points
-' were removed.  Also, the numOfPoints value - passed BYREF - will be updated to the current number
-' of points in the final, simplified polyline array.  (Note that points beyond the final index of the
-' simplified polyline *are not guaranteed to be zeroed-out*; their value is technically "undefined".)
-Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal minDistance As Single = 0.1!) As Long
+'Pass your list of points and the start index (probably 0) and end index (must be > 0) of the target line.
+' (Actual upper array bound doesn't matter; it's ignored.)  This function will return a *new* end index
+' via the ByRef endIndex value, and a Long indicating the number of points removed.  If 0 is returned,
+' no points were removed.
+'
+'Note also points beyond the new final index of the simplified polyline *are not guaranteed to be zeroed-out*;
+' their value is technically "undefined" and may retain the previous values you passed in.
+'
+'NOTE: this function needs further debugging; I can't guarantee it works ideally as-is due to limited testing.
+Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByVal startIndex As Long, ByRef endIndex As Long, Optional ByVal minDistance As Single = 0.1!) As Long
+    
+    Dim numOfPoints As Long
+    numOfPoints = (endIndex - startIndex) + 1
     
     'If we want to (possibly) remove points, we need at least three points to start!
     If (numOfPoints < 3) Then Exit Function
@@ -796,7 +803,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     
     'Start with the first line segment, comparing point (1) to the segment between (0) and (2)
     Dim leftIndex As Long
-    leftIndex = 0
+    leftIndex = startIndex
     
     'Direct distance between two points is used to determine removal, plus some temp variables
     ' to improve performance vs array accesses.
@@ -804,7 +811,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     
     'Iterate all points except the endpoints (which are essential and non-removable)
     Dim i As Long
-    For i = 1 To numOfPoints - 2
+    For i = startIndex + 1 To endIndex - 1
         
         'Calculate distance between the current point and the previous point.
         ' (For improved performance, we manually in-line the distance calculation.)
@@ -821,8 +828,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
             
         'This point cannot be removed.  Increment the *left* point index only, and shift the current
         ' point left-ward so that it's now located at the end of our running list of "good" points.
-        ' (The shift step can obviously be skipped if no points have been removed yet.)  We also
-        ' need to reset our running error whenever the current point is kept.
+        ' (The shift step can obviously be skipped if no points have been removed yet.)
         Else
             leftIndex = leftIndex + 1
             If (numPointsRemoved > 0) Then listOfPoints(i - numPointsRemoved) = listOfPoints(i)
@@ -831,12 +837,12 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     Next i
     
     'Shift the final polyline endpoint leftward by the number of removed points
-    If (numPointsRemoved > 0) Then listOfPoints(numOfPoints - 1 - numPointsRemoved) = listOfPoints(numOfPoints - 1)
+    If (numPointsRemoved > 0) Then listOfPoints(endIndex - numPointsRemoved) = listOfPoints(endIndex)
     
     'Return the number of points removed, and modify the current point count to reflect removals
     numOfPoints = numOfPoints - numPointsRemoved
     SimplifyLineForScreen = numPointsRemoved
-
+    
 End Function
 
 'Use a simple moving-average formula to smooth a given input line on the Y-axis only.

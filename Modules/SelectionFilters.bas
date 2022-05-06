@@ -3,8 +3,8 @@ Attribute VB_Name = "SelectionFilters"
 'Selection Tools: Filters
 'Copyright 2013-2022 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 02/May/22
-'Last update: new content-aware fill feature
+'Last updated: 05/May/22
+'Last update: new stroke, fill, and content-aware fill features
 '
 'This module should only contain selection filters (e.g. "grow", "border", etc).
 '
@@ -732,9 +732,8 @@ End Sub
 'Stroke the boundary of the target layer.  (If a selection is *not* active, stroke the boundary of the current layer.)
 Public Sub Selection_Stroke(ByVal displayDialog As Boolean, Optional ByRef fxParams As String = vbNullString)
     If displayDialog Then
-        'Interface.ShowPDDialog vbModal, FormFill
+        Interface.ShowPDDialog vbModal, FormStroke
     Else
-        'FormFill.ApplyFillEffect fxParams, False
+        FormStroke.ApplyStrokeEffect fxParams, False
     End If
 End Sub
-

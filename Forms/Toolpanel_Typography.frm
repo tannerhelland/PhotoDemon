@@ -1471,7 +1471,7 @@ Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
     If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
 
-Private Sub psText_PenChanged()
+Private Sub psText_PenChanged(ByVal isFinalChange As Boolean)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
     If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
@@ -1508,7 +1508,7 @@ Private Sub psText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTa
     End If
 End Sub
 
-Private Sub psTextBackground_PenChanged()
+Private Sub psTextBackground_PenChanged(ByVal isFinalChange As Boolean)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
     If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub

@@ -2396,9 +2396,11 @@ End Function
 ' guaranteed dimensions [0, rect.width - 1] x [0, rect.height - 1].
 '
 'No validation is performed on the optional passed rect, so make sure it's valid or this function *will* crash.
-Public Sub GetSingleChannel_2D(ByRef srcDIB As pdDIB, ByRef dstBytes() As Byte, Optional ByVal channelOffset As Long = 0, Optional ByVal ptrToRectOfInterest As Long = 0)
+Public Function GetSingleChannel_2D(ByRef srcDIB As pdDIB, ByRef dstBytes() As Byte, Optional ByVal channelOffset As Long = 0, Optional ByVal ptrToRectOfInterest As Long = 0) As Boolean
     
-    If (srcDIB Is Nothing) Then Exit Sub
+    GetSingleChannel_2D = False
+    
+    If (srcDIB Is Nothing) Then Exit Function
     
     Dim srcOffsetX As Long, srcOffsetY As Long
     Dim newBoundX As Long, newBoundY As Long
@@ -2430,8 +2432,9 @@ Public Sub GetSingleChannel_2D(ByRef srcDIB As pdDIB, ByRef dstBytes() As Byte, 
     Next y
     
     srcDIB.UnwrapArrayFromDIB srcBytes
+    GetSingleChannel_2D = True
     
-End Sub
+End Function
 
 'This function returns a DIB, resized to meet a specific pixel count.  This is very helpful for things like image analysis,
 ' where a full-sized image copy doesn't meaningfully improve heuristics (but requires a hell of a lot longer to analyze).

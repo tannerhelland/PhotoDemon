@@ -479,18 +479,18 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the pen dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowPenDialog(ByRef NewPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
-    ShowPenDialog = (ChoosePDPen(initialPen, NewPen, callingControl) = vbOK)
+Public Function ShowPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
+    ShowPenDialog = (ChoosePDPen(initialPen, newPen, callingControl) = vbOK)
 End Function
 
 'Display a custom pen selection dialog
-Public Function ChoosePDPen(ByRef oldPen As String, ByRef NewPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
+Public Function ChoosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
 
     Load dialog_OutlineSettings
     dialog_OutlineSettings.ShowDialog oldPen, callingControl
     
     ChoosePDPen = dialog_OutlineSettings.DialogResult
-    If ChoosePDPen = vbOK Then NewPen = dialog_OutlineSettings.NewPen
+    If ChoosePDPen = vbOK Then newPen = dialog_OutlineSettings.GetNewPen
     
     Unload dialog_OutlineSettings
     Set dialog_OutlineSettings = Nothing

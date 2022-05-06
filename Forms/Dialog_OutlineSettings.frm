@@ -172,7 +172,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'OK/Cancel result from the dialog
-Private m_UserAnswer As VbMsgBoxResult
+Private m_userAnswer As VbMsgBoxResult
 
 'The original pen when the dialog was first loaded
 Private m_OldPen As String
@@ -202,13 +202,13 @@ Private m_SuspendRedraws As Boolean
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = m_UserAnswer
+    DialogResult = m_userAnswer
 End Property
 
 'The newly selected pen (if any) is returned via this property
-Public Property Get NewPen() As String
-    NewPen = m_PenPreview.GetPenPropertiesAsXML
-End Property
+Public Function GetNewPen() As String
+    GetNewPen = m_PenPreview.GetPenPropertiesAsXML
+End Function
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl As pdPenSelector = Nothing)
@@ -217,7 +217,7 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     Set m_parentPenControl = callingControl
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
-    m_UserAnswer = vbCancel
+    m_userAnswer = vbCancel
     
     'Cache the initial pen parameters so we can access it elsewhere
     m_OldPen = initialPen
@@ -271,7 +271,7 @@ End Sub
 
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
-    m_UserAnswer = vbCancel
+    m_userAnswer = vbCancel
     Me.Hide
 End Sub
 
@@ -284,7 +284,7 @@ Private Sub cmdBar_OKClick()
     'TODO: save the current list of recently used pens
     'SaveRecentPenList
     
-    m_UserAnswer = vbOK
+    m_userAnswer = vbOK
     Me.Visible = False
 
 End Sub

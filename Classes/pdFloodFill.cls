@@ -266,7 +266,7 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
     'Because VB arrays are row-major, we're going to copy contiguous rows.
     Dim copySize As Long
     copySize = m_BoundsX + 1
-
+    
     Dim y As Long
     For y = 0 To m_BoundsY
         CopyMemoryStrict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), copySize
