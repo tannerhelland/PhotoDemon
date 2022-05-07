@@ -970,7 +970,7 @@ Friend Function GetSelectionBoundaryPath() As pd2DPath
     m_ViewportEdges.MakeArrayEdgeSafe maskBytes, safeBytes, Int(maskBounds.Width) - 1, Int(maskBounds.Height) - 1
     
     'Retrieve an outline path, with full support for multiple selections, complex shapes, etc
-    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) + 1, Int(maskBounds.Top) + 1
+    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1
     
 End Function
 
