@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.537</langversion>
+<langversion>6.6.538</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -196,6 +196,26 @@
 <phrase>
 <original>Empty clipboard</original>
 <translation>clipboard kosong</translation>
+</phrase>
+
+<phrase>
+<original>Clear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Content-aware fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Stroke</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1298,7 +1318,7 @@
 <translation>bersih baru-baru ini Daftar Gambar</translation>
 </phrase>
 
-<!-- Actions.bas contains 263 phrases. 7 were duplicates of existing phrases, so only 256 new phrases were written to file. -->
+<!-- Actions.bas contains 267 phrases. 7 were duplicates of existing phrases, so only 260 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3213,7 +3233,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Mencari pilihan sempadan</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
@@ -3690,6 +3710,13 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
+<original>Repainting selected regions</original>
+<translation></translation>
+</phrase>
+
+<!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
 <original>New layer</original>
 <translation>lapisan baru</translation>
 </phrase>
@@ -3707,6 +3734,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- pdMakeTexture.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Layer %1</original>
@@ -5618,7 +5647,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 386 phrases. 204 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 389 phrases. 207 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7405,6 +7434,33 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>patch test size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>random patch candidates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>refinement (percent)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>match quality threshold</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>search radius</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>Fading previous action (%1)</original>
 <translation>Pudar tindakan sebelum ini ( %1)</translation>
 </phrase>
@@ -7415,6 +7471,55 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>brush</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>do not change</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use selection size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use combined size (union)</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>pen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Stroking outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>expand to fit stroke (if necessary)</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>* current image state</original>
@@ -13804,10 +13909,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2611</phrasecount>
+<phrasecount>2630</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5439 phrases. -->
-<!-- 2828 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 11811 total words. -->
+<!-- As of this build, PhotoDemon contains 5478 phrases. -->
+<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
+<!-- These 2630 phrases contain approximately 11856 total words. -->
 
 </pdData>
