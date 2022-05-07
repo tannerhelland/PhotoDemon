@@ -326,6 +326,12 @@ Public Type PointLong
     y As Long
 End Type
 
+Public Type PointLong3D
+    x As Long
+    y As Long
+    z As Long
+End Type
+
 Public Type RectL
     Left As Long
     Top As Long

@@ -15,16 +15,16 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Path Wrapper
 'Copyright 2014-2022 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
-'Last updated: 11/January/21
-'Last update: new helper function for adding a list of bezier curve + control points
+'Last updated: 06/May/22
+'Last update: new GetPathPoints() function for retrieving this path (including all subpaths!) as a list of discrete lines
 'Dependencies: pd2DTransform, for applying affine transformations to a path.
 '
-'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a comprehensive interface;
-' instead, I add functions to it as I need them for various PD elements.
+'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a
+' comprehensive interface; instead, I add functions to it as I need them for various PD elements.
 '
-'The GDI+ path handle is created at class initialization, and released at class termination.  The path handle is
-' persistent by design, so no functions are provided for recreating or deleting it.  If you need to start over, use
-' the ResetPath() function.
+'The GDI+ path handle is created at class initialization, and released at class termination.
+' The path handle is persistent by design, so no functions are provided for recreating or deleting it.
+' If you need to start over, use the ResetPath() function.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -32,6 +32,21 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'When enumerating path points, you need to know what type of point each point is.
+Private Enum GP_PathPointType
+    gp_PathPointTypeStart = 0
+    gp_PathPointTypeLine = 1
+    gp_PathPointTypeBezier = 3
+    gp_PathPointTypePathTypeMask = &H7&
+    gp_PathPointTypeDashMode = &H10&
+    gp_PathPointTypePathMarker = &H20&
+    gp_PathPointTypeCloseSubpath = &H80&
+End Enum
+
+#If False Then
+    Private Const gp_PathPointTypeStart = 0, gp_PathPointTypeLine = 1, gp_PathPointTypeBezier = 3, gp_PathPointTypePathTypeMask = &H7&, gp_PathPointTypeDashMode = &H10&, gp_PathPointTypePathMarker = &H20&, gp_PathPointTypeCloseSubpath = &H80&
+#End If
 
 Private Declare Function GdipAddPathRectangle Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As GP_Result
 Private Declare Function GdipAddPathRectangleI Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As GP_Result
@@ -57,6 +72,8 @@ Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As G
 Private Declare Function GdipFlattenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As GP_Result
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
 Private Declare Function GdipGetPointCount Lib "gdiplus" (ByVal hPath As Long, ByRef dstCount As Long) As GP_Result
+Private Declare Function GdipGetPathPoints Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipGetPathTypes Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToByteArray As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipIsOutlineVisiblePathPoint Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal hPen As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
@@ -821,6 +838,125 @@ Friend Function GetPathBoundariesL(Optional ByRef testPen As pd2DPen = Nothing, 
     Else
         InternalError "GetPathBoundariesL", "null hPath"
     End If
+End Function
+
+'Retrieve the current path as a list of points (representing connected line segments).  YOU MUST READ AND
+' UNDERSTAND THIS COMMENT BLOCK TO KNOW HOW TO INTERPRET THIS DATA.
+'
+'First, note that a temporary path must be created to make this operation lossless, because the source path
+' needs to be flattened before we can retrieve straight-line coordinates - for example, an ellipse must be
+' flattened into discrete line segments because this function (by design) only returns straight lines.
+'
+'Note that three destination arrays are required: one for the actual points, and two others (which share a
+' size potentially much smaller than the points list) that tell you the indices of each unique subpath in
+' the point list, and whether that subpath is open (false) or closed (true).  You can thus use these
+' second and third lists to successfully traverse complex shapes, which may be composed of one or more
+' separate open and/or closed paths.
+Friend Function GetPathPoints(ByRef dstPoints() As PointFloat, ByRef dstNumPoints As Long, ByRef dstPathStartMarkers() As Long, ByRef dstIsPathClosed() As Boolean, ByRef dstNumPathMarkers As Long) As Boolean
+    
+    Const FUNC_NAME As String = "GetPathPoints"
+    
+    'Sanity check
+    If (m_PathHandle = 0) Then Exit Function
+    
+    'We need to flatten the path before retrieving it, but this is a destructive operation.
+    ' Clone the current path into a temporary path, flatten *that*, then use the flattened
+    ' path for all subsequent retrieval calls.
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    If (Not tmpPath.CloneExistingPath(Me)) Then
+        InternalError FUNC_NAME, "bad clone"
+        Exit Function
+    End If
+    
+    If (Not tmpPath.FlattenPath()) Then
+        InternalError FUNC_NAME, "bad flatten"
+        Exit Function
+    End If
+    
+    'Start by just pulling the path data from the path in GDI+ format.
+    ' (We need to translate this into a more portable format, but one problem at a time.)
+    Dim numGdipPoints As Long
+    If (GdipGetPointCount(tmpPath.GetHandle, numGdipPoints) <> GP_OK) Then
+        InternalError FUNC_NAME, "bad GdipPointCount call"
+        Exit Function
+    End If
+    
+    'Size two arrays to match: one for points, and another for point *types*.
+    Dim srcGdipPoints() As PointFloat, srcGdipTypes() As Byte
+    ReDim srcGdipPoints(0 To numGdipPoints - 1) As PointFloat
+    ReDim srcGdipTypes(0 To numGdipPoints - 1) As Byte
+    
+    'Retrieve both arrays and fail if either retrieval fails (since we need both to interpret the data).
+    If (GdipGetPathPoints(tmpPath.GetHandle, VarPtr(srcGdipPoints(0)), numGdipPoints) <> GP_OK) Then
+        InternalError FUNC_NAME, "bad GdipGetPathPoints call"
+        Exit Function
+    End If
+    
+    If (GdipGetPathTypes(tmpPath.GetHandle, VarPtr(srcGdipTypes(0)), numGdipPoints) <> GP_OK) Then
+        InternalError FUNC_NAME, "bad GdipGetPathTypes call"
+        Exit Function
+    End If
+    
+    'We now have everything we need from the temporary path.  Free it.
+    Set tmpPath = Nothing
+    
+    'We now need to convert the original point list to a PhotoDemon-specific one.
+    ' (This function is designed for internal use and it only ever wants line positions.  To simplify
+    ' traversal, we don't want to hand off a huge list of GDI+ specific entries - instead, we want a
+    ' simple array of point coordinates, and a second simple array of markers that tell us the indices
+    ' where each sub-path begins.)
+    '
+    'We know that both our output lists will be the same size or smaller than the lists we retrieved
+    ' from GDI+, thankfully.  (We'll size these arrays precisely after we fill them.)
+    ReDim dstPoints(0 To numGdipPoints - 1) As PointFloat
+    ReDim dstPathStartMarkers(0 To numGdipPoints - 1) As Long
+    ReDim dstIsPathClosed(0 To numGdipPoints - 1) As Boolean
+    
+    dstNumPoints = 0
+    dstNumPathMarkers = 0
+    
+    'Iterate the original GDI+ list and populate the output lists as we go
+    Dim i As Long, ptType As GP_PathPointType
+    For i = 0 To numGdipPoints - 1
+        
+        'Retrieve the GDI+ "type" of this point.  From the possible list of GDI+ entries, we only want
+        ' to line endpoints to the destination list.
+        ptType = srcGdipTypes(i)
+        
+        'Points that start a new subpath have the special "start" marker (basically, no line or curve
+        ' indicator which means that by default it must be a "start of path" marker).
+        If ((ptType And gp_PathPointTypePathTypeMask) = 0) Then
+            dstPathStartMarkers(dstNumPathMarkers) = dstNumPoints
+            dstPoints(dstNumPoints) = srcGdipPoints(i)
+            dstNumPoints = dstNumPoints + 1
+            dstNumPathMarkers = dstNumPathMarkers + 1
+        
+        Else
+            
+            'Only add line points, not curve points (they should have been flattened in the last step!)
+            If ((ptType And gp_PathPointTypeLine) <> 0) Then
+                dstPoints(dstNumPoints) = srcGdipPoints(i)
+                dstNumPoints = dstNumPoints + 1
+            End If
+            
+            'Look for "this subpath must be closed "markers.  When we see them, add a corresponding note
+            ' in the "isPathClosed" array.
+            If ((ptType And gp_PathPointTypeCloseSubpath) <> 0) Then
+                dstIsPathClosed(dstNumPathMarkers - 1) = True
+            End If
+            
+        End If
+            
+    Next i
+    
+    'Resize the destination arrays to match their final size(s)
+    If (UBound(dstPoints) <> dstNumPoints - 1) Then ReDim Preserve dstPoints(0 To dstNumPoints - 1) As PointFloat
+    If (UBound(dstPathStartMarkers) <> dstNumPathMarkers - 1) Then ReDim Preserve dstPathStartMarkers(0 To dstNumPathMarkers - 1) As Long
+    If (UBound(dstIsPathClosed) <> dstNumPathMarkers - 1) Then ReDim Preserve dstIsPathClosed(0 To dstNumPathMarkers - 1) As Boolean
+    
+    GetPathPoints = True
+    
 End Function
 
 Friend Function IsPointInsidePathF(ByVal x As Single, ByVal y As Single) As Boolean

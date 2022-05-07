@@ -1921,10 +1921,11 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
 
     'If this layer has transforms applied to it, we have to make them permanent before proceeding.
     '
-    'Note that this behavior can be overridden if a function is ABSOLUTELY CERTAIN that the end result won't botch the transform, but this
-    ' is only true for pixel transforms that operate strictly in separate x/y domains, such as resizing.  Note that this setting may be
-    ' forcibly ignored if the layer has complex affine transforms active (like rotation), because those transforms change the (x, y) domain
-    ' of the layer relative to the (x, y) domain of the image.
+    'Note that this behavior can be overridden if a function is ABSOLUTELY CERTAIN that the end result
+    ' won't botch the transform, but this is only true for pixel transforms that operate strictly in
+    ' separate x/y domains, such as resizing.  Note that this setting may be forcibly ignored if the
+    ' layer has complex affine transforms active (like rotation), because those transforms change the
+    ' (x, y) domain of the layer relative to the (x, y) domain of the image.
     Dim mustMakeCanvasTransformsPermanent As Boolean
     mustMakeCanvasTransformsPermanent = applyCanvasTransformsFirst Or Me.AffineTransformsActive(False)
     If mustMakeCanvasTransformsPermanent Then Me.MakeCanvasTransformsPermanent parentImageWidth, parentImageHeight
@@ -1961,6 +1962,40 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         'Mark the layer as dirty
         Me.NotifyOfDestructiveChanges
     
+    End If
+    
+End Sub
+
+'Return the current layer as a null-padded DIB.  This is preferable to ConvertToNullPaddedLayer, above, because you
+' can pass an initialized DIB (perhaps from a previous step in a multi-layer conversion process) and this function
+' will try to reuse it.  (Note that things like affine-transformed DIBs complicate this process and may allocate
+' their own temporary memory - alas!)
+'
+'Note, however, that if you apply the returned DIB to this layer later on, you'll need to manually handle things
+' like resetting offsets to [0, 0] and un-marking affine transform state.
+'
+'By design, this function is LOSSLESS.  It does not modify current layer state.
+Friend Sub GetLayerDIB_NullPadded(ByRef dstDIB As pdDIB, ByVal parentImageWidth As Long, ByVal parentImageHeight As Long)
+    
+    'Ensure the destination DIB is the correct size
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    If (dstDIB.GetDIBWidth <> parentImageWidth) Or (dstDIB.GetDIBHeight <> parentImageHeight) Then
+        dstDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0, 0
+    Else
+        dstDIB.ResetDIB 0
+    End If
+    
+    dstDIB.SetInitialAlphaPremultiplicationState m_LayerDIB.GetAlphaPremultiplication()
+    
+    'If this layer has transforms applied to it, we will simply ask it to render directly into the
+    ' destination DIB (instead of creating a new DIB, then passing that to us).
+    If Me.AffineTransformsActive(True) Then
+        Me.GetLayerCornerCoordinates m_PlgPoints
+        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, m_LayerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1!, Me.GetLayerResizeQuality_GDIPlus
+        
+    'If this is a normal layer, we can just BitBlt into position
+    Else
+        GDI.BitBltWrapper dstDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, m_LayerDIB.GetDIBWidth, m_LayerDIB.GetDIBHeight, m_LayerDIB.GetDIBDC, 0, 0, vbSrcCopy
     End If
     
 End Sub
@@ -2337,8 +2372,31 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
 
 End Function
 
-'Sometimes, it is helpful to reset all non-destructive parameters to their default values.  (For example, after flattening
-' an image, we want to reset the base layer.)  Use this function to do so.
+'Some operations may remove affine transforms from the current layer, typically by making them permanent.
+' Call this function to reset all affine transform settings to their default (inactive) state.
+Friend Sub ResetAffineTransformProperties()
+    
+    With myLayerData
+        .l_CanvasXModifier = 1#
+        .l_CanvasYModifier = 1#
+        .l_Angle = 0#
+        .l_RotateCenterX = 0.5
+        .l_RotateCenterY = 0.5
+        .l_ResizeQuality = LRQ_Bilinear
+        .l_ShearX = 0#
+        .l_ShearY = 0#
+    End With
+    
+    'While here, also assign default vector layer values
+    With myVectorData
+        .vd_Width = 0
+        .vd_Height = 0
+    End With
+    
+End Sub
+
+'Sometimes, it is helpful to reset all non-destructive parameters to their default values.
+' (For example, after flattening an image, we want to reset the base layer.)
 Friend Sub ResetLayerParameters()
 
     'Assign default values to this instance's header

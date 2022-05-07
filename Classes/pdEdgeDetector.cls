@@ -192,9 +192,11 @@ Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As PointFloat, ByRef numOfPoin
 
 End Sub
 
-'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function.
-' Complex polygons (including concave shapes, shapes with holes, or entirely separate polygons) are all handled correctly and
-' returned as a unified pd2DPath object.
+'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?
+' Then use this function.
+'
+'Complex polygons (including concave shapes, shapes with holes, or entirely separate polygons) are all handled
+' correctly and returned as a single unified pd2DPath object.
 Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
     
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
@@ -305,7 +307,6 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             'It is!  Start tracing its contour.
             startX = x
             startY = y
-            
             VBHacks.GetHighResTime startTime
             
             'Start searching for contour points!
@@ -483,7 +484,7 @@ Friend Sub MakeArrayEdgeSafe(ByRef srcArray() As Byte, ByRef dstArray() As Byte,
     ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
     Dim y As Long
     For y = 0 To srcYBound
-        CopyMemoryStrict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
+        CopyMemoryStrict VarPtr(dstArray(1, y + 1)), VarPtr(srcArray(0, y)), srcXBound + 1
     Next y
     
     'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.

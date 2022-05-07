@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 17/February/22
-'Last update: new rendering engine for new UI options
+'Last updated: 05/May/22
+'Last update: new GetSelectionBoundaryPath() helper (for Edit > Stroke)
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso,
 ' and "magic wand" selections are currently implemented.  (A selection brush is on my TODO list.)
@@ -950,6 +950,28 @@ Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable
     ElseIf (selProperty = pdsl_AspectRatio) Then
         GetPropertyLockedState = m_IsAspectLocked
     End If
+End Function
+
+'Return the current selection boundary as a generic path object.
+Friend Function GetSelectionBoundaryPath() As pd2DPath
+    
+    'Convert the current selection mask (only the relevant portion) to a 1-byte-per-pixel array
+    ' with fixed 0/255 values (intermediate ones break the edge detector)
+    Dim maskBounds As RectF
+    maskBounds = Me.GetCompositeBoundaryRect()
+    
+    Dim maskBytes() As Byte
+    DIBs.GetSingleChannel_2D Me.GetCompositeMaskDIB, maskBytes, 0, VarPtr(maskBounds)
+    Filters_ByteArray.ThresholdByteArray maskBytes, Int(maskBounds.Width), Int(maskBounds.Height), 1, False
+    
+    'Convert *that* array to an edge-safe one.
+    Dim safeBytes() As Byte
+    If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
+    m_ViewportEdges.MakeArrayEdgeSafe maskBytes, safeBytes, Int(maskBounds.Width) - 1, Int(maskBounds.Height) - 1
+    
+    'Retrieve an outline path, with full support for multiple selections, complex shapes, etc
+    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1
+    
 End Function
 
 'For lasso and polygon selections, this function will return the current selecton region

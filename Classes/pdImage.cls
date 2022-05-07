@@ -1556,11 +1556,13 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'If this is a vector layer, rasterize it
     If imgLayers(targetLayerIndex).IsLayerVector Then Layers.RasterizeLayer targetLayerIndex
     
-    'Before doing anything else, null-pad the layer we will be processing.  (At present, this function only operates on a single layer.)
+    'Before doing anything else, null-pad the layer we will be processing.
+    ' (At present, this function only operates on a single layer.)
     imgLayers(targetLayerIndex).ConvertToNullPaddedLayer Me.Width, Me.Height
     
-    'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
-    ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
+    'Selections can be one of several types.  Right now, we don't give special handling to simple
+    ' rectangular selections - all selections are fully processed according to the contents of the
+    ' selection mask.  (Also, all selections are currently created as 32bpp DIBs.)
     
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
     Dim selData() As Byte, selSA As SafeArray1D
@@ -1570,10 +1572,10 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     maskBounds = MainSelection.GetCompositeBoundaryRect
     
     Dim leftBound As Long, topBound As Long, rightBound As Long, bottomBound As Long
-    leftBound = maskBounds.Left
-    topBound = maskBounds.Top
-    rightBound = leftBound + maskBounds.Width - 1
-    bottomBound = topBound + maskBounds.Height - 1
+    leftBound = Int(maskBounds.Left)
+    topBound = Int(maskBounds.Top)
+    rightBound = leftBound + Int(maskBounds.Width) - 1
+    bottomBound = topBound + Int(maskBounds.Height) - 1
     
     Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long

@@ -559,15 +559,12 @@ Public Function ThresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     'If auto-calculate was specified, find the array's mean value now.
     If autoCalculateThreshold Then
     
-        Dim gHistogram() As Long
-        ReDim gHistogram(0 To 255) As Long
+        Dim gHistogram(0 To 255) As Long
         
         For x = initX To finalX
         For y = initY To finalY
-            
             curValue = srcArray(x, y)
             gHistogram(curValue) = gHistogram(curValue) + 1
-            
         Next y
         Next x
         
@@ -593,13 +590,11 @@ Public Function ThresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     'Threshold the array
     For x = initX To finalX
     For y = initY To finalY
-        
-        If srcArray(x, y) >= thresholdValue Then
+        If (srcArray(x, y) >= thresholdValue) Then
             srcArray(x, y) = 255
         Else
             srcArray(x, y) = 0
         End If
-        
     Next y
     Next x
     

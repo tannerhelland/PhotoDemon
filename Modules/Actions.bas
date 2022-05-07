@@ -341,8 +341,20 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
         
         'Empty clipboard is always available
         Case "edit_emptyclipboard"
-            Process "Empty clipboard", False, , UNDO_Nothing, , False
+            Process "Empty clipboard", False, vbNullString, UNDO_Nothing, recordAction:=False
+        
+        Case "edit_clear"
+            Process "Clear", True
             
+        Case "edit_contentawarefill"
+            Process "Content-aware fill", True
+            
+        Case "edit_fill"
+            Process "Fill", True
+            
+        Case "edit_stroke"
+            Process "Stroke", True
+        
         Case Else
             cmdFound = False
             

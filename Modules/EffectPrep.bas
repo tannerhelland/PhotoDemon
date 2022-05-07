@@ -121,8 +121,8 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
         'Simply copy m_PreviousPreviewCopy into workingDIB
         workingDIB.CreateFromExistingDIB m_PreviousPreviewCopy
         
-    'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated, so we try
-    ' to avoid it whenever possible.)
+    'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated,
+    ' so we try to avoid it whenever possible.)
     Else
     
         If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
@@ -693,7 +693,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 ' (Note that this is *not* an alpha-blend operation!  It is a weighted average between the old and
                 '  new pixel results, which produces a totally different output.)
                 Else
-                
+                    
                     blendAlpha = thisAlpha * ONE_DIV_255
                     
                     'Retrieve the old (original, unmodified) RGB values

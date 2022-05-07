@@ -2391,6 +2391,51 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount A
     
 End Function
 
+'Retrieve a single channel from a DIB as a 2D array.  The 2D array will have guaranteed dimensions
+' [0, dibWidth - 1] x [0, dibHeight - 1], unless a source rectangle is passed - then it will have
+' guaranteed dimensions [0, rect.width - 1] x [0, rect.height - 1].
+'
+'No validation is performed on the optional passed rect, so make sure it's valid or this function *will* crash.
+Public Function GetSingleChannel_2D(ByRef srcDIB As pdDIB, ByRef dstBytes() As Byte, Optional ByVal channelOffset As Long = 0, Optional ByVal ptrToRectOfInterest As Long = 0) As Boolean
+    
+    GetSingleChannel_2D = False
+    
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    Dim srcOffsetX As Long, srcOffsetY As Long
+    Dim newBoundX As Long, newBoundY As Long
+    
+    If (ptrToRectOfInterest <> 0) Then
+        Dim tmpRectF As RectF
+        VBHacks.CopyMemoryStrict VarPtr(tmpRectF), ptrToRectOfInterest, 16
+        srcOffsetX = Int(tmpRectF.Left)
+        srcOffsetY = Int(tmpRectF.Top)
+        newBoundX = Int(tmpRectF.Width) - 1
+        newBoundY = Int(tmpRectF.Height) - 1
+    Else
+        srcOffsetX = 0
+        srcOffsetY = 0
+        newBoundX = srcDIB.GetDIBWidth - 1
+        newBoundY = srcDIB.GetDIBHeight - 1
+    End If
+    
+    ReDim dstBytes(0 To newBoundX, 0 To newBoundY) As Byte
+    
+    Dim srcBytes() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcBytes, srcSA
+    
+    Dim x As Long, y As Long
+    For y = 0 To newBoundY
+    For x = 0 To newBoundX
+        dstBytes(x, y) = srcBytes((x + srcOffsetX) * 4 + channelOffset, srcOffsetY + y)
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcBytes
+    GetSingleChannel_2D = True
+    
+End Function
+
 'This function returns a DIB, resized to meet a specific pixel count.  This is very helpful for things like image analysis,
 ' where a full-sized image copy doesn't meaningfully improve heuristics (but requires a hell of a lot longer to analyze).
 '

@@ -1460,8 +1460,8 @@ End Function
 ' additional return details may be supplied in the returnDetails string parameter.
 Private Function Process_EditMenu(ByRef processID As String, Optional ByVal raiseDialog As Boolean = False, Optional ByRef processParameters As String = vbNullString, Optional ByRef createUndo As PD_UndoType = UNDO_Nothing, Optional ByRef relevantTool As Long = -1, Optional ByRef recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
-    'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
-    ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
+    'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.
+    ' (This allows us to detect changes to said settings, and create new Undo/Redo data accordingly.)
     Dim undoOrRedoUsed As Boolean
 
     If Strings.StringsEqual(processID, "Undo", True) Then
@@ -1572,6 +1572,22 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
     
     ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
         g_Clipboard.ClipboardEmpty
+        Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Clear", True) Then
+        SelectionFilters.Selection_Clear raiseDialog
+        Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Content-aware fill", True) Then
+        SelectionFilters.Selection_ContentAwareFill raiseDialog, processParameters
+        Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Fill", True) Then
+        SelectionFilters.Selection_Fill raiseDialog, processParameters
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Stroke", True) Then
+        SelectionFilters.Selection_Stroke raiseDialog, processParameters
         Process_EditMenu = True
         
     End If
@@ -2618,27 +2634,27 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         
     'Modify the existing selection in some way
     ElseIf Strings.StringsEqual(processID, "Invert selection", True) Then
-        SelectionFilters.InvertCurrentSelection
+        SelectionFilters.Selection_Invert
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Grow selection", True) Then
-        If raiseDialog Then SelectionFilters.GrowCurrentSelection True Else SelectionFilters.GrowCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.Selection_Grow True Else SelectionFilters.Selection_Grow False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Shrink selection", True) Then
-        If raiseDialog Then SelectionFilters.ShrinkCurrentSelection True Else SelectionFilters.ShrinkCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.Selection_Shrink True Else SelectionFilters.Selection_Shrink False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Feather selection", True) Then
-        If raiseDialog Then SelectionFilters.FeatherCurrentSelection True Else SelectionFilters.FeatherCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.Selection_Blur True Else SelectionFilters.Selection_Blur False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Sharpen selection", True) Then
-        If raiseDialog Then SelectionFilters.SharpenCurrentSelection True Else SelectionFilters.SharpenCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.Selection_Sharpen True Else SelectionFilters.Selection_Sharpen False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Border selection", True) Then
-        If raiseDialog Then SelectionFilters.BorderCurrentSelection True Else SelectionFilters.BorderCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.Selection_ConvertToBorder True Else SelectionFilters.Selection_ConvertToBorder False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
     
     'Erase selected area (from layer)

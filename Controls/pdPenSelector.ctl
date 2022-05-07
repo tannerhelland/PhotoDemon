@@ -52,7 +52,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This control doesn't really do anything interesting, besides allow a pen to be selected.
-Public Event PenChanged()
+Public Event PenChanged(ByVal isFinalChange As Boolean)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -68,6 +68,9 @@ Private m_PreviewPath As pd2DPath
 
 'When the "select pen" dialog is live, this will be set to TRUE
 Private m_IsDialogLive As Boolean
+
+'If a change event originates from the child dialog, this is set to TRUE
+Private m_ChangeIsLive As Boolean
 
 'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
 Private m_PenRect As RectF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
@@ -146,10 +149,10 @@ Public Property Get Pen() As String
     Pen = m_curPen
 End Property
 
-Public Property Let Pen(ByVal NewPen As String)
-    m_curPen = NewPen
+Public Property Let Pen(ByVal newPen As String)
+    m_curPen = newPen
     RedrawBackBuffer
-    RaiseEvent PenChanged
+    RaiseEvent PenChanged(Not m_ChangeIsLive)
     PropertyChanged "Pen"
 End Property
 
@@ -240,14 +243,14 @@ Private Sub RaisePenDialog()
     m_IsDialogLive = True
     
     'Backup the current pen; if the dialog is canceled, we want to restore it
-    Dim NewPen As String, oldPen As String
-    oldPen = Pen
+    Dim newPen As String, oldPen As String
+    oldPen = Me.Pen
     
     'Use the brush dialog to select a new color
-    If ShowPenDialog(NewPen, oldPen, Me) Then
-        Pen = NewPen
+    If ShowPenDialog(newPen, oldPen, Me) Then
+        Me.Pen = newPen
     Else
-        Pen = oldPen
+        Me.Pen = oldPen
     End If
     
     m_IsDialogLive = False
@@ -411,8 +414,10 @@ End Sub
 
 'If a pen selection dialog is active, it will pass pen updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with pens* - very cool!
-Public Sub NotifyOfLivePenChange(ByVal NewPen As String)
-    Pen = NewPen
+Public Sub NotifyOfLivePenChange(ByVal newPen As String)
+    m_ChangeIsLive = True
+    Me.Pen = newPen
+    m_ChangeIsLive = False
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

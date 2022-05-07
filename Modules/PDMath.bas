@@ -3,8 +3,8 @@ Attribute VB_Name = "PDMath"
 'Specialized Math Routines
 'Copyright 2013-2022 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 12/January/17
-'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.
+'Last updated: 06/May/22
+'Last update: new function for direct path simplification, which handles all line extraction for you
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June '13.  This module is now used to store all the random bits of specialized math required by the program.
@@ -33,6 +33,23 @@ End Enum
 
 #If False Then
     Private Const ng_Perlin = 0, ng_Simplex = 1, ng_OpenSimplex = 2
+#End If
+
+'Marching squares line simplification
+Private Enum PD_PointSimplify
+    ps_Essential = 0
+    ps_Horizontal = 1
+    ps_Vertical = 3
+    ps_MustBeCorner = 4
+    ps_NWCorner = 4
+    ps_NECorner = 8
+    ps_SECorner = 16
+    ps_SWCorner = 32
+    ps_Remove = 64
+End Enum
+
+#If False Then
+    Private Const ps_Essential = 0, ps_Horizontal = 1, ps_Vertical = 3, ps_MustBeCorner = 4, ps_NWCorner = 4, ps_NECorner = 8, ps_SECorner = 16, ps_SWCorner = 32, ps_Remove = 64
 #End If
 
 Private Declare Function IntersectRect Lib "user32" (ByVal ptrDstRect As Long, ByVal ptrSrcRect1 As Long, ByVal ptrSrcRect2 As Long) As Long
@@ -95,7 +112,7 @@ Public Function IsPolygonConvex(ByRef listOfPoints() As PointFloat, ByVal numOfP
     newDirection = PDMath.Atan2(newPoint.y - oldPoint.y, newPoint.x - oldPoint.x)
     angleSum = 0#
     
-    Dim orientation As Double
+    Dim curOrientation As Double
     
     'Check each point (specifically, the polygon side that terminates at each point)
     ' along with both that point's angle *and* the accumulated angles in the full polygon.
@@ -121,11 +138,11 @@ Public Function IsPolygonConvex(ByRef listOfPoints() As PointFloat, ByVal numOfP
         
         'First time through the loop, initialize orientation
         If (i = 0) Then
-            If (angle >= 0#) Then orientation = 1# Else orientation = -1#
+            If (angle >= 0#) Then curOrientation = 1# Else curOrientation = -1#
         
         'On subsequent passes, look for orientation changes
         Else
-            If (orientation * angle <= 0#) Then Exit Function
+            If (curOrientation * angle <= 0#) Then Exit Function
         End If
         
         'Accumulate angles
@@ -783,12 +800,17 @@ End Function
 ' some amount closer together (user-specified, defaults to 1/10th of a pixel) will be merged to
 ' improve performance and display quality.
 '
-'Pass your list of points and the number of points in the array.  (Upper array bound doesn't matter;
-' it's ignored.)  This function will return the number of points removed; if it returns 0, no points
-' were removed.  Also, the numOfPoints value - passed BYREF - will be updated to the current number
-' of points in the final, simplified polyline array.  (Note that points beyond the final index of the
-' simplified polyline *are not guaranteed to be zeroed-out*; their value is technically "undefined".)
-Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal minDistance As Single = 0.1!) As Long
+'Pass your list of points and the start index (probably 0) and end index (must be > 0) of the target line.
+' (Actual upper array bound doesn't matter; it's ignored.)  This function will return a *new* end index
+' via the ByRef endIndex value, and a Long indicating the number of points removed.  If 0 is returned,
+' no points were removed.
+'
+'Note also points beyond the new final index of the simplified polyline *are not guaranteed to be zeroed-out*;
+' their value is technically "undefined" and may retain the previous values you passed in.
+Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByVal startIndex As Long, ByRef endIndex As Long, Optional ByVal minDistance As Single = 0.1!) As Long
+    
+    Dim numOfPoints As Long
+    numOfPoints = (endIndex - startIndex) + 1
     
     'If we want to (possibly) remove points, we need at least three points to start!
     If (numOfPoints < 3) Then Exit Function
@@ -796,7 +818,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     
     'Start with the first line segment, comparing point (1) to the segment between (0) and (2)
     Dim leftIndex As Long
-    leftIndex = 0
+    leftIndex = startIndex
     
     'Direct distance between two points is used to determine removal, plus some temp variables
     ' to improve performance vs array accesses.
@@ -804,7 +826,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     
     'Iterate all points except the endpoints (which are essential and non-removable)
     Dim i As Long
-    For i = 1 To numOfPoints - 2
+    For i = startIndex + 1 To endIndex - 1
         
         'Calculate distance between the current point and the previous point.
         ' (For improved performance, we manually in-line the distance calculation.)
@@ -821,8 +843,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
             
         'This point cannot be removed.  Increment the *left* point index only, and shift the current
         ' point left-ward so that it's now located at the end of our running list of "good" points.
-        ' (The shift step can obviously be skipped if no points have been removed yet.)  We also
-        ' need to reset our running error whenever the current point is kept.
+        ' (The shift step can obviously be skipped if no points have been removed yet.)
         Else
             leftIndex = leftIndex + 1
             If (numPointsRemoved > 0) Then listOfPoints(i - numPointsRemoved) = listOfPoints(i)
@@ -831,12 +852,364 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     Next i
     
     'Shift the final polyline endpoint leftward by the number of removed points
-    If (numPointsRemoved > 0) Then listOfPoints(numOfPoints - 1 - numPointsRemoved) = listOfPoints(numOfPoints - 1)
+    If (numPointsRemoved > 0) Then
+        listOfPoints(endIndex - numPointsRemoved) = listOfPoints(endIndex)
+        endIndex = endIndex - numPointsRemoved
+    End If
     
-    'Return the number of points removed, and modify the current point count to reflect removals
-    numOfPoints = numOfPoints - numPointsRemoved
+    'Return the number of points removed
     SimplifyLineForScreen = numPointsRemoved
+    
+End Function
 
+'Simplify an arbitrary polyline of arbitrary length that was produced by PD's marching-squares algorithms.
+' This is particularly relevant for the selection tool, which is 100% mask-based, so we need to manually
+' generate vector boundaries for the mask under a variety of circumstances.
+'
+'Pass your list of points and the start index (probably 0) and end index (must be > 0) of the target line.
+' (Actual upper array bound doesn't matter; it's ignored.)  This function will return a *new* end index
+' via the ByRef endIndex value, and a Long indicating the number of points removed.  If 0 is returned,
+' no points were removed.
+'
+'Note also points beyond the new final index of the simplified polyline *are not guaranteed to be zeroed-out*;
+' their value is technically "undefined" and may retain the previous values you passed in.
+'
+'A potentially minor but relevant detail is that this function assumes path points are in clock-wise order.
+' It doesn't really matter, but it slightly affects whether antialiasing is performed 0.5px "outside" or
+' "inside" the border of the shape.  If a closed path is in clockwise order, the antialiasing will occur
+' 0.5px "outside the shape"; for counter-clockwise order, it will be "inside" the shape's border.
+Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFloat, ByVal startIndex As Long, ByRef endIndex As Long) As Long
+    
+    Dim numOfPoints As Long
+    numOfPoints = (endIndex - startIndex) + 1
+    
+    'If we want to (possibly) remove points, we need at least three points to start!
+    If (numOfPoints < 3) Then Exit Function
+    Dim numPointsRemoved As Long
+    
+    'Because paths may contain multiple discrete polylines, we allow the caller to pass whatever
+    ' starting index they want.
+    Dim leftIndex As Long
+    leftIndex = startIndex
+    
+    'This marching squares simplifier is my own design.  It will only produce ideal results on polylines
+    ' that come directly from PD's marching squares implementation (but will likely work well on others,
+    ' pending additional testing).
+    '
+    'What we want to do in this first pass is identify three-point junctions that can be better be
+    ' represented as a single two-point line.  This is true for polylines that move a single pixel over,
+    ' then change direction and travel some arbitrary distance before repeating moving a single pixel
+    ' over *in the same direction as before*.  These types of blocky lines can be converted to smooth
+    ' lines that antialias much better while also having much lower net point counts.
+    '
+    'To do this, we want to build a list of point "types".  This makes it easy to identify which points
+    ' can be removed and which points must remain.
+    Dim pointTypes() As PD_PointSimplify
+    ReDim pointTypes(startIndex To endIndex) As PD_PointSimplify
+    
+    'All points will be compared to the *next* point in line.
+    Dim i As Long
+    For i = startIndex To endIndex - 1
+        
+        'Assume most points are not removeable; we'll update this value after further checks
+        pointTypes(i) = ps_Essential
+        
+        'Compare this point to the point that follows it.  If this point has an identical x or y value
+        ' to the next point, we'll flag it as a "horizontal" or "vertical" line that follows.  (For marching
+        ' squares output, this is almost always true - but confirming this ensures we don't break on other
+        ' types of polylines "just in case.)  If, in addition to sharing an x/y value, this point and the next
+        ' point are only 1-px away, we'll also flag that - because that's what makes it a candidate for removal.
+        ' (Note also that the point IDs used here refer to the corner direction of the *next* point;
+        ' this doesn't necessarily matter since we assume clockwise order, but I mention it for clarity.)
+        If (listOfPoints(i).x = listOfPoints(i + 1).x) Then
+            pointTypes(i) = pointTypes(i) Or ps_Vertical
+            If (listOfPoints(i).y - listOfPoints(i + 1).y) = 1 Then
+                pointTypes(i) = pointTypes(i) Or ps_NECorner
+            ElseIf (listOfPoints(i).y - listOfPoints(i + 1).y) = -1 Then
+                pointTypes(i) = pointTypes(i) Or ps_SECorner
+            End If
+        ElseIf (listOfPoints(i).y = listOfPoints(i + 1).y) Then
+            pointTypes(i) = pointTypes(i) Or ps_Horizontal
+            If (listOfPoints(i).x - listOfPoints(i + 1).x) = 1 Then
+                pointTypes(i) = pointTypes(i) Or ps_NWCorner
+            ElseIf (listOfPoints(i).x - listOfPoints(i + 1).x) = -1 Then
+                pointTypes(i) = pointTypes(i) Or ps_SWCorner
+            End If
+        End If
+        
+    Next i
+    
+    'With all points identified, we now want to scan the list and look for a particular pattern:
+    ' two points with the same sub-type, separated by a single point in-between.  For example,
+    ' consider a list of points that look like this: [0, 0] [10, 0] [10, 1] [20, 1] [20, 2] [10, 2].
+    ' The above code will produce the following codes: [0]     [H]     [V+C]   [H]     [V+C]   [H]
+    ' The above code will produce the following codes: [H]     [V+C]   [H]     [V+C]   [H]     [V-C]
+    ' The [H] code means the line is a straight vertical line.  The [V+C] means it is a 1-px vertical
+    ' line (and the C stands for designated "corner").  Thus, if we encounter two [V+C] codes with a
+    ' single [H] between them, we know we can always safely remove the [H] point.
+    For i = startIndex + 2 To endIndex
+        
+        'See if this point is a corner
+        If (pointTypes(i) >= ps_MustBeCorner) Then
+            
+            'Look for matching point types to the point *2* previous
+            If pointTypes(i) = pointTypes(i - 2) Then
+                    
+                'If the point between these two is a straight 1-px vertical or horizontal line, we can remove it!
+                If (pointTypes(i - 1) > 0) And (pointTypes(i - 1) < ps_MustBeCorner) Then
+                    pointTypes(i - 1) = ps_Remove
+                End If
+                
+            End If
+            
+        End If
+        
+    Next i
+    
+    'With all potentially removeable points flagged, we can now perform removal in a single sweep
+    numPointsRemoved = 0
+    For i = startIndex To endIndex
+        
+        'Perform removal check
+        If (pointTypes(i) = ps_Remove) Then
+        
+            'This point can be removed.  Increment the point removal counter, but otherwise do nothing;
+            ' this point will be automatically "removed" by the left-shift code in the other branch.
+            numPointsRemoved = numPointsRemoved + 1
+            
+        'This point cannot be removed.  Increment the *left* point index only, and shift the current
+        ' point left-ward so that it's now located at the end of our running list of "good" points.
+        ' (The shift step can obviously be skipped if no points have been removed yet.)
+        Else
+            leftIndex = leftIndex + 1
+            If (numPointsRemoved > 0) Then listOfPoints(i - numPointsRemoved) = listOfPoints(i)
+        End If
+        
+    Next i
+    
+    'Shift the final polyline endpoint leftward by the number of removed points
+    If (numPointsRemoved > 0) Then
+        listOfPoints(endIndex - numPointsRemoved) = listOfPoints(endIndex)
+        endIndex = endIndex - numPointsRemoved
+    End If
+    
+    'Debug.Print "Removed " & numPointsRemoved & " in first pass"
+    
+    'We now have new starting + ending indices, and all "useless" points have been removed.
+    ' But that's not all we can do!  Removing points in the previous step likely left us with many points
+    ' that lie on the same line as their neighbors.  Why not remove those redundant points while we're here?
+    Dim numPointsRemoved2 As Long
+    For i = startIndex + 1 To endIndex - 1
+        
+        'Because the previous step was only capable of converting an e.g. 1-px vertical line and neighboring
+        ' horizontal line into a single slightly-sloped line, we know that neighboring points in this algorithm
+        ' will only lie on the same line under certain circumstances.  This greatly simplifies the way we
+        ' check for "is point on line".
+        If (listOfPoints(i).x - listOfPoints(i - 1).x) = (listOfPoints(i + 1).x - listOfPoints(i).x) Then
+            If (listOfPoints(i).y - listOfPoints(i - 1).y) = (listOfPoints(i + 1).y - listOfPoints(i).y) Then
+                
+                'This point can be removed.  Increment the point removal counter, but otherwise do nothing;
+                ' this point will be automatically "removed" by the left-shift code in the other branches.
+                numPointsRemoved2 = numPointsRemoved2 + 1
+            
+            'This point cannot be removed.  Increment the *left* point index only, and shift the current
+            ' point left-ward so that it's now located at the end of our running list of "good" points.
+            ' (The shift step can obviously be skipped if no points have been removed yet.)
+            Else
+                leftIndex = leftIndex + 1
+                If (numPointsRemoved2 > 0) Then listOfPoints(i - numPointsRemoved2) = listOfPoints(i)
+            End If
+            
+        'Same as branch above
+        Else
+            leftIndex = leftIndex + 1
+            If (numPointsRemoved2 > 0) Then listOfPoints(i - numPointsRemoved2) = listOfPoints(i)
+        End If
+        
+    Next i
+    
+    'Once again shift the final polyline endpoint leftward by the number of removed points
+    If (numPointsRemoved2 > 0) Then
+        listOfPoints(endIndex - numPointsRemoved2) = listOfPoints(endIndex)
+        endIndex = endIndex - numPointsRemoved2
+    End If
+    
+    'Debug.Print "Removed " & numPointsRemoved2 & " in second pass"
+    'Debug.Print "Final point count is " & (endIndex - startIndex) + 1
+    
+    'Return the number of points removed from *both* passes
+    SimplifyLinesFromMarchingSquares = numPointsRemoved + numPointsRemoved2
+    
+End Function
+
+'Given a pd2DPath object, simplify the path for display on-screen.  This function automatically removes any points
+' in the path closer than [minDistance].
+'
+'I recommend transforming your source path into screen coordinates, then handing it off to this function.
+' Resulting GDI+ drawing will often be much faster as a result, and the quality will be improved from not
+' needing to calculate complex miters on so many subpixel junctions.
+Public Function SimplifyPathForScreen(ByRef srcPath As pd2DPath, Optional ByVal minDistance As Single = 0.1!) As Boolean
+    
+    SimplifyPathForScreen = False
+    If (srcPath Is Nothing) Then Exit Function
+    
+    'Start by converting the source path to a list of discrete points and subpaths
+    Dim listOfPoints() As PointFloat, numOfPoints As Long, listOfSubpaths() As Long, listOfClosedStates() As Boolean, numOfSubpaths As Long
+    SimplifyPathForScreen = srcPath.GetPathPoints(listOfPoints, numOfPoints, listOfSubpaths, listOfClosedStates, numOfSubpaths)
+    If (Not SimplifyPathForScreen) Then Exit Function
+    
+    'The source path has given us everything we need.  Reset it to null-path state.
+    srcPath.ResetPath
+    
+    'We can now hand off each individual sub-path to the standalone "simplify for screen" function.
+    Dim idxFirst As Long, idxLast As Long, numPointsRemoved As Long, numPointsRemovedTotal As Long
+    Dim i As Long, j As Long
+    
+    'If you want to skip simplification and simply test correctness of retrieving points from a GDI+ path,
+    ' then manually adding them back to a path (and getting an identical result), use this (ugh) GOTO:
+    'GoTo SkipSimplification
+    
+    For i = 0 To numOfSubpaths - 1
+        
+        'Retrieve first/last indices for the current sub-path
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        'Simplify this line segment, and note that the simplifier returns the number of points removed (if any).
+        ' This is important because we need to manually shift subsequent points forward.
+        numPointsRemoved = PDMath.SimplifyLineForScreen(listOfPoints, idxFirst, idxLast, minDistance)
+        
+        'BEFORE we update the total number of points removed, shift the current list of points forward
+        ' in the array.  (Any points we removed from this path won't matter until the *next* path.)
+        If (numPointsRemovedTotal > 0) Then
+            For j = idxFirst To idxLast
+                listOfPoints(j - numPointsRemovedTotal) = listOfPoints(j)
+            Next j
+            listOfSubpaths(i) = listOfSubpaths(i) - numPointsRemovedTotal
+        End If
+        
+        'Now we can update the total removed points count
+        numPointsRemovedTotal = numPointsRemovedTotal + numPointsRemoved
+        
+    Next i
+    
+    'Update the final points count
+    numOfPoints = numOfPoints - numPointsRemovedTotal
+    
+'When debugging, I verified the correctness of this function by completely skipping the previous block
+' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
+' to confirm the same way!
+SkipSimplification:
+    
+    'All sub-paths have now been trimmed down to screen size.  Reconstruct the original path
+    ' from the new sub-path list.
+    For i = 0 To numOfSubpaths - 1
+        
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        srcPath.AddPolygon (idxLast - idxFirst) + 1, VarPtr(listOfPoints(idxFirst)), listOfClosedStates(i), False
+        
+    Next i
+    
+    SimplifyPathForScreen = True
+    
+End Function
+
+'Given a pd2DPath object generated by PD's marching-squares algorithm, simplify the path and prepare it for
+' antialiased handling.
+Public Function SimplifyPathFromMarchingSquares(ByRef srcPath As pd2DPath) As Boolean
+    
+    SimplifyPathFromMarchingSquares = False
+    If (srcPath Is Nothing) Then Exit Function
+    
+    'Start by converting the source path to a list of discrete points and subpaths
+    Dim listOfPoints() As PointFloat, numOfPoints As Long, listOfSubpaths() As Long, listOfClosedStates() As Boolean, numOfSubpaths As Long
+    SimplifyPathFromMarchingSquares = srcPath.GetPathPoints(listOfPoints, numOfPoints, listOfSubpaths, listOfClosedStates, numOfSubpaths)
+    If (Not SimplifyPathFromMarchingSquares) Then Exit Function
+    
+    'The source path has given us everything we need.  Reset it to null-path state.
+    srcPath.ResetPath
+    
+    'We can now hand off each individual sub-path to the standalone "simplify for screen" function.
+    Dim idxFirst As Long, idxLast As Long, numPointsRemoved As Long, numPointsRemovedTotal As Long
+    Dim i As Long, j As Long
+    
+    'If you want to skip simplification and simply test correctness of retrieving points from a GDI+ path,
+    ' then manually adding them back to a path (and getting an identical result), use this (ugh) GOTO:
+    'GoTo SkipSimplification
+    
+    For i = 0 To numOfSubpaths - 1
+        
+        'Retrieve first/last indices for the current sub-path
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        'Simplify this line segment, and note that the simplifier returns the number of points removed (if any).
+        ' This is important because we need to manually shift subsequent points forward.
+        numPointsRemoved = PDMath.SimplifyLinesFromMarchingSquares(listOfPoints, idxFirst, idxLast)
+        
+        'BEFORE we update the total number of points removed, shift the current list of points forward
+        ' in the array.  (Any points we removed from this path won't matter until the *next* path.)
+        If (numPointsRemovedTotal > 0) Then
+            For j = idxFirst To idxLast
+                listOfPoints(j - numPointsRemovedTotal) = listOfPoints(j)
+            Next j
+            listOfSubpaths(i) = listOfSubpaths(i) - numPointsRemovedTotal
+        End If
+        
+        'Now we can update the total removed points count
+        numPointsRemovedTotal = numPointsRemovedTotal + numPointsRemoved
+        
+    Next i
+    
+    'Update the final points count
+    numOfPoints = numOfPoints - numPointsRemovedTotal
+    
+    Debug.Print "Removed: " & numPointsRemovedTotal
+    
+'When debugging, I verified the correctness of this function by completely skipping the previous block
+' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
+' to confirm the same way!
+SkipSimplification:
+    
+    'All sub-paths have now been trimmed down to screen size.  Reconstruct the original path
+    ' from the new sub-path list.
+    For i = 0 To numOfSubpaths - 1
+        
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        srcPath.AddPolygon (idxLast - idxFirst) + 1, VarPtr(listOfPoints(idxFirst)), listOfClosedStates(i), False
+        
+    Next i
+    
+    SimplifyPathFromMarchingSquares = True
+    
 End Function
 
 'Use a simple moving-average formula to smooth a given input line on the Y-axis only.

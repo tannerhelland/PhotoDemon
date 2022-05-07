@@ -724,7 +724,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         Case PDUI_View
             Menus.SetMenuEnabled "view_top", newState
             
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus.
+        ' (This flag is very useful for items that require at least one open image to operate.)
         Case PDUI_ImageMenu
             If (Menus.IsMenuEnabled("image_top") <> newState) Then
                 Menus.SetMenuEnabled "image_top", newState
@@ -733,6 +734,12 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Menus.SetMenuEnabled "adj_top", newState
                 Menus.SetMenuEnabled "effects_top", newState
                 Menus.SetMenuEnabled "file_print", newState
+                
+                'The edit menu also contains items that require an open image to operate
+                Menus.SetMenuEnabled "edit_clear", newState
+                Menus.SetMenuEnabled "edit_fill", newState
+                Menus.SetMenuEnabled "edit_stroke", newState
+    
             End If
             
         'Macro (within the Tools menu)
@@ -796,6 +803,9 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
             Menus.SetMenuEnabled "image_crop", newState
             Menus.SetMenuEnabled "layer_cropselection", newState
+            
+            'The content-aware fill option in the edit menu also requires an active selection.
+            Menus.SetMenuEnabled "edit_contentawarefill", newState
             
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms
