@@ -343,9 +343,6 @@ Public Sub ApplyFillEffect(ByVal parameterList As String, Optional ByVal toPrevi
         strideMask = saMask.cElements
     End If
     
-    Dim newR As Long, newG As Long, newB As Long, newA As Long
-    Dim oldR As Long, oldG As Long, oldB As Long, oldA As Long
-    
     Dim blendAmount As Double
     Const ONE_DIV_255 As Double = 1# / 255#
     
@@ -377,8 +374,7 @@ Public Sub ApplyFillEffect(ByVal parameterList As String, Optional ByVal toPrevi
                             If (selValue < 255) Then
                                 pxDst(xOffset + 3) = Int(pxDst(xOffset + 3) * blendAmount)
                                 
-                            'Fully masked pixels are left as-is
-                            'Else
+                            'No need for an Else, because fully masked pixels are left as-is
                             End If
                         
                         'Unmasked pixels are fully removed

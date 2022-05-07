@@ -402,7 +402,7 @@ Private Function SynthesizeTexture() As Boolean
     Dim i As Long
     For i = 0 To m_numPointsLeft - 1
         
-        Dim curPoint As PointLong, testPoint As PointLong, tmpPoint As PointLong
+        Dim curPoint As PointLong, testPoint As PointLong
         curPoint = m_PointsRemaining(i)
         
         'Generate a list of nearby pixels that we can test to evaluate the "goodness" of the target pixel.

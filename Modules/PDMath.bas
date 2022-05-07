@@ -837,11 +837,99 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByVal 
     Next i
     
     'Shift the final polyline endpoint leftward by the number of removed points
-    If (numPointsRemoved > 0) Then listOfPoints(endIndex - numPointsRemoved) = listOfPoints(endIndex)
+    If (numPointsRemoved > 0) Then
+        listOfPoints(endIndex - numPointsRemoved) = listOfPoints(endIndex)
+        endIndex = endIndex - numPointsRemoved
+    End If
     
-    'Return the number of points removed, and modify the current point count to reflect removals
-    numOfPoints = numOfPoints - numPointsRemoved
+    'Return the number of points removed
     SimplifyLineForScreen = numPointsRemoved
+    
+End Function
+
+'Given a pd2DPath object, simplify the path for display on-screen.  This function automatically removes any points
+' in the path closer than [minDistance].
+'
+'I recommend transforming your source path into screen coordinates, then handing it off to this function.
+' Resulting GDI+ drawing will often be much faster as a result, and the quality will be improved from not
+' needing to calculate complex miters on so many subpixel junctions.
+Public Function SimplifyPathForScreen(ByRef srcPath As pd2DPath, Optional ByVal minDistance As Single = 0.1!) As Boolean
+    
+    SimplifyPathForScreen = False
+    If (srcPath Is Nothing) Then Exit Function
+    
+    'Start by converting the source path to a list of discrete points and subpaths
+    Dim listOfPoints() As PointFloat, numOfPoints As Long, listOfSubpaths() As Long, listOfClosedStates() As Boolean, numOfSubpaths As Long
+    SimplifyPathForScreen = srcPath.GetPathPoints(listOfPoints, numOfPoints, listOfSubpaths, listOfClosedStates, numOfSubpaths)
+    If (Not SimplifyPathForScreen) Then Exit Function
+    
+    'The source path has given us everything we need.  Reset it to null-path state.
+    srcPath.ResetPath
+    
+    'We can now hand off each individual sub-path to the standalone "simplify for screen" function.
+    Dim idxFirst As Long, idxLast As Long, numPointsRemoved As Long, numPointsRemovedTotal As Long
+    Dim i As Long, j As Long
+    
+    'If you want to skip simplification and simply test correctness of retrieving points from a GDI+ path,
+    ' then manually adding them back to a path (and getting an identical result), use this (ugh) GOTO:
+    'GoTo SkipSimplification
+    
+    For i = 0 To numOfSubpaths - 1
+        
+        'Retrieve first/last indices for the current sub-path
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        'Simplify this line segment, and note that the simplifier returns the number of points removed (if any).
+        ' This is important because we need to manually shift subsequent points forward.
+        numPointsRemoved = PDMath.SimplifyLineForScreen(listOfPoints, idxFirst, idxLast, minDistance)
+        
+        'BEFORE we update the total number of points removed, shift the current list of points forward
+        ' in the array.  (Any points we removed from this path won't matter until the *next* path.)
+        If (numPointsRemovedTotal > 0) Then
+            For j = idxFirst To idxLast
+                listOfPoints(j - numPointsRemovedTotal) = listOfPoints(j)
+            Next j
+            listOfSubpaths(i) = listOfSubpaths(i) - numPointsRemovedTotal
+        End If
+        
+        'Now we can update the total removed points count
+        numPointsRemovedTotal = numPointsRemovedTotal + numPointsRemoved
+        
+    Next i
+    
+    'Update the final points count
+    numOfPoints = numOfPoints - numPointsRemovedTotal
+    
+'When debugging, I verified the correctness of this function by completely skipping the previous block
+' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
+' to confirm the same way!
+SkipSimplification:
+    
+    'All sub-paths have now been trimmed down to screen size.  Reconstruct the original path
+    ' from the new sub-path list.
+    For i = 0 To numOfSubpaths - 1
+        
+        idxFirst = listOfSubpaths(i)
+        If (i < numOfSubpaths - 1) Then
+            idxLast = listOfSubpaths(i + 1) - 1
+        
+        'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
+        Else
+            idxLast = numOfPoints - 1
+        End If
+        
+        srcPath.AddPolygon (idxLast - idxFirst) + 1, VarPtr(listOfPoints(idxFirst)), listOfClosedStates(i), False
+        
+    Next i
+    
+    SimplifyPathForScreen = True
     
 End Function
 

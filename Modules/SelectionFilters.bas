@@ -523,7 +523,7 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         ' mask byte array (and rectangle defining the mask boundary area), but how we fill these
         ' depends on the size and position of the active layer vs its parent image.
         Dim tmpSrcCopy As pdDIB, tmpDstCopy As pdDIB
-        Dim srcMask() As Byte, srcMaskRect As RectF
+        Dim srcMask() As Byte
         
         Set tmpSrcCopy = New pdDIB
         Set tmpDstCopy = New pdDIB

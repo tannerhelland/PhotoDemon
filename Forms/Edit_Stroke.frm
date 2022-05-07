@@ -263,7 +263,10 @@ Public Sub ApplyStrokeEffect(ByVal parameterList As String, Optional ByVal toPre
             If (outlinePath Is Nothing) Then Set outlinePath = New pd2DPath
             outlinePath.ResetPath
             outlinePath.CloneExistingPath m_SelectionPathMini
-                
+            
+            'Want apply simplification?  Now's your chance:
+            'PDMath.SimplifyPathForScreen outlinePath, 2
+            
         'In non-preview "apply mode", retrieve the current selection boundary as-is.
         Else
             If (m_SelectionPath Is Nothing) Then Set m_SelectionPath = PDImages.GetActiveImage.MainSelection.GetSelectionBoundaryPath()
