@@ -73,11 +73,14 @@ Private Type ip_Comparator
 End Type
 
 'One of the first steps prior to inpainting is preparing a list of points that need to be inpainted.
-' This list consists of coordinates into the destination image, whose order has been deliberately randomized.
-' Note that points chosen early in the refinement process must be re-selected again later in the process,
-' when more points have been filled in, so this list *will* contain duplicates, by design.  It may also be
-' quite large compared to the original set of points, since the user can specify a quality parameter that
-' affects how many refinement passes we apply.
+' This list consists of coordinates into the destination image, whose order has been deliberately randomized
+' (depending on the user's settings - by *default* it's fully randomized, but the user can also select
+' "outside-in" or "inside-out" order, in which case the list is only partially randomized).
+'
+'Points chosen early in the refinement process must be re-synthesized again later in the process, when more
+' neighboring points have been filled in, so this list *will* contain duplicates, by design.  It may also be
+' quite large (5x or more) compared to the original set of points, since the user can specify a quality
+' parameter that affects how many refinement passes we apply.
 Private m_PointsRemaining() As PointLong, m_numPointsLeft As Long
 
 'When trying to match pixels, we need to randomly sample pixels from the source image as potential candidates.
@@ -772,6 +775,14 @@ Private Function InitializeInpainter() As Boolean
     If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing coordinate lists took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
+    'Next, we need to deal with the initial list of "points that must be synthesized".  The original paper
+    ' suggests using a fully randomized order, with the caveat that if this produces poor results you can
+    ' just run it again.
+    '
+    'Modern versions of GIMP's resynthesizer plugin also provide a choice for "outside-in" or "inside-out" order.
+    ' It's possible these provide better results on specific types of images (e.g. strong patterns may benefit
+    ' from "outside-in" order, because the pattern will be better matched from the get-go vs random order).
+    
     'Next, we need to randomize the order of the initial list of "points that must be synthesized".
     ' Shuffle using standard Fisher-Yates.
     Dim j As Long, tmpPoint As PointLong
@@ -948,8 +959,7 @@ Private Sub EvaluatePixel_RGBA(ByRef srcPoint As PointLong)
     Dim totalDiff As Long, curDiff As Long
     
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim x As Long, y As Long, numPixelsCompared As Long, maxPenalty As Long
-    maxPenalty = m_Cauchy(256) * 4
+    Dim x As Long, y As Long, numPixelsCompared As Long
     
     Dim i As Long
     For i = 0 To m_CurNumNeighbors - 1
@@ -1034,7 +1044,6 @@ End Function
 Private Sub InitializeOffsetList()
     
     'Constrain by the smaller of the source or destination's height, or the user-supplied radius parameter.
-    ' TODO: src/dest should be the same
     Dim minWidth As Long, minHeight As Long
     minWidth = PDMath.Min2Int(m_SrcWidth, m_ComparatorRadius)
     minHeight = PDMath.Min2Int(m_SrcHeight, m_ComparatorRadius)
@@ -1048,7 +1057,8 @@ Private Sub InitializeOffsetList()
     
     Dim idxPoint As Long: idxPoint = 0
     
-    'TODO: see if there is some algorithm for adding points in an already sorted way?
+    'There may be an algorithm for adding rectangular points in an already-sorted way, but I don't know it
+    ' so we're just going to add points "rectangularly" before manually sorting them into ascending distance order.
     Dim x As Long, y As Long
     For y = -minHeight To minHeight
     For x = 0 To minWidth
@@ -1081,7 +1091,7 @@ SkipPoint:
     ' have not yet been filled.  Because of this, on many pixels we will only use a small subset of coordinates
     ' from the start of the list, but for tasks like novel texture synthesis we will actually use the *full* list,
     ' especially at the start of the generation process, so a full, valid list needs to exist.)
-    SortCoordinates
+    SortNeighborCoordinates
     
 End Sub
 
@@ -1091,7 +1101,7 @@ Private Function ModuloInt(ByVal quotient As Long, ByVal divisor As Long) As Lon
     If (ModuloInt < 0&) Then ModuloInt = ModuloInt + divisor
 End Function
 
-Private Sub SortCoordinates()
+Private Sub SortNeighborCoordinates()
     
     If (m_numNearestOffsets <= 0) Then Exit Sub
     
@@ -1115,7 +1125,35 @@ Private Sub SortCoordinates()
         
     Next i
     
-    'Prep our internal stack (this is faster and more reliable than recursion).  Note that because
+    'Hand the rest of the sort off to a generic coordinate sorter
+    OptimizedSort_CoordinateList_Ascending sortList, m_numNearestOffsets
+    
+    'The coordinate list has been successfully sorted.  Clone the original list, then copy each entry
+    ' from that temporary clone into its final position in the "official" list.
+    Dim tmpPoints() As PointLong
+    ReDim tmpPoints(0 To m_numNearestOffsets - 1) As PointLong
+    CopyMemoryStrict VarPtr(tmpPoints(0)), VarPtr(m_NearestOffsets(0)), 8 * m_numNearestOffsets
+    
+    For i = 0 To m_numNearestOffsets - 1
+        m_NearestOffsets(i) = tmpPoints(sortList(i).idxOriginal)
+    Next i
+    
+    'During development, it was helpful to verify sort correctness (since I had to write my own sort function).
+    ' You can verify correctness with a simple check like this:
+    'For i = 0 To m_numNearestOffsets - 1
+    '    If (i > 0) Then
+    '        If (m_NearestOffsets(i).x * m_NearestOffsets(i).x + m_NearestOffsets(i).y * m_NearestOffsets(i).y < m_NearestOffsets(i - 1).x * m_NearestOffsets(i - 1).x + m_NearestOffsets(i - 1).y * m_NearestOffsets(i - 1).y) Then Debug.Print "BAD SORT AT " & i
+    '    End If
+    'Next i
+    
+End Sub
+
+'Sort an arbitrary list of coordinates in ascending order.  It's up to the caller to transform their data
+' into QSEntry format, and rearrange their list according to the final order when this function finishes.
+' (PhotoDemon uses this approach because different coordinate lists may be sorted by this function.)
+Private Sub OptimizedSort_CoordinateList_Ascending(ByRef sortList() As QSEntry, ByVal numPoints As Long)
+
+    'Prep an internal stack (this is faster and more reliable than recursion).  Note that because
     ' we are using a fixed potential list of sort candidates, this upper limit is guaranteed safe
     ' for this application - but it may *not* be safe for all quick sort ops, so if you change things
     ' like the maximum upper limit for search radius, you may need to increase stack size accordingly.
@@ -1124,25 +1162,26 @@ Private Sub SortCoordinates()
     ReDim qsRemaining(0 To INIT_QUICKSORT_STACK_SIZE - 1) As QSStack
     qsStackPtr = 0
     qsRemaining(0).sLB = 0
-    qsRemaining(0).sUB = m_numNearestOffsets - 1
+    qsRemaining(0).sUB = numPoints - 1
     
-    'Like most quick-sort implementations, VB6 sees a perf boost when switching over to insertion sort
+    'Like most quick-sort implementations, VB6 sees a perf boost by switching to insertion sort
     ' when a quicksort sub-list is small.  This threshold could probably be refined after more
     ' intensive study, but the usual default of 10 shows a ~20-30% perf improvement over baseline.
     Const USE_INSERTION_SORT_THRESHOLD As Long = 10
     
-    'Execute the sort (just a bog-standard quick sort at present)
     Dim idxLow As Long, idxHigh As Long
-    Dim v As QSEntry, vDist As Long
+    Dim i As Long, j As Long, v As QSEntry, vDist As Long
     
+    'Head of the quick sort loop
     Do
         
-        'Load the next set of boundaries, and reset all pivots
+        'Load the next set of sub-list boundaries
         idxLow = qsRemaining(qsStackPtr).sLB
         idxHigh = qsRemaining(qsStackPtr).sUB
         
         'Switch over to insertion sort when the sub-list is small
         If (idxHigh - idxLow < USE_INSERTION_SORT_THRESHOLD) Then
+            
             i = idxLow + 1
             Do While (i <= idxHigh)
                 v = sortList(i)
@@ -1151,19 +1190,21 @@ Private Sub SortCoordinates()
                 Do While (sortList(j).ptDistance > vDist)
                     sortList(j + 1) = sortList(j)
                     j = j - 1
-                    If (j < idxLow) Then Exit Do
+                    If (j < idxLow) Then Exit Do    'VB6 doesn't short-circuit so this check must be performed separately
                 Loop
                 sortList(j + 1) = v
                 i = i + 1
             Loop
         
-        'On larger lists, use standard quicksort
+        'On larger lists, continue with standard quicksort
         Else
             
+            'Establish initial pivots
             i = idxLow
             j = idxHigh
             vDist = sortList((i + j) \ 2).ptDistance
             
+            'Shift this item into position
             Do
                 Do While (sortList(i).ptDistance < vDist)
                     i = i + 1
@@ -1202,20 +1243,6 @@ Private Sub SortCoordinates()
         qsStackPtr = qsStackPtr - 1
         
     Loop While (qsStackPtr >= 0)
-    
-    'The coordinate list has been successfully sorted.  Clone the original list, then copy each entry
-    ' from that temporary clone into its final position in the "official" list.
-    Dim tmpPoints() As PointLong
-    ReDim tmpPoints(0 To m_numNearestOffsets - 1) As PointLong
-    CopyMemoryStrict VarPtr(tmpPoints(0)), VarPtr(m_NearestOffsets(0)), 8 * m_numNearestOffsets
-    
-    For i = 0 To m_numNearestOffsets - 1
-        m_NearestOffsets(i) = tmpPoints(sortList(i).idxOriginal)
-        'During development, it was helpful to verify sort correctness:
-        'If (i > 0) Then
-        '    If (m_NearestOffsets(i).x * m_NearestOffsets(i).x + m_NearestOffsets(i).y * m_NearestOffsets(i).y < m_NearestOffsets(i - 1).x * m_NearestOffsets(i - 1).x + m_NearestOffsets(i - 1).y * m_NearestOffsets(i - 1).y) Then Debug.Print "BAD SORT AT " & i
-        'End If
-    Next i
     
 End Sub
 

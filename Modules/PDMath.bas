@@ -16,7 +16,6 @@ Attribute VB_Name = "PDMath"
 
 Option Explicit
 
-'Many drawing features lean on various geometry functions
 Public Const PI As Double = 3.14159265358979
 Public Const PI_HALF As Double = 1.5707963267949
 Public Const PI_DOUBLE As Double = 6.28318530717958
@@ -35,7 +34,7 @@ End Enum
     Private Const ng_Perlin = 0, ng_Simplex = 1, ng_OpenSimplex = 2
 #End If
 
-'Marching squares line simplification
+'Marching squares line simplification (see SimplifyLinesFromMarchingSquares() function)
 Private Enum PD_PointSimplify
     ps_Essential = 0
     ps_Horizontal = 1
