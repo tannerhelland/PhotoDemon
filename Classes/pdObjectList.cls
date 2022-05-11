@@ -484,70 +484,77 @@ Private Sub PerformAutoResize()
             Else
             
                 'See if this control sits below the command bar; if it does, ignore it.
-                If (.ctlRectLoadTime.y1 < m_Controls(m_CommandBarIndex).ctlRectLoadTime.y1) Then
+                If (m_CommandBarIndex >= 0) Then
                     
-                    'Only move controls whose parent is the form itself; anything else is a nested control whose position
-                    ' will be handled automatically when we move its parent.
-                    If (GetParent(.hWnd) = m_ParentHWnd) Then
+                    If (.ctlRectLoadTime.y1 < m_Controls(m_CommandBarIndex).ctlRectLoadTime.y1) Then
                         
-                        'Next, some esoteric dialogs (e.g. curves) place some settings *beneath* the
-                        ' preview box.  These require horizontal resizing to match whatever we've done
-                        'to the preview box.
-                        Dim changeHorizontalSize As Boolean
-                        If (m_PreviewIndex >= 0) Then changeHorizontalSize = (.ctlRectLoadTime.x1 < (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - 8))   '8px is an arbitrary failsafe for tight-fitting controls
-                        
-                        If changeHorizontalSize Then
+                        'Only move controls whose parent is the form itself; anything else is a nested control whose position
+                        ' will be handled automatically when we move its parent.
+                        If (GetParent(.hWnd) = m_ParentHWnd) Then
                             
-                            'Height stays the same.
+                            'Next, some esoteric dialogs (e.g. curves) place some settings *beneath* the
+                            ' preview box.  These require horizontal resizing to match whatever we've done
+                            'to the preview box.
+                            Dim changeHorizontalSize As Boolean
+                            If (m_PreviewIndex >= 0) Then changeHorizontalSize = (.ctlRectLoadTime.x1 < (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - 8))   '8px is an arbitrary failsafe for tight-fitting controls
                             
-                            'Figure out preview window width (which may not have been calculated yet, since it
-                            ' depends on the order of control enumeration according to VB)
-                            newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1))
-                            
-                            'Left only gets changed if it is *not* aligned with the preview object
-                            If (.ctlRectLoadTime.x1 > (m_Controls(m_PreviewIndex).ctlRectLoadTime.x1 + 8)) Then
-                                newLeft = (.ctlRectLoadTime.x1 * (newWidth + m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) / m_Controls(m_PreviewIndex).ctlRectLoadTime.x2
+                            If changeHorizontalSize Then
+                                
+                                'Height stays the same.
+                                
+                                'Figure out preview window width (which may not have been calculated yet, since it
+                                ' depends on the order of control enumeration according to VB)
+                                newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1))
+                                
+                                'Left only gets changed if it is *not* aligned with the preview object
+                                If (.ctlRectLoadTime.x1 > (m_Controls(m_PreviewIndex).ctlRectLoadTime.x1 + 8)) Then
+                                    newLeft = (.ctlRectLoadTime.x1 * (newWidth + m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) / m_Controls(m_PreviewIndex).ctlRectLoadTime.x2
+                                Else
+                                    newLeft = .ctlRectLoadTime.x1
+                                End If
+                                
+                                'Top gets moved to an identical offset from the parent window's *bottom*
+                                newTop = curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1)
+                                
+                                'Width is modified as a fraction of the original preview control's width
+                                ' (relative to the new preview control width); this allows complex arrangements
+                                ' to *mostly* look good - see e.g. the Effects > Animation menu.
+                                newWidth = ((.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1) / (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) * newWidth
+                                
+                                'Apply the changes!
+                                SetWindowPos .hWnd, 0, newLeft, newTop, newWidth, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                                
+                            'Change left parameter only; top/width/height can remain as-is.
                             Else
-                                newLeft = .ctlRectLoadTime.x1
+                            
+                                newLeft = curParentClientWidth - (m_ParentRectClient.x2 - .ctlRectLoadTime.x1)
+                                
+                                'We have two options here: we can either "reflow" items vertically
+                                ' (which will place items at a proportionally equivalent vertical position)
+                                ' ...or we can just leave items at their original top position.  It's hard
+                                ' to unequivocally call one or the other "better", since it really depends
+                                ' on the dialog.  For now, I default to the simpler option (leaving items
+                                ' in their current position).
+                                
+                                'Leave in current position:
+                                newTop = .ctlRectLoadTime.y1
+                                
+                                'Place in proportionate position (to new size):
+                                'newTop = (.ctlRectLoadTime.y1 / (m_ParentRectClient.y2 - m_ParentRectClient.y1)) * curParentClientHeight
+                                
+                                SetWindowPos .hWnd, 0, newLeft, newTop, .ctlRectLoadTime.x2 - .ctlRectLoadTime.x1, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                                
                             End If
-                            
-                            'Top gets moved to an identical offset from the parent window's *bottom*
-                            newTop = curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1)
-                            
-                            'Width is modified as a fraction of the original preview control's width
-                            ' (relative to the new preview control width); this allows complex arrangements
-                            ' to *mostly* look good - see e.g. the Effects > Animation menu.
-                            newWidth = ((.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1) / (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) * newWidth
-                            
-                            'Apply the changes!
-                            SetWindowPos .hWnd, 0, newLeft, newTop, newWidth, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
-                            
-                        'Change left parameter only; top/width/height can remain as-is.
-                        Else
-                        
-                            newLeft = curParentClientWidth - (m_ParentRectClient.x2 - .ctlRectLoadTime.x1)
-                            
-                            'We have two options here: we can either "reflow" items vertically
-                            ' (which will place items at a proportionally equivalent vertical position)
-                            ' ...or we can just leave items at their original top position.  It's hard
-                            ' to unequivocally call one or the other "better", since it really depends
-                            ' on the dialog.  For now, I default to the simpler option (leaving items
-                            ' in their current position).
-                            
-                            'Leave in current position:
-                            newTop = .ctlRectLoadTime.y1
-                            
-                            'Place in proportionate position (to new size):
-                            'newTop = (.ctlRectLoadTime.y1 / (m_ParentRectClient.y2 - m_ParentRectClient.y1)) * curParentClientHeight
-                            
-                            SetWindowPos .hWnd, 0, newLeft, newTop, .ctlRectLoadTime.x2 - .ctlRectLoadTime.x1, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
                             
                         End If
                         
                     End If
-                    
+                
+                'Failsafe check to ensure a command-bar was found
+                Else
+                    PDDebug.LogAction "WARNING: pdObjectList.PerformAutoResize didn't find a command-bar!"
                 End If
-            
+                
             End If
         
         End With
