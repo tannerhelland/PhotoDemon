@@ -7,7 +7,7 @@ Begin VB.Form FormFillContentAware
    ClientHeight    =   6300
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   9705
+   ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,23 +24,33 @@ Begin VB.Form FormFillContentAware
    MinButton       =   0   'False
    ScaleHeight     =   420
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   647
+   ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsFillOrder 
+      Height          =   975
+      Left            =   240
+      TabIndex        =   6
+      Top             =   120
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "fill order"
+   End
    Begin PhotoDemon.pdSlider sldOptions 
       Height          =   975
       Index           =   1
-      Left            =   240
+      Left            =   6240
       TabIndex        =   1
-      Top             =   1200
-      Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   1720
-      Caption         =   "patch test size"
-      Min             =   4
-      Max             =   50
-      Value           =   20
-      NotchPosition   =   2
-      NotchValueCustom=   20
+      Top             =   120
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "patch test size"
+      min             =   4
+      max             =   50
+      value           =   20
+      notchposition   =   2
+      notchvaluecustom=   20
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -48,72 +58,72 @@ Begin VB.Form FormFillContentAware
       Left            =   0
       TabIndex        =   0
       Top             =   5550
-      Width           =   9705
-      _ExtentX        =   17119
-      _ExtentY        =   1323
+      Width           =   12060
+      _extentx        =   21273
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdSlider sldOptions 
       Height          =   975
       Index           =   2
-      Left            =   240
+      Left            =   6240
       TabIndex        =   2
-      Top             =   2280
-      Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   1720
-      Caption         =   "random patch candidates"
-      Min             =   5
-      Max             =   200
-      Value           =   60
-      NotchPosition   =   2
-      NotchValueCustom=   60
+      Top             =   1200
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "random patch candidates"
+      min             =   5
+      max             =   200
+      value           =   60
+      notchposition   =   2
+      notchvaluecustom=   60
    End
    Begin PhotoDemon.pdSlider sldOptions 
       Height          =   975
       Index           =   3
       Left            =   240
       TabIndex        =   3
-      Top             =   3360
-      Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   1720
-      Caption         =   "refinement (percent)"
-      Max             =   99
-      Value           =   50
-      NotchPosition   =   2
-      NotchValueCustom=   50
+      Top             =   2280
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "refinement (percent)"
+      max             =   99
+      value           =   50
+      notchposition   =   2
+      notchvaluecustom=   50
    End
    Begin PhotoDemon.pdSlider sldOptions 
       Height          =   975
       Index           =   4
-      Left            =   240
+      Left            =   6240
       TabIndex        =   4
-      Top             =   4440
-      Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   1720
-      Caption         =   "match quality threshold"
-      Min             =   1
-      Max             =   100
-      Value           =   15
-      NotchPosition   =   2
-      NotchValueCustom=   15
+      Top             =   2280
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "patch perfection threshold"
+      min             =   1
+      max             =   100
+      value           =   15
+      notchposition   =   2
+      notchvaluecustom=   15
    End
    Begin PhotoDemon.pdSlider sldOptions 
       Height          =   975
       Index           =   0
       Left            =   240
       TabIndex        =   5
-      Top             =   120
-      Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   1720
-      Caption         =   "search radius"
-      Min             =   5
-      Max             =   500
-      Value           =   200
-      NotchPosition   =   2
-      NotchValueCustom=   200
+      Top             =   1200
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   1720
+      caption         =   "search radius"
+      min             =   5
+      max             =   500
+      value           =   200
+      notchposition   =   2
+      notchvaluecustom=   200
    End
 End
 Attribute VB_Name = "FormFillContentAware"
@@ -158,19 +168,15 @@ Private Sub cmdBar_OKClick()
         .AddParam "random-candidates", sldOptions(2).Value
         .AddParam "refinement", sldOptions(3).Value / 100#
         .AddParam "allow-outliers", sldOptions(4).Value / 100#
+        .AddParam "fill-order", btsFillOrder.ListIndex
     End With
     
     Processor.Process "Content-aware fill", False, cParams.GetParamString(), UNDO_Layer
     
 End Sub
 
-'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
-' present, simply randomize the width/height to +/- the current image's width/height divided by two.
-Private Sub cmdBar_RandomizeClick()
-    'TODO
-End Sub
-
 Private Sub cmdBar_ResetClick()
+    btsFillOrder.ListIndex = 0
     sldOptions(0).Value = COMPARE_RADIUS_DEFAULT
     sldOptions(1).Value = MAX_NEIGHBORS_DEFAULT
     sldOptions(2).Value = RANDOM_CANDIDATES_DEFAULT
@@ -180,8 +186,16 @@ End Sub
 
 Private Sub Form_Load()
     
+    cmdBar.SetPreviewStatus False
+    
+    btsFillOrder.AddItem "random", 0
+    btsFillOrder.AddItem "outside-in", 1
+    btsFillOrder.AddItem "inside-out", 2
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    
+    cmdBar.SetPreviewStatus True
     
 End Sub
 

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 03/May/22
-'Last update: build settings UI and various parameter set functions
+'Last updated: 11/May/22
+'Last update: add support for outside-in and inside-out pixel filling (vs purely random order)
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -60,6 +60,23 @@ Option Explicit
 'During debugging, it is helpful to report detailed process information.
 ' Please disable verbose debugging in production builds.
 Private Const DEBUG_VERBOSE As Boolean = False
+
+'Pixels can be synthesized in a number of different "orders".  The original paper suggests that random
+' fill order is necessary for "[avoiding] any possibility of consistent skew due to the order in which
+' pixels are selected."  That said, GIMP provides options for "outside-in" and "inside-out" order,
+' and on some images outside-in order in particular does appear to provide more consistently appealing
+' results - so I've added a similar option here.
+Private Enum PD_FillOrder
+    fo_Random = 0
+    fo_OutsideIn = 1
+    fo_InsideOut = 2
+End Enum
+
+#If False Then
+    Private Const fo_Random = 0, fo_OutsideIn = 1, fo_InsideOut = 2
+#End If
+
+Private m_FillOrder As PD_FillOrder
 
 'When comparing pixels against each other, it improves locality to store coordinates and colors
 ' next to each other.  Note that we need to store two sets of coordinates - a base coordinate
@@ -302,6 +319,19 @@ Friend Sub SetAllowOutliers(ByVal newValue As Double)
         m_AllowOutliers = ALLOW_OUTLIERS_DEFAULT
     Else
         m_AllowOutliers = newValue
+    End If
+    
+End Sub
+
+Friend Sub SetFillOrder(ByVal newValue As Long)
+    
+    Const FUNC_NAME As String = "SetFillOrder"
+    
+    If (newValue < fo_Random) Or (newValue > fo_InsideOut) Then
+        InternalError FUNC_NAME, "bad value; acceptable range is [0, 2]"
+        m_FillOrder = fo_Random
+    Else
+        m_FillOrder = newValue
     End If
     
 End Sub
@@ -679,14 +709,16 @@ Private Function InitializeInpainter() As Boolean
         m_Cauchy(0) = 0
     End If
     
-    'Scale the maximum cauchy value by 3 in RGB mode, 4 in RGBA mode
+    'Scale the maximum cauchy value by 3 in RGB mode, 4 in RGBA mode (because for each pixel,
+    ' we're comparing that many channels)
     If m_EvaluateRGBOnly Then m_CauchyMax = m_CauchyMax * 3 Else m_CauchyMax = m_CauchyMax * 4
     
     If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing cauchy table took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
     
-    'Prepare a sorted list of offsets to search when evaluating pixel quality.  This step has a non-trivial
-    ' startup cost due to the sort requirement.
+    'Prepare a sorted list of offsets to search when evaluating pixel quality.
+    ' This step has a non-trivial startup cost due to the sort requirement (although this penalty has
+    ' been greatly reduced in later versions of this class).
     InitializeOffsetList
     If DEBUG_VERBOSE Then PDDebug.LogAction "Making and sorting offset list took " & VBHacks.GetTimeDiffNowAsString(startTime)
     VBHacks.GetHighResTime startTime
@@ -781,26 +813,39 @@ Private Function InitializeInpainter() As Boolean
     '
     'Modern versions of GIMP's resynthesizer plugin also provide a choice for "outside-in" or "inside-out" order.
     ' It's possible these provide better results on specific types of images (e.g. strong patterns may benefit
-    ' from "outside-in" order, because the pattern will be better matched from the get-go vs random order).
+    ' from "outside-in" order, because the pattern will be better matched from the get-go vs completely random).
     
-    'Next, we need to randomize the order of the initial list of "points that must be synthesized".
-    ' Shuffle using standard Fisher-Yates.
-    Dim j As Long, tmpPoint As PointLong
-    
-    Dim uBoundPoints As Long
-    uBoundPoints = m_numPointsLeft - 1
-    For i = uBoundPoints To 0 Step -1
+    'If we need to sort the initial list in ascending (inside-out) or descending (outside-in) order,
+    ' do so now.
+    If (m_FillOrder <> fo_Random) Then
         
-        'Swap the current point [i] with some random point [j] preceding it in the list.
-        j = m_Random.GetRandomIntRange_WH(0, i)
-        tmpPoint = m_PointsRemaining(i)
-        m_PointsRemaining(i) = m_PointsRemaining(j)
-        m_PointsRemaining(j) = tmpPoint
+        SortPointsRemaining
+        If DEBUG_VERBOSE Then PDDebug.LogAction "Sorting initial set of data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
-    Next i
+    'Otherwise, just do an in-place shuffle of the "points that must be synthesized" list
+    ' using standard Fisher-Yates.
+    Else
+        
+        'Next, we need to randomize the order of the initial list of "points that must be synthesized".
+        ' Shuffle using standard Fisher-Yates.
+        Dim j As Long, tmpPoint As PointLong
+        
+        Dim uBoundPoints As Long
+        uBoundPoints = m_numPointsLeft - 1
+        For i = uBoundPoints To 0 Step -1
+            
+            'Swap the current point [i] with some random point [j] preceding it in the list.
+            j = m_Random.GetRandomIntRange_WH(0, i)
+            tmpPoint = m_PointsRemaining(i)
+            m_PointsRemaining(i) = m_PointsRemaining(j)
+            m_PointsRemaining(j) = tmpPoint
+            
+        Next i
+        
+        If DEBUG_VERBOSE Then PDDebug.LogAction "Shuffling initial set of data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
     
-    If DEBUG_VERBOSE Then PDDebug.LogAction "Shuffling initial set of data points took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    VBHacks.GetHighResTime startTime
+    End If
     
     'Now that we have generated a queue of pixels that need to be synthesized, we need to re-add the first
     ' [p * n] pixels from the list to the queue.  A longer explanation for this is given at the top of the
@@ -1145,6 +1190,67 @@ Private Sub SortNeighborCoordinates()
     '        If (m_NearestOffsets(i).x * m_NearestOffsets(i).x + m_NearestOffsets(i).y * m_NearestOffsets(i).y < m_NearestOffsets(i - 1).x * m_NearestOffsets(i - 1).x + m_NearestOffsets(i - 1).y * m_NearestOffsets(i - 1).y) Then Debug.Print "BAD SORT AT " & i
     '    End If
     'Next i
+    
+End Sub
+
+Private Sub SortPointsRemaining()
+    
+    'Don't waste time sorting arbitrarily small lists
+    If (m_numPointsLeft <= 4) Then Exit Sub
+    
+    'Calculate the origin of the current shape.  (Rather than a complex marching-squares approach
+    ' to the "which pixels are outermost" question, we're just gonna sort by distance from the
+    ' centroid of the entire rectangle.  I have no idea if this is how GIMP does it, but some
+    ' other inpainting algorithms - e.g. Microsoft's at this link...
+    ' https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-2003-84.pdf
+    ' ... propose more complex priority rules.  I have not yet pursued that type of strategy.)
+    '
+    'TODO: adjust this strategy if the user is only searching in left/right/top/bottom directions.
+    Dim oX As Single, oY As Single
+    oX = (m_SrcWidth / 2!)
+    oY = (m_SrcHeight / 2!)
+    
+    'To improve performance, we're not gonna sort the coordinate list in-place.
+    ' Instead, we're going to pre-calculate all distances, sort just the distance list,
+    ' then rebuild the original coordinate array accordingly.
+    Dim sortList() As QSEntry
+    ReDim sortList(0 To m_numPointsLeft - 1) As QSEntry
+    
+    Dim i As Long, j As Long
+    For i = 0 To m_numPointsLeft - 1
+        
+        sortList(i).idxOriginal = i
+        With m_PointsRemaining(i)
+            
+            'Potential neighbor offsets are sorted by their Euclidean distance from the origin.
+            ' (We only need relative values, so don't waste time on the square-root.)
+            sortList(i).ptDistance = (.x - oX) * (.x - oX) + (.y - oY) * (.y - oY)
+            
+        End With
+        
+    Next i
+    
+    'Hand the rest of the sort off to a generic coordinate sorter
+    OptimizedSort_CoordinateList_Ascending sortList, m_numPointsLeft
+    
+    'The coordinate list has been successfully sorted.  Clone the original list, then copy each entry
+    ' from that temporary clone into its final position in the "official" list (while accounting for
+    ' the possibility of either ascending or descending order).
+    Dim tmpPoints() As PointLong
+    ReDim tmpPoints(0 To m_numPointsLeft - 1) As PointLong
+    CopyMemoryStrict VarPtr(tmpPoints(0)), VarPtr(m_PointsRemaining(0)), 8 * m_numPointsLeft
+    
+    Dim uBoundRemainingPoints As Long
+    uBoundRemainingPoints = m_numPointsLeft - 1
+    For i = 0 To uBoundRemainingPoints
+        If (m_FillOrder = fo_InsideOut) Then
+            m_PointsRemaining(i) = tmpPoints(sortList(i).idxOriginal)
+        Else
+            m_PointsRemaining(uBoundRemainingPoints - i) = tmpPoints(sortList(i).idxOriginal)
+        End If
+    Next i
+    
+    'If you want to verify sort order, consult the SortNeighborCoordinates function for a sample function.
     
 End Sub
 
