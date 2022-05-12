@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.538</langversion>
+<langversion>6.6.539</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -7434,6 +7434,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>patch test size</original>
 <translation></translation>
 </phrase>
@@ -7449,16 +7464,41 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>match quality threshold</original>
+<original>patch perfection threshold</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>search radius</original>
+<original>sample radius</original>
+<translation>radius sampel</translation>
+</phrase>
+
+<phrase>
+<original>left</original>
 <translation></translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>right</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outside-in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inside-out</original>
+<translation>dalam keluar</translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -8290,11 +8330,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>inside-out</original>
-<translation>dalam keluar</translation>
-</phrase>
-
-<phrase>
 <original>pull in</original>
 <translation>menarik dalam</translation>
 </phrase>
@@ -8319,7 +8354,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>lubang ulat</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8530,11 +8565,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>radius sampel</translation>
-</phrase>
-
-<phrase>
 <original>foreground color</original>
 <translation></translation>
 </phrase>
@@ -8564,7 +8594,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -11924,11 +11954,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>sample from</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>aligned</original>
 <translation></translation>
 </phrase>
@@ -11978,7 +12003,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -13909,10 +13934,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2630</phrasecount>
+<phrasecount>2635</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5478 phrases. -->
-<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
-<!-- These 2630 phrases contain approximately 11856 total words. -->
+<!-- As of this build, PhotoDemon contains 5487 phrases. -->
+<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
+<!-- These 2635 phrases contain approximately 11861 total words. -->
 
 </pdData>

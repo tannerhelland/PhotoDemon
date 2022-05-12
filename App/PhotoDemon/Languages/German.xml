@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1464</langversion>
+<langversion>9.0.1565</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -200,22 +200,22 @@
 
 <phrase>
 <original>Clear</original>
-<translation></translation>
+<translation>Löschen</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>Content-abhängige Füllung</translation>
 </phrase>
 
 <phrase>
 <original>Fill</original>
-<translation></translation>
+<translation>Füllung</translation>
 </phrase>
 
 <phrase>
 <original>Stroke</original>
-<translation></translation>
+<translation>Strich</translation>
 </phrase>
 
 <phrase>
@@ -840,7 +840,7 @@
 
 <phrase>
 <original>Colored pencil</original>
-<translation>Buntstift</translation>
+<translation>Farbstift</translation>
 </phrase>
 
 <phrase>
@@ -1040,7 +1040,7 @@
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation>Erweitern (Rangordnung Maximum)</translation>
+<translation>Dilatieren (Rangordnung Maximum)</translation>
 </phrase>
 
 <phrase>
@@ -2757,7 +2757,7 @@ Error number %1
 Description: %2
 
 %3</original>
-<translation>PhotoDemon hat einen Fehler festgestellt. Details zu dem Problem enthalten:
+<translation>PhotoDemon verzeichnete einen Fehler. Details zu dem Problem ummfassen:
 
 Fehlernummer %1
 Deskription: %2
@@ -3712,7 +3712,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>Übermalen selektierter Regionen</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5263,7 +5263,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Dilate</original>
-<translation>Erweitern</translation>
+<translation>Dilatieren</translation>
 </phrase>
 
 <phrase>
@@ -7436,31 +7436,71 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>patch test size</original>
+<original>above</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation>Samplen aus</translation>
+</phrase>
+
+<phrase>
+<original>fill order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>patch test size</original>
+<translation>Patch-Test-Größe</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>Zufällige Patch-Kandidaten</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
+<translation>Verfeinerung (Prozent)</translation>
+</phrase>
+
+<phrase>
+<original>patch perfection threshold</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>match quality threshold</original>
+<original>sample radius</original>
+<translation>Sample-Radius</translation>
+</phrase>
+
+<phrase>
+<original>left</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>search radius</original>
+<original>right</original>
 <translation></translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outside-in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inside-out</original>
+<translation>Von innen nach außen</translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -7476,39 +7516,39 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush</original>
-<translation></translation>
+<translation>Pinsel</translation>
 </phrase>
 
 <phrase>
 <original>layer size</original>
-<translation></translation>
+<translation>Layer-Größe</translation>
 </phrase>
 
 <phrase>
 <original>Applying fill</original>
-<translation></translation>
+<translation>Anwenden der Füllung</translation>
 </phrase>
 
 <phrase>
 <original>do not change</original>
-<translation></translation>
+<translation>Nicht ändern</translation>
 </phrase>
 
 <phrase>
 <original>use selection size</original>
-<translation></translation>
+<translation>Auswahlgröße verwenden</translation>
 </phrase>
 
 <phrase>
 <original>use combined size (union)</original>
-<translation></translation>
+<translation>Kombinierte Größe verwenden (Vereinigung)</translation>
 </phrase>
 
 <!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
-<translation></translation>
+<translation>Stift</translation>
 </phrase>
 
 <phrase>
@@ -7518,7 +7558,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>expand to fit stroke (if necessary)</original>
-<translation></translation>
+<translation>Erweitern, um Strich anzupassen (falls erforderlich)</translation>
 </phrase>
 
 <!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7892,7 +7932,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repainting image with oils</original>
-<translation>Bild wird mit Ölfarben übermalt</translation>
+<translation>Übermalen des Bildes mit Ölen</translation>
 </phrase>
 
 <!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8292,11 +8332,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>inside-out</original>
-<translation>Von innen nach außen</translation>
-</phrase>
-
-<phrase>
 <original>pull in</original>
 <translation>Einziehen</translation>
 </phrase>
@@ -8321,7 +8356,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Wurmloch</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8532,11 +8567,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>Sample-Radius</translation>
-</phrase>
-
-<phrase>
 <original>foreground color</original>
 <translation>Vordergrundfarbe</translation>
 </phrase>
@@ -8566,7 +8596,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Statisch</translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8860,7 +8890,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying dilate (maximum rank) filter</original>
-<translation>Anwenden des Erweitern- (Rangordnung Maximum) Filters</translation>
+<translation>Anwenden des Dilatieren- (Rangordnung Maximum) Filters</translation>
 </phrase>
 
 <phrase>
@@ -10247,12 +10277,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Applikations-Preview als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschließlich Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Applikations-Preview als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, that program has exited.</original>
-<translation>Leider ist das Programm beendet worden.</translation>
+<translation>Leider wurde das Programm beendet.</translation>
 </phrase>
 
 <phrase>
@@ -11924,11 +11954,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>sample from</original>
-<translation>Samplen aus</translation>
-</phrase>
-
-<phrase>
 <original>aligned</original>
 <translation>Ausgerichtet</translation>
 </phrase>
@@ -11978,7 +12003,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Kacheln + Beides spiegeln</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -12557,7 +12582,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>traditional Chinese</original>
-<translation>Chinesisch traditionell </translation>
+<translation>Chinesisch traditionell</translation>
 </phrase>
 
 <phrase>
@@ -13909,10 +13934,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2630</phrasecount>
+<phrasecount>2635</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5478 phrases. -->
-<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
-<!-- These 2630 phrases contain approximately 11856 total words. -->
+<!-- As of this build, PhotoDemon contains 5487 phrases. -->
+<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
+<!-- These 2635 phrases contain approximately 11861 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.392</langversion>
+<langversion>1.0.393</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7428,6 +7428,21 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>patch test size</original>
 <translation></translation>
 </phrase>
@@ -7443,16 +7458,41 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>match quality threshold</original>
+<original>patch perfection threshold</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>search radius</original>
+<original>sample radius</original>
+<translation>примерок радиус</translation>
+</phrase>
+
+<phrase>
+<original>left</original>
 <translation></translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>right</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outside-in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inside-out</original>
+<translation>внатре кон надвор</translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -8284,11 +8324,6 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>inside-out</original>
-<translation>внатре кон надвор</translation>
-</phrase>
-
-<phrase>
 <original>pull in</original>
 <translation>повлечи</translation>
 </phrase>
@@ -8313,7 +8348,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>wormhole</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8524,11 +8559,6 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>примерок радиус</translation>
-</phrase>
-
-<phrase>
 <original>foreground color</original>
 <translation></translation>
 </phrase>
@@ -8558,7 +8588,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -11918,11 +11948,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>sample from</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>aligned</original>
 <translation></translation>
 </phrase>
@@ -11972,7 +11997,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -13903,10 +13928,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2630</phrasecount>
+<phrasecount>2635</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5478 phrases. -->
-<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
-<!-- These 2630 phrases contain approximately 11856 total words. -->
+<!-- As of this build, PhotoDemon contains 5487 phrases. -->
+<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
+<!-- These 2635 phrases contain approximately 11861 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.97</langversion>
+<langversion>8.0.98</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -7428,6 +7428,21 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>patch test size</original>
 <translation></translation>
 </phrase>
@@ -7443,16 +7458,41 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>match quality threshold</original>
+<original>patch perfection threshold</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>search radius</original>
+<original>sample radius</original>
+<translation>radio de muestra</translation>
+</phrase>
+
+<phrase>
+<original>left</original>
 <translation></translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>right</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outside-in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inside-out</original>
+<translation>de adentro hacia afuera</translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -8284,11 +8324,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>inside-out</original>
-<translation>de adentro hacia afuera</translation>
-</phrase>
-
-<phrase>
 <original>pull in</original>
 <translation>tirar de</translation>
 </phrase>
@@ -8313,7 +8348,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>agujero de gusano</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8524,11 +8559,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>radio de muestra</translation>
-</phrase>
-
-<phrase>
 <original>foreground color</original>
 <translation></translation>
 </phrase>
@@ -8558,7 +8588,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -11918,11 +11948,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>sample from</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>aligned</original>
 <translation>alineado</translation>
 </phrase>
@@ -11972,7 +11997,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>azulejo + voltear ambos</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -13903,10 +13928,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2630</phrasecount>
+<phrasecount>2635</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5478 phrases. -->
-<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
-<!-- These 2630 phrases contain approximately 11856 total words. -->
+<!-- As of this build, PhotoDemon contains 5487 phrases. -->
+<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
+<!-- These 2635 phrases contain approximately 11861 total words. -->
 
 </pdData>

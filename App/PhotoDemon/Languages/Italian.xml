@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.90</langversion>
+<langversion>8.0.91</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -7432,6 +7432,21 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample from</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>patch test size</original>
 <translation></translation>
 </phrase>
@@ -7447,16 +7462,41 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>match quality threshold</original>
+<original>patch perfection threshold</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>search radius</original>
+<original>sample radius</original>
+<translation>raggio del campione</translation>
+</phrase>
+
+<phrase>
+<original>left</original>
 <translation></translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>right</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outside-in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inside-out</original>
+<translation>dentro-fuori</translation>
+</phrase>
+
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -8288,11 +8328,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>inside-out</original>
-<translation>dentro-fuori</translation>
-</phrase>
-
-<phrase>
 <original>pull in</original>
 <translation>tira dentro</translation>
 </phrase>
@@ -8317,7 +8352,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>cunicolo spazio-temporale</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8528,11 +8563,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>raggio del campione</translation>
-</phrase>
-
-<phrase>
 <original>foreground color</original>
 <translation></translation>
 </phrase>
@@ -8562,7 +8592,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation></translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -11931,11 +11961,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>sample from</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>aligned</original>
 <translation>allineato</translation>
 </phrase>
@@ -11985,7 +12010,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>piastrella + capovolgere entrambi</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -13916,10 +13941,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2630</phrasecount>
+<phrasecount>2635</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5478 phrases. -->
-<!-- 2848 are duplicates, so only 2630 unique phrases have been written to file. -->
-<!-- These 2630 phrases contain approximately 11856 total words. -->
+<!-- As of this build, PhotoDemon contains 5487 phrases. -->
+<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
+<!-- These 2635 phrases contain approximately 11861 total words. -->
 
 </pdData>
