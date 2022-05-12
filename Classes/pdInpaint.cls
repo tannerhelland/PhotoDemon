@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 11/May/22
-'Last update: add support for outside-in and inside-out pixel filling (vs purely random order)
+'Last updated: 12/May/22
+'Last update: add support for caller-supplied sampling center point (needed if "outside-in" or "inside-out"
+'             filling order is used, and the user is *not* sampling in one or more directions)
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -78,6 +79,24 @@ End Enum
 
 Private m_FillOrder As PD_FillOrder
 
+'When sampling pixels from the source image, the caller can toggle each sampling direction.
+' Note that selection shapes can be complex, so these toggles simply limit where pixels are
+' sampled *relative to the entire selection's boundary box*.  Any unselected pixels within
+' the selection's boundary box will *always* be available for sampling, but beyond the borders
+' of the boundary box, sampling can be limited by toggling e.g. "sample up" to FALSE.
+'
+'This class doesn't care about which sampling directions you limit, because it expects you to
+' "crop out" the relevant region of the image prior to calling this class.  The one thing that
+' sampling direction affects is how the *center* of the sampling area is calculated, which is
+' relevant for the "outside-in" and "inside-out" fill orders.  (When random sampling, it doesn't
+' matter if you limit sampling direction.)  This class can auto-calculate the center of the
+' sampling region, obviously, but if you've limited sampling direction then an auto-calculation
+' won't be correct because bordering sampling regions aren't symmetrical.
+'
+'Anyway, it's up to the caller to notify us of the center point of the selection.  This class
+' can handle everything else.
+Private m_SamplingCenter As PointLong
+
 'When comparing pixels against each other, it improves locality to store coordinates and colors
 ' next to each other.  Note that we need to store two sets of coordinates - a base coordinate
 ' (used for the original point that got "synthesized" into the current location) and an x/y offset
@@ -89,10 +108,10 @@ Private Type ip_Comparator
     cColor As RGBQuad
 End Type
 
-'One of the first steps prior to inpainting is preparing a list of points that need to be inpainted.
+'One of the first steps prior to inpainting is preparing a list of points that must be inpainted.
 ' This list consists of coordinates into the destination image, whose order has been deliberately randomized
 ' (depending on the user's settings - by *default* it's fully randomized, but the user can also select
-' "outside-in" or "inside-out" order, in which case the list is only partially randomized).
+' "outside-in" or "inside-out" order, in which case the list is sorted accordingly).
 '
 'Points chosen early in the refinement process must be re-synthesized again later in the process, when more
 ' neighboring points have been filled in, so this list *will* contain duplicates, by design.  It may also be
@@ -125,8 +144,9 @@ Private m_SynthesisState() As PointLong3D
 ' pixel differences (vs e.g. a more traditional gaussian distribution).  Cauchy is a much flatter
 ' distribution (https://en.wikipedia.org/wiki/Cauchy_distribution) which makes it more inclusive of
 ' outliers.  This is favorable for inpainting because we don't want *perfect* matches on each pixel -
-' this will produce a noticeably "artificial" look.  Instead, we want lots of "good enough" matches
-' that can hide seams more organically.
+' this will produce a noticeably "artificial" look because your brain will notice the obvious repeating
+' patterns from the source image.  Instead, we want lots of "good enough" matches that mix-and-match
+' data from elsewhere in the image, hiding any seams organically.
 '
 'Unfortunately, Cauchy requires an expensive Log() calculation (as used here, so we can get away with
 ' addition during summing) and it cannot be hard-coded at compile-time because it relies on a critical
@@ -136,29 +156,30 @@ Private m_SynthesisState() As PointLong3D
 ' need for expensive floating-point math on each comparison.
 '
 'Note that the table is deliberately resized to all possible values on the range [-255, 255], but we
-' also calculate a special "maximum value" (equal to a difference of 256) an upper bound of 256,
-' which can be used as a special sum to indicate "maximum difference" (which discourages further
-' matching since the penalty is so large).
+' also calculate a special "maximum value" (equal to a difference of 256), which can be used as a
+' special sum to indicate "maximum difference" (which discourages further matching due to the extreme
+' penalty).
 Private Const m_CauchyScale As Long = 32768
 Private m_Cauchy(-255 To 255) As Long
 Private m_CauchyMax As Long
 
-'This term is actually the "sigma" value from the original paper (pp 43), but I'm fairly it's the analog
-' of the GIMP plugin feature "sensitivity to outliers".  The range must be [0.0, 1.0], with a value of 0
-' penalizing outliers most severely.  As the original paper says, "...so long as we are only concerned
-' with finding the most likely match, not relative likelihoods, the Euclidean distance metric may be
-' simulated in this metric by choosing a very large [sigma]."  The paper suggests a default value of
-' 30 which makes no sense, so I assume it is meant to be "30 / 256" (~0.12).  In PhotoDemon I've bumped
-' the default value up slightly, to 0.15, purely for aesthetic reasons (it looks better in the UI lol).
+'This term is actually the "sigma" value from the original paper (pp 43), but I'm fairly certain it's
+' the analog of the GIMP plugin feature "sensitivity to outliers".  The range must be [0.0, 1.0],
+' with a value of 0 penalizing outliers most severely.  As the original paper says, "...so long as we
+' are only concerned with finding the most likely match, not relative likelihoods, the Euclidean
+' distance metric may be simulated in this metric by choosing a very large [sigma]."  The paper
+' suggests a default value of 30 which makes no sense, so I assume it is meant to be "30 / 256" (~0.12).
+' In PhotoDemon I've bumped the default value up slightly, to 0.15, purely for aesthetic reasons
+' (it looks better in the UI lol).
 Private m_AllowOutliers As Double
 Private Const ALLOW_OUTLIERS_DEFAULT As Double = 0.15
 
 'Some fixed set of points around each pixel must be searched and compared to see if a newly placed
 ' pixel is a good match.  We can't do a naive raster-order search because we want to sort the pixels in
-' ascending distance from the origin pixel.  As the original paper says (pp 40):  "...The best fit out of
-' each of these locations is selected, based on a comparison of the pattern formed by the [n] nearest known
-' neighbours of the current pixel to the pattern formed by pixels at corresponding offsets about each
-' candidate location."
+' ascending distance from the origin pixel.  As the original paper says (pp 40):  "...The best fit out
+' of each of these locations is selected, based on a comparison of the pattern formed by the [n] nearest
+' known neighbours of the current pixel to the pattern formed by pixels at corresponding offsets about
+' each candidate location."
 '
 'The selection of [n] is generally left to the user as an input.  Smaller [n] values improve performance
 ' at some cost to matching quality.  The original paper does not provide much guidance on this point,
@@ -175,16 +196,18 @@ Private m_NearestOffsets() As PointLong, m_numNearestOffsets As Long
 'From the offset list above, we need to generate [n] actual points to compare to the current point.
 ' These comparison point locations will vary according to input point, especially early in the inpainting
 ' process, because some points from the m_NearestOffsets() list won't have been synthesized yet by the
-' algorithm. (Similarly, some points may lie entirelry outside image boundaries.)  Thus from the full set
+' algorithm. (Similarly, some points may lie entirely outside image boundaries.)  Thus from the full set
 ' of *possible* comparison points, we must generate a *custom* list of target points for each pixel,
 ' consisting only of pixels that have already been synthesized.
 Private m_Comparators() As ip_Comparator
 
-'The user passes a parameter that tells us how many neighboring pixels to compare.  More can produce a
-' better result, but incurs a corresponding performance penalty.  The original paper suggests a default
-' value of 30.  (Note that boundary or selection issues - e.g. randomly selecting a pixel in the middle
-' of a large mask, but the user has specified a very small default radius - may prevent us from reaching
-' the full neighbor count, so we also track the *actual* neighbor count for the current candidate pixel.)
+'The user passes a parameter that tells us how many neighboring pixels to compare.  More neighbors can
+' produce a better result, but incurs a corresponding performance penalty.  The original paper suggests
+' a default value of 30.  (Note that boundary or selection issues - e.g. randomly selecting a pixel in
+' the middle of a large mask, but the user has specified a very small default radius - may prevent us
+' from reaching the full neighbor count, so we also track the *actual* neighbor count for the current
+' candidate pixel; as the maximum value approaches 0, we're basically selecting a new pixel at random,
+' but further refinement passes will help us reject poor early candidates.)
 Private m_MaxNumNeighbors As Long, m_CurNumNeighbors As Long
 
 'After much testing, I've gone with a default radius of 21 for the neighbor comparison.  This results in
@@ -373,6 +396,14 @@ Friend Sub SetRefinement(ByVal newValue As Double)
         m_Refinement = newValue
     End If
     
+End Sub
+
+'Notify this class of the "center point" to use when "outside-in" or "inside-out" fill order
+' is chosen.  You can pass [0, 0] to have this class auto-determine the center for you
+' (it will use [width / 2, height / 2]).
+Friend Sub SetSamplingCenter(ByVal newX As Long, ByVal newY As Long)
+    m_SamplingCenter.x = newX
+    m_SamplingCenter.y = newY
 End Sub
 
 Friend Sub SetSearchRadius(ByVal newValue As Long)
@@ -679,7 +710,7 @@ Private Function InitializeInpainter() As Boolean
         
         'We really only need [-255, 255] values, but [256] is used as a special "*really* penalize this pixel"
         ' value (used as a default weight on pixels that lie outside the source image, which discourages
-        ' over-selection of edge pixels in the input texture - a wanted behavior, as edges are harder to
+        ' over-selection of edge pixels in the input texture - a desireable behavior, as edges are hard to
         ' re-synthesize smoothly).
         Dim invAllowOutliers As Double
         invAllowOutliers = 1# / m_AllowOutliers
@@ -687,7 +718,7 @@ Private Function InitializeInpainter() As Boolean
         For i = -255 To 256
             
             Dim tmpFloat As Double
-            tmpFloat = GetCauchy((i / 256#) * invAllowOutliers) / GetCauchy(invAllowOutliers)
+            tmpFloat = GetCauchy(i / 256# * invAllowOutliers) / GetCauchy(invAllowOutliers)
             
             'Scale by an arbitrary integer value for faster calculations on the inner loop
             tmpFloat = tmpFloat * m_CauchyScale
@@ -789,6 +820,12 @@ Private Function InitializeInpainter() As Boolean
         
     Next x
     Next y
+    
+    'Failsafe check to ensure we have at least one valid source point
+    If (idxSrc <= 0) Then
+        InternalError FUNC_NAME, "no source points to synthesize from!"
+        Exit Function
+    End If
     
     'Resize the "valid source point list" to its precise boundary limit.  (We need to randomly select
     ' points from this list during the synthesis process, and we're just going to grab random points
@@ -1199,16 +1236,23 @@ Private Sub SortPointsRemaining()
     If (m_numPointsLeft <= 4) Then Exit Sub
     
     'Calculate the origin of the current shape.  (Rather than a complex marching-squares approach
-    ' to the "which pixels are outermost" question, we're just gonna sort by distance from the
-    ' centroid of the entire rectangle.  I have no idea if this is how GIMP does it, but some
-    ' other inpainting algorithms - e.g. Microsoft's at this link...
+    ' to the "which pixels are outermost" question, we just sort by distance from the centroid of
+    ' the entire rectangle.  I have no idea if this is how GIMP does it, but some other inpainting
+    ' algorithms - e.g. Microsoft's at this link...
     ' https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-2003-84.pdf
-    ' ... propose more complex priority rules.  I have not yet pursued that type of strategy.)
+    ' ... propose more complex priority rules.  I have not yet pursued a strategy like that.)
     '
-    'TODO: adjust this strategy if the user is only searching in left/right/top/bottom directions.
+    'Note that the caller may have specified their *own* custom center point (PD uses this if the
+    ' user turns off some sampling directions), but if the caller *hasn't* specified a custom
+    ' center point, we'll just use the center of the image.
     Dim oX As Single, oY As Single
-    oX = (m_SrcWidth / 2!)
-    oY = (m_SrcHeight / 2!)
+    If (m_SamplingCenter.x = 0) And (m_SamplingCenter.y = 0) Then
+        oX = (m_SrcWidth / 2!)
+        oY = (m_SrcHeight / 2!)
+    Else
+        oX = m_SamplingCenter.x
+        oY = m_SamplingCenter.y
+    End If
     
     'To improve performance, we're not gonna sort the coordinate list in-place.
     ' Instead, we're going to pre-calculate all distances, sort just the distance list,
@@ -1482,7 +1526,7 @@ Friend Sub SetDefaultParameterValues()
     
     'Because the original paper is primarily focused on full texture synthesis (where you create a novel
     ' seamless texture from some source), it doesn't deal a lot with specifics for content-aware filling.
-    ' Instead, it shows some examples and sort of says "the same ideas work for this concept, too!"
+    ' Instead, it shows some examples and sort of says "the same concepts work here, too!"
     '
     'One of the things that quickly became apparent during my own implementation attempt was that you
     ' don't want content-aware fill pulling pixels from too far away in the image.  Otherwise, you may end
@@ -1496,6 +1540,13 @@ Friend Sub SetDefaultParameterValues()
     ' to use.)  As such, you're better off replacing individual objects one-at-a-time rather than selecting
     ' them all and then batch-replacing them.
     m_ComparatorRadius = COMPARE_RADIUS_DEFAULT
+    
+    'For "inside-out" and "outside-in" fill modes, this class needs to know where the center of the
+    ' sampling region lies.  Rather than force this class to try and solve that itself, the caller can
+    ' simply tell us (via .SetSamplingCenter).  Pass [0, 0] to that function to use the default center
+    ' point at [width / 2, height / 2].
+    m_SamplingCenter.x = 0
+    m_SamplingCenter.y = 0
     
 End Sub
 

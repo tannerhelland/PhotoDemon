@@ -535,18 +535,39 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         baseFillRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
         If (baseFillRect.Width <= 0) Or (baseFillRect.Height <= 0) Then Exit Sub
         
+        'Note the centroid of the selection
+        Dim selectionCentroid As PointFloat
+        selectionCentroid.x = (baseFillRect.Left + baseFillRect.Width / 2)
+        selectionCentroid.y = (baseFillRect.Top + baseFillRect.Height / 2)
+        
+        'Determine whether we are allowed to sample in all directions
+        Dim sampleUp As Boolean, sampleDown As Boolean, sampleLeft As Boolean, sampleRight As Boolean
+        sampleUp = cParams.GetBool("sample-up", True, True)
+        sampleLeft = cParams.GetBool("sample-left", True, True)
+        sampleRight = cParams.GetBool("sample-right", True, True)
+        sampleDown = cParams.GetBool("sample-down", True, True)
+        
         'The source and destination images need to be the same size as this "to-be-filled region",
-        ' but expanded by the user's [sampling radius] in all directions.
+        ' but expanded by the user's [sampling radius] in all directions the user allows.
         Dim userSampleRadius As Long
         userSampleRadius = cParams.GetLong("search-radius", 200)
         If (userSampleRadius < 1) Then userSampleRadius = 1
         If (userSampleRadius > 500) Then userSampleRadius = 500
         
         Dim expandedFillRect As RectF
-        expandedFillRect.Left = baseFillRect.Left - userSampleRadius
-        expandedFillRect.Top = baseFillRect.Top - userSampleRadius
-        expandedFillRect.Width = baseFillRect.Width + userSampleRadius * 2
-        expandedFillRect.Height = baseFillRect.Height + userSampleRadius * 2
+        expandedFillRect.Left = baseFillRect.Left
+        If sampleLeft Then expandedFillRect.Left = expandedFillRect.Left - userSampleRadius
+        expandedFillRect.Top = baseFillRect.Top
+        If sampleUp Then expandedFillRect.Top = expandedFillRect.Top - userSampleRadius
+        
+        Dim widenAmount As Long
+        If sampleLeft Then widenAmount = userSampleRadius Else widenAmount = 0
+        If sampleRight Then widenAmount = widenAmount + userSampleRadius
+        expandedFillRect.Width = baseFillRect.Width + widenAmount
+        
+        If sampleUp Then widenAmount = userSampleRadius Else widenAmount = 0
+        If sampleDown Then widenAmount = widenAmount + userSampleRadius
+        expandedFillRect.Height = baseFillRect.Height + widenAmount
         
         'The user is allowed to inpaint along image boundaries (this is actually a common use-case),
         ' so pre-trim the target rectangle to the boundaries of the parent image.
@@ -627,6 +648,7 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         cInpaint.SetMaxRandomCandidates cParams.GetLong("random-candidates", 60)
         cInpaint.SetRefinement cParams.GetDouble("refinement", 0.5)
         cInpaint.SetSearchRadius cParams.GetLong("search-radius", 200)
+        cInpaint.SetSamplingCenter (selectionCentroid.x - expandedFillRect.Left), (selectionCentroid.y - expandedFillRect.Top)
         
         'Execute the content-aware fill
         cInpaint.ContentAwareFill tmpDstCopy, srcMask, True
