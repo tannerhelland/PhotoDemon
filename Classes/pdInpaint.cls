@@ -673,15 +673,17 @@ NextNeighbor:
         End With
         
         'TODO: add cancellation support
-        If m_ShowProgressUI And ((i And progCheck) = 0) Then ProgressBars.SetProgBarVal i
-        'If Interface.UserPressedESC() Then Exit For
+        If m_ShowProgressUI And ((i And progCheck) = 0) Then
+            If Interface.UserPressedESC() Then Exit For
+            ProgressBars.SetProgBarVal i
+        End If
         
     Next i
     
     'If we raised the progress bar, hide it before exiting
     If m_ShowProgressUI Then ProgressBars.ReleaseProgressBar
     
-    SynthesizeTexture = True
+    SynthesizeTexture = (Not g_cancelCurrentAction)
     
     If DEBUG_VERBOSE Then PDDebug.LogAction "Total inpainting process took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
