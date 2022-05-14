@@ -37,18 +37,15 @@ End Enum
 'Marching squares line simplification (see SimplifyLinesFromMarchingSquares() function)
 Private Enum PD_PointSimplify
     ps_Essential = 0
-    ps_Horizontal = 1
-    ps_Vertical = 3
-    ps_MustBeCorner = 4
-    ps_NWCorner = 4
-    ps_NECorner = 8
-    ps_SECorner = 16
-    ps_SWCorner = 32
-    ps_Remove = 64
+    ps_East = 1
+    ps_West = 2
+    ps_North = 4
+    ps_South = 8
+    ps_Remove = 16
 End Enum
 
 #If False Then
-    Private Const ps_Essential = 0, ps_Horizontal = 1, ps_Vertical = 3, ps_MustBeCorner = 4, ps_NWCorner = 4, ps_NECorner = 8, ps_SECorner = 16, ps_SWCorner = 32, ps_Remove = 64
+    Private Const ps_Essential = 0, ps_East = 1, ps_West = 2, ps_North = 4, ps_South = 8, ps_Remove = 16
 #End If
 
 Private Declare Function IntersectRect Lib "user32" (ByVal ptrDstRect As Long, ByVal ptrSrcRect1 As Long, ByVal ptrSrcRect2 As Long) As Long
@@ -879,8 +876,11 @@ End Function
 ' 0.5px "outside the shape"; for counter-clockwise order, it will be "inside" the shape's border.
 Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFloat, ByVal startIndex As Long, ByRef endIndex As Long) As Long
     
+    Const REPORT_SIMPLIFICATION_STATS As Boolean = False
+    
     Dim numOfPoints As Long
     numOfPoints = (endIndex - startIndex) + 1
+    If REPORT_SIMPLIFICATION_STATS Then PDDebug.LogAction "Starting with " & numOfPoints
     
     'If we want to (possibly) remove points, we need at least three points to start!
     If (numOfPoints < 3) Then Exit Function
@@ -893,7 +893,8 @@ Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFl
     
     'This marching squares simplifier is my own design.  It will only produce ideal results on polylines
     ' that come directly from PD's marching squares implementation (but will likely work well on others,
-    ' pending additional testing).
+    ' pending additional testing).  What matters is that the passed list of points consists *ONLY* of
+    ' horizontal and vertical line segments.  Other line segments *WILL NOT WORK*.
     '
     'What we want to do in this first pass is identify three-point junctions that can be better be
     ' represented as a single two-point line.  This is true for polylines that move a single pixel over,
@@ -906,63 +907,64 @@ Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFl
     Dim pointTypes() As PD_PointSimplify
     ReDim pointTypes(startIndex To endIndex) As PD_PointSimplify
     
-    'All points will be compared to the *next* point in line.
     Dim i As Long
     For i = startIndex To endIndex - 1
         
         'Assume most points are not removeable; we'll update this value after further checks
         pointTypes(i) = ps_Essential
         
-        'Compare this point to the point that follows it.  If this point has an identical x or y value
-        ' to the next point, we'll flag it as a "horizontal" or "vertical" line that follows.  (For marching
-        ' squares output, this is almost always true - but confirming this ensures we don't break on other
-        ' types of polylines "just in case.)  If, in addition to sharing an x/y value, this point and the next
-        ' point are only 1-px away, we'll also flag that - because that's what makes it a candidate for removal.
-        ' (Note also that the point IDs used here refer to the corner direction of the *next* point;
-        ' this doesn't necessarily matter since we assume clockwise order, but I mention it for clarity.)
-        If (listOfPoints(i).x = listOfPoints(i + 1).x) Then
-            pointTypes(i) = pointTypes(i) Or ps_Vertical
-            If (listOfPoints(i).y - listOfPoints(i + 1).y) = 1 Then
-                pointTypes(i) = pointTypes(i) Or ps_NECorner
-            ElseIf (listOfPoints(i).y - listOfPoints(i + 1).y) = -1 Then
-                pointTypes(i) = pointTypes(i) Or ps_SECorner
-            End If
-        ElseIf (listOfPoints(i).y = listOfPoints(i + 1).y) Then
-            pointTypes(i) = pointTypes(i) Or ps_Horizontal
-            If (listOfPoints(i).x - listOfPoints(i + 1).x) = 1 Then
-                pointTypes(i) = pointTypes(i) Or ps_NWCorner
-            ElseIf (listOfPoints(i).x - listOfPoints(i + 1).x) = -1 Then
-                pointTypes(i) = pointTypes(i) Or ps_SWCorner
+        'Determine the direction of the line coming *into* this point.
+        If (i > startIndex) Then
+            If (listOfPoints(i).x = listOfPoints(i - 1).x) Then
+                If (listOfPoints(i).y > listOfPoints(i - 1).y) Then
+                    pointTypes(i) = ps_South
+                ElseIf (listOfPoints(i).y < listOfPoints(i - 1).y) Then
+                    pointTypes(i) = ps_North
+                End If
+            ElseIf (listOfPoints(i).y = listOfPoints(i - 1).y) Then
+                If (listOfPoints(i).x > listOfPoints(i - 1).x) Then
+                    pointTypes(i) = ps_East
+                Else
+                    pointTypes(i) = ps_West
+                End If
             End If
         End If
         
-    Next i
-    
-    'With all points identified, we now want to scan the list and look for a particular pattern:
-    ' two points with the same sub-type, separated by a single point in-between.  For example,
-    ' consider a list of points that look like this: [0, 0] [10, 0] [10, 1] [20, 1] [20, 2] [10, 2].
-    ' The above code will produce the following codes: [0]     [H]     [V+C]   [H]     [V+C]   [H]
-    ' The above code will produce the following codes: [H]     [V+C]   [H]     [V+C]   [H]     [V-C]
-    ' The [H] code means the line is a straight vertical line.  The [V+C] means it is a 1-px vertical
-    ' line (and the C stands for designated "corner").  Thus, if we encounter two [V+C] codes with a
-    ' single [H] between them, we know we can always safely remove the [H] point.
-    For i = startIndex + 2 To endIndex
+        '(For the first point, assume a 90 turn coming in; this allows for smoothing that point.)
+        If (i = startIndex + 1) Then
+            If (pointTypes(i) = ps_East) Then
+                pointTypes(i - 1) = ps_North
+            ElseIf (pointTypes(i) = ps_South) Then
+                pointTypes(i - 1) = ps_East
+            ElseIf (pointTypes(i) = ps_West) Then
+                pointTypes(i - 1) = ps_South
+            Else
+                pointTypes(i - 1) = ps_West
+            End If
+        End If
         
-        'See if this point is a corner
-        If (pointTypes(i) >= ps_MustBeCorner) Then
+        'To determine if a point is removable, we need to compare two things:
+        ' 1) Does this point [p0] and the point [p-2] have the *same* directionality?
+        ' 2) If (1), are [p0] and [p-2] separated by only one pixel in the x or y direction?
+        '
+        'If (1) and (2) are both true, the point between them can be removed, and a straight line
+        ' from [p0] to [p2] used in its place.
+        If (i > startIndex + 1) Then
             
-            'Look for matching point types to the point *2* previous
-            If pointTypes(i) = pointTypes(i - 2) Then
-                    
-                'If the point between these two is a straight 1-px vertical or horizontal line, we can remove it!
-                If (pointTypes(i - 1) > 0) And (pointTypes(i - 1) < ps_MustBeCorner) Then
+            'Compare directionality
+            If (pointTypes(i) = pointTypes(i - 2)) Then
+                
+                'Look for a difference of *1* in the x or y direction
+                If (Abs(listOfPoints(i).x - listOfPoints(i - 2).x) = 1) Then
+                    pointTypes(i - 1) = ps_Remove
+                ElseIf (Abs(listOfPoints(i).y - listOfPoints(i - 2).y) = 1) Then
                     pointTypes(i - 1) = ps_Remove
                 End If
                 
             End If
             
         End If
-        
+            
     Next i
     
     'With all potentially removeable points flagged, we can now perform removal in a single sweep
@@ -992,7 +994,11 @@ Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFl
         endIndex = endIndex - numPointsRemoved
     End If
     
-    'Debug.Print "Removed " & numPointsRemoved & " in first pass"
+    If REPORT_SIMPLIFICATION_STATS Then PDDebug.LogAction "Removed " & numPointsRemoved & " in first pass"
+    
+    'To exit now, uncomment the following two lines:
+    'SimplifyLinesFromMarchingSquares = numPointsRemoved
+    'Exit Function
     
     'We now have new starting + ending indices, and all "useless" points have been removed.
     ' But that's not all we can do!  Removing points in the previous step likely left us with many points
@@ -1033,8 +1039,10 @@ Public Function SimplifyLinesFromMarchingSquares(ByRef listOfPoints() As PointFl
         endIndex = endIndex - numPointsRemoved2
     End If
     
-    'Debug.Print "Removed " & numPointsRemoved2 & " in second pass"
-    'Debug.Print "Final point count is " & (endIndex - startIndex) + 1
+    If REPORT_SIMPLIFICATION_STATS Then
+        PDDebug.LogAction "Removed " & numPointsRemoved2 & " in second pass"
+        PDDebug.LogAction "Final point count is " & (endIndex - startIndex) + 1
+    End If
     
     'Return the number of points removed from *both* passes
     SimplifyLinesFromMarchingSquares = numPointsRemoved + numPointsRemoved2
@@ -1156,7 +1164,7 @@ Public Function SimplifyPathFromMarchingSquares(ByRef srcPath As pd2DPath) As Bo
         idxFirst = listOfSubpaths(i)
         If (i < numOfSubpaths - 1) Then
             idxLast = listOfSubpaths(i + 1) - 1
-        
+            
         'numOfPoints is updated "as-we-go" and thus will already account for any removed point counts
         Else
             idxLast = numOfPoints - 1
@@ -1182,8 +1190,6 @@ Public Function SimplifyPathFromMarchingSquares(ByRef srcPath As pd2DPath) As Bo
     
     'Update the final points count
     numOfPoints = numOfPoints - numPointsRemovedTotal
-    
-    Debug.Print "Removed: " & numPointsRemovedTotal
     
 'When debugging, I verified the correctness of this function by completely skipping the previous block
 ' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
