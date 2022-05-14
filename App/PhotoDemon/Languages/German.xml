@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1565</langversion>
+<langversion>9.0.1568</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -555,7 +555,7 @@
 
 <phrase>
 <original>Threshold alpha</original>
-<translation>Schwellenwert-Alpha</translation>
+<translation>Schwellenwert Alpha</translation>
 </phrase>
 
 <phrase>
@@ -2932,7 +2932,7 @@ Deskription: %2
 
 <phrase>
 <original>fill style</original>
-<translation>Füllstil</translation>
+<translation>Füllungsstil</translation>
 </phrase>
 
 <phrase>
@@ -6697,7 +6697,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Fill settings</original>
-<translation>Füll-Einstellungen</translation>
+<translation>Füllungseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -7437,7 +7437,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>above</original>
-<translation></translation>
+<translation>Oberhalb</translation>
 </phrase>
 
 <phrase>
@@ -7447,7 +7447,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fill order</original>
-<translation></translation>
+<translation>Füllungsreihenfolge</translation>
 </phrase>
 
 <phrase>
@@ -7467,7 +7467,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>Patch-Perfektion-Schwellenwert</translation>
 </phrase>
 
 <phrase>
@@ -7477,27 +7477,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>left</original>
-<translation></translation>
+<translation>Links</translation>
 </phrase>
 
 <phrase>
 <original>right</original>
-<translation></translation>
+<translation>Rechts</translation>
 </phrase>
 
 <phrase>
 <original>below</original>
-<translation></translation>
+<translation>Unterhalb</translation>
 </phrase>
 
 <phrase>
 <original>outside-in</original>
-<translation></translation>
+<translation>Outside-In  (von außen nach innen)</translation>
 </phrase>
 
 <phrase>
 <original>inside-out</original>
-<translation>Von innen nach außen</translation>
+<translation>Inside-Out  (von innen nach außen)</translation>
 </phrase>
 
 <!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -7553,7 +7553,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Stroking outline</original>
-<translation></translation>
+<translation>Stroking der Outline</translation>
 </phrase>
 
 <phrase>
@@ -7662,7 +7662,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekte-Kollektion hinzu.</translation>
+<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oberhalb), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekte-Kollektion hinzu.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -10183,7 +10183,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche Paletten, die sich bereits in der Datei befinden, werden nicht modifiziert.</translation>
+<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche bereits in der Datei befindliche Paletten werden nicht modifiziert.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12036,7 +12036,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fill source</original>
-<translation>Füllquelle</translation>
+<translation>Füllungsquelle</translation>
 </phrase>
 
 <phrase>
@@ -12056,7 +12056,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fill area</original>
-<translation>Füllbereich</translation>
+<translation>Füllungsbereich</translation>
 </phrase>
 
 <phrase>
@@ -12086,7 +12086,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation>Normalerweise analysieren Füll-Operationen das gesamte Bild. Sie können auch nur den aktiven Layer analysieren.</translation>
+<translation>Normalerweise analysieren Füllungsoperationen das gesamte Bild. Sie können auch nur den aktiven Layer analysieren.</translation>
 </phrase>
 
 <phrase>
