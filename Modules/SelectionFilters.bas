@@ -533,6 +533,14 @@ Public Sub Selection_ContentAwareFill(ByVal displayDialog As Boolean, Optional B
         ' coordinate space.)
         Dim baseFillRect As RectF
         baseFillRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
+        
+        'Some selection methods may produce boundary rects with floating-point values (due to the way
+        ' mouse inputs are handled).  Because we'll be using these to address pixels, we want all values
+        ' clamped to their nearest equivalent integer.
+        baseFillRect.Width = Int(baseFillRect.Width + PDMath.Frac(baseFillRect.Left) + 0.5)
+        baseFillRect.Height = Int(baseFillRect.Height + PDMath.Frac(baseFillRect.Top) + 0.5)
+        baseFillRect.Left = Int(baseFillRect.Left)
+        baseFillRect.Top = Int(baseFillRect.Top)
         If (baseFillRect.Width <= 0) Or (baseFillRect.Height <= 0) Then Exit Sub
         
         'Note the centroid of the selection
