@@ -267,26 +267,7 @@ Friend Sub SetLayerType(ByVal newLayerType As PD_LayerType)
     m_VectorDIBSynched = False
 End Sub
 
-'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
-' considered vector layers, because all changes are non-destructive.
-Friend Function IsLayerVector() As Boolean
-
-    Select Case m_LayerType
-    
-        Case PDL_Image
-            IsLayerVector = False
-        
-        Case PDL_TextBasic, PDL_TextAdvanced
-            IsLayerVector = True
-        
-        Case Else
-            InternalError "IsLayerVector", "Layer type unknown!  Returning VECTOR = FALSE by default."
-    
-    End Select
-
-End Function
-
-'Counterpart to isLayerVector(), above
+'Counterpart to IsLayerVector(), IsLayerText(), below
 Friend Function IsLayerRaster() As Boolean
     IsLayerRaster = Not IsLayerVector()
 End Function
@@ -303,6 +284,25 @@ Friend Function IsLayerText() As Boolean
         
         Case Else
             IsLayerText = False
+    
+    End Select
+
+End Function
+
+'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
+' considered vector layers, because all changes are non-destructive.
+Friend Function IsLayerVector() As Boolean
+
+    Select Case m_LayerType
+    
+        Case PDL_Image
+            IsLayerVector = False
+        
+        Case PDL_TextBasic, PDL_TextAdvanced
+            IsLayerVector = True
+        
+        Case Else
+            InternalError "IsLayerVector", "Layer type unknown!  Returning VECTOR = FALSE by default."
     
     End Select
 
@@ -902,7 +902,9 @@ End Function
 ' 1) Top-Right
 ' 2) Bottom-Left
 ' 3) (optionally) Bottom-Right.  This point is optional because it can be inferred from the previous three
-Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As PointFloat)
+'
+'The optional "usePathOrder" parameter will swap the order of (2) and (3).
+Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As PointFloat, Optional ByVal usePathOrder As Boolean = False)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
     Dim tmpMatrix As pd2DTransform
@@ -917,19 +919,27 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As PointFloat)
     dstPoints(1).x = Me.GetLayerWidth(False)
     dstPoints(1).y = 0!
     
-    dstPoints(2).x = 0!
-    dstPoints(2).y = Me.GetLayerHeight(False)
+    If usePathOrder Then
+        dstPoints(2).x = Me.GetLayerWidth(False)
+        dstPoints(2).y = Me.GetLayerHeight(False)
+    Else
+        dstPoints(2).x = 0!
+        dstPoints(2).y = Me.GetLayerHeight(False)
+    End If
     
     'If the third point exists, fill it too
     If (UBound(dstPoints) >= 3) Then
-        dstPoints(3).x = Me.GetLayerWidth(False)
-        dstPoints(3).y = Me.GetLayerHeight(False)
+        If usePathOrder Then
+            dstPoints(3).x = 0
+            dstPoints(3).y = Me.GetLayerHeight(False)
+        Else
+            dstPoints(3).x = Me.GetLayerWidth(False)
+            dstPoints(3).y = Me.GetLayerHeight(False)
+        End If
     End If
     
     'Translate each point in turn
-    tmpMatrix.ApplyTransformToPointF dstPoints(0)
-    tmpMatrix.ApplyTransformToPointF dstPoints(1)
-    tmpMatrix.ApplyTransformToPointF dstPoints(2)
+    tmpMatrix.ApplyTransformToPointFs VarPtr(dstPoints(0)), 3
     If (UBound(dstPoints) >= 3) Then tmpMatrix.ApplyTransformToPointF dstPoints(3)
     
     'The temporary translation matrix will automatically be cleaned up when the function exits

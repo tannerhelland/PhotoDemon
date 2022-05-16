@@ -2437,54 +2437,91 @@ Private Sub CreateSelectionMask()
         'Wand selections use a custom class to perform a flood fill
         Case ss_Wand
             
-            'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
-            ' Note that we try to only regenerate this image as absolutely necessary.
-            Dim wandImageRefreshRequired As Boolean
-            wandImageRefreshRequired = (m_WandImage Is Nothing)
-            If (Not wandImageRefreshRequired) Then wandImageRefreshRequired = (m_WandImageTimestamp <> m_parentPDImage.GetTimeOfLastChange())
+            'Addendum May 2022: Photoshop has an interesting behavior if the user makes a magic wand selection on
+            ' the active layer and the cursor is *not* over the current layer - it selects everything *but* the layer,
+            ' regardless of tolerance.  (GIMP's behavior is more restrictive - it doesn't allow clicks *at all* if they
+            ' lie off-layer.  I dislike that approach.)
+            '
+            'To enable comparable behavior here, we perform a special check prior to rendering *any* flood-fill.
+            Dim useClickOutsideLayerMode As Boolean: useClickOutsideLayerMode = False
             
-            If wandImageRefreshRequired Then
-                
-                'A new image copy is required.  As much as possible, still try to minimize the work we do here
-                If (m_WandImage Is Nothing) Then Set m_WandImage = New pdDIB
-                If (m_WandImage.GetDIBWidth <> m_parentPDImage.Width) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.Height) Then
-                    m_WandImage.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, 0, 0
-                Else
-                    m_WandImage.ResetDIB 0
-                End If
-                
-                'Note the timestamp; this may allow us to skip subsequent copy requests
-                m_WandImageTimestamp = m_parentPDImage.GetTimeOfLastChange()
-                
-                'Merged image data is far more cumbersome to generate
-                If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
-                    m_parentPDImage.GetCompositedImage m_WandImage
-                Else
-                    
-                    Dim tmpLayer As pdLayer
-                    Set tmpLayer = New pdLayer
-                    tmpLayer.CopyExistingLayer m_parentPDImage.GetActiveLayer
-                    tmpLayer.ConvertToNullPaddedLayer m_parentPDImage.Width, m_parentPDImage.Height
-                    Set m_WandImage = tmpLayer.GetLayerDIB
-                    Set tmpLayer = Nothing
-                    
-                End If
-                
+            'Check for "sample from layer only" mode, then check for the click lying off-layer
+            If (Me.GetSelectionProperty_Long(sp_WandSampleMerged, 0) <> 0) Then
+                useClickOutsideLayerMode = Not Layers.IsCoordinateOverLayer(PDImages.GetActiveImage.GetActiveLayerIndex, m_CornersUnlocked.Left, m_CornersUnlocked.Top)
             End If
             
-            'pdFloodFill handles most the heavy lifting here
-            If (m_FloodFill Is Nothing) Then Set m_FloodFill = New pdFloodFill
+            'If the user clicked outside the layer *and* "sample from layer (not image)" mode is active,
+            ' auto-select everything outside the active layer's boundaries.
+            If useClickOutsideLayerMode Then
             
-            'Set all initial parameters
-            m_FloodFill.SetAntialiasingMode (GetSelectionProperty_Long(sp_Smoothing) > es_None)
-            m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
-            m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
-            m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
-            m_FloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
-            
-            'Apply the flood fill, and make sure we retrieve an outline while we're at it
-            If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
-            m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
+                'Rather than perform an actual magic-wand selection, we're just gonna auto-select everything outside
+                ' layer boundaries.  This mirrors identical behavior in Photoshop.
+                
+                'Start by retrieving a parallelogram describing the active layer's boundaries.
+                Dim layerCorners(0 To 3) As PointFloat
+                PDImages.GetActiveImage.GetActiveLayer.GetLayerCornerCoordinates layerCorners, True
+                
+                Dim layerBoundaryPath As pd2DPath
+                Set layerBoundaryPath = New pd2DPath
+                layerBoundaryPath.AddRectangle_AbsoluteI 0, 0, m_SelMask.GetDIBWidth - 1, m_SelMask.GetDIBHeight - 1
+                layerBoundaryPath.SetFillRule P2_FR_OddEven
+                layerBoundaryPath.AddPolygon 4, VarPtr(layerCorners(0)), True, False
+                
+                'The selection mask was already prepared in a previous step.  We will simply fill the area beyond
+                ' this layer's boundary with a plain white brush.
+                Dim tmpWandBrush As pd2DBrush
+                Set tmpWandBrush = New pd2DBrush
+                tmpWandBrush.SetBrushColor RGB(255, 255, 255)
+                
+                PD2D.FillPath dstSurface, tmpWandBrush, layerBoundaryPath
+                Set tmpWandBrush = Nothing
+                
+            '(otherwise proceed normally)
+            Else
+                
+                'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
+                ' Note that we try to only regenerate this image as absolutely necessary.
+                Dim wandImageRefreshRequired As Boolean
+                wandImageRefreshRequired = (m_WandImage Is Nothing)
+                If (Not wandImageRefreshRequired) Then wandImageRefreshRequired = (m_WandImageTimestamp <> m_parentPDImage.GetTimeOfLastChange())
+                
+                If wandImageRefreshRequired Then
+                    
+                    'A new image copy is required.  As much as possible, still try to minimize the work we do here
+                    If (m_WandImage Is Nothing) Then Set m_WandImage = New pdDIB
+                    If (m_WandImage.GetDIBWidth <> m_parentPDImage.Width) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.Height) Then
+                        m_WandImage.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, 0, 0
+                    Else
+                        m_WandImage.ResetDIB 0
+                    End If
+                    
+                    'Note the timestamp; this may allow us to skip subsequent copy requests
+                    m_WandImageTimestamp = m_parentPDImage.GetTimeOfLastChange()
+                    
+                    'To improve performance, retrieve and cache the relevant source (either a merged image copy or a null-padded image copy)
+                    If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
+                        m_parentPDImage.GetCompositedImage m_WandImage
+                    Else
+                        m_parentPDImage.GetActiveLayer.GetLayerDIB_NullPadded m_WandImage, m_parentPDImage.Width, m_parentPDImage.Height
+                    End If
+                    
+                End If
+                
+                'pdFloodFill handles most the heavy lifting here
+                If (m_FloodFill Is Nothing) Then Set m_FloodFill = New pdFloodFill
+                
+                'Set all initial parameters
+                m_FloodFill.SetAntialiasingMode (GetSelectionProperty_Long(sp_Smoothing) > es_None)
+                m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
+                m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
+                m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
+                m_FloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
+                
+                'Apply the flood fill, and make sure we retrieve an outline while we're at it
+                If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
+                m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
+                
+            End If
             
         'Other selection types will be added in the future
         Case Else

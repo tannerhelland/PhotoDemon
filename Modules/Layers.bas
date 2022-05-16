@@ -1573,6 +1573,23 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
 
 End Sub
 
+'Is a given coordinate - in IMAGE coordinate space - over a specified layer?  All possible affine transforms
+' are handled automatically by this function.
+Public Function IsCoordinateOverLayer(ByVal idxLayer As Long, ByVal xCoordImg As Single, ByVal yCoordImg As Single) As Boolean
+    
+    If (idxLayer < 0) Or (idxLayer >= PDImages.GetActiveImage.GetNumOfLayers) Then Exit Function
+    
+    Dim layerCorners(0 To 3) As PointFloat
+    PDImages.GetActiveImage.GetLayerByIndex(idxLayer, False).GetLayerCornerCoordinates layerCorners, True
+    
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    tmpPath.AddPolygon 4, VarPtr(layerCorners(0)), True, False
+    
+    IsCoordinateOverLayer = tmpPath.IsPointInsidePathF(xCoordImg, yCoordImg)
+    
+End Function
+
 'Flattening an image with transparency should raise a dialog, so the user can decide whether to
 ' 1) Keep transparency in the final flatten, or...
 ' 2) Replace transparency with a new background color.

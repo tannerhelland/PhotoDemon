@@ -223,7 +223,12 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
-        If m_AntialiasingMode Then cSurface.SetSurfacePixelOffset P2_PO_Half Else cSurface.SetSurfacePixelOffset P2_PO_Normal
+        If m_AntialiasingMode Then
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            PDMath.SimplifyPathFromMarchingSquares dstOutlinePath
+        Else
+            cSurface.SetSurfacePixelOffset P2_PO_Normal
+        End If
         
         If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100!
         

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2022 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 24/October/21
-'Last update: new Suspend option, for reducing memory usage when a pdImage isn't active
+'Last updated: 16/May/22
+'Last update: ensure changes to the active layer ID reset our internal "last-change" event time
 '
 'The pdImage class is used to store information on each image loaded by the user.
 ' One instance of this class exists for each loaded image.
@@ -545,14 +545,23 @@ End Function
 'Set the currently active layer by its cardinal ID value
 Friend Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
-    Dim i As Long
-    For i = 0 To UBound(imgLayers)
-        If (imgLayers(i).GetLayerID = newActiveLayerID) Then
-            m_curLayer = i
-            Exit For
-        End If
-    Next i
+    Dim origLayerID As Long
+    origLayerID = Me.GetActiveLayerID
     
+    If (origLayerID <> newActiveLayerID) Then
+        
+        Dim i As Long
+        For i = 0 To UBound(imgLayers)
+            If (imgLayers(i).GetLayerID = newActiveLayerID) Then
+                m_curLayer = i
+                Exit For
+            End If
+        Next i
+        
+        Me.NotifyImageChanged UNDO_ImageHeader
+        
+    End If
+        
     'If we made it all the way here, the requested layer was not found.  Do nothing (e.g. do not change the active layer).
     
 End Sub
@@ -563,7 +572,10 @@ Friend Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
     If (newActiveLayerIndex < 0) Then newActiveLayerIndex = 0
     If (newActiveLayerIndex > m_numOfLayers - 1) Then newActiveLayerIndex = m_numOfLayers - 1
     
-    m_curLayer = newActiveLayerIndex
+    If (m_curLayer <> newActiveLayerIndex) Then
+        m_curLayer = newActiveLayerIndex
+        Me.NotifyImageChanged UNDO_ImageHeader
+    End If
     
 End Sub
 
