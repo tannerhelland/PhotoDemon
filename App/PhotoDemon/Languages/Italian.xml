@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.91</langversion>
+<langversion>8.0.92</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -12523,6 +12523,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>impacchettamento della linea</translation>
 </phrase>
@@ -12564,6 +12569,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>click to edit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
 <translation></translation>
 </phrase>
 
@@ -12622,7 +12632,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Clicca qui per convertire questo livello in testo avanzato.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13941,10 +13951,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2635</phrasecount>
+<phrasecount>2637</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5487 phrases. -->
-<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
-<!-- These 2635 phrases contain approximately 11861 total words. -->
+<!-- As of this build, PhotoDemon contains 5490 phrases. -->
+<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
+<!-- These 2637 phrases contain approximately 11864 total words. -->
 
 </pdData>

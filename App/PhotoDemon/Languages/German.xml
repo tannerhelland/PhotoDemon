@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1568</langversion>
+<langversion>9.0.1569</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12516,6 +12516,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>Zeilenumbruch</translation>
 </phrase>
@@ -12558,6 +12563,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>Klick, um zu bearbeiten</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12615,7 +12625,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in erweiterten Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13934,10 +13944,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2635</phrasecount>
+<phrasecount>2637</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5487 phrases. -->
-<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
-<!-- These 2635 phrases contain approximately 11861 total words. -->
+<!-- As of this build, PhotoDemon contains 5490 phrases. -->
+<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
+<!-- These 2637 phrases contain approximately 11864 total words. -->
 
 </pdData>

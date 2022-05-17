@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.86</langversion>
+<langversion>8.0.87</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -12516,6 +12516,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>lijn wrap</translation>
 </phrase>
@@ -12557,6 +12562,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>click to edit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
 <translation></translation>
 </phrase>
 
@@ -12615,7 +12625,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Klik hier om deze laag om te zetten naar geavanceerde tekst.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13934,10 +13944,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2635</phrasecount>
+<phrasecount>2637</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5487 phrases. -->
-<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
-<!-- These 2635 phrases contain approximately 11861 total words. -->
+<!-- As of this build, PhotoDemon contains 5490 phrases. -->
+<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
+<!-- These 2637 phrases contain approximately 11864 total words. -->
 
 </pdData>

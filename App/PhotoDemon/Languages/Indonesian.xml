@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.539</langversion>
+<langversion>6.6.540</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -12516,6 +12516,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>bungkus garis</translation>
 </phrase>
@@ -12557,6 +12562,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>click to edit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
 <translation></translation>
 </phrase>
 
@@ -12615,7 +12625,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13934,10 +13944,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2635</phrasecount>
+<phrasecount>2637</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5487 phrases. -->
-<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
-<!-- These 2635 phrases contain approximately 11861 total words. -->
+<!-- As of this build, PhotoDemon contains 5490 phrases. -->
+<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
+<!-- These 2637 phrases contain approximately 11864 total words. -->
 
 </pdData>

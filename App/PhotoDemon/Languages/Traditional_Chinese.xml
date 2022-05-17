@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.267</langversion>
+<langversion>7.0.268</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -12470,6 +12470,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>自動換行</translation>
 </phrase>
@@ -12511,6 +12516,11 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click to edit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
 <translation></translation>
 </phrase>
 
@@ -12569,7 +12579,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 57 phrases. 33 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13880,10 +13890,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2635</phrasecount>
+<phrasecount>2637</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5487 phrases. -->
-<!-- 2852 are duplicates, so only 2635 unique phrases have been written to file. -->
-<!-- These 2635 phrases contain approximately 11861 total words. -->
+<!-- As of this build, PhotoDemon contains 5490 phrases. -->
+<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
+<!-- These 2637 phrases contain approximately 11864 total words. -->
 
 </pdData>
