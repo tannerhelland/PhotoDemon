@@ -316,8 +316,8 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
     
 End Sub
 
-'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.  This is especially relevant
-' if the layer has one or more non-destructive affine transforms active.
+'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.
+' This is especially relevant if the layer has one or more non-destructive affine transforms active.
 Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
 
     If (srcImage Is Nothing) Then Exit Function

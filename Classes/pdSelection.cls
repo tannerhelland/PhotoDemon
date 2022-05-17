@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2022 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 05/May/22
-'Last update: new GetSelectionBoundaryPath() helper (for Edit > Stroke)
+'Last updated: 17/May/22
+'Last update: fix magic wand behavior in "Sampling from Layer" mode
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso,
 ' and "magic wand" selections are currently implemented.  (A selection brush is on my TODO list.)
@@ -2256,8 +2256,8 @@ Private Sub CreateSelectionMask()
     
     If (Me.GetSelectionProperty_Long(sp_Smoothing) > es_None) Then
         
-        'Rectangle selections are an exception here; we don't want to antialias them at all, even if antialiasing is enabled.
-        ' (GDI+ tends to mess up antialiasing for perfect rects.)
+        'Rectangle selections are an exception here; we don't want to antialias them at all,
+        ' even if antialiasing is enabled (GDI+ demonstrates odd antialiasing behavior on rects.)
         useAA = Not ((m_SelectionShape = ss_Rectangle) And (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#))
     Else
         useAA = False
@@ -2450,31 +2450,29 @@ Private Sub CreateSelectionMask()
                 useClickOutsideLayerMode = Not Layers.IsCoordinateOverLayer(PDImages.GetActiveImage.GetActiveLayerIndex, m_CornersUnlocked.Left, m_CornersUnlocked.Top)
             End If
             
+            Dim layerCorners(0 To 3) As PointFloat, layerBoundaryPath As pd2DPath, tmpWandBrush As pd2DBrush
+            
             'If the user clicked outside the layer *and* "sample from layer (not image)" mode is active,
             ' auto-select everything outside the active layer's boundaries.
             If useClickOutsideLayerMode Then
             
-                'Rather than perform an actual magic-wand selection, we're just gonna auto-select everything outside
-                ' layer boundaries.  This mirrors identical behavior in Photoshop.
+                'Rather than perform an actual magic-wand selection, we're just gonna auto-select
+                ' everything outside layer boundaries.  This mirrors identical behavior in Photoshop.
                 
                 'Start by retrieving a parallelogram describing the active layer's boundaries.
-                Dim layerCorners(0 To 3) As PointFloat
                 PDImages.GetActiveImage.GetActiveLayer.GetLayerCornerCoordinates layerCorners, True
                 
-                Dim layerBoundaryPath As pd2DPath
                 Set layerBoundaryPath = New pd2DPath
                 layerBoundaryPath.AddRectangle_AbsoluteI 0, 0, m_SelMask.GetDIBWidth - 1, m_SelMask.GetDIBHeight - 1
                 layerBoundaryPath.SetFillRule P2_FR_OddEven
                 layerBoundaryPath.AddPolygon 4, VarPtr(layerCorners(0)), True, False
                 
-                'The selection mask was already prepared in a previous step.  We will simply fill the area beyond
-                ' this layer's boundary with a plain white brush.
-                Dim tmpWandBrush As pd2DBrush
+                'The selection mask was already prepared in a previous step.  We will simply fill
+                ' the area beyond this layer's boundary with a plain white brush.
                 Set tmpWandBrush = New pd2DBrush
                 tmpWandBrush.SetBrushColor RGB(255, 255, 255)
                 
                 PD2D.FillPath dstSurface, tmpWandBrush, layerBoundaryPath
-                Set tmpWandBrush = Nothing
                 
             '(otherwise proceed normally)
             Else
@@ -2487,23 +2485,36 @@ Private Sub CreateSelectionMask()
                 
                 If wandImageRefreshRequired Then
                     
-                    'A new image copy is required.  As much as possible, still try to minimize the work we do here
+                    'If we need to retrieve a composited copy of the image, we'll cache it locally to improve
+                    ' performance on back-to-back wand events.
                     If (m_WandImage Is Nothing) Then Set m_WandImage = New pdDIB
-                    If (m_WandImage.GetDIBWidth <> m_parentPDImage.Width) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.Height) Then
-                        m_WandImage.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, 0, 0
-                    Else
-                        m_WandImage.ResetDIB 0
-                    End If
-                    
-                    'Note the timestamp; this may allow us to skip subsequent copy requests
-                    m_WandImageTimestamp = m_parentPDImage.GetTimeOfLastChange()
-                    
-                    'To improve performance, retrieve and cache the relevant source (either a merged image copy or a null-padded image copy)
                     If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
+                        
+                        If (m_WandImage.GetDIBWidth <> m_parentPDImage.Width) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.Height) Then
+                            m_WandImage.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, 0, 0
+                        Else
+                            m_WandImage.ResetDIB 0
+                        End If
+                        
                         m_parentPDImage.GetCompositedImage m_WandImage
+                    
+                    'In layer mode, however, we want to use the wand image *not* to store a copy of the
+                    ' current layer (we already have that) but to store a copy of the *mask* generated at
+                    ' the current layer's size (which we'll need to BitBlt or PlgBlt into the final,
+                    ' image-sized selection mask after the fill completes).
                     Else
-                        m_parentPDImage.GetActiveLayer.GetLayerDIB_NullPadded m_WandImage, m_parentPDImage.Width, m_parentPDImage.Height
+                        
+                        If (m_WandImage.GetDIBWidth <> m_parentPDImage.GetActiveLayer.GetLayerWidth(False)) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.GetActiveLayer.GetLayerHeight(False)) Then
+                            m_WandImage.CreateBlank m_parentPDImage.GetActiveLayer.GetLayerWidth(False), m_parentPDImage.GetActiveLayer.GetLayerHeight(False), 32, 0, 0
+                        Else
+                            m_WandImage.ResetDIB 0
+                        End If
+                        
                     End If
+                    
+                    'Regardless of samplign mode, note the timestamp; this may allow us to accelerate future
+                    ' wand events.
+                    m_WandImageTimestamp = m_parentPDImage.GetTimeOfLastChange()
                     
                 End If
                 
@@ -2512,16 +2523,47 @@ Private Sub CreateSelectionMask()
                 
                 'Set all initial parameters
                 m_FloodFill.SetAntialiasingMode (GetSelectionProperty_Long(sp_Smoothing) > es_None)
-                m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
                 m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
                 m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
                 m_FloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
                 
-                'Apply the flood fill, and make sure we retrieve an outline while we're at it
                 If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
-                m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
+                
+                'How we apply the actual flood fill varies by sampling mode.  Sampling the composite image is easy;
+                ' we can ask the flood fill class to simply paint the selection mask for us, after initiating a
+                ' fill from the user's clicked point (which is in IMAGE coordinate space).
+                If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
+                    m_FloodFill.SetInitialPoint Int(m_CornersUnlocked.Left), Int(m_CornersUnlocked.Top)
+                    m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
+                    
+                'In layer sampling mode, things are a little trickier because we only want to sample the
+                ' active layer - but then we'll need to translate the results into IMAGE coordinate space.
+                Else
+                    
+                    'Start by translating the magic wand sample point into this layer's coordinate space
+                    Dim xLayerSpace As Single, yLayerSpace As Single
+                    Drawing.ConvertImageCoordsToLayerCoords_Full m_parentPDImage, m_parentPDImage.GetActiveLayer, m_CornersUnlocked.Left, m_CornersUnlocked.Top, xLayerSpace, yLayerSpace
+                    m_FloodFill.SetInitialPoint Int(xLayerSpace), Int(yLayerSpace)
+                    
+                    'Perform the fill, and note the different target DIB
+                    m_FloodFill.InitiateFloodFill m_parentPDImage.GetActiveLayer.GetLayerDIB, m_WandImage, m_WandOutline
+                    
+                    'We now need to translate both the wand image and the wand outline into final IMAGE coordinate space
+                    Dim cTransform As pd2DTransform
+                    m_parentPDImage.GetActiveLayer.GetCopyOfLayerTransformationMatrix_Full cTransform
+                    
+                    'Transform the full outline path
+                    m_WandOutline.ApplyTransformation cTransform
+                    
+                    'PlgBlt the mask into place
+                    PDImages.GetActiveImage.GetActiveLayer.GetLayerCornerCoordinates layerCorners, False
+                    GDI_Plus.GDIPlus_PlgBlt m_SelMask, layerCorners, m_WandImage, 0, 0, m_WandImage.GetDIBWidth, m_WandImage.GetDIBHeight
+                    
+                End If
                 
             End If
+            
+            Set tmpWandBrush = Nothing
             
         'Other selection types will be added in the future
         Case Else

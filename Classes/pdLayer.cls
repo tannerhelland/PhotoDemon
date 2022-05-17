@@ -987,8 +987,8 @@ Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As PointFloat)
         
 End Sub
 
-'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If a caller needs a copy of the
-' layer's current transformation matrix, it can use this function to retrieve it.
+'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).
+' If a caller needs a copy of the layer's current transformation matrix, use this function to retrieve it.
 '
 'Note that scaling is not applied, by design.  The caller should handle scaling manually.
 Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pd2DTransform, Optional ByVal ApplyTranslation As Boolean = True)
@@ -1020,8 +1020,8 @@ Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pd2DTransform, 
     
 End Sub
 
-'As of PhotoDemon 7.0, layers support one or more affine transformations (resize, rotation, skew, etc).  If a caller needs a
-' copy of the layer's current transformation matrix, it can use this function to retrieve it.
+'As of PhotoDemon 7.0, layers support one or more affine transformations (resize, rotation, skew, etc).
+' If a caller needs a copy of the layer's current transformation matrix, it can use this function to retrieve it.
 Friend Sub GetCopyOfLayerTransformationMatrix_Full(ByRef dstMatrix As pd2DTransform)
 
     'Create and/or reset the destination matrix, as necessary
