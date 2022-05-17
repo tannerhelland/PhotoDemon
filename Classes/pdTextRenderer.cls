@@ -1077,10 +1077,14 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
                 
             End If
         
-        'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  In PD, I have modified it to use a 0-10 scale with
-        ' 3 as the default, and we convert it to a 12-based measurement if working with GDI+ specifically.  Note that this *ONLY WORKS IN
-        ' BASIC RENDERING MODE.  GDI doesn't support this measurement natively, so we have to rig it using a manual system.  PD's manual glyph
-        ' rendering methods ignore this setting entirely.
+        'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.
+        ' In PD, I have modified it to use a 0-10 scale with 3 as the default, and we convert it to a
+        ' 12-based measurement if working with GDI+ specifically.
+        '
+        'Note that this *ONLY WORKS IN BASIC RENDERING MODE.*  GDI doesn't support this measurement natively,
+        ' so we have to rig it using a manual system.
+        '
+        '(PD's manual glyph rendering methods ignore this setting entirely.)
         Case ptp_TextContrast
             If (m_TextContrast <> CLng(newValue)) Then
                 m_TextContrast = CLng(newValue)
@@ -1765,14 +1769,12 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outline is not cropped.
     If m_OutlineActive Then
-        
         With boundingRect
             .Left = .Left + penTextOutline.GetPenWidth()
             .Top = .Top + penTextOutline.GetPenWidth()
             .Width = .Width - penTextOutline.GetPenWidth() * 2
             .Height = .Height - penTextOutline.GetPenWidth() * 2
         End With
-    
     End If
     
     '2) The caller can specify custom margin adjustments, either positive or negative.  Apply those now.
@@ -1800,7 +1802,8 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
     End If
     
-    '4) After all boundary rect modifications are made, we need to perform a failsafe check to make sure width and height aren't negative.
+    '4) After all boundary rect modifications are made, we need to perform a failsafe check
+    ' to ensure width and height aren't negative.
     With boundingRect
         
         If (.Width < 0) Then

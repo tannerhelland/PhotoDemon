@@ -307,7 +307,8 @@ Begin VB.Form toolpanel_TextAdvanced
          _ExtentY        =   1296
          Caption         =   "line spacing"
          FontSizeCaption =   10
-         Min             =   -10
+         Min             =   -100
+         Max             =   1000
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390

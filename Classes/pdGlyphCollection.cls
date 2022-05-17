@@ -856,7 +856,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     lineHeight = m_TextMetrics.tmHeight
     
     'We further adjust line height by the user's specified line spacing modifier (where 0.0 means use default line height)
-    lineHeight = lineHeight + (m_LineSpacing * lineHeight)
+    lineHeight = lineHeight + (m_LineSpacing / 100!) * lineHeight
     
     'Previously, the lineHeight calculation included the m_TextMetrics.tmExternalLeading value.  I no longer use this, as it causes some
     ' fonts to greatly over-extend each line.
@@ -1077,9 +1077,9 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             xOffset = boundingRect.Left
             m_LineWidths(currentLine) = 0
             
-            'We now need to mark the last character of the previous line, and the first character of this line.  (This is important
-            ' for future wordbreak calculations.)  Note that the character in question may or may not be the current glyph,
-            ' if the current glyph is a whitespace character.
+            'We now need to mark the last character of the previous line, and the first character of this line.
+            ' (This is important for future wordbreak calculations.)  Note that the character in question may
+            ' or may not be the current glyph, *if* the current glyph is a whitespace character.
             
             'First, deal with hard linebreaks.  They are a special circumstance, and if one is used, we ALWAYS mark it as the last glyph
             ' of the preceding paragraph.  (This is necessary if the first glyph in the string is a linebreak, for example.)
