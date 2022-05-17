@@ -36,6 +36,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Uniscribe is an extremely complex API.  When debugging, set this to TRUE to report detailed state information.
+Private Const UNISCRIBE_DEBUG_VERBOSE As Boolean = False
 
 'All Uniscribe APIs relevant to PD.  Note that we do not use the simplified ScriptString wrappers;
 ' they are not powerful enough for the kinds of tasks we need tackle.
@@ -337,7 +339,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     'If ScriptItemize still failed, it was not due to memory errors
     If unsReturn = S_OK Then
         
-        Debug.Print "Uniscribe itemized the string correctly.  (" & numItemsFilled & " SCRIPT_ITEM structs were filled.)"
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "Uniscribe itemized the string correctly.  (" & numItemsFilled & " SCRIPT_ITEM structs were filled.)"
         
         'Technically, we could trim our cache to its relevant size here (remembering that we MUST leave a spare entry at the end), but throughout
         ' this class I allow cache sizes to float.  Redimming them saves a tiny amount of memory at great cost to churn and performance, so instead,
@@ -378,7 +380,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         Step1_ScriptItemize = True
         
     Else
-        Debug.Print "WARNING!  ScriptItemize failed with code " & unsReturn & ".  Please investigate."
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptItemize failed with code " & unsReturn & ".  Please investigate."
         Step1_ScriptItemize = False
     End If
     
@@ -400,8 +402,8 @@ End Function
 Friend Function Step2_ScriptLayout() As Boolean
     
     'If a SCRIPT_ITEM cache does not exist, exit now
-    If Not m_ScriptItemCacheOK Then
-        Debug.Print "WARNING!  Step 1 failed, so Step 2 cannot proceed!"
+    If (Not m_ScriptItemCacheOK) Then
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  Step 1 failed, so Step 2 cannot proceed!"
         Step2_ScriptLayout = False
         Exit Function
     End If
@@ -482,17 +484,17 @@ Friend Function Step2_ScriptLayout() As Boolean
     '    Debug.Print i & ":" & m_VisualToLogicalOrder(i) & ":" & m_LogicalToVisualOrder(i)
     'Next i
     
-    If unsReturn = S_OK Then
+    If (unsReturn = S_OK) Then
         
         'In the future, we may need to look at reordering our m_Items() array to match the order returned by this function.
         ' I haven't tested complex enough test to know for sure, but if that becomes necessary, this section of code is where
         ' you'd want to reorder them accordingly.
         
-        Debug.Print "Uniscribe laid out the string correctly."
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "Uniscribe laid out the string correctly."
         Step2_ScriptLayout = True
         
     Else
-        Debug.Print "WARNING!  ScriptLayout failed with code " & unsReturn & ".  Please investigate."
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptLayout failed with code " & unsReturn & ".  Please investigate."
         Step2_ScriptLayout = False
     End If
     
@@ -523,7 +525,7 @@ Friend Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     
     'If a SCRIPT_ITEM cache does not exist, exit now
     If (Not m_ScriptItemCacheOK) Then
-        Debug.Print "WARNING!  Step 1 or 2 failed, so Step 3 cannot proceed!"
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  Step 1 or 2 failed, so Step 3 cannot proceed!"
         Step3_ScriptShape = False
         Exit Function
     End If
@@ -621,10 +623,10 @@ Friend Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
                 'Forward the updated results to this Item object
                 m_Items(i).SetShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
                 
-                Debug.Print "WARNING!  ScriptShape could not find some glyphs in this font.  Recommend font fallback."
+                If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptShape could not find some glyphs in this font.  Recommend font fallback."
                 
             Else
-                Debug.Print "WARNING!  ScriptShape returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
+                If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptShape returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
             End If
             
         End If
@@ -633,7 +635,7 @@ Friend Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     Next i
     
     
-    If functionSuccess Then Debug.Print "Uniscribe shaped the string correctly."
+    If functionSuccess And UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "Uniscribe shaped the string correctly."
     Step3_ScriptShape = functionSuccess
     
     
@@ -659,7 +661,7 @@ Friend Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
 
     'If a SCRIPT_ITEM cache does not exist, exit now
     If Not m_ScriptItemCacheOK Then
-        Debug.Print "WARNING!  Step 1 or 2 failed, so Step 4 cannot proceed!"
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  Step 1 or 2 failed, so Step 4 cannot proceed!"
         Step4_ScriptPlace = False
         Exit Function
     End If
@@ -723,11 +725,11 @@ Friend Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
                 functionSuccess = False
                 
                 'In the future, we may be able to deal with some failure states
-                If unsReturn = USP_E_SCRIPT_NOT_IN_FONT Then
+                If (unsReturn = USP_E_SCRIPT_NOT_IN_FONT) Then
                     m_Items(i).SetPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
-                    Debug.Print "WARNING!  ScriptPlace could not find some glyphs in this font.  Recommend font fallback."
+                    If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptPlace could not find some glyphs in this font.  Recommend font fallback."
                 Else
-                    Debug.Print "WARNING!  ScriptPlace returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
+                    If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptPlace returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
                 End If
                 
             End If
@@ -737,7 +739,7 @@ Friend Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
     Next i
     
     'Return success/failure
-    If functionSuccess Then Debug.Print "Uniscribe placed the string correctly."
+    If functionSuccess And UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "Uniscribe placed the string correctly."
     Step4_ScriptPlace = functionSuccess
 
 End Function
@@ -758,7 +760,7 @@ Friend Function Step5_ScriptBreak() As Boolean
 
     'If a SCRIPT_ITEM cache does not exist, exit now
     If Not m_ScriptItemCacheOK Then
-        Debug.Print "WARNING!  Step 1 or 2 failed, so Step 5 cannot proceed!"
+        If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  Step 1 or 2 failed, so Step 5 cannot proceed!"
         Step5_ScriptBreak = False
         Exit Function
     End If
@@ -804,7 +806,7 @@ Friend Function Step5_ScriptBreak() As Boolean
                 
                 'Because ScriptBreak operates is a pass/fail API, we don't have to worry about crap like guessing buffer sizes.
                 ' Failure is always unacceptable (and shouldn't happen unless the string contains only gibberish).
-                Debug.Print "WARNING!  ScriptBreak returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
+                If UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING!  ScriptBreak returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
                 
             End If
                         
@@ -813,7 +815,7 @@ Friend Function Step5_ScriptBreak() As Boolean
     Next i
     
     'Return success/failure
-    If functionSuccess Then Debug.Print "Uniscribe calculated word breaks correctly."
+    If functionSuccess And UNISCRIBE_DEBUG_VERBOSE Then PDDebug.LogAction "Uniscribe calculated word breaks correctly."
     Step5_ScriptBreak = functionSuccess
 
 End Function

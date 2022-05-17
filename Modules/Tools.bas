@@ -764,42 +764,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 
             Case TEXT_ADVANCED
                 
-                With toolpanel_TextAdvanced
-                    .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
-                    .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
-                    .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
-                    .cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
-                    If PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextHinting) Then .btsHinting.ListIndex = 1 Else .btsHinting.ListIndex = 0
-                    .btnFontStyles(0).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
-                    .btnFontStyles(1).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
-                    .btnFontStyles(2).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
-                    .btnFontStyles(3).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
-                    .btsHAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
-                    .btsVAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
-                    .cboWordWrap.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_WordWrap)
-                    .chkFillText.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FillActive)
-                    .bsText.Brush = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FillBrush)
-                    .chkOutlineText.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_OutlineActive)
-                    .psText.Pen = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_OutlinePen)
-                    .chkBackground.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_BackgroundActive)
-                    .bsTextBackground.Brush = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_BackgroundBrush)
-                    .chkBackgroundBorder.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_BackBorderActive)
-                    .psTextBackground.Pen = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_BackBorderPen)
-                    .tudMargin(0).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginLeft)
-                    .tudMargin(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginRight)
-                    .tudMargin(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginTop)
-                    .tudMargin(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_MarginBottom)
-                    .sldLineSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_LineSpacing)
-                    .sltCharInflation.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharInflation)
-                    .tudJitter(0).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharJitterX)
-                    .tudJitter(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharJitterY)
-                    .cboCharMirror.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharMirror)
-                    .sltCharOrientation.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharOrientation)
-                    .cboCharCase.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharRemap)
-                    .sltCharSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
-                End With
-                
-                'Display the "convert to advanced text layer" panel as necessary
+                'Either sync all UI objects against the current layer's text settings, or display a
+                ' "convert this basic text layer to an advanced text layer" prompt.
+                toolpanel_TextAdvanced.SyncSettingsToCurrentLayer
                 toolpanel_TextAdvanced.UpdateAgainstCurrentLayer
         
         End Select
@@ -891,6 +858,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_Text, toolpanel_TextAdvanced.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_TextAdvanced.cboTextFontFace.List(toolpanel_TextAdvanced.cboTextFontFace.ListIndex)
                     .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.Value
+                    .SetTextLayerProperty ptp_StretchToFit, (toolpanel_TextAdvanced.btsStretch.ListIndex = 1)
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextAdvanced.cboTextRenderingHint.ListIndex
                     .SetTextLayerProperty ptp_TextHinting, (toolpanel_TextAdvanced.btsHinting.ListIndex = 1)
                     .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).Value

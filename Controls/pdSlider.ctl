@@ -658,6 +658,9 @@ Private Sub UpdateControlLayout()
     If (tudPrimary.GetTop <> newTop_TUD) Then tudPrimary.SetTop newTop_TUD
     If (tudPrimary.GetLeft <> newLeft_TUD) Then tudPrimary.SetLeft newLeft_TUD
     
+    'Failsafe check for text up/down visibility
+    If (ucSupport.GetControlHeight < tudPrimary.GetTop + tudPrimary.GetHeight) Then ucSupport.RequestNewSize , tudPrimary.GetTop + tudPrimary.GetHeight
+    
     'Inside the IDE, use a line of dummy code to force a redraw of the control outline
     If (Not PDMain.IsProgramRunning()) Then
         pdssPrimary.Visible = False

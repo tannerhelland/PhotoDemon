@@ -101,6 +101,7 @@ Public Enum PD_TEXT_PROPERTY
     ptp_CharJitterY = 33
     ptp_CharInflation = 34
     ptp_CharMirror = 35
+    ptp_StretchToFit = 36
 End Enum
 
 #If False Then
@@ -110,7 +111,7 @@ End Enum
     Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
     Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
     Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
-    Const ptp_CharMirror = 35
+    Const ptp_CharMirror = 35, ptp_StretchToFit = 36
 #End If
 
 'At present, only WAPI font backends are available.
@@ -374,6 +375,7 @@ Private m_TextContrast As Long
 'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
 Private m_TextHinting As Boolean
 Private m_WordWrap As PD_TextWordwrap
+Private m_StretchToFit As Boolean
 Private m_FillActive As Boolean
 Private m_FillBrush As String
 Private m_OutlineActive As Boolean
@@ -742,6 +744,7 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-text-renderer", GetRendererStringFromEnum(m_RenderingEngine), True, True
         .AddParam "obj-hinting", m_TextHinting, True, True
         .AddParam "obj-wordwrap-mode", GetWordwrapStringFromEnum(m_WordWrap), True, True
+        .AddParam "obj-stretch-to-fit", m_StretchToFit, True, True
         .AddParam "obj-fill-active", m_FillActive, True, True
         .AddParam "obj-fill-brush", m_FillBrush, True, False
         .AddParam "obj-stroke-active", m_OutlineActive, True, True
@@ -809,6 +812,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_RenderingEngine, GetRendererEnumFromString(.GetString("obj-text-renderer", GetRendererStringFromEnum(te_WAPI), True))
             SetGenericTextProperty ptp_TextHinting, .GetBool("obj-hinting", False)
             SetGenericTextProperty ptp_WordWrap, GetWordwrapEnumFromString(.GetString("obj-wordwrap-mode", GetWordwrapStringFromEnum(tww_AutoWord), True))
+            SetGenericTextProperty ptp_StretchToFit, .GetBool("obj-stretch-to-fit", False, True)
             SetGenericTextProperty ptp_FillActive, .GetBool("obj-fill-active", True)
             SetGenericTextProperty ptp_FillBrush, .GetString("obj-fill-brush", vbNullString)
             SetGenericTextProperty ptp_OutlineActive, .GetBool("obj-stroke-active", False)
@@ -916,6 +920,9 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             
         Case ptp_WordWrap
             GetGenericTextProperty = m_WordWrap
+        
+        Case ptp_StretchToFit
+            GetGenericTextProperty = m_StretchToFit
             
         Case ptp_FillActive
             GetGenericTextProperty = m_FillActive
@@ -1114,6 +1121,12 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
         Case ptp_WordWrap
             If (m_WordWrap <> CLng(newValue)) Then
                 m_WordWrap = CLng(newValue)
+                SetGenericTextProperty = True
+            End If
+        
+        Case ptp_StretchToFit
+            If (m_StretchToFit <> CBool(newValue)) Then
+                m_StretchToFit = CBool(newValue)
                 SetGenericTextProperty = True
             End If
             
@@ -1640,9 +1653,9 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
             newLeft = boundingRect.Left + Abs(firstCharABCWidth.abcfA) + 1
             boundingRect.Left = newLeft
             
-            'Because fonts with a significant left overhang are likely to have a large right overhang as well, mirror the
-            ' overhang to the right boundary as well.  (We do this because GDI+ word wrap is unpredictable, and we can't retrieve
-            ' where it decides to wordwrap - so we have to make assumptions like this.)
+            'Because fonts with a significant left overhang are likely to have a large right overhang as well,
+            ' mirror the overhang to the right boundary as well.  (We do this because GDI+ word wrap is unpredictable,
+            ' and we can't retrieve where it decides to wordwrap - so we have to make assumptions.)
             newWidth = boundingRect.Width - (Abs(firstCharABCWidth.abcfC) + 1)
             If (newWidth > 0) Then boundingRect.Width = newWidth
             
@@ -1828,7 +1841,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         VBHacks.GetHighResTime startTime
     End If
     
-    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
+    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap, m_StretchToFit) Then
         
         If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - assembly: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2319,6 +2332,7 @@ Private Sub Class_Initialize()
     
     m_WordWrap = tww_AutoWord
     m_FillActive = True
+    m_StretchToFit = False
     
     'Set default graphics container text settings
     m_TextContrast = 4
@@ -2371,6 +2385,7 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", te_WAPI)
         SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
         SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tww_AutoWord)
+        SetGenericTextProperty ptp_StretchToFit, False
         SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
         SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
         SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)
