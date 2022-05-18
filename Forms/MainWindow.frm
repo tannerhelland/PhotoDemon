@@ -817,20 +817,32 @@ Begin VB.Form FormMain
          Index           =   10
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Fill selected area..."
          Index           =   11
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Load selection..."
+         Caption         =   "Heal selected area..."
          Index           =   12
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "Stroke selection outline..."
          Index           =   13
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Export"
+         Caption         =   "-"
          Index           =   14
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Load selection..."
+         Index           =   15
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Save current selection..."
+         Index           =   16
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Export"
+         Index           =   17
          Begin VB.Menu MnuSelectExport 
             Caption         =   "Selected area as image..."
             Index           =   0
@@ -3671,12 +3683,18 @@ Private Sub MnuSelect_Click(Index As Integer)
         Case 10
             Actions.LaunchAction_ByName "select_erasearea"
         Case 11
-            '(separator)
+            Actions.LaunchAction_ByName "select_fill"
         Case 12
-            Actions.LaunchAction_ByName "select_load"
+            Actions.LaunchAction_ByName "select_heal"
         Case 13
-            Actions.LaunchAction_ByName "select_save"
+            Actions.LaunchAction_ByName "select_stroke"
         Case 14
+            '(separator)
+        Case 15
+            Actions.LaunchAction_ByName "select_load"
+        Case 16
+            Actions.LaunchAction_ByName "select_save"
+        Case 17
             'Top-level "Export selection as..." menu
     End Select
 End Sub

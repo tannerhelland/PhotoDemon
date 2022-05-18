@@ -830,6 +830,9 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
         Case ptp_FontSizeUnit
             GetNameOfTextAction = g_Language.TranslateMessage("font (size unit)")
         
+        Case ptp_StretchToFit
+            GetNameOfTextAction = g_Language.TranslateMessage("automatic fit")
+        
         Case ptp_FontBold
             GetNameOfTextAction = g_Language.TranslateMessage("style (bold)")
         
@@ -2657,11 +2660,23 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         If raiseDialog Then SelectionFilters.Selection_ConvertToBorder True Else SelectionFilters.Selection_ConvertToBorder False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
     
-    'Erase selected area (from layer)
+    'Modify selected pixels in various ways
     ElseIf Strings.StringsEqual(processID, "Erase selected area", True) Then
         Selections.EraseSelectedArea cParams.GetLong("targetlayer")
         Process_SelectMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Fill selected area", True) Then
+        SelectionFilters.Selection_Fill raiseDialog, processParameters
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Heal selected area", True) Then
+        SelectionFilters.Selection_ContentAwareFill raiseDialog, processParameters
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Stroke selection outline", True) Then
+        SelectionFilters.Selection_Stroke raiseDialog, processParameters
+        Process_SelectMenu = True
+        
     'Load/save selection from/to file
     ElseIf Strings.StringsEqual(processID, "Load selection", True) Then
         If raiseDialog Then SelectionFiles.LoadSelectionFromFile True Else SelectionFiles.LoadSelectionFromFile False, processParameters

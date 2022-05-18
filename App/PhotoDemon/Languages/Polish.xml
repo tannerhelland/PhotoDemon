@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.101</langversion>
+<langversion>8.0.102</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -626,6 +626,21 @@
 <phrase>
 <original>Erase selected area</original>
 <translation>Skasuj zaznaczony obszar</translation>
+</phrase>
+
+<phrase>
+<original>Fill selected area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Heal selected area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Stroke selection outline</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1313,7 +1328,7 @@
 <translation>Wyczyść listę ostatnich obrazów</translation>
 </phrase>
 
-<!-- Actions.bas contains 267 phrases. 7 were duplicates of existing phrases, so only 260 new phrases were written to file. -->
+<!-- Actions.bas contains 270 phrases. 7 were duplicates of existing phrases, so only 263 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2865,6 +2880,11 @@ Opis: %2
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>style (bold)</original>
 <translation>Styl (pogrubiony)</translation>
 </phrase>
@@ -3023,7 +3043,7 @@ Po zakończeniu kliknij przycisk "Prześlij nowe zgłoszenie".</translation>
 <translation>Instrukcje do raportu o błędzie</translation>
 </phrase>
 
-<!-- Processor.bas contains 126 phrases. 67 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -5638,7 +5658,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 389 phrases. 207 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 392 phrases. 210 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12512,11 +12532,6 @@ pliku nie zostaną zmodyfikowane.</translation>
 </phrase>
 
 <phrase>
-<original>automatic fit</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation>Linia zawijania</translation>
 </phrase>
@@ -12621,7 +12636,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 <translation>Kliknij tutaj, aby przekonwertować tę warstwę na tekst zaawansowany.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13935,10 +13950,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2637</phrasecount>
+<phrasecount>2640</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5490 phrases. -->
-<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
-<!-- These 2637 phrases contain approximately 11864 total words. -->
+<!-- As of this build, PhotoDemon contains 5498 phrases. -->
+<!-- 2858 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11873 total words. -->
 
 </pdData>

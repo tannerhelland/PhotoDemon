@@ -674,6 +674,15 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
         Case "select_erasearea"
             Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
             
+        Case "select_fill"
+            Process "Fill selected area", True
+            
+        Case "select_heal"
+            Process "Heal selected area", True
+            
+        Case "select_stroke"
+            Process "Stroke selection outline", True
+        
         Case "select_load"
             Process "Load selection", True
             

@@ -213,7 +213,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Empty clipboard", "edit_emptyclipboard", 1, 13, 4
     AddMenuItem "-", "-", 1, 14
     AddMenuItem "Clear", "edit_clear", 1, 15, , "paint_erase"
-    AddMenuItem "Content-aware fill...", "edit_contentawarefill", 1, 16
+    AddMenuItem "Content-aware fill...", "edit_contentawarefill", 1, 16, , "edit_contentawarefill"
     AddMenuItem "Fill...", "edit_fill", 1, 17, , "paint_fill"
     AddMenuItem "Stroke...", "edit_stroke", 1, 18, , "paint_softbrush"
     
@@ -348,13 +348,16 @@ Public Sub InitializeMenus()
     AddMenuItem "Feather...", "select_feather", 4, 7
     AddMenuItem "Sharpen...", "select_sharpen", 4, 8
     AddMenuItem "-", "-", 4, 9
-    AddMenuItem "Erase selected area", "select_erasearea", 4, 10, , "select_erase"
-    AddMenuItem "-", "-", 4, 11
-    AddMenuItem "Load selection...", "select_load", 4, 12, , "file_open"
-    AddMenuItem "Save current selection...", "select_save", 4, 13, , "file_save"
-    AddMenuItem "Export", "select_export", 4, 14
-        AddMenuItem "Selected area as image...", "select_exportarea", 4, 14, 0
-        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 14, 1
+    AddMenuItem "Erase selected area", "select_erasearea", 4, 10, , "paint_erase"
+    AddMenuItem "Fill selected area...", "select_fill", 4, 11, , "paint_fill"
+    AddMenuItem "Heal selected area...", "select_heal", 4, 12, , "edit_contentawarefill"
+    AddMenuItem "Stroke selection outline...", "select_stroke", 4, 13, , "paint_softbrush"
+    AddMenuItem "-", "-", 4, 14
+    AddMenuItem "Load selection...", "select_load", 4, 15, , "file_open"
+    AddMenuItem "Save current selection...", "select_save", 4, 16, , "file_save"
+    AddMenuItem "Export", "select_export", 4, 17
+        AddMenuItem "Selected area as image...", "select_exportarea", 4, 17, 0
+        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 17, 1
         
     'Adjustments Menu
     AddMenuItem "Adjustments", "adj_top", 5

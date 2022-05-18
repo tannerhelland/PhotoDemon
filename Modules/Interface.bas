@@ -789,8 +789,11 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Menus.SetMenuEnabled "select_feather", newState
                 Menus.SetMenuEnabled "select_sharpen", newState
                 
-                'Erase selected area
+                'Modify selected pixels in various ways
                 Menus.SetMenuEnabled "select_erasearea", newState
+                Menus.SetMenuEnabled "select_fill", newState
+                Menus.SetMenuEnabled "select_heal", newState
+                Menus.SetMenuEnabled "select_stroke", newState
                 
                 'Save selection
                 Menus.SetMenuEnabled "select_save", newState

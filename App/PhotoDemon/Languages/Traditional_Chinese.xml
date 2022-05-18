@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.268</langversion>
+<langversion>7.0.269</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -626,6 +626,21 @@
 <phrase>
 <original>Erase selected area</original>
 <translation>抹除已選區域</translation>
+</phrase>
+
+<phrase>
+<original>Fill selected area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Heal selected area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Stroke selection outline</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1313,7 +1328,7 @@
 <translation>清除最近影像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 267 phrases. 7 were duplicates of existing phrases, so only 260 new phrases were written to file. -->
+<!-- Actions.bas contains 270 phrases. 7 were duplicates of existing phrases, so only 263 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2840,6 +2855,11 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>automatic fit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>style (bold)</original>
 <translation>樣式 (粗體)</translation>
 </phrase>
@@ -2996,7 +3016,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>錯誤回報說明</translation>
 </phrase>
 
-<!-- Processor.bas contains 126 phrases. 67 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -5607,7 +5627,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 389 phrases. 207 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 392 phrases. 210 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12470,11 +12490,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>automatic fit</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation>自動換行</translation>
 </phrase>
@@ -12579,7 +12594,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 34 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Step 1: select a language file</original>
@@ -13890,10 +13905,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2637</phrasecount>
+<phrasecount>2640</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5490 phrases. -->
-<!-- 2853 are duplicates, so only 2637 unique phrases have been written to file. -->
-<!-- These 2637 phrases contain approximately 11864 total words. -->
+<!-- As of this build, PhotoDemon contains 5498 phrases. -->
+<!-- 2858 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11873 total words. -->
 
 </pdData>
