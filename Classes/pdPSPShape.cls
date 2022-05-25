@@ -15,13 +15,13 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Vector Shape Container
 'Copyright 2020-2022 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 19/January/21
-'Last update: allow for important of text layers!
+'Last updated: 25/May/22
+'Last update: in text layers, replace standalone LF chars with CRLF to ensure correct linebreak behavior
 '
 'This class describes a single vector "shape" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
 ' Vector rendering elements are automatically translated to pd2D as needed (and pd2D ultimately
-' handles all rendering!).
+' handles all rendering).
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" PSP spec at this URL (link good as of December 2020):
@@ -460,6 +460,14 @@ Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As 
     'With the string assembled, we can actually place it into a text layer
     Dim textContents As String
     textContents = finalString.ToString()
+    
+    'Look for line-breaks and replace as necessary.  (PSP files appear to encode LF only, and we want
+    ' standard Windows CRLF.)
+    If (InStr(1, textContents, vbLf, vbBinaryCompare) <> 0) Then
+        If (InStr(1, textContents, vbCr, vbBinaryCompare) = 0) Then
+            textContents = Replace$(textContents, vbLf, vbCrLf, compare:=vbBinaryCompare)
+        End If
+    End If
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
