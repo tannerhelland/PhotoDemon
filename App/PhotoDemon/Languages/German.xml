@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1580</langversion>
+<langversion>9.0.1582</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -635,12 +635,12 @@
 
 <phrase>
 <original>Heal selected area</original>
-<translation>Selektierten Bereich heilen</translation>
+<translation>Selektierten Bereich heilen (reparieren)</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Auswahl-Outline mittels Strich ziehen</translation>
 </phrase>
 
 <phrase>
@@ -1793,7 +1793,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen. Bitte melden Sie diesen Fehler mittels "Hilfe > Bug-Bericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen. Bitte melden Sie diesen Fehler unter Verwendung von "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -2713,7 +2713,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Preparing image for printing</original>
-<translation>Bild wird für Druck vorbereitet</translation>
+<translation>Vorbereitung des Bildes für Druck</translation>
 </phrase>
 
 <phrase>
@@ -7573,7 +7573,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Stroking outline</original>
-<translation>Stroking der Outline</translation>
+<translation>Ziehen der Outline mittels Strich</translation>
 </phrase>
 
 <phrase>
@@ -10030,7 +10030,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Preparing batch processing engine</original>
-<translation>Batchverarbeitungs-Engine wird vorbereitet</translation>
+<translation>Vorbereitung der Batchverarbeitungs-Engine</translation>
 </phrase>
 
 <phrase>
@@ -11321,7 +11321,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Cropping verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem es stattdessen leere Rahmungen oder Cropping verwendet.</translation>
 </phrase>
 
 <phrase>

@@ -337,7 +337,7 @@ Public Sub GenerateInputFormats()
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
     
     'In v9.0, I wrote a custom XCF parser for PD
-    AddInputFormat "XCF - GIMP (GNU Image Manipulation Program)", "*.xcf", PDIF_XCF
+    AddInputFormat "XCF - GIMP (GNU Image Manipulation Program)", "*.xcf;*.xcfgz;*.xcf.gz", PDIF_XCF
     
     'Finish out the list with an obligatory "All files" option
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
