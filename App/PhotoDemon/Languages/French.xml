@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.582</langversion>
+<langversion>6.7.583</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -200,22 +200,22 @@
 
 <phrase>
 <original>Clear</original>
-<translation></translation>
+<translation>Effacer</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>Effacer selon le contenu</translation>
 </phrase>
 
 <phrase>
 <original>Fill</original>
-<translation></translation>
+<translation>Remplir</translation>
 </phrase>
 
 <phrase>
 <original>Stroke</original>
-<translation></translation>
+<translation>Tracé</translation>
 </phrase>
 
 <phrase>
@@ -630,17 +630,17 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Remplir la zone sélectionnée</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Effacer selon le contenu</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Tracer le contour de sélection</translation>
 </phrase>
 
 <phrase>
@@ -835,12 +835,12 @@
 
 <phrase>
 <original>Gradient map</original>
-<translation></translation>
+<translation>Placage de gradient</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Placage de palette</translation>
 </phrase>
 
 <phrase>
@@ -1015,7 +1015,7 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation>Flux gradués</translation>
+<translation>Flux de dégradé</translation>
 </phrase>
 
 <phrase>
@@ -1035,7 +1035,7 @@
 
 <phrase>
 <original>Bump map</original>
-<translation></translation>
+<translation>Placage de relief</translation>
 </phrase>
 
 <phrase>
@@ -1280,7 +1280,7 @@
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>Vitesse du playback d'animation</translation>
 </phrase>
 
 <phrase>
@@ -2707,7 +2707,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>Mozilla Public License 2.0</original>
-<translation></translation>
+<translation>Mozilla Licence Publique 2.0</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -2887,7 +2887,7 @@ Description: %2
 
 <phrase>
 <original>automatic fit</original>
-<translation></translation>
+<translation>ajustement automatique</translation>
 </phrase>
 
 <phrase>
@@ -3730,7 +3730,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>Repeindre les régions sélectionnées</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5221,7 +5221,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Map</original>
-<translation></translation>
+<translation>Placage</translation>
 </phrase>
 
 <phrase>
@@ -5336,7 +5336,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Playback speed</original>
-<translation></translation>
+<translation>Vitesse de relecture</translation>
 </phrase>
 
 <phrase>
@@ -6378,17 +6378,17 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>gradient type</original>
-<translation></translation>
+<translation>type de dégradé</translation>
 </phrase>
 
 <phrase>
 <original>midpoint</original>
-<translation></translation>
+<translation>point médian</translation>
 </phrase>
 
 <phrase>
 <original>Applying gradient map</original>
-<translation></translation>
+<translation>Application du placage de dégradé</translation>
 </phrase>
 
 <!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7124,7 +7124,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation></translation>
+<translation>En attente: spécifiez les options d'importation</translation>
 </phrase>
 
 <phrase>
@@ -7455,37 +7455,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>above</original>
-<translation></translation>
+<translation>en haut</translation>
 </phrase>
 
 <phrase>
 <original>sample from</original>
-<translation>échantillonner a partir de</translation>
+<translation>échantillonner à partir de</translation>
 </phrase>
 
 <phrase>
 <original>fill order</original>
-<translation></translation>
+<translation>ordre de remplissage</translation>
 </phrase>
 
 <phrase>
 <original>patch test size</original>
-<translation></translation>
+<translation>taille du correctif-test</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>correctif aléatoire</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation></translation>
+<translation>affinement (pourcentage)</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>taux de précision du correctif</translation>
 </phrase>
 
 <phrase>
@@ -7495,27 +7495,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>left</original>
-<translation></translation>
+<translation>à gauche</translation>
 </phrase>
 
 <phrase>
 <original>right</original>
-<translation></translation>
+<translation>à droite</translation>
 </phrase>
 
 <phrase>
 <original>below</original>
-<translation></translation>
+<translation>vers le bas</translation>
 </phrase>
 
 <phrase>
 <original>outside-in</original>
-<translation></translation>
+<translation>extérieur vers l'intérieur'</translation>
 </phrase>
 
 <phrase>
 <original>inside-out</original>
-<translation>intérieur vers extérieur</translation>
+<translation>intérieur vers l'extérieur</translation>
 </phrase>
 
 <!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -7534,49 +7534,49 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush</original>
-<translation></translation>
+<translation>brosse</translation>
 </phrase>
 
 <phrase>
 <original>layer size</original>
-<translation></translation>
+<translation>taille de calque</translation>
 </phrase>
 
 <phrase>
 <original>Applying fill</original>
-<translation></translation>
+<translation>Application du remplissage</translation>
 </phrase>
 
 <phrase>
 <original>do not change</original>
-<translation></translation>
+<translation>ne pas changer</translation>
 </phrase>
 
 <phrase>
 <original>use selection size</original>
-<translation></translation>
+<translation>utiliser la taille de sélection</translation>
 </phrase>
 
 <phrase>
 <original>use combined size (union)</original>
-<translation></translation>
+<translation>utiliser une taille combinée (union)</translation>
 </phrase>
 
 <!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
-<translation></translation>
+<translation>stylo</translation>
 </phrase>
 
 <phrase>
 <original>Stroking outline</original>
-<translation></translation>
+<translation>Traçage du contour</translation>
 </phrase>
 
 <phrase>
 <original>expand to fit stroke (if necessary)</original>
-<translation></translation>
+<translation>étendre pour adapter au tracé (si nécessaire)</translation>
 </phrase>
 
 <!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7697,12 +7697,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>first frame for effect</original>
-<translation></translation>
+<translation>première image de l'effet</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation></translation>
+<translation>dernière image de l'effet</translation>
 </phrase>
 
 <phrase>
@@ -7729,7 +7729,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>speed modifier</original>
-<translation></translation>
+<translation>modificateur de vitese</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8659,12 +8659,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ambient light</original>
-<translation></translation>
+<translation>lumière ambiante</translation>
 </phrase>
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>Génération du placage de relief</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9320,7 +9320,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>coordinates (x, y)</original>
-<translation></translation>
+<translation>coordonnées (x,y)</translation>
 </phrase>
 
 <phrase>
@@ -11668,12 +11668,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>undo</original>
-<translation>annuler</translation>
+<translation>annulation</translation>
 </phrase>
 
 <phrase>
 <original>layout</original>
-<translation></translation>
+<translation>disposition</translation>
 </phrase>
 
 <phrase>
@@ -11698,12 +11698,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>Outils Faire/Refaire: inverse les changements apportés à une image ou un calque</translation>
 </phrase>
 
 <phrase>
 <original>Layout tools: explore, zoom, move or measure an image or layer</original>
-<translation></translation>
+<translation>Outils de mise en place: explorer, zoomer, déplacer, mesurer une image ou un calque</translation>
 </phrase>
 
 <phrase>
@@ -11718,7 +11718,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation>Pinceau : utiliser une souris, un pavé tactile ou une tablette pour appliquer des coups de pinceau sur une image ou un calque</translation>
+<translation>Outils de Peinture : utiliser une souris, un pavé tactile ou une tablette pour peindre sur une image ou un calque</translation>
 </phrase>
 
 <phrase>
@@ -12203,7 +12203,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>size (w, h)</original>
-<translation>taille (w, h)</translation>
+<translation>taille (l, h)</translation>
 </phrase>
 
 <phrase>
@@ -12243,17 +12243,17 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>make transforms permanent</original>
-<translation></translation>
+<translation>rendre les transformations permanentes</translation>
 </phrase>
 
 <phrase>
 <original>sample selections from</original>
-<translation></translation>
+<translation>échantillonner les sélections selon</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation></translation>
+<translation>comportement par défaut des sélections</translation>
 </phrase>
 
 <phrase>
@@ -12299,7 +12299,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>animate</original>
-<translation>animer</translation>
+<translation>activer</translation>
 </phrase>
 
 <phrase>
@@ -12309,17 +12309,17 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>fill interior</original>
-<translation></translation>
+<translation>remplissage intérieur</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation></translation>
+<translation>remplissage extérieur</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation></translation>
+<translation>ouvrir le panneau automatiquement</translation>
 </phrase>
 
 <phrase>
@@ -12359,7 +12359,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Intersect with selection</original>
-<translation>Intersectionner avec la selection</translation>
+<translation>Combiner avec la selection</translation>
 </phrase>
 
 <phrase>
@@ -12476,7 +12476,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation></translation>
+<translation>toujours ouvrir ce panneau pour les nouveaux calques de texte</translation>
 </phrase>
 
 <phrase>
@@ -12588,7 +12588,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>box</original>
-<translation></translation>
+<translation>boite</translation>
 </phrase>
 
 <phrase>

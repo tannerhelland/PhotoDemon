@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1570</langversion>
+<langversion>9.0.1580</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -630,12 +630,12 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Selektierten Bereich füllen</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Selektierten Bereich heilen</translation>
 </phrase>
 
 <phrase>
@@ -1705,12 +1705,12 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Rotating image</original>
-<translation>Drehen des Bildes</translation>
+<translation>Rotieren des Bildes</translation>
 </phrase>
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>Bildleinwand wird rund um Layer angepasst</translation>
+<translation>Anpassung der Bildleinwand rund um Layer</translation>
 </phrase>
 
 <phrase>
@@ -2887,7 +2887,7 @@ Deskription: %2
 
 <phrase>
 <original>automatic fit</original>
-<translation></translation>
+<translation>Automatische Passung</translation>
 </phrase>
 
 <phrase>
@@ -4746,7 +4746,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Change the image size unit displayed to the left of this box</original>
-<translation>Die links von diesem Feld angezeigte Bildgrößeneinheit ändern</translation>
+<translation>Die links von dieser Box angezeigte Bildgrößeneinheit ändern</translation>
 </phrase>
 
 <!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -7512,12 +7512,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>outside-in</original>
-<translation>Outside-In  (von außen nach innen)</translation>
+<translation>Outside-In</translation>
 </phrase>
 
 <phrase>
 <original>inside-out</original>
-<translation>Inside-Out  (von innen nach außen)</translation>
+<translation>Inside-Out</translation>
 </phrase>
 
 <!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -8082,7 +8082,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>box width</original>
-<translation>Quaderbreite</translation>
+<translation>Boxbreite</translation>
 </phrase>
 
 <phrase>
@@ -8092,7 +8092,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>box height</original>
-<translation>Quaderhöhe</translation>
+<translation>Boxhöhe</translation>
 </phrase>
 
 <phrase>
@@ -9401,7 +9401,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rotating area</original>
-<translation>Drehbereich</translation>
+<translation>Rotationsbereich</translation>
 </phrase>
 
 <phrase>
@@ -11343,7 +11343,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Rotating layer</original>
-<translation>Drehen des Layers</translation>
+<translation>Rotieren des Layers</translation>
 </phrase>
 
 <phrase>
@@ -12582,7 +12582,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>box</original>
-<translation></translation>
+<translation>Box</translation>
 </phrase>
 
 <phrase>
