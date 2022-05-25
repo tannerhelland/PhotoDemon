@@ -117,9 +117,24 @@ End Function
 
 'Specialized wrappers follow.
 '
-'Return the precise return code from a zlib decompress operation; this is helpful for obnoxious
+'Return the precise return code from specific decompress operations; this is helpful for obnoxious
 ' edge-cases like PNG files where compressed chunks don't store the original data size, so we
 ' have to manually attempt ever-larger buffers.
+Public Function Decompress_GZip(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByRef actualBytesWritten As Long) As Long
+    
+    'Allocate a decompressor
+    Dim hDecompress As Long
+    hDecompress = libdeflate_alloc_decompressor()
+    If (hDecompress <> 0) Then
+        actualBytesWritten = 0
+        Decompress_GZip = libdeflate_gzip_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, actualBytesWritten)
+        libdeflate_free_decompressor hDecompress
+    Else
+        InternalError "Decompress_GZip", "Failed to initialize a decompressor"
+    End If
+    
+End Function
+
 Public Function Decompress_ZLib(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long) As Long
     
     'Allocate a decompressor

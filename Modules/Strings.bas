@@ -882,6 +882,13 @@ Public Function StringsEqualLeft(ByRef firstString As String, ByRef fixedLengthS
     End If
 End Function
 
+Public Function StringsEqualRight(ByRef firstString As String, ByRef fixedLengthString As String, ByVal ignoreCase As Boolean) As Boolean
+    StringsEqualRight = False
+    If (LenB(firstString) >= LenB(fixedLengthString)) Then
+        StringsEqualRight = StringsEqual(Right$(firstString, Len(fixedLengthString)), fixedLengthString, ignoreCase)
+    End If
+End Function
+
 'Convenience not-wrapper to StringsEqual, above
 Public Function StringsNotEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     StringsNotEqual = Not StringsEqual(firstString, secondString, ignoreCase)

@@ -1426,16 +1426,16 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                 centerX = dstRect.Left + halfWidth
                 centerY = dstRect.Top + halfHeight
                 
-                Dim squareRect As RectF, MaxLength As Double, radiusRect As Double, radiusSquare As Double
-                If (dstRect.Width > dstRect.Height) Then MaxLength = halfWidth Else MaxLength = halfHeight
+                Dim squareRect As RectF, maxLength As Double, radiusRect As Double, radiusSquare As Double
+                If (dstRect.Width > dstRect.Height) Then maxLength = halfWidth Else maxLength = halfHeight
                 radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
-                radiusSquare = Sqr(MaxLength * MaxLength + MaxLength * MaxLength) + 0.5
+                radiusSquare = Sqr(maxLength * maxLength + maxLength * maxLength) + 0.5
                                 
                 With squareRect
-                    .Left = centerX - MaxLength
-                    .Top = centerY - MaxLength
-                    .Width = MaxLength * 2
-                    .Height = MaxLength * 2
+                    .Left = centerX - maxLength
+                    .Top = centerY - maxLength
+                    .Width = maxLength * 2
+                    .Height = maxLength * 2
                 End With
                 
                 'Construct a reference path, using the 1) target rect, and 2) gradient shape to determine path behavior

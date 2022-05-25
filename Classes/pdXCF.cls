@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XCF (GIMP native file format) Container and Parser
 'Copyright 2022-2022 by Tanner Helland
 'Created: 30/March/22
-'Last updated: 11/April/22
-'Last update: add support for layer masks (in all color-depths, yay!)
+'Last updated: 25/May/22
+'Last update: add support for GZip variants (.xcfgz, .xcf.gz)
 '
 'This class handles GIMP XCF format parsing duties.  It is custom-built for PhotoDemon, with an emphasis
 ' on performance and proper color-management of all imported data.
@@ -267,6 +267,10 @@ Private m_xcfVersion As Long
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
 
+'If the XCF file is embedded inside some other container (like .gz, as in "image.xcf.gz"), we will try to
+' extract the bytes to a temporary array, then parse that.  This may or may not work depending on memory constraints.
+Private m_tmpXcfCopy() As Byte
+
 'Validate a source filename as XCF format.  Validation *does* touch the file -
 ' we must validate a "magic number" in the header.
 Friend Function IsFileXCF(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True, Optional ByVal onSuccessLeaveStreamOpen As Boolean = False) As Boolean
@@ -276,16 +280,91 @@ Friend Function IsFileXCF(ByRef srcFilename As String, Optional ByVal requireVal
     If potentiallyXCF Then potentiallyXCF = (Files.FileLenW(srcFilename) > 26)
     
     'Check extension up front, if requested.
-    If (potentiallyXCF And requireValidFileExtension) Then
-        potentiallyXCF = Strings.StringsEqual(Files.FileGetExtension(srcFilename), "xcf", True)
+    Dim useGZMode As Boolean
+    If potentiallyXCF Then
+        
+        'Regardless of extension validation, we need to determine if a GZ-encoded file is being used
+        ' (because that changes how we parse the file).
+        useGZMode = Strings.StringsEqual(Files.FileGetExtension(srcFilename), "xcfgz", True) Or Strings.StringsEqualRight(srcFilename, "xcf.gz", True)
+        
+        'Validate against a normal "XCF" extension or the various gz-encoded sub-types
+        If requireValidFileExtension Then
+            potentiallyXCF = Strings.StringsEqual(Files.FileGetExtension(srcFilename), "xcf", True)
+            If (Not potentiallyXCF) Then potentiallyXCF = useGZMode
+        End If
+        
     End If
     
     'Proceed with deeper validation as necessary
     If potentiallyXCF Then
         
-        'Attempt to load the file
+        'Attempt to load the file.  How we do this varies by XCF file type (GIMP allows you to embed an XCF file
+        ' inside various containers, e.g. xcf.gz).
         Set m_Stream = New pdStream
-        If m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFilename) Then
+        Dim streamOK As Boolean
+        
+        If useGZMode Then
+            
+            If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "XCF is inside GZip wrapper.  Attempting decompression..."
+            
+            'Load the file (which is currently just a compressed stream) into memory
+            Dim origBytes() As Byte
+            If Files.FileLoadAsByteArray(srcFilename, origBytes) Then
+                
+                'If the original file was < 2 GB, its size will be *hypothetically* stored in the last 4 bytes of the stream.
+                Dim decompressedSize As Long
+                GetMem4 VarPtr(origBytes(UBound(origBytes) - 3)), decompressedSize
+                
+                'To reduce the possibility of atrociously bad guesses in a malformed file (which would likely have us
+                ' reading a CRC value instead of the original file size), mask the size against a safe upper limit.
+                decompressedSize = decompressedSize And &HFFFFFFF
+                
+                'If the size field is bad, attempt an arbitrary buffer size (which we'll increase as necessary).
+                If (decompressedSize < 0) Then
+                    Const ARBITRARY_INIT_SIZE As Long = 16000000
+                    decompressedSize = ARBITRARY_INIT_SIZE
+                End If
+                
+                'Attempt to decode the .gz stream into a local array, and keep attempting until we have a big enough
+                ' buffer to hold the result (or we run out of memory entirely).
+                Dim actualDecompressedSize As Long
+                Do
+                    
+                    'Prep a buffer to receive the file copy, then attempt decompression
+                    ReDim m_tmpXcfCopy(0 To decompressedSize - 1) As Byte
+                    
+                    Const ERR_BUFF_TOO_SMALL As Long = 3
+                    Dim ldResult As Long
+                    ldResult = Plugin_libdeflate.Decompress_GZip(VarPtr(m_tmpXcfCopy(0)), decompressedSize, VarPtr(origBytes(0)), UBound(origBytes) + 1, actualDecompressedSize)
+                    
+                    decompressedSize = decompressedSize * 2
+                    
+                Loop While (ldResult = ERR_BUFF_TOO_SMALL) And (decompressedSize < 2 ^ 30)
+                
+                Const DECOMPRESSION_OK As Long = 0
+                If (ldResult = DECOMPRESSION_OK) And (actualDecompressedSize > 0) Then
+                    
+                    If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "GZip decompression worked.  Proceeding normally..."
+                        
+                    'We decompressed the file!  Because we may have allocated a *lot* more space than we needed
+                    ' (and we have a bunch of parsing to do that's gonna accumulate even more memory), reduce the
+                    ' size of the placeholder array as small as possible.
+                    If (UBound(m_tmpXcfCopy) <> actualDecompressedSize - 1) Then ReDim Preserve m_tmpXcfCopy(0 To actualDecompressedSize - 1) As Byte
+                    
+                    'Attempt to start a stream on the temporary array, then let parsing proceed normally from there.
+                    streamOK = m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, actualDecompressedSize, VarPtr(m_tmpXcfCopy(0)))
+                    
+                Else
+                    If XCF_DEBUG_VERBOSE Then PDDebug.LogAction "GZip decompression failed; file parsing abandoned."
+                End If
+                
+            End If
+            
+        Else
+            streamOK = m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFilename)
+        End If
+        
+        If streamOK Then
             
             'The first 9 bytes of an XCF file must be the ASCII values "gimp xcf "
             potentiallyXCF = (m_Stream.ReadString_ASCII(9) = "gimp xcf ")
@@ -296,7 +375,10 @@ Friend Function IsFileXCF(ByRef srcFilename As String, Optional ByVal requireVal
     End If
     
     IsFileXCF = potentiallyXCF
-    If (Not IsFileXCF) Or (Not onSuccessLeaveStreamOpen) Then Set m_Stream = Nothing
+    If (Not IsFileXCF) Or (Not onSuccessLeaveStreamOpen) Then
+        Set m_Stream = Nothing
+        Erase m_tmpXcfCopy
+    End If
     
 End Function
 
