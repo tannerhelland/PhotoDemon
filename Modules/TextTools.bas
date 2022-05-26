@@ -17,6 +17,92 @@ Attribute VB_Name = "Tools_Text"
 
 Option Explicit
 
+'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
+Public Enum PD_TEXT_PROPERTY
+    ptp_Text = 0
+    ptp_FontColor = 1
+    ptp_FontFace = 2
+    ptp_FontSize = 3
+    ptp_FontSizeUnit = 4
+    ptp_FontBold = 5
+    ptp_FontItalic = 6
+    ptp_FontUnderline = 7
+    ptp_FontStrikeout = 8
+    ptp_HorizontalAlignment = 9
+    ptp_VerticalAlignment = 10
+    ptp_TextAntialiasing = 11
+    ptp_TextContrast = 12
+    ptp_RenderingEngine = 13
+    ptp_TextHinting = 14
+    ptp_WordWrap = 15
+    ptp_FillActive = 16
+    ptp_FillBrush = 17
+    ptp_OutlineActive = 18
+    ptp_OutlinePen = 19
+    ptp_BackgroundActive = 20
+    ptp_BackgroundBrush = 21
+    ptp_BackBorderActive = 22
+    ptp_BackBorderPen = 23
+    ptp_LineSpacing = 24
+    ptp_MarginLeft = 25
+    ptp_MarginTop = 26
+    ptp_MarginRight = 27
+    ptp_MarginBottom = 28
+    ptp_CharRemap = 29
+    ptp_CharSpacing = 30
+    ptp_CharOrientation = 31
+    ptp_CharJitterX = 32
+    ptp_CharJitterY = 33
+    ptp_CharInflation = 34
+    ptp_CharMirror = 35
+    ptp_StretchToFit = 36
+End Enum
+
+#If False Then
+    Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
+    Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
+    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillActive = 16, ptp_FillBrush = 17
+    Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
+    Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
+    Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
+    Const ptp_CharMirror = 35, ptp_StretchToFit = 36
+#End If
+
+'PD's internal glyph renderer supports a number of esoteric capabilities
+Public Enum PD_TextWordwrap
+    tww_None = 0
+    tww_Manual = 1
+    tww_AutoCharacter = 2
+    tww_AutoWord = 3
+End Enum
+
+#If False Then
+    Private Const tww_None = 0, tww_Manual = 1, tww_AutoCharacter = 2, tww_AutoWord = 3
+#End If
+
+Public Enum PD_CharacterMirror
+    cm_None = 0
+    cm_Horizontal = 1
+    cm_Vertical = 2
+    cm_Both = 3
+End Enum
+
+#If False Then
+    Private Const cm_None = 0, cm_Horizontal = 1, cm_Vertical = 2, cm_Both = 3
+#End If
+
+'I'm looking at adding additional "stretch-to-fit" text options in future builds, so this is no longer
+' a binary setting but an enum.
+Public Enum PD_TextStretchToFit
+    stf_None = 0
+    stf_Box = 1
+    stf_Slab = 2
+End Enum
+
+#If False Then
+    Private Const stf_None = 0, stf_Box = 1, stf_Slab = 2
+#End If
+
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single)
 
     'One of two things can happen when the mouse is clicked in text mode:

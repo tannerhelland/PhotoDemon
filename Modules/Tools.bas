@@ -848,8 +848,9 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_TextBasic.btsVAlignment.ListIndex
                 End With
                 
-                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
-                ' This is because this property changes according to the active text tool.
+                'This is a little weird, but we also make sure to synchronize the current text rendering engine when
+                ' the UI is synched, because this property changes according to the type of text layer.
+                ' (Basic text layers are rendered using the built-in Windows text renderer.)
                 PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, te_WAPI
             
             Case TEXT_ADVANCED
@@ -858,7 +859,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_Text, toolpanel_TextAdvanced.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_TextAdvanced.cboTextFontFace.List(toolpanel_TextAdvanced.cboTextFontFace.ListIndex)
                     .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.Value
-                    .SetTextLayerProperty ptp_StretchToFit, (toolpanel_TextAdvanced.btsStretch.ListIndex = 1)
+                    .SetTextLayerProperty ptp_StretchToFit, toolpanel_TextAdvanced.btsStretch.ListIndex
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextAdvanced.cboTextRenderingHint.ListIndex
                     .SetTextLayerProperty ptp_TextHinting, (toolpanel_TextAdvanced.btsHinting.ListIndex = 1)
                     .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).Value
@@ -890,8 +891,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.Value
                 End With
                 
-                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
-                ' This is because this property changes according to the active text tool.
+                'Advanced text layers are rendered using a PhotoDemon-specific renderer.
                 PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, te_PhotoDemon
         
         End Select

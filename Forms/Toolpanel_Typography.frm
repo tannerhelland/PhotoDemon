@@ -907,7 +907,7 @@ End Sub
 Private Sub btsStretch_Click(ByVal buttonIndex As Long)
     If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     Tools.SetToolBusyState True
-    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_StretchToFit, (btsStretch.ListIndex = 1)
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_StretchToFit, btsStretch.ListIndex
     Tools.SetToolBusyState False
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
@@ -915,11 +915,11 @@ End Sub
 Private Sub btsStretch_GotFocusAPI()
     UpdateFlyout 1, True
     If (Not PDImages.IsImageActive()) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_StretchToFit, (btsStretch.ListIndex = 1), PDImages.GetActiveImage.GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_StretchToFit, btsStretch.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsStretch_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_StretchToFit, (btsStretch.ListIndex = 1)
+    Processor.FlagFinalNDFXState_Text ptp_StretchToFit, btsStretch.ListIndex
 End Sub
 
 Private Sub btsStretch_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -2056,7 +2056,7 @@ Public Sub SyncSettingsToCurrentLayer()
     txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
     cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
     sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
-    If PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_StretchToFit) Then btsStretch.ListIndex = 1 Else btsStretch.ListIndex = 0
+    btsStretch.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_StretchToFit)
     cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
     If PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextHinting) Then btsHinting.ListIndex = 1 Else btsHinting.ListIndex = 0
     btnFontStyles(0).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))

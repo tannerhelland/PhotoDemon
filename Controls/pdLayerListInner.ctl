@@ -158,6 +158,7 @@ Private m_InOLEDragDropMode As Boolean
 ' Also, the layer-to-be-moved is tracked, as is the initial layer index (which is required for processing the final
 ' action, e.g. the one that triggers Undo/Redo creation).
 Private m_LayerRearrangingMode As Boolean, m_LayerMovingID As Long, m_LayerIndexToRearrange As Long, m_InitialLayerIndex As Long
+Private m_ActiveLayerIDatMouseDown As Long
 
 'When the user is in "edit layer name" mode, this will be set to TRUE
 Private m_LayerNameEditMode As Boolean
@@ -528,8 +529,9 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             ' the active layer.
             Else
             
-                'See if the clicked layer differs from the current active layer
-                If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
+                'See if the clicked layer differs from the active layer at _MouseDown; if it does, redraw the viewport.
+                ' (This ensures correct UI behavior on tools like move/size that render decorations on the current layer.)
+                If (m_ActiveLayerIDatMouseDown <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
                     Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
                     Layers.SetActiveLayerByIndex clickedLayer, False
                     Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -683,6 +685,10 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             
             'Enter layer rearranging mode
             m_LayerRearrangingMode = True
+            
+            'Note the ID of the active layer *before* the mouse button was pressed - we may activate a new layer,
+            ' and at _MouseUp, we'll need to account for that.
+            m_ActiveLayerIDatMouseDown = PDImages.GetActiveImage.GetActiveLayerID
             
             'If the selected layer is not the active one, make it so
             If (clickedLayer <> PDImages.GetActiveImage.GetActiveLayerIndex) Then Layers.SetActiveLayerByIndex clickedLayer, False

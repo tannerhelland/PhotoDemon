@@ -18,29 +18,6 @@ Attribute VB_Name = "TextSupport"
 
 Option Explicit
 
-'PD's internal glyph renderer supports a number of esoteric capabilities
-Public Enum PD_TextWordwrap
-    tww_None = 0
-    tww_Manual = 1
-    tww_AutoCharacter = 2
-    tww_AutoWord = 3
-End Enum
-
-#If False Then
-    Private Const tww_None = 0, tww_Manual = 1, tww_AutoCharacter = 2, tww_AutoWord = 3
-#End If
-
-Public Enum PD_CharacterMirror
-    cm_None = 0
-    cm_Horizontal = 1
-    cm_Vertical = 2
-    cm_Both = 3
-End Enum
-
-#If False Then
-    Private Const cm_None = 0, cm_Horizontal = 1, cm_Vertical = 2, cm_Both = 3
-#End If
-
 'Check a Long-type value to see if it falls within a given range
 Public Function RangeValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double) As Boolean
     If (checkVal >= cMin) And (checkVal <= cMax) Then

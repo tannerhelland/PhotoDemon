@@ -762,7 +762,7 @@ End Sub
 
 'Same idea as setActiveLayerByID, above
 Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
-
+    
     'If this layer is already active, ignore the request
     If (PDImages.GetActiveImage.GetActiveLayerID <> PDImages.GetActiveImage.GetLayerByIndex(newLayerIndex).GetLayerID) Then
         

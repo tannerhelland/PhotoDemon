@@ -21,37 +21,36 @@ Attribute VB_Exposed = False
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
 '
-'I originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend (with
-' Uniscribe stuff handled separately).  But there are complications with this.  GDI and GDI+ have different strengths
-' and weaknesses (GDI has no 32-bpp rendering support, while GDI+ doesn't support OpenType), so to really provide a
-' decent font experience without native libraries, one must utilize parts of all the libraries.
+'I originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend
+' (with Uniscribe stuff handled separately).  But there are complications with this.  GDI and GDI+ have different
+' strengths and weaknesses (GDI has no 32-bpp rendering support, while GDI+ doesn't support OpenType), so to really
+' provide a decent font rendering experience on Windows, it's unavoiadable to drag multiple libraries into the mix.
+' (This is a recurring theme with literally all things on Windows - there's never one "best choice" library
+' for anything.)
 '
-'Hence this class.  Here's the basic setup:
+'Here's the basic setup for this class:
 '
-'For the WAPI text rendering engine...
+'PhotoDemon's basic text tool attempts to use built-in Windows renderers, with the following caveats...
 '
-' - With TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice, typographic-specific
-' features (like variable antialiasing contrast).
+' - On TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice,
+' typographic-specific features (like variable antialiasing contrast).
 '
-' - With OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
-' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bezier curve format).  The final,
-' resultant shape(s) are then passed to GDI+ as a generic path object, which we can render with any of GDI+'s native
-' features (antialiasing, fancy gradients, etc).
+' - With OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed,
+' and converted into a usable format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native
+' cubic Bezier curve format).  The final, resultant shape(s) are then passed to GDI+ as a generic path,
+' which we can then render with native GDI+ features (antialiasing, fancy gradients, etc).
 '
-'This unpleasant hybrid approach is part of the shit we deal with as Windows developers, I guess.
+'This unpleasant hybrid approach is part of the shit you deal with as a Windows developer.
 '
 'For the PHOTODEMON text rendering engine...
 '
-' - A comprehensive Uniscribe interface is used for text shaping, layout, and placement.  This allows us to make use of just
-'   about every possible OpenType font feature, which is amazing!
+' - A comprehensive Uniscribe interface is used for text shaping, layout, and placement.  This allows me to use
+'   pretty much every possible OpenType font feature, which is amazing!
 '
 ' - Glyph paths are retrieved via GDI, and manually parsed into GDI+ path objects.  The details are handled by the
 '   pdGlyphCollection class.
 '
-' - Actual rendering duties are handled by GDI+.
-'
-'Dependencies:
-'  - Fonts module, which handles some of the messier bits of GDI interaction
+' - Rendering the final path(s) is done by GDI+.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -63,58 +62,8 @@ Option Explicit
 'When debugging, performance reports can be helpful
 Private Const REPORT_TEXT_RENDER_TIMING As Boolean = False
 
-'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
-Public Enum PD_TEXT_PROPERTY
-    ptp_Text = 0
-    ptp_FontColor = 1
-    ptp_FontFace = 2
-    ptp_FontSize = 3
-    ptp_FontSizeUnit = 4
-    ptp_FontBold = 5
-    ptp_FontItalic = 6
-    ptp_FontUnderline = 7
-    ptp_FontStrikeout = 8
-    ptp_HorizontalAlignment = 9
-    ptp_VerticalAlignment = 10
-    ptp_TextAntialiasing = 11
-    ptp_TextContrast = 12
-    ptp_RenderingEngine = 13
-    ptp_TextHinting = 14
-    ptp_WordWrap = 15
-    ptp_FillActive = 16
-    ptp_FillBrush = 17
-    ptp_OutlineActive = 18
-    ptp_OutlinePen = 19
-    ptp_BackgroundActive = 20
-    ptp_BackgroundBrush = 21
-    ptp_BackBorderActive = 22
-    ptp_BackBorderPen = 23
-    ptp_LineSpacing = 24
-    ptp_MarginLeft = 25
-    ptp_MarginTop = 26
-    ptp_MarginRight = 27
-    ptp_MarginBottom = 28
-    ptp_CharRemap = 29
-    ptp_CharSpacing = 30
-    ptp_CharOrientation = 31
-    ptp_CharJitterX = 32
-    ptp_CharJitterY = 33
-    ptp_CharInflation = 34
-    ptp_CharMirror = 35
-    ptp_StretchToFit = 36
-End Enum
-
-#If False Then
-    Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
-    Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
-    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillActive = 16, ptp_FillBrush = 17
-    Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
-    Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
-    Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
-    Const ptp_CharMirror = 35, ptp_StretchToFit = 36
-#End If
-
-'At present, only WAPI font backends are available.
+'This class switches between GDI and GDI+ as necessary.  It sets this flag automatically based on current class settings
+' and success/failure of various WAPI calls.
 Private Enum fontBackend
     fb_UNKNOWN = 0
     fb_GDIPLUS = 1
@@ -125,13 +74,17 @@ End Enum
     Private Const fb_UNKNOWN = 0, fb_GDIPLUS = 1, fb_GDI = 2
 #End If
 
-'Because I want switches between GDI and GDI+ to be transparent, this class will dynamically track which engine is required
-' for rendering.  If a setting changes (and renders the font cache invalid), this value will be reset to UNKNOWN.  On the next
-' font object creation attempt, the required backend will be automatically determined, based on the current class settings.
+'If a text setting changes (and renders the current font cache invalid), this backend value gets reset to UNKNOWN.
+' On the next font object creation attempt, the required backend is automatically determined based on both class settings
+' and whether we could initialize the engine we want.  (Note that text will *always* be rendered successfully,
+' so you don't need to concern yourself with how PD renders the text - it'll figure out a solution regardless of
+' GDI/GDI+ weirdness.)
 Private m_CurrentBackend As fontBackend
 
-'This class provides two basic rendering engines: WAPI and MANUAL.  WAPI limits you to innate features of GDI and GDI+ (BOOOORING).
-' MANUAL offloads all rendering to PD's manual glyph renderer, and enables... well, pretty much anything I can think to implement.
+'This class provides two different text rendering engines: WAPI and MANUAL.  WAPI is used for basic text layers, and it is
+' thus limited by the innate feature support of GDI and GDI+ (BOOOORING).  The "PhotoDemon" backend is a homebrew text
+' renderer that can do pretty much anything we want.  It's extremely powerful, but note that it still dips into WAPI for
+' various features (e.g. Uniscribe is used for glyph layout, and then we apply our own features atop those results).
 Public Enum PD_TextEngine
     te_WAPI = 0
     te_PhotoDemon = 1
@@ -143,15 +96,15 @@ End Enum
 
 Private m_RenderingEngine As PD_TextEngine
 
-'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown (e.g. GDI+ font handling is
-' a pile of garbage).  Here are a few common failure states.
-Private Const gdipFontFamilyNotFound As Long = 14
-Private Const gdipFontStyleNotFound As Long = 15
-Private Const gdipNotTrueTypeFont As Long = 16
+'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown
+' (e.g. GDI+ font handling is a pile of garbage).  Here are a few common failure states.
+Private Const GDIP_FONT_FAMILY_NOT_FOUND As Long = 14
+Private Const GDIP_FONT_STYLE_NOT_FOUND As Long = 15
+Private Const GDIP_FONT_NOT_TRUETYPE As Long = 16
 
-'GDI+ supports multiple measurement modes, and these may actually be relevant for fonts.  Because GDI+ provides some units
-' that we don't want to expose to users (e.g. "World", "Display"), PD uses its own font size enumeration, which we translate
-' to corresponding GDI+ units as necessary.
+'GDI+ supports multiple measurement modes, and these may actually be relevant for fonts.  Because GDI+ provides
+' units that we don't want to expose to users (e.g. "World", "Display"), PD uses its own font size enumeration,
+' which we translate to corresponding GDI+ units as necessary.
 Public Enum PD_FontUnit
     fu_Pixel = 0
     fu_Point = 1
@@ -161,8 +114,8 @@ End Enum
     Private Const fu_Pixel = 0, fu_Point = 1
 #End If
 
-'GDI+ maps a number of enums to this default "QualityMode" enum.  These values tend to be unpredictable, so I recommend sticking with
-' explicit mapping options whenever possible.
+'GDI+ maps a number of enums to this default "QualityMode" enum.  These values tend to be unpredictable,
+' so I recommend sticking with explicit mapping options whenever possible.
 Private Enum GdiPlusQualityMode
     QualityModeInvalid = -1
     QualityModeDefault = 0
@@ -189,8 +142,9 @@ End Enum
     Private Const GP_SM_None = 0, GP_SM_Antialias = 0
 #End If
 
-'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).  Rather than expose a confusing list
-' of operators that may or may not be relevant, PD uses its own AA enumeration, which we translate to corresponding GDI+ units as necessary.
+'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).
+' Rather than expose a confusing list of operators that may or may not be relevant, PD uses its own AA enumeration,
+' which we translate to corresponding GDI+ units as necessary.
 Public Enum pdTextAA
     pdta_None = 0
     pdta_Standard = 1
@@ -249,7 +203,8 @@ End Enum
     Private Const FontStyleRegular = 0, FontStyleBold = 1, FontStyleItalic = 2, FontStyleBoldItalic = 3, FontStyleUnderline = 4, FontStyleStrikeout = 8
 #End If
 
-'GDI+ string format settings.  Note that "near" and "far" monikers are used, to better support RTL languages.
+'GDI+ string format settings.  Note that "near" and "far" monikers are used instead of left/right; this affects
+' handling of RTL languages in a more natural way.
 Public Enum GdiPlusStringAlignment
     StringAlignmentNear = 0
     StringAlignmentCenter = 1
@@ -276,7 +231,6 @@ Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstString
 Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As GP_Result
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As GP_Result
-'Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RectF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RectF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As GP_Result
 
 'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As GP_Result
@@ -305,7 +259,6 @@ Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPo
 
 'Back color modes (PD only uses transparent fonts)
 Private Const FONT_TRANSPARENT As Long = &H1
-'Private Const FONT_OPAQUE As Long = &H2
 
 'Formatting constants for DrawText
 Private Enum Win32_DrawTextConstants
@@ -375,7 +328,7 @@ Private m_TextContrast As Long
 'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
 Private m_TextHinting As Boolean
 Private m_WordWrap As PD_TextWordwrap
-Private m_StretchToFit As Boolean
+Private m_StretchToFit As PD_TextStretchToFit
 Private m_FillActive As Boolean
 Private m_FillBrush As String
 Private m_OutlineActive As Boolean
@@ -575,18 +528,6 @@ Private Function GetFontSizeUnitFromString(ByRef srcString As String) As PD_Font
     End If
 End Function
 
-'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
-' which uses GDI and Uniscribe to retrieve individual glyphs, but then does all positioning and rendering manually.
-'
-'Note that this setting does not initiate a font refresh, as PD generates a GDI font copy by default, regardless of rendering engine or font backend.
-Friend Function GetRenderingEngine() As PD_TextEngine
-    GetRenderingEngine = m_RenderingEngine
-End Function
-
-Friend Sub SetRenderingEngine(ByVal newEngine As PD_TextEngine)
-    m_RenderingEngine = newEngine
-End Sub
-
 Private Function GetRendererStringFromEnum(ByVal srcValue As PD_TextEngine) As String
     If (srcValue = te_WAPI) Then
         GetRendererStringFromEnum = "wapi"
@@ -606,6 +547,26 @@ Private Function GetRendererEnumFromString(ByRef srcValue As String) As PD_TextE
     Else
         InternalError "GetRendererEnumFromString", "bad value: " & srcValue
         GetRendererEnumFromString = te_WAPI
+    End If
+End Function
+
+Private Function GetStretchToFitEnumFromString(ByRef srcValue As String) As PD_TextStretchToFit
+    If (srcValue = "none") Then
+        GetStretchToFitEnumFromString = stf_None
+    ElseIf (srcValue = "box") Then
+        GetStretchToFitEnumFromString = stf_Box
+    ElseIf (srcValue = "slab") Then
+        GetStretchToFitEnumFromString = stf_Slab
+    End If
+End Function
+
+Private Function GetStretchToFitStringFromEnum(ByVal srcValue As PD_TextStretchToFit) As String
+    If (srcValue = stf_None) Then
+        GetStretchToFitStringFromEnum = "none"
+    ElseIf (srcValue = stf_Box) Then
+        GetStretchToFitStringFromEnum = "box"
+    ElseIf (srcValue = stf_Slab) Then
+        GetStretchToFitStringFromEnum = "slab"
     End If
 End Function
 
@@ -744,7 +705,7 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-text-renderer", GetRendererStringFromEnum(m_RenderingEngine), True, True
         .AddParam "obj-hinting", m_TextHinting, True, True
         .AddParam "obj-wordwrap-mode", GetWordwrapStringFromEnum(m_WordWrap), True, True
-        .AddParam "obj-stretch-to-fit", m_StretchToFit, True, True
+        .AddParam "obj-stretch-to-fit", GetStretchToFitStringFromEnum(m_StretchToFit), True, True
         .AddParam "obj-fill-active", m_FillActive, True, True
         .AddParam "obj-fill-brush", m_FillBrush, True, False
         .AddParam "obj-stroke-active", m_OutlineActive, True, True
@@ -812,7 +773,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_RenderingEngine, GetRendererEnumFromString(.GetString("obj-text-renderer", GetRendererStringFromEnum(te_WAPI), True))
             SetGenericTextProperty ptp_TextHinting, .GetBool("obj-hinting", False)
             SetGenericTextProperty ptp_WordWrap, GetWordwrapEnumFromString(.GetString("obj-wordwrap-mode", GetWordwrapStringFromEnum(tww_AutoWord), True))
-            SetGenericTextProperty ptp_StretchToFit, .GetBool("obj-stretch-to-fit", False, True)
+            SetGenericTextProperty ptp_StretchToFit, GetStretchToFitEnumFromString(.GetString("obj-stretch-to-fit", False, True))
             SetGenericTextProperty ptp_FillActive, .GetBool("obj-fill-active", True)
             SetGenericTextProperty ptp_FillBrush, .GetString("obj-fill-brush", vbNullString)
             SetGenericTextProperty ptp_OutlineActive, .GetBool("obj-stroke-active", False)
@@ -1125,8 +1086,8 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             End If
         
         Case ptp_StretchToFit
-            If (m_StretchToFit <> CBool(newValue)) Then
-                m_StretchToFit = CBool(newValue)
+            If (m_StretchToFit <> CLng(newValue)) Then
+                m_StretchToFit = CLng(newValue)
                 SetGenericTextProperty = True
             End If
             
@@ -1458,13 +1419,13 @@ Private Sub ReportGDIPlusFailure(ByVal failCode As Long)
     'FYI, GDI+ failures are expected and frequent, so my interest in them is primarily academic at present.
     Select Case failCode
     
-        Case gdipFontFamilyNotFound
+        Case GDIP_FONT_FAMILY_NOT_FOUND
             PDDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
             
-        Case gdipFontStyleNotFound
+        Case GDIP_FONT_STYLE_NOT_FOUND
             PDDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
             
-        Case gdipNotTrueTypeFont
+        Case GDIP_FONT_NOT_TRUETYPE
             PDDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
             
         Case Else
@@ -1495,11 +1456,8 @@ Private Function CreateGDIFont() As Boolean
     
 End Function
 
-'Use this function to render arbitrary text to an arbitrary DIB.  Performance should be decent, but if you're going to be making
-' a ton of successive calls, it's probably worthwhile to cache a GDI+ graphics instance that points to the target.  (This class does
-' not currently offer a function for that, FYI.)
-'
-'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
+'Use this function to render arbitrary text to an arbitrary DIB.  All class properties must be initialized
+' *prior* to this point (correct behavior is not otherwise guaranteed).
 Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
@@ -2332,7 +2290,7 @@ Private Sub Class_Initialize()
     
     m_WordWrap = tww_AutoWord
     m_FillActive = True
-    m_StretchToFit = False
+    m_StretchToFit = stf_None
     
     'Set default graphics container text settings
     m_TextContrast = 4
@@ -2385,7 +2343,7 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", te_WAPI)
         SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
         SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tww_AutoWord)
-        SetGenericTextProperty ptp_StretchToFit, False
+        SetGenericTextProperty ptp_StretchToFit, stf_None
         SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
         SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
         SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)

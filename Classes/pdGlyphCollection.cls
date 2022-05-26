@@ -634,7 +634,7 @@ End Sub
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByVal stretchToFit As Boolean = False) As Boolean
+Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None) As Boolean
     
     'Initialize the destination path as necessary
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
@@ -829,7 +829,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         If m_StyleUnderline Or m_StyleStrikeout Then dstPath.AddPath additionalStylesRect
         
         'If stretch-to-fit mode is active, manually squeeze the final path into the passed bounding box
-        If stretchToFit Then
+        If (stretchToFit = stf_Box) Then
             
             Dim cTransform As pd2DTransform
             Set cTransform = New pd2DTransform
@@ -867,7 +867,7 @@ End Function
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes
 ' from Uniscribe; this function is primarily responsible for line breaks, and any PD-specific positioning changes
 ' (e.g. modified line or character spacing).
-Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByRef dstStylePath As pd2DPath, Optional ByVal stretchToFit As Boolean = False) As Boolean
+Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByRef dstStylePath As pd2DPath, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, glyphCheck As Long
@@ -890,7 +890,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     
     'If stretch-to-fit mode is active, we cannot auto-calculate linebreaks.  The only line breaks we
     ' respect in stretch-to-fit mode are hard-coded linebreaks from the original string.
-    If stretchToFit Then lineWrapMode = tww_Manual
+    If (stretchToFit <> stf_None) Then lineWrapMode = tww_Manual
     
     'Prior to processing each glyph, we cache some unchanging values (like line increments)
     
