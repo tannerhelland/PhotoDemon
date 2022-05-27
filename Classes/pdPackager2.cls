@@ -494,25 +494,25 @@ End Function
 Private Sub SetCompressionFlag(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal compressData As PD_CompressionFormat, ByVal newState As Boolean, Optional ByVal updateFileHeaderToo As Boolean = True)
 
     If (compressData = cf_Zstd) Then
-        If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZstdRequired, newState, m_FileHeader.DataFlags(0)
+        If updateFileHeaderToo Then SetBitFlag_Long PDP_HF2_ZstdRequired, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
-            SetBitFlag PDP_NF2_ZstdRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_ZstdRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         Else
-            SetBitFlag PDP_NF2_ZstdRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_ZstdRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
     ElseIf (compressData = cf_Zlib) Then
-        If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZlibRequired, newState, m_FileHeader.DataFlags(0)
+        If updateFileHeaderToo Then SetBitFlag_Long PDP_HF2_ZlibRequired, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
-            SetBitFlag PDP_NF2_ZlibRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_ZlibRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         Else
-            SetBitFlag PDP_NF2_ZlibRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_ZlibRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
     ElseIf ((compressData = cf_Lz4) Or (compressData = cf_Lz4hc)) Then
-        If updateFileHeaderToo Then SetBitFlag PDP_HF2_Lz4Required, newState, m_FileHeader.DataFlags(0)
+        If updateFileHeaderToo Then SetBitFlag_Long PDP_HF2_Lz4Required, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
-            SetBitFlag PDP_NF2_Lz4RequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_Lz4RequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         Else
-            SetBitFlag PDP_NF2_Lz4Required, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_NF2_Lz4Required, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
     End If
     
@@ -581,8 +581,8 @@ Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             
             'Mark a special flag bit in this node, to identify it as an auto-added file entry.  This simplifies the extraction process later,
             ' and also provides a failsafe against the user adding their own nodes called "PDPFILE".
-            SetBitFlag PDP_HF2_FileCollection, True, m_FileHeader.DataFlags(0)
-            SetBitFlag PDP_NF2_FileNode, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_HF2_FileCollection, True, m_FileHeader.DataFlags(0)
+            SetBitFlag_Long PDP_NF2_FileNode, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
             
         End If
     
@@ -810,11 +810,11 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         m_FileHeader.DirectoryChunkSizePacked = compressedSize
         
         If ((secondPassDirectoryCompression = cf_Zstd) And (originalSize <> compressedSize)) Then
-            SetBitFlag PDP_HF2_ZstdRequired, True, m_FileHeader.DirectoryFlags(0)
+            SetBitFlag_Long PDP_HF2_ZstdRequired, True, m_FileHeader.DirectoryFlags(0)
         ElseIf ((secondPassDirectoryCompression = cf_Zlib) And (originalSize <> compressedSize)) Then
-            SetBitFlag PDP_HF2_ZlibRequired, True, m_FileHeader.DirectoryFlags(0)
+            SetBitFlag_Long PDP_HF2_ZlibRequired, True, m_FileHeader.DirectoryFlags(0)
         ElseIf (((secondPassDirectoryCompression = cf_Lz4) Or (secondPassDirectoryCompression = cf_Lz4hc)) And (originalSize <> compressedSize)) Then
-            SetBitFlag PDP_HF2_Lz4Required, True, m_FileHeader.DirectoryFlags(0)
+            SetBitFlag_Long PDP_HF2_Lz4Required, True, m_FileHeader.DirectoryFlags(0)
         End If
         
     Else
@@ -1055,11 +1055,11 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
                 Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_None
-                If GetBitFlag(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
+                If VBHacks.GetBitFlag_Long(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Zstd
-                ElseIf GetBitFlag(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
+                ElseIf VBHacks.GetBitFlag_Long(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Zlib
-                ElseIf GetBitFlag(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
+                ElseIf VBHacks.GetBitFlag_Long(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Lz4
                 End If
                 
@@ -1258,11 +1258,11 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
                 'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
                 Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_None
-                If GetBitFlag(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
+                If VBHacks.GetBitFlag_Long(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Zstd
-                ElseIf GetBitFlag(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
+                ElseIf VBHacks.GetBitFlag_Long(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Zlib
-                ElseIf GetBitFlag(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
+                ElseIf VBHacks.GetBitFlag_Long(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
                     cmpFormat = cf_Lz4
                 End If
                 
@@ -1460,7 +1460,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If GetBitFlag(PDP_NF2_FileNode, m_NodeDirectory(i).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_NF2_FileNode, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1640,7 +1640,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If GetBitFlag(PDP_NF2_FileNode, m_NodeDirectory(i).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_NF2_FileNode, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1988,19 +1988,19 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
         Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_Zstd
         If useHeaderBuffer Then
-            If GetBitFlag(PDP_NF2_ZstdRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_NF2_ZstdRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Zstd
-            ElseIf GetBitFlag(PDP_NF2_ZlibRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            ElseIf VBHacks.GetBitFlag_Long(PDP_NF2_ZlibRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Zlib
-            ElseIf GetBitFlag(PDP_NF2_Lz4RequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            ElseIf VBHacks.GetBitFlag_Long(PDP_NF2_Lz4RequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Lz4
             End If
         Else
-            If GetBitFlag(PDP_NF2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_NF2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Zstd
-            ElseIf GetBitFlag(PDP_NF2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            ElseIf VBHacks.GetBitFlag_Long(PDP_NF2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Zlib
-            ElseIf GetBitFlag(PDP_NF2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            ElseIf VBHacks.GetBitFlag_Long(PDP_NF2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
                 cmpFormat = cf_Lz4
             End If
         End If
@@ -2122,59 +2122,6 @@ Friend Function GetNodeDataByIndex_String(ByVal targetNodeIndex As Long, ByVal u
     
 End Function
 
-'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.
-' Inputs:
-'  1) position of the flag, which must be in the range [0, 31]
-'  2) value of the flag, TRUE for 1, FALSE for 0
-'  3) The Long-type value where you want the flag placed
-Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        
-        'Write a 1 flag
-        If flagValue Then
-        
-            'Blend the flag with the source Long using OR, which will force the target bit to 1 while preserving the rest of the Long's contents
-            copyOfDstLong = copyOfDstLong Or longMask
-        
-        'Write a 0 flag
-        Else
-        
-            'Blend the INVERSE flag with the source Long, which will force the target bit to 0 while preserving the rest of the Long's contents
-            copyOfDstLong = copyOfDstLong And Not longMask
-        
-        End If
-        
-    Else
-        'InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
-    End If
-
-End Sub
-
-'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.
-' Inputs:
-'  1) position of the flag, which must be in the range [0, 31]
-'  2) The Long from which you want the bit retrieved
-Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        
-        GetBitFlag = ((srcLong And longMask) <> 0)
-        
-    Else
-        'InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
-    End If
-
-End Function
-
 'Once a package has been loaded from file, you can use this function to check various flags in the file
 Friend Function GetPackageFlag(ByVal flagToCheck As Byte, Optional ByVal checkLocation As PDP_FLAG_SOURCE = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
 
@@ -2185,14 +2132,14 @@ Friend Function GetPackageFlag(ByVal flagToCheck As Byte, Optional ByVal checkLo
         Case PDP_FS_Any
         
             'Check directory and data flags first
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DataFlags(0))
             
             'If the flag is still false, scan individual nodes, looking for a hit
             If Not GetPackageFlag Then
             
                 Dim i As Long
                 For i = 0 To m_numOfNodes - 1
-                    GetPackageFlag = GetPackageFlag Or GetBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
+                    GetPackageFlag = GetPackageFlag Or VBHacks.GetBitFlag_Long(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
                     If GetPackageFlag Then Exit For
                 Next i
             
@@ -2200,15 +2147,15 @@ Friend Function GetPackageFlag(ByVal flagToCheck As Byte, Optional ByVal checkLo
         
         'Directory chunk flags
         Case PDP_FS_Directory
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DirectoryFlags(0))
         
         'Data chunk flags
         Case PDP_FS_Data
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DataFlags(0))
         
         'Specific node flags; if used, we'd better hope the user supplied the right node index!
         Case PDP_FS_IndividualNode
-            GetPackageFlag = GetBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
     
     End Select
 

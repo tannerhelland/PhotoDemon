@@ -3,10 +3,8 @@ Attribute VB_Name = "VBHacks"
 'Misc VB6 Hacks
 'Copyright 2016-2022 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 05/April/20
-'Last update: remove SafeArrayLock/Unlock calls when aliasing arrays; these have complications
-'             when multithreading because lock counts can desynchronize - see MSDN for details:
-'             https://docs.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-safearraylock
+'Last updated: 27/May/22
+'Last update: move various incarnations of Get/SetBitFlag functions here, and build a fixed-size flag table for perf reasons
 '
 'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations
 ' and C-style code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to
@@ -129,6 +127,8 @@ Private m_TimerFrequency As Currency
 Private m_EditBoxRef As pdEditBoxW
 Private m_AcceleratorRef As pdAccelerator
 Private m_PDIKRef As pdInputKeyboard
+
+Private m_BitFlags(0 To 31) As Long, m_BitFlagsReady As Boolean
 
 '"Wrap" an arbitrary VB array at some other arbitrary array.  The new array must *NOT* be initialized
 ' or its memory will leak.
@@ -405,6 +405,45 @@ Public Sub PurgeInputMessages(ByVal srcHWnd As Long)
     Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1& Or PM_QS_INPUT)
     Loop
     
+End Sub
+
+Private Sub BuildBitFlagTable()
+    Dim i As Long
+    For i = 0 To 30
+        m_BitFlags(i) = 2 ^ i
+    Next i
+    m_BitFlags(31) = &H80000000
+    m_BitFlagsReady = True
+End Sub
+
+'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.
+' Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31 is the SIGN BIT for a standard VB Long.
+'
+' Inputs:
+'  1) position of the flag, which must be in the range [0, 31]
+'  2) The Long from which you want the bit retrieved
+Public Function GetBitFlag_Long(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+    If (flagPosition >= 0) And (flagPosition <= 31) Then
+        If (Not m_BitFlagsReady) Then BuildBitFlagTable
+        GetBitFlag_Long = (Int(srcLong And m_BitFlags(flagPosition)) <> 0)
+    End If
+End Function
+
+'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.
+' Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31 is the SIGN BIT for a standard VB Long.
+' Inputs:
+'  1) position of the flag, which must be in the range [0, 31]
+'  2) value of the flag, TRUE for 1, FALSE for 0
+'  3) The Long-type value where you want the flag placed
+Public Sub SetBitFlag_Long(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef dstLong As Long)
+    If (flagPosition >= 0) And (flagPosition <= 31) Then
+        If (Not m_BitFlagsReady) Then BuildBitFlagTable
+        If flagValue Then
+            dstLong = dstLong Or m_BitFlags(flagPosition)
+        Else
+            dstLong = dstLong And Not m_BitFlags(flagPosition)
+        End If
+    End If
 End Sub
 
 Public Function FreeLib(ByRef hLib As Long) As Boolean

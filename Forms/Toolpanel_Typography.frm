@@ -1326,6 +1326,8 @@ Private Sub chkOutlineText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
 End Sub
 
 Private Sub cmdConvertLayer_Click()
+        
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
     PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextAdvanced

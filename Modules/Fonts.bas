@@ -636,7 +636,7 @@ End Function
 'Once I have a better idea of what I can do with font quality, I'll be switching the fontQuality Enum to something internal to PD.
 ' But right now, I'm still in the exploratory phase, and trying to figure out whether different font quality settings affect
 ' the glyph outline returned.  (They should, technically, since hinting affects font shape.)
-Public Sub FillLogFontW_Quality(ByRef dstLogFontW As LOGFONTW, ByVal fontQuality As GdiPlusTextRenderingHint)
+Public Sub FillLogFontW_Quality(ByRef dstLogFontW As LOGFONTW, ByVal fontQuality As GP_TextRenderingHint)
 
     Dim gdiFontQuality As GDI_FontQuality
     

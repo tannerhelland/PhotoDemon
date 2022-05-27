@@ -357,10 +357,10 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     If compressData Then
     
         'Overall data chunk flag
-        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+        SetBitFlag_Long PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
         
         'This node's flag
-        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        SetBitFlag_Long PDP_FLAG_ZLIB_REQUIRED, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
         
     End If
     
@@ -508,7 +508,7 @@ Public Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             
             'Mark a special flag bit in this node, to identify it as an auto-added file entry.  This simplifies the extraction process later,
             ' and also provides a failsafe against the user adding their own nodes called "PDPFILE".
-            SetBitFlag PDP_FLAG_FILE_NODE, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag_Long PDP_FLAG_FILE_NODE, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
             
         End If
     
@@ -723,7 +723,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     ' if it compresses the data; false, otherwise.
     If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
         m_FileHeader.DirectoryChunkSizeCompressed = compressedSize
-        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DirectoryFlags(0)
+        SetBitFlag_Long PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DirectoryFlags(0)
     Else
         m_FileHeader.DirectoryChunkSizeCompressed = 0
     End If
@@ -735,7 +735,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     If secondPassDataCompression Then
         If CopyPtrToArray(m_DataBuffer.Peek_PointerOnly(0), originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
             m_FileHeader.DataChunkSizeCompressed = compressedSize
-            SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+            SetBitFlag_Long PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
         Else
             m_FileHeader.DataChunkSizeCompressed = 0
         End If
@@ -1227,7 +1227,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If GetBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1423,7 +1423,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If GetBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            If VBHacks.GetBitFlag_Long(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1876,59 +1876,6 @@ Public Function Init_ZLib() As Boolean
 
 End Function
 
-'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.
-' Inputs:
-'  1) position of the flag, which must be in the range [0, 31]
-'  2) value of the flag, TRUE for 1, FALSE for 0
-'  3) The Long-type value where you want the flag placed
-Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        
-        'Write a 1 flag
-        If flagValue Then
-        
-            'Blend the flag with the source Long using OR, which will force the target bit to 1 while preserving the rest of the Long's contents
-            copyOfDstLong = copyOfDstLong Or longMask
-        
-        'Write a 0 flag
-        Else
-        
-            'Blend the INVERSE flag with the source Long, which will force the target bit to 0 while preserving the rest of the Long's contents
-            copyOfDstLong = copyOfDstLong And Not longMask
-        
-        End If
-        
-    Else
-        'Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
-    End If
-
-End Sub
-
-'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.
-' Inputs:
-'  1) position of the flag, which must be in the range [0, 31]
-'  2) The Long from which you want the bit retrieved
-Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        
-        GetBitFlag = ((srcLong And longMask) <> 0)
-        
-    Else
-        'Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
-    End If
-
-End Function
-
 'Once a package has been loaded from file, you can use this function to check various flags in the file
 Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal checkLocation As PDP_FLAG_LOCATION = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
 
@@ -1939,14 +1886,14 @@ Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal ch
         Case PDP_LOCATION_ANY
         
             'Check directory and data flags first
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DataFlags(0))
             
             'If the flag is still false, scan individual nodes, looking for a hit
             If Not GetPackageFlag Then
             
                 Dim i As Long
                 For i = 0 To m_numOfNodes - 1
-                    GetPackageFlag = GetPackageFlag Or GetBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
+                    GetPackageFlag = GetPackageFlag Or VBHacks.GetBitFlag_Long(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
                     If GetPackageFlag Then Exit For
                 Next i
             
@@ -1954,15 +1901,15 @@ Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal ch
         
         'Directory chunk flags
         Case PDP_LOCATION_DIRECTORY
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DirectoryFlags(0))
         
         'Data chunk flags
         Case PDP_LOCATION_DATA
-            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_FileHeader.DataFlags(0))
         
         'Specific node flags; if used, we'd better hope the user supplied the right node index!
         Case PDP_LOCATION_INDIVIDUALNODE
-            GetPackageFlag = GetBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
+            GetPackageFlag = VBHacks.GetBitFlag_Long(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
     
     End Select
 

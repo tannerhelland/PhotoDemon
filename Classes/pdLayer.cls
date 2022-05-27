@@ -760,14 +760,14 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
 End Sub
 
 'Text layer properties can be get/set via these singular functions.
-Friend Function GetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
+Friend Function GetTextLayerProperty(ByVal desiredProperty As PD_TextProperty) As Variant
 
     'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
     GetTextLayerProperty = myTextRenderer.GetGenericTextProperty(desiredProperty)
     
 End Function
 
-Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant)
+Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TextProperty, ByVal newValue As Variant)
     
     'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
     

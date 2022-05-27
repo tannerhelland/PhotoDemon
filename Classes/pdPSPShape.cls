@@ -465,7 +465,7 @@ Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As 
     ' standard Windows CRLF.)
     If (InStr(1, textContents, vbLf, vbBinaryCompare) <> 0) Then
         If (InStr(1, textContents, vbCr, vbBinaryCompare) = 0) Then
-            textContents = Replace$(textContents, vbLf, vbCrLf, compare:=vbBinaryCompare)
+            textContents = Replace$(textContents, vbLf, vbCrLf, Compare:=vbBinaryCompare)
         End If
     End If
     
@@ -492,7 +492,7 @@ Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As 
     dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_Text, textContents
     
     'Apply other text settings from the header
-    Dim convertedTextAlignment As GdiPlusStringAlignment
+    Dim convertedTextAlignment As GP_StringAlignment
     Select Case m_TextAttributes.ta_Alignment
         Case keTextAlignmentLeft
             convertedTextAlignment = StringAlignmentNear

@@ -743,7 +743,9 @@ Private Sub hypEditText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, 
 End Sub
 
 Private Sub cmdConvertLayer_Click()
-    
+        
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+        
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
     PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextBasic
     PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex

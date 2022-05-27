@@ -18,7 +18,7 @@ Attribute VB_Name = "Tools_Text"
 Option Explicit
 
 'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
-Public Enum PD_TEXT_PROPERTY
+Public Enum PD_TextProperty
     ptp_Text = 0
     ptp_FontColor = 1
     ptp_FontFace = 2

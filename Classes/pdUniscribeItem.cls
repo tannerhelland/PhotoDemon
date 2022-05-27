@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Uniscribe Item Container
 'Copyright 2015-2022 by Tanner Helland
 'Created: 20/May/15
-'Last updated: 20/May/15
-'Last update: start migrating run-specific information into this class, to make it easier to handle complicated text layouts.
+'Last updated: 27/May/22
+'Last update: code clean-up
 '
 'This class is just a small container for holding individual Uniscribe item data.  We use a class instead of a struct because
 ' item coverage is highly variable; some items may hold a single glyph, while others hold 100+ glyphs.  It's impossible to
@@ -35,21 +35,25 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Before proceeding further, it's worth explaining a few very confusing terms, which Uniscribe uses to describe the various
-' units of text information it handles.  (Source: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374094%28v=vs.85%29.aspx)
+'Before proceeding further, it's worth explaining a few very confusing terms, which Uniscribe uses to
+' describe the various units of text information it handles.
+' (Source: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374094%28v=vs.85%29.aspx)
 
 'ITEM:
 ' - ITEMS have a single script and direction (LTR or RTL).
-' - ScriptItemize analyzes a *paragraph* and returns it as an array of ITEMS.  This means that Uniscribe *does not* handle text
-'    larger than a paragraph, e.g. text that contains hard line breaks.  If a string contains hard line breaks (e.g. Cr/Lf chars),
-'    you must subdivide it into paragraphs, then process each paragraph individually.
-' - Simple text - e.g. text with a uniform style - may be both an ITEM and a RUN, but in general, you should not assume any equality
-'    between these units.  This is true for even simple text, as Uniscribe prefers to break ITEMS on certain punctuation boundaries,
-'    even if the script and direction do not change (and they thus would work fine as a RUN).
-' - ITEMS can contain characters of multiple styles (font, size, color).  Note that this statement is very misleading, because
-'    Uniscribe cannot automatically address or handle ITEMS consisting of multiple styles.  Rather, this means that ITEMS returned
-'    by Uniscribe *can* be manually subdivided into smaller ITEMS of varying styles.  However, *YOU* must be the one to perform that
-'    subdivision, as Uniscribe's itemizing function has no way for the caller to specify custom ITEM boundaries.
+' - ScriptItemize analyzes a *paragraph* and returns it as an array of ITEMS.  This means that Uniscribe
+'    *does not* handle text larger than a paragraph, e.g. text that contains hard line breaks.  If a string
+'    contains hard line breaks (e.g. Cr/Lf chars), you *must* subdivide it into paragraphs, then process
+'    each paragraph individually.
+' - Simple text - e.g. text with a uniform style - may be both an ITEM and a RUN, but in general, you should
+'    not assume any equality between these units.  This is true for even simple text, as Uniscribe prefers to
+'    break ITEMS on certain punctuation boundaries, even if the script and direction do not change (and they
+'    thus would work fine as a RUN).
+' - ITEMS can contain characters of multiple styles (font, size, color).  Note that this statement is misleading,
+'    because Uniscribe cannot automatically address or handle ITEMS consisting of multiple styles.  Rather, this
+'    this means that ITEMS returned by Uniscribe *can* be manually subdivided into smaller ITEMS of varying styles.
+'    However, *YOU* must be the one to perform that subdivision, as Uniscribe's itemizing function has no way for
+'    the caller to specify custom ITEM boundaries.
 ' - ITEM and RUN information are combined to create a full paragraph.
 
 'RUN:
@@ -57,8 +61,8 @@ Option Explicit
 ' - Multiple scripts (e.g. "languages" or "character sets", colloquially) are allowed in a RUN.
 ' - Unlike an ITEM, a RUN can contain both LTR and RTL content.
 
-'These definitions are not hard and fast, and MSDN often uses one where it probably means the other.  I describe them here so
-' you'll have compassion if I accidentally do the same.  ;)
+'These definitions are not hard and fast, and MSDN often uses one where it probably means the other.
+' I describe them here so you'll have compassion if I accidentally do the same.  ;)
 
 'In general, I would prefer to use the term ITEM to describe a section of text with a uniform style, script, and direction.
 ' Multiple ITEMS can then be combined into a RUN, meaning a RUN always consists of one or more ITEMS.
@@ -69,21 +73,23 @@ Option Explicit
 
 'Now, onto the bits of per-item information this class stores.
 
-'ScriptItemize is the first Uniscribe function called.  It divides a paragraph into individual items.  Each item has a uniform
-' direction and script.  As an example, a sentence like "Hello [Arabic text] World" would consist of three items:
+'ScriptItemize is the first Uniscribe function called.  It divides a paragraph into individual items.
+' Each item has a uniform direction and script.  As an example, a sentence like "Hello [Arabic text] World"
+' would consist of three items:
 ' "Hello"
 ' "[Arabic Text]"
 ' "World"
 
-'"Hello" and "World" would be marked as LTR, while "[Arabic Text]" would be marked as RTL.  This is important, because we ultimately
-' need to reorder RTL glyphs - post-shaping - into LTR order, to simplify the glyph rendering process.
+'"Hello" and "World" would be marked as LTR, while "[Arabic Text]" would be marked as RTL.
+' This is important, because we ultimately need to reorder RTL glyphs - post-shaping - into LTR order,
+' to simplify the glyph rendering process.
 
 'Anyway, this class represents a single item, meaning a single SCRIPT_ITEM struct as returned by ScriptItemize.
 Private m_ScriptItem As SCRIPT_ITEM
 
-'Upon generating our SCRIPT_ITEM copy, ScriptItemize also has knowledge of which chunk of the string our SCRIPT_ITEM represents.
-' It will supply this substring via the get/setSubstring functions.  (Note that we also cache the length of this substring, as it's
-' used for a lot of other calculations, like array bounds.
+'Upon generating our SCRIPT_ITEM copy, ScriptItemize also has knowledge of which chunk of the string our
+' SCRIPT_ITEM represents.  It will supply this substring via the Get/SetSubstring functions.
+' (Note that we also cache the length of this substring, as it's used for other calculations, like array bounds.)
 Private m_Substring As String
 Private m_SubstringLength As Long
 
@@ -161,8 +167,9 @@ Friend Function GetSubstring() As String
     GetSubstring = m_Substring
 End Function
 
-'When setting the substring, we set two other parameters as well: the relative start and end position of this substring, relative to
-' the whole string passed to pdUniscribe.  This is helpful for identifying the chunk of the main string that this item represents.
+'When setting the substring, we set two other parameters as well: the relative start and end position
+' of this substring, relative to the whole string passed to pdUniscribe.  This is helpful for identifying
+' the chunk of the main string that this item represents.
 '
 'IMPORTANT NOTE: StartPos and EndPos are in *VB STRING COORDINATES*, meaning they are 1-based, not 0-based!
 Friend Sub SetSubstring(ByVal newSubstring As String, ByVal relativeStartPos As Long, ByVal relativeEndPos As Long)
@@ -189,7 +196,7 @@ End Function
 Friend Sub SetShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGlyphs As Long, ByRef glyphCache() As Integer, ByRef visualAttributesCache() As SCRIPT_VISATTR)
     
     'The logical cluster cache has the same length as our substring, so handle it separately
-    If UBound(m_LogicalClusterCache) <> m_SubstringLength - 1 Then
+    If (UBound(m_LogicalClusterCache) <> m_SubstringLength - 1) Then
         ReDim m_LogicalClusterCache(0 To m_SubstringLength - 1) As Integer
     End If
     
@@ -198,9 +205,10 @@ Friend Sub SetShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGly
     'The glyph and visual attribute caches are the same size, so we can handle them together
     m_NumOfGlyphs = numOfGlyphs
     
-    'Note that it is technically possible for a substring to not result in any actual glyphs.  (e.g. a bunch of zero-width control chars)
-    ' This is still a valid return, and if it happens, we can't attempt to copy zero bytes of data.
-    If m_NumOfGlyphs > 0 Then
+    'Note that it is technically possible for a substring to not result in any actual glyphs
+    ' (e.g. a bunch of zero-width control chars).  This is still a valid return, and if it happens,
+    ' we can't attempt to copy zero bytes of data.
+    If (m_NumOfGlyphs > 0) Then
     
         If UBound(m_GlyphCache) <> m_NumOfGlyphs - 1 Then
             ReDim m_GlyphCache(0 To m_NumOfGlyphs - 1) As Integer
@@ -228,7 +236,8 @@ Friend Sub DisableAllShaping()
     
 End Sub
 
-'While we can set all of ScriptShape's generated information at once, retrieving it is more helpful if we do it on a per-item basis.
+'While we can set all of ScriptShape's generated information at once, retrieving it is more helpful if we do it
+' on a per-item basis.
 Friend Function GetNumOfGlyphs() As Long
     GetNumOfGlyphs = m_NumOfGlyphs
 End Function
@@ -243,8 +252,9 @@ Friend Function GetPointerToVisualAttributesCache() As Long
     GetPointerToVisualAttributesCache = VarPtr(m_VisualAttributesCache(0))
 End Function
 
-'Similarly, sometimes we just want to grab a single entry at a given position.  For performance reasons, none of these wrappers check bounds.
-' It's assumed that the caller is iterating using the result of getNumOfGlyphs(), so bounds won't be a problem.
+'Similarly, sometimes we just want to grab a single entry at a given position.  For performance reasons,
+' none of these wrappers check bounds.  It's assumed that the caller is iterating using the result from
+' GetNumOfGlyphs(), so bounds won't be a problem.
 Friend Function GetGlyphCacheAtPosition(ByVal gPos As Long) As Long
     
     'Glyphs are returned by Uniscribe as 16-bit values.  Obviously, VB treats these values as if they are signed.
@@ -263,7 +273,8 @@ End Sub
 
 'ScriptPlace generates two arrays and one custom struct for each item:
 ' 1) Advance width list (distance between neighboring glyphs, basically)
-' 2) Glyph offset list (displacement of a glyph within its cell; this is primarily used for diacritics with variable per-glyph positioning)
+' 2) Glyph offset list (displacement of a glyph within its cell; this is primarily used for diacritics with
+'    variable per-glyph positioning)
 ' 3) ABC measurement for the ENTIRE item.
 '
 'To improve performance, we copy all three of these simultaneously, at the end of ScriptPlace processing.
@@ -286,8 +297,8 @@ Friend Sub SetPlacementData(ByRef advanceWidthCache() As Long, ByRef glyphOffset
     
 End Sub
 
-'ScriptBreak generates a per-character array of logical attributes.  This is a pain, as the renderer only cares about glyphs, not chars,
-' so we have to manually convert this array into something usable.
+'ScriptBreak generates a per-character array of logical attributes.  This is a pain, as the renderer only cares
+' about glyphs, not chars, so we have to manually convert this array into something usable.
 Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGATTR)
     
     If m_SubstringLength > 0 Then
@@ -296,8 +307,8 @@ Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
         If UBound(m_CharAttributesCache) < m_SubstringLength Then ReDim m_CharAttributesCache(0 To m_SubstringLength) As SCRIPT_LOGATTR
         CopyMemoryStrict VarPtr(m_CharAttributesCache(0)), VarPtr(charAttributesCache(0)), m_SubstringLength
         
-        'Now, we need to convert the per-character list of attributes to a per-glyph attribute.  This is a pain, as characters and
-        ' glyphs do not necessarily have a 1:1 correlation.
+        'Now, we need to convert the per-character list of attributes to a per-glyph attribute.
+        ' This is a pain, as characters and glyphs do not necessarily have a 1:1 correlation.
         
         'Start by prepping our glyph softbreak cache
         If UBound(m_GlyphSoftBreakCache) < m_NumOfGlyphs Then
@@ -316,19 +327,21 @@ Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
                 
         Dim tmpLong As Long, tmpIndex As Long
         
-        'Because our break information is per-character, we'll iterate the string by character (not glyph).  If any character in a
-        ' glyph is soft-breakable, we mark the ENTIRE glyph as breakable.
+        'Because our break information is per-character, we'll iterate the string by character (not glyph).
+        ' If any character in a glyph is soft-breakable, we mark the ENTIRE glyph as breakable.
         For i = 0 To m_SubstringLength - 1
         
             'Find the glyph that corresponds to this character
             tmpIndex = m_LogicalClusterCache(i)
             tmpLong = charAttributesCache(i).fBitFields
             
-            'Like most horribly obnoxious Uniscribe structs, data is embedded at the bit level.  Retrieve the flag bit for soft breaks.
-            If GetBitFlag(0, tmpLong) Then
+            'Like most horribly obnoxious Uniscribe structs, data is embedded at the bit level.
+            ' Retrieve the flag bit for soft breaks.
+            If VBHacks.GetBitFlag_Long(0, tmpLong) Then
                 
-                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
-                If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
+                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken
+                ' IMMEDIATELY BEFORE this glyph.
+                If (tmpIndex >= 0) And (tmpIndex < m_NumOfGlyphs) Then
                     m_GlyphSoftBreakCache(tmpIndex) = True
                 Else
                     Debug.Print "WARNING!  m_LogicalClusterCache() returned a bogus value.  Please investigate!"
@@ -337,10 +350,10 @@ Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
             End If
             
             '...and the same thing, but for white space
-            If GetBitFlag(1, tmpLong) Then
+            If VBHacks.GetBitFlag_Long(1, tmpLong) Then
                 
                 'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
-                If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
+                If (tmpIndex >= 0) And (tmpIndex < m_NumOfGlyphs) Then
                     m_GlyphWhitespaceCache(tmpIndex) = True
                 Else
                     Debug.Print "WARNING!  m_LogicalClusterCache() returned a bogus value.  Please investigate!"
@@ -357,9 +370,10 @@ Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
             tmpLong = m_VisualAttributesCache(i).fBitFields1
         
             'Retrieve the zero-width bit
-            If GetBitFlag(6, tmpLong) Then
+            If VBHacks.GetBitFlag_Long(6, tmpLong) Then
                 
-                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
+                'Mark this glyph as soft-breakable.
+                ' This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
                 m_GlyphZeroWidthCache(i) = True
                 
             End If
@@ -383,44 +397,20 @@ Friend Function GetZeroWidthAtPosition(ByVal gPos As Long) As Boolean
 End Function
 
 Friend Function GetCorrespondingCharIndex(ByVal gPos As Long) As Long
-
-    'Search the logical cluster cache until we find a glyph position that matches.  Note that the relationship between characters
-    ' and glyphs is *not* 1:1, so one glyph may match to multiple characters!  This function will only return the first hit.
-    ' (In the future, I suppose we could return an LBound and UBound if relevant, but for our current tasks, this is good enough.)
+    
+    'Search the logical cluster cache until we find a glyph position that matches.
+    
+    'Note that the relationship between characters and glyphs is *not* 1:1, so one glyph may match
+    ' to multiple characters!  This function will only return the first hit.  (In the future, I suppose
+    ' we could return an LBound and UBound if relevant, but for current tasks this is good enough.)
     Dim i As Long
     For i = 0 To UBound(m_LogicalClusterCache)
-    
-        If m_LogicalClusterCache(i) = gPos Then
+        If (m_LogicalClusterCache(i) = gPos) Then
             GetCorrespondingCharIndex = m_RelativeStartPos + i
             Exit For
         End If
-        
     Next i
     
-End Function
-
-'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
-' is the SIGN BIT for a standard VB Long.
-'
-' Inputs:
-'  1) position of the flag, which must be in the range [0, 31]
-'  2) The Long from which you want the bit retrieved
-Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        GetBitFlag = (CLng(srcLong And longMask) <> 0)
-        
-        'If you're curious about how this function works (and what it returns), you can uncomment the line below
-        'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
-        
-    Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
-    End If
-
 End Function
 
 Private Sub Class_Initialize()

@@ -12,11 +12,11 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon GDI+ Text Manager and Renderer
+'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
 'Copyright 2015-2022 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 03/June/19
-'Last update: minor code clean-up and optimizations; reduce debug logging in stable code paths
+'Last updated: 27/May/22
+'Last update: code clean-up
 '
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
@@ -64,7 +64,7 @@ Private Const REPORT_TEXT_RENDER_TIMING As Boolean = False
 
 'This class switches between GDI and GDI+ as necessary.  It sets this flag automatically based on current class settings
 ' and success/failure of various WAPI calls.
-Private Enum fontBackend
+Private Enum PD_FontBackend
     fb_UNKNOWN = 0
     fb_GDIPLUS = 1
     fb_GDI = 2
@@ -79,7 +79,7 @@ End Enum
 ' and whether we could initialize the engine we want.  (Note that text will *always* be rendered successfully,
 ' so you don't need to concern yourself with how PD renders the text - it'll figure out a solution regardless of
 ' GDI/GDI+ weirdness.)
-Private m_CurrentBackend As fontBackend
+Private m_CurrentBackend As PD_FontBackend
 
 'This class provides two different text rendering engines: WAPI and MANUAL.  WAPI is used for basic text layers, and it is
 ' thus limited by the innate feature support of GDI and GDI+ (BOOOORING).  The "PhotoDemon" backend is a homebrew text
@@ -114,38 +114,10 @@ End Enum
     Private Const fu_Pixel = 0, fu_Point = 1
 #End If
 
-'GDI+ maps a number of enums to this default "QualityMode" enum.  These values tend to be unpredictable,
-' so I recommend sticking with explicit mapping options whenever possible.
-Private Enum GdiPlusQualityMode
-    QualityModeInvalid = -1
-    QualityModeDefault = 0
-    QualityModeLow = 1
-    QualityModeHigh = 2
-End Enum
-
-#If False Then
-    Private Const QualityModeInvalid = -1, QualityModeDefault = 0, QualityModeLow = 1, QualityModeHigh = 2
-#End If
-
-'SmoothingMode controls generic AA operations for pens
-Private Enum GdiPlusSmoothingMode
-    SmoothingModeInvalid = QualityModeInvalid
-    SmoothingModeDefault = QualityModeDefault
-    SmoothingModeHighSpeed = QualityModeLow
-    SmoothingModeHighQuality = QualityModeHigh
-    GP_SM_None
-    GP_SM_Antialias
-End Enum
-
-#If False Then
-    Private Const SmoothingModeInvalid = QualityModeInvalid, SmoothingModeDefault = QualityModeDefault, SmoothingModeHighSpeed = QualityModeLow, SmoothingModeHighQuality = QualityModeHigh
-    Private Const GP_SM_None = 0, GP_SM_Antialias = 0
-#End If
-
 'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).
 ' Rather than expose a confusing list of operators that may or may not be relevant, PD uses its own AA enumeration,
 ' which we translate to corresponding GDI+ units as necessary.
-Public Enum pdTextAA
+Public Enum PD_TextAntialiasing
     pdta_None = 0
     pdta_Standard = 1
     pdta_Crisp = 2
@@ -156,7 +128,7 @@ End Enum
 #End If
 
 'Text hinting and AA are merged into a single setting in GDI+
-Public Enum GdiPlusTextRenderingHint
+Public Enum GP_TextRenderingHint
     TextRenderingHintSystemDefault = 0              'System default; unused because it is unpredictable
     TextRenderingHintSingleBitPerPixelGridFit = 1   'Hinting, No AA
     TextRenderingHintSingleBitPerPixel = 2          'No Hinting, No AA
@@ -171,7 +143,7 @@ End Enum
 #End If
 
 'String format settings
-Private Enum StringFormatFlags
+Private Enum GP_StringFormatFlags
     StringFormatFlagsDirectionRightToLeft = &H1
     StringFormatFlagsDirectionVertical = &H2
     StringFormatFlagsFitBlackBox = &H4
@@ -203,18 +175,6 @@ End Enum
     Private Const FontStyleRegular = 0, FontStyleBold = 1, FontStyleItalic = 2, FontStyleBoldItalic = 3, FontStyleUnderline = 4, FontStyleStrikeout = 8
 #End If
 
-'GDI+ string format settings.  Note that "near" and "far" monikers are used instead of left/right; this affects
-' handling of RTL languages in a more natural way.
-Public Enum GdiPlusStringAlignment
-    StringAlignmentNear = 0
-    StringAlignmentCenter = 1
-    StringAlignmentFar = 2
-End Enum
-
-#If False Then
-    Private Const StringAlignmentNear = 0, StringAlignmentCenter = 1, StringAlignmentFar = 2
-#End If
-
 'GDI+ font family functions
 Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
 Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
@@ -225,17 +185,17 @@ Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Lo
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
 
 'GDI+ string format functions
-Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
+Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As GP_StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As GP_Result
 Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newFlags As Long) As GP_Result
 Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As GP_Result
-Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As GP_Result
-Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As GP_Result
+Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GP_StringAlignment) As GP_Result
+Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GP_StringAlignment) As GP_Result
 
 'GDI+ graphics container font functions
-Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As GP_Result
+Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GP_TextRenderingHint) As GP_Result
 Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As Long, ByVal textContrast As Long) As GP_Result
-Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GdiPlusSmoothingMode) As GP_Result
+Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GP_SmoothingMode) As GP_Result
 
 'GDI+ Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RectF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As GP_Result
@@ -314,15 +274,15 @@ Private m_StrikeoutSupported As Boolean
 ' to per-DC settings in GDI (e.g. string alignment).  Because it is cheap to modify a StringFormat object, PD automatically
 ' syncs these internal values to a GDI+ StringFormat handle whenever they are changed.  This spares us from needing to do
 ' it during rendering stages.
-Private m_HorizontalAlignment As GdiPlusStringAlignment
-Private m_VerticalAlignment As GdiPlusStringAlignment
+Private m_HorizontalAlignment As GP_StringAlignment
+Private m_VerticalAlignment As GP_StringAlignment
 
 'Even *more* string settings are not stored in the font itself, or in a StringFormat object, but in the target
 ' GDI+ Graphics container.  These must be assigned to the graphics container prior to painting text, so there's not really
 ' an easy way to cache these settings.  (We could keep a temporary graphics container on hand, but we still have to clone
 ' it prior to rendering, so I doubt there's any gain there.)  As such, these values are not relevant until text is
 ' actually painted onto a target object.
-Private m_TextAntialiasing As pdTextAA
+Private m_TextAntialiasing As PD_TextAntialiasing
 Private m_TextContrast As Long
 
 'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
@@ -371,7 +331,7 @@ Private m_FontCacheClean As Boolean
 
 'If we have to fall back to plain GDI for rendering, we use a temporary 24-bpp DIB to cache the results.  This is then manually
 ' transferred to the 32-bpp target.
-Private m_tmpGdiDIB As pdDIB
+Private m_tmpDIB As pdDIB
 
 'Get/set the current rendering string.  PD uses a lot of tricks to improve rendering performance, including ignoring redraw requests if none of the
 ' class's internals have changed, so the current text must be assigned via these functions prior to actual rendering.
@@ -425,17 +385,18 @@ Friend Function IsFontStrikeoutSupported() As Boolean
     IsFontStrikeoutSupported = m_StrikeoutSupported
 End Function
 
-'Set functions for various font styles.  Note that these functions reset the current font cache, so please use them
-' only if necessary.
+'Set functions for various font styles.
+' Note that these functions reset the current font cache, so all of them contain checks for "If (newSetting != oldSetting)".
+' This lets us skip cache rebuilds unless absolutely necessary.
 Friend Sub SetFontBold(ByVal newValue As Boolean)
-    If newValue <> m_FontBold Then
+    If (newValue <> m_FontBold) Then
         m_FontBold = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
 Friend Sub SetFontItalic(ByVal newValue As Boolean)
-    If newValue <> m_FontItalic Then
+    If (newValue <> m_FontItalic) Then
         m_FontItalic = newValue
         m_FontCacheClean = False
     End If
@@ -449,7 +410,7 @@ Friend Sub SetFontUnderline(ByVal newValue As Boolean)
 End Sub
 
 Friend Sub SetFontStrikeout(ByVal newValue As Boolean)
-    If newValue <> m_FontStrikeout Then
+    If (newValue <> m_FontStrikeout) Then
         m_FontStrikeout = newValue
         m_FontCacheClean = False
     End If
@@ -479,7 +440,7 @@ Friend Sub SetFontSizeUnit(ByVal newUnit As PD_FontUnit)
     End If
 End Sub
 
-Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As pdTextAA) As String
+Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As PD_TextAntialiasing) As String
     If (srcValue = pdta_None) Then
         GetFontAntialiasingStringFromEnum = "none"
     ElseIf (srcValue = pdta_Standard) Then
@@ -492,7 +453,7 @@ Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As pdTextAA) A
     End If
 End Function
 
-Private Function GetFontAntialiasingEnumFromString(ByRef srcValue As String) As pdTextAA
+Private Function GetFontAntialiasingEnumFromString(ByRef srcValue As String) As PD_TextAntialiasing
     If (srcValue = "none") Then
         GetFontAntialiasingEnumFromString = pdta_None
     ElseIf (srcValue = "standard") Then
@@ -679,7 +640,8 @@ End Function
 'XML get/set functions for getting/setting all parameters at once.
 Friend Function GetAllFontSettingsAsXML() As String
 
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdSerialize class
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller,
+    ' lighter pdSerialize class
     Dim cSerialize As pdSerialize
     Set cSerialize = New pdSerialize
     
@@ -741,7 +703,8 @@ End Function
 ' as dirty, so you should only use it when loading a serialized object for the first time.)
 Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
     
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdSerialize class
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller,
+    ' lighter pdSerialize class
     Dim cSerialize As pdSerialize
     Set cSerialize = New pdSerialize
     cSerialize.SetParamString srcXMLString
@@ -803,7 +766,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
         
 End Function
 
-Private Function GetAlignmentStringFromUnit(ByVal srcValue As GdiPlusStringAlignment) As String
+Private Function GetAlignmentStringFromUnit(ByVal srcValue As GP_StringAlignment) As String
     If (srcValue = StringAlignmentNear) Then
         GetAlignmentStringFromUnit = "near"
     ElseIf (srcValue = StringAlignmentCenter) Then
@@ -816,7 +779,7 @@ Private Function GetAlignmentStringFromUnit(ByVal srcValue As GdiPlusStringAlign
     End If
 End Function
 
-Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GdiPlusStringAlignment
+Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GP_StringAlignment
     If (srcValue = "near") Then
         GetAlignmentUnitFromString = StringAlignmentNear
     ElseIf (srcValue = "center") Then
@@ -830,7 +793,7 @@ Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GdiPlus
 End Function
 
 'Rather than using dedicated get functions or properties, you can retrieve font and text values via this universal function.
-Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
+Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty) As Variant
 
     Select Case desiredProperty
         
@@ -950,9 +913,9 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
 End Function
 
 'Rather than using dedicated set functions or properties, you can modify values via this universal function.
-' Returns: TRUE if a value was successfully changed; FALSE if the requested value change was meaningless.  The caller can use this return
-'           to know whether the associated text needs to be redrawn.
-Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant) As Boolean
+' Returns: TRUE if a value was successfully changed; FALSE if the requested value change was meaningless.
+'           The caller can use this return to know whether the associated text needs to be redrawn.
+Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty, ByVal newValue As Variant) As Boolean
 
     Select Case desiredProperty
         
@@ -968,7 +931,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
                 SetGenericTextProperty = True
             End If
         
-        'TODO: consider raising some kind of error or message if the listed font is not available.
+        'TODO: consider raising some kind of error or message if the listed font is not available?
         ' This is a possibility for PDI images traded between PCs.
         Case ptp_FontFace
             If Strings.StringsNotEqual(m_FontFace, CStr(newValue), True) Then
@@ -1237,17 +1200,12 @@ End Sub
 
 'Convert a PD_FontUnit enum to a GDI+ format measurement unit.  Note that not all GDI+ units are reachable this way, by design.
 Private Function ConvertPDFontUnitToGdipFontUnit(ByRef srcFontUnit As PD_FontUnit) As GP_Unit
-    
     Select Case srcFontUnit
-    
         Case fu_Pixel
             ConvertPDFontUnitToGdipFontUnit = GP_U_Pixel
-        
         Case fu_Point
             ConvertPDFontUnitToGdipFontUnit = GP_U_Point
-            
     End Select
-    
 End Function
 
 'When all font parameters have been set, we can actually create a font!
@@ -1324,7 +1282,8 @@ Friend Function CreateFontObject() As Boolean
         
 End Function
 
-'Attempt to create a GDI+ font matching the current class settings.  Note that GDI+ creates two relevant objects: font family, and font itself
+'Attempt to create a GDI+ font matching the current class settings.
+' Note that GDI+ creates two relevant objects: font family, and font itself.
 Private Function CreateGDIPlusFont() As Boolean
     
     'If a GDI+ font family already exists, free it
@@ -1351,21 +1310,15 @@ Private Function CreateGDIPlusFont() As Boolean
         GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleStrikeout, testResult
         m_StrikeoutSupported = (testResult <> 0)
         
-        'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc) and the
-        ' current font size.
+        'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc)
+        ' and the current font size.
         gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGdipFontUnit(m_FontSizeUnit), m_GDIPlusFont)
         
         'Check for known errors; GDI+ cannot synthesize some font sizes, for example
         If (gdipReturn = GP_OK) And (m_GDIPlusFont <> 0) Then
-        
-            'Font creation successful.  Set the font cache flag, so we know not to create the font again.
-            
-            'Return success
             CreateGDIPlusFont = True
-            
         Else
         
-            'Font creation failure.  Not much we can do now.
             ReportGDIPlusFailure gdipReturn
             
             'Delete the font family we created as well, then exit
@@ -1396,12 +1349,12 @@ Private Function GetFontStylesAsGdipLong() As Long
 End Function
 
 'Convert the current PD-specific text rendering hint into a Long-type value compatible with GDI+'s text declarations
-Private Function ConvertTextAAToGdipTextHint() As GdiPlusTextRenderingHint
+Private Function ConvertTextAAToGdipTextHint() As GP_TextRenderingHint
     
     Select Case m_TextAntialiasing
     
         Case pdta_None
-            ConvertTextAAToGdipTextHint = TextRenderingHintSingleBitPerPixel 'TextRenderingHintSingleBitPerPixelGridFit
+            ConvertTextAAToGdipTextHint = TextRenderingHintSingleBitPerPixel
         
         Case pdta_Standard
             ConvertTextAAToGdipTextHint = TextRenderingHintAntiAlias
@@ -1595,11 +1548,12 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         .Height = textHeight
     End With
     
-    'Hypothetically, we could attempt to retrieve a bounding box for the string.  This would be relevant when compensating for overhang
-    ' on the left side, for synthesized fonts like Times New Roman - Italic.  Unfortunately, GDI+ is stupid and it doesn't report
-    ' left-bound overhang, so our internal function GetStringBoundingBox() isn't helpful at all.
+    'Hypothetically, we could attempt to retrieve a bounding box for the string.  This would be relevant when
+    ' compensating for overhang on the left side, for synthesized fonts like Times New Roman - Italic.
+    ' Unfortunately, GDI+ is stupid and it doesn't report left-bound overhang, so our internal function
+    ' GetStringBoundingBox() isn't helpful here.
     
-    'We can, however, use GDI to calculate it instead.  (TODO: cache this value, and only re-check it if the string and/or font changes.)
+    'We can, however, use GDI to calculate it instead.
     Dim firstCharABCWidth As ABCFLOAT
     If Fonts.GetABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
         
@@ -1662,20 +1616,21 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End With
     
     'Next, set up all container-specific path settings
-    Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GP_PixelOffsetMode
+    Dim targetSmoothingMode As GP_SmoothingMode, targetOffsetMode As GP_PixelOffsetMode
     
     'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality
     ' (which assumes gamma correction), and it can cause premultiplied alpha to be calculated
     ' incorrectly, leading to random hot pixels.
     GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma dstGraphics, GP_CQ_AssumeLinear
     
-    'Antialiasing settings currently affect both smoothing mode and offset mode.  Offset mode is particularly relevant when working with
-    ' tiny text, as it greatly improves clarity to use half mode.  (Also, note that antialiasing affects *all drawing operations on the target*,
-    ' by design, so you cannot currently set different AA options for text vs background elements.)
+    'Antialiasing settings currently affect both smoothing mode and offset mode.
+    ' Offset mode is particularly relevant when working with tiny text, as it greatly improves clarity (when TRUE).
+    ' (Also, note that antialiasing affects *all drawing operations on the target*, by design, so you cannot
+    ' currently set different AA options for text vs background elements.)
     Select Case m_TextAntialiasing
         
         Case pdta_None
-            targetSmoothingMode = SmoothingModeHighSpeed
+            targetSmoothingMode = GP_SM_None
             targetOffsetMode = GP_POM_None
         
         Case pdta_Standard
@@ -1688,8 +1643,8 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
     End Select
     
-    'Note that we don't actually set container settings yet, because we first want to draw some generic elements (like the background fill)
-    ' at maximum speed.  Once those are finished, we'll set target smoothing and offset modes.
+    'Note that we don't actually set container settings yet, because we first want to draw some generic elements
+    ' (like the background fill) at max speed.  Once those are finished, we'll set target smoothing and offset modes.
         
     'If fill mode is active, create a relevant brush.  Note that not all brushes are currently implemented!
     Dim gdipFillBrush As Long, textFillBrush As pd2DBrush, backgroundFillBrush As pd2DBrush
@@ -1819,7 +1774,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             
             'If an outline is being drawn, we don't need antialiasing, which also improves performance
             If (gdipBackBorderPen <> 0) Then
-                GdipSetSmoothingMode dstGraphics, SmoothingModeHighSpeed
+                GdipSetSmoothingMode dstGraphics, GP_SM_HighSpeed
             Else
                 GdipSetSmoothingMode dstGraphics, GP_SM_Antialias
             End If
@@ -1892,26 +1847,26 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
 End Function
 
-'Render text using GDI using a dummy implementation, only.  This only exists to test things like GDI font creation; I am actively working on
-' superceding it with a much more advanced implementation.
+'Render text using GDI.  This only exists as a fallback if GDI+ rendering fails (which is far more common pre-Windows-10).
+' This function is unlikely to be called on Win 10+ due to improvements in GDI+ font handling.
 Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
 
     'Because GDI doesn't support 32-bpp rendering targets, we must do all rendering to a 24-bpp surface, then copy it over manually
-    If (m_tmpGdiDIB Is Nothing) Then
-        Set m_tmpGdiDIB = New pdDIB
-        m_tmpGdiDIB.CreateBlank 4, 4, 24, 0
+    If (m_tmpDIB Is Nothing) Then
+        Set m_tmpDIB = New pdDIB
+        m_tmpDIB.CreateBlank 4, 4, 24, 0
     End If
     
     'Start by setting up all container-specific text settings; note that these are only used in our temporary DIB!
     Dim oldFont As Long
-    oldFont = SelectObject(m_tmpGdiDIB.GetDIBDC, m_GDIFont)
+    oldFont = SelectObject(m_tmpDIB.GetDIBDC, m_GDIFont)
     
     'Set other font parameters.  Note that this function only draws white text onto a black background.  Color is applied later.
-    SetTextColor m_tmpGdiDIB.GetDIBDC, RGB(255, 255, 255)
-    SetTextAlign m_tmpGdiDIB.GetDIBDC, 0
+    SetTextColor m_tmpDIB.GetDIBDC, RGB(255, 255, 255)
+    SetTextAlign m_tmpDIB.GetDIBDC, 0
     
     'Enable transparent font rendering
-    SetBkMode m_tmpGdiDIB.GetDIBDC, FONT_TRANSPARENT
+    SetBkMode m_tmpDIB.GetDIBDC, FONT_TRANSPARENT
     
     'You'd think drawing opaque text to a 32-bpp container would work, but nope, this just means that
     ' GDI functions make the ENTIRE TEXT AREA transparent. THANKS, MICROSOFT!
@@ -1924,7 +1879,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'Start by retrieving default size values
     Dim targetWidth As Long, targetHeight As Long
     Dim txtSize As PointAPI
-    GetTextExtentPoint32 m_tmpGdiDIB.GetDIBDC, StrPtr(srcString), Len(srcString), txtSize
+    GetTextExtentPoint32 m_tmpDIB.GetDIBDC, StrPtr(srcString), Len(srcString), txtSize
     
     Dim tmpRect As RECT
     tmpRect.Left = 0
@@ -1932,10 +1887,10 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'A left-side overhang is possible on some fonts, particularly fonts where italics have to be synthesized.
     ' There's no automatic way to handle this, so we do it manually (as usual).
     Dim firstCharABCWidth As ABCFLOAT
-    If Fonts.GetABCWidthOfGlyph(m_tmpGdiDIB.GetDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
+    If Fonts.GetABCWidthOfGlyph(m_tmpDIB.GetDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
         
-        'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
-        ' extra pixel to account for possible antialiasing along the border.)
+        'If the offset value is negative, we want to increase our rendering offset proportionally.
+        ' (Note that we add an extra pixel to account for possible antialiasing along the border.)
         If (firstCharABCWidth.abcfA < 0) Then
             Dim newLeft As Long
             newLeft = tmpRect.Left + Abs(firstCharABCWidth.abcfA) + 1
@@ -1943,12 +1898,12 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         
     End If
     
-    'If the width of this string (in the current font) is less than the width of the target DIB, we will use the string's
-    ' precise render dimensions for our target DIB.
+    'If the width of this string (in the current font) is less than the width of the target DIB,
+    ' we will use the string's precise render dimensions for our target DIB.
     If (txtSize.x + tmpRect.Left < dstDIB.GetDIBWidth) Then
         
-        'GDI adds 1/6 em width to account for glyph overhang.  Italic mode doubles the default overhang (and we apply that correction
-        ' by default, to cover fonts where italics is the only available mode).
+        'GDI adds 1/6 em width to account for glyph overhang.  Italic mode doubles the default overhang
+        ' (and we apply that correction by default, to cover fonts where italics is the only available mode).
         targetWidth = txtSize.x + CLng((CDbl(txtSize.y) / 6 + 1) * 2) + tmpRect.Left
         If targetWidth > dstDIB.GetDIBWidth Then targetWidth = dstDIB.GetDIBWidth
         
@@ -1963,7 +1918,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         tmpRect.Bottom = 0
         tmpRect.Right = targetWidth
         
-        DrawText m_tmpGdiDIB.GetDIBDC, StrPtr(srcString), Len(srcString), tmpRect, GetDrawTextAlignmentFlags() Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX
+        DrawText m_tmpDIB.GetDIBDC, StrPtr(srcString), Len(srcString), tmpRect, GetDrawTextAlignmentFlags() Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX
         
         'Take the height of the rendered string, or the height of the target DIB, whichever is smaller
         If (tmpRect.Bottom > dstDIB.GetDIBHeight) Then
@@ -1975,34 +1930,35 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     End If
     
     'Recreate the target DIB, as necessary
-    If (m_tmpGdiDIB.GetDIBWidth <> targetWidth) Or (m_tmpGdiDIB.GetDIBHeight <> targetHeight) Then
+    If (m_tmpDIB.GetDIBWidth <> targetWidth) Or (m_tmpDIB.GetDIBHeight <> targetHeight) Then
     
         'Remove the font from the temporary DC, because we are about to create it.
-        SelectObject m_tmpGdiDIB.GetDIBDC, oldFont
+        SelectObject m_tmpDIB.GetDIBDC, oldFont
     
-        'Create the temporary DIB.  We know this will be smaller or equal to the size of the target DIB, greatly simplifying the eventual transfer process.
-        m_tmpGdiDIB.CreateBlank targetWidth, targetHeight, 24
-        m_tmpGdiDIB.ResetDIB
+        'Create the temporary DIB.  We know this will be smaller or equal to the size of the target DIB,
+        ' greatly simplifying the eventual transfer process.
+        m_tmpDIB.CreateBlank targetWidth, targetHeight, 24
+        m_tmpDIB.ResetDIB
         
         'Re-select the font into the DIB
-        oldFont = SelectObject(m_tmpGdiDIB.GetDIBDC, m_GDIFont)
+        oldFont = SelectObject(m_tmpDIB.GetDIBDC, m_GDIFont)
         
         'Reset other font parameters.
-        SetTextColor m_tmpGdiDIB.GetDIBDC, RGB(255, 255, 255)
-        SetTextAlign m_tmpGdiDIB.GetDIBDC, 0
-        SetBkMode m_tmpGdiDIB.GetDIBDC, FONT_TRANSPARENT
+        SetTextColor m_tmpDIB.GetDIBDC, RGB(255, 255, 255)
+        SetTextAlign m_tmpDIB.GetDIBDC, 0
+        SetBkMode m_tmpDIB.GetDIBDC, FONT_TRANSPARENT
         
     Else
-        m_tmpGdiDIB.ResetDIB
+        m_tmpDIB.ResetDIB
     End If
     
     'Populate our clipping rect with the final width and height values we generated
     tmpRect.Right = targetWidth
     tmpRect.Bottom = targetHeight
     
-    'If overhang is present on the first glyph, it's likely to be present on other glyphs as well.  Mirror the left overhang (if any)
-    ' across the right border.  (We do this because GDI word wrap is unpredictable, and we can't retrieve where it decides to
-    ' wordwrap - so we have to make assumptions like this.)
+    'If overhang is present on the first glyph, it's likely to be present on other glyphs as well.
+    ' Mirror the left overhang (if any) across the right border.  (We do this because GDI word wrap
+    ' is unpredictable, and we can't retrieve where it decides to wordwrap - so we can only make assumptions.)
     If (firstCharABCWidth.abcfA < 0) Then
         Dim newRight As Long
         newRight = tmpRect.Right - (Abs(firstCharABCWidth.abcfC) + 1)
@@ -2011,13 +1967,13 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Use DrawText for the actual rendering
     Dim retDrawText As Long
-    retDrawText = DrawText(m_tmpGdiDIB.GetDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP Or GetDrawTextAlignmentFlags())
+    retDrawText = DrawText(m_tmpDIB.GetDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP Or GetDrawTextAlignmentFlags())
     
     'We can actually determine a return value now
     RenderTextToDIB_GDI = (retDrawText <> 0)
     
     'Remove the font, so we can use again it later!
-    SelectObject m_tmpGdiDIB.GetDIBDC, oldFont
+    SelectObject m_tmpDIB.GetDIBDC, oldFont
     
     'With the temporary DIB successfully renderered, our new job is to transfer its contents to the destination DIB.
     ' Unfortunately, we have to do this manually, using per-pixel code.
@@ -2026,9 +1982,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     dstDIB.ResetDIB
     dstDIB.SetInitialAlphaPremultiplicationState True
         
-    'Next, we need to prepare lookup tables based on the translation of gray pixels (since we rendered white text to a black background)
-    ' to the target color, with alpha accounted for.  Note that alpha is easy - the grayscale value of the temporary DIB represents
-    ' alpha - so we just need to calculate premultiplied colors.
+    'Next, we need to prepare lookup tables based on the translation of gray pixels (since we rendered white text
+    ' to a black background) to the target color, with alpha accounted for.  Note that alpha is easy - the grayscale
+    ' value of the temporary DIB represents alpha - so we just need to calculate premultiplied colors.
     
     'Start by extracting individual RGB components from the text color.
     Dim r As Long, g As Long, b As Long, a As Long
@@ -2044,8 +2000,8 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     Dim x As Long, y As Long
     Dim preMultiplicationFactor As Double, textContrastFactor As Double, alphaCalculation As Double
     
-    '"standard" and "crisp" AA modes need to mimic the Text Contrast setting GDI+ provides.  We use a custom calculation
-    ' that provides similar results.
+    '"standard" and "crisp" AA modes need to mimic the Text Contrast setting GDI+ provides.
+    ' We use a custom calculation that provides similar results.
     
     'Convert m_TextContrast from the range [0, 10] to [0.5, 3.0]
     textContrastFactor = (m_TextContrast / 4) + 0.5
@@ -2100,9 +2056,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         preMultiplicationFactor = a / 255#
         
         With clrLookup(x)
-            .Red = r * preMultiplicationFactor
-            .Green = g * preMultiplicationFactor
-            .Blue = b * preMultiplicationFactor
+            .Red = Int(r * preMultiplicationFactor)
+            .Green = Int(g * preMultiplicationFactor)
+            .Blue = Int(b * preMultiplicationFactor)
             .Alpha = a
         End With
         
@@ -2115,20 +2071,20 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Create a second local array and point it as the pixel data of our temporary image
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    m_tmpGdiDIB.WrapArrayAroundDIB srcImageData, srcSA
+    m_tmpDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim finalX As Long, finalY As Long
-    finalX = m_tmpGdiDIB.GetDIBWidth - 1
-    finalY = m_tmpGdiDIB.GetDIBHeight - 1
+    finalX = m_tmpDIB.GetDIBWidth - 1
+    finalY = m_tmpDIB.GetDIBHeight - 1
     
     'As a failsafe, make sure finalX and Y don't extend beyond our target DIB, either
     If (finalX >= dstDIB.GetDIBWidth) Then finalX = dstDIB.GetDIBWidth - 1
     If (finalY >= dstDIB.GetDIBHeight) Then finalY = dstDIB.GetDIBHeight - 1
     
-    'Finally, we also need to calculate x/y offset values.  For performance reasons, this class renders text to a temporary DIB
-    ' at the exact size of the text's bounding rect.  Because we must manually convert these results to 32-bpp, then transfer them
-    ' to the destination image, the alignment of the temporary DIB vs the destination DIB varies according to the underlying
-    ' text alignment.
+    'Finally, we also need to calculate x/y offset values.  For performance reasons, this class renders text
+    ' to a temporary DIB at the exact size of the text's bounding rect.  Because we must manually convert these
+    ' results to 32-bpp, then transfer them to the destination image, the alignment of the temporary DIB vs the
+    ' destination DIB varies according to the underlying text alignment.
     
     'Calculate offsets now
     Dim xOffset As Long, yOffset As Long
@@ -2139,10 +2095,10 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             xOffset = 0
         
         Case StringAlignmentCenter
-            xOffset = (dstDIB.GetDIBWidth - m_tmpGdiDIB.GetDIBWidth) \ 2
+            xOffset = (dstDIB.GetDIBWidth - m_tmpDIB.GetDIBWidth) \ 2
         
         Case StringAlignmentFar
-            xOffset = dstDIB.GetDIBWidth - m_tmpGdiDIB.GetDIBWidth
+            xOffset = dstDIB.GetDIBWidth - m_tmpDIB.GetDIBWidth
     
     End Select
     
@@ -2152,10 +2108,10 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             yOffset = 0
         
         Case StringAlignmentCenter
-            yOffset = (dstDIB.GetDIBHeight - m_tmpGdiDIB.GetDIBHeight) \ 2
+            yOffset = (dstDIB.GetDIBHeight - m_tmpDIB.GetDIBHeight) \ 2
         
         Case StringAlignmentFar
-            yOffset = dstDIB.GetDIBHeight - m_tmpGdiDIB.GetDIBHeight
+            yOffset = dstDIB.GetDIBHeight - m_tmpDIB.GetDIBHeight
     
     End Select
     
@@ -2177,7 +2133,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Deallocate both arrays and exit
     dstDIB.UnwrapRGBQuadArrayFromDIB dstImageData
-    m_tmpGdiDIB.UnwrapArrayFromDIB srcImageData
+    m_tmpDIB.UnwrapArrayFromDIB srcImageData
     
 End Function
 
@@ -2216,8 +2172,9 @@ Private Function GetDrawTextAlignmentFlags() As Win32_DrawTextConstants
 
 End Function
 
-'If this class is no longer required but the caller doesn't want to fully release it, they can call this sub to have us release all
-' caches and system handles (hFonts, GDI+ fonts, etc).  Note that the class needs to be FULLY reinitialized after this function is called.
+'If this class is no longer required but the caller doesn't want to fully release it, they can call this sub
+' to have us release all caches and system handles (hFonts, GDI+ fonts, etc).  Note that the class needs to be
+' FULLY reinitialized after this function is called.
 Friend Sub ReleaseAsManyResourcesAsPossible()
     
     'Release any GDI+ objects that are easily re-created
@@ -2242,7 +2199,6 @@ End Sub
 
 Private Sub Class_Initialize()
     
-    'TEMPORARY!  Force the default, basic rendering engine while we get the basic text tool sorted out.
     m_RenderingEngine = te_WAPI
         
     'Because GDI+ StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
@@ -2370,4 +2326,3 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
     SetAllFontSettingsFromXML_Legacy = True
     
 End Function
-

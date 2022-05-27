@@ -727,6 +727,18 @@ End Enum
     Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_Antialias = 4
 #End If
 
+'GDI+ string format settings.  Note that "near" and "far" monikers are used instead of left/right;
+' this allows handling RTL languages in a more natural way.
+Public Enum GP_StringAlignment
+    StringAlignmentNear = 0
+    StringAlignmentCenter = 1
+    StringAlignmentFar = 2
+End Enum
+
+#If False Then
+    Private Const StringAlignmentNear = 0, StringAlignmentCenter = 1, StringAlignmentFar = 2
+#End If
+
 Public Enum GP_Unit
     GP_U_World = 0&
     GP_U_Display = 1&
