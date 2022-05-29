@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PD System Open/Save Dialog Interface
 'Copyright 2015-2022 by Tanner Helland
 'Created: 05/August/15
-'Last updated: 15/August/15
-'Last update: finish work on GetSaveFileName()
+'Last updated: 29/May/22
+'Last update: add convenience helper for multi-select, returning the results as a pdStringStack object
 '
 'Common dialogs appear in multiple places throughout PD.  In the beginning, PD relied on a convenient common dialog wrapper
 ' from vbAccelerator (http://www.vbaccelerator.com/home/VB/Code/Libraries/Common_Dialogs/Code_Only_Common_Dialogs/article.asp),
@@ -27,7 +27,7 @@ Attribute VB_Exposed = False
 'The eventual goal is to add parallel support for Vista's IFileOpen/SaveDialogs, which would actually allow me to customize
 ' the program's main dialogs, but that's a ways off.  For now, everything simply wraps the traditional common dialog controls.
 '
-'For convenience against existing code, the function calls are roughly identical to Steve's old control.
+'For convenience against existing code, function calls are roughly identical to Steve's old control.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -171,13 +171,13 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
         
         'The filter string is actually null-delimited, which isn't easy for the caller to do, so we allow the old-style
         ' pipe and colon separators, which are forcibly converted now.
-        Dim Ch As String, i As Integer, s As String
+        Dim tmpChar As String, i As Long, s As String
         For i = 1 To Len(Filter)
-            Ch = Mid$(Filter, i, 1)
-            If Ch = "|" Or Ch = ":" Then
+            tmpChar = Mid$(Filter, i, 1)
+            If (tmpChar = "|") Or (tmpChar = ":") Then
                 s = s & vbNullChar
             Else
-                s = s & Ch
+                s = s & tmpChar
             End If
         Next
         
@@ -212,10 +212,8 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     'Before proceeding, add debug info in the special case of a buffer underrun.  This case is problematic, as we can't simply
     ' "try again" without re-raising a modal dialog, so I'm hoping my current default buffer size is always sufficient.
     If (lReturn = 0) And (CommDlgExtendedError() = FNERR_BUFFERTOOSMALL) Then
-        
         PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error"
         PDDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
-        
     End If
     
     'Non-zero returns are considered successful, but note that a failure state may have occurred due to a too-small buffer.
@@ -225,7 +223,6 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     If (lReturn <> 0) Then
         
         'Success!  Parse out the relevant strings.
-        
         Dim lLen As Long
         
         If (Not MultiSelect) Then
@@ -359,4 +356,71 @@ Friend Function GetSaveFileName(ByRef FileName As String, _
     
     Interface.NotifySystemDialogState False
     
+End Function
+
+'Display a system-specific Open File dialog with MULTISELECT = TRUE, and return the list of selected file(s)
+' as as pdStringStack object.
+' RETURNS: TRUE if one or more files was selected; FALSE if canceled.
+Friend Function GetOpenFileNames_AsStringStack(ByRef dstStringStack As pdStringStack, ByRef FileName As String, _
+                           Optional ByRef FileTitle As String, _
+                           Optional ByVal FileMustExist As Boolean = True, _
+                           Optional ByVal Filter As String = "All (*.*)|*.*", _
+                           Optional ByRef FilterIndex As Long = 1, _
+                           Optional ByRef InitDir As String, _
+                           Optional ByRef DlgTitle As String, _
+                           Optional ByRef DefaultExt As String, _
+                           Optional ByVal Owner As Long = 0&) As Boolean
+
+    GetOpenFileNames_AsStringStack = Me.GetOpenFileName(FileName, FileTitle, FileMustExist, True, Filter, FilterIndex, InitDir, DlgTitle, DefaultExt, Owner)
+    
+    If GetOpenFileNames_AsStringStack Then
+    
+        If (dstStringStack Is Nothing) Then Set dstStringStack = New pdStringStack
+        
+        'Take the return string (a null-delimited list of filenames) and split it into an array
+        Dim listOfFiles() As String
+        listOfFiles = Split(FileName, vbNullChar)
+        
+        Dim i As Long
+        
+        'Due to buffering required by the API call, uBound(listOfFiles) should ALWAYS > 0 but
+        ' check it anyway (just to be safe)
+        If (UBound(listOfFiles) > 0) Then
+        
+            'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
+            For i = UBound(listOfFiles) To 0 Step -1
+                If (LenB(listOfFiles(i)) <> 0) Then Exit For
+            Next
+            
+            'With all empty strings removed, only legitimate file paths remain
+            ReDim Preserve listOfFiles(0 To i) As String
+            
+        End If
+        
+        'If multiple files were selected, we need to perform additional processing
+        If (UBound(listOfFiles) > 0) Then
+        
+            'The common dialog function returns a unique array. Index (0) contains the folder path
+            ' (without a trailing backslash), so first things first - add a trailing backslash
+            Dim basePath As String
+            basePath = Files.PathAddBackslash(listOfFiles(0))
+            
+            'The remaining indices contain filenames within that base folder.  To get the full filename,
+            ' we must append the path from (0) to the start of each filename.  This simplifies things for
+            ' the caller - it can simply loop through full paths, loading files as it goes.
+            For i = 1 To UBound(listOfFiles)
+                dstStringStack.AddString basePath & listOfFiles(i)
+            Next i
+            
+        'If there is only one file in the array (e.g. the user only opened one image), we don't need to
+        ' perform extra processing - just save the new directory to the preferences file
+        Else
+            dstStringStack.AddString listOfFiles(0)
+        End If
+        
+        'Success requires at least one valid return
+        GetOpenFileNames_AsStringStack = (dstStringStack.GetNumOfStrings > 0)
+    
+    End If
+
 End Function
