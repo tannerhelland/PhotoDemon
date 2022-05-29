@@ -105,12 +105,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
             
         End If
         
-        'Copy the raw string array into an iteration-friendly string stack
-        
-        'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
+        'Store the selected file filter in the user's pref file
         UserPrefs.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
         
-        'All done!
         PhotoDemon_OpenImageDialog = True
         
     'If the user cancels the commondialog box, simply exit out.

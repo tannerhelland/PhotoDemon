@@ -181,10 +181,10 @@ FilterCleanup:
     
 End Sub
 
-'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes will be available to the user.
-' Note that this function returns TRUE if the user selects a file, FALSE if they cancel.  This function
-' DOES NOT attempt to load or validate the target file - that's on you.
-Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
+'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes are available to the user.
+' Note that this function returns TRUE if the user selects one or more files, FALSE if they cancel.
+' This function DOES NOT attempt to load or validate target files - that's the caller's responsibility.
+Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilenames As pdStringStack) As Boolean
     
     DisplayLUTLoadDialog = False
     
@@ -210,19 +210,15 @@ Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilen
     Dim sFile As String
     sFile = srcFilename
     
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter.ToString(), 1, UserPrefs.GetLUTPath(False), cdTitle, , GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileNames_AsStringStack(dstFilenames, sFile, vbNullString, True, cdFilter.ToString(), 1, UserPrefs.GetLUTPath(False), cdTitle, , GetModalOwner().hWnd) Then
     
         'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
         ' as they require.
-        DisplayLUTLoadDialog = (LenB(sFile) <> 0)
+        DisplayLUTLoadDialog = (Not dstFilenames Is Nothing)
+        If DisplayLUTLoadDialog Then DisplayLUTLoadDialog = (dstFilenames.GetNumOfStrings > 0)
         
-        'The dialog was successful.  Return the path, and save this path for future usage.
-        If DisplayLUTLoadDialog Then
-            UserPrefs.SetLUTPath sFile
-            dstFilename = sFile
-        Else
-            dstFilename = vbNullString
-        End If
+        'The dialog was successful.  Save this path to the user's pref file.
+        If DisplayLUTLoadDialog Then UserPrefs.SetLUTPath Files.FileGetPath(dstFilenames.GetString(0))
         
     End If
     

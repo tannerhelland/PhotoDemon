@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 '3D color lookup effect
 'Copyright 2020-2022 by Tanner Helland
 'Created: 27/October/20
-'Last updated: 02/November/20
-'Last update: add support for .look LUT format
+'Last updated: 29/May/22
+'Last update: allow the user to import multiple LUT files at once
 '
 'For a detailed explanation of 3D color lookup tables and how they work, see the pdLUT3D class.
 '
@@ -221,80 +221,94 @@ End Sub
 
 Private Sub cmdBrowse_Click()
     
-    Dim srcFilename As String
-    If m_LUT.DisplayLUTLoadDialog(vbNullString, srcFilename) Then
+    Dim srcFilenames As pdStringStack
+    If m_LUT.DisplayLUTLoadDialog(vbNullString, srcFilenames) Then
         
-        'Don't load this LUT at all unless it validates
-        If m_LUT.LoadLUTFromFile(srcFilename) Then
+        'We now want to perform the following tasks:
+        ' 1) Validate each LUT
+        ' 2) If a LUT validates, add it to the list box
+        ' 3) Preview the last LUT in the list
+        Dim j As Long
+        For j = 0 To srcFilenames.GetNumOfStrings - 1
             
-            'Before doing anything else, copy the source file into the user's LUT folder.
-            If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
-                Dim newFilename As String
-                newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
-                Files.FileCopyW srcFilename, newFilename
-                srcFilename = newFilename
-            End If
+            Dim srcFilename As String
+            srcFilename = srcFilenames.GetString(j)
             
-            'If the file validated, and it has a sub-file, copy the sub-file into the local folder as well
-            If (LenB(m_LUT.GetLUTSubPath()) <> 0) Then
-                newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(m_LUT.GetLUTSubPath(), False)
-                Files.FileCopyW m_LUT.GetLUTSubPath(), newFilename
-            End If
-            
-            'Ensure we have sufficient space for a new entry
-            If (m_numOfLUTs <= 0) Then
-                ReDim m_LUTs(0) As LUTCache
-            Else
-                If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
-            End If
-            
-            Dim targetFilenameOnly As String
-            targetFilenameOnly = Files.FileGetName(srcFilename)
-            
-            'We now need to search the current list of LUTs and figure out where to insert this one.
-            Dim i As Long
-            i = 0
-            
-            If (m_numOfLUTs > 0) Then
+            'Don't load this LUT at all unless it validates
+            If m_LUT.LoadLUTFromFile(srcFilename) Then
                 
-                'Look for the first entry with a value *less* than the current one
-                For i = 0 To m_numOfLUTs - 1
-                    If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
-                Next i
-                
-                'Shift all existing entries to make room for this new one
-                If (i < m_numOfLUTs - 1) Then
-                    Dim j As Long
-                    For j = m_numOfLUTs - 1 To i + 1 Step -1
-                        m_LUTs(j) = m_LUTs(j - 1)
-                    Next j
+                'Before doing anything else, copy the source file into the user's LUT folder.
+                If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
+                    Dim newFilename As String
+                    newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
+                    Files.FileCopyW srcFilename, newFilename
+                    srcFilename = newFilename
                 End If
                 
-            End If
+                'If the file validated, and it has a sub-file, copy the sub-file into the local folder as well
+                If (LenB(m_LUT.GetLUTSubPath()) <> 0) Then
+                    newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(m_LUT.GetLUTSubPath(), False)
+                    Files.FileCopyW m_LUT.GetLUTSubPath(), newFilename
+                End If
                 
-            With m_LUTs(i)
-                .fullPath = srcFilename
-                .filenameOnly = targetFilenameOnly
-                .lenDataCompressed = 0
-                .lenDataUncompressed = 0
-            End With
-            m_numOfLUTs = m_numOfLUTs + 1
+                'Ensure we have sufficient space for a new entry
+                If (m_numOfLUTs <= 0) Then
+                    ReDim m_LUTs(0) As LUTCache
+                Else
+                    If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+                End If
+                
+                Dim targetFilenameOnly As String
+                targetFilenameOnly = Files.FileGetName(srcFilename)
+                
+                'We now need to search the current list of LUTs and figure out where to insert this one.
+                Dim i As Long
+                i = 0
+                
+                If (m_numOfLUTs > 0) Then
+                    
+                    'Look for the first entry with a value *less* than the current one
+                    For i = 0 To m_numOfLUTs - 1
+                        If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+                    Next i
+                    
+                    'Shift all existing entries to make room for this new one
+                    If (i < m_numOfLUTs - 1) Then
+                        Dim k As Long
+                        For k = m_numOfLUTs - 1 To i + 1 Step -1
+                            m_LUTs(k) = m_LUTs(k - 1)
+                        Next k
+                    End If
+                    
+                End If
+                    
+                With m_LUTs(i)
+                    .fullPath = srcFilename
+                    .filenameOnly = targetFilenameOnly
+                    .lenDataCompressed = 0
+                    .lenDataUncompressed = 0
+                End With
+                m_numOfLUTs = m_numOfLUTs + 1
+                
+                'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
+                ' get added to the *end* of the list.  This is by design to make newly added entries
+                ' easier to find.  If the user leaves and returns to this dialog, the list of available
+                ' LUTs always gets re-sorted.
+                lstLUTs.AddItem targetFilenameOnly, i
+                
+                '(Only make this LUT the active one if we're finished processing LUT files.)
+                If (j = srcFilenames.GetNumOfStrings - 1) Then lstLUTs.ListIndex = i
+                
+            'LUT didn't validate!  Notify the user.
+            Else
+                Dim msgText As String, msgTitle As String
+                msgText = g_Language.TranslateMessage("%1 is not a valid 3D lookup table (LUT).", srcFilename)
+                msgTitle = g_Language.TranslateMessage("Error")
+                PDMsgBox msgText, vbExclamation Or vbOKOnly Or vbApplicationModal, msgTitle
+            End If
             
-            'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
-            ' get added to the *end* of the list.  This is by design to make newly added entries
-            ' easier to find.  If the user leaves and returns to this dialog, the list of available
-            ' LUTs always gets re-sorted.
-            lstLUTs.AddItem targetFilenameOnly, i
-            lstLUTs.ListIndex = i
+        Next j
             
-        'LUT didn't validate!  Notify the user, then exit.
-        Else
-            Dim msgText As String, msgTitle As String
-            msgText = g_Language.TranslateMessage("%1 is not a valid 3D lookup table (LUT).", srcFilename)
-            msgTitle = g_Language.TranslateMessage("Error")
-            PDMsgBox msgText, vbExclamation Or vbOKOnly Or vbApplicationModal, msgTitle
-        End If
-        
     End If
     
 End Sub
