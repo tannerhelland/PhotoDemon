@@ -104,56 +104,15 @@ Option Explicit
 
 Private Sub cmdAdd_Click()
 
-    Dim srcFiles As String, finalList As pdStringStack
-    Set finalList = New pdStringStack
+    Dim finalList As pdStringStack
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-    If cCommonDialog.GetOpenFileName(srcFiles, , True, True, , , UserPrefs.GetAppPath, "Select one or more files", , Me.hWnd) Then
-        
-        'Take the return string (a null-delimited list of filenames) and split it out into a string array
-        Dim listOfFiles() As String
-        listOfFiles = Split(srcFiles, vbNullChar)
-        
-        Dim i As Long
-        
-        'Due to the buffering required by the API call, UBound(listOfFiles) should ALWAYS > 0 but
-        ' let's check it anyway (just to be safe)
-        If (UBound(listOfFiles) > 0) Then
-        
-            'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
-            For i = UBound(listOfFiles) To 0 Step -1
-                If (LenB(listOfFiles(i)) <> 0) Then Exit For
-            Next
-            
-            'With all the empty strings removed, all that's left is legitimate file paths
-            ReDim Preserve listOfFiles(0 To i) As String
-            
-        End If
-        
-        'If multiple files were selected, we need to do some additional processing to the array
-        If (UBound(listOfFiles) > 0) Then
-        
-            'The common dialog function returns a unique array. Index (0) contains the folder path (without a
-            ' trailing backslash), so first things first - add a trailing backslash
-            Dim basePath As String
-            basePath = Files.PathAddBackslash(listOfFiles(0))
-            
-            'The remaining indices contain a filename within that folder.  To get the full filename, we must
-            ' append the path from (0) to the start of each filename.  This will relieve the burden on
-            ' whatever function called us - it can simply loop through the full paths, loading files as it goes
-            For i = 1 To UBound(listOfFiles)
-                finalList.AddString basePath & listOfFiles(i)
-            Next i
-            
-        'If there is only one file in the array (e.g. the user only opened one image), we don't need to do all
-        ' that extra processing - just retrieve the only file path as-is
-        Else
-            finalList.AddString listOfFiles(0)
-        End If
+    If cCommonDialog.GetOpenFileNames_AsStringStack(finalList, vbNullString, vbNullString, True, , , UserPrefs.GetAppPath, "Select one or more files", , Me.hWnd) Then
         
         'Sort the list of files, then add it to the primary list box
         finalList.SortAlphabetically
         
+        Dim i As Long
         For i = 0 To finalList.GetNumOfStrings - 1
             lstFiles.AddItem finalList.GetString(i)
         Next i

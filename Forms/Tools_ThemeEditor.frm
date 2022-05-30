@@ -615,8 +615,8 @@ Private Sub cmdResItemPath_Click()
     srcFile = Files.FileGetName(txtResourceLocation.Text)
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-    If cCommonDialog.GetOpenFileName(srcFile, , True, False, "All files (*.*)|*.*", , m_FSO.FileGetPath(txtResourceLocation.Text), "Select resource item", , Me.hWnd) Then
-        If (Len(srcFile) <> 0) Then
+    If cCommonDialog.GetOpenFileName(srcFile, , True, False, , , m_FSO.FileGetPath(txtResourceLocation.Text), "Select resource item", , Me.hWnd) Then
+        If (LenB(srcFile) <> 0) Then
             txtResourceLocation.Text = srcFile
             SyncResourceAgainstCurrentUI
             UpdatePreview

@@ -18,22 +18,25 @@ Attribute VB_Exposed = False
 'Last updated: 29/May/22
 'Last update: add convenience helper for multi-select, returning the results as a pdStringStack object
 '
-'Common dialogs appear in multiple places throughout PD.  In the beginning, PD relied on a convenient common dialog wrapper
-' from vbAccelerator (http://www.vbaccelerator.com/home/VB/Code/Libraries/Common_Dialogs/Code_Only_Common_Dialogs/article.asp),
-' but besides being unwieldy and somewhat error-prone, Steve's implementation was ANSI-only.  Due to some major differences in
-' string handling (including multifile delimiters), it was non-trivial to overhaul his control, so in 2015, I wrote a new
-' common dialog interface, specific to PD.
+'Common dialogs appear in multiple places throughout PD.  In the beginning, PD relied on a convenient
+' common dialog wrapper from vbAccelerator...
 '
-'The eventual goal is to add parallel support for Vista's IFileOpen/SaveDialogs, which would actually allow me to customize
-' the program's main dialogs, but that's a ways off.  For now, everything simply wraps the traditional common dialog controls.
+'http://www.vbaccelerator.com/home/VB/Code/Libraries/Common_Dialogs/Code_Only_Common_Dialogs/article.html
 '
-'For convenience against existing code, function calls are roughly identical to Steve's old control.
+'...but besides being unwieldy and somewhat error-prone, Steve's implementation was ANSI-only.  Due to major
+' differences in string handling (including multifile delimiters), it was non-trivial to overhaul his code,
+' so in 2015 I wrote a new common dialog interface, specific to PhotoDemon.
+'
+'The eventual goal is to add parallel support for Vista's IFileOpen/SaveDialogs, which would allow me to
+' (finally) customize the program's main dialogs, but as of today that remains TODO.  For now, PD simply
+' wraps the old-school common dialog APIs.
+'
+'(Also: for convenience against existing code, parameter order is roughly identical to Steve's old implementation.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
-
 
 Option Explicit
 
@@ -71,7 +74,7 @@ Private Type OPENFILENAME
     FlagsEx              As Long
 End Type
 
-Private Enum EOpenFile
+Private Enum Win32_CommonDialogFlags
     OFN_READONLY = &H1
     OFN_OVERWRITEPROMPT = &H2
     OFN_HIDEREADONLY = &H4
@@ -106,7 +109,7 @@ End Enum
 #End If
 
 'MSDN explanation of potential CD errors: https://msdn.microsoft.com/en-us/library/ms646916%28v=vs.85%29.aspx
-Public Enum CommonDialogErrorsEnum
+Public Enum Win32_CommonDialogErrors
     CDERR_DIALOGFAILURE = &HFFFF&
     CDERR_FINDRESFAILURE = &H6
     CDERR_LOADRESFAILURE = &H7
@@ -136,20 +139,19 @@ Private Const MAX_FILE As Long = 260
 
 'Display a system-specific Open File dialog.
 ' RETURNS: TRUE if one or more files was selected; FALSE if canceled.
-Friend Function GetOpenFileName(ByRef FileName As String, _
-                           Optional ByRef FileTitle As String, _
-                           Optional ByVal FileMustExist As Boolean = True, _
-                           Optional ByVal MultiSelect As Boolean = False, _
-                           Optional ByVal Filter As String = "All (*.*)|*.*", _
-                           Optional ByRef FilterIndex As Long = 1, _
-                           Optional ByRef InitDir As String, _
-                           Optional ByRef DlgTitle As String, _
-                           Optional ByRef DefaultExt As String, _
-                           Optional ByVal Owner As Long = 0&) As Boolean
+Friend Function GetOpenFileName(ByRef dstFilename As String, _
+                           Optional ByRef fileAndExtensionOnlyNoPath As String, _
+                           Optional ByVal fileMustExist As Boolean = True, _
+                           Optional ByVal allowMultiSelect As Boolean = False, _
+                           Optional ByVal extensionFilters As String = "All (*.*)|*.*", _
+                           Optional ByRef idxFilter As Long = 1, _
+                           Optional ByRef initialFolder As String, _
+                           Optional ByRef titleBarCaption As String, _
+                           Optional ByRef defaultExtension As String, _
+                           Optional ByVal hWndOwner As Long = 0&) As Boolean
     
+    'Lock various UI bits and stop responding to certain window messages
     Interface.NotifySystemDialogState True
-    
-    Dim lReturn As Long, lInitPathSize As Long
     
     'Prep a relevant OFN struct
     Dim tmpOFN As OPENFILENAME
@@ -157,76 +159,74 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     With tmpOFN
         .lStructSize = Len(tmpOFN)
         
-        'OFN_EXPLORER is explicitly flagged to force Explorer mode even when allowing multiselect, and OFN_PATHMUSTEXIST
-        ' is used to prevent the user from entering invalid filenames.
+        'OFN_EXPLORER is explicitly flagged to force Explorer mode even when allowing multiselect,
+        ' and OFN_PATHMUSTEXIST is used to prevent the user from entering invalid filenames.
         .Flags = OFN_PATHMUSTEXIST Or OFN_LONGNAMES Or OFN_HIDEREADONLY
-        If FileMustExist Then .Flags = .Flags Or OFN_FILEMUSTEXIST
-        If MultiSelect Then .Flags = .Flags Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
+        If fileMustExist Then .Flags = .Flags Or OFN_FILEMUSTEXIST
+        If allowMultiSelect Then .Flags = .Flags Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
         
         'Various other obvious flags
-        .hWndOwner = Owner
-        .lpstrInitialDir = InitDir
-        .lpstrDefExt = DefaultExt
-        .lpstrTitle = DlgTitle
+        .hWndOwner = hWndOwner
+        .lpstrInitialDir = initialFolder
+        .lpstrDefExt = defaultExtension
+        .lpstrTitle = titleBarCaption
         
-        'The filter string is actually null-delimited, which isn't easy for the caller to do, so we allow the old-style
-        ' pipe and colon separators, which are forcibly converted now.
-        Dim tmpChar As String, i As Long, s As String
-        For i = 1 To Len(Filter)
-            tmpChar = Mid$(Filter, i, 1)
-            If (tmpChar = "|") Or (tmpChar = ":") Then
-                s = s & vbNullChar
-            Else
-                s = s & tmpChar
-            End If
-        Next
+        'The filter string must be passed in null-delimited format, but this is non-trivial to do in VB6.
+        ' So we ask callers to use pipe separators, then manually convert to nulls before invoking the dialog.
+        Dim tmpChar As String, tmpString As String
+        tmpString = extensionFilters
+        If (InStr(1, tmpString, "|", vbBinaryCompare) <> 0) Then tmpString = Replace$(tmpString, "|", vbNullChar)
         
         'Double-nulls mark final termination
-        s = s & vbNullChar & vbNullChar
-        .lpstrFilter = s
-        .nFilterIndex = FilterIndex
+        .lpstrFilter = tmpString & vbNullChar & vbNullChar
+        .nFilterIndex = idxFilter
         
-        'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small,
-        ' the call to GetOpenFilename will fail, and we can't retry without re-raising the dialog from scratch.
+        'Because we allocate our own return string, we must pass the common dialog an allocated buffer
+        ' of some arbitrary size.  If the size proves too small to hold all files selected by the user,
+        ' the call to GetOpenFilename will fail, and we can't retry without re-raising the dialog -
+        ' so make sure the initial size is as big as possible!
+        Dim initPathSize As Long
         If OS.IsVistaOrLater Then
-            lInitPathSize = MAX_PATH_LOAD
+            initPathSize = MAX_PATH_LOAD
         Else
-            lInitPathSize = MAX_PATH_LOAD_XP
+            initPathSize = MAX_PATH_LOAD_XP
         End If
         
-        s = FileName & String$(lInitPathSize - Len(FileName), 0)
-        .lpstrFile = s
-        .nMaxFile = lInitPathSize
+        'Null-pad strings before passing them to the common dialog
+        .nMaxFile = initPathSize
+        .lpstrFile = dstFilename & String$(initPathSize - Len(dstFilename), 0)
         
-        s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-        .lpstrFileTitle = s
         .nMaxFileTitle = MAX_FILE
+        .lpstrFileTitle = fileAndExtensionOnlyNoPath & String$(MAX_FILE - Len(fileAndExtensionOnlyNoPath), 0)
         
         'All other fields are fine as-is
         
     End With
     
-    'Turn control over to the common dialog function
+    'Turn control over to the common dialog
+    Dim lReturn As Long
     lReturn = GetOpenFileNameW(VarPtr(tmpOFN))
     
-    'Before proceeding, add debug info in the special case of a buffer underrun.  This case is problematic, as we can't simply
-    ' "try again" without re-raising a modal dialog, so I'm hoping my current default buffer size is always sufficient.
+    'Before proceeding, add debug info in the special case of a buffer underrun.  This case is problematic,
+    ' as we can't simply "try again" without re-raising a modal dialog, so I'm hoping my current default
+    ' buffer size is always sufficient.
     If (lReturn = 0) And (CommDlgExtendedError() = FNERR_BUFFERTOOSMALL) Then
         PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error"
         PDDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
     End If
     
-    'Non-zero returns are considered successful, but note that a failure state may have occurred due to a too-small buffer.
-    ' (We could technically handle buffer overflows by retrying with a larger buffer, but I don't know how to do that
-    '  without re-displaying the entire effing common dialog; to that end, I've hard-coded a 16K buffer as a limit,
-    '  since PD won't do well with that many loaded images anyway.)
     If (lReturn <> 0) Then
         
         'Success!  Parse out the relevant strings.
         Dim lLen As Long
         
-        If (Not MultiSelect) Then
+        'In multi-select mode, parsing out individual filenames is left to the caller
+        If allowMultiSelect Then
+            dstFilename = tmpOFN.lpstrFile
         
+        'In single-file mode, we handle filename assembly for the caller (as a convenience)
+        Else
+            
             If (tmpOFN.nFileOffset <> 0) Then
                 lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1
                 If (lLen < 1) Then lLen = Len(tmpOFN.lpstrFile)
@@ -234,46 +234,44 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
                 lLen = lstrlenW(StrPtr(tmpOFN.lpstrFile))
             End If
             
-            If lLen Then FileName = Left$(tmpOFN.lpstrFile, lLen)
+            If (lLen <> 0) Then dstFilename = Left$(tmpOFN.lpstrFile, lLen)
             
-        Else
-            FileName = tmpOFN.lpstrFile
         End If
         
         lLen = lstrlenW(StrPtr(tmpOFN.lpstrFileTitle))
-        If lLen Then FileTitle = Left$(tmpOFN.lpstrFileTitle, lLen)
+        If (lLen <> 0) Then fileAndExtensionOnlyNoPath = Left$(tmpOFN.lpstrFileTitle, lLen)
         
         'Return the filter index, so the caller can store it to preferences as desired
-        FilterIndex = tmpOFN.nFilterIndex
+        idxFilter = tmpOFN.nFilterIndex
         
         GetOpenFileName = True
-        
+    
+    'A return value of 0 means the user canceled the dialog
     Else
         Message "Load canceled. "
         GetOpenFileName = False
-        FileName = vbNullString
-        FileTitle = vbNullString
+        dstFilename = vbNullString
+        fileAndExtensionOnlyNoPath = vbNullString
     End If
     
+    'Re-enable various hooks, subclassers, and UI bits
     Interface.NotifySystemDialogState False
                            
 End Function
 
 'Display a system-specific Save File dialog.
 ' RETURNS: TRUE if a valid save target was selected/created; FALSE if canceled.
-Friend Function GetSaveFileName(ByRef FileName As String, _
-                           Optional ByRef FileTitle As String, _
-                           Optional ByVal OverWritePrompt As Boolean = True, _
-                           Optional ByRef Filter As String = "All (*.*)|*.*", _
-                           Optional ByRef FilterIndex As Long = 1, _
-                           Optional ByRef InitDir As String, _
-                           Optional ByRef DlgTitle As String, _
-                           Optional ByRef DefaultExt As String, _
-                           Optional ByVal Owner As Long = -1) As Boolean
+Friend Function GetSaveFileName(ByRef dstFilename As String, _
+                           Optional ByRef fileAndExtensionOnlyNoPath As String, _
+                           Optional ByVal showOverWritePrompt As Boolean = True, _
+                           Optional ByRef extensionFilters As String = "All (*.*)|*.*", _
+                           Optional ByRef idxFilter As Long = 1, _
+                           Optional ByRef initialFolder As String, _
+                           Optional ByRef titleBarCaption As String, _
+                           Optional ByRef defaultExtension As String, _
+                           Optional ByVal hWndOwner As Long = 0&) As Boolean
 
     Interface.NotifySystemDialogState True
-    
-    Dim lReturn As Long, lInitPathSize As Long
     
     'Prep a relevant OFN struct
     Dim tmpOFN As OPENFILENAME
@@ -283,35 +281,35 @@ Friend Function GetSaveFileName(ByRef FileName As String, _
         
         'We forcefully hide the "Open as Read Only" checkbox, as it makes little sense for PD.
         .Flags = OFN_HIDEREADONLY
-        If OverWritePrompt Then .Flags = .Flags Or OFN_OVERWRITEPROMPT
+        If showOverWritePrompt Then .Flags = .Flags Or OFN_OVERWRITEPROMPT
         
         'Various other obvious flags
-        If (Owner <> -1) Then .hWndOwner = Owner
-        .lpstrInitialDir = InitDir
-        .lpstrDefExt = DefaultExt
-        .lpstrTitle = DlgTitle
+        .hWndOwner = hWndOwner
+        .lpstrInitialDir = initialFolder
+        .lpstrDefExt = defaultExtension
+        .lpstrTitle = titleBarCaption
         
-        'The filter string is actually null-delimited, which isn't easy for the caller to do, so we allow the old-style
-        ' pipe and colon separators, which are forcibly converted now.
-        Dim s As String
-        s = Filter
-        If InStr(1, s, "|", vbBinaryCompare) Then s = Replace$(s, "|", vbNullChar)
-        If InStr(1, s, ":", vbBinaryCompare) Then s = Replace$(s, ":", vbNullChar)
+        'The filter string must be passed in null-delimited format, but this is non-trivial to do in VB6.
+        ' So we ask callers to use pipe separators, then manually convert to nulls before invoking the dialog.
+        Dim tmpString As String
+        tmpString = extensionFilters
+        If (InStr(1, tmpString, "|", vbBinaryCompare) <> 0) Then tmpString = Replace$(tmpString, "|", vbNullChar)
         
         'Double-nulls mark final termination
-        s = s & vbNullChar & vbNullChar
-        .lpstrFilter = s
-        .nFilterIndex = FilterIndex
+        .lpstrFilter = tmpString & vbNullChar & vbNullChar
+        .nFilterIndex = idxFilter
         
-        'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small, we could technically call
-        ' the function again with a larger buffer (not implemented, as PD uses a comically huge buffer).
-        lInitPathSize = MAX_PATH_SAVE
-        s = FileName & String$(lInitPathSize - Len(FileName), 0)
-        .lpstrFile = s
-        .nMaxFile = lInitPathSize
+        'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small,
+        ' we could technically call the function again with a larger buffer (not implemented, as PD uses
+        ' a comically huge buffer).
+        Dim initPathSize As Long
+        initPathSize = MAX_PATH_SAVE
         
-        s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-        .lpstrFileTitle = s
+        'Null-pad all strings to their max size
+        .lpstrFile = dstFilename & String$(initPathSize - Len(dstFilename), 0)
+        .nMaxFile = initPathSize
+        
+        .lpstrFileTitle = fileAndExtensionOnlyNoPath & String$(MAX_FILE - Len(fileAndExtensionOnlyNoPath), 0)
         .nMaxFileTitle = MAX_FILE
         
         'All other fields are fine as-is
@@ -319,6 +317,7 @@ Friend Function GetSaveFileName(ByRef FileName As String, _
     End With
     
     'Turn control over to the common dialog function
+    Dim lReturn As Long
     lReturn = GetSaveFileNameW(VarPtr(tmpOFN))
     
     'Non-zero returns are considered successful, but note that a failure state may have occurred due to a too-small buffer.
@@ -330,48 +329,47 @@ Friend Function GetSaveFileName(ByRef FileName As String, _
         'Success!  Parse out the relevant filename string.
         Dim lLen As Long
         If (tmpOFN.nFileOffset <> 0) Then
-            lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1&
-            If (lLen < 1&) Then lLen = Len(tmpOFN.lpstrFile)
+            lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1
+            If (lLen < 1) Then lLen = Len(tmpOFN.lpstrFile)
         Else
             lLen = lstrlenW(StrPtr(tmpOFN.lpstrFile))
         End If
         
-        If lLen Then FileName = Left$(tmpOFN.lpstrFile, lLen)
+        If (lLen <> 0) Then dstFilename = Left$(tmpOFN.lpstrFile, lLen)
         
         'As a convenience, return the file title too (which is just the filename + extension, with no path data)
         lLen = lstrlenW(StrPtr(tmpOFN.lpstrFileTitle))
-        If lLen Then FileTitle = Left$(tmpOFN.lpstrFileTitle, lLen)
+        If (lLen <> 0) Then fileAndExtensionOnlyNoPath = Left$(tmpOFN.lpstrFileTitle, lLen)
         
         'Return the filter index, so the caller can store it to preferences as desired
-        FilterIndex = tmpOFN.nFilterIndex
+        idxFilter = tmpOFN.nFilterIndex
         
         GetSaveFileName = True
         
     Else
-        
         Message "Save canceled. "
         GetSaveFileName = False
-        
     End If
     
+    'Re-enable various hooks, subclassers, and UI bits
     Interface.NotifySystemDialogState False
     
 End Function
 
-'Display a system-specific Open File dialog with MULTISELECT = TRUE, and return the list of selected file(s)
+'Display a system-specific Open File dialog with allowMultiSelect = TRUE, and return the list of selected file(s)
 ' as as pdStringStack object.
 ' RETURNS: TRUE if one or more files was selected; FALSE if canceled.
-Friend Function GetOpenFileNames_AsStringStack(ByRef dstStringStack As pdStringStack, ByRef FileName As String, _
-                           Optional ByRef FileTitle As String, _
-                           Optional ByVal FileMustExist As Boolean = True, _
-                           Optional ByVal Filter As String = "All (*.*)|*.*", _
-                           Optional ByRef FilterIndex As Long = 1, _
-                           Optional ByRef InitDir As String, _
-                           Optional ByRef DlgTitle As String, _
-                           Optional ByRef DefaultExt As String, _
-                           Optional ByVal Owner As Long = 0&) As Boolean
+Friend Function GetOpenFileNames_AsStringStack(ByRef dstStringStack As pdStringStack, ByRef dstFilename As String, _
+                           Optional ByRef fileAndExtensionOnlyNoPath As String, _
+                           Optional ByVal fileMustExist As Boolean = True, _
+                           Optional ByVal extensionFilters As String = "All (*.*)|*.*", _
+                           Optional ByRef idxFilter As Long = 1, _
+                           Optional ByRef initialFolder As String, _
+                           Optional ByRef titleBarCaption As String, _
+                           Optional ByRef defaultExtension As String, _
+                           Optional ByVal hWndOwner As Long = 0&) As Boolean
 
-    GetOpenFileNames_AsStringStack = Me.GetOpenFileName(FileName, FileTitle, FileMustExist, True, Filter, FilterIndex, InitDir, DlgTitle, DefaultExt, Owner)
+    GetOpenFileNames_AsStringStack = Me.GetOpenFileName(dstFilename, fileAndExtensionOnlyNoPath, fileMustExist, True, extensionFilters, idxFilter, initialFolder, titleBarCaption, defaultExtension, hWndOwner)
     
     If GetOpenFileNames_AsStringStack Then
     
@@ -379,7 +377,7 @@ Friend Function GetOpenFileNames_AsStringStack(ByRef dstStringStack As pdStringS
         
         'Take the return string (a null-delimited list of filenames) and split it into an array
         Dim listOfFiles() As String
-        listOfFiles = Split(FileName, vbNullChar)
+        listOfFiles = Split(dstFilename, vbNullChar)
         
         Dim i As Long
         

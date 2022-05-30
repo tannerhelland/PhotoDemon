@@ -2955,7 +2955,7 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     Dim sFile As String
     sFile = srcFilename
     
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter.ToString(), 1, UserPrefs.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, vbNullString, True, False, cdFilter.ToString(), 1, UserPrefs.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
     
         'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
         ' as they require.

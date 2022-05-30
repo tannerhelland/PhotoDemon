@@ -305,7 +305,7 @@ Public Sub PlayMacro()
         
     'If we get a path, load that file
     Dim sFile As String
-    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, vbNullString, True, False, cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         Message "Loading macro..."
         

@@ -51,61 +51,12 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     Dim sFileList As String
         
     'Retrieve one (or more) files to open
-    If openDialog.GetOpenFileName(sFileList, , True, True, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
+    If openDialog.GetOpenFileNames_AsStringStack(dstStringStack, vbNullString, vbNullString, True, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), vbNullString, ownerHwnd) Then
         
         'Message "Preparing to load image..."
         
-        'Take the return string (a null-delimited list of filenames) and split it out into a string array
-        Dim listOfFiles() As String
-        listOfFiles = Split(sFileList, vbNullChar)
-        
-        Dim i As Long
-        
-        'Due to the buffering required by the API call, uBound(listOfFiles) should ALWAYS > 0 but
-        ' let's check it anyway (just to be safe)
-        If (UBound(listOfFiles) > 0) Then
-        
-            'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
-            For i = UBound(listOfFiles) To 0 Step -1
-                If (LenB(listOfFiles(i)) <> 0) Then Exit For
-            Next
-            
-            'With all the empty strings removed, all that's left is legitimate file paths
-            ReDim Preserve listOfFiles(0 To i) As String
-            
-        End If
-        
-        'If multiple files were selected, we need to do some additional processing to the array
-        If (UBound(listOfFiles) > 0) Then
-        
-            'The common dialog function returns a unique array. Index (0) contains the folder path (without a
-            ' trailing backslash), so first things first - add a trailing backslash
-            Dim imagesPath As String
-            imagesPath = Files.PathAddBackslash(listOfFiles(0))
-            
-            'The remaining indices contain a filename within that folder.  To get the full filename, we must
-            ' append the path from (0) to the start of each filename.  This will relieve the burden on
-            ' whatever function called us - it can simply loop through the full paths, loading files as it goes
-            For i = 1 To UBound(listOfFiles)
-                dstStringStack.AddString imagesPath & listOfFiles(i)
-            Next i
-            
-            'Save the new directory as the default path for future usage
-            UserPrefs.SetPref_String "Paths", "Open Image", imagesPath
-            
-        'If there is only one file in the array (e.g. the user only opened one image), we don't need to do all
-        ' that extra processing - just save the new directory to the preferences file
-        Else
-        
-            'Save the new directory as the default path for future usage
-            tempPathString = Files.FileGetPath(listOfFiles(0))
-            UserPrefs.SetPref_String "Paths", "Open Image", tempPathString
-            
-            dstStringStack.AddString listOfFiles(0)
-            
-        End If
-        
-        'Store the selected file filter in the user's pref file
+        'Save the base folder and active file filter to the user's pref file
+        UserPrefs.SetPref_String "Paths", "Open Image", Files.FileGetPath(dstStringStack.GetString(0))
         UserPrefs.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
         
         PhotoDemon_OpenImageDialog = True

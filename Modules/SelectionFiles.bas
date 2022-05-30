@@ -172,7 +172,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
                 
-        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
+        If openDialog.GetOpenFileName(sFile, vbNullString, True, False, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
