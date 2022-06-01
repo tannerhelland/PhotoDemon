@@ -329,8 +329,8 @@ Private Sub Form_Load()
     
     If Files.RetrieveAllFiles(lutFolder, listOfFiles, True, False, "cube|look|3dl") Then
         
-        'Tell the listbox to use file display mode.  (This will truncate extremely long filenames using
-        ' OS rules, as necessary.)
+        'Tell the listbox to use file display mode.
+        ' (This will truncate extremely long filenames using OS rules, as necessary.)
         lstLUTs.SetDisplayMode_Files True
         
         'Prep the LUT collection
@@ -338,7 +338,7 @@ Private Sub Form_Load()
         ReDim m_LUTs(0 To INIT_LUT_SIZE - 1) As LUTCache
         m_numOfLUTs = 0
         
-        'Compatible LUTs currently include .cube and .3dl files; list only these files
+        'List all files from the retrieval list
         Dim i As Long, testFile As String, testFilenameOnly As String
         For i = 0 To listOfFiles.GetNumOfStrings - 1
             

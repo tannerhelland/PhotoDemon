@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon 3D LUT I/O class
 'Copyright 2020-2022 by Tanner Helland
 'Created: 23/October/20
-'Last updated: 23/February/22
-'Last update: fix parsing issues on weirdly encoded 3rd-party .look files
+'Last updated: 01/June/22
+'Last update: new support for resizing LUT dimensions on-the-fly
 '
 'From the .CUBE spec:
 '
@@ -41,7 +41,7 @@ Attribute VB_Exposed = False
 ' Technicolor (yes, *that* Technicolor) presentation on their website that hints at the required math.
 '
 'Many documents were consulted to build this class.  Critical links include these ones
-' (intact as of October 2020):
+' (links good as of October 2020):
 '
 ' - Version 1.0 of Adobe's .CUBE spec:
 '    https://wwwimages2.adobe.com/content/dam/acom/en/products/speedgrade/cc/pdfs/cube-lut-specification-1.0.pdf
@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 '    https://download.autodesk.com/us/systemdocs/pdf/lustre_color_management_user_guide.pdf
 '
 'This class has been heavily optimized for speed, which means it has many dependencies on other
-' PD classes.
+' PhotoDemon classes.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -231,7 +231,11 @@ Friend Function GetLUTPath() As String
     GetLUTPath = m_lutPath
 End Function
 
-'Only some files (.look format) require a subpath
+Friend Function GetLUTSize() As Long
+    GetLUTSize = m_LutSize
+End Function
+
+'Only some files (.look format) support the concept of subpaths
 Friend Function GetLUTSubPath() As String
     GetLUTSubPath = m_subLutPath
 End Function
@@ -927,6 +931,75 @@ LUTParseCrash:
     LoadLUTFromFile_look = False
 End Function
 
+'Passed values must be on the range [0.0, 1.0].  Returned values are currently clamped to [0.0, 1.0] as well
+' (but this could easily be modified as desired).
+Friend Sub GetInterpolatedRGB_Float(ByVal srcR As Single, ByVal srcG As Single, ByVal srcB As Single, ByRef dstR As Single, ByRef dstG As Single, ByRef dstB As Single)
+
+    'Use the source RGB values as indices into the central lookup table
+    Dim rIndex As Single, gIndex As Single, bIndex As Single
+    rIndex = (srcR * m_LutLoopSize)
+    gIndex = (srcG * m_LutLoopSize)
+    bIndex = (srcB * m_LutLoopSize)
+    
+    'Calculate the fractional component of each index; we need this to interpolate.
+    ' (While here, we also calculate a "+1" index; this lets us skip bounds-checking on the inner
+    ' interpolation loop.)
+    Dim nR As Long, nG As Long, nB As Long
+    nR = Int(rIndex)
+    nG = Int(gIndex)
+    nB = Int(bIndex)
+    
+    Dim nRP As Long, nGP As Long, nBP As Long
+    nRP = nR + 1
+    If (nRP >= m_LutSize) Then nRP = m_LutLoopSize
+    nGP = nG + 1
+    If (nGP >= m_LutSize) Then nGP = m_LutLoopSize
+    nBP = nB + 1
+    If (nBP >= m_LutSize) Then nBP = m_LutLoopSize
+    
+    Dim fR As Single, fG As Single, fB As Single
+    fR = rIndex - nR
+    fG = gIndex - nG
+    fB = bIndex - nB
+    
+    'Branches enable faster conversions
+    If (fG >= fB) And (fB >= fR) Then
+        dstR = (1! - fG) * m_lut3D(nR, nG, nB).rFloat + (fG - fB) * m_lut3D(nR, nGP, nB).rFloat + (fB - fR) * m_lut3D(nR, nGP, nBP).rFloat + fR * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fG) * m_lut3D(nR, nG, nB).gFloat + (fG - fB) * m_lut3D(nR, nGP, nB).gFloat + (fB - fR) * m_lut3D(nR, nGP, nBP).gFloat + fR * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fG) * m_lut3D(nR, nG, nB).bFloat + (fG - fB) * m_lut3D(nR, nGP, nB).bFloat + (fB - fR) * m_lut3D(nR, nGP, nBP).bFloat + fR * m_lut3D(nRP, nGP, nBP).bFloat
+    ElseIf (fB > fR) And (fR > fG) Then
+        dstR = (1! - fB) * m_lut3D(nR, nG, nB).rFloat + (fB - fR) * m_lut3D(nR, nG, nBP).rFloat + (fR - fG) * m_lut3D(nRP, nG, nBP).rFloat + fG * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fB) * m_lut3D(nR, nG, nB).gFloat + (fB - fR) * m_lut3D(nR, nG, nBP).gFloat + (fR - fG) * m_lut3D(nRP, nG, nBP).gFloat + fG * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fB) * m_lut3D(nR, nG, nB).bFloat + (fB - fR) * m_lut3D(nR, nG, nBP).bFloat + (fR - fG) * m_lut3D(nRP, nG, nBP).bFloat + fG * m_lut3D(nRP, nGP, nBP).bFloat
+    ElseIf (fB > fG) And (fG >= fR) Then
+        dstR = (1! - fB) * m_lut3D(nR, nG, nB).rFloat + (fB - fG) * m_lut3D(nR, nG, nBP).rFloat + (fG - fR) * m_lut3D(nR, nGP, nBP).rFloat + fR * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fB) * m_lut3D(nR, nG, nB).gFloat + (fB - fG) * m_lut3D(nR, nG, nBP).gFloat + (fG - fR) * m_lut3D(nR, nGP, nBP).gFloat + fR * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fB) * m_lut3D(nR, nG, nB).bFloat + (fB - fG) * m_lut3D(nR, nG, nBP).bFloat + (fG - fR) * m_lut3D(nR, nGP, nBP).bFloat + fR * m_lut3D(nRP, nGP, nBP).bFloat
+    ElseIf (fR >= fG) And (fG > fB) Then
+        dstR = (1! - fR) * m_lut3D(nR, nG, nB).rFloat + (fR - fG) * m_lut3D(nRP, nG, nB).rFloat + (fG - fB) * m_lut3D(nRP, nGP, nB).rFloat + fB * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fR) * m_lut3D(nR, nG, nB).gFloat + (fR - fG) * m_lut3D(nRP, nG, nB).gFloat + (fG - fB) * m_lut3D(nRP, nGP, nB).gFloat + fB * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fR) * m_lut3D(nR, nG, nB).bFloat + (fR - fG) * m_lut3D(nRP, nG, nB).bFloat + (fG - fB) * m_lut3D(nRP, nGP, nB).bFloat + fB * m_lut3D(nRP, nGP, nBP).bFloat
+    ElseIf (fG > fR) And (fR >= fB) Then
+        dstR = (1! - fG) * m_lut3D(nR, nG, nB).rFloat + (fG - fR) * m_lut3D(nR, nGP, nB).rFloat + (fR - fB) * m_lut3D(nRP, nGP, nB).rFloat + fB * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fG) * m_lut3D(nR, nG, nB).gFloat + (fG - fR) * m_lut3D(nR, nGP, nB).gFloat + (fR - fB) * m_lut3D(nRP, nGP, nB).gFloat + fB * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fG) * m_lut3D(nR, nG, nB).bFloat + (fG - fR) * m_lut3D(nR, nGP, nB).bFloat + (fR - fB) * m_lut3D(nRP, nGP, nB).bFloat + fB * m_lut3D(nRP, nGP, nBP).bFloat
+    Else
+        dstR = (1! - fR) * m_lut3D(nR, nG, nB).rFloat + (fR - fB) * m_lut3D(nRP, nG, nB).rFloat + (fB - fG) * m_lut3D(nRP, nG, nBP).rFloat + fG * m_lut3D(nRP, nGP, nBP).rFloat
+        dstG = (1! - fR) * m_lut3D(nR, nG, nB).gFloat + (fR - fB) * m_lut3D(nRP, nG, nB).gFloat + (fB - fG) * m_lut3D(nRP, nG, nBP).gFloat + fG * m_lut3D(nRP, nGP, nBP).gFloat
+        dstB = (1! - fR) * m_lut3D(nR, nG, nB).bFloat + (fR - fB) * m_lut3D(nRP, nG, nB).bFloat + (fB - fG) * m_lut3D(nRP, nG, nBP).bFloat + fG * m_lut3D(nRP, nGP, nBP).bFloat
+    End If
+    
+    'Clamping could be optional for floating-point values, but we currently desire this behavior in PD.
+    If (dstR < 0!) Then dstR = 0!
+    If (dstR > 1!) Then dstR = 1!
+    If (dstG < 0!) Then dstG = 0!
+    If (dstG > 1!) Then dstG = 1!
+    If (dstB < 0!) Then dstB = 0!
+    If (dstB > 1!) Then dstB = 1!
+    
+End Sub
+
+'Passed values should be on the range [0, 255]
 Friend Sub GetInterpolatedRGB_Int(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long, ByRef dstR As Long, ByRef dstG As Long, ByRef dstB As Long)
 
     'Use the source RGB values as indices into the central lookup table
@@ -1023,6 +1096,69 @@ Friend Sub ResetLUT()
     m_MinR = 0!: m_MinG = 0!: m_MinB = 0!
     m_lutPath = vbNullString
     m_subLutPath = vbNullString
+End Sub
+
+'If a LUT has been loaded, you can resize it to any arbitrary size via this function.
+' This can convert e.g. a 33x33x33 LUT to a 17x17x17 one.  LUT size doesn't matter much for performance,
+' but reducing it can greatly reduce the on-disk *size* of a LUT.  (In the aforementioned example,
+' the 17x17x17 LUT only has ~5000 entries compared to ~36000 for the 33x33x33 version.)
+Friend Sub ResizeLUT(ByVal newLUTSize As Long)
+    
+    'Resizing a LUT is easy: just create a temporary set of floats, run the LUT filter on it, then swap the
+    ' module-level values out.
+    Dim newBound As Long
+    newBound = newLUTSize - 1
+    
+    Dim newValues() As FloatColor
+    ReDim newValues(0 To newLUTSize - 1, 0 To newLUTSize - 1, 0 To newLUTSize - 1) As FloatColor
+    
+    Dim r As Long, g As Long, b As Long
+    Dim origR As Single, origG As Single, origB As Single, newR As Single, newG As Single, newB As Single
+    
+    Dim minR As Single, minG As Single, minB As Single
+    Dim maxR As Single, maxG As Single, maxB As Single
+    minR = 0!: minG = 0!: minB = 0!
+    maxR = 1!: maxG = 1!: maxB = 1!
+    
+    For r = 0 To newBound
+        origR = r / newBound
+    For g = 0 To newBound
+        origG = g / newBound
+    For b = 0 To newBound
+        origB = b / newBound
+        Me.GetInterpolatedRGB_Float origR, origG, origB, newR, newG, newB
+        If (newR < minR) Then minR = newR
+        If (newR > maxR) Then maxR = newR
+        If (newG < minG) Then minG = newG
+        If (newG > maxG) Then maxG = newG
+        If (newB < minB) Then minB = newB
+        If (newB > maxB) Then maxB = newB
+        With newValues(r, g, b)
+            .rFloat = newR
+            .gFloat = newG
+            .bFloat = newB
+        End With
+    Next b
+    Next g
+    Next r
+    
+    'With new values calculated, swap out the class-level LUT with our new one.
+    ReDim m_lut3D(0 To newBound, 0 To newBound, 0 To newBound) As FloatColor
+    m_LutSize = newLUTSize
+    m_LutLoopSize = newLUTSize - 1
+    
+    m_MinR = minR: m_MinG = minG: m_MinB = minB
+    m_MaxR = maxR: m_MaxG = maxG: m_MaxB = maxB
+    m_RangeR = m_MaxR - m_MinR: m_RangeG = m_MaxG - m_MinG: m_RangeB = m_MaxB - m_MinB
+    
+    For r = 0 To newBound
+    For g = 0 To newBound
+    For b = 0 To newBound
+        m_lut3D(r, g, b) = newValues(r, g, b)
+    Next b
+    Next g
+    Next r
+    
 End Sub
 
 'Serialize the current LUT's contents to a byte array.  Returns the size of the stored data, UNCOMPRESSED.
