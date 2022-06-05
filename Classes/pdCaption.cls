@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "Caption" support class for user controls
 'Copyright 2014-2022 by Tanner Helland
 'Created: 27/August/15
-'Last updated: 28/October/15
-'Last update: rewrite the class to use a program-level cache of requested caption sizes.  This spares us from needing to
-'              create tons of redundant font objects for rendering UI text.
+'Last updated: 05/June/22
+'Last update: remove check for spaces prior to enabling wordwrap; CJK languages (and likely others) can break
+'             in plenty of non-space locations!  Thank you to @shishi2019 for catching and reporting this bug.
 '
 'As part of streamlining PD's many custom user controls, I've been adding "caption" support to each relevant UC.
 ' This spares us from having to use two controls for each instance (the UC itself, plus a label), simplifying layout
@@ -269,8 +269,9 @@ Friend Sub SetControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
 End Sub
 
 'Returns the width of the current caption, in pixels, with autofit active.  No padding is applied.
-' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously) affects the width of the string, but because the width
-' of a wordwrap string is simply the container width - which the caller must specify - there's no point in returning it here.
+' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously) affects the width of the string,
+' but because the width of a wordwrap string is simply the container width - which the caller must specify -
+' there's no point in returning it here.
 Friend Function GetCaptionWidth() As Single
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
@@ -302,7 +303,7 @@ Friend Function GetCaptionHeight() As Single
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
-    If Not m_FontSizeVerified Then VerifyFontSize
+    If (Not m_FontSizeVerified) Then VerifyFontSize
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
@@ -487,10 +488,11 @@ End Sub
 ' is pointless if we haven't been notified of a container size yet.)
 Private Sub VerifyFontSize()
     
-    'Our parent control is responsible for notifying us if its size changes.  If it hasn't notified us yet, verification can't proceed.
+    'Our parent control is responsible for notifying us if its size changes.
+    ' If it hasn't notified us yet, verification can't proceed.
     If (m_ContainerWidth > 0) Then
         
-        'Shortcut if the caption is null; many toolbar buttons don't use captions
+        'Shortcut if the caption is null (many toolbar buttons don't use captions)
         If (LenB(m_CaptionTranslated) = 0) Then
             m_FontSizeCaptionFit = m_FontSizeCaption
             m_FontSizeVerified = True
@@ -500,21 +502,15 @@ Private Sub VerifyFontSize()
         Dim newFontSize As Single
         
         'There are two ways to verify font size, and they differ depending on whether the caller
-        ' wants us to enable wordwrapping.  (Note that even if word-wrap is enabled, we skip it
-        ' if the caption doesn't contain spaces - because then it wouldn't have anywhere to wrap
-        ' anyway!)
-        Dim tryWordWrap As Boolean
-        tryWordWrap = m_WordWrapAllowed
-        If tryWordWrap Then tryWordWrap = (InStr(1, m_CaptionTranslated, " ", vbBinaryCompare) <> 0)
-        
-        If tryWordWrap Then
+        ' wants us to enable wordwrapping.
+        If m_WordWrapAllowed Then
             newFontSize = Fonts.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         Else
             newFontSize = Fonts.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         End If
         
-        'Note the size required to fit the text inside the target area.  On subsequent draw calls, we will silently switch
-        ' to *this* font size.
+        'Note the size required to fit the text inside the target area.
+        ' (On subsequent draw calls, we will silently switch to *this* font size.)
         m_FontSizeCaptionFit = newFontSize
         
         'Once we've verified the control's font size, we don't need to verify it again, unless...

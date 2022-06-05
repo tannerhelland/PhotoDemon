@@ -382,15 +382,20 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     
     Dim formHeight As Long
     Dim stringTop As Long, stringWidth As Long, stringHeight As Long
+    Dim strPadding As Long
     
     'If the message needs wrapping, we next need to figure out how tall the string will be
     If useWordWrap Then
         
-        'If the longest line is short enough, use it as the string's width (instead of the max allowable width)
+        'If the longest line in this message is shorter than the maximum allowed size of the message box,
+        ' use that shorter string display size as the message box's on-screen width (instead of the maximum
+        ' allowable width)
+        strPadding = Interface.FixDPI(16)
+        
         If (finalFormWidth < maxLineWidth) Then
-            stringWidth = finalFormWidth - (stringLeft + FixDPI(16))
+            stringWidth = finalFormWidth - (stringLeft + strPadding)
         Else
-            stringWidth = maxLineWidth + FixDPI(16)
+            stringWidth = maxLineWidth + strPadding
         End If
         
         stringHeight = tmpFont.GetHeightOfWordwrapString(pMessage, stringWidth)
@@ -398,7 +403,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
         'If this line only wraps once (e.g. it's just a long-ish sentence), and an icon is being displayed,
         ' we still need to see if the icon height is larger than the wrapped line height.
         If iconActive Then formHeight = picIcon.GetTop * 2 + dpiIconSize Else formHeight = 0
-        formHeight = PDMath.Max2Int(formHeight, stringHeight + FixDPI(32) * 2)
+        formHeight = PDMath.Max2Int(formHeight, stringHeight + strPadding * 4)
         
         'Use the calculated form height to determine the string's position
         stringTop = (formHeight - stringHeight) \ 2
@@ -410,13 +415,14 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     ' that works, while accounting for things like the icon's position (if any)
     Else
         
-        stringHeight = tmpFont.GetHeightOfString(pMessage) + FixDPI(2)
+        strPadding = Interface.FixDPI(2)
+        stringHeight = tmpFont.GetHeightOfString(pMessage) + strPadding
         
         'If the icon is active, we'll use it to size the form (instead of the string itself)
         If iconActive Then
             formHeight = picIcon.GetTop * 2 + dpiIconSize
         Else
-            formHeight = stringHeight + FixDPI(32) * 2
+            formHeight = stringHeight + Interface.FixDPI(32) * 2
         End If
         
         'Similarly, if an icon is active, we want to center the message relative to the icon
@@ -426,7 +432,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
             stringTop = (formHeight - stringHeight) \ 2
         End If
         
-        lblMsg.SetPositionAndSize stringLeft, stringTop, maxLineWidth + FixDPI(2), stringHeight
+        lblMsg.SetPositionAndSize stringLeft, stringTop, maxLineWidth + strPadding, stringHeight
         
     End If
     
