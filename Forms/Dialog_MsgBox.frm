@@ -93,8 +93,8 @@ Attribute VB_Exposed = False
 'Homebrew Message Box Replacement
 'Copyright 2017-2022 by Tanner Helland
 'Created: 15/August/17
-'Last updated: 17/August/17
-'Last update: wrap up initial build
+'Last updated: 05/June/22
+'Last update: fix Unicode window captions
 '
 'Theming a system message box is not worth the trouble.  Instead, we roll our own.  Any calls to PD's central
 ' "PDMsgBox" function are routed through here.
@@ -475,7 +475,11 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     'After all that work, we can finally apply the message caption and title.  (Note that the passed caption
     ' is *not* actually translated yet - that happens when themes get applied.)
     lblMsg.Caption = pMessage
-    Me.Caption = pTitle
+    If (Not g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW Me.hWnd, pTitle
+    Else
+        Me.Caption = pTitle
+    End If
     
     'Provide a default answer of "cancel" (in the event that the user closes the dialog by clicking the
     ' "x" button in the top-right)
