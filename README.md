@@ -57,14 +57,14 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ## What's new in nightly builds
 
-![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
+![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
 [Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2020/09/22/photodemon-8-4.html).
 
 ### File formats
 
 - Comprehensive import and export support for [Corel Paintshop Pro (psp, pspimage) images](https://en.wikipedia.org/wiki/PaintShop_Pro), including many text and vector layer features.
-- Comprehensive import support for [GIMP XCF images](https://en.wikipedia.org/wiki/GIMP), including full coverage for all color modes, precisions (integer and float), and XCF versions.
+- Comprehensive import support for [GIMP XCF images](https://en.wikipedia.org/wiki/GIMP), including full coverage for all color modes, precisions (integer and float), and XCF versions.  GZ-compressed XCF files are also supported.
 - Comprehensive import and export support for the brand-new [AVIF file format](https://en.wikipedia.org/wiki/AV1#AV1_Image_File_Format_(AVIF)), c/o the [open-source libavif library](https://github.com/AOMediaCodec/libavif).  AVIF file support is incredibly complex (the stock encoder+decoder apps are almost 3x larger than PhotoDemon!) and they are only available for 64-bit systems, so PhotoDemon does not ship these libraries by default.  If you attempt to open or save an AVIF file, PhotoDemon will offer to download a local copy of libavif for you.  
 - Comprehensive import and export support for [animated WebP images](https://developers.google.com/speed/webp), including direct export to animated WebP from PhotoDemon's built-in screen recorder tool (`Tools > Animated screen capture`)
 - Comprehensive import and export support for [lossless QOI ("quite OK image") files](https://qoiformat.org/).
@@ -78,10 +78,12 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Effects
 
 - New support for [Photoshop effect plugins](https://en.wikipedia.org/wiki/Photoshop_plugin) ("8bf", 32-bit only), with thanks to [spetric's Photoshop-Plugin-Host library](https://github.com/spetric/Photoshop-Plugin-Host).
+- New [`Effects > Light and shadow > Bump map`](https://github.com/tannerhelland/PhotoDemon/pull/399) tool.
 - New [`Effects > Distort > Droste`](https://github.com/tannerhelland/PhotoDemon/pull/364) tool, so you can channel your inner [M.C. Escher](https://en.wikipedia.org/wiki/Print_Gallery_(M._C._Escher))
 - New [`Effects > Render > Truchet Tiles` tool](https://github.com/tannerhelland/PhotoDemon/pull/358)
-- New `Effects > Animation menu`, including new [Foreground and Background effects](https://github.com/tannerhelland/PhotoDemon/commit/06a4f1df3a5231eb0cac17dd7f426a049e44f7e7) (for automatically applying a background or foreground to an animated image)
+- New `Effects > Animation menu`, including new [Foreground and Background effects](https://github.com/tannerhelland/PhotoDemon/commit/06a4f1df3a5231eb0cac17dd7f426a049e44f7e7) (for automatically applying a background or foreground to an animated image) and an [Animation speed effect](https://github.com/tannerhelland/PhotoDemon/pull/400) (for changing an animation's playback speed)
 - New [`Effects > Edge > Gradient flow`](https://github.com/tannerhelland/PhotoDemon/commit/f7e28487c087f1483dac435290ab3c30f7c18ac0) tool
+- Greatly improved `Effects > Transform > Perspective` tool, with new live preview support and precise control over all corner coordinates.
 - Greatly improved and accelerated [`Effects > Artistic > Stained Glass`](https://github.com/tannerhelland/PhotoDemon/commit/02f60a5c6807cec763fcfb7628332b9b6de897f2) and [`Effects > Pixelate > Crystallize`](https://github.com/tannerhelland/PhotoDemon/commit/ac2772d145a30b5e1a4bccd334c642062f63708c) tools
 
 ### Adjustments
@@ -95,10 +97,13 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Image and Layer tools
 
 - [All-new selection tool engine](https://github.com/tannerhelland/PhotoDemon/pull/387), including full support for merging selections.  All selection tools support new "Add", "Subtract", and "Intersect" combine modes.  In addition, a new canvas selection renderer automatically highlights the selected region of composite selections.  (Other new rendering UI features are available on each selection toolpanel).
+- New [`Edit > Content-aware fill` (and corresponding `Select > Heal selected area`) tools](https://github.com/tannerhelland/PhotoDemon/pull/403) can intelligently remove objects from photos.  Just select the object you want to remove, then click the menu to remove it!
 - Completely redesigned [`Image > Resize` tool](https://github.com/tannerhelland/PhotoDemon/pull/361), with real-time interactive previews, 12 different resampling filters, memory size estimations, a user-resizable dialog, progress bar updates, and more.  The new tool was custom-built for PhotoDemon, and it has very low memory requirements, excellent performance, and zero 3rd-party dependencies.  (The `Layer > Resize` tool also receives all of these new features!)
 - New [`Layer > Replace` tools](https://github.com/tannerhelland/PhotoDemon/commit/24f50821c1fd665494d72fd4e4e75fc29e8c3a0e), for quickly replacing an existing layer with data from the clipboard or any arbitrary image file.
 - Overhauled [`Image > Crop` tool](https://github.com/tannerhelland/PhotoDemon/commit/6bfe841f282ae9ec9d75b4cd29065eee11c7e9f2), including new support for retaining editable text layers after cropping (instead of rasterizing them).
+- The `Advanced text tool` provides a new "stretch to fit" option, which automatically sizes the font to fit within the text layer's current boundaries.
 - New [lock aspect ratio](https://github.com/tannerhelland/PhotoDemon/commit/3b74576eb425c5ff80a4b05615f94a86faabf261) toggle on the Move/Size tool
+- New `Edit > Stroke` and `Edit > Fill` tools allow you to easily stroke a selection outline or fill a selected outline with custom pens or brushes.
 
 ### Batch processor
 - New support for [preserving folder structure](https://github.com/tannerhelland/PhotoDemon/commit/4c6e7040440e5f2424485670d04d618a7fe211bd) when batch processing images from a complex folder tree
