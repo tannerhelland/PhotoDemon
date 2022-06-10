@@ -6,10 +6,10 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.140</langversion>
+<langversion>9.0b1373.1</langversion>
 <langstatus>完成</langstatus>
 
-<author>ChenLin(QQ:289778005)</author>
+<author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -90,12 +90,12 @@
 
 <phrase>
 <original>Export animated WebP</original>
-<translation></translation>
+<translation>导出动态WebP</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>导出颜色查找</translation>
 </phrase>
 
 <phrase>
@@ -375,17 +375,17 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>从剪贴板替换图层</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>从文件替换图层</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>从可见层替换层</translation>
 </phrase>
 
 <phrase>
@@ -760,7 +760,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>颜色查找</translation>
 </phrase>
 
 <phrase>
@@ -815,7 +815,7 @@
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>混浊剂</translation>
 </phrase>
 
 <phrase>
@@ -835,12 +835,12 @@
 
 <phrase>
 <original>Gradient map</original>
-<translation></translation>
+<translation>梯度图</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>调色板图</translation>
 </phrase>
 
 <phrase>
@@ -955,7 +955,7 @@
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>递归视觉</translation>
 </phrase>
 
 <phrase>
@@ -1015,7 +1015,7 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>梯度流</translation>
 </phrase>
 
 <phrase>
@@ -1180,7 +1180,7 @@
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Truchet 拼贴</translation>
 </phrase>
 
 <phrase>
@@ -1270,12 +1270,12 @@
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>动画背景</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>动画前景</translation>
 </phrase>
 
 <phrase>
@@ -1290,7 +1290,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Photoshop (8bf) 插件</translation>
 </phrase>
 
 <phrase>
@@ -1488,7 +1488,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Error</original>
-<translation></translation>
+<translation>错误</translation>
 </phrase>
 
 <phrase>
@@ -1594,7 +1594,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>random</original>
-<translation></translation>
+<translation>随机</translation>
 </phrase>
 
 <phrase>
@@ -1609,27 +1609,27 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>waves</original>
-<translation></translation>
+<translation>波动</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>按线缝合</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>链条</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>编织</translation>
 </phrase>
 
 <phrase>
 <original>arc</original>
-<translation></translation>
+<translation>弧形</translation>
 </phrase>
 
 <phrase>
@@ -1639,7 +1639,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>maze</original>
-<translation></translation>
+<translation>迷宫</translation>
 </phrase>
 
 <phrase>
@@ -1649,7 +1649,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>octagon</original>
-<translation></translation>
+<translation>八边形</translation>
 </phrase>
 
 <phrase>
@@ -1730,7 +1730,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>加载 %1 到 %2 页</translation>
 </phrase>
 
 <phrase>
@@ -2138,12 +2138,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>New layer from selection</original>
-<translation></translation>
+<translation>从选择新建层</translation>
 </phrase>
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation></translation>
+<translation>层更新成功。</translation>
 </phrase>
 
 <phrase>
@@ -2344,12 +2344,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Warning</original>
-<translation></translation>
+<translation>警告</translation>
 </phrase>
 
 <phrase>
 <original>Macro canceled.</original>
-<translation></translation>
+<translation>取消宏</translation>
 </phrase>
 
 <phrase>
@@ -2377,7 +2377,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Save macro</original>
-<translation></translation>
+<translation>保存宏</translation>
 </phrase>
 
 <phrase>
@@ -2392,12 +2392,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Open macro</original>
-<translation></translation>
+<translation>打开宏</translation>
 </phrase>
 
 <phrase>
 <original>Loading macro</original>
-<translation></translation>
+<translation>加载宏</translation>
 </phrase>
 
 <phrase>
@@ -2407,12 +2407,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation></translation>
+<translation>宏不兼容，取消。</translation>
 </phrase>
 
 <phrase>
 <original>Playing macro</original>
-<translation></translation>
+<translation>运行宏</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -2528,14 +2528,14 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Applying plugin</original>
-<translation></translation>
+<translation>应用插件</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation></translation>
+<translation>AVIF是由开放媒体联盟开发的一种现代图像格式。PhotoDemon本机不支持AVIF图像，但它可以下载一个免费的开源插件，永久支持AVIF。</translation>
 </phrase>
 
 <phrase>
@@ -2545,37 +2545,37 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>是否希望PhotoDemon将这些库下载到PhotoDemon插件文件夹中？</translation>
 </phrase>
 
 <phrase>
 <original>Download required</original>
-<translation></translation>
+<translation>需要下载</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation></translation>
+<translation>PhotoDemon目前不会下载AVIF库。</translation>
 </phrase>
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation></translation>
+<translation>要手动启用AVIF支持，您可以下载免费 "%1" 和 "%2" 程序的最新副本，并将其放入PhotoDemon插件文件夹中</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation></translation>
+<translation>这些免费库在开放媒体联盟libavif发布页面上随时可用</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled</original>
-<translation></translation>
+<translation>下载被取消</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>您已将PhotoDemon放置在受限系统文件夹中。因为PhotoDemon没有管理员权限，所以无法为您下载文件。请将PhotoDemon移动到不受限制的文件夹，然后重试。</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -2699,7 +2699,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Mozilla Public License 2.0</original>
-<translation></translation>
+<translation>Mozilla公共许可证2.0</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3061,22 +3061,22 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 <phrase>
 <original>cosine</original>
-<translation></translation>
+<translation>余弦</translation>
 </phrase>
 
 <phrase>
 <original>bell</original>
-<translation></translation>
+<translation>铃声</translation>
 </phrase>
 
 <phrase>
 <original>quadratic</original>
-<translation></translation>
+<translation>二次方程式</translation>
 </phrase>
 
 <phrase>
 <original>quadratic b-spline</original>
-<translation></translation>
+<translation>二元b样条</translation>
 </phrase>
 
 <phrase>
@@ -3086,7 +3086,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 <phrase>
 <original>cubic convolution</original>
-<translation></translation>
+<translation>立方卷积</translation>
 </phrase>
 
 <!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -3310,7 +3310,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Move selected pixels</original>
-<translation></translation>
+<translation>移动选定像素</translation>
 </phrase>
 
 <phrase>
@@ -3360,7 +3360,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Target: selected pixels</original>
-<translation></translation>
+<translation>目标：选定像素</translation>
 </phrase>
 
 <phrase>
@@ -3522,7 +3522,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Redo (fast-forward to a later state)</original>
-<translation></translation>
+<translation>重做（快进到最终状态）</translation>
 </phrase>
 
 <phrase>
@@ -3537,17 +3537,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Undo (rewind to an earlier state)</original>
-<translation></translation>
+<translation>撤消（回放到最初状态）</translation>
 </phrase>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation></translation>
+<translation>钉住的面板打开</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>工具箱面板会自动关闭，但您可以固定其中一个以保持其打开。（切换工具或打开新面板时，固定面板仍处于关闭状态。）</translation>
 </phrase>
 
 <phrase>
@@ -3574,32 +3574,32 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation></translation>
+<translation>PhotoDemon无法访问互联网。请仔细检查您的连接，然后重试。</translation>
 </phrase>
 
 <phrase>
 <original>Verifying URL (this may take a moment)</original>
-<translation></translation>
+<translation>正在验证URL（可能需要一些时间）</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation></translation>
+<translation>PhotoDemon无法访问目标URL (%1)。如果问题仍然存在，请尝试使用浏览器手动下载该文件。</translation>
 </phrase>
 
 <phrase>
 <original>Downloading</original>
-<translation></translation>
+<translation>正在下载</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation></translation>
+<translation>PhotoDemon无法访问互联网。请仔细检查你的连接。</translation>
 </phrase>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation></translation>
+<translation>正在下载 (%1 of %2 字节)</translation>
 </phrase>
 
 <phrase>
@@ -3616,7 +3616,11 @@ Please enter a numeric value.</original>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation></translation>
+<translation>不幸的是，%1 阻止PhotoDemon直接下载此文件。（直接下载有时被错误配置的服务器误认为是热链接），
+
+
+
+您需要使用浏览器手动下载此文件。</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3736,12 +3740,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>全部支持的色彩查找表LUTs</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>选择色彩查找表LUT 文件</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4080,7 +4084,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>背景</translation>
 </phrase>
 
 <!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4089,7 +4093,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Composite image</original>
-<translation></translation>
+<translation>合成图像</translation>
 </phrase>
 
 <!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4108,27 +4112,27 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>hexagon</original>
-<translation></translation>
+<translation>六角形</translation>
 </phrase>
 
 <phrase>
 <original>braid</original>
-<translation></translation>
+<translation>编织</translation>
 </phrase>
 
 <phrase>
 <original>cross</original>
-<translation></translation>
+<translation>交叉</translation>
 </phrase>
 
 <phrase>
 <original>leaves</original>
-<translation></translation>
+<translation>叶子</translation>
 </phrase>
 
 <phrase>
 <original>ragged</original>
-<translation></translation>
+<translation>凹凸不平</translation>
 </phrase>
 
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -4613,7 +4617,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>%1, was %2</original>
-<translation></translation>
+<translation>%1, 是 %2</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4808,7 +4812,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated WebP</original>
-<translation></translation>
+<translation>动态WebP</translation>
 </phrase>
 
 <phrase>
@@ -4978,7 +4982,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Replace</original>
-<translation></translation>
+<translation>替换</translation>
 </phrase>
 
 <phrase>
@@ -5213,7 +5217,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Map</original>
-<translation></translation>
+<translation>地图</translation>
 </phrase>
 
 <phrase>
@@ -5323,7 +5327,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Foreground</original>
-<translation></translation>
+<translation>前景</translation>
 </phrase>
 
 <phrase>
@@ -5478,7 +5482,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Medium buttons</original>
-<translation></translation>
+<translation>中型按钮</translation>
 </phrase>
 
 <phrase>
@@ -5558,7 +5562,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Ask a question</original>
-<translation></translation>
+<translation>问个问题</translation>
 </phrase>
 
 <phrase>
@@ -5573,7 +5577,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>PhotoDemon forum</original>
-<translation></translation>
+<translation>PhotoDemon论坛</translation>
 </phrase>
 
 <phrase>
@@ -5958,12 +5962,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>available LUTs</original>
-<translation></translation>
+<translation>可用色彩查找表LUTs</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation></translation>
+<translation>导入色彩查找表LUT文件</translation>
 </phrase>
 
 <phrase>
@@ -5973,22 +5977,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying color lookup</original>
-<translation></translation>
+<translation>应用颜色查找</translation>
 </phrase>
 
 <phrase>
 <original>%1 is not a valid 3D lookup table (LUT).</original>
-<translation></translation>
+<translation>%1不是有效的三维查找表（LUT）。</translation>
 </phrase>
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>颜色查找表LUT集合存储在 "%1"文件夹中</translation>
 </phrase>
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation></translation>
+<translation>单击在资源管理器中打开此文件夹</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6313,7 +6317,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>foreground</original>
-<translation></translation>
+<translation>前景</translation>
 </phrase>
 
 <phrase>
@@ -6323,7 +6327,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Removing haze from image</original>
-<translation></translation>
+<translation>去除图像中的薄雾</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6369,17 +6373,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient type</original>
-<translation></translation>
+<translation>梯度类型</translation>
 </phrase>
 
 <phrase>
 <original>midpoint</original>
-<translation></translation>
+<translation>中点</translation>
 </phrase>
 
 <phrase>
 <original>Applying gradient map</original>
-<translation></translation>
+<translation>应用梯度映射</translation>
 </phrase>
 
 <!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6420,7 +6424,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>filter</original>
-<translation></translation>
+<translation>滤镜</translation>
 </phrase>
 
 <phrase>
@@ -6430,77 +6434,77 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation></translation>
+<translation>暖调滤镜 (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Cooling filter (%1)</original>
-<translation></translation>
+<translation>冷却滤镜 (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Red</original>
-<translation></translation>
+<translation>红色</translation>
 </phrase>
 
 <phrase>
 <original>Orange</original>
-<translation></translation>
+<translation>橙色</translation>
 </phrase>
 
 <phrase>
 <original>Yellow</original>
-<translation></translation>
+<translation>黄色</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation></translation>
+<translation>绿色</translation>
 </phrase>
 
 <phrase>
 <original>Cyan</original>
-<translation></translation>
+<translation>青色</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation></translation>
+<translation>蓝色</translation>
 </phrase>
 
 <phrase>
 <original>Violet</original>
-<translation></translation>
+<translation>紫罗兰</translation>
 </phrase>
 
 <phrase>
 <original>Magenta</original>
-<translation></translation>
+<translation>洋红</translation>
 </phrase>
 
 <phrase>
 <original>Deep red</original>
-<translation></translation>
+<translation>深红</translation>
 </phrase>
 
 <phrase>
 <original>Deep blue</original>
-<translation></translation>
+<translation>深蓝</translation>
 </phrase>
 
 <phrase>
 <original>Deep emerald</original>
-<translation></translation>
+<translation>深翡翠</translation>
 </phrase>
 
 <phrase>
 <original>Deep yellow</original>
-<translation></translation>
+<translation>深黄</translation>
 </phrase>
 
 <phrase>
 <original>Custom</original>
-<translation></translation>
+<translation>自定义</translation>
 </phrase>
 
 <phrase>
@@ -7115,7 +7119,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation></translation>
+<translation>正在等待用户指定导入选项</translation>
 </phrase>
 
 <phrase>
@@ -7279,12 +7283,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation></translation>
+<translation>您可以随时从“工具”菜单更改语言和主题设置。</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customizations are available in the Window menu.</original>
-<translation></translation>
+<translation>窗口菜单中提供了其他界面自定义。</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -7452,7 +7456,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>sample from</original>
-<translation></translation>
+<translation>样本来源</translation>
 </phrase>
 
 <phrase>
@@ -7597,52 +7601,52 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scan for new plugins</original>
-<translation></translation>
+<translation>扫描新插件</translation>
 </phrase>
 
 <phrase>
 <original>about this plugin</original>
-<translation></translation>
+<translation>关于这个插件</translation>
 </phrase>
 
 <phrase>
 <original>available plugins</original>
-<translation></translation>
+<translation>可用插件</translation>
 </phrase>
 
 <phrase>
 <original>add folder</original>
-<translation></translation>
+<translation>添加文件夹</translation>
 </phrase>
 
 <phrase>
 <original>default plugin folder</original>
-<translation></translation>
+<translation>默认插件文件夹</translation>
 </phrase>
 
 <phrase>
 <original>additional folders</original>
-<translation></translation>
+<translation>其他文件夹</translation>
 </phrase>
 
 <phrase>
 <original>remove folder</original>
-<translation></translation>
+<translation>移除文件夹</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for plugin</original>
-<translation></translation>
+<translation>等待插件</translation>
 </phrase>
 
 <phrase>
 <original>Plugin canceled.</original>
-<translation></translation>
+<translation>插件取消</translation>
 </phrase>
 
 <phrase>
 <original>plugins</original>
-<translation></translation>
+<translation>插件</translation>
 </phrase>
 
 <phrase>
@@ -7652,39 +7656,39 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>loading plugin collection</original>
-<translation></translation>
+<translation>加载插件集合</translation>
 </phrase>
 
 <phrase>
 <original>No plugins found.</original>
-<translation></translation>
+<translation>未找到插件</translation>
 </phrase>
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
+<translation>Photoshop（8bf）插件是扩展名为“8bf”的文件。这些插件提供了新的图像效果，网上有数千个8bf插件。</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
+<translation>PhotoDemon不附带8bf插件，但如果你在网上找到插件，你可以下载它们并将其添加到PhotoDemon中。（PhotoDemon支持大多数32位8bf插件，不支持64位插件）</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
+<translation>下载一个或多个8bf文件后，使用设置按钮（上图）告诉PhotoDemon在哪里可以找到它们，PhotoDemon会将它们添加到你的特效集合中。</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation></translation>
+<translation>处理后，删除该层</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation></translation>
+<translation>背景层</translation>
 </phrase>
 
 <phrase>
@@ -7699,12 +7703,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying background</original>
-<translation></translation>
+<translation>应用背景</translation>
 </phrase>
 
 <phrase>
 <original>Applying foreground</original>
-<translation></translation>
+<translation>应用前景</translation>
 </phrase>
 
 <phrase>
@@ -7714,7 +7718,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>foreground layer</original>
-<translation></translation>
+<translation>前景层</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -8035,7 +8039,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge color and opacity</original>
-<translation></translation>
+<translation>边缘颜色和不透明度</translation>
 </phrase>
 
 <phrase>
@@ -8296,22 +8300,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>swap order</original>
-<translation></translation>
+<translation>交换顺序</translation>
 </phrase>
 
 <phrase>
 <original>inner radius</original>
-<translation></translation>
+<translation>内半径</translation>
 </phrase>
 
 <phrase>
 <original>outer radius</original>
-<translation></translation>
+<translation>外半径</translation>
 </phrase>
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation></translation>
+<translation>召唤埃舍尔特效M. C. Escher</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8563,7 +8567,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>render</original>
-<translation></translation>
+<translation>递交</translation>
 </phrase>
 
 <phrase>
@@ -8573,37 +8577,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>boost</original>
-<translation></translation>
+<translation>增加</translation>
 </phrase>
 
 <phrase>
 <original>foreground color</original>
-<translation></translation>
+<translation>前景色</translation>
 </phrase>
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation></translation>
+<translation>计算梯度流</translation>
 </phrase>
 
 <phrase>
 <original>magnitude</original>
-<translation></translation>
+<translation>重要</translation>
 </phrase>
 
 <phrase>
 <original>direction</original>
-<translation></translation>
+<translation>用法</translation>
 </phrase>
 
 <phrase>
 <original>dynamic</original>
-<translation></translation>
+<translation>动态</translation>
 </phrase>
 
 <phrase>
 <original>static</original>
-<translation></translation>
+<translation>静止</translation>
 </phrase>
 
 <!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -9068,12 +9072,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Truchet tiles</original>
-<translation></translation>
+<translation>特鲁谢Truchet拼贴</translation>
 </phrase>
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation></translation>
+<translation>渲染Truchet拼贴</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9190,7 +9194,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>neural network</original>
-<translation></translation>
+<translation>神经网络</translation>
 </phrase>
 
 <phrase>
@@ -9612,7 +9616,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation></translation>
+<translation>保留输入文件夹结构</translation>
 </phrase>
 
 <phrase>
@@ -9677,7 +9681,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation></translation>
+<translation>自动检测动画图像</translation>
 </phrase>
 
 <phrase>
@@ -9697,7 +9701,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation></translation>
+<translation>设置动画图像的导出参数</translation>
 </phrase>
 
 <phrase>
@@ -10126,12 +10130,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>balanced</original>
-<translation></translation>
+<translation>保持平衡</translation>
 </phrase>
 
 <phrase>
 <original>best</original>
-<translation></translation>
+<translation>最佳</translation>
 </phrase>
 
 <!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10230,7 +10234,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Thanks!</original>
-<translation></translation>
+<translation>下载图片时请尊重版权，谢谢！</translation>
 </phrase>
 
 <phrase>
@@ -10373,12 +10377,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>preview quality changes</original>
-<translation></translation>
+<translation>更改预览质量</translation>
 </phrase>
 
 <phrase>
 <original>image quality</original>
-<translation></translation>
+<translation>图像质量</translation>
 </phrase>
 
 <phrase>
@@ -10393,7 +10397,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation></translation>
+<translation>AVIF压缩在计算上非常密集，在较旧或较慢的PC上，您可能希望禁用实时预览。</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10800,7 +10804,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>target version</original>
-<translation></translation>
+<translation>目标版本</translation>
 </phrase>
 
 <!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10834,37 +10838,37 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>image type</original>
-<translation></translation>
+<translation>图像类型</translation>
 </phrase>
 
 <phrase>
 <original>generic</original>
-<translation></translation>
+<translation>通用的</translation>
 </phrase>
 
 <phrase>
 <original>indoor photo</original>
-<translation></translation>
+<translation>室内照片</translation>
 </phrase>
 
 <phrase>
 <original>outdoor photo</original>
-<translation></translation>
+<translation>户外照片</translation>
 </phrase>
 
 <phrase>
 <original>chart</original>
-<translation></translation>
+<translation>图表</translation>
 </phrase>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation></translation>
+<translation>绘画（或其他艺术品）</translation>
 </phrase>
 
 <phrase>
 <original>icon</original>
-<translation></translation>
+<translation>图标</translation>
 </phrase>
 
 <!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11268,12 +11272,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>preview changes</original>
-<translation></translation>
+<translation>预览更改</translation>
 </phrase>
 
 <phrase>
 <original>optimize for speed</original>
-<translation></translation>
+<translation>优化速度</translation>
 </phrase>
 
 <phrase>
@@ -11283,7 +11287,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>resampling</original>
-<translation></translation>
+<translation>重新取样</translation>
 </phrase>
 
 <phrase>
@@ -11303,7 +11307,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation></translation>
+<translation>一些图像重采样过滤器支持近似计算，这些性能改进，对质量的影响很小。</translation>
 </phrase>
 
 <phrase>
@@ -11560,62 +11564,62 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: show the "New layer" dialog</original>
-<translation></translation>
+<translation>单击：显示“新建图层”对话框</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation></translation>
+<translation>按住Shift键并单击：添加空白层</translation>
 </phrase>
 
 <phrase>
 <original>Add layer</original>
-<translation></translation>
+<translation>添加图层</translation>
 </phrase>
 
 <phrase>
 <original>Click: delete this layer</original>
-<translation></translation>
+<translation>单击：删除此图层</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation></translation>
+<translation>单击：将此层向上移动到层顶部</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation></translation>
+<translation>按住Shift键并单击：将此层与其上方的层合并</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer up</original>
-<translation></translation>
+<translation>向上移动或合并图层</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer down the layer stack</original>
-<translation></translation>
+<translation>单击：将此层向下移动</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation></translation>
+<translation>按住Shift键并单击：将此层与其下方的层合并</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer down</original>
-<translation></translation>
+<translation>向下移动或合并图层</translation>
 </phrase>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation></translation>
+<translation>单击：添加此图层的副本</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate layer</original>
-<translation></translation>
+<translation>复制层</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -11665,7 +11669,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>layout</original>
-<translation></translation>
+<translation>布局</translation>
 </phrase>
 
 <phrase>
@@ -11690,12 +11694,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>撤消/重做工具：恢复对图像或图层所做的更改</translation>
 </phrase>
 
 <phrase>
 <original>Layout tools: explore, zoom, move or measure an image or layer</original>
-<translation></translation>
+<translation>布局工具：浏览、缩放、移动或测量图像或图层</translation>
 </phrase>
 
 <phrase>
@@ -11795,7 +11799,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Zoom</original>
-<translation></translation>
+<translation>缩放</translation>
 </phrase>
 
 <phrase>
@@ -11880,7 +11884,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Zoom tool</original>
-<translation></translation>
+<translation>缩放工具</translation>
 </phrase>
 
 <phrase>
@@ -12019,12 +12023,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
+<translation>单击后</translation>
 </phrase>
 
 <phrase>
 <original>return to previous tool</original>
-<translation></translation>
+<translation>返回到上一个工具</translation>
 </phrase>
 
 <phrase>
@@ -12053,7 +12057,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>brush style</original>
-<translation></translation>
+<translation>画笔风格</translation>
 </phrase>
 
 <phrase>
@@ -12063,12 +12067,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>compare pixels by</original>
-<translation></translation>
+<translation>按像素进行比较</translation>
 </phrase>
 
 <phrase>
 <original>fill area</original>
-<translation></translation>
+<translation>填充区</translation>
 </phrase>
 
 <phrase>
@@ -12115,7 +12119,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>center offset</original>
-<translation></translation>
+<translation>中心偏移</translation>
 </phrase>
 
 <phrase>
@@ -12147,7 +12151,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>modify measurement</original>
-<translation></translation>
+<translation>修改测量</translation>
 </phrase>
 
 <phrase>
@@ -12167,7 +12171,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>clear points</original>
-<translation></translation>
+<translation>清除点</translation>
 </phrase>
 
 <phrase>
@@ -12182,19 +12186,19 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use measurement to</original>
-<translation></translation>
+<translation>使用测量</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>size (w, h)</original>
-<translation>大小(w,h)</translation>
+<translation>尺寸(宽w,高h)</translation>
 </phrase>
 
 <phrase>
 <original>lock aspect ratio</original>
-<translation></translation>
+<translation>锁定长宽比</translation>
 </phrase>
 
 <phrase>
@@ -12204,7 +12208,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>ignore transparent pixels</original>
-<translation></translation>
+<translation>忽略透明像素</translation>
 </phrase>
 
 <phrase>
@@ -12229,17 +12233,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>make transforms permanent</original>
-<translation></translation>
+<translation>固化变换</translation>
 </phrase>
 
 <phrase>
 <original>sample selections from</original>
-<translation></translation>
+<translation>样本选自</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation></translation>
+<translation>默认选择行为</translation>
 </phrase>
 
 <phrase>
@@ -12249,12 +12253,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>shear (x, y)</original>
-<translation></translation>
+<translation>剪切(x, y)</translation>
 </phrase>
 
 <phrase>
 <original>auto select layer</original>
-<translation></translation>
+<translation>自动选择图层</translation>
 </phrase>
 
 <phrase>
@@ -12264,12 +12268,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>copy</original>
-<translation></translation>
+<translation>复制</translation>
 </phrase>
 
 <phrase>
 <original>cut</original>
-<translation></translation>
+<translation>剪切</translation>
 </phrase>
 
 <phrase>
@@ -12285,27 +12289,27 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>animate</original>
-<translation></translation>
+<translation>动态</translation>
 </phrase>
 
 <phrase>
 <original>(no additional options)</original>
-<translation></translation>
+<translation>（无其他选择）</translation>
 </phrase>
 
 <phrase>
 <original>fill interior</original>
-<translation></translation>
+<translation>内部填充</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation></translation>
+<translation>填充外部</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation></translation>
+<translation>自动打开面板</translation>
 </phrase>
 
 <phrase>
@@ -12315,7 +12319,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>round corners</original>
-<translation></translation>
+<translation>圆角</translation>
 </phrase>
 
 <phrase>
@@ -12325,42 +12329,42 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>combine</original>
-<translation></translation>
+<translation>选区交集</translation>
 </phrase>
 
 <phrase>
 <original>New selection</original>
-<translation></translation>
+<translation>新选择</translation>
 </phrase>
 
 <phrase>
 <original>Add to selection</original>
-<translation></translation>
+<translation>增加选取范围</translation>
 </phrase>
 
 <phrase>
 <original>Subtract from selection</original>
-<translation></translation>
+<translation>从选区减去</translation>
 </phrase>
 
 <phrase>
 <original>Intersect with selection</original>
-<translation></translation>
+<translation>与选区相交</translation>
 </phrase>
 
 <phrase>
 <original>always</original>
-<translation></translation>
+<translation>总是</translation>
 </phrase>
 
 <phrase>
 <original>when combining</original>
-<translation></translation>
+<translation>组合时</translation>
 </phrase>
 
 <phrase>
 <original>never</original>
-<translation></translation>
+<translation>从不</translation>
 </phrase>
 
 <phrase>
@@ -12415,7 +12419,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation></translation>
+<translation>编辑或创建选择时，此面板会自动打开；在较小的屏幕上，如果遮挡了太多画布，这可能没有帮助，因此可以在此处禁用此行为。</translation>
 </phrase>
 
 <phrase>
@@ -12452,17 +12456,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click to edit text</original>
-<translation></translation>
+<translation>单击以编辑文本</translation>
 </phrase>
 
 <phrase>
 <original>edit text</original>
-<translation></translation>
+<translation>编辑文本</translation>
 </phrase>
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation></translation>
+<translation>始终打开此面板以获取新的文本层</translation>
 </phrase>
 
 <phrase>
@@ -12519,12 +12523,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>偏移 (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>inflate</original>
-<translation></translation>
+<translation>膨胀</translation>
 </phrase>
 
 <phrase>
@@ -12534,12 +12538,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>horizontal padding</original>
-<translation></translation>
+<translation>水平填充</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation></translation>
+<translation>垂直填充</translation>
 </phrase>
 
 <phrase>
@@ -12554,7 +12558,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>outline background</original>
-<translation></translation>
+<translation>背景轮廓</translation>
 </phrase>
 
 <phrase>
@@ -12564,12 +12568,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fill and outline</original>
-<translation></translation>
+<translation>轮廓填充</translation>
 </phrase>
 
 <phrase>
 <original>click to edit</original>
-<translation></translation>
+<translation>单击此处进行编辑</translation>
 </phrase>
 
 <phrase>
@@ -13154,22 +13158,22 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>session restore</original>
-<translation></translation>
+<translation>恢复会话</translation>
 </phrase>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation></translation>
+<translation>自动恢复因系统更新或重新启动而中断的会话</translation>
 </phrase>
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
-<translation></translation>
+<translation>关闭图像时，警告未保存的更改</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation></translation>
+<translation>使用“另存为”时，将使用默认文件格式</translation>
 </phrase>
 
 <phrase>
@@ -13179,17 +13183,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>safe saving</original>
-<translation></translation>
+<translation>安全另存</translation>
 </phrase>
 
 <phrase>
 <original>unsaved changes</original>
-<translation></translation>
+<translation>未保存的更改</translation>
 </phrase>
 
 <phrase>
 <original>default format</original>
-<translation></translation>
+<translation>默认格式</translation>
 </phrase>
 
 <phrase>
@@ -13199,12 +13203,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>default folder</original>
-<translation></translation>
+<translation>默认文件夹</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation></translation>
+<translation>使用“另存为”时，使用初始文件夹</translation>
 </phrase>
 
 <phrase>
@@ -13359,7 +13363,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>notify when an update is ready</original>
-<translation></translation>
+<translation>更新准备就绪时通知</translation>
 </phrase>
 
 <phrase>
@@ -13502,7 +13506,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation></translation>
+<translation>如果你的电脑在PhotoDemon运行时重新启动，PhotoDemon可以自动恢复你以前的会话。</translation>
 </phrase>
 
 <phrase>
@@ -13512,32 +13516,32 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>the current image's folder</original>
-<translation></translation>
+<translation>当前图像的文件夹</translation>
 </phrase>
 
 <phrase>
 <original>the last-used folder</original>
-<translation></translation>
+<translation>最后使用的文件夹</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation></translation>
+<translation>大多数照片编辑器默认为当前图像的文件夹；对于涉及从一个文件夹加载图像但保存到新文件夹的工作流，请使用上次使用的文件夹以节省时间。</translation>
 </phrase>
 
 <phrase>
 <original>the current image's format</original>
-<translation></translation>
+<translation>当前图像的格式</translation>
 </phrase>
 
 <phrase>
 <original>the last-used format</original>
-<translation></translation>
+<translation>最后使用的格式</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation></translation>
+<translation>大多数照片编辑器默认为当前图像的格式。对于涉及以一种格式（如RAW）加载图像但保存为新格式（如JPEG）的工作流，请使用上次使用的格式以节省时间。</translation>
 </phrase>
 
 <phrase>
@@ -13756,12 +13760,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>library details</original>
-<translation></translation>
+<translation>库详情</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation></translation>
+<translation>库状态</translation>
 </phrase>
 
 <phrase>
@@ -13771,7 +13775,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>library folder</original>
-<translation></translation>
+<translation>库文件夹</translation>
 </phrase>
 
 <phrase>
@@ -13841,7 +13845,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>not installed, but available on-demand</original>
-<translation></translation>
+<translation>未安装，但可按需提供</translation>
 </phrase>
 
 <phrase>
@@ -13851,17 +13855,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>an AVIF image</original>
-<translation></translation>
+<translation>AVIF图片</translation>
 </phrase>
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation></translation>
+<translation>此库PhotoDemon不能用。</translation>
 </phrase>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation></translation>
+<translation>如果您与 %1 交互，PhotoDemon将为您下载并配置此库。</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -13895,7 +13899,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation></translation>
+<translation>在PhotoDemon中打开（用于进一步编辑）</translation>
 </phrase>
 
 <phrase>
@@ -13925,12 +13929,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>when recording finishes</original>
-<translation></translation>
+<translation>录制结束时</translation>
 </phrase>
 
 <phrase>
 <original>save directly to image file</original>
-<translation></translation>
+<translation>直接保存到图像文件</translation>
 </phrase>
 
 <phrase>
