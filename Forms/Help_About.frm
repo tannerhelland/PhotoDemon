@@ -308,6 +308,7 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
+    GeneratePatron "Frank Reibold"
     GeneratePatron "James Proctor"
     GeneratePatron "Jim Schmidt"
     GeneratePatron vbNullString
@@ -381,6 +382,7 @@ Private Sub Form_Load()
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "libavif Project", "https://github.com/AOMediaCodec/libavif"
     GenerateContributor "libwebp Project", "https://developers.google.com/speed/webp"
+    GenerateContributor "Manfredi Marceca"
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"
     GenerateContributor "Mariozo"
     GenerateContributor "Ming", "http://ufoym.com/"

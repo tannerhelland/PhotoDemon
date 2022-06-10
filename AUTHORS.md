@@ -15,6 +15,7 @@ Super Patrons:
 
 Patrons:
 
+* Frank Reibold
 * James Proctor
 * Jim Schmidt
 
@@ -87,6 +88,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Leandro Ascierto](http://leandroascierto.com/blog/clsmenuimage/)
 * [Lemuel Cushing](https://github.com/LemuelCushing)
 * Leonid Blyakher
+* Manfredi Marceca
 * [Manuel Augusto Santos](http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1)
 * Mariozo
 * [Ming](http://ufoym.com/)
