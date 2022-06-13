@@ -3902,6 +3902,10 @@ Private Sub MnuTest_Click()
     lastTime = startTime
     
     'Test code goes here
+    Dim cLut As pdLUT3D
+    Set cLut = New pdLUT3D
+    cLut.LoadLUTFromFile "E:\LUTs\Photoshop\EdgyAmber.3DL"
+    Debug.Print cLut.SaveLUTToFile_3dl("E:\LUTs\Photoshop\EdgyAmber_Test.3DL")
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB,
     ' then uncomment these two lines:

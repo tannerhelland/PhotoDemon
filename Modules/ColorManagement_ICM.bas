@@ -881,6 +881,8 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage, Optional ByVal 
         cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
         cdFilterExtensions.Append "3dl"
         
+        'TODO: look?  icc?
+        
         Dim cdIndex As Long
         cdIndex = 2
         
@@ -928,9 +930,60 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage, Optional ByVal 
         
         If (LenB(dstFilename) <> 0) Then
             
-            'TODO!
             Dim cExport As pdLUT3D
             Set cExport = New pdLUT3D
+            
+            'Retrieve the base, unmodified copy of the current layer
+            Dim idLayer As Long
+            idLayer = PDImages.GetActiveImage.GetActiveLayerID
+            
+            Dim origDIB As pdDIB
+            If (Not PDImages.GetActiveImage.UndoManager.GetOriginalLayer_FromUndo(origDIB, idLayer)) Then
+                
+                'If no changes have been made to the current image, the above function will return FALSE.
+                ' In this case, we can just retrieve the current layer as-is (because it's unmodified).
+                Set origDIB = New pdDIB
+                origDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+                
+            End If
+            
+            'Grab a soft link to the active layer
+            Dim curDIB As pdDIB
+            Set curDIB = PDImages.GetActiveImage.GetActiveDIB
+            
+            'Ensure DIB sizes match
+            If (origDIB.GetDIBWidth <> curDIB.GetDIBWidth) Or (origDIB.GetDIBHeight <> curDIB.GetDIBHeight) Then
+                
+                'Resize the original DIB to match the current DIB size
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                tmpDIB.CreateBlank curDIB.GetDIBWidth, curDIB.GetDIBHeight, 32, 0, 0
+                GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, curDIB.GetDIBWidth, curDIB.GetDIBHeight, origDIB, 0, 0, origDIB.GetDIBWidth, origDIB.GetDIBHeight, 1!, GP_IM_HighQualityBilinear, dstCopyIsOkay:=True
+                Set origDIB = tmpDIB
+                
+            End If
+            
+            'Build a given LUT
+            Const LUT_MAX_COUNT As Long = 17
+            
+            ' TODO: get lut size from user
+            If cExport.BuildLUTFromTwoDIBs(origDIB, curDIB, LUT_MAX_COUNT) Then
+                
+                'Export said LUT to desired format
+                Select Case cParams.GetString("export-format", "cube", True)
+                
+                    Case "cube"
+                        'TODO
+                        
+                    Case "3dl"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, vbNullString, vbNullString)
+                
+                End Select
+                
+            'Unspecified error?
+            Else
+                Debug.Print "fail?"
+            End If
             
         End If
     

@@ -94,6 +94,7 @@ Friend Sub AppendFromPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long)
     m_Length = m_Length + srcLenInChars
 End Sub
 
+'Append a full line of text, and terminate with the standard windows carriage return + linefeed combo
 Friend Sub AppendLine(ByRef srcString As String)
     EnsureCapacity m_Length + Len(srcString) + 2
     CopyMemoryStrict StrPtr(m_Buffer) + m_Length * 2, StrPtr(srcString), Len(srcString) * 2
@@ -104,10 +105,28 @@ Friend Sub AppendLine(ByRef srcString As String)
     PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
 End Sub
 
+'Append a full line of text, but terminate using a Unix-style linefeed-only char
+Friend Sub AppendLineLf(ByRef srcString As String)
+    EnsureCapacity m_Length + Len(srcString) + 1
+    CopyMemoryStrict StrPtr(m_Buffer) + m_Length * 2, StrPtr(srcString), Len(srcString) * 2
+    m_Length = m_Length + Len(srcString) + 1
+    
+    'Manually write only a linefeed char after the original string
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
+End Sub
+
+'CrLf linebreak
 Friend Sub AppendLineBreak()
     m_Length = m_Length + 2
     EnsureCapacity m_Length
     PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 4, 13
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
+End Sub
+
+'Lf only
+Friend Sub AppendLineBreakLf()
+    m_Length = m_Length + 1
+    EnsureCapacity m_Length
     PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
 End Sub
 

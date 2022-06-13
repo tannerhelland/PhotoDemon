@@ -105,6 +105,17 @@ Private m_RangeR As Single, m_RangeG As Single, m_RangeB As Single
 'Some luts are loaded across multiple stages.  State-tracking is important to prevent errors.
 Private m_LoadSuccessful As Boolean
 
+'When creating our own LUTs from before-and-after images, we have to perform heuristics to try and
+' "guess" at what the user did to the image.
+Private Type PD_LUTConstructor
+    origColor As RGBQuad
+    newColor As RGBQuad
+    fxColor As RGBQuad
+    finalColor As RGBQuad
+    posInImage As PointLong
+    origColorDistance As Long
+End Type
+
 'Apply the loaded lUT to an arbitrary DIB
 Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB, Optional ByVal raiseProgressEvents As Boolean = False)
     
@@ -180,6 +191,206 @@ FilterCleanup:
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
 End Sub
+
+Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As pdDIB, ByVal numSamplingPoints As Long) As Boolean
+    
+    Const FUNC_NAME As String = "BuildLUTFromTwoDIBs"
+    BuildLUTFromTwoDIBs = True
+    
+    'Validate sampling points
+    If (numSamplingPoints < 0) Or (numSamplingPoints > 64) Then
+        InternalProblem FUNC_NAME, "bad sampling points"
+        BuildLUTFromTwoDIBs = False
+        Exit Function
+    End If
+    
+    'Initialize the module-level LUT to the correct grid size, and fill it with identity values
+    m_LutSize = numSamplingPoints
+    m_LutLoopSize = numSamplingPoints - 1
+    ReDim m_lut3D(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As FloatColor
+    
+    Dim r As Long, g As Long, b As Long
+    Dim newR As Single, newG As Single, newB As Single
+    
+    For r = 0 To m_LutLoopSize
+        newR = r / m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+        newG = g / m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        newB = b / m_LutLoopSize
+        With m_lut3D(r, g, b)
+            .rFloat = newR
+            .gFloat = newG
+            .bFloat = newB
+        End With
+    Next b
+    Next g
+    Next r
+    
+    'We now have an identity LUT at the correct size, and it has been initialized to an identity transform.
+    
+    'Let's also create a little tracking array to store whether we've produced a LUT value at a given
+    ' position or not.
+    Dim lutReady() As Byte
+    ReDim lutReady(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As Byte
+    
+    'Our next goal is to iterate the passed images, and for each pixel, find its nearest point in the LUT.
+    ' This will produce an array of "best-matched" points, from which we can roughly construct a new LUT.
+    
+    'Start by creating a LUT constructor array; this will track "best-match" points, colors, and positions
+    ' from the source image.
+    Dim curAnalysis() As PD_LUTConstructor
+    ReDim curAnalysis(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As PD_LUTConstructor
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With curAnalysis(r, g, b)
+            .origColorDistance = LONG_MAX
+            .origColor.Red = Int((r / m_LutLoopSize) * 255 + 0.5)
+            .origColor.Green = Int((g / m_LutLoopSize) * 255 + 0.5)
+            .origColor.Blue = Int((b / m_LutLoopSize) * 255 + 0.5)
+        End With
+    Next b
+    Next g
+    Next r
+    
+    'Scan the *base* image and for each color, convert it to its nearest LUT point, compare its distance
+    ' to the current best-match and update accordingly.
+    Dim pxBase() As Byte, pxSA As SafeArray1D
+    
+    Dim x As Long, xOffset As Long, y As Long, xMax As Long, yMax As Long
+    xMax = baseDIB.GetDIBWidth - 1
+    yMax = baseDIB.GetDIBHeight - 1
+    
+    Dim idxR As Long, idxG As Long, idxB As Long, curDist As Long
+    Dim rDist As Long, gDist As Long, bDist As Long
+    
+    'Testing only
+    Dim numMatches As Long
+    
+    For y = 0 To yMax
+        baseDIB.WrapArrayAroundScanline pxBase, pxSA, y
+    For x = 0 To xMax
+        
+        'Pull this color from the base (unmodified) image, and calculate its corresponding LUT position
+        xOffset = x * 4
+        b = pxBase(xOffset)
+        g = pxBase(xOffset + 1)
+        r = pxBase(xOffset + 2)
+        
+        idxB = Int(b / m_LutLoopSize + 0.5)
+        idxG = Int(g / m_LutLoopSize + 0.5)
+        idxR = Int(r / m_LutLoopSize + 0.5)
+        
+        With curAnalysis(idxR, idxG, idxB)
+            
+            'Skip pixels that already have a perfect match
+            If (.origColorDistance <> 0) Then
+                
+                'Calculate the difference between this color and the "ideal" color at this position.
+                bDist = (b - .origColor.Blue)
+                gDist = (g - .origColor.Green)
+                rDist = (r - .origColor.Red)
+                curDist = rDist * rDist + gDist * gDist + bDist * bDist
+                
+                'Store best matches, *including* position - we need to see how this pixel's color changed
+                If (curDist < .origColorDistance) Then
+                    .newColor.Blue = b
+                    .newColor.Green = g
+                    .newColor.Red = r
+                    .origColorDistance = curDist
+                    .posInImage.x = x
+                    .posInImage.y = y
+                    
+                    'Note that we now have a candidate for this LUT position
+                    If (lutReady(idxR, idxG, idxB) = 0) Then
+                        'Debug.Print idxR, idxG, idxB
+                        numMatches = numMatches + 1
+                    End If
+                    
+                    lutReady(idxR, idxG, idxB) = 1
+                    
+                End If
+                
+            End If
+            
+        End With
+        
+    Next x
+    Next y
+    
+    Debug.Print "found " & numMatches & " matches (out of " & xMax * yMax & " possibilities)"
+    
+    baseDIB.UnwrapArrayFromDIB pxBase
+    
+    'We now have a "best-match" for every LUT entry *that exists in the target image*.
+    '
+    'That last point is important because normal images will not cover the entire color spectrum.
+    ' Instead, our LUT will have blank spots where no colors from the image "fell" into that LUT bucket.
+    ' Rather than try and find distant best-matches for those points, we get a better result from interpolating
+    ' them against samples that *do* exist in the image.
+    '
+    'Anyway, we now want to iterate through the LUT and for every point that has a best-match, we want to
+    ' find the modified (post-effects) color of that pixel.  This gives us a reasonably good mapping between
+    ' what an idealized transform should be at this LUT position.
+    Dim pxFinal() As RGBQuad, pxSA2D As SafeArray2D
+    modifiedDIB.WrapRGBQuadArrayAroundDIB pxFinal, pxSA2D
+    
+    Dim fxScale As Single
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        If (lutReady(r, g, b) <> 0) Then
+            
+            With curAnalysis(r, g, b)
+                
+                'Pull the new color
+                .fxColor = pxFinal(.posInImage.x, .posInImage.y)
+                
+                'Remap the color linearly.  (We could presumably do more intense/accurate interpolation,
+                ' but since this whole approach is hackish I'm not worried about linear quality implications.)
+                If (.fxColor.Blue > 0) Then
+                    fxScale = (.newColor.Blue / .fxColor.Blue)
+                Else
+                    fxScale = 0!
+                End If
+                
+                'Scale the "idealized" LUT value at this point, and do not consider clamping (that's an RGB space concern).
+                m_lut3D(r, g, b).bFloat = m_lut3D(r, g, b).bFloat * fxScale
+                
+                If (.fxColor.Green > 0) Then
+                    fxScale = (.newColor.Green / .fxColor.Green)
+                Else
+                    fxScale = 0!
+                End If
+                m_lut3D(r, g, b).gFloat = m_lut3D(r, g, b).gFloat * fxScale
+                
+                If (.fxColor.Red > 0) Then
+                    fxScale = (.newColor.Red / .fxColor.Red)
+                Else
+                    fxScale = 0!
+                End If
+                m_lut3D(r, g, b).rFloat = m_lut3D(r, g, b).rFloat * fxScale
+                
+            End With
+            
+        End If
+        
+    Next b
+    Next g
+    Next r
+    
+    'All LUT positions with matching colors from the base image have now received their final values.
+    
+    'TODO: interpolate all other positions.
+    
+    'For now, let's just return TRUE so I can work on export features.
+    BuildLUTFromTwoDIBs = True
+    
+End Function
 
 'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes are available to the user.
 ' Note that this function returns TRUE if the user selects one or more files, FALSE if they cancel.
@@ -1160,6 +1371,86 @@ Friend Sub ResizeLUT(ByVal newLUTSize As Long)
     Next r
     
 End Sub
+
+'Export the current LUT to a 3dl file
+Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_3dl"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_3dl = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically 3DL files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    '3DL files support comments, and convention has you stick the app, copyright, and description
+    ' on the first three lines of the file as comments, e.g. this from an actual 3DL file:
+    '#Created by: Adobe Photoshop Export Color Lookup Plugin
+    '#Copyright: (C) Copyright 1234 [various names here]
+    '#Description: [put whatever you want here]
+    cTextFile.AppendLineLf "Created by: " & Updates.GetPhotoDemonNameAndVersion()
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "Copyright: " & copyrightText
+    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "Description: " & textDescription
+    
+    'After the above lines comes a fixed list of sampling intervals.  3DL files use 10-bit color defs,
+    ' so these are values on the range [0, 1023].  The default number of discrete values is 17 (per the spec).
+    Dim i As Long
+    For i = 0 To m_LutLoopSize
+        cTextFile.Append Trim$(Str$(Int((i / m_LutLoopSize) * 1023 + 0.5)))
+        If (i < m_LutLoopSize) Then cTextFile.Append " "
+    Next i
+    
+    cTextFile.AppendLineBreakLf
+    
+    'We now append all colors in RGB order, with the B channel incrementing fastest.
+    ' (For reasons unknown to me, values are written on the range [0, 4095] despite 10-bit
+    ' color being used.  I do not know the reason for this and the 3DL spec doesn't explain it -
+    ' but this is how all the 3DL files that ship with Photoshop work, so we do it too.
+    Dim r As Long, g As Long, b As Long
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With m_lut3D(r, g, b)
+            cTextFile.AppendLineLf Trim$(Str$(Int(.rFloat * 4095 + 0.5))) & Str$(Int(.gFloat * 4095 + 0.5)) & Str$(Int(.bFloat * 4095 + 0.5))
+        End With
+    Next b
+    Next g
+    Next r
+    
+    'All that's left is to write the table out to file!
+    SaveLUTToFile_3dl = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_3dl = False
+    
+End Function
 
 'Serialize the current LUT's contents to a byte array.  Returns the size of the stored data, UNCOMPRESSED.
 ' (If you choose to compress the data, you ALSO need to retrieve and store the dstUncompressedSize value,
