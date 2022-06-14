@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon KD-Tree for fast palette matching
 'Copyright 2018-2022 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 26/March/19
-'Last update: add a dedicated RGBA mode, for fast matching of full RGBA quads
+'Last updated: 14/June/22
+'Last update: add a "fast tree construction but slower tree traversal" mode, which will be used for 3D LUT construction
+'             (where a smaller number of LUT points must be matched against a huge tree of *all* colors in the image)
 'Dependencies: pdKDTreeNode
 '
 'K-D trees (https://en.wikipedia.org/wiki/K-d_tree) are a data structure well-designed for sorting large collections
@@ -48,6 +49,12 @@ Option Explicit
 
 Private m_Root As pdKDTreeNode
 Private m_BestDistance As Long
+
+'The "fast build but slow retrieve" version uses a stack to construct the tree
+Private Type SortStack
+    sLB As Long
+    sUB As Long
+End Type
 
 'Pass an entire palette to this method; the tree will be automatically constructed accordingly.
 Friend Function BuildTree(ByRef srcPalette() As RGBQuad, ByVal numColorsToUse As Long) As Boolean
@@ -138,19 +145,64 @@ Friend Function GetNearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad) As Lon
     End If
 End Function
 
-''This alternate build strategy was created during early testing phases.  It is still valid code, but I do not require
-'' it in PD as the alternative implementation is *much* faster.  I've left it here for reference's sake.
-'Private Sub BuildTreeBinary(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVal highBound As Long)
+'This alternate build strategy was created during early testing phases.  It is still valid code,
+' but I do not generally recommend using it in PD as the alternative implementation is *much* faster
+' for normal palettes.
 '
-'    If (highBound < lowBound) Then Exit Sub
-'
-'    'Add the requested node
-'    Dim curIndex As Long
-'    curIndex = lowBound + (highBound - lowBound) \ 2
-'    m_Root.InsertNode srcPalette(curIndex)
-'
-'    'Partition the high and low spaces and repeat
-'    BuildTreeBinary srcPalette, lowBound, curIndex - 1
-'    BuildTreeBinary srcPalette, curIndex + 1, highBound
-'
-'End Sub
+'One exception to this rule is LUT construction, where instead of solving the problem of many-colors-in-image
+' to few-colors-in-palette, we have the opposite problem: few-colors-in-LUT to many-colors-in-image.  For this
+' weird case, the penalty of constructing a perfectly balanced tree outweighs the perf hit of slow color retrieval,
+' so it's better to use a fast build strategy (at some cost to retrieval perf).
+Friend Sub BuildTreeFastButRetrievalIsSlow(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVal highBound As Long)
+
+    If (highBound < lowBound) Then Exit Sub
+    Set m_Root = New pdKDTreeNode
+    
+    'Transfer the source palette into a "cache" type, so we can store original palette indices
+    ' into the KD-tree (instead of just bare RGBQuads)
+    Dim tmpCache() As PDPaletteCache
+    ReDim tmpCache(0 To highBound) As PDPaletteCache
+    
+    Dim i As Long
+    For i = lowBound To highBound
+        tmpCache(i).ColorValue = srcPalette(i)
+        tmpCache(i).OrigIndex = i
+    Next i
+    
+    'Build an addition stack
+    Const INIT_STACK_SIZE As Long = 256
+    Dim qsRemaining() As SortStack, qsStackPtr As Long
+    ReDim qsRemaining(0 To INIT_STACK_SIZE - 1) As SortStack
+    qsStackPtr = 0
+    qsRemaining(0).sLB = lowBound
+    qsRemaining(0).sUB = highBound
+    
+    Do
+        
+        lowBound = qsRemaining(qsStackPtr).sLB
+        highBound = qsRemaining(qsStackPtr).sUB
+        qsStackPtr = qsStackPtr - 1
+        
+        'Add the requested node (the center of the current list)
+        Dim curIndex As Long
+        curIndex = lowBound + (highBound - lowBound) \ 2
+        m_Root.InsertNode tmpCache(curIndex)
+        
+        'Partition the high and low lists, add to the stack, then repeat
+        If (lowBound <= curIndex - 1) Then
+            qsStackPtr = qsStackPtr + 1
+            If (qsStackPtr > UBound(qsRemaining)) Then ReDim Preserve qsRemaining(0 To qsStackPtr * 2 - 1) As SortStack
+            qsRemaining(qsStackPtr).sLB = lowBound
+            qsRemaining(qsStackPtr).sUB = curIndex - 1
+        End If
+        
+        If (curIndex + 1 <= highBound) Then
+            qsStackPtr = qsStackPtr + 1
+            If (qsStackPtr > UBound(qsRemaining)) Then ReDim Preserve qsRemaining(0 To qsStackPtr * 2 - 1) As SortStack
+            qsRemaining(qsStackPtr).sLB = curIndex + 1
+            qsRemaining(qsStackPtr).sUB = highBound
+        End If
+        
+    Loop While (qsStackPtr >= 0)
+    
+End Sub

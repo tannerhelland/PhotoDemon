@@ -675,76 +675,137 @@ Private Sub Class_Initialize()
     m_Depth = NODE_EMPTY
 End Sub
 
-''PD no longer requires a traditional "insert" method.  Instead, the "InsertNodeBalanced" function should
-''be used for much better performance.  I have left this old "insert" method here for reference sake.
-'' (It still works just fine!)
-'Friend Sub InsertNode(ByRef srcColor As RGBQuad, Optional ByVal depth As Long = 0)
-'
-'    'MOD is slower than a simple branch; cycle between values 0/1/2 for red/green/blue axes
-'    If (depth > 2) Then depth = 0
-'
-'    'If this node has not yet been assigned a color, store the passed color locally.
-'    If (m_Depth = NODE_EMPTY) Then
-'        m_Color = srcColor
-'        m_Red = srcColor.Red
-'        m_Green = srcColor.Green
-'        m_Blue = srcColor.Blue
-'        m_Depth = depth
-'
-'    'This node already contains a color.  See if the passed color is "higher" or "lower" than our own color -
-'    ' and note that we compare differently depending on the current depth.
-'    Else
-'
-'        'Do a quick search for equality; if found, return our color and exit.
-'        ' (Note the manual short-circuiting to work around VB deficiencies.)
-'        If (srcColor.Red = m_Color.Red) Then
-'            If (srcColor.Green = m_Color.Green) Then
-'                If (srcColor.Blue = m_Color.Blue) Then
-'                    Exit Sub
-'                End If
-'            End If
-'        End If
-'
-'        'Rotate between RGB axes
-'        Select Case depth
-'
-'            'Red
-'            Case 0
-'
-'                'Left branch
-'                If (srcColor.Red < m_Color.Red) Then
-'                    If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
-'                    m_Left.InsertNode srcColor, depth + 1
-'
-'                'Right branch
-'                Else
-'                    If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
-'                    m_Right.InsertNode srcColor, depth + 1
-'
-'                End If
-'
-'            'Green
-'            Case 1
-'                If (srcColor.Green < m_Color.Green) Then
-'                    If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
-'                    m_Left.InsertNode srcColor, depth + 1
-'                Else
-'                    If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
-'                    m_Right.InsertNode srcColor, depth + 1
-'                End If
-'
-'            'Blue
-'            Case 2
-'                If (srcColor.Blue < m_Color.Blue) Then
-'                    If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
-'                    m_Left.InsertNode srcColor, depth + 1
-'                Else
-'                    If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
-'                    m_Right.InsertNode srcColor, depth + 1
-'                End If
-'
-'        End Select
-'
-'    End If
-'
-'End Sub
+'PD no longer requires a traditional "insert" method.  Instead, the "InsertNodeBalanced" function should
+'be used for much better performance.  I have left this old "insert" method here for reference sake.
+' (It still works just fine!)
+Friend Sub InsertNode(ByRef srcColor As PDPaletteCache, Optional ByVal depth As Long = 0)
+
+    'MOD is slower than a simple branch; cycle between values 0/1/2 for red/green/blue axes
+    If (depth > 2) Then depth = 0
+
+    'If this node has not yet been assigned a color, store the passed color locally.
+    If (m_Depth = NODE_EMPTY) Then
+        m_Color = srcColor.ColorValue
+        m_Red = srcColor.ColorValue.Red
+        m_Green = srcColor.ColorValue.Green
+        m_Blue = srcColor.ColorValue.Blue
+        m_OriginalIndex = srcColor.OrigIndex
+        m_Depth = depth
+
+    'This node already contains a color.  See if the passed color is "higher" or "lower" than our own color -
+    ' and note that we compare differently depending on the current depth.
+    Else
+
+        'Do a quick search for equality; if found, return our color and exit.
+        ' (Note the manual short-circuiting to work around VB deficiencies.)
+        If (srcColor.ColorValue.Red = m_Color.Red) Then
+            If (srcColor.ColorValue.Green = m_Color.Green) Then
+                If (srcColor.ColorValue.Blue = m_Color.Blue) Then
+                    Exit Sub
+                End If
+            End If
+        End If
+
+        'Rotate between RGB axes
+        Dim useLeftBranch As Boolean
+        
+        Select Case depth
+
+            'Red
+            Case 0
+                useLeftBranch = (srcColor.ColorValue.Red < m_Color.Red)
+                
+            'Green
+            Case 1
+                useLeftBranch = (srcColor.ColorValue.Green < m_Color.Green)
+
+            'Blue
+            Case 2
+                useLeftBranch = (srcColor.ColorValue.Blue < m_Color.Blue)
+                
+        End Select
+        
+        'Left branch
+        If useLeftBranch Then
+            If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
+            m_Left.InsertNode srcColor, depth + 1
+
+        'Right branch
+        Else
+            If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
+            m_Right.InsertNode srcColor, depth + 1
+        End If
+        
+    End If
+
+End Sub
+
+'PD no longer requires a traditional "insert" method.  Instead, the "InsertNodeBalanced" function should
+'be used for much better performance.  I have left this old "insert" method here for reference sake.
+' (It still works just fine!)
+Friend Sub InsertNodeIncAlpha(ByRef srcColor As PDPaletteCache, Optional ByVal depth As Long = 0)
+
+    'MOD is slower than a simple branch; cycle between values 0/1/2/3 for red/green/blue/alpha axes
+    If (depth > 3) Then depth = 0
+
+    'If this node has not yet been assigned a color, store the passed color locally.
+    If (m_Depth = NODE_EMPTY) Then
+        m_Color = srcColor.ColorValue
+        m_Red = srcColor.ColorValue.Red
+        m_Green = srcColor.ColorValue.Green
+        m_Blue = srcColor.ColorValue.Blue
+        m_Alpha = srcColor.ColorValue.Alpha
+        m_OriginalIndex = srcColor.OrigIndex
+        m_Depth = depth
+
+    'This node already contains a color.  See if the passed color is "higher" or "lower" than our own color -
+    ' and note that we compare differently depending on the current depth.
+    Else
+
+        'Do a quick search for equality; if found, return our color and exit.
+        ' (Note the manual short-circuiting to work around VB deficiencies.)
+        If (srcColor.ColorValue.Red = m_Color.Red) Then
+            If (srcColor.ColorValue.Green = m_Color.Green) Then
+                If (srcColor.ColorValue.Blue = m_Color.Blue) Then
+                    If (srcColor.ColorValue.Alpha = m_Color.Alpha) Then Exit Sub
+                End If
+            End If
+        End If
+
+        'Rotate between RGBA axes
+        Dim useLeftBranch As Boolean
+        
+        Select Case depth
+
+            'Red
+            Case 0
+                useLeftBranch = (srcColor.ColorValue.Red < m_Color.Red)
+            
+            'Green
+            Case 1
+                useLeftBranch = (srcColor.ColorValue.Green < m_Color.Green)
+                
+            'Blue
+            Case 2
+                useLeftBranch = (srcColor.ColorValue.Blue < m_Color.Blue)
+                
+            'Alpha
+            Case 3
+                useLeftBranch = (srcColor.ColorValue.Alpha < m_Color.Alpha)
+                
+        End Select
+        
+        'Left branch
+        If useLeftBranch Then
+            If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
+            m_Left.InsertNodeIncAlpha srcColor, depth + 1
+
+        'Right branch
+        Else
+            If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
+            m_Right.InsertNodeIncAlpha srcColor, depth + 1
+        End If
+        
+    End If
+
+End Sub
