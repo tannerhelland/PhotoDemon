@@ -60,6 +60,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Detailed debug reports can be useful for profiling and/or troubleshooting
+Private Const DEBUG_VERBOSE As Boolean = True
+
 'When serializing the LUT array (which is just a large array of floats) to/from a byte stream,
 ' we can shuffle the floats for greatly improved compression performance.  (Shuffling takes
 ' the first byte of every float and places them together, then all second bytes, etc; this is
@@ -204,6 +207,11 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         Exit Function
     End If
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing LUT creator..."
+    
     'Initialize the module-level LUT to the correct grid size, and fill it with identity values
     m_LutSize = numSamplingPoints
     m_LutLoopSize = numSamplingPoints - 1
@@ -229,11 +237,6 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     
     'We now have an identity LUT at the correct size, and it has been initialized to an identity transform.
     
-    'Let's also create a little tracking array to store whether we've produced a LUT value at a given
-    ' position or not.
-    Dim lutReady() As Byte
-    ReDim lutReady(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As Byte
-    
     'Our next goal is to iterate the passed images, and for each pixel, find its nearest point in the LUT.
     ' This will produce an array of "best-matched" points, from which we can roughly construct a new LUT.
     
@@ -255,137 +258,219 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     Next g
     Next r
     
+    Dim curTime As Currency
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "LUT creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    'New approach!  Scan the base image and build a list of colors from it - and importantly, store each color alongside
+    ' its position in the image.
+    Dim cHash As pdHashCoord
+    Set cHash = New pdHashCoord
+    
     'Scan the *base* image and for each color, convert it to its nearest LUT point, compare its distance
     ' to the current best-match and update accordingly.
-    Dim pxBase() As Byte, pxSA As SafeArray1D
+    Dim pxBase() As Long, pxSA As SafeArray1D
     
     Dim x As Long, xOffset As Long, y As Long, xMax As Long, yMax As Long
     xMax = baseDIB.GetDIBWidth - 1
     yMax = baseDIB.GetDIBHeight - 1
     
+    'TODO: see if removable?
     Dim idxR As Long, idxG As Long, idxB As Long, curDist As Long
     Dim rDist As Long, gDist As Long, bDist As Long
     
-    'Testing only
-    Dim numMatches As Long
+    Dim tmpPoint As PointLong, tmpColor As RGBQuad, tmpLong As Long
     
     For y = 0 To yMax
-        baseDIB.WrapArrayAroundScanline pxBase, pxSA, y
+        tmpPoint.y = y
+        baseDIB.WrapLongArrayAroundScanline pxBase, pxSA, y
     For x = 0 To xMax
         
-        'Pull this color from the base (unmodified) image, and calculate its corresponding LUT position
-        xOffset = x * 4
-        b = pxBase(xOffset)
-        g = pxBase(xOffset + 1)
-        r = pxBase(xOffset + 2)
+        tmpPoint.x = x
+        tmpLong = pxBase(x) Or &HFF000000
         
-        idxB = Int(b / m_LutLoopSize + 0.5)
-        idxG = Int(g / m_LutLoopSize + 0.5)
-        idxR = Int(r / m_LutLoopSize + 0.5)
-        
-        With curAnalysis(idxR, idxG, idxB)
-            
-            'Skip pixels that already have a perfect match
-            If (.origColorDistance <> 0) Then
-                
-                'Calculate the difference between this color and the "ideal" color at this position.
-                bDist = (b - .origColor.Blue)
-                gDist = (g - .origColor.Green)
-                rDist = (r - .origColor.Red)
-                curDist = rDist * rDist + gDist * gDist + bDist * bDist
-                
-                'Store best matches, *including* position - we need to see how this pixel's color changed
-                If (curDist < .origColorDistance) Then
-                    .newColor.Blue = b
-                    .newColor.Green = g
-                    .newColor.Red = r
-                    .origColorDistance = curDist
-                    .posInImage.x = x
-                    .posInImage.y = y
-                    
-                    'Note that we now have a candidate for this LUT position
-                    If (lutReady(idxR, idxG, idxB) = 0) Then
-                        'Debug.Print idxR, idxG, idxB
-                        numMatches = numMatches + 1
-                    End If
-                    
-                    lutReady(idxR, idxG, idxB) = 1
-                    
-                End If
-                
-            End If
-            
-        End With
+        'Add the color from this location to the hash table.  The hash table will automatically remove duplicates for us,
+        ' and it will store coordinates alongside colors, giving us a 1:1 mapping between the two.
+        cHash.AddColor tmpLong, tmpPoint
         
     Next x
     Next y
     
-    Debug.Print "found " & numMatches & " matches (out of " & xMax * yMax & " possibilities)"
+    baseDIB.UnwrapLongArrayFromDIB pxBase
     
-    baseDIB.UnwrapArrayFromDIB pxBase
+    'With a hash-table assembled, we now need to build a KD-tree of the final color list.  We can traverse this tree
+    ' to find best-match colors for each LUT entry.
     
-    'We now have a "best-match" for every LUT entry *that exists in the target image*.
-    '
-    'That last point is important because normal images will not cover the entire color spectrum.
-    ' Instead, our LUT will have blank spots where no colors from the image "fell" into that LUT bucket.
-    ' Rather than try and find distant best-matches for those points, we get a better result from interpolating
-    ' them against samples that *do* exist in the image.
-    '
-    'Anyway, we now want to iterate through the LUT and for every point that has a best-match, we want to
-    ' find the modified (post-effects) color of that pixel.  This gives us a reasonably good mapping between
-    ' what an idealized transform should be at this LUT position.
-    Dim pxFinal() As RGBQuad, pxSA2D As SafeArray2D
-    modifiedDIB.WrapRGBQuadArrayAroundDIB pxFinal, pxSA2D
+    'Start by pulling a list of unique colors from the hash table.
+    Dim listOfColors() As RGBQuad, numOfColors As Long
+    numOfColors = cHash.GetUniqueColors(listOfColors)
     
-    Dim fxScale As Single
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Hash table (and final color list retrieval) took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    'Add each color from the list to the KD-tree
+    Dim cTree As pdKDTree
+    Set cTree = New pdKDTree
+    cTree.BuildTreeFastButRetrievalIsSlow listOfColors, 0, numOfColors - 1
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "KD-tree construction took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    'With a KD-tree assembled and a corresponding color-to-coordinate table, we can finally start matching LUT colors.
+    
+    'The way we're gonna do this is iterate through the LUT, and for each point, find the closest matching color
+    ' in the original image (using the KD-tree).  From these nearest-points, we'll construct a "best-fit" LUT
+    ' approximation.
+    Dim bestMatchCoord As PointLong
     
     For r = 0 To m_LutLoopSize
     For g = 0 To m_LutLoopSize
     For b = 0 To m_LutLoopSize
         
-        If (lutReady(r, g, b) <> 0) Then
-            
-            With curAnalysis(r, g, b)
-                
-                'Pull the new color
-                .fxColor = pxFinal(.posInImage.x, .posInImage.y)
-                
-                'Remap the color linearly.  (We could presumably do more intense/accurate interpolation,
-                ' but since this whole approach is hackish I'm not worried about linear quality implications.)
-                If (.fxColor.Blue > 0) Then
-                    fxScale = (.newColor.Blue / .fxColor.Blue)
-                Else
-                    fxScale = 0!
-                End If
-                
-                'Scale the "idealized" LUT value at this point, and do not consider clamping (that's an RGB space concern).
-                m_lut3D(r, g, b).bFloat = m_lut3D(r, g, b).bFloat * fxScale
-                
-                If (.fxColor.Green > 0) Then
-                    fxScale = (.newColor.Green / .fxColor.Green)
-                Else
-                    fxScale = 0!
-                End If
-                m_lut3D(r, g, b).gFloat = m_lut3D(r, g, b).gFloat * fxScale
-                
-                If (.fxColor.Red > 0) Then
-                    fxScale = (.newColor.Red / .fxColor.Red)
-                Else
-                    fxScale = 0!
-                End If
-                m_lut3D(r, g, b).rFloat = m_lut3D(r, g, b).rFloat * fxScale
-                
-            End With
-            
-        End If
+        'Retrieve the matching color at this point.
+        tmpColor = cTree.GetNearestColor(curAnalysis(r, g, b).origColor)
+        tmpColor.Alpha = 255
+        curAnalysis(r, g, b).newColor = tmpColor
         
     Next b
     Next g
     Next r
     
-    'All LUT positions with matching colors from the base image have now received their final values.
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "KD-tree matching took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
     
-    'TODO: interpolate all other positions.
+    'We now have a "best-match" color for every LUT entry *using only colors that existed in the original,
+    ' unmodified target image*.
+    '
+    'That last point is important because no (real-world) image contains colors from the entire color spectrum.
+    ' Because of this, some regions of our LUT will have been matched extremely well, while others will be
+    ' matched very poorly.  That's OK - we'll deal with it as best we can in a moment.
+    '
+    'For now, however, we need to retrieve the *modified* version of each matched *original* color in the image.
+    ' We can do this using our original hash table (which cleverly stored color and coordinate data alongside
+    ' each other).  This will give us a target to use for interpolating new color values on colors that were
+    ' matched poorly.
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        With curAnalysis(r, g, b)
+            GetMem4 VarPtr(.newColor), tmpLong
+            If cHash.GetCoordForColor(tmpLong, tmpPoint) Then
+                .posInImage = tmpPoint
+            Else
+                'Never expected; colors must always match!
+                If DEBUG_VERBOSE Then InternalProblem FUNC_NAME, "color doesn't exist in hash table"
+            End If
+        End With
+    
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Hash table coordinate retrieval took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    Dim pxFinal() As RGBQuad, pxSA2D As SafeArray2D
+    modifiedDIB.WrapRGBQuadArrayAroundDIB pxFinal, pxSA2D
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With curAnalysis(r, g, b)
+            .fxColor = pxFinal(.posInImage.x, .posInImage.y)
+        End With
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Modified color retrievals took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    'Free unsafe array wrapper and note that we no longer need to touch either DIB
+    modifiedDIB.UnwrapRGBQuadArrayFromDIB pxFinal
+    
+    'Every entry in the LUT now has a best-match original color, the corresponding "final" color (with all
+    ' adjustments+effects applied), and a coordinate where said color appears in the image (which probably
+    ' isn't useful at this point so maybe we don't need to store it at all?  TODO!)
+    
+    'We now need to scale those best-match colors to reflect the difference between the color the LUT represents
+    ' (which is some fixed-interval value like [0, 0, 0], [0, 0, 15], [0, 0, 31] etc) and whatever the
+    ' best-match color for that LUT value is (like maybe [0, 0, 31] got matched to [5, 12, 16]).  We do this by
+    ' calculating the difference between each LUT value and its best-matched color, then applying that same
+    ' scale to the *new* color - this is just cheap 1D interpolation on each axis and is not necessarily ideal,
+    ' but it's very fast and cheap to implement.  (We could always do a second pass over the data, and for
+    ' LUT entries that were poorly matched - perhaps outside some threshold - we could average them against
+    ' their neighbors to smooth out the LUT mesh - exploring this is TODO.)
+    Dim fxScale As Single, tmpFloat As Single
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        With curAnalysis(r, g, b)
+            
+            'Remap the effect color linearly.  (We could presumably do more intense/accurate interpolation,
+            ' but since this whole approach is hackish I'm not worried about linear quality implications.)
+            If (.newColor.Blue > 0) Then
+                fxScale = (.fxColor.Blue / .newColor.Blue)
+            Else
+                fxScale = 0!
+            End If
+            
+            'Scale the "idealized" LUT value at this point
+            tmpFloat = m_lut3D(r, g, b).bFloat * fxScale
+            'tmpFloat = (.origColor.Blue * fxScale) / 255!
+            'tmpFloat = (.fxColor.Blue / 255)
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).bFloat = tmpFloat
+            
+            If (.newColor.Green > 0) Then
+                fxScale = (.fxColor.Green / .newColor.Green)
+            Else
+                fxScale = 0!
+            End If
+            
+            tmpFloat = m_lut3D(r, g, b).gFloat * fxScale
+            'tmpFloat = (.origColor.Green * fxScale) / 255!
+            'tmpFloat = (.fxColor.Green / 255)
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).gFloat = tmpFloat
+            
+            If (.newColor.Red > 0) Then
+                fxScale = (.fxColor.Red / .newColor.Red)
+            Else
+                fxScale = 0!
+            End If
+            
+            tmpFloat = m_lut3D(r, g, b).rFloat * fxScale
+            'tmpFloat = (.origColor.Red * fxScale) / 255!
+            'tmpFloat = (.fxColor.Red / 255)
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).rFloat = tmpFloat
+            
+        End With
+        
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Final scaling and interpolation took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
     
     'For now, let's just return TRUE so I can work on export features.
     BuildLUTFromTwoDIBs = True
@@ -1400,6 +1485,9 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
     'Failsafe check only; PD should enforce safe overwriting in the parent function.
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
     'To improve performance, write everything to a pdString instance.  Note that we'll be using
     ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically 3DL files
     ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
@@ -1411,9 +1499,9 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
     '#Created by: Adobe Photoshop Export Color Lookup Plugin
     '#Copyright: (C) Copyright 1234 [various names here]
     '#Description: [put whatever you want here]
-    cTextFile.AppendLineLf "Created by: " & Updates.GetPhotoDemonNameAndVersion()
-    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "Copyright: " & copyrightText
-    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "Description: " & textDescription
+    cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: " & copyrightText
+    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "#Description: " & textDescription
     
     'After the above lines comes a fixed list of sampling intervals.  3DL files use 10-bit color defs,
     ' so these are values on the range [0, 1023].  The default number of discrete values is 17 (per the spec).
@@ -1440,6 +1528,10 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
     Next b
     Next g
     Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Constructing final 3DL text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    End If
     
     'All that's left is to write the table out to file!
     SaveLUTToFile_3dl = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
