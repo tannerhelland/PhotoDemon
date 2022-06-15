@@ -313,9 +313,9 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     End If
     
     'Add each color from the list to the KD-tree
-    Dim cTree As pdKDTree
-    Set cTree = New pdKDTree
-    cTree.BuildTreeFastButRetrievalIsSlow listOfColors, 0, numOfColors - 1
+    Dim cTree As pdKDTreeArray
+    Set cTree = New pdKDTreeArray
+    cTree.BuildTree listOfColors, 0, numOfColors - 1
     
     If DEBUG_VERBOSE Then
         PDDebug.LogAction "KD-tree construction took " & VBHacks.GetTimeDiffNowAsString(curTime)
@@ -341,6 +341,9 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     Next b
     Next g
     Next r
+    
+    'We are done with the tree class; kill it to free resources
+    Set cTree = Nothing
     
     If DEBUG_VERBOSE Then
         PDDebug.LogAction "KD-tree matching took " & VBHacks.GetTimeDiffNowAsString(curTime)
