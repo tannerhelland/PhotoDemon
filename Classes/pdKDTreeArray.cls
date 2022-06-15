@@ -54,10 +54,13 @@ End Type
 Private m_numNodes As Long
 Private m_Nodes() As KDNode
 
-'When retrieving colors, I assume the caller is gonna retrieve a bunch of colors in the row.
-' (This class makes no sense otherwise.)  To improve performance, let's reuse a single search stack
-' across all retrieval calls.
-Private m_SearchStack() As Long
+'When retrieving values from the tree, we search through it recursively.  To minimize the stack size
+' hit caused by recursion, we declare as many recursive function variables at class-level as we can.
+Private m_bestDistance As Long, m_testDistance As Long
+Private m_testColor As RGBQuad, m_srcColor As RGBQuad, m_bestColor As RGBQuad
+
+Private m_curR As Long, m_curG As Long, m_curB As Long
+Private m_testR As Long, m_testG As Long, m_testB As Long
 
 Friend Sub BuildTree(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVal highBound As Long)
 
@@ -120,144 +123,106 @@ Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
     'Failsafe only; build the damn tree before trying to retrieve colors from it!
     If (m_numNodes <= 0) Then Exit Function
     
-    Dim bestDistance As Long, testDistance As Long
-    bestDistance = LONG_MAX
+    m_bestDistance = LONG_MAX
+    m_srcColor = srcColor
     
-    Dim testColor As RGBQuad
+    'Start searching at the root node
+    CompareNode 0
     
-    'We keep a running stack of nodes to check.  When we exhaust this list, we stop iterating nodes.
-    
-    'The first node we check is always the root node
-    m_SearchStack(0) = 0
-    
-    Dim numStackNodes As Long
-    numStackNodes = 1
-    
-    'RGBQuads store color values as bytes.  These overflow when we try to do basic arithmetic with them,
-    ' so we must copy them into save Long values.
-    Dim curR As Long, curG As Long, curB As Long
-    Dim testR As Long, testG As Long, testB As Long
-    
-    Dim idxTest As Long, testDepth As Long
-    
-    Do While (numStackNodes > 0)
-        
-        'Decrement stack counter and make that our current index
-        numStackNodes = numStackNodes - 1
-        idxTest = m_SearchStack(numStackNodes)
-        testDepth = m_Nodes(idxTest).nDepth
-        
-        'Before checking child nodes, compare the target color against this node's color.
-        testColor = m_Nodes(idxTest).nColor
-        curR = testColor.Red
-        curG = testColor.Green
-        curB = testColor.Blue
-        
-        testR = curR - srcColor.Red
-        testG = curG - srcColor.Green
-        testB = curB - srcColor.Blue
-        testDistance = testR * testR + testG * testG + testB * testB
-        
-        'Store the best (closest) result so far
-        If (testDistance < bestDistance) Then
-            bestDistance = testDistance
-            GetNearestColor = testColor
-        End If
-        
-        'Next, we want to determine if any of our child nodes contain potential points "closer to" or
-        ' "further from" our current best-match color.  (Excuse the ugly code here; I've manually inlined
-        ' code for better performance.)
-        '
-        'Note that we use our previously stored depth to determine which axis to use for comparisons,
-        ' and to simplify the code, we use the existing variables "r" and "g" to hold "current" and
-        ' "module" level values, e.g. at m_Depth = 0, r = srcColor.Red and g = m_Red.
-        Select Case testDepth
-            Case 0
-                testR = srcColor.Red
-                testG = curR
-            Case 1
-                testR = srcColor.Green
-                testG = curG
-            Case 2
-                testR = srcColor.Blue
-                testG = curB
-        End Select
-        
-        'We will potentially need to search the sub-trees beneath both child nodes, so to simplify
-        ' stack boundary checks, ensure room for at least two more stack entries.
-        If (numStackNodes >= UBound(m_SearchStack) - 1) Then ReDim Preserve m_SearchStack(0 To numStackNodes * 2 + 1) As Long
-        
-        'If the target color is *less than* this node's color, better matches will be found in
-        ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
-        ' search the right tree first.)
-        If (testR < testG) Then
-        
-            'Search the left tree
-            testB = m_Nodes(idxTest).nChildLeft
-            If (testB > 0) Then
-                m_SearchStack(numStackNodes) = testB
-                numStackNodes = numStackNodes + 1
-            End If
-            
-            'Now we need to repeat some ugly steps (but writing it this way minimizes branching for
-            ' improved perf).  We next need to see if it's necessary to check the right branch
-            ' of ths tree as well.  We do this by testing the theoretical "closest point" possible in
-            ' the right branch, and if that "theoretical" point is closer to the target color than our
-            ' current best match, we need to search the right branch for possible targets as well.
-            testB = m_Nodes(idxTest).nChildRight
-            If (testB > 0) Then
-                
-                'We know that the best value for this tree *likely* lies in the left branch.  In order for
-                ' a value in the right branch to be closer than the current value, it would need to be the
-                ' *smallest possible value* in that tree - so at depth 0, this means a color with an r value
-                ' as low as possible.
-                '
-                'Because our KD-tree implementation uses "greater-than-or-equal-to" for right branch
-                ' determination, the lowest possible value in right branches is an r-value equal to the
-                ' target color's.  (We ignore green and blue because they could potentially be *equal* to
-                ' the target color, but we have no way of knowing that as this node only branches on red!)
-                testDistance = testR - testG
-                
-                'If the closest "theoretical" point in the right branch is closer than the current best match,
-                ' we must also search that sub-tree for a best match.
-                If ((testDistance * testDistance) < bestDistance) Then
-                    m_SearchStack(numStackNodes) = testB
-                    numStackNodes = numStackNodes + 1
-                End If
-                
-            End If
-            
-        Else
-            
-            'Search the right tree
-            testB = m_Nodes(idxTest).nChildRight
-            If (testB > 0) Then
-                m_SearchStack(numStackNodes) = testB
-                numStackNodes = numStackNodes + 1
-            End If
-            
-            testB = m_Nodes(idxTest).nChildLeft
-            If (testB > 0) Then
-                
-                'Because we're querying the left tree, the nearest possible color would have to be at least
-                ' one less than this node's color.  As such, if this node has a value of 0, there is no
-                ' possible way that the left node could contain a closer color (as it can't contain
-                ' *any* colors less than zero!)
-                If (testR > 0) Then
-                    testDistance = testR - 1 - testG
-                    If ((testDistance * testDistance) < bestDistance) Then
-                        m_SearchStack(numStackNodes) = testB
-                        numStackNodes = numStackNodes + 1
-                    End If
-                End If
-                
-            End If
-            
-        End If
-            
-    Loop
+    'Return the best-match color from the recursive descent through the tree
+    GetNearestColor = m_bestColor
     
 End Function
+
+Private Sub CompareNode(ByVal idxTest As Long)
+    
+    'Before checking child nodes, compare the target color against this node's color.
+    m_testColor = m_Nodes(idxTest).nColor
+    m_curR = m_testColor.Red
+    m_curG = m_testColor.Green
+    m_curB = m_testColor.Blue
+    
+    m_testR = m_curR - m_srcColor.Red
+    m_testG = m_curG - m_srcColor.Green
+    m_testB = m_curB - m_srcColor.Blue
+    m_testDistance = m_testR * m_testR + m_testG * m_testG + m_testB * m_testB
+    
+    'Store the best (closest) result so far
+    If (m_testDistance < m_bestDistance) Then
+        m_bestDistance = m_testDistance
+        m_bestColor = m_testColor
+    End If
+    
+    'Next, we want to determine if any of this node's child nodes contain potential points "closer to"
+    ' or "further from" our current best-match color.  Note that we need to cache these values in
+    ' local variables because we're going to potentially initiate a new layer of recursion here.
+    '
+    'Also, we use our previously stored "depth" tracker to determine which axis to use for comparisons.
+    Dim srcComponent As Long, targetComponent As Long
+    Select Case m_Nodes(idxTest).nDepth
+        Case 0
+            srcComponent = m_srcColor.Red
+            targetComponent = m_curR
+        Case 1
+            srcComponent = m_srcColor.Green
+            targetComponent = m_curG
+        Case 2
+            srcComponent = m_srcColor.Blue
+            targetComponent = m_curB
+    End Select
+    
+    'If the target color is *less than* this node's color, better matches will be found in
+    ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
+    ' search the right tree first.)
+    If (srcComponent < targetComponent) Then
+    
+        'Search the left tree *immediately*
+        If (m_Nodes(idxTest).nChildLeft > 0) Then CompareNode m_Nodes(idxTest).nChildLeft
+        
+        'Now we need to repeat some ugly steps (but writing it this way minimizes branching for
+        ' improved perf).  We next need to see if it's necessary to check the right branch
+        ' of ths tree as well.  We do this by testing the theoretical "closest point" possible in
+        ' the right branch, and if that "theoretical" point is closer to the target color than our
+        ' current best match, we need to search the right branch for possible targets as well.
+        If (m_Nodes(idxTest).nChildRight > 0) Then
+            
+            'We know that the best value for this tree *likely* lies in the left branch.  In order for
+            ' a value in the right branch to be closer than the current value, it would need to be the
+            ' *smallest possible value* in that tree - so at depth 0, this means a color with an r value
+            ' as low as possible.
+            '
+            'Because our KD-tree implementation uses "greater-than-or-equal-to" for right branch
+            ' determination, the lowest possible value in right branches is an r-value equal to the
+            ' target color's.  (We ignore green and blue because they could potentially be *equal* to
+            ' the target color, but we have no way of knowing that as this node only branches on red!)
+            m_testDistance = srcComponent - targetComponent
+            
+            'If the closest "theoretical" point in the right branch is closer than the current best match,
+            ' we must also search that sub-tree for a best match.
+            If ((m_testDistance * m_testDistance) < m_bestDistance) Then CompareNode m_Nodes(idxTest).nChildRight
+            
+        End If
+        
+    Else
+        
+        'Search the right tree
+        If (m_Nodes(idxTest).nChildRight > 0) Then CompareNode m_Nodes(idxTest).nChildRight
+        If (m_Nodes(idxTest).nChildLeft > 0) Then
+            
+            'Because we're querying the left tree, the nearest possible color would have to be at least
+            ' one less than this node's color.  As such, if this node has a value of 0, there is no
+            ' possible way that the left node could contain a closer color (as it can't contain
+            ' *any* colors less than zero!)
+            If (srcComponent > 0) Then
+                m_testDistance = srcComponent - 1 - targetComponent
+                If ((m_testDistance * m_testDistance) < m_bestDistance) Then CompareNode m_Nodes(idxTest).nChildLeft
+            End If
+            
+        End If
+        
+    End If
+    
+End Sub
 
 Private Sub InsertNode(ByRef srcColor As RGBQuad)
     
