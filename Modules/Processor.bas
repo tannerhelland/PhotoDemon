@@ -1403,11 +1403,11 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Export color lookup", True) Then
-        ColorManagement.SaveColorLookupToFile PDImages.GetActiveImage(), raiseDialog, processParameters
+        Saving.SaveColorLookupToFile PDImages.GetActiveImage()
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
-        ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage(), raiseDialog, processParameters
+        ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage()
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export palette", True) Then

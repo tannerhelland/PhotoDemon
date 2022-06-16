@@ -16,9 +16,8 @@ Attribute VB_Exposed = False
 'Copyright 2018-2022 by Tanner Helland
 'Created: 28/January/18
 'Last updated: 15/June/22
-'Last update: copy "fast tree construction but slower tree traversal" mode out of the base KD-tree class, and rewrite
-'             it here against a backing array (to improve horrifically slow class teardown when 100,000+ instances are
-'             necessary).
+'Last update: copy novel "array-backed tree" mode out of the base KD-tree class, and rewrite it here as a
+'             dedicated class (to improve horrifically slow class teardown when 100,000+ instances are used).
 '
 'This class contains a specialized K-D tree implementation.  Please see the normal pdKDTree class for a generic
 ' KD-tree implementation, including full implementation details.  This class exists purely to work around some
@@ -31,7 +30,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The "fast build but slow retrieve" version uses a stack to construct the tree
+'Constructing the tree now uses a stack instead of recursion; this improves performance when node
+' count is astronomically high
 Private Type SortStack
     sLB As Long
     sUB As Long
@@ -39,11 +39,11 @@ End Type
 
 'Each tree element is stored in a backing array.  This backing array removes the need for child classes,
 ' which changes the performance trade-offs involved - this class is much faster to build and teardown than
-' the normal KD-tree class, but slower to traverse.  (This is possibly caused by locality - normal class
-' creation may produce left/right child classes that are physically closer together in memory vs a linear
-' array like this.)  Because the teardown penalty of the normal class is so severe, however, (we're talking
-' a teardown time in *minutes* if the class count exceeds several hundred thousand instances), this is a
-' critical trade-off when I need a KD-tree with many tens of thousands of individual nodes.
+' the normal KD-tree class, but it requires more complicated code because we can't just "walk" through
+' natural parent-child class relationships.  Because the teardown penalty of a standard implementation is
+' so severe, however, (we're talking a teardown time in *minutes* if the class count exceeds several hundred
+' thousand instances), this class is absolutely worth the extra code when I need a KD-tree with tens or
+' hundreds of thousands of nodes.
 Private Type KDNode
     nColor As RGBQuad
     nChildLeft As Long

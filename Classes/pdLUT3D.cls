@@ -195,7 +195,7 @@ FilterCleanup:
     
 End Sub
 
-Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As pdDIB, ByVal numSamplingPoints As Long) As Boolean
+Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As pdDIB, ByVal numSamplingPoints As Long, Optional ByVal showProgressBar As Boolean = False) As Boolean
     
     Const FUNC_NAME As String = "BuildLUTFromTwoDIBs"
     BuildLUTFromTwoDIBs = True
@@ -205,6 +205,12 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         InternalProblem FUNC_NAME, "bad sampling points"
         BuildLUTFromTwoDIBs = False
         Exit Function
+    End If
+    
+    If showProgressBar Then
+        ProgressBars.SetProgBarMax 10
+        ProgressBars.SetProgBarVal 0
+        Message "Analyzing image..."
     End If
     
     Dim startTime As Currency
@@ -235,6 +241,8 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     Next g
     Next r
     
+    If showProgressBar Then ProgressBars.SetProgBarVal 1
+    
     'We now have an identity LUT at the correct size, and it has been initialized to an identity transform.
     
     'Our next goal is to iterate the passed images, and for each pixel, find its nearest point in the LUT.
@@ -263,6 +271,8 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "LUT creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime curTime
     End If
+    
+    If showProgressBar Then ProgressBars.SetProgBarVal 2
     
     'New approach!  Scan the base image and build a list of colors from it - and importantly, store each color alongside
     ' its position in the image.
@@ -299,6 +309,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     Next y
     
     baseDIB.UnwrapLongArrayFromDIB pxBase
+    If showProgressBar Then ProgressBars.SetProgBarVal 3
     
     'With a hash-table assembled, we now need to build a KD-tree of the final color list.  We can traverse this tree
     ' to find best-match colors for each LUT entry.
@@ -311,6 +322,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "Hash table (and final color list retrieval) took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 4
     
     'Add each color from the list to the KD-tree
     Dim cTree As pdKDTreeArray
@@ -321,6 +333,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "KD-tree construction took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 5
     
     'With a KD-tree assembled and a corresponding color-to-coordinate table, we can finally start matching LUT colors.
     
@@ -349,6 +362,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "KD-tree matching took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 6
     
     'We now have a "best-match" color for every LUT entry *using only colors that existed in the original,
     ' unmodified target image*.
@@ -383,6 +397,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "Hash table coordinate retrieval took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 7
     
     Dim pxFinal() As RGBQuad, pxSA2D As SafeArray2D
     modifiedDIB.WrapRGBQuadArrayAroundDIB pxFinal, pxSA2D
@@ -401,6 +416,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "Modified color retrievals took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 8
     
     'Free unsafe array wrapper and note that we no longer need to touch either DIB
     modifiedDIB.UnwrapRGBQuadArrayFromDIB pxFinal
@@ -435,8 +451,6 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
             
             'Scale the "idealized" LUT value at this point
             tmpFloat = m_lut3D(r, g, b).bFloat * fxScale
-            'tmpFloat = (.origColor.Blue * fxScale) / 255!
-            'tmpFloat = (.fxColor.Blue / 255)
             If (tmpFloat > 1!) Then tmpFloat = 1!
             m_lut3D(r, g, b).bFloat = tmpFloat
             
@@ -447,8 +461,6 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
             End If
             
             tmpFloat = m_lut3D(r, g, b).gFloat * fxScale
-            'tmpFloat = (.origColor.Green * fxScale) / 255!
-            'tmpFloat = (.fxColor.Green / 255)
             If (tmpFloat > 1!) Then tmpFloat = 1!
             m_lut3D(r, g, b).gFloat = tmpFloat
             
@@ -459,8 +471,6 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
             End If
             
             tmpFloat = m_lut3D(r, g, b).rFloat * fxScale
-            'tmpFloat = (.origColor.Red * fxScale) / 255!
-            'tmpFloat = (.fxColor.Red / 255)
             If (tmpFloat > 1!) Then tmpFloat = 1!
             m_lut3D(r, g, b).rFloat = tmpFloat
             
@@ -474,6 +484,7 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "Final scaling and interpolation took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 9
     
     'For now, let's just return TRUE so I can work on export features.
     BuildLUTFromTwoDIBs = True
