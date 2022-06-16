@@ -259,19 +259,12 @@ Private Sub InsertNode(ByRef srcColor As RGBQuad)
         Dim useLeftBranch As Boolean
         
         Select Case depth
-
-            'Red
             Case 0
                 useLeftBranch = (srcColor.Red < tmpColor.Red)
-                
-            'Green
             Case 1
                 useLeftBranch = (srcColor.Green < tmpColor.Green)
-
-            'Blue
             Case 2
                 useLeftBranch = (srcColor.Blue < tmpColor.Blue)
-                
         End Select
         
         'Increment depth before continuing with traversal
@@ -325,13 +318,5 @@ Private Sub InsertNode(ByRef srcColor As RGBQuad)
         End If
         
     Loop
-    
-End Sub
-
-Private Sub Class_Initialize()
-    
-    'Prevent the need for "is array initialized "checks
-    Const INIT_STACK_SIZE As Long = 256
-    ReDim m_SearchStack(0 To INIT_STACK_SIZE - 1) As Long
     
 End Sub

@@ -3,8 +3,8 @@ Attribute VB_Name = "FileMenu"
 'File Menu Handler
 'Copyright 2001-2022 by Tanner Helland
 'Created: 15/Apr/01
-'Last updated: 30/September/20
-'Last update: new user preference for initial folder suggestion on Save As
+'Last updated: 16/June/22
+'Last update: remove an unused variable
 '
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
@@ -48,8 +48,6 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     Dim openDialog As pdOpenSaveDialog
     Set openDialog = New pdOpenSaveDialog
     
-    Dim sFileList As String
-        
     'Retrieve one (or more) files to open
     If openDialog.GetOpenFileNames_AsStringStack(dstStringStack, vbNullString, vbNullString, True, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), vbNullString, ownerHwnd) Then
         

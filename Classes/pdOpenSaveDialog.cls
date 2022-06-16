@@ -173,7 +173,7 @@ Friend Function GetOpenFileName(ByRef dstFilename As String, _
         
         'The filter string must be passed in null-delimited format, but this is non-trivial to do in VB6.
         ' So we ask callers to use pipe separators, then manually convert to nulls before invoking the dialog.
-        Dim tmpChar As String, tmpString As String
+        Dim tmpString As String
         tmpString = extensionFilters
         If (InStr(1, tmpString, "|", vbBinaryCompare) <> 0) Then tmpString = Replace$(tmpString, "|", vbNullChar)
         

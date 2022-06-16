@@ -283,13 +283,9 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     ' to the current best-match and update accordingly.
     Dim pxBase() As Long, pxSA As SafeArray1D
     
-    Dim x As Long, xOffset As Long, y As Long, xMax As Long, yMax As Long
+    Dim x As Long, y As Long, xMax As Long, yMax As Long
     xMax = baseDIB.GetDIBWidth - 1
     yMax = baseDIB.GetDIBHeight - 1
-    
-    'TODO: see if removable?
-    Dim idxR As Long, idxG As Long, idxB As Long, curDist As Long
-    Dim rDist As Long, gDist As Long, bDist As Long
     
     Dim tmpPoint As PointLong, tmpColor As RGBQuad, tmpLong As Long
     
@@ -299,9 +295,11 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     For x = 0 To xMax
         
         tmpPoint.x = x
+        
+        'Force alpha to 255; LUTs don't consider transparency
         tmpLong = pxBase(x) Or &HFF000000
         
-        'Add the color from this location to the hash table.  The hash table will automatically remove duplicates for us,
+        'Add the color from this location to the hash table.  The hash table will automatically remove duplicates,
         ' and it will store coordinates alongside colors, giving us a 1:1 mapping between the two.
         cHash.AddColor tmpLong, tmpPoint
         
@@ -320,11 +318,12 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     
     If DEBUG_VERBOSE Then
         PDDebug.LogAction "Hash table (and final color list retrieval) took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        PDDebug.LogAction "(Hash table has " & numOfColors & " colors.)"
         VBHacks.GetHighResTime curTime
     End If
     If showProgressBar Then ProgressBars.SetProgBarVal 4
     
-    'Add each color from the list to the KD-tree
+    'Add each color from the list to a KD-tree; we will momentarily use this tree to retrieve best-fit colors
     Dim cTree As pdKDTreeArray
     Set cTree = New pdKDTreeArray
     cTree.BuildTree listOfColors, 0, numOfColors - 1
@@ -338,15 +337,14 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     'With a KD-tree assembled and a corresponding color-to-coordinate table, we can finally start matching LUT colors.
     
     'The way we're gonna do this is iterate through the LUT, and for each point, find the closest matching color
-    ' in the original image (using the KD-tree).  From these nearest-points, we'll construct a "best-fit" LUT
-    ' approximation.
-    Dim bestMatchCoord As PointLong
-    
+    ' in the original image (using the KD-tree).  From these "best-fit" colors, we'll construct a "best-fit" LUT
+    ' approximation that describes the changes from the base image to the modified image across the full spectrum
+    ' covered by this photo.
     For r = 0 To m_LutLoopSize
     For g = 0 To m_LutLoopSize
     For b = 0 To m_LutLoopSize
         
-        'Retrieve the matching color at this point.
+        'Retrieve the matching color at this point, force full opacity, then store the result
         tmpColor = cTree.GetNearestColor(curAnalysis(r, g, b).origColor)
         tmpColor.Alpha = 255
         curAnalysis(r, g, b).newColor = tmpColor
@@ -392,6 +390,9 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     Next b
     Next g
     Next r
+    
+    'We are done with the hash table; kill it to free up resources
+    Set cHash = Nothing
     
     If DEBUG_VERBOSE Then
         PDDebug.LogAction "Hash table coordinate retrieval took " & VBHacks.GetTimeDiffNowAsString(curTime)
@@ -1543,11 +1544,10 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
     Next g
     Next r
     
-    If DEBUG_VERBOSE Then
-        PDDebug.LogAction "Constructing final 3DL text took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    End If
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Constructing final 3DL text took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'All that's left is to write the table out to file!
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Handing final 3DL text off to Files module for export to " & dstFile
     SaveLUTToFile_3dl = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
     
     Exit Function

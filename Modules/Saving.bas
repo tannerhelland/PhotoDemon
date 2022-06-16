@@ -1067,7 +1067,7 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
             ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
             
             'Export said LUT to desired format
-            Select Case "export-format"
+            Select Case targetLutFormat
                 Case "cube"
                     'TODO
                 Case "3dl"
