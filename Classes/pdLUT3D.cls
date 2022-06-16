@@ -475,6 +475,33 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
             If (tmpFloat > 1!) Then tmpFloat = 1!
             m_lut3D(r, g, b).rFloat = tmpFloat
             
+            'With a baseline color generated, we now want to cover some special cases.
+            
+            'First, look for grayscale conversions.  We can detect this if the R/G/B values of the target color
+            ' are all identical.  (Various corrections either do not apply to grayscale pixels - e.g. "vibrance" -
+            ' or they forcibly convert certain tones to grayscale - e.g. "selective colorize".  We can cover these
+            ' cases nicely with a custom check.)
+            If (.fxColor.Red = .fxColor.Green) And (.fxColor.Green = .fxColor.Blue) Then
+                
+                'Average the new colors we calculated
+                tmpFloat = (m_lut3D(r, g, b).rFloat + m_lut3D(r, g, b).gFloat + m_lut3D(r, g, b).bFloat) * 0.333333333333333
+                m_lut3D(r, g, b).rFloat = tmpFloat
+                m_lut3D(r, g, b).gFloat = tmpFloat
+                m_lut3D(r, g, b).bFloat = tmpFloat
+                
+            End If
+            
+            'Next, look for inversion.  This is a challenging one to detect via linear interpolation,
+            ' but it's easily detected using the source colors.
+            If (.fxColor.Red = 255 - .newColor.Red) And (.fxColor.Green = 255 - .newColor.Green) And (.fxColor.Blue = 255 - .newColor.Blue) Then
+                
+                'Invert this color accordingly
+                m_lut3D(r, g, b).rFloat = (m_LutLoopSize - r) / m_LutLoopSize
+                m_lut3D(r, g, b).gFloat = (m_LutLoopSize - g) / m_LutLoopSize
+                m_lut3D(r, g, b).bFloat = (m_LutLoopSize - b) / m_LutLoopSize
+                
+            End If
+            
         End With
         
     Next b
