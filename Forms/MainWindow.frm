@@ -3904,8 +3904,8 @@ Private Sub MnuTest_Click()
     'Test code goes here
     Dim cLUT As pdLUT3D
     Set cLUT = New pdLUT3D
-    cLUT.LoadLUTFromFile "E:\LUTs\Photoshop\NightFromDay.cube"
-    Debug.Print cLUT.SaveLUTToFile_3dl("E:\LUTs\Photoshop\EdgyAmber_RoundTrip.3dl")
+    cLUT.LoadLUTFromFile "C:\tanner-dev\PhotoDemon\Data\3DLUTs\Candlelight.CUBE"
+    Debug.Print cLUT.SaveLUTToFile_Cube("C:\tanner-dev\PhotoDemon\Data\3DLUTs\Candlelight-roundtrip.CUBE")
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB,
     ' then uncomment these two lines:

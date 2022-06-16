@@ -1069,7 +1069,7 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
             'Export said LUT to desired format
             Select Case targetLutFormat
                 Case "cube"
-                    'TODO
+                    SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, vbNullString, vbNullString)
                 Case "3dl"
                     SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, vbNullString, vbNullString)
             End Select

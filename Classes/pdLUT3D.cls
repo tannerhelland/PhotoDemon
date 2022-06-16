@@ -434,6 +434,10 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
     ' but it's very fast and cheap to implement.  (We could always do a second pass over the data, and for
     ' LUT entries that were poorly matched - perhaps outside some threshold - we could average them against
     ' their neighbors to smooth out the LUT mesh - exploring this is TODO.)
+    '
+    'Also TODO: vectors are almost certainly a smarter approach here - calculate a 3D vector from the source
+    ' color to the final color, then scale that vector according to its position in the overall 3D cube when
+    ' applying it to the LUT color.  Researching this alternative implementation is TODO.
     Dim fxScale As Single, tmpFloat As Single
     
     For r = 0 To m_LutLoopSize
@@ -1582,6 +1586,96 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
 CouldNotSaveFile:
     InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
     SaveLUTToFile_3dl = False
+    
+End Function
+
+'Export the current LUT to a cube file
+Friend Function SaveLUTToFile_Cube(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_Cube"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_Cube = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically 3DL files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    '3DL files support comments, and convention has you stick the app, copyright, and description
+    ' on the first three lines of the file as comments, e.g. this from an actual 3DL file:
+    '#Created by: Adobe Photoshop Export Color Lookup Plugin
+    '#Copyright: (C) Copyright 1234 [various names here]
+    '#Description: [put whatever you want here]
+    cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: " & copyrightText
+    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "TITLE """ & textDescription & """"
+    
+    'Tradition (?) dictates an extra blank line between some segments
+    cTextFile.AppendLineBreakLf
+    
+    'LUT size gets its own line
+    cTextFile.AppendLineLf "#LUT size"
+    cTextFile.AppendLineLf "LUT_3D_SIZE " & Trim$(Str$(m_LutSize))
+    cTextFile.AppendLineBreakLf
+    
+    'Domain needs to be explicitly written, per-channel
+    cTextFile.AppendLineLf "#data domain"
+    cTextFile.AppendLineLf "DOMAIN_MIN 0.0 0.0 0.0"
+    cTextFile.AppendLineLf "DOMAIN_MAX 1.0 1.0 1.0"
+    cTextFile.AppendLineBreakLf
+    
+    'We now append all colors in RGB order, with the R channel incrementing fastest.
+    ' Colors are written as floating-point values written out to 6 decimal points.
+    cTextFile.AppendLineLf "#LUT data points"
+    
+    Dim r As Long, g As Long, b As Long
+    
+    For b = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For r = 0 To m_LutLoopSize
+        With m_lut3D(r, g, b)
+            cTextFile.AppendLineLf Format$(.rFloat, "0.000000") & " " & Format$(.gFloat, "0.000000") & " " & Format$(.bFloat, "0.000000")
+        End With
+    Next r
+    Next g
+    Next b
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Constructing final cube text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    'All that's left is to write the table out to file!
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Handing final cube text off to Files module for export to " & dstFile
+    SaveLUTToFile_Cube = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_Cube = False
     
 End Function
 
