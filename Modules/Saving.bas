@@ -987,6 +987,8 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     
     cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
     cdFilterExtensions.Append "cube|"
+    cdFilter.Append "Adobe SpeedGrade (.look)|*.look|"
+    cdFilterExtensions.Append "look|"
     cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
     cdFilterExtensions.Append "3dl"
     
@@ -1022,6 +1024,8 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
             Case 1
                 targetLutFormat = "cube"
             Case 2
+                targetLutFormat = "look"
+            Case 3
                 targetLutFormat = "3dl"
         End Select
         
@@ -1070,6 +1074,8 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
             Select Case targetLutFormat
                 Case "cube"
                     SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, vbNullString, vbNullString)
+                Case "look"
+                    SaveColorLookupToFile = cExport.SaveLUTToFile_look(dstFilename, vbNullString, vbNullString)
                 Case "3dl"
                     SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, vbNullString, vbNullString)
             End Select

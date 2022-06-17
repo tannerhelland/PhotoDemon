@@ -332,7 +332,11 @@ Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As
         PDDebug.LogAction "KD-tree construction took " & VBHacks.GetTimeDiffNowAsString(curTime)
         VBHacks.GetHighResTime curTime
     End If
-    If showProgressBar Then ProgressBars.SetProgBarVal 5
+    
+    If showProgressBar Then
+        ProgressBars.SetProgBarVal 5
+        Message "Building color lookup..."
+    End If
     
     'With a KD-tree assembled and a corresponding color-to-coordinate table, we can finally start matching LUT colors.
     
@@ -1621,18 +1625,19 @@ Friend Function SaveLUTToFile_Cube(ByRef dstFile As String, Optional ByRef copyr
     If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
     
     'To improve performance, write everything to a pdString instance.  Note that we'll be using
-    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically 3DL files
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically cube files
     ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
     Dim cTextFile As pdString
     Set cTextFile = New pdString
     
-    '3DL files support comments, and convention has you stick the app, copyright, and description
-    ' on the first three lines of the file as comments, e.g. this from an actual 3DL file:
+    'Cube files support comments, and convention has you stick the app and copyright, and description
+    ' on the first two lines of the file as comments, e.g. this from an actual cube file:
     '#Created by: Adobe Photoshop Export Color Lookup Plugin
     '#Copyright: (C) Copyright 1234 [various names here]
-    '#Description: [put whatever you want here]
     cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
     If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: " & copyrightText
+    
+    'LUT title is its own block, prefixed by a keyword (you'll see this pattern elsewhere in the file)
     If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "TITLE """ & textDescription & """"
     
     'Tradition (?) dictates an extra blank line between some segments
@@ -1676,6 +1681,107 @@ Friend Function SaveLUTToFile_Cube(ByRef dstFile As String, Optional ByRef copyr
 CouldNotSaveFile:
     InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
     SaveLUTToFile_Cube = False
+    
+End Function
+
+'Export the current LUT to a look file
+Friend Function SaveLUTToFile_look(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_look"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_look = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically look files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    'look files are basically XML files with the LUT itself embedded as hex.  Easy enough!
+    ' (Note that look files coming from Adobe have a bunch of extra XML tags that we can't replicate,
+    ' so we *only* write the LUT and a few key details.)
+    cTextFile.AppendLineLf "<?xml version=""1.0"" ?>"
+    cTextFile.AppendLineLf "<look>"
+    
+    'Try to mimic compatibility with Adobe where we can
+    cTextFile.AppendLineLf "  <shaders>"
+    cTextFile.AppendLineLf "  </shaders>"
+    
+    'Next comes the LUT block.  Start with an opening tag and size descriptor
+    cTextFile.AppendLineLf Space$(2) & "<LUT>"
+    cTextFile.AppendLineLf Space$(4) & "<size>""" & Trim$(Str$(m_LutSize)) & """</size>"
+    cTextFile.AppendLineLf Space$(6) & "<data>"""
+    
+    'We now need to pull the full LUT matrix, as-is, into a hex string
+    Dim lutHex As String
+    If Not Strings.BytesToHex_FromPtr(VarPtr(m_lut3D(0, 0, 0)), (m_LutSize ^ 3) * 12, lutHex, True, True) Then
+        InternalProblem FUNC_NAME, "bad hex conversion"
+        SaveLUTToFile_look = False
+        Exit Function
+    End If
+    
+    Dim hexPrefix As String
+    hexPrefix = Space$(6)
+    
+    'We now want to break up the hex string into 64-character chunks, and write each 64-char chunk as its own line
+    Dim i As Long
+    For i = 1 To Len(lutHex) Step 64
+        
+        Dim lenThisChunk As Long
+        lenThisChunk = (Len(lutHex) - i) + 1
+        If (lenThisChunk > 64) Then lenThisChunk = 64
+        
+        cTextFile.Append hexPrefix
+        
+        If (i < Len(lutHex) - 64) Then
+            cTextFile.AppendLineLf Mid$(lutHex, i, lenThisChunk)
+        Else
+            cTextFile.AppendLineLf Mid$(lutHex, i, lenThisChunk) & """"
+        End If
+        
+    Next i
+    
+    'Close all open tags, then write out the data!
+    cTextFile.AppendLineLf Space$(4) & "</data>"
+    cTextFile.AppendLineLf Space$(2) & "</LUT>"
+    cTextFile.AppendLineLf "</look>"
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Constructing final look text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Handing final look text off to Files module for export to " & dstFile
+    End If
+    
+    SaveLUTToFile_look = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_look = False
     
 End Function
 
