@@ -994,9 +994,10 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     
     'TODO: look?  icc?
     
-    'Default to 3dl pending further testing (note common-dialog indices are 1-based)
+    'Default to cube pending further testing (note common-dialog indices are 1-based)
     Dim cdIndex As Long
-    cdIndex = 2
+    cdIndex = UserPrefs.GetPref_Long("Dialogs", "lut-cdlg-index", 1)
+    If (cdIndex < 1) Or (cdIndex > 3) Then cdIndex = 1
     
     'Suggest a file name.  At present, we just reuse the current image's name.
     Dim dstFilename As String
@@ -1013,10 +1014,9 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     
     If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
         
-        Saving.BeginSaveProcess
-        
         'Update preferences
         UserPrefs.SetLUTPath Files.FileGetPath(dstFilename)
+        UserPrefs.SetPref_Long "Dialogs", "lut-cdlg-index", cdIndex
         
         'Convert common-dialog index into a human-readable string
         Dim targetLutFormat As String
@@ -1029,67 +1029,83 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
                 targetLutFormat = "3dl"
         End Select
         
-        'Retrieve an original, unmodified copy of the current layer
-        Dim idLayer As Long
-        idLayer = PDImages.GetActiveImage.GetActiveLayerID
-        
-        Dim origDIB As pdDIB
-        If (Not PDImages.GetActiveImage.UndoManager.GetOriginalLayer_FromUndo(origDIB, idLayer)) Then
+        'Display a "save options" dialog; LUTs do have a few different customizable properties
+        Dim lutProps As String
+        If (Dialogs.PromptExportLUT(PDImages.GetActiveImage, lutProps) = vbOK) Then
             
-            'If no changes have been made to the current image, the above function will return FALSE.
-            ' In this case, we can just retrieve the current layer as-is (because it's unmodified).
-            Set origDIB = New pdDIB
-            origDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+            Saving.BeginSaveProcess
             
+            'Retrieve an original, unmodified copy of the current layer
+            Dim idLayer As Long
+            idLayer = PDImages.GetActiveImage.GetActiveLayerID
+            
+            Dim origDIB As pdDIB
+            If (Not PDImages.GetActiveImage.UndoManager.GetOriginalLayer_FromUndo(origDIB, idLayer)) Then
+                
+                'If no changes have been made to the current image, the above function will return FALSE.
+                ' In this case, we can just retrieve the current layer as-is (because it's unmodified).
+                Set origDIB = New pdDIB
+                origDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+                
+            End If
+            
+            'Grab a soft link to the active layer
+            Dim curDIB As pdDIB
+            Set curDIB = PDImages.GetActiveImage.GetActiveDIB
+            
+            'Ensure DIB sizes match (and resize as necessary)
+            If (origDIB.GetDIBWidth <> curDIB.GetDIBWidth) Or (origDIB.GetDIBHeight <> curDIB.GetDIBHeight) Then
+                
+                'Resize the original DIB to match the current DIB size
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                tmpDIB.CreateBlank curDIB.GetDIBWidth, curDIB.GetDIBHeight, 32, 0, 0
+                GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, curDIB.GetDIBWidth, curDIB.GetDIBHeight, origDIB, 0, 0, origDIB.GetDIBWidth, origDIB.GetDIBHeight, 1!, GP_IM_HighQualityBilinear, dstCopyIsOkay:=True
+                Set origDIB = tmpDIB
+                
+            End If
+            
+            Dim cParams As pdSerialize
+            Set cParams = New pdSerialize
+            cParams.SetParamString lutProps
+            
+            'LUT size now comes from the user; this exists purely to cover malformed batch process requests
+            Const LUT_DEFAULT_COUNT As Long = 17
+            
+            'Build a LUT that describes all changes to the current layer (this is the longest part to process)
+            Dim cExport As pdLUT3D
+            Set cExport = New pdLUT3D
+            If cExport.BuildLUTFromTwoDIBs(origDIB, curDIB, cParams.GetLong("grid-points", LUT_DEFAULT_COUNT, True), True) Then
+                
+                Message "Saving file..."
+                ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
+                
+                'Pull copyright and description strings, if any, into standalone variables
+                Dim strCopyright As String, strDescription As String
+                strCopyright = Strings.ForceSingleLine(cParams.GetString("copyright", vbNullString))
+                strDescription = Strings.ForceSingleLine(cParams.GetString("description", vbNullString))
+                
+                'Export said LUT to desired format
+                Select Case targetLutFormat
+                    Case "cube"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, strCopyright, strDescription)
+                    Case "look"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_look(dstFilename, strCopyright, strDescription)
+                    Case "3dl"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, strCopyright, strDescription)
+                End Select
+                
+                ProgressBars.ReleaseProgressBar
+                Message "Save complete."
+                
+            End If
+            
+            Saving.EndSaveProcess
+            
+        '/export options canceled
         End If
-        
-        'Grab a soft link to the active layer
-        Dim curDIB As pdDIB
-        Set curDIB = PDImages.GetActiveImage.GetActiveDIB
-        
-        'Ensure DIB sizes match (and resize as necessary)
-        If (origDIB.GetDIBWidth <> curDIB.GetDIBWidth) Or (origDIB.GetDIBHeight <> curDIB.GetDIBHeight) Then
-            
-            'Resize the original DIB to match the current DIB size
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateBlank curDIB.GetDIBWidth, curDIB.GetDIBHeight, 32, 0, 0
-            GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, curDIB.GetDIBWidth, curDIB.GetDIBHeight, origDIB, 0, 0, origDIB.GetDIBWidth, origDIB.GetDIBHeight, 1!, GP_IM_HighQualityBilinear, dstCopyIsOkay:=True
-            Set origDIB = tmpDIB
-            
-        End If
-        
-        ' TODO: get lut size from user
-        Const LUT_MAX_COUNT As Long = 17
-        
-        'Build a LUT that describes all changes to the current layer (this is the longest part to process)
-        Dim cExport As pdLUT3D
-        Set cExport = New pdLUT3D
-        If cExport.BuildLUTFromTwoDIBs(origDIB, curDIB, LUT_MAX_COUNT, True) Then
-            
-            Message "Saving file..."
-            ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
-            
-            'Export said LUT to desired format
-            Select Case targetLutFormat
-                Case "cube"
-                    SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, vbNullString, vbNullString)
-                Case "look"
-                    SaveColorLookupToFile = cExport.SaveLUTToFile_look(dstFilename, vbNullString, vbNullString)
-                Case "3dl"
-                    SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, vbNullString, vbNullString)
-            End Select
-            
-            ProgressBars.ReleaseProgressBar
-            Message "Save complete."
-            
-        'Unspecified error?
-        Else
-            Debug.Print "fail?"
-        End If
-        
-        Saving.EndSaveProcess
-        
+    
+    '/common dialog canceled
     End If
     
     'Re-enable user input regardless of save success/fail behavior

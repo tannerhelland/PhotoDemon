@@ -355,6 +355,13 @@ Public Function EscapeXMLString(ByRef srcString As String) As String
     If (InStr(1, srcString, "&", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "&", "&amp;")
 End Function
 
+'Sometimes we need to write strings in places where line-breaks are unacceptable; use this function to help
+Public Function ForceSingleLine(ByRef srcString As String) As String
+    ForceSingleLine = srcString
+    If (InStr(1, ForceSingleLine, vbCr, vbBinaryCompare) <> 0) Then ForceSingleLine = Replace$(ForceSingleLine, vbCr, vbNullString)
+    If (InStr(1, ForceSingleLine, vbLf, vbBinaryCompare) <> 0) Then ForceSingleLine = Replace$(ForceSingleLine, vbLf, vbNullString)
+End Function
+
 'Given a source string, parse it into a list of discrete words and return said list.
 ' NOTE: this function should really use Uniscribe so that it can split words in languages
 ' that do not use space as a delimiter.  TODO!

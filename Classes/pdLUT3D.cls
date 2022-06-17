@@ -1550,7 +1550,7 @@ Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyri
     '#Copyright: (C) Copyright 1234 [various names here]
     '#Description: [put whatever you want here]
     cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
-    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: " & copyrightText
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: (c) " & Year(Now) & " " & copyrightText
     If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "#Description: " & textDescription
     
     'After the above lines comes a fixed list of sampling intervals.  3DL files use 10-bit color defs,
@@ -1635,7 +1635,7 @@ Friend Function SaveLUTToFile_Cube(ByRef dstFile As String, Optional ByRef copyr
     '#Created by: Adobe Photoshop Export Color Lookup Plugin
     '#Copyright: (C) Copyright 1234 [various names here]
     cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
-    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: " & copyrightText
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: (c) " & Year(Now) & " " & copyrightText
     
     'LUT title is its own block, prefixed by a keyword (you'll see this pattern elsewhere in the file)
     If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "TITLE """ & textDescription & """"
