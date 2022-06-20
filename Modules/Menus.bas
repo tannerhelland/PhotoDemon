@@ -245,7 +245,9 @@ Public Sub InitializeMenus()
     AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
     AddMenuItem "-", "0", 2, 18
     AddMenuItem "Animation...", "image_animation", 2, 19, , "animation"
-    AddMenuItem "Compare...", "image_compare", 2, 20
+    AddMenuItem "Compare", "image_compare", 2, 20
+        AddMenuItem "Create color lookup...", "image_createlut", 2, 20, 0
+        AddMenuItem "Similarity...", "image_similarity", 2, 20, 1
     AddMenuItem "Metadata", "image_metadata", 2, 21
         AddMenuItem "Edit metadata...", "image_editmetadata", 2, 21, 0, "image_metadata"
         AddMenuItem "Remove all metadata", "image_removemetadata", 2, 21, 1

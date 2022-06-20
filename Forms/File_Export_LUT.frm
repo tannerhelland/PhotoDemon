@@ -77,7 +77,7 @@ Begin VB.Form dialog_ExportLUT
       Width           =   9870
       _extentx        =   17410
       _extenty        =   1323
-      dontautounloadparent=   -1  'True
+      dontautounloadparent=   -1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
@@ -208,7 +208,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Populate any list elements
     btsQuality.AddItem "fast", 0
-    btsQuality.AddItem "normal", 1
+    btsQuality.AddItem "standard", 1
     btsQuality.AddItem "extreme", 2
     btsQuality.AddItem "custom", 3
     btsQuality.ListIndex = 1

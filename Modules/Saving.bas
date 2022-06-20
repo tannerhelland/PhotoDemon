@@ -992,8 +992,6 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
     cdFilterExtensions.Append "3dl"
     
-    'TODO: look?  icc?
-    
     'Default to cube pending further testing (note common-dialog indices are 1-based)
     Dim cdIndex As Long
     cdIndex = UserPrefs.GetPref_Long("Dialogs", "lut-cdlg-index", 1)
@@ -1012,7 +1010,7 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
     
-    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetLUTPath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
         
         'Update preferences
         UserPrefs.SetLUTPath Files.FileGetPath(dstFilename)

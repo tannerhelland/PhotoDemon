@@ -2284,7 +2284,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Process_ImageMenu = True
     
     'Compare two images/layers
-    ElseIf Strings.StringsEqual(processID, "Compare images", True) Then
+    ElseIf Strings.StringsEqual(processID, "Create color lookup", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormImageCreateLUT Else FormImageCreateLUT.CreateDifferenceLUT processParameters
+        Process_ImageMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Compare similarity", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormImageCompare Else FormImageCompare.CompareImages processParameters
         Process_ImageMenu = True
         
@@ -2302,8 +2306,8 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Filters_Miscellaneous.MenuCountColors
         Process_ImageMenu = True
         
-    'NOTE!  Some Image-menu actions have been removed in new versions of the programs.  If they exist inside macros, we don't want to
-    ' raise any errors, so I've included their keywords here even though they are basically NOPs.
+    'NOTE!  Some Image-menu actions have been removed in new versions of the programs.  If they exist inside macros,
+    ' I don't want to raise errors, so I've included their keywords here even though they are basically NOPs.
     
     'TODO 8.2: reinstate auto-cropping
     ElseIf Strings.StringsEqual(processID, "Autocrop", True) Then

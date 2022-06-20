@@ -418,8 +418,16 @@ Begin VB.Form FormMain
          Index           =   19
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Compare..."
+         Caption         =   "Compare"
          Index           =   20
+         Begin VB.Menu MnuImageCompare 
+            Caption         =   "Create color lookup..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuImageCompare 
+            Caption         =   "Similarity..."
+            Index           =   1
+         End
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Metadata"
@@ -3197,9 +3205,18 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 19
             Actions.LaunchAction_ByName "image_animation"
         Case 20
-            Actions.LaunchAction_ByName "image_compare"
+            'Compare top-level
         Case 21
             'Metadata top-level
+    End Select
+End Sub
+
+Private Sub MnuImageCompare_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "image_createlut"
+        Case 1
+            Actions.LaunchAction_ByName "image_similarity"
     End Select
 End Sub
 
