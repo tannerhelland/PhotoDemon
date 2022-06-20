@@ -489,9 +489,9 @@ Private Sub cmdBar_OKClick()
     
     'If we are generating a new comparison layer, we need to create undo data
     If chkSettings(2).Value Then
-        Process "Compare images", , cParams.GetParamString(), UNDO_Image
+        Process "Compare similarity", , cParams.GetParamString(), UNDO_Image
     Else
-        Process "Compare images", , cParams.GetParamString(), UNDO_Nothing
+        Process "Compare similarity", , cParams.GetParamString(), UNDO_Nothing
     End If
     
 End Sub

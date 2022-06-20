@@ -309,8 +309,13 @@
 </phrase>
 
 <phrase>
-<original>Compare images</original>
-<translation>比较图像</translation>
+<original>Create color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Compare similarity</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1328,7 +1333,7 @@
 <translation>清除最近的图像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 270 phrases. 7 were duplicates of existing phrases, so only 263 new phrases were written to file. -->
+<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1381,7 +1386,7 @@
 <translation>配置文件导出成功.</translation>
 </phrase>
 
-<!-- ColorManagement_ICM.bas contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -3115,6 +3120,11 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
+<original>Saving file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This is a still image (only one frame of animation).</original>
 <translation>这是一个静止图像（只有一帧动画）。</translation>
 </phrase>
@@ -3129,7 +3139,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>导出动画</translation>
 </phrase>
 
-<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3739,6 +3749,11 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>Building color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>All supported LUTs</original>
 <translation>全部支持的色彩查找表LUTs</translation>
 </phrase>
@@ -3748,7 +3763,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>选择色彩查找表LUT 文件</translation>
 </phrase>
 
-<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- pdMakeTexture.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4926,6 +4941,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Similarity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Metadata</original>
 <translation>元数据</translation>
 </phrase>
@@ -5662,7 +5682,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 392 phrases. 210 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 211 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10141,6 +10161,28 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>description</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>copyright</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>extreme</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
 <original>Palette export options</original>
 <translation>调色板导出选项</translation>
 </phrase>
@@ -10960,6 +11002,11 @@ Would you like to save your batch list before exiting?</original>
 <!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>Compare images</original>
+<translation>比较图像</translation>
+</phrase>
+
+<phrase>
 <original>resize images as necessary</original>
 <translation>根据需要调整图像大小</translation>
 </phrase>
@@ -11029,7 +11076,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>图像比较</translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -13949,12 +13996,29 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>Create color lookup table (LUT)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add this to the "Adjustments > Color lookup" tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>modified image and layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2640</phrasecount>
+<phrasecount>2652</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5498 phrases. -->
-<!-- 2858 are duplicates, so only 2640 unique phrases have been written to file. -->
-<!-- These 2640 phrases contain approximately 11873 total words. -->
+<!-- As of this build, PhotoDemon contains 5533 phrases. -->
+<!-- 2881 are duplicates, so only 2652 unique phrases have been written to file. -->
+<!-- These 2652 phrases contain approximately 11906 total words. -->
 
 </pdData>

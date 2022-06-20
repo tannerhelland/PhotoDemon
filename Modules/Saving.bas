@@ -967,6 +967,150 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
     
 End Function
 
+'Save the current pdImage's list of edits to a standalone 3D lut file.
+Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
+    
+    'Failsafe checks
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
+    
+    'Determine an initial folder.  This is easy - just grab the last "3dlut" path from the preferences file.
+    Dim initialSaveFolder As String
+    initialSaveFolder = UserPrefs.GetLUTPath()
+    
+    'Build common dialog filter lists
+    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Set cdFilter = New pdString
+    Set cdFilterExtensions = New pdString
+    
+    cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
+    cdFilterExtensions.Append "cube|"
+    cdFilter.Append "Adobe SpeedGrade (.look)|*.look|"
+    cdFilterExtensions.Append "look|"
+    cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
+    cdFilterExtensions.Append "3dl"
+    
+    'Default to cube pending further testing (note common-dialog indices are 1-based)
+    Dim cdIndex As Long
+    cdIndex = UserPrefs.GetPref_Long("Dialogs", "lut-cdlg-index", 1)
+    If (cdIndex < 1) Or (cdIndex > 3) Then cdIndex = 1
+    
+    'Suggest a file name.  At present, we just reuse the current image's name.
+    Dim dstFilename As String
+    dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("Color lookup")
+    dstFilename = initialSaveFolder & dstFilename
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export color lookup")
+    
+    'Prep a common dialog interface
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetLUTPath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+        
+        'Update preferences
+        UserPrefs.SetLUTPath Files.FileGetPath(dstFilename)
+        UserPrefs.SetPref_Long "Dialogs", "lut-cdlg-index", cdIndex
+        
+        'Convert common-dialog index into a human-readable string
+        Dim targetLutFormat As String
+        Select Case cdIndex
+            Case 1
+                targetLutFormat = "cube"
+            Case 2
+                targetLutFormat = "look"
+            Case 3
+                targetLutFormat = "3dl"
+        End Select
+        
+        'Display a "save options" dialog; LUTs do have a few different customizable properties
+        Dim lutProps As String
+        If (Dialogs.PromptExportLUT(PDImages.GetActiveImage, lutProps) = vbOK) Then
+            
+            Saving.BeginSaveProcess
+            
+            'Retrieve an original, unmodified copy of the current layer
+            Dim idLayer As Long
+            idLayer = PDImages.GetActiveImage.GetActiveLayerID
+            
+            Dim origDIB As pdDIB
+            If (Not PDImages.GetActiveImage.UndoManager.GetOriginalLayer_FromUndo(origDIB, idLayer)) Then
+                
+                'If no changes have been made to the current image, the above function will return FALSE.
+                ' In this case, we can just retrieve the current layer as-is (because it's unmodified).
+                Set origDIB = New pdDIB
+                origDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+                
+            End If
+            
+            'Grab a soft link to the active layer
+            Dim curDIB As pdDIB
+            Set curDIB = PDImages.GetActiveImage.GetActiveDIB
+            
+            'Ensure DIB sizes match (and resize as necessary)
+            If (origDIB.GetDIBWidth <> curDIB.GetDIBWidth) Or (origDIB.GetDIBHeight <> curDIB.GetDIBHeight) Then
+                
+                'Resize the original DIB to match the current DIB size
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                tmpDIB.CreateBlank curDIB.GetDIBWidth, curDIB.GetDIBHeight, 32, 0, 0
+                GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, curDIB.GetDIBWidth, curDIB.GetDIBHeight, origDIB, 0, 0, origDIB.GetDIBWidth, origDIB.GetDIBHeight, 1!, GP_IM_HighQualityBilinear, dstCopyIsOkay:=True
+                Set origDIB = tmpDIB
+                
+            End If
+            
+            Dim cParams As pdSerialize
+            Set cParams = New pdSerialize
+            cParams.SetParamString lutProps
+            
+            'LUT size now comes from the user; this exists purely to cover malformed batch process requests
+            Const LUT_DEFAULT_COUNT As Long = 17
+            
+            'Build a LUT that describes all changes to the current layer (this is the longest part to process)
+            Dim cExport As pdLUT3D
+            Set cExport = New pdLUT3D
+            If cExport.BuildLUTFromTwoDIBs(origDIB, curDIB, cParams.GetLong("grid-points", LUT_DEFAULT_COUNT, True), True) Then
+                
+                Message "Saving file..."
+                ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
+                
+                'Pull copyright and description strings, if any, into standalone variables
+                Dim strCopyright As String, strDescription As String
+                strCopyright = Strings.ForceSingleLine(cParams.GetString("copyright", vbNullString))
+                strDescription = Strings.ForceSingleLine(cParams.GetString("description", vbNullString))
+                
+                'Export said LUT to desired format
+                Select Case targetLutFormat
+                    Case "cube"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, strCopyright, strDescription)
+                    Case "look"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_look(dstFilename, strCopyright, strDescription)
+                    Case "3dl"
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, strCopyright, strDescription)
+                End Select
+                
+                ProgressBars.ReleaseProgressBar
+                Message "Save complete."
+                
+            End If
+            
+            Saving.EndSaveProcess
+            
+        '/export options canceled
+        End If
+    
+    '/common dialog canceled
+    End If
+    
+    'Re-enable user input regardless of save success/fail behavior
+    Interface.EnableUserInput
+    
+End Function
+
 'If the current image only has one frame of animation, we can still save it, but the image (obviously) won't animate.
 ' Call this function to ask the user if they still want to proceed.
 'RETURNS: TRUE if the user still wants to proceed, FALSE if they do not.

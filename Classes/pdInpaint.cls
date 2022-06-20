@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Inpainting (Texture Synthesis) class
 'Copyright 2022-2022 by Tanner Helland
 'Created: 21/April/22
-'Last updated: 12/May/22
-'Last update: add support for caller-supplied sampling center point (needed if "outside-in" or "inside-out"
-'             filling order is used, and the user is *not* sampling in one or more directions)
+'Last updated: 16/June/22
+'Last update: remove a few unused variables
 '
 'Texture synthesis is an active field of study.  A great introduction to the topic is Paul Harrison's
 ' PhD thesis, "Image Texture Tools: Texture Synthesis, Texture Transfer, and Plausible Restoration",
@@ -1195,7 +1194,7 @@ Private Sub SortNeighborCoordinates()
     Dim sortList() As QSEntry
     ReDim sortList(0 To m_numNearestOffsets - 1) As QSEntry
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To m_numNearestOffsets - 1
         
         sortList(i).idxOriginal = i
@@ -1262,7 +1261,7 @@ Private Sub SortPointsRemaining()
     Dim sortList() As QSEntry
     ReDim sortList(0 To m_numPointsLeft - 1) As QSEntry
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To m_numPointsLeft - 1
         
         sortList(i).idxOriginal = i

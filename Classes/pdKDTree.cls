@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon KD-Tree for fast palette matching
 'Copyright 2018-2022 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 26/March/19
-'Last update: add a dedicated RGBA mode, for fast matching of full RGBA quads
+'Last updated: 15/June/22
+'Last update: split "fast tree construction but slower tree traversal" mode into a separate class (pdKDTreeArray)
 'Dependencies: pdKDTreeNode
 '
 'K-D trees (https://en.wikipedia.org/wiki/K-d_tree) are a data structure well-designed for sorting large collections
@@ -47,7 +47,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private m_Root As pdKDTreeNode
-Private m_BestDistance As Long
 
 'Pass an entire palette to this method; the tree will be automatically constructed accordingly.
 Friend Function BuildTree(ByRef srcPalette() As RGBQuad, ByVal numColorsToUse As Long) As Boolean
@@ -107,22 +106,25 @@ End Function
 
 'Given some source color, return the best color match from the tree
 Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
-    m_BestDistance = LONG_MAX
-    If (Not m_Root Is Nothing) Then m_Root.NearestColor srcColor, GetNearestColor, m_BestDistance
+    Dim bestDistance As Long
+    bestDistance = LONG_MAX
+    If (Not m_Root Is Nothing) Then m_Root.NearestColor srcColor, GetNearestColor, bestDistance
 End Function
 
 Friend Function GetNearestColorIncAlpha(ByRef srcColor As RGBQuad) As RGBQuad
-    m_BestDistance = LONG_MAX
-    If (Not m_Root Is Nothing) Then m_Root.NearestColorIncAlpha srcColor, GetNearestColorIncAlpha, m_BestDistance
+    Dim bestDistance As Long
+    bestDistance = LONG_MAX
+    If (Not m_Root Is Nothing) Then m_Root.NearestColorIncAlpha srcColor, GetNearestColorIncAlpha, bestDistance
 End Function
 
 'Given some source color, return an index into the original source palette of the palette entry
 ' that most closely matches the requested color.
 Friend Function GetNearestPaletteIndex(ByRef srcColor As RGBQuad) As Long
-    m_BestDistance = LONG_MAX
+    Dim bestDistance As Long
+    bestDistance = LONG_MAX
     If (Not m_Root Is Nothing) Then
         Dim tmpResult As PDPaletteCache
-        m_Root.NearestPaletteIndex srcColor, tmpResult, m_BestDistance
+        m_Root.NearestPaletteIndex srcColor, tmpResult, bestDistance
         GetNearestPaletteIndex = tmpResult.OrigIndex
     End If
 End Function
@@ -130,27 +132,11 @@ End Function
 'Given some source color, return an index into the original source palette of the palette entry
 ' that most closely matches the requested color.
 Friend Function GetNearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad) As Long
-    m_BestDistance = LONG_MAX
+    Dim bestDistance As Long
+    bestDistance = LONG_MAX
     If (Not m_Root Is Nothing) Then
         Dim tmpResult As PDPaletteCache
-        m_Root.NearestPaletteIndexIncAlpha srcColor, tmpResult, m_BestDistance
+        m_Root.NearestPaletteIndexIncAlpha srcColor, tmpResult, bestDistance
         GetNearestPaletteIndexIncAlpha = tmpResult.OrigIndex
     End If
 End Function
-
-''This alternate build strategy was created during early testing phases.  It is still valid code, but I do not require
-'' it in PD as the alternative implementation is *much* faster.  I've left it here for reference's sake.
-'Private Sub BuildTreeBinary(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVal highBound As Long)
-'
-'    If (highBound < lowBound) Then Exit Sub
-'
-'    'Add the requested node
-'    Dim curIndex As Long
-'    curIndex = lowBound + (highBound - lowBound) \ 2
-'    m_Root.InsertNode srcPalette(curIndex)
-'
-'    'Partition the high and low spaces and repeat
-'    BuildTreeBinary srcPalette, lowBound, curIndex - 1
-'    BuildTreeBinary srcPalette, curIndex + 1, highBound
-'
-'End Sub

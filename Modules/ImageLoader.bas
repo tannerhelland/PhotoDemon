@@ -728,9 +728,9 @@ End Function
 ' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
 ' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
 '
-'New as of 11 July '14 is the ability to specify a custom layer destination, for layer-relevant load operations.  If this value is NOTHING,
-' the function will automatically load the data to the relevant layer in the parent pdImage object.  If this layer is supplied, however,
-' the supplied layer reference will be used instead.
+'New as of 11 July '14 is the ability to specify a custom layer destination, for layer-relevant load operations.
+' If this value is NOTHING, the function will automatically load the data to the relevant layer in the parent pdImage object.
+' If a pdLayer object is supplied, however, it will be used instead.
 Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False, Optional ByRef customLayerDestination As pdLayer = Nothing)
     
     'Certain load functions require access to a DIB, so declare a generic one in advance

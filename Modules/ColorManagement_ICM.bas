@@ -854,164 +854,61 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
 
 End Sub
 
-'Save the current pdImage's list of edits to a standalone 3D lut file.
-Public Function SaveColorLookupToFile(ByRef srcImage As pdImage, Optional ByVal raiseDialog As Boolean, Optional ByRef exportParams As String = vbNullString) As Boolean
-    
-    'Failsafe checks
-    If (srcImage Is Nothing) Then Exit Function
-    
-    Dim dstFilename As String, cParams As pdSerialize
-    
-    If raiseDialog Then
-    
-        'Disable user input until the dialog closes
-        Interface.DisableUserInput
-        
-        'Determine an initial folder.  This is easy - just grab the last "3dlut" path from the preferences file.
-        Dim initialSaveFolder As String
-        initialSaveFolder = UserPrefs.GetLUTPath()
-        
-        'Build common dialog filter lists
-        Dim cdFilter As pdString, cdFilterExtensions As pdString
-        Set cdFilter = New pdString
-        Set cdFilterExtensions = New pdString
-        
-        cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
-        cdFilterExtensions.Append "cube|"
-        cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
-        cdFilterExtensions.Append "3dl"
-        
-        Dim cdIndex As Long
-        cdIndex = 2
-        
-        'Suggest a file name.  At present, we just reuse the current image's name.
-        dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-        If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("Color lookup")
-        dstFilename = initialSaveFolder & dstFilename
-        
-        Dim cdTitle As String
-        cdTitle = g_Language.TranslateMessage("Export color lookup")
-        
-        'Prep a common dialog interface
-        Dim saveDialog As pdOpenSaveDialog
-        Set saveDialog = New pdOpenSaveDialog
-        
-        If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
-        
-            'Update preferences
-            UserPrefs.SetLUTPath Files.FileGetPath(dstFilename)
-            
-            'Call this function again - with raiseDialog set to *false* - to initiate the actual save.
-            Set cParams = New pdSerialize
-            cParams.AddParam "export-filename", dstFilename
-            
-            Dim targetLutFormat As String
-            Select Case cdIndex
-                Case 1
-                    targetLutFormat = "cube"
-                Case 2
-                    targetLutFormat = "3dl"
-            End Select
-            
-            cParams.AddParam "export-format", targetLutFormat
-            
-            Process "Export color lookup", False, cParams.GetParamString()
-            
-        End If
-    
-    'No dialog, which means we need to generate and export a 3D lut for the current image state
-    Else
-        
-        Set cParams = New pdSerialize
-        cParams.SetParamString exportParams
-        dstFilename = cParams.GetString("export-filename")
-        
-        If (LenB(dstFilename) <> 0) Then
-            
-            'TODO!
-            Dim cExport As pdLUT3D
-            Set cExport = New pdLUT3D
-            
-        End If
-    
-    End If
-
-End Function
-
 'Save a given pdImage's associated color profile to a standalone ICC file.
-Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal raiseDialog As Boolean, Optional ByRef exportParams As String = vbNullString) As Boolean
+Public Function SaveImageProfileToFile(ByRef srcImage As pdImage) As Boolean
     
     'Failsafe checks
     If (srcImage Is Nothing) Then Exit Function
     If (LenB(srcImage.GetColorProfile_Original) = 0) Then Exit Function
     
-    Dim dstFilename As String, cParams As pdSerialize
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
     
-    If raiseDialog Then
+    'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+    Dim initialSaveFolder As String
+    initialSaveFolder = UserPrefs.GetColorProfilePath()
     
-        'Disable user input until the dialog closes
-        Interface.DisableUserInput
+    'Build a common dialog filter list
+    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Set cdFilter = New pdString
+    Set cdFilterExtensions = New pdString
+    
+    cdFilter.Append g_Language.TranslateMessage("ICC profile") & " (.icc, .icm)|*.icc,*.icm"
+    cdFilterExtensions.Append "icc"
+    
+    Dim cdIndex As Long
+    cdIndex = 1
+    
+    'Suggest a file name.  At present, we just reuse the current image's name.
+    Dim dstFilename As String
+    dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("New color profile")
+    dstFilename = initialSaveFolder & dstFilename
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export color profile")
+    
+    'Prep a common dialog interface
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
         
-        'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
-        Dim initialSaveFolder As String
-        initialSaveFolder = UserPrefs.GetColorProfilePath()
+        'Update preferences
+        UserPrefs.SetColorProfilePath Files.FileGetPath(dstFilename)
         
-        'Build a common dialog filter list
-        Dim cdFilter As pdString, cdFilterExtensions As pdString
-        Set cdFilter = New pdString
-        Set cdFilterExtensions = New pdString
+        'Pull the associated color profile into a byte array
+        Dim srcProfile As pdICCProfile
+        Set srcProfile = ColorManagement.GetProfile_ByHash(srcImage.GetColorProfile_Original)
         
-        cdFilter.Append g_Language.TranslateMessage("ICC profile") & " (.icc, .icm)|*.icc,*.icm"
-        cdFilterExtensions.Append "icc"
-        
-        Dim cdIndex As Long
-        cdIndex = 1
-        
-        'Suggest a file name.  At present, we just reuse the current image's name.
-        dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-        If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("New color profile")
-        dstFilename = initialSaveFolder & dstFilename
-        
-        Dim cdTitle As String
-        cdTitle = g_Language.TranslateMessage("Export color profile")
-        
-        'Prep a common dialog interface
-        Dim saveDialog As pdOpenSaveDialog
-        Set saveDialog = New pdOpenSaveDialog
-        
-        If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
-        
-            'Update preferences
-            UserPrefs.SetColorProfilePath Files.FileGetPath(dstFilename)
-            
-            'Call this function again - with raiseDialog set to *false* - to initiate the actual save.
-            Set cParams = New pdSerialize
-            cParams.AddParam "export-filename", dstFilename
-            Process "Export color profile", False, cParams.GetParamString()
-            
+        If (Not srcProfile Is Nothing) Then
+            Dim profBytes() As Byte, profLen As Long
+            srcProfile.GetProfileBytes profBytes, profLen
+            If Files.FileCreateFromByteArray(profBytes, dstFilename, True) Then Message "Profile exported successfully."
         End If
-    
-    'If we aren't showing a dialog, we can just dump the associated image's profile to the target file
-    Else
         
-        Set cParams = New pdSerialize
-        cParams.SetParamString exportParams
-        dstFilename = cParams.GetString("export-filename")
-        
-        If (LenB(dstFilename) <> 0) Then
-        
-            'Pull the associated color profile into a byte array
-            Dim srcProfile As pdICCProfile
-            Set srcProfile = ColorManagement.GetProfile_ByHash(srcImage.GetColorProfile_Original)
-            
-            If (Not srcProfile Is Nothing) Then
-                Dim profBytes() As Byte, profLen As Long
-                srcProfile.GetProfileBytes profBytes, profLen
-                If Files.FileCreateFromByteArray(profBytes, dstFilename, True) Then Message "Profile exported successfully."
-            End If
-        
-        End If
-    
     End If
-
+    
+    'Re-enable user input
+    Interface.EnableUserInput
+    
 End Function

@@ -60,6 +60,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Detailed debug reports can be useful for profiling and/or troubleshooting
+Private Const DEBUG_VERBOSE As Boolean = True
+
 'When serializing the LUT array (which is just a large array of floats) to/from a byte stream,
 ' we can shuffle the floats for greatly improved compression performance.  (Shuffling takes
 ' the first byte of every float and places them together, then all second bytes, etc; this is
@@ -104,6 +107,17 @@ Private m_RangeR As Single, m_RangeG As Single, m_RangeB As Single
 
 'Some luts are loaded across multiple stages.  State-tracking is important to prevent errors.
 Private m_LoadSuccessful As Boolean
+
+'When creating our own LUTs from before-and-after images, we have to perform heuristics to try and
+' "guess" at what the user did to the image.
+Private Type PD_LUTConstructor
+    origColor As RGBQuad
+    newColor As RGBQuad
+    fxColor As RGBQuad
+    finalColor As RGBQuad
+    posInImage As PointLong
+    origColorDistance As Long
+End Type
 
 'Apply the loaded lUT to an arbitrary DIB
 Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB, Optional ByVal raiseProgressEvents As Boolean = False)
@@ -180,6 +194,338 @@ FilterCleanup:
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
 End Sub
+
+Public Function BuildLUTFromTwoDIBs(ByRef baseDIB As pdDIB, ByRef modifiedDIB As pdDIB, ByVal numSamplingPoints As Long, Optional ByVal showProgressBar As Boolean = False) As Boolean
+    
+    Const FUNC_NAME As String = "BuildLUTFromTwoDIBs"
+    BuildLUTFromTwoDIBs = True
+    
+    'Validate sampling points
+    If (numSamplingPoints < 0) Or (numSamplingPoints > 64) Then
+        InternalProblem FUNC_NAME, "bad sampling points"
+        BuildLUTFromTwoDIBs = False
+        Exit Function
+    End If
+    
+    If showProgressBar Then
+        ProgressBars.SetProgBarMax 10
+        ProgressBars.SetProgBarVal 0
+        Message "Analyzing image..."
+    End If
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Initializing LUT creator..."
+    
+    'Initialize the module-level LUT to the correct grid size, and fill it with identity values
+    m_LutSize = numSamplingPoints
+    m_LutLoopSize = numSamplingPoints - 1
+    ReDim m_lut3D(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As FloatColor
+    
+    Dim r As Long, g As Long, b As Long
+    Dim newR As Single, newG As Single, newB As Single
+    
+    For r = 0 To m_LutLoopSize
+        newR = r / m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+        newG = g / m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        newB = b / m_LutLoopSize
+        With m_lut3D(r, g, b)
+            .rFloat = newR
+            .gFloat = newG
+            .bFloat = newB
+        End With
+    Next b
+    Next g
+    Next r
+    
+    If showProgressBar Then ProgressBars.SetProgBarVal 1
+    
+    'We now have an identity LUT at the correct size, and it has been initialized to an identity transform.
+    
+    'Our next goal is to iterate the passed images, and for each pixel, find its nearest point in the LUT.
+    ' This will produce an array of "best-matched" points, from which we can roughly construct a new LUT.
+    
+    'Start by creating a LUT constructor array; this will track "best-match" points, colors, and positions
+    ' from the source image.
+    Dim curAnalysis() As PD_LUTConstructor
+    ReDim curAnalysis(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As PD_LUTConstructor
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With curAnalysis(r, g, b)
+            .origColorDistance = LONG_MAX
+            .origColor.Red = Int((r / m_LutLoopSize) * 255 + 0.5)
+            .origColor.Green = Int((g / m_LutLoopSize) * 255 + 0.5)
+            .origColor.Blue = Int((b / m_LutLoopSize) * 255 + 0.5)
+        End With
+    Next b
+    Next g
+    Next r
+    
+    Dim curTime As Currency
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "LUT creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    If showProgressBar Then ProgressBars.SetProgBarVal 2
+    
+    'New approach!  Scan the base image and build a list of colors from it - and importantly, store each color alongside
+    ' its position in the image.
+    Dim cHash As pdHashCoord
+    Set cHash = New pdHashCoord
+    
+    'Scan the *base* image and for each color, convert it to its nearest LUT point, compare its distance
+    ' to the current best-match and update accordingly.
+    Dim pxBase() As Long, pxSA As SafeArray1D
+    
+    Dim x As Long, y As Long, xMax As Long, yMax As Long
+    xMax = baseDIB.GetDIBWidth - 1
+    yMax = baseDIB.GetDIBHeight - 1
+    
+    Dim tmpPoint As PointLong, tmpColor As RGBQuad, tmpLong As Long
+    
+    For y = 0 To yMax
+        tmpPoint.y = y
+        baseDIB.WrapLongArrayAroundScanline pxBase, pxSA, y
+    For x = 0 To xMax
+        
+        tmpPoint.x = x
+        
+        'Force alpha to 255; LUTs don't consider transparency
+        tmpLong = pxBase(x) Or &HFF000000
+        
+        'Add the color from this location to the hash table.  The hash table will automatically remove duplicates,
+        ' and it will store coordinates alongside colors, giving us a 1:1 mapping between the two.
+        cHash.AddColor tmpLong, tmpPoint
+        
+    Next x
+    Next y
+    
+    baseDIB.UnwrapLongArrayFromDIB pxBase
+    If showProgressBar Then ProgressBars.SetProgBarVal 3
+    
+    'With a hash-table assembled, we now need to build a KD-tree of the final color list.  We can traverse this tree
+    ' to find best-match colors for each LUT entry.
+    
+    'Start by pulling a list of unique colors from the hash table.
+    Dim listOfColors() As RGBQuad, numOfColors As Long
+    numOfColors = cHash.GetUniqueColors(listOfColors)
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Hash table (and final color list retrieval) took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        PDDebug.LogAction "(Hash table has " & numOfColors & " colors.)"
+        VBHacks.GetHighResTime curTime
+    End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 4
+    
+    'Add each color from the list to a KD-tree; we will momentarily use this tree to retrieve best-fit colors
+    Dim cTree As pdKDTreeArray
+    Set cTree = New pdKDTreeArray
+    cTree.BuildTree listOfColors, 0, numOfColors - 1
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "KD-tree construction took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    
+    If showProgressBar Then
+        ProgressBars.SetProgBarVal 5
+        Message "Building color lookup..."
+    End If
+    
+    'With a KD-tree assembled and a corresponding color-to-coordinate table, we can finally start matching LUT colors.
+    
+    'The way we're gonna do this is iterate through the LUT, and for each point, find the closest matching color
+    ' in the original image (using the KD-tree).  From these "best-fit" colors, we'll construct a "best-fit" LUT
+    ' approximation that describes the changes from the base image to the modified image across the full spectrum
+    ' covered by this photo.
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        'Retrieve the matching color at this point, force full opacity, then store the result
+        tmpColor = cTree.GetNearestColor(curAnalysis(r, g, b).origColor)
+        tmpColor.Alpha = 255
+        curAnalysis(r, g, b).newColor = tmpColor
+        
+    Next b
+    Next g
+    Next r
+    
+    'We are done with the tree class; kill it to free resources
+    Set cTree = Nothing
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "KD-tree matching took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 6
+    
+    'We now have a "best-match" color for every LUT entry *using only colors that existed in the original,
+    ' unmodified target image*.
+    '
+    'That last point is important because no (real-world) image contains colors from the entire color spectrum.
+    ' Because of this, some regions of our LUT will have been matched extremely well, while others will be
+    ' matched very poorly.  That's OK - we'll deal with it as best we can in a moment.
+    '
+    'For now, however, we need to retrieve the *modified* version of each matched *original* color in the image.
+    ' We can do this using our original hash table (which cleverly stored color and coordinate data alongside
+    ' each other).  This will give us a target to use for interpolating new color values on colors that were
+    ' matched poorly.
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        With curAnalysis(r, g, b)
+            GetMem4 VarPtr(.newColor), tmpLong
+            If cHash.GetCoordForColor(tmpLong, tmpPoint) Then
+                .posInImage = tmpPoint
+            Else
+                'Never expected; colors must always match!
+                If DEBUG_VERBOSE Then InternalProblem FUNC_NAME, "color doesn't exist in hash table"
+            End If
+        End With
+    
+    Next b
+    Next g
+    Next r
+    
+    'We are done with the hash table; kill it to free up resources
+    Set cHash = Nothing
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Hash table coordinate retrieval took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 7
+    
+    Dim pxFinal() As RGBQuad, pxSA2D As SafeArray2D
+    modifiedDIB.WrapRGBQuadArrayAroundDIB pxFinal, pxSA2D
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With curAnalysis(r, g, b)
+            .fxColor = pxFinal(.posInImage.x, .posInImage.y)
+        End With
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Modified color retrievals took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 8
+    
+    'Free unsafe array wrapper and note that we no longer need to touch either DIB
+    modifiedDIB.UnwrapRGBQuadArrayFromDIB pxFinal
+    
+    'Every entry in the LUT now has a best-match original color, the corresponding "final" color (with all
+    ' adjustments+effects applied), and a coordinate where said color appears in the image (which probably
+    ' isn't useful at this point so maybe we don't need to store it at all?  TODO!)
+    
+    'We now need to scale those best-match colors to reflect the difference between the color the LUT represents
+    ' (which is some fixed-interval value like [0, 0, 0], [0, 0, 15], [0, 0, 31] etc) and whatever the
+    ' best-match color for that LUT value is (like maybe [0, 0, 31] got matched to [5, 12, 16]).  We do this by
+    ' calculating the difference between each LUT value and its best-matched color, then applying that same
+    ' scale to the *new* color - this is just cheap 1D interpolation on each axis and is not necessarily ideal,
+    ' but it's very fast and cheap to implement.  (We could always do a second pass over the data, and for
+    ' LUT entries that were poorly matched - perhaps outside some threshold - we could average them against
+    ' their neighbors to smooth out the LUT mesh - exploring this is TODO.)
+    '
+    'Also TODO: vectors are almost certainly a smarter approach here - calculate a 3D vector from the source
+    ' color to the final color, then scale that vector according to its position in the overall 3D cube when
+    ' applying it to the LUT color.  Researching this alternative implementation is TODO.
+    Dim fxScale As Single, tmpFloat As Single
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        
+        With curAnalysis(r, g, b)
+            
+            'Remap the effect color linearly.  (We could presumably do more intense/accurate interpolation,
+            ' but since this whole approach is hackish I'm not worried about linear quality implications.)
+            If (.newColor.Blue > 0) Then
+                fxScale = (.fxColor.Blue / .newColor.Blue)
+            Else
+                fxScale = 0!
+            End If
+            
+            'Scale the "idealized" LUT value at this point
+            tmpFloat = m_lut3D(r, g, b).bFloat * fxScale
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).bFloat = tmpFloat
+            
+            If (.newColor.Green > 0) Then
+                fxScale = (.fxColor.Green / .newColor.Green)
+            Else
+                fxScale = 0!
+            End If
+            
+            tmpFloat = m_lut3D(r, g, b).gFloat * fxScale
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).gFloat = tmpFloat
+            
+            If (.newColor.Red > 0) Then
+                fxScale = (.fxColor.Red / .newColor.Red)
+            Else
+                fxScale = 0!
+            End If
+            
+            tmpFloat = m_lut3D(r, g, b).rFloat * fxScale
+            If (tmpFloat > 1!) Then tmpFloat = 1!
+            m_lut3D(r, g, b).rFloat = tmpFloat
+            
+            'With a baseline color generated, we now want to cover some special cases.
+            
+            'First, look for grayscale conversions.  We can detect this if the R/G/B values of the target color
+            ' are all identical.  (Various corrections either do not apply to grayscale pixels - e.g. "vibrance" -
+            ' or they forcibly convert certain tones to grayscale - e.g. "selective colorize".  We can cover these
+            ' cases nicely with a custom check.)
+            If (.fxColor.Red = .fxColor.Green) And (.fxColor.Green = .fxColor.Blue) Then
+                
+                'Average the new colors we calculated
+                tmpFloat = (m_lut3D(r, g, b).rFloat + m_lut3D(r, g, b).gFloat + m_lut3D(r, g, b).bFloat) * 0.333333333333333
+                m_lut3D(r, g, b).rFloat = tmpFloat
+                m_lut3D(r, g, b).gFloat = tmpFloat
+                m_lut3D(r, g, b).bFloat = tmpFloat
+                
+            End If
+            
+            'Next, look for inversion.  This is a challenging one to detect via linear interpolation,
+            ' but it's easily detected using the source colors.
+            If (.fxColor.Red = 255 - .newColor.Red) And (.fxColor.Green = 255 - .newColor.Green) And (.fxColor.Blue = 255 - .newColor.Blue) Then
+                
+                'Invert this color accordingly
+                m_lut3D(r, g, b).rFloat = (m_LutLoopSize - r) / m_LutLoopSize
+                m_lut3D(r, g, b).gFloat = (m_LutLoopSize - g) / m_LutLoopSize
+                m_lut3D(r, g, b).bFloat = (m_LutLoopSize - b) / m_LutLoopSize
+                
+            End If
+            
+        End With
+        
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Final scaling and interpolation took " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+    End If
+    If showProgressBar Then ProgressBars.SetProgBarVal 9
+    
+    'For now, let's just return TRUE so I can work on export features.
+    BuildLUTFromTwoDIBs = True
+    
+End Function
 
 'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes are available to the user.
 ' Note that this function returns TRUE if the user selects one or more files, FALSE if they cancel.
@@ -1160,6 +1506,284 @@ Friend Sub ResizeLUT(ByVal newLUTSize As Long)
     Next r
     
 End Sub
+
+'Export the current LUT to a 3dl file
+Friend Function SaveLUTToFile_3dl(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_3dl"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_3dl = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically 3DL files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    '3DL files support comments, and convention has you stick the app, copyright, and description
+    ' on the first three lines of the file as comments, e.g. this from an actual 3DL file:
+    '#Created by: Adobe Photoshop Export Color Lookup Plugin
+    '#Copyright: (C) Copyright 1234 [various names here]
+    '#Description: [put whatever you want here]
+    cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: (c) " & Year(Now) & " " & copyrightText
+    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "#Description: " & textDescription
+    
+    'After the above lines comes a fixed list of sampling intervals.  3DL files use 10-bit color defs,
+    ' so these are values on the range [0, 1023].  The default number of discrete values is 17 (per the spec).
+    Dim i As Long
+    For i = 0 To m_LutLoopSize
+        cTextFile.Append Trim$(Str$(Int((i / m_LutLoopSize) * 1023 + 0.5)))
+        If (i < m_LutLoopSize) Then cTextFile.Append " "
+    Next i
+    
+    cTextFile.AppendLineBreakLf
+    
+    'We now append all colors in RGB order, with the B channel incrementing fastest.
+    ' (For reasons unknown to me, values are written on the range [0, 4095] despite 10-bit
+    ' color being used.  I do not know the reason for this and the 3DL spec doesn't explain it -
+    ' but this is how all the 3DL files that ship with Photoshop work, so we do it too.
+    Dim r As Long, g As Long, b As Long
+    
+    For r = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For b = 0 To m_LutLoopSize
+        With m_lut3D(r, g, b)
+            cTextFile.AppendLineLf Trim$(Str$(Int(.rFloat * 4095 + 0.5))) & Str$(Int(.gFloat * 4095 + 0.5)) & Str$(Int(.bFloat * 4095 + 0.5))
+        End With
+    Next b
+    Next g
+    Next r
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Constructing final 3DL text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    'All that's left is to write the table out to file!
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Handing final 3DL text off to Files module for export to " & dstFile
+    SaveLUTToFile_3dl = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_3dl = False
+    
+End Function
+
+'Export the current LUT to a cube file
+Friend Function SaveLUTToFile_Cube(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_Cube"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_Cube = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically cube files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    'Cube files support comments, and convention has you stick the app and copyright, and description
+    ' on the first two lines of the file as comments, e.g. this from an actual cube file:
+    '#Created by: Adobe Photoshop Export Color Lookup Plugin
+    '#Copyright: (C) Copyright 1234 [various names here]
+    cTextFile.AppendLineLf "#Created by: " & Updates.GetPhotoDemonNameAndVersion()
+    If (LenB(copyrightText) <> 0) Then cTextFile.AppendLineLf "#Copyright: (c) " & Year(Now) & " " & copyrightText
+    
+    'LUT title is its own block, prefixed by a keyword (you'll see this pattern elsewhere in the file)
+    If (LenB(textDescription) <> 0) Then cTextFile.AppendLineLf "TITLE """ & textDescription & """"
+    
+    'Tradition (?) dictates an extra blank line between some segments
+    cTextFile.AppendLineBreakLf
+    
+    'LUT size gets its own line
+    cTextFile.AppendLineLf "#LUT size"
+    cTextFile.AppendLineLf "LUT_3D_SIZE " & Trim$(Str$(m_LutSize))
+    cTextFile.AppendLineBreakLf
+    
+    'Domain needs to be explicitly written, per-channel
+    cTextFile.AppendLineLf "#data domain"
+    cTextFile.AppendLineLf "DOMAIN_MIN 0.0 0.0 0.0"
+    cTextFile.AppendLineLf "DOMAIN_MAX 1.0 1.0 1.0"
+    cTextFile.AppendLineBreakLf
+    
+    'We now append all colors in RGB order, with the R channel incrementing fastest.
+    ' Colors are written as floating-point values written out to 6 decimal points.
+    cTextFile.AppendLineLf "#LUT data points"
+    
+    Dim r As Long, g As Long, b As Long
+    
+    For b = 0 To m_LutLoopSize
+    For g = 0 To m_LutLoopSize
+    For r = 0 To m_LutLoopSize
+        With m_lut3D(r, g, b)
+            cTextFile.AppendLineLf Format$(.rFloat, "0.000000") & " " & Format$(.gFloat, "0.000000") & " " & Format$(.bFloat, "0.000000")
+        End With
+    Next r
+    Next g
+    Next b
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Constructing final cube text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    'All that's left is to write the table out to file!
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Handing final cube text off to Files module for export to " & dstFile
+    SaveLUTToFile_Cube = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_Cube = False
+    
+End Function
+
+'Export the current LUT to a look file
+Friend Function SaveLUTToFile_look(ByRef dstFile As String, Optional ByRef copyrightText As String = vbNullString, Optional ByRef textDescription As String = vbNullString) As Boolean
+    
+    Const FUNC_NAME As String = "SaveLUTToFile_look"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    'Failsafe checks for valid inputs and/or class state
+    Dim cantSave As Boolean: cantSave = False
+    
+    If (LenB(dstFile) = 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "invalid function parameters"
+    End If
+    
+    If (m_LutSize <= 0) Then
+        cantSave = True
+        InternalProblem FUNC_NAME, "no LUT"
+    End If
+    
+    If cantSave Then
+        SaveLUTToFile_look = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD should enforce safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim startTime As Currency
+    If DEBUG_VERBOSE Then VBHacks.GetHighResTime startTime
+    
+    'To improve performance, write everything to a pdString instance.  Note that we'll be using
+    ' Unix-style Lf line terminators (*not* CrLf) for compatibility reasons.  (Technically look files
+    ' should work either way, but nearly all the ones I see "in the wild" have Unix line-endings.)
+    Dim cTextFile As pdString
+    Set cTextFile = New pdString
+    
+    'look files are basically XML files with the LUT itself embedded as hex.  Easy enough!
+    ' (Note that look files coming from Adobe have a bunch of extra XML tags that we can't replicate,
+    ' so we *only* write the LUT and a few key details.)
+    cTextFile.AppendLineLf "<?xml version=""1.0"" ?>"
+    cTextFile.AppendLineLf "<look>"
+    
+    'Try to mimic compatibility with Adobe where we can
+    cTextFile.AppendLineLf "  <shaders>"
+    cTextFile.AppendLineLf "  </shaders>"
+    
+    'Next comes the LUT block.  Start with an opening tag and size descriptor
+    cTextFile.AppendLineLf Space$(2) & "<LUT>"
+    cTextFile.AppendLineLf Space$(4) & "<size>""" & Trim$(Str$(m_LutSize)) & """</size>"
+    cTextFile.AppendLineLf Space$(6) & "<data>"""
+    
+    'We now need to pull the full LUT matrix, as-is, into a hex string
+    Dim lutHex As String
+    If Not Strings.BytesToHex_FromPtr(VarPtr(m_lut3D(0, 0, 0)), (m_LutSize ^ 3) * 12, lutHex, True, True) Then
+        InternalProblem FUNC_NAME, "bad hex conversion"
+        SaveLUTToFile_look = False
+        Exit Function
+    End If
+    
+    Dim hexPrefix As String
+    hexPrefix = Space$(6)
+    
+    'We now want to break up the hex string into 64-character chunks, and write each 64-char chunk as its own line
+    Dim i As Long
+    For i = 1 To Len(lutHex) Step 64
+        
+        Dim lenThisChunk As Long
+        lenThisChunk = (Len(lutHex) - i) + 1
+        If (lenThisChunk > 64) Then lenThisChunk = 64
+        
+        cTextFile.Append hexPrefix
+        
+        If (i < Len(lutHex) - 64) Then
+            cTextFile.AppendLineLf Mid$(lutHex, i, lenThisChunk)
+        Else
+            cTextFile.AppendLineLf Mid$(lutHex, i, lenThisChunk) & """"
+        End If
+        
+    Next i
+    
+    'Close all open tags, then write out the data!
+    cTextFile.AppendLineLf Space$(4) & "</data>"
+    cTextFile.AppendLineLf Space$(2) & "</LUT>"
+    cTextFile.AppendLineLf "</look>"
+    
+    If DEBUG_VERBOSE Then
+        PDDebug.LogAction "Constructing final look text took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Handing final look text off to Files module for export to " & dstFile
+    End If
+    
+    SaveLUTToFile_look = Files.FileSaveAsText(cTextFile.ToString, dstFile, True, False)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalProblem FUNC_NAME, "VB error #" & Err.Number & ": " & Err.Description
+    SaveLUTToFile_look = False
+    
+End Function
 
 'Serialize the current LUT's contents to a byte array.  Returns the size of the stored data, UNCOMPRESSED.
 ' (If you choose to compress the data, you ALSO need to retrieve and store the dstUncompressedSize value,

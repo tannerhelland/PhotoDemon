@@ -429,7 +429,11 @@ Private Function Launch_ByName_MenuImage(ByRef srcMenuName As String, Optional B
             Process "Animation options", True
         
         Case "image_compare"
-            Process "Compare images", True
+            Case "image_createlut"
+                Process "Create color lookup", True
+            
+            Case "image_similarity"
+                Process "Compare similarity", True
         
         Case "image_metadata"
             Case "image_editmetadata"

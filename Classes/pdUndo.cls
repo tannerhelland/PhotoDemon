@@ -1076,6 +1076,38 @@ Friend Sub ClearUndos()
     
 End Sub
 
+'Retrieve a copy of an original, unmodified layer using PhotoDemon's Undo engine.  This is currently used by
+' the "Export > Color lookup" feature (which compares current image state to original image state, then tries to
+' generate a matching 3D LUT defining any changes that have taken place).
+'
+'This function will return FALSE if no layer-specific changes have been made, and thus retrieval is not relevant.
+Friend Function GetOriginalLayer_FromUndo(ByRef dstDIB As pdDIB, ByVal targetLayerID As Long) As Boolean
+    
+    GetOriginalLayer_FromUndo = False
+    
+    'Ensure the image has changed
+    If (m_UndoNum <> 0) Then
+            
+        GetOriginalLayer_FromUndo = True
+        
+        'We know the original Undo file is of type UNDO_EVERYTHING (because a full copy of the base image
+        ' was saved at the head of the Undo chain).  Because of this, we don't need to invoke the full
+        ' Undo parser - instead, just directly call the retrieval function we know we need.
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        GetOriginalLayer_FromUndo = ImageImporter.LoadPDI_SingleLayer(GenerateUndoFilename(0), tmpLayer, targetLayerID, False)
+        
+        'On success, tmpLayer will now contain a copy of the relevant DIB (inside .GetLayerDIB).
+        ' Copy it into the destination DIB before exiting.
+        If GetOriginalLayer_FromUndo Then
+            Set dstDIB = tmpLayer.GetLayerDIB
+            Set tmpLayer = Nothing
+        End If
+        
+    End If
+    
+End Function
+
 'Return the tool associated with the current Undo state
 Friend Function GetUndoTool() As Long
     If (m_UndoNum > 0) Then GetUndoTool = m_UndoStack(m_UndoNum - 1).srcProcCall.pcTool

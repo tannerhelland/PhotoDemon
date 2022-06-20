@@ -325,6 +325,23 @@ Public Function BytesToHex(ByRef srcArray() As Byte, ByRef dstHex As String, Opt
     
 End Function
 
+'Convert data from some arbitrary pointer into a human-readable hex string, using standard Windows libraries.
+' Returns TRUE if successful; FALSE otherwise.
+Public Function BytesToHex_FromPtr(ByVal srcPtr As Long, ByVal srcLen As Long, ByRef dstHex As String, Optional ByVal convertUpperCase As Boolean = True, Optional ByVal removeSpaces As Boolean = True) As Boolean
+    
+    BytesToHex_FromPtr = False
+    
+    'Retrieve the necessary output buffer size.
+    Dim bufferSize As Long
+    If (CryptBinaryToString(srcPtr, srcLen, CRYPT_STRING_HEXASCII Or CRYPT_STRING_NOCRLF, 0&, bufferSize) <> 0) Then
+        dstHex = String$(bufferSize - 1, 0)
+        BytesToHex_FromPtr = (CryptBinaryToString(srcPtr, srcLen, CRYPT_STRING_HEXASCII Or CRYPT_STRING_NOCRLF, StrPtr(dstHex), bufferSize) <> 0)
+        If removeSpaces Then dstHex = Replace$(dstHex, " ", vbNullString)
+        If convertUpperCase Then dstHex = UCase$(dstHex)
+    End If
+    
+End Function
+
 'XML escaping is easier than HTML escaping, as only five chars must be handled ("'<>&).  While these five
 ' chars don't *always* need to be escaped (and in fact, they specifically shouldn't be escaped in comments),
 ' this function *always* escapes the chars, if found.  For a more comprehensive solution, use MSXML.
@@ -336,6 +353,13 @@ Public Function EscapeXMLString(ByRef srcString As String) As String
     If (InStr(1, srcString, "<", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "<", "&lt;")
     If (InStr(1, srcString, ">", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, ">", "&gt;")
     If (InStr(1, srcString, "&", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "&", "&amp;")
+End Function
+
+'Sometimes we need to write strings in places where line-breaks are unacceptable; use this function to help
+Public Function ForceSingleLine(ByRef srcString As String) As String
+    ForceSingleLine = srcString
+    If (InStr(1, ForceSingleLine, vbCr, vbBinaryCompare) <> 0) Then ForceSingleLine = Replace$(ForceSingleLine, vbCr, vbNullString)
+    If (InStr(1, ForceSingleLine, vbLf, vbBinaryCompare) <> 0) Then ForceSingleLine = Replace$(ForceSingleLine, vbLf, vbNullString)
 End Function
 
 'Given a source string, parse it into a list of discrete words and return said list.
@@ -455,12 +479,12 @@ End Function
 '
 'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
 ' StringFromUTF16_FixedLen() function, below.
-Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
+Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal fixedMaxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
     
     'Check string length
     Dim strLength As Long
     If useMaxLengthAsStrLength Then
-        strLength = maxLength
+        strLength = fixedMaxLength
     Else
         If srcStringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
     End If
@@ -472,7 +496,7 @@ Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcSt
         
         'Make sure the string's length is valid.
         Dim maxAllowedLength As Long
-        If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
+        If (fixedMaxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = fixedMaxLength
         If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
         
         'Create the target string and copy the bytes over

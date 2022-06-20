@@ -712,6 +712,19 @@ Public Function PromptExportAnimatedWebP(ByRef srcImage As pdImage, ByRef dstFor
     
 End Function
 
+Public Function PromptExportLUT(ByRef srcImage As pdImage, ByRef dstFormatParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportLUT
+    dialog_ExportLUT.ShowDialog srcImage
+    
+    PromptExportLUT = dialog_ExportLUT.GetDialogResult
+    dstFormatParams = dialog_ExportLUT.GetFormatParams
+    
+    Unload dialog_ExportLUT
+    Set dialog_ExportLUT = Nothing
+    
+End Function
+
 Public Function PromptImportSVG(ByVal hResvgTree As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
     
     Load dialog_SVGImport
