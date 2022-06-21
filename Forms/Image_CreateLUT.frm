@@ -292,16 +292,35 @@ Public Sub CreateDifferenceLUT(ByRef listOfParameters As String)
         Dim strCopyright As String
         strCopyright = "freely waived; this file is released into the public domain under the Unlicense (https://unlicense.org/)"
         
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+        ' the original file remains untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFilename) Then
+            tmpFilename = dstFilename & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Else
+            tmpFilename = dstFilename
+        End If
+        
         'Export said LUT to desired format
         Dim saveOK As Boolean
         Select Case dstLutFormat
             Case "cube"
-                saveOK = cExport.SaveLUTToFile_Cube(dstFilename, strCopyright, dstDescription)
+                saveOK = cExport.SaveLUTToFile_Cube(tmpFilename, strCopyright, dstDescription)
             Case "look"
-                saveOK = cExport.SaveLUTToFile_look(dstFilename, strCopyright, dstDescription)
+                saveOK = cExport.SaveLUTToFile_look(tmpFilename, strCopyright, dstDescription)
             Case "3dl"
-                saveOK = cExport.SaveLUTToFile_3dl(dstFilename, strCopyright, dstDescription)
+                saveOK = cExport.SaveLUTToFile_3dl(tmpFilename, strCopyright, dstDescription)
         End Select
+        
+        'If the original file already existed, attempt to replace it now
+        If saveOK And Strings.StringsNotEqual(dstFilename, tmpFilename) Then
+            saveOK = (Files.FileReplace(dstFilename, tmpFilename) = FPR_SUCCESS)
+            If (Not saveOK) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+        End If
         
         'If the user did *not* save the LUT into PD's LUT folder, we likely want to add it to PD's Color lookup tool
         If cParams.GetBool("add-to-pd", True, True) And saveOK Then

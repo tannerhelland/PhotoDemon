@@ -1412,6 +1412,14 @@ Public Sub RotatePointAroundPoint(ByVal rotateX As Single, ByVal rotateY As Sing
     
 End Sub
 
+'Simple helper if you don't want to manually initialize a pdRandomize instance; *do not use* in perf-sensitive code
+Public Function GetCompletelyRandomInt() As Long
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
+    GetCompletelyRandomInt = cRandom.GetRandomInt_WH()
+End Function
+
 'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed
 ' to encompass the entire original rect.  (Said another way, the modified rect will *never* be smaller
 ' than the original rect.)

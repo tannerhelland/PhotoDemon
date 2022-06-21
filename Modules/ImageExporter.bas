@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/February/22
-'Last update: add QOI encoder
+'Last updated: 21/June/22
+'Last update: unify debug text across the codebase
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.
 '
@@ -1160,10 +1160,7 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1182,7 +1179,7 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         If (Not ExportICO) Then
             Files.FileDelete tmpFilename
-            PDDebug.LogAction "WARNING!  ImageExporter could not overwrite ICO file; original file is likely open elsewhere."
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
         End If
         
     End If
@@ -1214,10 +1211,7 @@ Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1234,7 +1228,7 @@ Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             If (Not ExportORA) Then
                 Files.FileDelete tmpFilename
-                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite OpenRaster file; original file is likely open elsewhere."
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
             End If
             
         End If
@@ -1330,10 +1324,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     ' the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1353,7 +1344,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
         
         If (Not ExportPNG_Animated) Then
             Files.FileDelete tmpFilename
-            PDDebug.LogAction "WARNING!  ImageExporter could not overwrite APNG file; original file is likely open elsewhere."
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
         End If
         
     End If
@@ -1545,10 +1536,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1565,7 +1553,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             If (Not ExportPSD) Then
                 Files.FileDelete tmpFilename
-                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSD file; original file is likely open elsewhere."
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
             End If
             
         End If
@@ -1636,10 +1624,7 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1656,7 +1641,7 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 
             If (Not ExportPSP) Then
                 Files.FileDelete tmpFilename
-                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSP file; original file is likely open elsewhere."
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
             End If
 
         End If
@@ -1692,10 +1677,7 @@ Public Function ExportQOI(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -1712,7 +1694,7 @@ Public Function ExportQOI(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportQOI = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
             If (Not ExportQOI) Then
                 Files.FileDeleteIfExists tmpFilename
-                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite QOI file; original file is likely open elsewhere."
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
             End If
         End If
         
@@ -2211,10 +2193,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' mid-save, the original file is left untouched).
         Dim tmpFilename As String
         If Files.FileExists(dstFile) Then
-            Dim cRandom As pdRandomize
-            Set cRandom = New pdRandomize
-            cRandom.SetSeed_AutomaticAndRandom
-            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
         Else
             tmpFilename = dstFile
         End If
@@ -2234,7 +2213,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 
                 If (Not ExportWebP) Then
                     Files.FileDelete tmpFilename
-                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
                 End If
                 
             End If
@@ -2336,10 +2315,7 @@ Public Function ExportWebP_Animated(ByRef srcPDImage As pdImage, ByVal dstFile A
         ' mid-save, the original file is left untouched).
         Dim tmpFilename As String
         If Files.FileExists(dstFile) Then
-            Dim cRandom As pdRandomize
-            Set cRandom = New pdRandomize
-            cRandom.SetSeed_AutomaticAndRandom
-            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
         Else
             tmpFilename = dstFile
         End If
@@ -2357,7 +2333,7 @@ Public Function ExportWebP_Animated(ByRef srcPDImage As pdImage, ByVal dstFile A
                 ExportWebP_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
                 If (Not ExportWebP_Animated) Then
                     Files.FileDelete tmpFilename
-                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite WebP file; original file is likely open elsewhere."
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
                 End If
             End If
         

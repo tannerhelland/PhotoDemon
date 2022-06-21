@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/February/22
-'Last update: add QOI export
+'Last updated: 21/June/22
+'Last update: add safe saving to color lookup export
 '
 'This module handles high-level image export duties.  Low-level export functions
 ' are generally located in the ImageExport module; see there for per-format details.
@@ -1083,15 +1083,34 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
                 strCopyright = Strings.ForceSingleLine(cParams.GetString("copyright", vbNullString))
                 strDescription = Strings.ForceSingleLine(cParams.GetString("description", vbNullString))
                 
+                'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+                ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+                ' the original file remains untouched).
+                Dim tmpFilename As String
+                If Files.FileExists(dstFilename) Then
+                    tmpFilename = dstFilename & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                Else
+                    tmpFilename = dstFilename
+                End If
+                
                 'Export said LUT to desired format
                 Select Case targetLutFormat
                     Case "cube"
-                        SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(dstFilename, strCopyright, strDescription)
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_Cube(tmpFilename, strCopyright, strDescription)
                     Case "look"
-                        SaveColorLookupToFile = cExport.SaveLUTToFile_look(dstFilename, strCopyright, strDescription)
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_look(tmpFilename, strCopyright, strDescription)
                     Case "3dl"
-                        SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(dstFilename, strCopyright, strDescription)
+                        SaveColorLookupToFile = cExport.SaveLUTToFile_3dl(tmpFilename, strCopyright, strDescription)
                 End Select
+                
+                'If the original file already existed, attempt to replace it now
+                If SaveColorLookupToFile And Strings.StringsNotEqual(dstFilename, tmpFilename) Then
+                    SaveColorLookupToFile = (Files.FileReplace(dstFilename, tmpFilename) = FPR_SUCCESS)
+                    If (Not SaveColorLookupToFile) Then
+                        Files.FileDelete tmpFilename
+                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                    End If
+                End If
                 
                 ProgressBars.ReleaseProgressBar
                 Message "Save complete."

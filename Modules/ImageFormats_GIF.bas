@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats_GIF"
 'Additional support functions for GIF support
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/October/21
-'Last update: migrate (lengthy) functions to pdGIF; this ensures better resource release after export
+'Last updated: 21/June/22
+'Last update: unify debug text across the codebase
 'Dependencies: pdGIF (class), ImageFormats_GIF_LZW (module)
 '
 'Most image exporters exist in the ImageExporter module.  GIF is a weird exception because animated GIFs
@@ -44,10 +44,7 @@ Public Function ExportGIF_LL(ByRef srcPDImage As pdImage, ByVal dstFile As Strin
     ' if an error occurs mid-save, the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -73,7 +70,7 @@ Public Function ExportGIF_LL(ByRef srcPDImage As pdImage, ByVal dstFile As Strin
                 
                 If (Not ExportGIF_LL) Then
                     Files.FileDelete tmpFilename
-                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite GIF file; original file is likely open elsewhere."
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
                 End If
             
             'Encode is already done!
@@ -129,10 +126,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' if an error occurs mid-save, the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        Dim cRandom As pdRandomize
-        Set cRandom = New pdRandomize
-        cRandom.SetSeed_AutomaticAndRandom
-        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
     Else
         tmpFilename = dstFile
     End If
@@ -158,7 +152,7 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
                 
                 If (Not ExportGIF_Animated_LL) Then
                     Files.FileDelete tmpFilename
-                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite GIF file; original file is likely open elsewhere."
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
                 End If
             
             'Encode is already done!
