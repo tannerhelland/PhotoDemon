@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Resource Manager
 'Copyright 2016-2022 by Tanner Helland
 'Created: 13/December/16
-'Last updated: 03/October/19
-'Last update: switch to new pdPackage format for performance and memory gains
+'Last updated: 21/June/22
+'Last update: automatically extract 3D LUT (color lookup table) collection on first run
 '
 'PhotoDemon needs to include a whole swatch of custom resources.  These resources take up a lot of space,
 ' and we also need to pull different resources depending on things like screen DPI.  To simplify this process,
@@ -241,6 +241,34 @@ Friend Function ExtractDefaultAssets() As Boolean
             End If
         End If
         UserPrefs.SetPref_Boolean "Assets", "ExtractedColorProfiles", True
+    End If
+    
+    '3D LUTs
+    If (Not UserPrefs.GetPref_Boolean("Assets", "Extracted3DLUTs", False)) Then
+        PDDebug.LogAction "3D LUT collection has never been extracted before.  Extracting now..."
+        If Me.LoadGenericResource("luts", tmpBytes) Then
+            If cPackage.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
+                Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+                    If (tmpChunkName = "NAME") Then
+                        dstFilename = UserPrefs.GetLUTPath(True) & tmpStream.ReadString_UTF8(tmpChunkSize)
+                        If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                            If (tmpChunkName = "DATA") Then
+                                If (Not Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True)) Then
+                                    RaiseResourceError "ExtractDefaultAssets: failed to create target file " & dstFilename
+                                End If
+                            End If
+                        Else
+                            RaiseResourceError "bad lut data: " & tmpChunkName
+                        End If
+                    Else
+                        RaiseResourceError "bad lut name: " & tmpChunkName
+                    End If
+                Loop
+            Else
+                RaiseResourceError "ExtractDefaultAssets: failed to extract profile resource chunk"
+            End If
+        End If
+        UserPrefs.SetPref_Boolean "Assets", "Extracted3DLUTs", True
     End If
     
 End Function
