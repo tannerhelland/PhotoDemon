@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 '3D color lookup effect
 'Copyright 2020-2022 by Tanner Helland
 'Created: 27/October/20
-'Last updated: 29/May/22
-'Last update: allow the user to import multiple LUT files at once
+'Last updated: 22/June/22
+'Last update: correctly handle importing a LUT with the same name as an existing LUT
 '
 'For a detailed explanation of 3D color lookup tables and how they work, see the pdLUT3D class.
 '
@@ -241,14 +241,22 @@ Private Sub cmdBrowse_Click()
                 If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
                     Dim newFilename As String
                     newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
-                    Files.FileCopyW srcFilename, newFilename
+                    If Files.FileExists(newFilename) Then
+                        Files.FileReplace newFilename, srcFilename
+                    Else
+                        Files.FileCopyW srcFilename, newFilename
+                    End If
                     srcFilename = newFilename
                 End If
                 
                 'If the file validated, and it has a sub-file, copy the sub-file into the local folder as well
                 If (LenB(m_LUT.GetLUTSubPath()) <> 0) Then
                     newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(m_LUT.GetLUTSubPath(), False)
-                    Files.FileCopyW m_LUT.GetLUTSubPath(), newFilename
+                    If Files.FileExists(newFilename) Then
+                        Files.FileReplace newFilename, m_LUT.GetLUTSubPath()
+                    Else
+                        Files.FileCopyW m_LUT.GetLUTSubPath(), newFilename
+                    End If
                 End If
                 
                 'Ensure we have sufficient space for a new entry
@@ -265,15 +273,23 @@ Private Sub cmdBrowse_Click()
                 Dim i As Long
                 i = 0
                 
+                '(We also need to check to see if a LUT with this name already exists; if it does, we simply
+                ' want to update it in-place instead of adding it again.)
+                Dim lutAlreadyExists As Boolean: lutAlreadyExists = False
+                
                 If (m_numOfLUTs > 0) Then
                     
-                    'Look for the first entry with a value *less* than the current one
+                    'Look for the first entry with a value *less than* or *equal to* the current one
                     For i = 0 To m_numOfLUTs - 1
-                        If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+                        If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) <= 0) Then Exit For
                     Next i
                     
-                    'Shift all existing entries to make room for this new one
-                    If (i < m_numOfLUTs - 1) Then
+                    'We should check for the entry already existing (maybe the user hand-edited the file,
+                    ' or is downloading a new copy from elsewhere)
+                    lutAlreadyExists = Strings.StringsEqual(targetFilenameOnly, m_LUTs(i).filenameOnly, True)
+                    
+                    'If this entry is novel, shift all existing entries to make room for it
+                    If (Not lutAlreadyExists) And (i < m_numOfLUTs - 1) Then
                         Dim k As Long
                         For k = m_numOfLUTs - 1 To i + 1 Step -1
                             m_LUTs(k) = m_LUTs(k - 1)
@@ -281,21 +297,32 @@ Private Sub cmdBrowse_Click()
                     End If
                     
                 End If
+                
+                'If this lut already exists, just free its internal cache to force a re-load
+                If lutAlreadyExists Then
                     
-                With m_LUTs(i)
-                    .fullPath = srcFilename
-                    .filenameOnly = targetFilenameOnly
-                    .lenDataCompressed = 0
-                    .lenDataUncompressed = 0
-                End With
-                m_numOfLUTs = m_numOfLUTs + 1
-                
-                'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
-                ' get added to the *end* of the list.  This is by design to make newly added entries
-                ' easier to find.  If the user leaves and returns to this dialog, the list of available
-                ' LUTs always gets re-sorted.
-                lstLUTs.AddItem targetFilenameOnly, i
-                
+                    With m_LUTs(i)
+                        .fullPath = srcFilename
+                        .lenDataCompressed = 0
+                        .lenDataUncompressed = 0
+                    End With
+            
+                'Update the backing collection
+                Else
+                    
+                    With m_LUTs(i)
+                        .fullPath = srcFilename
+                        .filenameOnly = targetFilenameOnly
+                        .lenDataCompressed = 0
+                        .lenDataUncompressed = 0
+                    End With
+                    m_numOfLUTs = m_numOfLUTs + 1
+                        
+                    'Update the listbox too (to ensure it stays synced to the backing collection)
+                    lstLUTs.AddItem targetFilenameOnly, i
+                    
+                End If
+                    
                 '(Only make this LUT the active one if we're finished processing LUT files.)
                 If (j = srcFilenames.GetNumOfStrings - 1) Then lstLUTs.ListIndex = i
                 
