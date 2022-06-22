@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 21/June/22
-'Last update: unify debug text across the codebase
+'Last updated: 22/June/22
+'Last update: convert esoteric format exporters to safe-overwrite strategy
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.
 '
@@ -590,15 +590,16 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     If (Not imgSavedOK) Then
         PDDebug.LogAction "Using internal PNG encoder for this operation..."
         imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, PNG_COMPRESS, vbNullString, True) < png_Failure)
-    End If
     
-    'If other mechanisms failed, attempt a failsafe export using GDI+.  (This should never trigger, but is
-    ' a holdover from when PD's PNG encoder was in its infancy and reliability was not yet real-world-confirmed.)
-    If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
+        'If other mechanisms failed, attempt a failsafe export using GDI+.  (This should never trigger, but is
+        ' a holdover from when PD's PNG encoder was in its infancy and reliability was not yet real-world-confirmed.)
+        If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
+        
+    End If
     
     'We now have a temporary PNG file saved.  Shell avifenc with the proper parameters to generate a
     ' valid AVIF (at the requested filename).
-    ExportAVIF = Plugin_AVIF.ConvertStandardImageToAVIF(tmpFilename, dstFile, avifQuality)
+    If imgSavedOK Then ExportAVIF = Plugin_AVIF.ConvertStandardImageToAVIF(tmpFilename, dstFile, avifQuality)
     
     'With the AVIF generated, we can now erase our temporary PNG file
     Files.FileDeleteIfExists tmpFilename
@@ -668,10 +669,22 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         desiredAlphaStatus = PDAS_NoAlpha
     End If
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+        
     'If both GDI+ and FreeImage are missing, use our own internal methods to save the BMP file in its current state.
     ' (This is a measure of last resort, as the saved image is unlikely to match the requested output depth.)
     If (Not Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) And (Not ImageFormats.IsFreeImageEnabled) Then
-        tmpImageCopy.WriteToBitmapFile dstFile
+        tmpImageCopy.WriteToBitmapFile tmpFilename
         ExportBMP = True
     Else
     
@@ -692,7 +705,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If (fi_DIB <> 0) Then
-                ExportBMP = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_BMP, BMPflags, outputColorDepth, True)
+                ExportBMP = FreeImage_SaveEx(fi_DIB, tmpFilename, PDIF_BMP, BMPflags, outputColorDepth, True)
                 If ExportBMP Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
@@ -706,9 +719,18 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
         Else
-            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_BMP, outputColorDepth)
+            ExportBMP = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_BMP, outputColorDepth)
         End If
     
+    End If
+    
+    'If the original file already existed, attempt to replace it now
+    If ExportBMP And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        ExportBMP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not ExportBMP) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
     End If
     
     Exit Function
@@ -778,9 +800,31 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             Dim fi_Flags As Long: fi_Flags = 0&
             fi_Flags = fi_Flags Or jp2Quality
             
-            ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, dstFile, fi_Flags)
+            'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+            ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+            ' the original file remains untouched).
+            Dim tmpFilename As String
+            If Files.FileExists(dstFile) Then
+                Do
+                    tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                Loop While Files.FileExists(tmpFilename)
+            Else
+                tmpFilename = dstFile
+            End If
+            
+            ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, tmpFilename, fi_Flags)
             If ExportJP2 Then
+            
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
+                
+                'If the original file already existed, attempt to replace it now
+                If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                    If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
+                        Files.FileDelete tmpFilename
+                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                    End If
+                End If
+                
             Else
                 PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                 Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
@@ -878,6 +922,18 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         If outputColorDepth = 8 Then forceGrayscale = True
     End If
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
     'FreeImage is our preferred export engine
     If ImageFormats.IsFreeImageEnabled Then
         
@@ -891,13 +947,13 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             ' of the main image, which ExifTool will use to generate a thumbnail metadata entry
             If cParams.GetBool("MetadataExportAllowed", True) And cParamsMetadata.GetBool("MetadataEmbedThumbnail", False) Then
                 
-                Dim fThumbnail As Long, tmpFile As String
+                Dim fThumbnail As Long, tmpThumbFile As String
                 fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
-                tmpFile = cParamsMetadata.GetString("MetadataTempFilename")
+                tmpThumbFile = cParamsMetadata.GetString("MetadataTempFilename")
                 
-                If (LenB(tmpFile) <> 0) Then
-                    Files.FileDeleteIfExists tmpFile
-                    FreeImage_SaveEx fThumbnail, tmpFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
+                If (LenB(tmpThumbFile) <> 0) Then
+                    Files.FileDeleteIfExists tmpThumbFile
+                    FreeImage_SaveEx fThumbnail, tmpThumbFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
                 End If
                 
                 FreeImage_Unload fThumbnail
@@ -909,7 +965,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             FreeImage_SetResolutionX fi_DIB, srcPDImage.GetDPI
             FreeImage_SetResolutionY fi_DIB, srcPDImage.GetDPI
             
-            ExportJPEG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_JPEG, jpegFlags, outputColorDepth, True)
+            ExportJPEG = FreeImage_SaveEx(fi_DIB, tmpFilename, PDIF_JPEG, jpegFlags, outputColorDepth, True)
             If ExportJPEG Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
@@ -925,9 +981,18 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     'If FreeImage is unavailable, fall back to GDI+
     Else
-        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_JPEG, outputColorDepth, jpegQuality)
+        ExportJPEG = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_JPEG, outputColorDepth, jpegQuality)
     End If
     
+    'If the original file already existed, attempt to replace it now
+    If ExportJPEG And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        ExportJPEG = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not ExportJPEG) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
+    End If
+        
     Exit Function
     
 ExportJPEGError:
@@ -987,9 +1052,32 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             fi_Flags = fi_Flags Or jxrQuality
             If jxrProgressive Then fi_Flags = fi_Flags Or JXR_PROGRESSIVE
             
-            ExportJXR = FreeImage_Save(FIF_JXR, fi_DIB, dstFile, fi_Flags)
+            'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+            ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+            ' the original file remains untouched).
+            Dim tmpFilename As String
+            If Files.FileExists(dstFile) Then
+                Do
+                    tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                Loop While Files.FileExists(tmpFilename)
+            Else
+                tmpFilename = dstFile
+            End If
+            
+            ExportJXR = FreeImage_Save(FIF_JXR, fi_DIB, tmpFilename, fi_Flags)
+            
             If ExportJXR Then
+            
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
+                
+                'If the original file already existed, attempt to replace it now
+                If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                    If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
+                        Files.FileDelete tmpFilename
+                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                    End If
+                End If
+                
             Else
                 PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                 Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
@@ -1055,12 +1143,10 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             If (fi_FloatDIB <> 0) Then
                 
-                'Prior to saving, we must account for default 2.2 gamma correction.  We do this by iterating through the source, and modifying gamma
-                ' values as we go.  (If we reduce gamma prior to RGBF conversion, quality will obviously be impacted due to clipping.)
-                
-                'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
-                Dim srcImageData() As Single
-                Dim srcSA As SafeArray1D
+                'Prior to saving, we must account for default 2.2 gamma correction.
+                ' We do this by iterating through the source, and modifying gamma values as we go.
+                ' (If we reduce gamma prior to RGBF conversion, quality will obviously be impacted due to clipping.)
+                Dim srcImageData() As Single, srcSA As SafeArray1D
                 
                 'Iterate through each scanline in the source image, copying it to destination as we go.
                 Dim iWidth As Long, iHeight As Long, iScanWidth As Long, iLoopWidth As Long
@@ -1104,9 +1190,32 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 Next y
                 
                 'With gamma properly accounted for, we can finally write the image out to file.
-                ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, dstFile, 0)
+                
+                'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+                ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+                ' the original file remains untouched).
+                Dim tmpFilename As String
+                If Files.FileExists(dstFile) Then
+                    Do
+                        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                    Loop While Files.FileExists(tmpFilename)
+                Else
+                    tmpFilename = dstFile
+                End If
+                
+                ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, tmpFilename, 0)
                 If ExportHDR Then
+                    
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
+                    
+                    'If the original file already existed, attempt to replace it now
+                    If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                        If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
+                            Files.FileDelete tmpFilename
+                            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                        End If
+                    End If
+                    
                 Else
                     PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                     Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
@@ -1160,7 +1269,9 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1211,7 +1322,9 @@ Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1278,11 +1391,23 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim imgSavedOK As Boolean
     imgSavedOK = False
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
     'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
     ' and format coverage than either FreeImage or GDI+.
     If (Not imgSavedOK) Then
         PDDebug.LogAction "Using internal PNG encoder for this operation..."
-        imgSavedOK = (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
+        imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
     End If
     
     'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,
@@ -1290,7 +1415,16 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' are enormous, but hey - it's better than not writing a PNG at all, right?)
     If (Not imgSavedOK) Then
         PDDebug.LogAction "WARNING: pdPNG failed!"
-        imgSavedOK = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, 32)
+        imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
+    End If
+    
+    'If the original file already existed, attempt to replace it now
+    If imgSavedOK And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        imgSavedOK = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not imgSavedOK) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
     End If
     
     ExportPNG = imgSavedOK
@@ -1324,7 +1458,9 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     ' the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1461,8 +1597,8 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
                 fif_Final = FIF_PFM
             Else
                 If (outputColorDepth = 1) Then
-                    'On 25/May/16 I discovered that FreeImage's ASCII encoding is broken for PBM files.  We now default to binary encoding
-                    ' until the bug is fixed.
+                    'On 25/May/16 I discovered that FreeImage's ASCII encoding is broken for PBM files.
+                    ' We now default to binary encoding until the bug is fixed.
                     'If pnmUseASCII Then fif_Final = FIF_PBM Else fif_Final = FIF_PBMRAW
                     fif_Final = FIF_PBMRAW
                     FreeImage_Invert fi_DIB
@@ -1480,9 +1616,31 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
                 fi_Flags = FISO_PNM_SAVE_RAW
             End If
             
-            ExportPNM = FreeImage_Save(fif_Final, fi_DIB, dstFile, fi_Flags)
+            'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+            ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+            ' the original file remains untouched).
+            If Files.FileExists(dstFile) Then
+                Do
+                    tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                Loop While Files.FileExists(tmpFilename)
+            Else
+                tmpFilename = dstFile
+            End If
+            
+            ExportPNM = FreeImage_Save(fif_Final, fi_DIB, tmpFilename, fi_Flags)
             If ExportPNM Then
+                
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
+                
+                'If the original file already existed, attempt to replace it now
+                If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                    ExportPNM = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                    If (Not ExportPNM) Then
+                        Files.FileDelete tmpFilename
+                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                    End If
+                End If
+        
             Else
                 PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                 Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
@@ -1536,7 +1694,9 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1624,7 +1784,9 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1677,7 +1839,9 @@ Public Function ExportQOI(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ' mid-save, the original file is left untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -1761,9 +1925,32 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             Dim fi_Flags As Long: fi_Flags = 0&
             If compressRLE Then fi_Flags = fi_Flags Or TARGA_SAVE_RLE
             
-            ExportTGA = FreeImage_Save(FIF_TARGA, fi_DIB, dstFile, fi_Flags)
+            'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+            ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+            ' the original file remains untouched).
+            Dim tmpFilename As String
+            If Files.FileExists(dstFile) Then
+                Do
+                    tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                Loop While Files.FileExists(tmpFilename)
+            Else
+                tmpFilename = dstFile
+            End If
+            
+            ExportTGA = FreeImage_Save(FIF_TARGA, fi_DIB, tmpFilename, fi_Flags)
             If ExportTGA Then
+            
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
+                        
+                'If the original file already existed, attempt to replace it now
+                If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                    ExportTGA = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                    If (Not ExportTGA) Then
+                        Files.FileDelete tmpFilename
+                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                    End If
+                End If
+                
             Else
                 PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                 Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
@@ -1869,6 +2056,18 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
     Dim TIFFflags As Long: TIFFflags = TIFF_DEFAULT
     
     'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
@@ -1886,10 +2085,8 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' 5) When all layers are finished, write the TIFF out to file
         
         'Start by creating a blank multipage object
-        Files.FileDeleteIfExists dstFile
-        
         Dim fi_MultipageHandle As Long
-        fi_MultipageHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)
+        fi_MultipageHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, tmpFilename, True, False, False)
         
         'If all pages are monochrome, we can encode the final TIFF object using monochrome compression settings, but if even
         ' one page is color, it complicates that.
@@ -2135,7 +2332,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                     
             'Use that handle to save the image to TIFF format, with required color conversion based on the outgoing color depth
             If (fi_DIB <> 0) Then
-                ExportTIFF = FreeImage_Save(PDIF_TIFF, fi_DIB, dstFile, TIFFflags)
+                ExportTIFF = FreeImage_Save(PDIF_TIFF, fi_DIB, tmpFilename, TIFFflags)
                 FreeImage_Unload fi_DIB
                 If ExportTIFF Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
@@ -2150,9 +2347,18 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             End If
             
         Else
-            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_TIFF, outputColorDepth)
+            ExportTIFF = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_TIFF, outputColorDepth)
         End If
         
+    End If
+    
+    'If the original file already existed, attempt to replace it now
+    If ExportTIFF And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        ExportTIFF = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not ExportTIFF) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
     End If
     
     Exit Function
@@ -2193,7 +2399,9 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' mid-save, the original file is left untouched).
         Dim tmpFilename As String
         If Files.FileExists(dstFile) Then
-            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Do
+                tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Loop While Files.FileExists(tmpFilename)
         Else
             tmpFilename = dstFile
         End If
@@ -2201,7 +2409,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Use pdWebP to save the WebP file
         Dim cWebP As pdWebP
         Set cWebP = New pdWebP
-        If cWebP.SaveWebP_ToFile(srcPDImage, formatParams, dstFile) Then
+        If cWebP.SaveWebP_ToFile(srcPDImage, formatParams, tmpFilename) Then
         
             If Strings.StringsEqual(dstFile, tmpFilename) Then
                 ExportWebP = True
@@ -2315,7 +2523,9 @@ Public Function ExportWebP_Animated(ByRef srcPDImage As pdImage, ByVal dstFile A
         ' mid-save, the original file is left untouched).
         Dim tmpFilename As String
         If Files.FileExists(dstFile) Then
-            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Do
+                tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Loop While Files.FileExists(tmpFilename)
         Else
             tmpFilename = dstFile
         End If

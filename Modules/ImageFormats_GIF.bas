@@ -44,7 +44,9 @@ Public Function ExportGIF_LL(ByRef srcPDImage As pdImage, ByVal dstFile As Strin
     ' if an error occurs mid-save, the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If
@@ -126,7 +128,9 @@ Public Function ExportGIF_Animated_LL(ByRef srcPDImage As pdImage, ByVal dstFile
     ' if an error occurs mid-save, the original file remains untouched).
     Dim tmpFilename As String
     If Files.FileExists(dstFile) Then
-        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
         tmpFilename = dstFile
     End If

@@ -3,8 +3,9 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2022 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 16/February/22
-'Last update: add wrapper function for filling regions
+'Last updated: 21/June/22
+'Last update: ensure GDI+ image export uses safe overwriting (e.g. do not overwrite an existing file
+'             until we verify that the export was successful)
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally
 ' used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time
@@ -2545,9 +2546,6 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             End With
             
     End Select
-
-    'With our encoder prepared, we can finally continue with the save
-    Files.FileDeleteIfExists dstFilename
     
     'Convert our list of params to a format GDI+ understands.
     Dim tmpEncodeParams() As Byte, tmpEncodeParamSize As Long
@@ -2569,11 +2567,35 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         Next i
     End If
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFilename) Then
+        Do
+            tmpFilename = dstFilename & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFilename
+    End If
+    
     'Pass all completed structs to GDI+ and let it handle everything from here
     Dim gpReturn As GP_Result
-    gpReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exportGuid(0)), VarPtr(tmpEncodeParams(0)))
+    gpReturn = GdipSaveImageToFile(hImage, StrPtr(tmpFilename), VarPtr(exportGuid(0)), VarPtr(tmpEncodeParams(0)))
     
-    If (gpReturn <> GP_OK) Then
+    If (gpReturn = GP_OK) Then
+        
+       'Safe saving: if the destination file already existed, attempt to replace it now
+       If Strings.StringsNotEqual(dstFilename, tmpFilename) Then
+           Dim overwriteOK As Boolean
+           overwriteOK = (Files.FileReplace(dstFilename, tmpFilename) = FPR_SUCCESS)
+           If (Not overwriteOK) Then
+               Files.FileDelete tmpFilename
+               PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+           End If
+       End If
+                
+    Else
         InternalGDIPlusError "GdipSaveImageToFile", "GDI+ failure", gpReturn
         GDI_Plus.ReleaseGDIPlusImage hImage
         GDIPlusSavePicture = False

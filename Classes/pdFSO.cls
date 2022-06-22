@@ -1044,18 +1044,23 @@ Friend Function FileReadData(ByVal srcHandle As Long, ByVal ptrToDestinationObje
     
 End Function
 
-'Replace an arbitrary file with another arbitrary file, with optional backup file of the original created during the process.
+'Replace an arbitrary file with another arbitrary file, with an optional backup file of the original
+' created during the process.
 '
-'All files must reside on the same volume.  The target file should exist, but to be safe, I have added some custom code to address instances
-' where the target file does not exist (this function will silently fall back to a "Move file" action instead).
+'All files must reside on the same volume.  The target file should exist, but to be safe, I have added
+' some custom code to address instances where the target file does not exist (this function will silently
+' fall back to a "Move file" action instead).
 '
-'IMPORTANT NOTE: the ReplaceFileW function has rare-but-not-impossible failure outcomes where the original file is deleted, but the new file is
-'                 not renamed.  Because this failure could be catastrophic during an update process, PD will forcibly create backups of any files
-'                 patched via this function, and restore them as necessary.  The "customBackupFile" parameter only exists if you want to specify
-'                 a CUSTOM backup filename + location; it does not affect whether or not a backup IS created.  (TL;DR - backups are always created.)
+'IMPORTANT NOTE: the ReplaceFileW function has rare-but-not-impossible failure outcomes where the original
+'                 file is deleted, but the new file is not renamed.  Because this failure could be
+'                 catastrophic during an update process, PD will forcibly create backups of any files patched
+'                 via this function and restore them as necessary.  The "customBackupFile" parameter only exists
+'                 if you want to specify a CUSTOM backup filename + location; it does not affect whether or not
+'                 a backup IS created.  (TL;DR - backups are always created.)
 Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = vbNullString) As PD_FILE_PATCH_RESULT
     
-    'Because this function is capable of botching an existing PD install if catastrophic failure occurs, error handling must be comprehensive.
+    'Because this function is capable of botching an existing PD install if catastrophic failure occurs,
+    ' error handling must be comprehensive.
     On Error GoTo ReplaceFailure
     
     Dim backupFile As String
@@ -1067,8 +1072,9 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
         'Consider forcibly specifying a backup path if the user didn't provide their own
         If (LenB(customBackupFile) = 0) Then
         
-            'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
-            ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
+            'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating
+            ' a backup here.  Otherwise, you risk a scenario where something goes wrong during the replace step,
+            ' and the original file is lost forever.
             
             'For example, in PhotoDemon I use the standard Data/Updates folder for backups when patching, like this:
             'backupFile = UserPrefs.GetUpdatePath & FileGetName(oldFile)
@@ -1079,8 +1085,9 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
             backupFile = customBackupFile
         End If
         
-        'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  Because this function is used to patch PhotoDemon.exe,
-        ' there is no margin for failure, so detailed handling of every possible outcome is required.
+        'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  Because this function is used
+        ' to patch PhotoDemon.exe, there is no margin for failure, so detailed handling of every possible outcome
+        ' is necessary.
         rfReturn = ReplaceFileW(StrPtr(oldFile), StrPtr(newFile), StrPtr(backupFile), REPLACEFILE_IGNORE_MERGE_ERRORS, 0&, 0&)
         
         'Success means we can exit immediately
@@ -1096,15 +1103,17 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
         
             Select Case Err.LastDllError
             
-                'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced and replacement files retain their original
-                ' file names. Otherwise, the replaced file no longer exists and the replacement file exists under its original name.
+                'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced and
+                ' replacement files retain their original file names. Otherwise, the replaced file no longer exists
+                ' and the replacement file exists under its original name.
                 Case ERROR_UNABLE_TO_MOVE_REPLACEMENT
                     
                     'See if the old file exists
                     If Me.FileExists(oldFile) Then
                     
-                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-                        ' to this function being invoked, the caller is free to try again.
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in
+                        ' an identical place as it was prior to this function being invoked, the caller is free to
+                        ' try again.
                         Me.FileDelete customBackupFile
                         FileReplace = FPR_FAIL_NOTHING_CHANGED
                         Exit Function
@@ -1117,8 +1126,8 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
                             'The backup file exists.  Try to restore it to the location of the original file.
                             mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
                             
-                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-                            ' restored to its original state.
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the
+                            ' caller that the system has been restored to its original state.
                             If (mfReturn <> 0) Then
                                 Me.FileDelete backupFile
                                 FileReplace = FPR_FAIL_NOTHING_CHANGED
@@ -1140,16 +1149,18 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
                     
                     End If
                 
-                'The replacement file could not be moved. The replacement file still exists under its original name; however, it has inherited the file streams
-                ' and attributes from the file it is replacing. The file to be replaced still exists with a different name. If lpBackupFileName is specified,
+                'The replacement file could not be moved. The replacement file still exists under its original name;
+                ' however, it has inherited the file streams and attributes from the file it is replacing.
+                ' The file to be replaced still exists with a different name. If lpBackupFileName is specified,
                 ' it will be the name of the replaced file.
                 Case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2
                 
                     'See if the old file exists; this should never happen.
                     If Me.FileExists(oldFile) Then
                     
-                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-                        ' to this function being invoked, the caller is free to try again.
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in
+                        ' an identical place as it was prior to this function being invoked, the caller is free to
+                        ' try again.
                         Me.FileDelete customBackupFile
                         
                         FSOError "FileReplace", "Impossible outcome 3 occurred in FileReplace.  Please investigate."
@@ -1158,14 +1169,15 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
                        
                     Else
                     
-                        'The old file no longer exists.  Restore the backup file.  (The backup file is supposedly guaranteed to exist with this error code.)
+                        'The old file no longer exists.  Restore the backup file.
+                        ' (The backup file is supposedly guaranteed to exist with this error code.)
                         If Me.FileExists(backupFile) Then
                         
                             'The backup file exists.  Try to restore it to the location of the original file.
                             mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
                             
-                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-                            ' restored to its original state.
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify
+                            ' the caller that the system has been restored to its original state.
                             If (mfReturn <> 0) Then
                                 Me.FileDelete backupFile
                                 FileReplace = FPR_FAIL_NOTHING_CHANGED
@@ -1195,8 +1207,8 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
                     FileReplace = FPR_FAIL_NOTHING_CHANGED
                     Exit Function
                 
-                'Other failure states are more problematic.  Defer to the primary error handler, which will try to restore the
-                ' original file setup as best as it can.
+                'Other failure states are more problematic.  Defer to the primary error handler,
+                ' which will try to restore the original file setup as best as it can.
                 Case Else
                     PDDebug.LogAction "pdFSO.ReplaceFile last DLL error: " & Err.LastDllError
                     GoTo ReplaceFailure
@@ -1230,15 +1242,16 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
     Exit Function
     
     
-'Arbitrary failure states are problematic.  Basically, our goal is to restore the original file setup as best as we can.  We do this by attempting
-' to restore the backup file (if it exists), and applying any renames or moves required to get everything back to the way it was.
+'Arbitrary failure states are problematic.  Basically, our goal is to restore the original file setup
+' as best as we can.  We do this by attempting to restore the backup file (if it exists), and applying
+' any renames or moves required to get everything back to the way it was.
 ReplaceFailure:
 
     'See if the old file exists
     If Me.FileExists(oldFile) Then
     
-        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-        ' to this function being invoked, the caller is free to try again.
+        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an
+        ' identical place as it was prior to this function being invoked, the caller is free to try again.
         Me.FileDelete customBackupFile
         
         If Me.FileExists(newFile) Then
@@ -1258,8 +1271,8 @@ ReplaceFailure:
             'The backup file exists.  Try to restore it to the location of the original file.
             mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
             
-            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-            ' restored to its original state.
+            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller
+            ' that the system has been restored to its original state.
             If (mfReturn <> 0) Then
                 
                 Me.FileDelete backupFile

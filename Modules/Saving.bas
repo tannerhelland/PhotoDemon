@@ -1088,7 +1088,9 @@ Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
                 ' the original file remains untouched).
                 Dim tmpFilename As String
                 If Files.FileExists(dstFilename) Then
-                    tmpFilename = dstFilename & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                    Do
+                        tmpFilename = dstFilename & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+                    Loop While Files.FileExists(tmpFilename)
                 Else
                     tmpFilename = dstFilename
                 End If

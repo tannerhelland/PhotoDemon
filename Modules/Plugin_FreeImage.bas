@@ -65,6 +65,7 @@ Public Function InitializeFreeImage(Optional ByVal actuallyLoadDLL As Boolean = 
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim fiPath As String
     fiPath = PluginManager.GetPluginPath & "FreeImage.dll"
+    
     If actuallyLoadDLL Then
         
         'On successful initialization, PD supplies a callback to FreeImage for detailed error messages.
