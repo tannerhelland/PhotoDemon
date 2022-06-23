@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon array-backed KD-Tree (slower than normal KD-tree, but much faster tear-down due to no child classes)
 'Copyright 2018-2022 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 15/June/22
-'Last update: copy novel "array-backed tree" mode out of the base KD-tree class, and rewrite it here as a
-'             dedicated class (to improve horrifically slow class teardown when 100,000+ instances are used).
+'Last updated: 23/June/22
+'Last update: add support for tracking/returning original palette index
 '
 'This class contains a specialized K-D tree implementation.  Please see the normal pdKDTree class for a generic
 ' KD-tree implementation, including full implementation details.  This class exists purely to work around some
@@ -48,7 +47,8 @@ Private Type KDNode
     nColor As RGBQuad
     nChildLeft As Long
     nChildRight As Long
-    nDepth As Long      'VB will pad the struct to 4-byte alignment regardless, so may as well make this a Long
+    nDepth As Integer           'VB will pad the struct to 4-byte alignment regardless, so may as well make this a Long
+    nOriginalIndex As Integer   'Original index mode is only supported up to 32k indices; this is by design given PD's usage
 End Type
 
 Private m_numNodes As Long
@@ -59,8 +59,8 @@ Private m_Nodes() As KDNode
 Private m_bestDistance As Long, m_testDistance As Long
 Private m_testColor As RGBQuad, m_srcColor As RGBQuad, m_bestColor As RGBQuad
 
-Private m_curR As Long, m_curG As Long, m_curB As Long
-Private m_testR As Long, m_testG As Long, m_testB As Long
+Private m_curR As Long, m_curG As Long, m_curB As Long, m_curA As Long
+Private m_testR As Long, m_testG As Long, m_testB As Long, m_testA As Long
 
 Friend Sub BuildTree(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVal highBound As Long)
 
@@ -75,6 +75,7 @@ Friend Sub BuildTree(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVa
     With m_Nodes(0)
         .nColor = srcPalette(0)
         .nDepth = 0
+        .nOriginalIndex = 0
     End With
     
     m_numNodes = 1
@@ -96,7 +97,7 @@ Friend Sub BuildTree(ByRef srcPalette() As RGBQuad, ByVal lowBound As Long, ByVa
         'Add the requested node (the center of the current list)
         Dim curIndex As Long
         curIndex = lowBound + (highBound - lowBound) \ 2
-        InsertNode srcPalette(curIndex)
+        InsertNode srcPalette(curIndex), curIndex
         
         'Partition the high and low lists, add to the stack, then repeat
         If (lowBound <= curIndex - 1) Then
@@ -121,17 +122,19 @@ End Sub
 Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
     
     'Failsafe only; build the damn tree before trying to retrieve colors from it!
-    If (m_numNodes <= 0) Then Exit Function
-    
-    m_bestDistance = LONG_MAX
-    m_srcColor = srcColor
-    
-    'Start searching at the root node
-    CompareNode 0
-    
-    'Return the best-match color from the recursive descent through the tree
-    GetNearestColor = m_bestColor
-    
+    If (m_numNodes > 0) Then
+        
+        m_bestDistance = LONG_MAX
+        m_srcColor = srcColor
+        
+        'Start searching at the root node
+        CompareNode 0
+        
+        'Return the best-match color from the recursive descent through the tree
+        GetNearestColor = m_bestColor
+        
+    End If
+        
 End Function
 
 Private Sub CompareNode(ByVal idxTest As Long)
@@ -224,7 +227,7 @@ Private Sub CompareNode(ByVal idxTest As Long)
     
 End Sub
 
-Private Sub InsertNode(ByRef srcColor As RGBQuad)
+Private Sub InsertNode(ByRef srcColor As RGBQuad, ByVal originalIndex As Long)
     
     'We always start on the R-axis (note that the root node must already be filled for this function to work)
     Dim depth As Long
@@ -283,6 +286,7 @@ Private Sub InsertNode(ByRef srcColor As RGBQuad)
                 m_Nodes(curNode).nChildLeft = m_numNodes
                 With m_Nodes(m_numNodes)
                     .nColor = srcColor
+                    .nOriginalIndex = originalIndex And &H7FFF&
                     .nDepth = depth
                 End With
                 m_numNodes = m_numNodes + 1
@@ -304,6 +308,7 @@ Private Sub InsertNode(ByRef srcColor As RGBQuad)
                 m_Nodes(curNode).nChildRight = m_numNodes
                 With m_Nodes(m_numNodes)
                     .nColor = srcColor
+                    .nOriginalIndex = originalIndex And &H7FFF&
                     .nDepth = depth
                 End With
                 m_numNodes = m_numNodes + 1
