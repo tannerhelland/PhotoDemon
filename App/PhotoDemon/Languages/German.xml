@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.1583</langversion>
+<langversion>9.0.1653</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -95,7 +95,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation>Farb-Lookup exportieren</translation>
+<translation>Color Lookup exportieren</translation>
 </phrase>
 
 <phrase>
@@ -310,12 +310,12 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Color Lookup erstellen</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Ähnlichkeit vergleichen</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation>Farb-Lookup</translation>
+<translation>Color Lookup</translation>
 </phrase>
 
 <phrase>
@@ -3128,7 +3128,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Saving file</original>
-<translation></translation>
+<translation>Datei wird gespeichert</translation>
 </phrase>
 
 <phrase>
@@ -3756,7 +3756,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>Bilden der Color Lookup</translation>
 </phrase>
 
 <phrase>
@@ -4948,7 +4948,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Similarity</original>
-<translation></translation>
+<translation>Ähnlichkeit</translation>
 </phrase>
 
 <phrase>
@@ -6004,7 +6004,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying color lookup</original>
-<translation>Anwenden der Farb-Lookup</translation>
+<translation>Anwenden der Color Lookup</translation>
 </phrase>
 
 <phrase>
@@ -10168,22 +10168,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>description</original>
-<translation></translation>
+<translation>Deskription</translation>
 </phrase>
 
 <phrase>
 <original>copyright</original>
-<translation></translation>
+<translation>Copyright</translation>
 </phrase>
 
 <phrase>
 <original>grid points</original>
-<translation></translation>
+<translation>Gitterpunkte</translation>
 </phrase>
 
 <phrase>
 <original>extreme</original>
-<translation></translation>
+<translation>Extrem</translation>
 </phrase>
 
 <!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10754,7 +10754,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>floating-point</original>
-<translation>Gleitkomma</translation>
+<translation>Fließkomma</translation>
 </phrase>
 
 <phrase>
@@ -14006,17 +14006,17 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
-<translation></translation>
+<translation>Color Lookup-Tabelle (LUT) erstellen</translation>
 </phrase>
 
 <phrase>
 <original>add this to the "Adjustments > Color lookup" tool</original>
-<translation></translation>
+<translation>Dies dem Tool "Anpassungen > Color Lookup" hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>modified image and layer</original>
-<translation></translation>
+<translation>Modifiziertes Bild und Layer</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->

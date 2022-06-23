@@ -9,7 +9,7 @@
 <langversion>9.0b1373.1</langversion>
 <langstatus>完成</langstatus>
 
-<author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn</author>
+<author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -200,22 +200,22 @@
 
 <phrase>
 <original>Clear</original>
-<translation></translation>
+<translation>清除</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>内容感知填充</translation>
 </phrase>
 
 <phrase>
 <original>Fill</original>
-<translation></translation>
+<translation>填充</translation>
 </phrase>
 
 <phrase>
 <original>Stroke</original>
-<translation></translation>
+<translation>画笔</translation>
 </phrase>
 
 <phrase>
@@ -310,12 +310,12 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>创建颜色查找</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>比较相似度</translation>
 </phrase>
 
 <phrase>
@@ -635,17 +635,17 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>填充选定区域</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>修复选定区域</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>描边选择大纲</translation>
 </phrase>
 
 <phrase>
@@ -1040,7 +1040,7 @@
 
 <phrase>
 <original>Bump map</original>
-<translation></translation>
+<translation>凹凸图</translation>
 </phrase>
 
 <phrase>
@@ -1285,7 +1285,7 @@
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>动画播放速度</translation>
 </phrase>
 
 <phrase>
@@ -2545,7 +2545,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation></translation>
+<translation>开放媒体联盟提供免费的开源 64 位 AVIF 编码器和解码器库。 这些库每个大约为 ~%1 mb（总共 ~%2 mb）。 下载后，它们将允许 PhotoDemon 在任何 64 位系统上导入和导出 AVIF 文件。</translation>
 </phrase>
 
 <phrase>
@@ -2885,7 +2885,7 @@ Description: %2
 
 <phrase>
 <original>automatic fit</original>
-<translation></translation>
+<translation>自动贴合</translation>
 </phrase>
 
 <phrase>
@@ -3121,7 +3121,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Saving file</original>
-<translation></translation>
+<translation>保存文件</translation>
 </phrase>
 
 <phrase>
@@ -3736,7 +3736,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>重新绘制选定区域</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3750,7 +3750,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>构建颜色查找</translation>
 </phrase>
 
 <phrase>
@@ -4942,7 +4942,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Similarity</original>
-<translation></translation>
+<translation>相似</translation>
 </phrase>
 
 <phrase>
@@ -5352,7 +5352,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Playback speed</original>
-<translation></translation>
+<translation>播放速度</translation>
 </phrase>
 
 <phrase>
@@ -7471,7 +7471,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>above</original>
-<translation></translation>
+<translation>以上</translation>
 </phrase>
 
 <phrase>
@@ -7481,27 +7481,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fill order</original>
-<translation></translation>
+<translation>填充命令</translation>
 </phrase>
 
 <phrase>
 <original>patch test size</original>
-<translation></translation>
+<translation>补丁测试大小</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>随机候选补丁</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation></translation>
+<translation>细化(百分比)</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>补丁完美阈值</translation>
 </phrase>
 
 <phrase>
@@ -7511,22 +7511,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>left</original>
-<translation></translation>
+<translation>左</translation>
 </phrase>
 
 <phrase>
 <original>right</original>
-<translation></translation>
+<translation>右</translation>
 </phrase>
 
 <phrase>
 <original>below</original>
-<translation></translation>
+<translation>以下</translation>
 </phrase>
 
 <phrase>
 <original>outside-in</original>
-<translation></translation>
+<translation>由外而内</translation>
 </phrase>
 
 <phrase>
@@ -7550,49 +7550,49 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush</original>
-<translation></translation>
+<translation>刷子</translation>
 </phrase>
 
 <phrase>
 <original>layer size</original>
-<translation></translation>
+<translation>图层大小</translation>
 </phrase>
 
 <phrase>
 <original>Applying fill</original>
-<translation></translation>
+<translation>应用填充</translation>
 </phrase>
 
 <phrase>
 <original>do not change</original>
-<translation></translation>
+<translation>不要更改</translation>
 </phrase>
 
 <phrase>
 <original>use selection size</original>
-<translation></translation>
+<translation>use selection size</translation>
 </phrase>
 
 <phrase>
 <original>use combined size (union)</original>
-<translation></translation>
+<translation>使用组合大小(联合)</translation>
 </phrase>
 
 <!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
-<translation></translation>
+<translation>笔</translation>
 </phrase>
 
 <phrase>
 <original>Stroking outline</original>
-<translation></translation>
+<translation>描边轮廓</translation>
 </phrase>
 
 <phrase>
 <original>expand to fit stroke (if necessary)</original>
-<translation></translation>
+<translation>扩展以适应行程(如有必要)</translation>
 </phrase>
 
 <!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7713,12 +7713,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>first frame for effect</original>
-<translation></translation>
+<translation>第一帧效果</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation></translation>
+<translation>最后一帧效果</translation>
 </phrase>
 
 <phrase>
@@ -7745,7 +7745,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>speed modifier</original>
-<translation></translation>
+<translation>速度调节器</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8675,12 +8675,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ambient light</original>
-<translation></translation>
+<translation>环境光线</translation>
 </phrase>
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>生成凹凸图</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9336,7 +9336,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>coordinates (x, y)</original>
-<translation></translation>
+<translation>坐标 (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -10162,22 +10162,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>description</original>
-<translation></translation>
+<translation>描述</translation>
 </phrase>
 
 <phrase>
 <original>copyright</original>
-<translation></translation>
+<translation>版权</translation>
 </phrase>
 
 <phrase>
 <original>grid points</original>
-<translation></translation>
+<translation>网格点</translation>
 </phrase>
 
 <phrase>
 <original>extreme</original>
-<translation></translation>
+<translation>极端</translation>
 </phrase>
 
 <!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12625,7 +12625,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>box</original>
-<translation></translation>
+<translation>盒子</translation>
 </phrase>
 
 <phrase>
@@ -13998,17 +13998,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
-<translation></translation>
+<translation>创建颜色查找表 (LUT)</translation>
 </phrase>
 
 <phrase>
 <original>add this to the "Adjustments > Color lookup" tool</original>
-<translation></translation>
+<translation>将此添加到“调整>颜色查找”工具</translation>
 </phrase>
 
 <phrase>
 <original>modified image and layer</original>
-<translation></translation>
+<translation>修改后的图像和图层</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
