@@ -1354,6 +1354,11 @@ Public Function ApplyPaletteToImage_KDTree(ByRef dstDIB As pdDIB, ByRef srcPalet
     Set kdTree = New pdKDTree
     kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
     
+    'To test the array-backed implementation, use this setup:
+    'Dim kdTree As pdKDTreeArray
+    'Set kdTree = New pdKDTreeArray
+    'kdTree.BuildTreeBalanced srcPalette, 0, UBound(srcPalette), False
+    
     'Start matching pixels
     For y = 0 To finalY
         dstDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
