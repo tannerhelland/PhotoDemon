@@ -162,8 +162,8 @@ Attribute VB_Exposed = False
 'Create color lookup from differences between two images
 'Copyright 2022-2022 by Tanner Helland
 'Created: 18/June/22
-'Last updated: 20/June/22
-'Last update: wrap up UI for this tool (which was previously only available internally)
+'Last updated: 24/June/22
+'Last update: save *some* last-used settings (but not ones that will break the app, like the layer dropdowns)
 '
 'This dialog provides a UI for comparing two images, then generating a 3D LUT from their differences.
 ' This LUT is then exported to an arbitrary LUT file (of the user's choosing) where it can be used to apply
@@ -179,6 +179,12 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'Because we don't use a traditional command bar on this dialog, last-used settings must be
+' manually handled.  (We need to do this manually anyway because the image- and layer- dropdowns
+' are session-specific.)
+Private WithEvents lastUsedSettings As pdLastUsedSettings
+Attribute lastUsedSettings.VB_VarHelpID = -1
 
 Private m_OpenImageIDs As pdStack
 
@@ -374,6 +380,12 @@ Private Sub cmdBar_OKClick()
         .AddParam "add-to-pd", chkAvailable.Value, True
     End With
     
+    'Save all last-used settings to file
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
+    
     Me.Visible = False
     
     'Note that this feature does *not* generate a new Undo/Redo node, by design
@@ -465,11 +477,31 @@ End Sub
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
 Private Sub Form_Load()
 
+    'Grid size presets
+    ddQuality.SetAutomaticRedraws False, False
+    ddQuality.Clear
+    ddQuality.AddItem "fast", 0
+    ddQuality.AddItem "standard", 1
+    ddQuality.AddItem "extreme", 2
+    ddQuality.AddItem "custom", 3
+    ddQuality.SetAutomaticRedraws True
+    ddQuality.ListIndex = 1
+    
+    txtDescription.Text = vbNullString
+    
+    'Load any last-used settings for this form, but only for controls *below* the layer dropdowns
+    Set lastUsedSettings = New pdLastUsedSettings
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
+    
     'Populate both drop-downs with a list of open images
     PDImages.GetListOfActiveImageIDs m_OpenImageIDs
     
     ddSource(0).SetAutomaticRedraws False
+    ddSource(0).Clear
+    
     ddSource(2).SetAutomaticRedraws False
+    ddSource(2).Clear
     
     Dim srcLayerName As String, idxActiveImage As Long
     Dim i As Long
@@ -501,15 +533,6 @@ Private Sub Form_Load()
     'Select an active layer from both drop-downs
     PopulateLayerList 0, True
     PopulateLayerList 2, True
-    
-    'Grid size presets
-    ddQuality.AddItem "fast", 0
-    ddQuality.AddItem "standard", 1
-    ddQuality.AddItem "extreme", 2
-    ddQuality.AddItem "custom", 3
-    ddQuality.ListIndex = 1
-    
-    txtDescription.Text = vbNullString
     
     ApplyThemeAndTranslations Me
     
@@ -565,6 +588,10 @@ Private Sub PopulateLayerList(ByVal srcDropDown As Long, Optional ByVal isInitPo
     
     ddSource(ddTarget).SetAutomaticRedraws True, True
     
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    If (Not lastUsedSettings Is Nothing) Then lastUsedSettings.SetParentForm Nothing
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
