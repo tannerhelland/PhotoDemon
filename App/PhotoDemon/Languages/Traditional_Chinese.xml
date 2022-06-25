@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.270</langversion>
+<langversion>7.0.271</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -12654,7 +12654,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>start a new language file from scratch</original>
+<original>start a new language file</original>
 <translation>建立新的語言檔案</translation>
 </phrase>
 
@@ -13956,7 +13956,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>add this to the "Adjustments > Color lookup" tool</original>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
 <translation></translation>
 </phrase>
 
@@ -13973,6 +13973,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5533 phrases. -->
 <!-- 2881 are duplicates, so only 2652 unique phrases have been written to file. -->
-<!-- These 2652 phrases contain approximately 11906 total words. -->
+<!-- These 2652 phrases contain approximately 11905 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.1</langversion>
+<langversion>9.0b1373.2</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -12696,7 +12696,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>start a new language file from scratch</original>
+<original>start a new language file</original>
 <translation>建立一个新的语言文件</translation>
 </phrase>
 
@@ -14002,8 +14002,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>add this to the "Adjustments > Color lookup" tool</original>
-<translation>将此添加到“调整>颜色查找”工具</translation>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14019,6 +14019,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5533 phrases. -->
 <!-- 2881 are duplicates, so only 2652 unique phrases have been written to file. -->
-<!-- These 2652 phrases contain approximately 11906 total words. -->
+<!-- These 2652 phrases contain approximately 11905 total words. -->
 
 </pdData>

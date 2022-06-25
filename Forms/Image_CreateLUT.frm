@@ -34,7 +34,7 @@ Begin VB.Form FormImageCreateLUT
       Width           =   6375
       _ExtentX        =   11245
       _ExtentY        =   661
-      Caption         =   "add this to the ""Adjustments > Color lookup"" tool"
+      Caption         =   "add this to the ""Adjustments > Color > Color lookup"" tool"
    End
    Begin PhotoDemon.pdDropDown ddQuality 
       Height          =   375

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.542</langversion>
+<langversion>6.6.543</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -12700,7 +12700,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>start a new language file from scratch</original>
+<original>start a new language file</original>
 <translation>memulakan fail bahasa baru dari awal</translation>
 </phrase>
 
@@ -14010,7 +14010,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>add this to the "Adjustments > Color lookup" tool</original>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
 <translation></translation>
 </phrase>
 
@@ -14027,6 +14027,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- As of this build, PhotoDemon contains 5533 phrases. -->
 <!-- 2881 are duplicates, so only 2652 unique phrases have been written to file. -->
-<!-- These 2652 phrases contain approximately 11906 total words. -->
+<!-- These 2652 phrases contain approximately 11905 total words. -->
 
 </pdData>

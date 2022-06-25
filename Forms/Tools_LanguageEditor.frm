@@ -114,7 +114,7 @@ Begin VB.Form FormLanguageEditor
          Width           =   11325
          _ExtentX        =   19976
          _ExtentY        =   582
-         Caption         =   "start a new language file from scratch"
+         Caption         =   "start a new language file"
          Value           =   -1  'True
       End
       Begin PhotoDemon.pdRadioButton optBaseLanguage 
