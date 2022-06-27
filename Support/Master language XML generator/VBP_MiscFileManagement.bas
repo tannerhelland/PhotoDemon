@@ -81,20 +81,20 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     Dim numToAppend As Long
     
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-    If Right(tmpFilename, 1) = ")" Then
+    If Right$(tmpFilename, 1) = ")" Then
     
         Dim i As Long
         For i = Len(tmpFilename) - 2 To 1 Step -1
             
             ' If it isn't a number, see if it's an initial parentheses: "("
-            If Not (IsNumeric(Mid(tmpFilename, i, 1))) Then
+            If Not (IsNumeric(Mid$(tmpFilename, i, 1))) Then
                 
                 'If it is a parentheses, then this file already has a "( #)" appended to it.  Figure out what the
                 ' number inside the parentheses is, and strip that entire block from the filename.
-                If Mid(tmpFilename, i, 1) = "(" Then
+                If Mid$(tmpFilename, i, 1) = "(" Then
                 
-                    numToAppend = CLng(Val(Mid(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
-                    tmpFilename = Left(tmpFilename, i - 2)
+                    numToAppend = CLng(Val(Mid$(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
+                    tmpFilename = Left$(tmpFilename, i - 2)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this filename is not in the format we want.
@@ -303,7 +303,7 @@ Public Sub StripFilename(ByRef sString As String)
     
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            sString = Right(sString, Len(sString) - x)
+            sString = Right$(sString, Len(sString) - x)
             Exit Sub
         End If
     Next x
@@ -359,30 +359,31 @@ Public Sub StripOffExtension(ByRef sString As String)
 End Sub
 
 'Function to return the extension from a filename
-Public Function GetExtension(sFile As String) As String
+Public Function GetExtension(ByRef sFile As String) As String
+    
+    GetExtension = vbNullString
     
     Dim i As Long
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string
-        If (Mid(sFile, i, 1) = "\") Or (Mid(sFile, i, 1) = "/") Then
-            GetExtension = ""
+        If (Mid$(sFile, i, 1) = "\") Or (Mid$(sFile, i, 1) = "/") Then
+            GetExtension = vbNullString
             Exit Function
         End If
         
-        If Mid(sFile, i, 1) = "." Then
+        If (Mid$(sFile, i, 1) = ".") Then
             GetExtension = Right$(sFile, Len(sFile) - i)
             Exit Function
         End If
     Next i
     
     'If we reach this point, no extension was found
-    GetExtension = ""
             
 End Function
 
 'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef Filename As String)
+Public Sub MakeValidWindowsFilename(ByRef Filename As String)
 
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
@@ -393,7 +394,7 @@ Public Sub makeValidWindowsFilename(ByRef Filename As String)
     For x = 1 To Len(strInvalidChars)
         invLoc = InStr(Filename, Mid$(strInvalidChars, x, 1))
         If invLoc <> 0 Then
-            Filename = Left(Filename, invLoc - 1) & "_" & Right(Filename, Len(Filename) - invLoc)
+            Filename = Left$(Filename, invLoc - 1) & "_" & Right$(Filename, Len(Filename) - invLoc)
         End If
     Next x
 
@@ -500,7 +501,7 @@ Private Function Win32ToVbTime(ft As Currency) As Date
 End Function
 
 'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return a canonical major/minor string, e.g. "6.0"
-Public Function retrieveVersionMajorMinorAsString(ByVal srcVersionString As String) As String
+Public Function RetrieveVersionMajorMinorAsString(ByVal srcVersionString As String) As String
 
     'To avoid locale issues, replace any "," with "."
     If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
@@ -510,16 +511,16 @@ Public Function retrieveVersionMajorMinorAsString(ByVal srcVersionString As Stri
     tmpArray = Split(srcVersionString, ".")
     
     If UBound(tmpArray) >= 1 Then
-        retrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
+        RetrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
     Else
-        retrieveVersionMajorMinorAsString = ""
+        RetrieveVersionMajorMinorAsString = vbNullString
     End If
 
 End Function
 
 'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return the revision number
 ' as a string, e.g. 4 for "6.0.04".  If no revision is found, return 0.
-Public Function retrieveVersionRevisionAsLong(ByVal srcVersionString As String) As Long
+Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) As Long
     
     'An improperly formatted version number can cause failure; if this happens, we'll assume a revision of 0, which should
     ' force a re-download of the problematic file.
@@ -533,18 +534,18 @@ Public Function retrieveVersionRevisionAsLong(ByVal srcVersionString As String) 
     tmpArray = Split(srcVersionString, ".")
     
     If UBound(tmpArray) >= 2 Then
-        retrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
+        RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
     
     'If one or less "." chars are found, assume a revision of 0
     Else
-        retrieveVersionRevisionAsLong = 0
+        RetrieveVersionRevisionAsLong = 0
     End If
     
     Exit Function
     
 cantFormatRevisionAsLong:
 
-    retrieveVersionRevisionAsLong = 0
+    RetrieveVersionRevisionAsLong = 0
 
 End Function
 

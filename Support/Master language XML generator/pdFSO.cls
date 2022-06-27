@@ -358,7 +358,7 @@ End Function
 ' 2) by avoiding disallowed extensions, using a pipe-delimited list of unacceptable extensions (e.g. "bak|tmp")
 '
 'Use either the whitelist or the blacklist option, but not both (obviously).
-Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
     
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = EnforcePathSlash(srcFolder)
@@ -596,7 +596,7 @@ Public Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolde
         
         'Check equality first; equal strings mean no relative folder is required
         If StringsEqual(baseFolder, thisFolder) Then
-            GenerateRelativePath = ""
+            GenerateRelativePath = vbNullString
         
         'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
         Else
@@ -618,7 +618,7 @@ End Function
 'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
 ' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
 ' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
-Public Function DirW(Optional ByVal sParam As String = "") As String
+Public Function DirW(Optional ByVal sParam As String = vbNullString) As String
     
     Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
     Dim retValue As Long
@@ -748,7 +748,7 @@ End Function
 '                 not renamed.  Because this failure could be catastrophic during an update process, PD will forcibly create backups of any files
 '                 patched via this function, and restore them as necessary.  The "customBackupFile" parameter only exists if you want to specify
 '                 a CUSTOM backup filename + location; it does not affect whether or not a backup IS created.  (TL;DR - backups are always created.)
-Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "") As FILE_PATCH_RESULT
+Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = vbNullString) As FILE_PATCH_RESULT
     
     'Because this function is capable of botching an existing PD install if catastrophic failure occurs, error handling must be comprehensive.
     On Error GoTo replaceFailure
@@ -1110,23 +1110,24 @@ End Function
 'Function to return the extension from a filename.
 Public Function GetFileExtension(sFile As String) As String
     
+    GetFileExtension = vbNullString
+    
     Dim i As Long
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string
-        If StringsEqual(Mid(sFile, i, 1), "\") Or StringsEqual(Mid(sFile, i, 1), "/") Then
-            GetFileExtension = ""
+        If StringsEqual(Mid$(sFile, i, 1), "\") Or StringsEqual(Mid$(sFile, i, 1), "/") Then
+            GetFileExtension = vbNullString
             Exit Function
         End If
         
-        If StringsEqual(Mid(sFile, i, 1), ".") Then
+        If StringsEqual(Mid$(sFile, i, 1), ".") Then
             GetFileExtension = Right$(sFile, Len(sFile) - i)
             Exit Function
         End If
     Next i
     
     'If we reach this point, no extension was found
-    GetFileExtension = ""
             
 End Function
 
@@ -1519,7 +1520,7 @@ Private Function UTF8BytesToString(ByRef Utf8() As Byte) As String
         
         Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar did not return a valid buffer length.)"
         Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
-        UTF8BytesToString = ""
+        UTF8BytesToString = vbNullString
         
     'The returned length is non-zero.  Prep a buffer, then retrieve the bytes.
     Else
@@ -1536,7 +1537,7 @@ Private Function UTF8BytesToString(ByRef Utf8() As Byte) As String
         If lenWideString = 0 Then
             Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
             Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
-            UTF8BytesToString = ""
+            UTF8BytesToString = vbNullString
         Else
             UTF8BytesToString = strWide
         End If

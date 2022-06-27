@@ -493,33 +493,41 @@ Attribute VB_Exposed = False
 'Interactive Language (Translation) Editor
 'Copyright 2013-2022 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
-'Last updated: 15/February/17
-'Last update: attempt to improve titlecase handling
+'Last updated: 27/June/22
+'Last update: prevent PD's localization engine from localizing any of this dialog's text
+'             (here's my thinking: anyone using this dialog is working on missing localization(s),
+'             and they need to be fluent in en-US to produce a workable translation, and this dialog
+'             contains a *ton* of text and a volunteer translator's time is better spent elsewhere,
+'             on parts of the app humans engage with regularly)
 '
-'Thanks to the incredible work of Frank Donckers, PhotoDemon includes a fully functional language translation engine.
-' Many thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but also
-' for taking the time to translate the entire PhotoDemon text collection into multiple languages. (This was a huge
-' project, as PhotoDemon contains a LOT of text.)
+'Thanks to the incredible work of Frank Donckers, PhotoDemon ships with a custom-built text localization engine.
+' Thank you to Frank for implementing the original translation engine prototype, and for taking the time to
+' translate all of PhotoDemon's text into multiple languages. (This was a huge project, as PhotoDemon contains
+' a LOT of text.)
 '
-'During the translation process, Frank pointed out that translating PhotoDemon's 1,000+ unique phrases takes a loooong
-' time.  This new language editor aims to accelerate the process.  I have borrowed many concepts and code pieces from
-' a similar project by Frank, which he used to create the original translation files.
+'During the translation process, Frank pointed out that translating PhotoDemon's 1,000+ unique phrases takes
+' a loooong time.  This new language editor aims to accelerate the process.  I have borrowed many concepts
+' and code pieces from a similar project by Frank, which he used to create PhotoDemon's first translation files.
 '
 'This integrated language editor requires a source language file to start.  This can either be a blank English
 ' language file (provided with all PD downloads) or an existing language file.
 '
 'Data retention is a key focus of the current implementation.  As a safeguard against crashes, two autosaves are
-' maintained for any active project.  Every time a phrase is edited or added, an autosave is created.  (Same goes for
-' language metadata.)  This should guarantee that even in the event of a crash, nothing more than the last-modified
-' phrase will be lost.
+' maintained for any active project.  Every time a phrase is edited or added, an autosave is created.
+' This should guarantee that even in the event of a catastrophic failure (power failure or similar), only the
+' last-modified phrase would ever risk being lost.
 '
-'To accelerate the translation process, Google Translate can be used to automatically populate an "estimated"
-' translation.  This was Frank's idea and Frank's code - many thanks to him for such a clever feature!  As of
-' 22 February 2014, I have added an option to perform a full automatic translation of all untranslated phrases.
-' This is helpful for creating a translation file from scratch, which can then be reviewed by a human at their
-' own leisure.
+'To accelerate the translation process, DeepL.com can be used to automatically populate an "estimated"
+' translation of a given phrase.  This uses the official DeepL translation API (via curl) and if you want to use
+' it too, you will need to generate a free DeepL API key:
 '
-'Note: for the Google Translate Terms of Use, please visit https://www.google.com/policies/terms/
+' https://www.deepl.com/pro-api?cta=header-pro-api
+'
+'(Scroll down to the "Free" box and click "sign up for free".)  This feature previously used Google Translate,
+' but after receiving a ton of feedback that the translation results from Google were poor, I have since migrated
+' to DeepL, which has received better reviews from users.  Note that a human will always need to review
+' localizations for best results, but since I am not a polyglot I am not much help here - feedback from native
+' speakers is *always* welcome.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -537,7 +545,7 @@ Private m_ListOfLanguages() As PDLanguageFile
 Private m_curLanguage As PDLanguageFile
 
 'All phrases that need to be translated will be stored in this array
-Private Type Phrase
+Private Type PD_Phrase
     Original As String
     Translation As String
     Length As Long
@@ -545,7 +553,7 @@ Private Type Phrase
     IsMachineTranslation As Boolean
 End Type
 Private m_NumOfPhrases As Long
-Private m_AllPhrases() As Phrase
+Private m_AllPhrases() As PD_Phrase
 
 'Has the source XML language file been loaded yet?
 Private m_xmlLoaded As Boolean
@@ -692,7 +700,7 @@ AutoTranslateFailure:
     PerformAutosave
     
     'Notify the user, then exit
-    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbCritical Or vbOKOnly, "Translations interrupted"
+    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  Any existing work has been auto-saved.", vbCritical Or vbOKOnly, "Translations interrupted"
     
 End Sub
 
@@ -714,7 +722,7 @@ Private Sub cmdDeleteLanguage_Click()
         'Make sure we have write access to this folder before attempting to delete anything
         If Files.PathExists(Files.FileGetPath(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
-            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(This action cannot be undone.  To restore a deleted language file, you must download a fresh copy of PhotoDemon from photodemon.org.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If (msgReturn = vbYes) Then
                 Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
@@ -730,7 +738,7 @@ Private Sub cmdDeleteLanguage_Click()
     'User-folder languages are gone forever once deleted, so change the wording of the deletion confirmation.
     Else
     
-        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(This action cannot be undone.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If (msgReturn = vbYes) Then
             Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
@@ -830,9 +838,6 @@ End Sub
 ' to the previous page.
 Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     Dim i As Long
 
     Dim unloadFormNow As Boolean
@@ -847,8 +852,8 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         
             'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
             ' currently too lazy to write a more elegant warning!)
-            If optBaseLanguage(1) And (lstLanguages.ListIndex = -1) Then
-                PDMsgBox "Please select a language before continuing to the next step.", vbOKOnly Or vbInformation, "Please select a language"
+            If (optBaseLanguage(1).Value And (lstLanguages.ListIndex < 0)) Then
+                PDMsgBox "You must select a language file to edit.", vbOKOnly Or vbInformation, "Please select a language"
                 Exit Sub
             End If
             
@@ -857,7 +862,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                         
             'If they want to start a new language file from scratch, set the load path to the MASTER English language file
             ' (which is hopefully present... if not, there's not much we can do.)
-            If optBaseLanguage(0) Then
+            If optBaseLanguage(0).Value Then
                                 
                 If LoadAllPhrasesFromFile(UserPrefs.GetLanguagePath & "Master\MASTER.xml") Then
                     
@@ -875,7 +880,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
                     Screen.MousePointer = vbDefault
-                    PDMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Master language file missing"
+                    PDMsgBox "Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Master language file missing"
                     Unload Me
                 End If
             
@@ -941,7 +946,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 Dim sFile As String
                 
                 If m_curLanguage.LangType = "Autosave" Then
-                    sFile = cFile.MakeValidWindowsFilename(m_curLanguage.LangName)
+                    sFile = Files.FileMakeNameValid(m_curLanguage.LangName)
                     sFile = Files.FileGetPath(m_curLanguage.FileName) & sFile & ".xml"
                 Else
                     sFile = Files.FileGetPath(m_curLanguage.FileName) & Files.FileGetName(m_curLanguage.FileName, True) & ".xml"
@@ -1047,40 +1052,39 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
     lblWizardTitle.Caption = lblWizardTitle.Caption & " "
     
-    Dim helpText As String
+    Dim helpText As pdString
     
     Select Case m_WizardPage
     
         Case 0
-            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("select a language file")
+            lblWizardTitle.Caption = "step 1: select a language file"
             
-            helpText = g_Language.TranslateMessage("This tool allows you to create and edit PhotoDemon language files.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("This page also allows you to delete unused language files.  Note that there is no Undo when deleting language files, so please be careful!")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.")
-            If Not OS.IsProgramCompiled Then helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(For best results, do not use this editor in the IDE!)")
+            helpText.AppendLine "This tool allows you to create and edit PhotoDemon language files." & vbCrLf
+            helpText.AppendLine "Please start by selecting a base language file.  If the selected file already contains translation data, you can edit existing translations or fill-in missing ones." & vbCrLf
+            helpText.AppendLine "This page also allows you to delete unused language files.  There is no Undo option when deleting language files, so please be careful!" & vbCrLf
+            helpText.Append "(When you click ""Next"", the selected language file will parsed and validated.  This process may take several seconds.)"
             
         Case 1
-            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("add language metadata")
+            lblWizardTitle.Caption = "step 2: add language metadata"
             
-            helpText = g_Language.TranslateMessage("In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("The most important items on this page are the language ID and language name.  If these items are missing or invalid, PhotoDemon won't be able to use the language file.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)")
+            helpText.AppendLine "PhotoDemon needs a little bit of metadata for each language file.  This allows it to auto-select the most relevant language based on the locale of a user's PC." & vbCrLf
+            helpText.AppendLine "The most important items on this page are the language ID and language name.  Please double-check to ensure these are correct." & vbCrLf
+            helpText.AppendLine "If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please retain the original author's name." & vbCrLf
+            helpText.Append "(NOTE: changes made to this page won't be auto-saved until you click the Next or Previous button.)"
             
         Case 2
-            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("translate all phrases")
+            lblWizardTitle.Caption = "step 3: localize phrases"
             
-            helpText = g_Language.TranslateMessage("This final step allows you to edit existing translations, and add missing ones.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)")
-            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are finished editing this language, please consider sharing it!  Contact me by visiting:")
-            helpText = helpText & vbCrLf & g_Language.TranslateMessage("photodemon.org/about/contact/")
-            helpText = helpText & vbCrLf & g_Language.TranslateMessage("so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!")
+            helpText.AppendLine "This final step allows you to edit existing translations and fill-in missing ones." & vbCrLf
+            helpText.AppendLine "Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's /Data/Languages folder.  This means you can exit the program at any time without losing your work." & vbCrLf
+            helpText.AppendLine "When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)" & vbCrLf
+            helpText.AppendLine "When you are finished editing this language, please consider sharing it!  My current contact information is available at:" & vbCrLf
+            helpText.AppendLine "https://photodemon.org/about/"
+            helpText.Append "Even partial translations are helpful.  Thank you so much for your help."
     
     End Select
     
-    lblExplanation.Caption = helpText
+    lblExplanation.Caption = helpText.ToString()
         
 End Sub
 
@@ -1096,9 +1100,9 @@ Private Sub Form_Load()
         
     'Fill the "phrases to display" combo box
     cboPhraseFilter.Clear
-    cboPhraseFilter.AddItem "All phrases", 0
-    cboPhraseFilter.AddItem "Translated phrases", 1
-    cboPhraseFilter.AddItem "Untranslated phrases", 2
+    cboPhraseFilter.AddItem "all phrases", 0
+    cboPhraseFilter.AddItem "translated phrases", 1
+    cboPhraseFilter.AddItem "untranslated phrases", 2
     cboPhraseFilter.ListIndex = 0
     
     'Initialize the Google Translate interface
@@ -1119,7 +1123,9 @@ End Sub
 
 'Given a source language file, find all phrase tags, and load them into a specialized phrase array
 Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
-
+    
+    LoadAllPhrasesFromFile = False
+    
     Set m_XMLEngine = New pdXML
     
     'Attempt to load the language file
@@ -1137,85 +1143,76 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
             If m_XMLEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
                 
                 m_NumOfPhrases = UBound(phraseLocations) + 1
-                ReDim m_AllPhrases(0 To m_NumOfPhrases - 1) As Phrase
+                ReDim m_AllPhrases(0 To m_NumOfPhrases - 1) As PD_Phrase
                 
                 Dim tmpString As String
                 
                 Dim i As Long
                 For i = 0 To m_NumOfPhrases - 1
-                    tmpString = m_XMLEngine.GetUniqueTag_String("original", , phraseLocations(i))
+                    tmpString = m_XMLEngine.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
                     m_AllPhrases(i).Original = tmpString
                     m_AllPhrases(i).Length = Len(tmpString)
-                    m_AllPhrases(i).Translation = m_XMLEngine.GetUniqueTag_String("translation", , phraseLocations(i))
+                    m_AllPhrases(i).Translation = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(tmpString))
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
-                    If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, vbNullString)
-                    If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, vbNullString)
-                    If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, vbNullString)
+                    If (InStr(1, tmpString, vbCr) > 0) Then tmpString = Replace(tmpString, vbCr, vbNullString)
+                    If (InStr(1, tmpString, vbLf) > 0) Then tmpString = Replace(tmpString, vbLf, vbNullString)
                     m_AllPhrases(i).ListBoxEntry = tmpString
                     
                 Next i
                 
                 LoadAllPhrasesFromFile = True
             
-            Else
-                LoadAllPhrasesFromFile = False
+            '/Failed to find any phrases in the file
             End If
         
-        Else
-            LoadAllPhrasesFromFile = False
+        '/Failed to validate XML
         End If
     
-    Else
-        LoadAllPhrasesFromFile = False
+    '/Failed to load XML
     End If
 
 End Function
 
 Private Sub lstLanguages_Click()
-    If Not optBaseLanguage(1) Then optBaseLanguage(1) = True
-    If lstLanguages.ListIndex >= 0 Then cmdDeleteLanguage.Enabled = True Else cmdDeleteLanguage.Enabled = False
+    If (Not optBaseLanguage(1).Value) Then optBaseLanguage(1).Value = True
+    cmdDeleteLanguage.Enabled = (lstLanguages.ListIndex >= 0)
 End Sub
 
 'When the phrase box is clicked, display the original and translated (if available) text in the right-hand text boxes
 Private Sub lstPhrases_Click()
     
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase:")
-    txtOriginal = m_AllPhrases(GetPhraseIndexFromListIndex()).Original
+    txtOriginal.Text = m_AllPhrases(GetPhraseIndexFromListIndex()).Original
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
     If (LenB(m_AllPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0) Then
-        txtTranslation = m_AllPhrases(GetPhraseIndexFromListIndex()).Translation
+        txtTranslation.Text = m_AllPhrases(GetPhraseIndexFromListIndex()).Translation
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved):")
     Else
     
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
         
         If chkGoogleTranslate.Value Then
-            txtTranslation = g_Language.TranslateMessage("waiting...")
-            
-            'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before
-            ' assigning new text.
-            Dim retString As String
+            txtTranslation.Text = g_Language.TranslateMessage("waiting...")
             
             'Google translate changed their page layout again; try DeepL instead
             'retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            Dim retString As String
             retString = m_AutoTranslate.GetDeepLTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
             
             If (LenB(retString) <> 0) Then
-                txtTranslation = vbNullString
-                txtTranslation = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
+                txtTranslation.Text = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
             Else
-                txtTranslation = vbNullString
-                txtTranslation = g_Language.TranslateMessage("translation failed!")
+                txtTranslation.Text = g_Language.TranslateMessage("translation failed!")
             End If
             
         Else
-            txtTranslation = vbNullString
+            txtTranslation.Text = vbNullString
         End If
             
     End If
@@ -1265,24 +1262,25 @@ Private Sub PopulateAvailableLanguages()
         Do While listOfTmpXML.PopString(chkFile)
             
             'Use PD's XML engine to load the file
-            Dim tmpm_xmlEngine As pdXML
-            Set tmpm_xmlEngine = New pdXML
-            If tmpm_xmlEngine.LoadXMLFile(UserPrefs.GetLanguagePath(True) & chkFile) Then
+            Dim tmpXML As pdXML
+            Set tmpXML = New pdXML
+            If tmpXML.LoadXMLFile(UserPrefs.GetLanguagePath(True) & chkFile) Then
             
                 'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-                If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
+                If tmpXML.IsPDDataType("Translation") And tmpXML.ValidateLoadedXMLData("langid", "langname", "phrase") Then
                 
                     ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As PDLanguageFile
                     
                     With m_ListOfLanguages(UBound(m_ListOfLanguages))
+                    
                         'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-                        .langID = tmpm_xmlEngine.GetUniqueTag_String("langid")
-                        .LangName = tmpm_xmlEngine.GetUniqueTag_String("langname")
+                        .langID = tmpXML.GetUniqueTag_String("langid")
+                        .LangName = tmpXML.GetUniqueTag_String("langname")
         
                         'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-                        .langVersion = tmpm_xmlEngine.GetUniqueTag_String("langversion")
-                        .LangStatus = tmpm_xmlEngine.GetUniqueTag_String("langstatus")
-                        .Author = tmpm_xmlEngine.GetUniqueTag_String("author")
+                        .langVersion = tmpXML.GetUniqueTag_String("langversion")
+                        .LangStatus = tmpXML.GetUniqueTag_String("langstatus")
+                        .Author = tmpXML.GetUniqueTag_String("author")
                         
                         'Finally, add some internal metadata
                         .FileName = UserPrefs.GetLanguagePath(True) & chkFile
@@ -1418,7 +1416,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                 
                 Dim i As Long
                 For i = LBound(strOrig) To UBound(strOrig)
-                    If (Len(Trim$(strOrig(i))) <> 0) Then
+                    If (LenB(Trim$(strOrig(i))) <> 0) Then
                         firstWord = strOrig(i)
                         firstWordIndex = i
                         Exit For

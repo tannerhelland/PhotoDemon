@@ -560,8 +560,8 @@ Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
         
         'Parse the current version into two discrete chunks: the major/minor value, and the revision value
         Dim curMajorMinor As String, curRevision As Long
-        curMajorMinor = retrieveVersionMajorMinorAsString(curVersion)
-        curRevision = retrieveVersionRevisionAsLong(curVersion)
+        curMajorMinor = RetrieveVersionMajorMinorAsString(curVersion)
+        curRevision = RetrieveVersionRevisionAsLong(curVersion)
         
         'Increment the revision value by 1, then assemble the modified replacement text
         curRevision = curRevision + 1
@@ -1044,7 +1044,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
             Exit Sub
             
         'Some developer-only dialogs do not need to be translated.
-        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm"
+        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm", "Tools_LanguageEditor.frm"
             Exit Sub
     
     End Select
@@ -2078,9 +2078,6 @@ Private Sub Form_Load()
     AddBlacklist "Simplex"
     AddBlacklist "OpenSimplex"
     AddBlacklist "Lab"
-    AddBlacklist "L*"
-    AddBlacklist "a*"
-    AddBlacklist "b*"
     AddBlacklist "PhotoDemon"
     AddBlacklist "Hilite"
     AddBlacklist "Laplacian"

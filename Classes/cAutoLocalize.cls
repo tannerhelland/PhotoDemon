@@ -163,6 +163,7 @@ RetryTranslation:
         
         Dim fullTargetURL As String
         fullTargetURL = "https://www.deepl.com/translator#" & m_srcLanguage & "/" & m_dstLanguage & "/" & Replace(srcText, " ", "%20")
+        Debug.Print fullTargetURL
         m_IE.Navigate fullTargetURL
         
         Dim failsafeTimeout As Date
@@ -225,6 +226,8 @@ RetryTranslation:
         If (InStr(processedHTML, ChrW$(174)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(174), "'", 1, , vbTextCompare)
         If (InStr(processedHTML, ChrW$(175)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(175), "'", 1, , vbTextCompare)
     
+    Else
+        PDDebug.LogAction "IE unavailable"
     End If
     
 NoTranslationAvailable:

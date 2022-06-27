@@ -172,7 +172,7 @@ Public Function WriteTag(ByVal tagName As String, ByVal tagContents As String, O
 End Function
 
 'Add a new section to the XML file.  To keep things simple, this is always done at the END of the file.
-Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "") As Boolean
+Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sectionAttribute As String = vbNullString, Optional ByVal sectionAttributeValue As String = vbNullString) As Boolean
     
     'First, make sure the section does not already exist
     If InStr(1, m_xmlContents, "<" & sectionName & ">", m_TextCompareMode) > 0 Then
@@ -184,7 +184,7 @@ Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sect
     Dim tagLocation As Long
     tagLocation = InStrRev(m_xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     
-    If tagLocation > 0 Then
+    If (tagLocation > 0) Then
     
         'Split the XML file into two halves: the half before the root tag, and the half after
         Dim topHalf As String, bottomHalf As String
@@ -194,7 +194,7 @@ Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sect
         Dim newTagSection As String
         newTagSection = "<" & sectionName
         
-        If Len(sectionAttribute) <> 0 Then
+        If (LenB(sectionAttribute) <> 0) Then
             newTagSection = newTagSection & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
         Else
             newTagSection = newTagSection & ">"
@@ -213,25 +213,15 @@ Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sect
 End Function
 
 'Simple - does a given tag exist?  Both simple and complex tags will be checked.
-Public Function DoesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
+Public Function DoesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = vbNullString, Optional ByVal attributeValue As String = vbNullString) As Boolean
 
     'If an attribute is provided, finding the tag is a bit messier
-    If Len(attributeName) <> 0 Then
-    
-        If InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode) Then
-            DoesTagExist = True
-        Else
-            DoesTagExist = False
-        End If
-    
+    If (LenB(attributeName) <> 0) Then
+        DoesTagExist = (InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode) <> 0)
+        
     'If no attribute is provided, finding the tag is simple
     Else
-    
-        If InStr(1, m_xmlContents, "<" & tagName & ">", m_TextCompareMode) Then
-            DoesTagExist = True
-        Else
-            DoesTagExist = False
-        End If
+        DoesTagExist = (InStr(1, m_xmlContents, "<" & tagName & ">", m_TextCompareMode) <> 0)
         
     End If
 
@@ -275,12 +265,12 @@ End Function
 
 'Update an already existant tag located within a specific subsection of the XML file.  If the tag is not found, it will be added
 ' at the end of the section.
-Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
+Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = vbNullString, Optional ByVal sectionAttribute As String = vbNullString, Optional ByVal sectionAttributeValue As String = vbNullString, Optional ByVal createIfMissing As Boolean = True) As Boolean
 
     'Create a start and end tag to search for, which will vary contingent on the presence of a section request
     Dim startTag As String, CloseTag As String
-    If Len(sectionName) <> 0 Then
-        If Len(sectionAttribute) <> 0 Then
+    If (LenB(sectionName) <> 0) Then
+        If (LenB(sectionAttribute) <> 0) Then
             startTag = "<" & sectionName & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
         Else
             startTag = "<" & sectionName & ">"
@@ -295,7 +285,7 @@ Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, 
     sectionStartLocation = 0
     
     'If a section is specified, add the tag at the end of that section.  Otherwise, add it at the end of the XML file.
-    If Len(sectionAttribute) <> 0 Then
+    If (LenB(sectionAttribute) <> 0) Then
     
         'Finding the proper section close tag for sections with attributes is a bit trickier.  Start by finding the
         ' start location of the requested section+attribute, then find the close tag that follows that.
@@ -511,14 +501,10 @@ Public Function LoadXMLFile(ByVal xmlPath As String) As Boolean
             
             'Remove all tabs from the source file.  (These pad the XML data unnecessarily, so we erase them when loading XML, and restore
             ' them when writing XML.)
-            If InStr(1, m_xmlContents, vbTab, vbBinaryCompare) <> 0 Then m_xmlContents = Replace$(m_xmlContents, vbTab, "", , , vbBinaryCompare)
+            If InStr(1, m_xmlContents, vbTab, vbBinaryCompare) <> 0 Then m_xmlContents = Replace$(m_xmlContents, vbTab, vbNullString, , , vbBinaryCompare)
             
             'Check for an XML header
-            If VerifyXMLHeader(m_xmlContents) Then
-                LoadXMLFile = True
-            Else
-                LoadXMLFile = False
-            End If
+            LoadXMLFile = VerifyXMLHeader(m_xmlContents)
             
         Else
             LoadXMLFile = False
@@ -534,12 +520,8 @@ End Function
 Private Function VerifyXMLHeader(ByRef fileContents As String) As Boolean
         
     'Check for "<?xml" in the file.  We don't care about encoding, etc - just check "<?xml" to keep things quick.
-    If InStr(1, fileContents, "<?xml", m_TextCompareMode) > 0 Then
-        VerifyXMLHeader = True
-    Else
-        VerifyXMLHeader = False
-    End If
-
+    VerifyXMLHeader = (InStr(1, fileContents, "<?xml", m_TextCompareMode) <> 0)
+    
 End Function
 
 'Retrieve an entire file and return it as a string.
@@ -558,18 +540,13 @@ Private Function GetFileAsString(ByVal fName As String) As String
             Get #fileNum, , tmpFileContents
         Close #fileNum
         
-        'Once Unicode support is added, investigate alternate means of file loading, perhaps like the code below??
-        'Open fName For Input As #fileNum
-        '    tmpFileContents = StrConv(InputB(LOF(fileNum), fileNum), vbUnicode)
-        'Close #fileNum
-    
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to our own XML processing)
-        If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
+        If (InStr(1, tmpFileContents, vbTab) <> 0) Then tmpFileContents = Replace(tmpFileContents, vbTab, vbNullString, 1, -1, vbBinaryCompare)
         
         GetFileAsString = tmpFileContents
     
     Else
-        GetFileAsString = ""
+        GetFileAsString = vbNullString
     End If
     
 End Function
@@ -675,13 +652,13 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Public Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "", Optional ByVal xmlSectionAttribute As String = "", Optional ByVal xmlSectionAttributeValue As String = "") As String
+Public Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defaultReturn As String = vbNullString, Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = vbNullString, Optional ByVal xmlSectionAttribute As String = vbNullString, Optional ByVal xmlSectionAttributeValue As String = vbNullString) As String
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If Len(xmlSection) <> 0 Then
+    If (LenB(xmlSection) <> 0) Then
     
-        If Len(xmlSectionAttribute) <> 0 Then
+        If (LenB(xmlSectionAttribute) <> 0) Then
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
         Else
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
@@ -695,7 +672,7 @@ Public Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) <> 0 Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_String = Trim$(tmpString)
     Else
         GetUniqueTag_String = defaultReturn
@@ -754,10 +731,10 @@ Public Function GetTagValueAtPreciseLocation(ByVal startPosition As Long) As Str
     endPos = InStr(startPos + 1, m_xmlContents, "<", vbBinaryCompare)
     
     'Return the value between the two positions
-    If endPos > startPos Then
+    If (endPos > startPos) Then
         GetTagValueAtPreciseLocation = Mid$(m_xmlContents, startPos + 1, (endPos - startPos) - 1)
     Else
-        GetTagValueAtPreciseLocation = ""
+        GetTagValueAtPreciseLocation = vbNullString
     End If
 
 End Function
@@ -802,7 +779,7 @@ End Function
 
 'Return the valid range (character positions) of a given XML block.  Start and End position Long values must be provided by the caller.
 ' Unlike other functions, this returns a TRUE if successful; FALSE otherwise.
-Public Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByVal tagName As String, Optional ByVal tagAttribute As String = "", Optional ByVal tagAttributeValue As String = "", Optional ByVal searchStartPosition As Long = 1) As Boolean
+Public Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByVal tagName As String, Optional ByVal tagAttribute As String = vbNullString, Optional ByVal tagAttributeValue As String = vbNullString, Optional ByVal searchStartPosition As Long = 1) As Boolean
 
     Dim searchLocation As Long
     searchLocation = InStr(searchStartPosition, m_xmlContents, "<" & tagName & " ", m_TextCompareMode)
@@ -918,7 +895,7 @@ Private Function GetTextBetweenTags(ByRef tagName As String, Optional ByVal sear
         End If
         
     Else
-        GetTextBetweenTags = ""
+        GetTextBetweenTags = vbNullString
     End If
 
 End Function
@@ -926,10 +903,9 @@ End Function
 'Given a string, replace any characters that are not allowed with underscores; this is used to generate dynamic tag names
 Public Function GetXMLSafeTagName(ByVal srcText As String) As String
 
-    Dim goodString As String
-    
     'Remove any incidental white space before processing
-    goodString = Trim(srcText)
+    Dim goodString As String
+    goodString = Trim$(srcText)
     
     'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
     Dim validChars As String
@@ -991,11 +967,7 @@ Public Function FindAllAttributeValues(ByRef sArray() As String, ByVal tagName A
     Loop
     
     'If at least one matching tag was found, return true
-    If tagsFound > 0 Then
-        FindAllAttributeValues = True
-    Else
-        FindAllAttributeValues = False
-    End If
+    FindAllAttributeValues = (tagsFound > 0)
 
 End Function
 
