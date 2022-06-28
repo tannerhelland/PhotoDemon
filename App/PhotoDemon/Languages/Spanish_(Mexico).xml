@@ -6,10 +6,10 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.103</langversion>
+<langversion>9.0.0</langversion>
 <langstatus>completo</langstatus>
 
-<author>Plinio C Garcia (with help from DeepL.com)</author>
+<author>Plinio C Garcia, with help from DeepL.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -90,12 +90,12 @@
 
 <phrase>
 <original>Export animated WebP</original>
-<translation></translation>
+<translation>Exportar WebP animado</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Exportación de la búsqueda de colores</translation>
 </phrase>
 
 <phrase>
@@ -200,22 +200,22 @@
 
 <phrase>
 <original>Clear</original>
-<translation></translation>
+<translation>Borrar</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>Relleno con contenido</translation>
 </phrase>
 
 <phrase>
 <original>Fill</original>
-<translation></translation>
+<translation>Llenar</translation>
 </phrase>
 
 <phrase>
 <original>Stroke</original>
-<translation></translation>
+<translation>Trazar</translation>
 </phrase>
 
 <phrase>
@@ -310,12 +310,12 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Crear búsqueda de colores</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Comparar similitudes</translation>
 </phrase>
 
 <phrase>
@@ -380,17 +380,17 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Reemplazar capa desde el portapapeles</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Reemplazar la capa del archivo</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Sustituir la capa de las capas visibles</translation>
 </phrase>
 
 <phrase>
@@ -635,17 +635,17 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Rellenar el área seleccionada</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Curar el área seleccionada</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Esquema de la selección de trazos</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Búsqueda de colores</translation>
 </phrase>
 
 <phrase>
@@ -820,7 +820,7 @@
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Dehaze</translation>
 </phrase>
 
 <phrase>
@@ -840,12 +840,12 @@
 
 <phrase>
 <original>Gradient map</original>
-<translation></translation>
+<translation>Mapa de gradientes</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Mapa de la paleta</translation>
 </phrase>
 
 <phrase>
@@ -960,7 +960,7 @@
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Droste</translation>
 </phrase>
 
 <phrase>
@@ -1020,7 +1020,7 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>Flujo de gradiente</translation>
 </phrase>
 
 <phrase>
@@ -1040,7 +1040,7 @@
 
 <phrase>
 <original>Bump map</original>
-<translation></translation>
+<translation>Mapa de baches</translation>
 </phrase>
 
 <phrase>
@@ -1185,7 +1185,7 @@
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Truchet</translation>
 </phrase>
 
 <phrase>
@@ -1275,17 +1275,17 @@
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>Fondo de animación</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>Primer plano de la animación</translation>
 </phrase>
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>Velocidad de reproducción de la animación</translation>
 </phrase>
 
 <phrase>
@@ -1295,7 +1295,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Plugin de Photoshop (8bf)</translation>
 </phrase>
 
 <phrase>
@@ -1494,7 +1494,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <phrase>
 <original>Error</original>
-<translation></translation>
+<translation>Error</translation>
 </phrase>
 
 <phrase>
@@ -1601,7 +1601,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>random</original>
-<translation></translation>
+<translation>aleatorio</translation>
 </phrase>
 
 <phrase>
@@ -1616,27 +1616,27 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>waves</original>
-<translation></translation>
+<translation>ondas</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>acolchado</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>cadena</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>tejeduría</translation>
 </phrase>
 
 <phrase>
 <original>arc</original>
-<translation></translation>
+<translation>arco</translation>
 </phrase>
 
 <phrase>
@@ -1646,7 +1646,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>maze</original>
-<translation></translation>
+<translation>laberinto</translation>
 </phrase>
 
 <phrase>
@@ -1656,7 +1656,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>octagon</original>
-<translation></translation>
+<translation>octógono</translation>
 </phrase>
 
 <phrase>
@@ -1737,7 +1737,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>Cargando la página %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -2145,12 +2145,12 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 
 <phrase>
 <original>New layer from selection</original>
-<translation></translation>
+<translation>Nueva capa a partir de la selección</translation>
 </phrase>
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation></translation>
+<translation>Capa actualizada con éxito.</translation>
 </phrase>
 
 <phrase>
@@ -2351,12 +2351,12 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 
 <phrase>
 <original>Warning</original>
-<translation></translation>
+<translation>Advertencia</translation>
 </phrase>
 
 <phrase>
 <original>Macro canceled.</original>
-<translation></translation>
+<translation>Macro cancelado.</translation>
 </phrase>
 
 <phrase>
@@ -2385,7 +2385,7 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 
 <phrase>
 <original>Save macro</original>
-<translation></translation>
+<translation>Guardar macro</translation>
 </phrase>
 
 <phrase>
@@ -2400,12 +2400,12 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 
 <phrase>
 <original>Open macro</original>
-<translation></translation>
+<translation>Macro abierta</translation>
 </phrase>
 
 <phrase>
 <original>Loading macro</original>
-<translation></translation>
+<translation>Carga de la macro</translation>
 </phrase>
 
 <phrase>
@@ -2415,12 +2415,12 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation></translation>
+<translation>Se ha encontrado una macro incompatible.  Macro cancelada.</translation>
 </phrase>
 
 <phrase>
 <original>Playing macro</original>
-<translation></translation>
+<translation>Jugar a las macros</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -2536,54 +2536,54 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 
 <phrase>
 <original>Applying plugin</original>
-<translation></translation>
+<translation>Aplicación del plugin</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation></translation>
+<translation>AVIF es un formato de imagen moderno desarrollado por la Alliance for Open Media.  PhotoDemon no soporta de forma nativa las imágenes AVIF, pero puede descargar un plugin gratuito de código abierto que habilita permanentemente el soporte de AVIF.</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation></translation>
+<translation>La Alliance for Open Media ofrece bibliotecas de codificación y decodificación AVIF de 64 bits, gratuitas y de código abierto.  Estas bibliotecas son aproximadamente ~%1 mb cada una (~%2 mb en total).  Una vez descargadas, permitirán a PhotoDemon importar y exportar archivos AVIF en cualquier sistema de 64 bits.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>¿Quieres que PhotoDemon descargue estas bibliotecas en tu carpeta de plugins de PhotoDemon?</translation>
 </phrase>
 
 <phrase>
 <original>Download required</original>
-<translation></translation>
+<translation>Descarga necesaria</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation></translation>
+<translation>PhotoDemon no descargará las bibliotecas AVIF en este momento.</translation>
 </phrase>
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation></translation>
+<translation>Para activar manualmente la compatibilidad con AVIF, puedes descargar las últimas copias de los programas gratuitos "%1" y "%2" y colocarlos en tu carpeta de plugins de PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation></translation>
+<translation>Estas bibliotecas gratuitas están siempre disponibles en la página de publicación de Alliance for Open Media libavif</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled</original>
-<translation></translation>
+<translation>Descarga cancelada</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>Has colocado PhotoDemon en una carpeta restringida del sistema.  Como PhotoDemon no tiene acceso de administrador, no puede descargar archivos para usted.  Por favor, mueva PhotoDemon a una carpeta no restringida e inténtelo de nuevo.</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -2707,7 +2707,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>Mozilla Public License 2.0</original>
-<translation></translation>
+<translation>Mozilla Public License 2.0</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3534,7 +3534,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>Redo (fast-forward to a later state)</original>
-<translation></translation>
+<translation>Rehacer (avanzar a un estado posterior)</translation>
 </phrase>
 
 <phrase>
@@ -3549,17 +3549,17 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>Undo (rewind to an earlier state)</original>
-<translation></translation>
+<translation>Deshacer (rebobinar a un estado anterior)</translation>
 </phrase>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation></translation>
+<translation>Fije este panel abierto</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>Los paneles de la caja de herramientas se cierran automáticamente, pero puedes anclar uno para mantenerlo abierto.  (Los paneles anclados siguen cerrándose al cambiar de herramienta o abrir nuevos paneles)</translation>
 </phrase>
 
 <phrase>
@@ -3586,32 +3586,32 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation></translation>
+<translation>PhotoDemon no puede conectarse a Internet.  Por favor, compruebe su conexión y vuelva a intentarlo.</translation>
 </phrase>
 
 <phrase>
 <original>Verifying URL (this may take a moment)</original>
-<translation></translation>
+<translation>Verificación de la URL (puede tardar un momento)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation></translation>
+<translation>PhotoDemon no pudo alcanzar la URL de destino (%1).  Si el problema persiste, intente descargar el archivo manualmente utilizando su navegador de Internet.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading</original>
-<translation></translation>
+<translation>Descargando</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation></translation>
+<translation>PhotoDemon ha perdido el acceso a Internet. Por favor, compruebe su conexión.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation></translation>
+<translation>Descargando (%1 de %2 bytes)</translation>
 </phrase>
 
 <phrase>
@@ -3628,7 +3628,9 @@ Please válida Introduzca un valor numérico.</translation>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation></translation>
+<translation>Desafortunadamente, %1 impidió que PhotoDemon descargara directamente este archivo. (Las descargas directas a veces son confundidas con hotlinks por servidores mal configurados)
+
+Tendrá que descargar manualmente este archivo utilizando su navegador de Internet.</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3734,7 +3736,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>Repintado de regiones seleccionadas</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3748,17 +3750,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>Búsqueda de colores del edificio</translation>
 </phrase>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>Todas las LUTs soportadas</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>Seleccione un archivo LUT</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4097,7 +4099,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>Antecedentes</translation>
 </phrase>
 
 <!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4630,7 +4632,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>%1, was %2</original>
-<translation></translation>
+<translation>%1, era %2</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4825,7 +4827,7 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Animated WebP</original>
-<translation></translation>
+<translation>WebP animado</translation>
 </phrase>
 
 <phrase>
@@ -4940,7 +4942,7 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Similarity</original>
-<translation></translation>
+<translation>Similitud</translation>
 </phrase>
 
 <phrase>

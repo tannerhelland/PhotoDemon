@@ -96,13 +96,13 @@ Begin VB.Form FormLanguageEditor
          _ExtentY        =   8070
       End
       Begin PhotoDemon.pdButton cmdDeleteLanguage 
-         Height          =   615
+         Height          =   690
          Left            =   8400
          TabIndex        =   10
          Top             =   6360
          Width           =   3135
          _ExtentX        =   5530
-         _ExtentY        =   1085
+         _ExtentY        =   1217
          Caption         =   "Delete selected language file"
       End
       Begin PhotoDemon.pdRadioButton optBaseLanguage 
@@ -138,6 +138,26 @@ Begin VB.Form FormLanguageEditor
          _ExtentY        =   503
          Caption         =   "language files currently available"
          FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdTextBox txtApiKey 
+         Height          =   345
+         Left            =   1080
+         TabIndex        =   21
+         Top             =   6720
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   1
+         Left            =   840
+         Top             =   6360
+         Width           =   7155
+         _ExtentX        =   12621
+         _ExtentY        =   503
+         Caption         =   "(optional) free DeepL.com API key for translation suggestions"
          ForeColor       =   4210752
       End
    End
@@ -380,7 +400,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   615
          Left            =   5040
          TabIndex        =   5
-         Top             =   6600
+         Top             =   6720
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1085
@@ -420,7 +440,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   330
          Left            =   5040
          TabIndex        =   3
-         Top             =   6000
+         Top             =   6360
          Width           =   6600
          _ExtentX        =   11642
          _ExtentY        =   582
@@ -476,7 +496,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   615
          Left            =   240
          TabIndex        =   20
-         Top             =   6600
+         Top             =   6720
          Width           =   4455
          _ExtentX        =   7858
          _ExtentY        =   1085
@@ -562,7 +582,7 @@ Private m_xmlLoaded As Boolean
 Private m_WizardPage As Long
 
 'A Google Translate interface, which we use to auto-populate missing translations
-Private m_AutoTranslate As clsAutoLocalize
+Private m_AutoTranslate As pdAutoLocalize
 
 'An XML engine is used to parse and update the actual language file contents
 Private m_XMLEngine As pdXML
@@ -658,8 +678,7 @@ Private Sub cmdAutoTranslate_Click()
             'Remove ampersands, as Google will treat these as the word "and"
             If InStr(1, srcPhrase, "&", vbBinaryCompare) Then srcPhrase = Replace$(srcPhrase, "&", vbNullString, , , vbBinaryCompare)
             
-            'Request a translation from Google
-            'retString = m_AutoTranslate.GetGoogleTranslation(srcPhrase)
+            'Request a translation from DeepL
             retString = m_AutoTranslate.GetDeepLTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation
@@ -705,7 +724,12 @@ AutoTranslateFailure:
 End Sub
 
 Private Sub cmdCancel_Click()
+    
+    'Before exiting, save the user's DeepL API key (if they entered one)
+    UpdateAPIKey
+    
     Unload Me
+    
 End Sub
 
 'Allow the user to delete the selected language file, if they so desire.
@@ -846,10 +870,13 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     'Before changing the page, maek sure all user input on the current page is valid
     Select Case m_WizardPage
     
-        'The first page is the language selection page.  When the user leaves this page, we must load the language they've selected
-        ' into memory - so this validation step is quite large.
+        'The first page is the language selection page.  When the user leaves this page, we must load the language
+        ' they've selected into memory.
         Case 0
-        
+            
+            'Before doing anything, save the user's DeepL API key (if they entered one)
+            UpdateAPIKey
+            
             'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
             ' currently too lazy to write a more elegant warning!)
             If (optBaseLanguage(1).Value And (lstLanguages.ListIndex < 0)) Then
@@ -941,8 +968,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         
             If moveForward Then
                 
-                'If the user is working from an official file or an autosave, the folder and/or extension of the original filename
-                ' may not be usable.  Strip just the original filename, and append our own folder and extension.
+                'If the user is working from an official file or an autosave, the folder and/or extension of the
+                ' original filename may not be usable.  Strip just the original filename, and append our own
+                ' folder and extension.
                 Dim sFile As String
                 
                 If m_curLanguage.LangType = "Autosave" Then
@@ -1053,6 +1081,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     lblWizardTitle.Caption = lblWizardTitle.Caption & " "
     
     Dim helpText As pdString
+    Set helpText = New pdString
     
     Select Case m_WizardPage
     
@@ -1105,9 +1134,17 @@ Private Sub Form_Load()
     cboPhraseFilter.AddItem "untranslated phrases", 2
     cboPhraseFilter.ListIndex = 0
     
-    'Initialize the Google Translate interface
-    Set m_AutoTranslate = New clsAutoLocalize
+    'Initialize an online translation interface
+    Set m_AutoTranslate = New pdAutoLocalize
     m_AutoTranslate.SetSrcLanguage "en"
+    
+    'Note that the user must supply their own API key; I do not ship mine with the project
+    Dim userKey As String
+    userKey = UserPrefs.GetPref_String("Core", "DeepL-API", vbNullString, False)
+    If (LenB(userKey) <> 0) Then
+        txtApiKey.Text = userKey
+        m_AutoTranslate.SetAPIKey Trim$(userKey)
+    End If
     
     'Apply translations and visual styles
     ApplyThemeAndTranslations Me
@@ -1507,4 +1544,13 @@ End Sub
 
 Private Sub txtTranslation_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     preventFurtherHandling = m_InKeyEvent
+End Sub
+
+'Call this to save the user's entered API key (if any) to their prefs file
+Private Sub UpdateAPIKey()
+    If (LenB(Trim$(txtApiKey.Text)) > 0) Then
+        If Strings.StringsNotEqual(Trim$(txtApiKey.Text), UserPrefs.GetPref_String("Core", "DeepL-API", vbNullString, True), True) Then
+            UserPrefs.SetPref_String "Core", "DeepL-API", Trim$(txtApiKey.Text)
+        End If
+    End If
 End Sub
