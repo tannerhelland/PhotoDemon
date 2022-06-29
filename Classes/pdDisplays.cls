@@ -358,7 +358,7 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
         'Extract the adapter name as well
         Dim tmpName As String
         tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monInfo.szDevice(0)), CCHDEVICENAME * 2, True)
-        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
+        If (LenB(tmpName) > 0) Then tmpName = Trim$(tmpName)
         listOfDisplays(m_NumOfDisplays).SetAdapterName tmpName
         
         'While here, we want to add some additional information to the display entry, but it's fairly involved, so we're

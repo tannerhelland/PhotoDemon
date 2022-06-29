@@ -4279,7 +4279,7 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
             srcMimetype = vbNullString
     End Select
     
-    If (Len(srcMimetype) <> 0) Then
+    If (LenB(srcMimetype) <> 0) Then
         
         'Start by retrieving the number of encoders, and the size of the full encoder list
         Dim numOfEncoders As Long, sizeOfEncoders As Long

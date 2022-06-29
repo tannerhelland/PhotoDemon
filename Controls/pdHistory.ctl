@@ -205,7 +205,7 @@ Public Sub SetHistoryFromString(ByRef srcString As String)
     
     Dim i As Long
                 
-    If (Len(srcString) <> 0) Then
+    If (LenB(srcString) <> 0) Then
     
         Dim cXML As pdSerialize
         Set cXML = New pdSerialize
@@ -232,7 +232,7 @@ Public Sub SetHistoryFromString(ByRef srcString As String)
                     entryName = "pdHistoryItem" & ":" & CStr(i)
                     If cXML.DoesParamExist(entryName) Then
                         m_HistoryItems(i).ItemString = .GetString(entryName, vbNullString)
-                        If (Len(m_HistoryItems(i).ItemString) = 0) Then RaiseEvent HistoryDoesntExist(i, m_HistoryItems(i).ItemString)
+                        If (LenB(m_HistoryItems(i).ItemString) = 0) Then RaiseEvent HistoryDoesntExist(i, m_HistoryItems(i).ItemString)
                     Else
                         RaiseEvent HistoryDoesntExist(i, m_HistoryItems(i).ItemString)
                     End If

@@ -580,7 +580,7 @@ Private Function ExportStep2_ColorProfile(ByRef cStream As pdStream, ByRef srcIm
     
     'We can finally write the description out to file
     cStream.WriteIntU Len(strProfileDescription)
-    If (Len(strProfileDescription) > 0) Then cStream.WriteString_ASCII strProfileDescription
+    If (LenB(strProfileDescription) > 0) Then cStream.WriteString_ASCII strProfileDescription
     
     'Next comes size of the profile
     Dim profBytes() As Byte, profSize As Long

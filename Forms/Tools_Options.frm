@@ -1312,7 +1312,7 @@ Private Sub cmdColorProfilePath_Click()
     tempPathString = UserPrefs.GetPref_String("Paths", "Color Profile", vbNullString)
     
     'If no color profile path was found, populate it with the default system color profile path
-    If (Len(tempPathString) = 0) Then tempPathString = GetSystemColorFolder()
+    If (LenB(tempPathString) = 0) Then tempPathString = GetSystemColorFolder()
     
     'Prepare a common dialog filter list with extensions of known profile types
     Dim cdFilter As String
@@ -1326,8 +1326,6 @@ Private Sub cmdColorProfilePath_Click()
     Set openDialog = New pdOpenSaveDialog
     
     If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".icc", FormOptions.hWnd) Then
-        
-        sFile = Strings.TrimNull(sFile)
         
         'Save this new directory as the default path for future usage
         Dim listPath As String

@@ -499,7 +499,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 strKeyLocation = "CurrentLocationOnDisk"
                 strKeyName = "OriginalFileName"
                 
-                If (Len(PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation)) <> 0) Then
+                If (LenB(PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation)) <> 0) Then
                     Me.AssignTooltip PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation), PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyName)
                 Else
                     Me.AssignTooltip "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."

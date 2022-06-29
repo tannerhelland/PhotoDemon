@@ -466,7 +466,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         tmpString = cmdBar.RetrievePresetData("NodeCount_" & i)
         
         'If no node data is found for this entry, reset all node data and exit immediately
-        If (Len(tmpString) = 0) Then
+        If (LenB(tmpString) = 0) Then
             ResetCurvePoints
             Exit Sub
         End If

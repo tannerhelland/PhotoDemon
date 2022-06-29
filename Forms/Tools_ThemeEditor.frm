@@ -632,7 +632,7 @@ Private Sub cmdResourcePath_Click()
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
     If cCommonDialog.GetOpenFileName(srcFile, , False, False, "PD Resource Files (*.pdr)|*.pdr", , m_FSO.FileGetPath(txtResourcePath.Text), "Select resource file", "pdr", Me.hWnd) Then
-        If (Len(srcFile) <> 0) Then
+        If (LenB(srcFile) <> 0) Then
             txtResourcePath.Text = srcFile
             UserPrefs.SetPref_String "Themes", "LastResourceFile", srcFile
             LoadResourceFromFile

@@ -1401,7 +1401,7 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
     
     If isList Then strResult = g_Language.TranslateMessage("list of %1, one entry per line", strResult)
     
-    If Len(strResult) <> 0 Then ConvertDataTypeToString = strResult
+    If (LenB(strResult) <> 0) Then ConvertDataTypeToString = strResult
     
 End Function
 

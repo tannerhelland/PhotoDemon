@@ -440,7 +440,7 @@ Private Function AppProcessID() As Long
                 Do
                     testProcessName = Strings.StringFromUTF16_FixedLen(VarPtr(uProcess.szExeFile(0)), MAX_PATH * 2, True)
                     
-                    If (Len(testProcessName) <> 0) Then
+                    If (LenB(testProcessName) <> 0) Then
                         If Strings.StringsEqual(testProcessName, processName, True) Then
                             procFound = True
                             Exit Do

@@ -89,7 +89,7 @@ Public Sub DeleteTempFiles()
     
         Dim i As Long
         For i = 0 To m_NumOfTempFiles - 1
-            If (Len(m_ListOfTempFiles(i)) <> 0) Then Files.FileDeleteIfExists m_ListOfTempFiles(i)
+            If (LenB(m_ListOfTempFiles(i)) <> 0) Then Files.FileDeleteIfExists m_ListOfTempFiles(i)
         Next i
         
         m_NumOfTempFiles = 0

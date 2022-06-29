@@ -136,7 +136,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             ' filename, and extension we want it to search against.
             Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
             tmpFolder = Files.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
-            If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+            If (LenB(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0) Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
             tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
             tmpExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
             
@@ -329,7 +329,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
 
     'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
     ' prompt.
-    If (Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <= 0) Then
+    If (LenB(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0) Then
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.

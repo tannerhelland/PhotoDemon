@@ -451,7 +451,7 @@ End Function
 Public Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
     
     'Forward the string pointer to the actual addNodeData function, and return its result.
-    If Len(srcDataString) <> 0 Then
+    If (LenB(srcDataString) <> 0) Then
         AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel, requestChecksum)
     End If
 
@@ -577,7 +577,7 @@ Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
             If preserveFolders Then
                 
                 'Folder preservation is active.  Find the appropriate relative base, per the caller's supplied path(s).
-                If Len(useCustomRelativeFolderBase) <> 0 Then
+                If (LenB(useCustomRelativeFolderBase) <> 0) Then
                     relativeFilePath = m_File.GenerateRelativePath(useCustomRelativeFolderBase, curFile)
                 Else
                     relativeFilePath = m_File.GenerateRelativePath(srcFolder, curFile)
@@ -1330,7 +1330,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         End If
         
         'Make sure the destination path was successfully constructed, including any relative path data
-        If Len(fullDestinationPath) > 0 Then
+        If (LenB(fullDestinationPath) > 0) Then
         
             'Retrieve this node's contents
             If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
@@ -1492,7 +1492,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'Make sure the destination path was successfully constructed, including any relative path data.
                         ' (If constructing the relative path failed, the destination path string will have been erased.)
-                        If Len(fullDestinationPath) > 0 Then
+                        If (LenB(fullDestinationPath) > 0) Then
                         
                             'Retrieve this node's contents
                             If GetNodeDataByIndex(i, False, retBytes()) Then

@@ -1041,7 +1041,7 @@ Private Function LoadPaletteGIMP(ByRef srcFile As String, ByRef srcStream As pdS
                         srcColorName = vbNullString
                         If (InStr(1, Trim$(curLine), SPACE_CHAR, vbBinaryCompare) <> 0) Then
                             curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare))) & SPACE_CHAR
-                            If (Len(curLine) <> 0) Then srcColorName = curLine
+                            If (LenB(curLine) <> 0) Then srcColorName = curLine
                         End If
                         
                         'If we made it all the way here, this line was successfully parsed for color data.

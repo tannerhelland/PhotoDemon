@@ -327,7 +327,7 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
     m_OldBrush = initialBrush
     Set m_Filler = New pd2DBrush
     m_Filler.SetBrushPropertiesFromXML initialBrush
-    If Len(initialBrush) = 0 Then initialBrush = m_Filler.GetBrushPropertiesAsXML
+    If (LenB(initialBrush) = 0) Then initialBrush = m_Filler.GetBrushPropertiesAsXML
     
     'Sync all controls to the initial brush parameters
     SyncControlsToFillObject

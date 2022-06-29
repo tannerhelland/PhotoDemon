@@ -923,7 +923,7 @@ Private Function ValidateExternalPackage(Optional ByRef packageID As String = vb
     m_Stream.SetPosition 0, FILE_BEGIN
     ValidateExternalPackage = (m_Stream.ReadString_ASCII(8) = "PDPKCHNK")
     If ValidateExternalPackage Then m_PackageID = PDPackaging.ValidateChunkID(m_Stream.ReadString_UTF8(4))
-    If (Len(packageID) <> 0) Then ValidateExternalPackage = Strings.StringsEqual(m_PackageID, PDPackaging.ValidateChunkID(packageID))
+    If (LenB(packageID) <> 0) Then ValidateExternalPackage = Strings.StringsEqual(m_PackageID, PDPackaging.ValidateChunkID(packageID))
 End Function
 
 'Given a source pointer, write the contents as a new chunk.  Any/all validation needs to be performed

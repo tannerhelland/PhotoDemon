@@ -1741,7 +1741,7 @@ End Function
 'If you know it's safe to destroy PD's clipboard cache, you can do so via this function.  Note that this action is not reversible,
 ' so make sure it's what you want/need to do.
 Private Sub DestroyStashedData()
-    If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
 End Sub
 
 Friend Function IsPDDataOnClipboard() As Boolean

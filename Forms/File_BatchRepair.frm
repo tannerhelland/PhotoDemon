@@ -411,7 +411,7 @@ End Sub
 Private Sub cmdDstFolder_Click()
     Dim folderPath As String
     folderPath = Files.PathBrowseDialog(Me.hWnd, txtDstFolder.Text)
-    If (Len(folderPath) <> 0) Then
+    If (LenB(folderPath) <> 0) Then
         txtDstFolder.Text = Files.PathAddBackslash(folderPath)
         UserPrefs.SetPref_String "BatchProcess", "RepairDstFolder", txtDstFolder.Text
     End If
@@ -420,7 +420,7 @@ End Sub
 Private Sub cmdSrcFolder_Click()
     Dim folderPath As String
     folderPath = Files.PathBrowseDialog(Me.hWnd, txtSrcFolder.Text)
-    If (Len(folderPath) <> 0) Then
+    If (LenB(folderPath) <> 0) Then
         txtSrcFolder.Text = Files.PathAddBackslash(folderPath)
         UserPrefs.SetPref_String "BatchProcess", "RepairSrcFolder", txtSrcFolder.Text
     End If

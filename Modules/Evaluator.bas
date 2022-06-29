@@ -127,9 +127,9 @@ Private Function Eval(ByVal srcExpression As String) As Variant
     If InStr(srcExpression, "'") Then Eval = Replace(Trim$(srcExpression), "'", ""): Exit Function
     
     'Return numeric characters as-is, with an additional check for duplicate negatives
-    If Len(srcExpression) Then Eval = Val(Replace(srcExpression, "--", vbNullString))
+    If (LenB(srcExpression) <> 0) Then Eval = Val(Replace(srcExpression, "--", vbNullString))
     
-    'If we don't want to support characters or functions, we can check for invalid alpha characters here
+    'If we don't want to support characters or functions, check for invalid alpha characters here
     'If (Trim$(srcExpression) >= "A") Then: Err.Raise 5, , "Invalid expression.": Exit Function
     
     If (LenB(srcExpression) <> 0) Then

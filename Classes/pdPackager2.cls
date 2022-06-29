@@ -650,7 +650,7 @@ Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
             If preserveFolders Then
                 
                 'Folder preservation is active.  Find the appropriate relative base, per the caller's supplied path(s).
-                If (Len(useCustomRelativeFolderBase) <> 0) Then
+                If (LenB(useCustomRelativeFolderBase) <> 0) Then
                     relativeFilePath = m_File.GenerateRelativePath(useCustomRelativeFolderBase, curFile)
                 Else
                     relativeFilePath = m_File.GenerateRelativePath(srcFolder, curFile)

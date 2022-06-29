@@ -584,7 +584,7 @@ End Sub
 
 Private Sub hstColors_HistoryItemClicked(ByVal histIndex As Long, ByVal histValue As String)
     
-    If (Len(histValue) <> 0) Then
+    If (LenB(histValue) <> 0) Then
     
         Dim clickedColor As Long
         clickedColor = CLng(histValue)
