@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Fast String-based collection, using hash-table + separate chaining (linked-list) for collisions
 'Copyright 2022-2022 by Tanner Helland
 'Created: 07/March/22
-'Last updated: 21/March/22
-'Last update: wrap up initial build, including official integration into pdTranslate
+'Last updated: 30/June/22
+'Last update: fix overflow table bug when re-adding the same key multiple times
 '
 'PhotoDemon's run-time localization engine has to manage a ton of strings.  Historically, we've just
 ' pulled strings on-demand from the base XML string.  This is very fast (especially since localization
@@ -49,6 +49,7 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+Option Compare Binary
 
 'Item entry in the table.  Key and value are stored together, alongside a link to the next item in this chain.
 Private Type MergedEntry
@@ -141,7 +142,7 @@ Friend Function AddItem(ByRef srcKey As String, ByRef srcItem As String) As Bool
                     
                     'Key already exists in the table.  Overwrite it with the new value, then exit.
                     If (m_overflowTable(idxTable).sKey = srcKey) Then
-                        m_hashTable(idxTable).sItem = srcItem
+                        m_overflowTable(idxTable).sItem = srcItem
                         Exit Function
                         
                     Else

@@ -66,6 +66,10 @@ Private m_ServiceAvailable As Boolean
 'The user needs to supply an API key for the target translation service; without this, the class WILL NOT WORK
 Private m_apiKey As String
 
+Public Function GetAPIKey() As String
+    GetAPIKey = m_apiKey
+End Function
+
 Public Sub SetAPIKey(ByRef srcKey As String)
     m_apiKey = srcKey
 End Sub
