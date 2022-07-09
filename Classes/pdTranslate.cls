@@ -327,6 +327,13 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     ImageFormats.NotifyLanguageChanged
     
 End Sub
+Friend Function GetSystemUserCountry() As String
+    GetSystemUserCountry = UCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
+End Function
+
+Friend Function GetSystemUserLanguage() As String
+    GetSystemUserLanguage = LCase$(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
+End Function
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"
 Private Function GetDefaultUserLanguage() As String
@@ -341,10 +348,10 @@ Private Function GetDefaultUserLanguage() As String
     Dim abbrLang As String, abbrRegion As String
     
     'Get the ISO 639 abbreviated language name (e.g. "en" for "English")
-    abbrLang = LCase$(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
+    abbrLang = Me.GetSystemUserLanguage()
     
     'Get the ISO 4166 abbreviated country/region name (e.g. "US" for "United States")
-    abbrRegion = UCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
+    abbrRegion = Me.GetSystemUserCountry()
     
     'Return the language codes
     GetDefaultUserLanguage = abbrLang & "-" & abbrRegion

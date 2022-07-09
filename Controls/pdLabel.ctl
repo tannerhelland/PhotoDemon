@@ -338,7 +338,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-        
+    
     Alignment = vbLeftJustify
     Caption = "caption"
     Layout = AutoFitCaption

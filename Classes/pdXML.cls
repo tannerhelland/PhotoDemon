@@ -1018,11 +1018,17 @@ End Function
 ' Long-type array, which the calling function can use to retrieve individual values at its leisure.
 ' NOTE: per my personal requirements for this function, it assumes simple tags only (e.g. <tagname>).  This improves
 ' performance.  This function could easily be modified to also find tags with attributes.
-Friend Function FindAllTagLocations(ByRef locationArray() As Long, ByVal tagName As String, Optional ByVal useDoEvents As Boolean = False) As Boolean
-
-    Dim numOfTags As Long, tagArrayBound As Long
+Friend Function FindAllTagLocations(ByRef locationArray() As Long, ByRef tagName As String) As Boolean
+    
+    FindAllTagLocations = False
+    
+    Dim numOfTags As Long
     numOfTags = 0
-    tagArrayBound = 100
+    
+    Const INIT_OCCURRENCES_COUNT As Long = 4096
+    Dim tagArrayBound As Long
+    tagArrayBound = INIT_OCCURRENCES_COUNT - 1
+    
     ReDim locationArray(0 To tagArrayBound) As Long
     
     Dim searchTag As String
@@ -1032,7 +1038,7 @@ Friend Function FindAllTagLocations(ByRef locationArray() As Long, ByVal tagName
     searchLocation = 1
     
     'If the tag doesn't occur even once, fail the function and exit.
-    If InStr(searchLocation, m_xmlContents, searchTag, m_TextCompareMode) > 0 Then
+    If (InStr(searchLocation, m_xmlContents, searchTag, m_TextCompareMode) > 0) Then
     
         'Find one initial tag
         searchLocation = InStr(searchLocation, m_xmlContents, searchTag, m_TextCompareMode)
@@ -1045,29 +1051,20 @@ Friend Function FindAllTagLocations(ByRef locationArray() As Long, ByVal tagName
             
             'Increment tag count.  If it exceeds the bounds of the array, resize the array to match.
             numOfTags = numOfTags + 1
-            
-            If numOfTags > tagArrayBound Then
-                tagArrayBound = tagArrayBound * 2
+            If (numOfTags > tagArrayBound) Then
+                tagArrayBound = tagArrayBound * 2 + 1
                 ReDim Preserve locationArray(0 To tagArrayBound) As Long
             End If
             
             'Find the next occurrence of the target tag
             searchLocation = InStr(searchLocation + 1, m_xmlContents, searchTag, m_TextCompareMode)
+            
+        Loop While (searchLocation > 0)
         
-            If useDoEvents Then
-                If (numOfTags And 7) = 0 Then DoEvents
-            End If
-        
-        Loop While searchLocation > 0
-    
         'Now that all tags have been located, resize the array to match the number of tags found, then exit
-        ReDim Preserve locationArray(0 To numOfTags - 1) As Long
-        FindAllTagLocations = True
+        FindAllTagLocations = (numOfTags > 0)
+        If FindAllTagLocations Then ReDim Preserve locationArray(0 To numOfTags - 1) As Long
         
-    Else
-    
-        FindAllTagLocations = False
-    
     End If
     
 End Function

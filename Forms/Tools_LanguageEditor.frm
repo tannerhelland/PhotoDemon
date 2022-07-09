@@ -7,7 +7,7 @@ Begin VB.Form FormLanguageEditor
    ClientHeight    =   9000
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   15360
+   ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,12 +24,24 @@ Begin VB.Form FormLanguageEditor
    MinButton       =   0   'False
    ScaleHeight     =   600
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1024
+   ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdHyperlink hypReadme 
+      Height          =   375
+      Left            =   120
+      TabIndex        =   24
+      Top             =   8445
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   661
+      Alignment       =   2
+      Caption         =   "click here for detailed instructions"
+      URL             =   "https://github.com/tannerhelland/PhotoDemon/tree/main/App/PhotoDemon/Languages#readme"
+   End
    Begin PhotoDemon.pdButton cmdPrevious 
       Height          =   615
-      Left            =   10080
-      TabIndex        =   4
+      Left            =   6720
+      TabIndex        =   2
       Top             =   8310
       Width           =   1725
       _ExtentX        =   3043
@@ -38,8 +50,8 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
-      Left            =   11880
-      TabIndex        =   18
+      Left            =   8520
+      TabIndex        =   16
       Top             =   8310
       Width           =   1725
       _ExtentX        =   3043
@@ -48,78 +60,67 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
-      Left            =   13860
-      TabIndex        =   19
+      Left            =   10500
+      TabIndex        =   17
       Top             =   8310
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   1085
       Caption         =   "Cancel"
    End
-   Begin PhotoDemon.pdLabel lblExplanation 
-      Height          =   7320
-      Left            =   120
-      Top             =   780
-      Width           =   3135
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   ""
-      ForeColor       =   4210752
-      Layout          =   1
-   End
    Begin PhotoDemon.pdLabel lblWizardTitle 
       Height          =   405
       Left            =   120
       Top             =   120
-      Width           =   14475
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "Step 1: select a language file"
+      Width           =   11835
+      _ExtentX        =   20876
+      _ExtentY        =   714
+      Caption         =   ""
       FontSize        =   12
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   2
-      Left            =   3480
+      Left            =   120
       Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Width           =   11910
+      _ExtentX        =   21008
+      _ExtentY        =   13150
       Begin PhotoDemon.pdButton cmdUseReference 
-         Height          =   735
+         Height          =   1095
          Left            =   11040
-         TabIndex        =   25
-         Top             =   5520
+         TabIndex        =   20
+         Top             =   5160
          Width           =   615
          _ExtentX        =   1085
-         _ExtentY        =   1296
+         _ExtentY        =   1931
          Caption         =   "use"
       End
       Begin PhotoDemon.pdTextBox txtReference 
-         Height          =   735
+         Height          =   1095
          Left            =   5040
-         TabIndex        =   24
-         Top             =   5520
+         TabIndex        =   19
+         Top             =   5160
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   1296
+         _ExtentY        =   1931
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdListBox lstPhrases 
-         Height          =   5175
+         Height          =   5295
          Left            =   240
-         TabIndex        =   8
-         Top             =   360
+         TabIndex        =   6
+         Top             =   1320
          Width           =   4455
          _ExtentX        =   7858
-         _ExtentY        =   9128
+         _ExtentY        =   9340
       End
       Begin PhotoDemon.pdDropDown cboPhraseFilter 
          Height          =   375
          Left            =   240
-         TabIndex        =   11
-         Top             =   6000
+         TabIndex        =   9
+         Top             =   360
          Width           =   4455
          _ExtentX        =   7858
          _ExtentY        =   661
@@ -127,7 +128,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdButton cmdNextPhrase 
          Height          =   615
          Left            =   5040
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   6720
          Width           =   6615
          _ExtentX        =   11668
@@ -137,7 +138,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtTranslation 
          Height          =   1965
          Left            =   5040
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   2760
          Width           =   6615
          _ExtentX        =   11668
@@ -147,32 +148,12 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtOriginal 
          Height          =   1995
          Left            =   5040
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   360
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   3519
          Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkOnlineTranslate 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   2
-         Top             =   4800
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "use an online service to estimate missing translations"
-      End
-      Begin PhotoDemon.pdCheckBox chkShortcut 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   3
-         Top             =   6360
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "CTRL+ENTER automatically saves and proceeds to next phrase"
       End
       Begin PhotoDemon.pdLabel lblTranslatedPhrase 
          Height          =   285
@@ -201,18 +182,18 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   2
          Left            =   0
-         Top             =   5625
-         Width           =   4665
-         _ExtentX        =   8229
+         Top             =   0
+         Width           =   4785
+         _ExtentX        =   8440
          _ExtentY        =   503
-         Caption         =   "phrases to display"
+         Caption         =   "phrase groups"
          FontSize        =   12
          ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblPhraseBox 
          Height          =   285
          Left            =   0
-         Top             =   0
+         Top             =   840
          Width           =   4785
          _ExtentX        =   8440
          _ExtentY        =   503
@@ -223,152 +204,74 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdButton cmdAutoTranslate 
          Height          =   615
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   6720
          Width           =   4455
          _ExtentX        =   7858
          _ExtentY        =   1085
-         Caption         =   "Initiate auto-translation of all missing phrases"
+         Caption         =   "Auto-translate all missing phrases"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   11
-         Left            =   5040
-         Top             =   5160
-         Width           =   6585
-         _ExtentX        =   11615
+         Left            =   4920
+         Top             =   4800
+         Width           =   6705
+         _ExtentX        =   11827
          _ExtentY        =   503
-         Caption         =   "reference translation (if a .po file was provided)"
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
-      Index           =   0
-      Left            =   3480
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButton cmdPO 
-         Height          =   330
-         Left            =   7680
-         TabIndex        =   23
-         Top             =   7080
-         Width           =   495
-         _ExtentX        =   873
-         _ExtentY        =   582
-         Caption         =   "..."
-      End
-      Begin PhotoDemon.pdListBox lstLanguages 
-         Height          =   4215
-         Left            =   840
-         TabIndex        =   6
-         Top             =   1560
-         Width           =   10695
-         _ExtentX        =   18865
-         _ExtentY        =   8070
-      End
-      Begin PhotoDemon.pdButton cmdDeleteLanguage 
-         Height          =   690
-         Left            =   8400
-         TabIndex        =   10
-         Top             =   5880
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1217
-         Caption         =   "Delete selected language file"
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   0
-         Top             =   120
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "start a new language file"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   1
-         Top             =   600
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "edit an existing language file:"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   840
-         Top             =   1200
-         Width           =   10650
-         _ExtentX        =   18785
-         _ExtentY        =   503
-         Caption         =   "language files currently available"
+         Caption         =   "reference translation from .po file"
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdTextBox txtApiKey 
-         Height          =   345
-         Left            =   1080
-         TabIndex        =   21
-         Top             =   6240
-         Width           =   7095
-         _ExtentX        =   12303
-         _ExtentY        =   609
-      End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   1
-         Left            =   840
-         Top             =   5880
-         Width           =   7275
-         _ExtentX        =   12832
+         Index           =   6
+         Left            =   5040
+         Top             =   6360
+         Width           =   6585
+         _ExtentX        =   11615
          _ExtentY        =   503
-         Caption         =   "(optional) free DeepL.com API key for translation suggestions"
+         Caption         =   "(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)"
          ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   10
-         Left            =   840
-         Top             =   6720
-         Width           =   7275
-         _ExtentX        =   12832
-         _ExtentY        =   503
-         Caption         =   "(optional) 3rd-party language file (.po) to compare"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdTextBox txtPO 
-         Height          =   345
-         Left            =   1080
-         TabIndex        =   22
-         Top             =   7080
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   609
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   1
-      Left            =   3480
+      Left            =   120
       Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Width           =   11910
+      _ExtentX        =   21008
+      _ExtentY        =   13150
+      Begin PhotoDemon.pdCheckBox chkUserLocale 
+         Height          =   360
+         Left            =   8280
+         TabIndex        =   27
+         Top             =   405
+         Width           =   3375
+         _ExtentX        =   5953
+         _ExtentY        =   635
+         Caption         =   "copy system locale"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdHyperlink hypISO 
+         Height          =   375
+         Index           =   0
+         Left            =   6120
+         TabIndex        =   25
+         Top             =   840
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
+         Caption         =   "official ISO language codes at Wikipedia"
+         URL             =   "https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes"
+      End
       Begin PhotoDemon.pdTextBox txtLangID 
          Height          =   345
          Index           =   1
-         Left            =   240
-         TabIndex        =   12
-         Top             =   1335
+         Left            =   6840
+         TabIndex        =   10
+         Top             =   375
          Width           =   630
          _ExtentX        =   1111
          _ExtentY        =   609
@@ -378,8 +281,8 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangID 
          Height          =   345
          Index           =   0
-         Left            =   240
-         TabIndex        =   13
+         Left            =   6120
+         TabIndex        =   11
          Top             =   375
          Width           =   630
          _ExtentX        =   1111
@@ -390,10 +293,10 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangName 
          Height          =   345
          Left            =   240
-         TabIndex        =   14
-         Top             =   2295
-         Width           =   2910
-         _ExtentX        =   5133
+         TabIndex        =   12
+         Top             =   360
+         Width           =   5175
+         _ExtentX        =   9128
          _ExtentY        =   609
          FontSize        =   11
          Text            =   "English (US)"
@@ -401,10 +304,10 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangStatus 
          Height          =   345
          Left            =   240
-         TabIndex        =   15
-         Top             =   3255
-         Width           =   2910
-         _ExtentX        =   5133
+         TabIndex        =   13
+         Top             =   2280
+         Width           =   11055
+         _ExtentX        =   19500
          _ExtentY        =   609
          FontSize        =   11
          Text            =   "incomplete"
@@ -412,10 +315,10 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangVersion 
          Height          =   345
          Left            =   240
-         TabIndex        =   16
-         Top             =   4215
-         Width           =   2910
-         _ExtentX        =   5133
+         TabIndex        =   14
+         Top             =   1320
+         Width           =   5175
+         _ExtentX        =   9128
          _ExtentY        =   609
          FontSize        =   11
          Text            =   "1.0.0"
@@ -423,79 +326,19 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangAuthor 
          Height          =   345
          Left            =   240
-         TabIndex        =   17
-         Top             =   5190
-         Width           =   11415
-         _ExtentX        =   20135
+         TabIndex        =   15
+         Top             =   3240
+         Width           =   11055
+         _ExtentX        =   19500
          _ExtentY        =   609
          FontSize        =   11
          Text            =   "enter your name here"
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   4
-         Left            =   3360
-         Top             =   4290
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   423
-         Caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
-         FontSize        =   9
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   3
-         Left            =   3360
-         Top             =   3330
-         Width           =   8295
-         _ExtentX        =   14631
-         _ExtentY        =   423
-         Caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
-         FontSize        =   9
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   2
-         Left            =   3360
-         Top             =   2370
-         Width           =   7995
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
-         FontSize        =   9
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   1
-         Left            =   1080
-         Top             =   1410
-         Width           =   10125
-         _ExtentX        =   17859
-         _ExtentY        =   423
-         Caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
-         FontSize        =   9
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   0
-         Left            =   1080
-         Top             =   435
-         Width           =   10050
-         _ExtentX        =   17727
-         _ExtentY        =   423
-         Caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
-         FontSize        =   9
-         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   8
          Left            =   0
-         Top             =   4800
+         Top             =   2880
          Width           =   11595
          _ExtentX        =   20452
          _ExtentY        =   503
@@ -507,11 +350,11 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   4
          Left            =   0
-         Top             =   2880
-         Width           =   11520
-         _ExtentX        =   20320
+         Top             =   1920
+         Width           =   11610
+         _ExtentX        =   20479
          _ExtentY        =   503
-         Caption         =   "translation status"
+         Caption         =   "language status"
          FontSize        =   12
          ForeColor       =   4210752
       End
@@ -519,11 +362,11 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   3
          Left            =   0
-         Top             =   3840
-         Width           =   11535
-         _ExtentX        =   20346
+         Top             =   960
+         Width           =   5730
+         _ExtentX        =   10107
          _ExtentY        =   503
-         Caption         =   "translation version"
+         Caption         =   "language version"
          FontSize        =   12
          ForeColor       =   4210752
       End
@@ -531,9 +374,9 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   7
          Left            =   0
-         Top             =   1920
-         Width           =   11460
-         _ExtentX        =   20214
+         Top             =   0
+         Width           =   5730
+         _ExtentX        =   10107
          _ExtentY        =   503
          Caption         =   "language name"
          FontSize        =   12
@@ -541,27 +384,152 @@ Begin VB.Form FormLanguageEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   960
-         Width           =   11445
-         _ExtentX        =   20188
+         Index           =   5
+         Left            =   5880
+         Top             =   0
+         Width           =   5730
+         _ExtentX        =   10107
          _ExtentY        =   503
-         Caption         =   "country ID"
+         Caption         =   "language and country ID"
          FontSize        =   12
          ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   5
+         Index           =   0
          Left            =   0
-         Top             =   0
-         Width           =   11490
-         _ExtentX        =   20267
+         Top             =   4440
+         Width           =   11580
+         _ExtentX        =   20426
          _ExtentY        =   503
-         Caption         =   "language ID"
+         Caption         =   "optional translation aids"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdTextBox txtApiKey 
+         Height          =   345
+         Left            =   360
+         TabIndex        =   21
+         Top             =   5640
+         Width           =   11055
+         _ExtentX        =   19500
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   1
+         Left            =   240
+         Top             =   5280
+         Width           =   11355
+         _ExtentX        =   20029
+         _ExtentY        =   503
+         Caption         =   "free DeepL.com API key for automatic translation suggestions"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   10
+         Left            =   240
+         Top             =   6240
+         Width           =   11475
+         _ExtentX        =   20241
+         _ExtentY        =   503
+         Caption         =   "language file (.po) from any other software, as a reference"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdTextBox txtPO 
+         Height          =   345
+         Left            =   360
+         TabIndex        =   22
+         Top             =   6600
+         Width           =   10695
+         _ExtentX        =   18865
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdButton cmdPO 
+         Height          =   330
+         Left            =   11160
+         TabIndex        =   23
+         Top             =   6600
+         Width           =   495
+         _ExtentX        =   873
+         _ExtentY        =   582
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdHyperlink hypISO 
+         Height          =   375
+         Index           =   1
+         Left            =   6120
+         TabIndex        =   26
+         Top             =   1200
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
+         Caption         =   "official ISO country codes at Wikipedia"
+         URL             =   "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements"
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   360
+         Index           =   0
+         Left            =   240
+         Top             =   4845
+         Width           =   11355
+         _ExtentX        =   20029
+         _ExtentY        =   635
+         Caption         =   "These optional settings can accelerate the translation process.  They are not saved to the language file."
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   7455
+      Index           =   0
+      Left            =   120
+      Top             =   720
+      Width           =   11910
+      _ExtentX        =   21008
+      _ExtentY        =   13150
+      Begin PhotoDemon.pdListBox lstLanguages 
+         Height          =   5055
+         Left            =   840
+         TabIndex        =   4
+         Top             =   1080
+         Width           =   10815
+         _ExtentX        =   19076
+         _ExtentY        =   8916
+      End
+      Begin PhotoDemon.pdButton cmdDeleteLanguage 
+         Height          =   690
+         Left            =   8400
+         TabIndex        =   8
+         Top             =   6360
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   1217
+         Caption         =   "delete selected language file"
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   0
+         Top             =   120
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "start new language"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   1
+         Top             =   600
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "edit existing language:"
       End
    End
 End
@@ -571,42 +539,32 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Interactive Language (Translation) Editor
-'Copyright 2013-2022 by Frank Donckers and Tanner Helland
+'Interactive Language (i18n) Editor
+'Copyright 2013-2022 by Tanner Helland
 'Created: 28/August/13
-'Last updated: 30/June/22
-'Last update: new option for specifying a reference localization file (.po format) from other software.
-'             I am using this to compare machine-translated text to GIMP and Krita in hopes of minimizing
-'             egregious errors.
+'Last updated: 08/July/22
+'Last update: rework UI, underlying code as part of broader modernization
 '
-'Thanks to the incredible work of Frank Donckers, PhotoDemon ships with a custom-built text localization engine.
-' Thank you to Frank for implementing the original translation engine prototype, and for taking the time to
-' translate all of PhotoDemon's text into multiple languages. (This was a huge project, as PhotoDemon contains
-' a LOT of text.)
+'This tool can simplify the PhotoDemon localization process.  The original version (built in 2013) was
+' heavily influenced by feedback from Frank Donckers.  Many thanks to Frank for his contributions to
+' PhotoDemon i18n.  (Frank also contributed the first three language files to the project!)  You can see
+' Frank's original, unaltered contributions in the old commit logs for the original version of this tool:
 '
-'During the translation process, Frank pointed out that translating PhotoDemon's 1,000+ unique phrases takes
-' a loooong time.  This new language editor aims to accelerate the process.  I have borrowed many concepts
-' and code pieces from a similar project by Frank, which he used to create PhotoDemon's first translation files.
+'https://github.com/tannerhelland/PhotoDemon/commits/c5d55af4ba3683eec49efc9c6e3d0e5bfc6d2395/Forms/VBP_FormLanguageEditor.frm
 '
-'This integrated language editor requires a source language file to start.  This can either be a blank English
-' language file (provided with all PD downloads) or an existing language file.
+'Data retention is a key focus of the current editor.  As a safeguard against crashes, two autosaves
+' are always maintained.  Autosaves are generated every time a phrase is edited. This (should) guarantee
+' that even in the event of a catastrophic failure, only the last-modified phrase will ever risk being lost.
 '
-'Data retention is a key focus of the current implementation.  As a safeguard against crashes, two autosaves are
-' maintained for any active project.  Every time a phrase is edited or added, an autosave is created.
-' This should guarantee that even in the event of a catastrophic failure (power failure or similar), only the
-' last-modified phrase would ever risk being lost.
-'
-'To accelerate the translation process, DeepL.com can be used to automatically populate an "estimated"
-' translation of a given phrase.  This uses the official DeepL translation API (via curl) and if you want to use
-' it too, you will need to generate a free DeepL API key:
+'To accelerate the translation process, DeepL.com can automatically populate "estimated" translations.
+' This feature uses the official DeepL translation API and as such, requires a free DeepL API key:
 '
 ' https://www.deepl.com/pro-api?cta=header-pro-api
 '
-'(Scroll down to the "Free" box and click "sign up for free".)  This feature previously used Google Translate,
-' but after receiving a ton of feedback that the translation results from Google were poor, I have since migrated
-' to DeepL, which has received better reviews from users.  Note that a human will always need to review
-' localizations for best results, but since I am not a polyglot I am not much help here - feedback from native
-' speakers is *always* welcome.
+'(Scroll down to the "Free" box and click "sign up for free".)
+'
+'Obviously, a human should always review localizations for best results, but the online service is very
+' helpful for accelerating the process, especially on lengthy and/or highly technical text.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -614,52 +572,48 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-Option Compare Text
 
-'The current list of available languages.  This list is not currently updated with the language the user is working on.
-' It only contains a list of languages already stored in the /App/PhotoDemon/Languages and Data/Languages folders.
-Private m_ListOfLanguages() As PDLanguageFile
+'The current list of available languages (e.g. XML files stored in the App - /App/PhotoDemon/Languages - and
+' user - Data/Languages - folders).
+Private m_listOfLanguages() As PDLanguageFile
 
-'The language currently being edited.  This m_curLanguage variable will contain all metadata for the language file.
+'The language currently being edited.
 Private m_curLanguage As PDLanguageFile
 
-'All phrases that need to be translated will be stored in this array
+'All phrases from the existing language file
 Private Type PD_Phrase
-    Original As String
-    Translation As String
-    Length As Long
-    ListBoxEntry As String
-    IsMachineTranslation As Boolean
+    txtOriginal As String
+    txtTranslation As String
+    txtForListBox As String
 End Type
-Private m_NumOfPhrases As Long
-Private m_AllPhrases() As PD_Phrase
-
-'Has the source XML language file been loaded yet?
-Private m_xmlLoaded As Boolean
+Private m_numOfPhrases As Long, m_Phrases() As PD_Phrase
 
 'The current wizard page
-Private m_WizardPage As Long
+Private m_wizardPage As Long
 
-'A Google Translate interface, which we use to auto-populate missing translations
+'An interface to an online service is used to auto-populate missing translations (if the user provides
+' an API key)
 Private m_AutoTranslate As pdAutoLocalize
 
-'An XML engine is used to parse and update the actual language file contents
+'An internal XML engine is used to parse and update the actual language file contents
 Private m_XMLEngine As pdXML
 
-'To minimize the chance of data loss, PhotoDemon backs up translation data to two alternating files.  In the event of a crash anywhere in
-' the editing or export stages, this guarantees that we will never lose more than the last-edited phrase.
+'To minimize the chance of data loss, PhotoDemon backs up translation data to two alternating files.
+' In the event of a crash, this guarantees that we never lose more than the last-edited phrase.
 Private m_curBackupFile As Long
-Private Const backupFileName As String = "PD_LANG_EDIT_BACKUP_"
+Private Const BACKUP_FILE_PREFIX As String = "PD_LANG_EDIT_BACKUP_"
 
 'Hacky fix for specialized Ctrl+Enter detection
-Private m_InKeyEvent As Boolean
+Private m_inKeyEvent As Boolean
 
 'The user can (optionally) point at a target .po file for comparison.  This is very helpful for comparing
 ' phrases to their equivalent in other open-source software, which reduces the chance of us using translations
 ' different from what everyone else is using.
-Private m_PoComparison As pdStringHash
+Private m_ReferencePO As pdStringHash
 
-'During phrase editing, the user can choose to display all phrases, only translated phrases, or only untranslated phrases.
+'During phrase editing, the user can choose to display specific groups of phrases (e.g. "all phrases",
+' "only untranslated phrases").  Available options vary according to user settings; for example, phrases matching
+' a reference PO are only available if a reference PO file was supplied.
 Private Sub cboPhraseFilter_Click()
 
     lstPhrases.Clear
@@ -671,37 +625,37 @@ Private Sub cboPhraseFilter_Click()
     
         'All phrases
         Case 0
-            For i = 0 To m_NumOfPhrases - 1
-                lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
+            For i = 0 To m_numOfPhrases - 1
+                lstPhrases.AddItem m_Phrases(i).txtForListBox
             Next i
         
         'Translated phrases
         Case 1
-            For i = 0 To m_NumOfPhrases - 1
-                If (LenB(m_AllPhrases(i).Translation) <> 0) Then
-                    lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
+            For i = 0 To m_numOfPhrases - 1
+                If (LenB(m_Phrases(i).txtTranslation) <> 0) Then
+                    lstPhrases.AddItem m_Phrases(i).txtForListBox
                 End If
             Next i
         
         'Untranslated phrases
         Case 2
-            For i = 0 To m_NumOfPhrases - 1
-                If (LenB(m_AllPhrases(i).Translation) = 0) Then
-                    lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
+            For i = 0 To m_numOfPhrases - 1
+                If (LenB(m_Phrases(i).txtTranslation) = 0) Then
+                    lstPhrases.AddItem m_Phrases(i).txtForListBox
                 End If
             Next i
             
         '(Optional) phrases that don't match the supplied reference .po
         Case 3
-            If (Not m_PoComparison Is Nothing) Then
-                If (m_PoComparison.GetNumOfItems > 0) Then
+            If (Not m_ReferencePO Is Nothing) Then
+                If (m_ReferencePO.GetNumOfItems > 0) Then
                     
                     Dim tmpString As String
                     
-                    For i = 0 To m_NumOfPhrases - 1
-                        If m_PoComparison.GetItemByKey(LCase$(m_AllPhrases(i).Original), tmpString) Then
-                            If Strings.StringsNotEqual(tmpString, m_AllPhrases(i).Translation, True) Then
-                                lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
+                    For i = 0 To m_numOfPhrases - 1
+                        If m_ReferencePO.GetItemByKey(LCase$(m_Phrases(i).txtOriginal), tmpString) Then
+                            If Strings.StringsNotEqual(tmpString, m_Phrases(i).txtTranslation, True) Then
+                                lstPhrases.AddItem m_Phrases(i).txtForListBox
                             End If
                         End If
                     Next i
@@ -711,78 +665,85 @@ Private Sub cboPhraseFilter_Click()
     
     End Select
                 
+    'Redraw the listbox *now*
     lstPhrases.SetAutomaticRedraws True, True
-    
     UpdatePhraseBoxTitle
     
 End Sub
 
-'Use Google Translate to auto-translate all untranslated messages.  Note that this is not a great implementation, but it
-' should be "good enough" for PD's purposes.
+'Locale can be pulled from the OS; useful for users creating a new language, so they don't have to look up
+' the lang and region IDs manually
+Private Sub chkUserLocale_Click()
+    If (Not g_Language Is Nothing) And chkUserLocale.Value Then
+        txtLangID(0).Text = g_Language.GetSystemUserLanguage()
+        txtLangID(1).Text = g_Language.GetSystemUserCountry()
+    End If
+End Sub
+
+'Use an online service to auto-translate *all* untranslated messages.  This is never ideal (online translations
+' need to be human-reviewed), but for languages that don't have an active maintainer, it's sometimes better than
+' nothing.
 Private Sub cmdAutoTranslate_Click()
     
-    'If the program is interrupted while auto-translations are taking place, the IE object will stall and the function will crash.
+    'If the internet goes down while auto-translations are processing, errors may be raised by the underlying
+    ' winHTTP object.
     On Error GoTo AutoTranslateFailure
+    
+    'Some strings on this page are error-specific and not intended for average users.  To avoid unnecessary
+    ' localization burdens, I hide them from the auto-translator by using a pdString object.
+    Dim cString As pdString
+    Set cString = New pdString
     
     'Because this process can take a very long time, warn the user in advance.
     Dim msgReturn As VbMsgBoxResult
-    msgReturn = PDMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo Or vbInformation, "Automatic translation warning")
-
+    cString.AppendLine "Once started, this process cannot be canceled.  It may take a very long time to complete."
+    cString.AppendLineBreak
+    cString.Append "Are you sure you want to continue?"
+    msgReturn = PDMsgBox(cString.ToString(), vbYesNo Or vbInformation, "Automatic translations")
     If (msgReturn <> vbYes) Then Exit Sub
     
-    'The user has given the go-ahead, so start translating!
-    Dim i As Long
-    
-    'Start by counting the number of untranslated phrases (so we can provide a status report to the user)
+    'Count the number of untranslated phrases (so we can provide ongoing status reports)
     Dim totalUntranslated As Long, totalTranslated As Long
     totalUntranslated = 0
     totalTranslated = 0
     
-    For i = 0 To m_NumOfPhrases - 1
-        If (LenB(m_AllPhrases(i).Translation) = 0) Then totalUntranslated = totalUntranslated + 1
+    Dim i As Long
+    For i = 0 To m_numOfPhrases - 1
+        If (LenB(m_Phrases(i).txtTranslation) = 0) Then totalUntranslated = totalUntranslated + 1
     Next i
     
     Dim srcPhrase As String, retString As String
     
-    'Iterate through all untranslated phrases, requesting Google translates as we go
-    For i = 0 To m_NumOfPhrases - 1
-        If (LenB(m_AllPhrases(i).Translation) = 0) Then
+    'Iterate through all untranslated phrases, requesting online translations as we go
+    For i = 0 To m_numOfPhrases - 1
+        
+        'Skip already translated phrases
+        If (LenB(m_Phrases(i).txtTranslation) = 0) Then
         
             'Regardless of whether or not we succeed, increment the counter
             totalTranslated = totalTranslated + 1
             cmdAutoTranslate.Caption = g_Language.TranslateMessage("Processing phrase %1 of %2", totalTranslated, totalUntranslated)
             
-            m_AllPhrases(i).IsMachineTranslation = True
+            'Retrieve the original text, then request a translation from the online service
+            srcPhrase = m_Phrases(i).txtOriginal
             
-            'This phrase is not translated.  Apply a minimal amount of preprocessing, then request a translation from Google.
-            srcPhrase = m_AllPhrases(i).Original
-            
-            'Remove ampersands, as Google will treat these as the word "and"
-            If InStr(1, srcPhrase, "&", vbBinaryCompare) Then srcPhrase = Replace$(srcPhrase, "&", vbNullString, , , vbBinaryCompare)
-            
-            'Request a translation from DeepL
+            retString = vbNullString
             retString = m_AutoTranslate.GetDeepLTranslation(srcPhrase)
             
-            'If Google succeeded, store the new translation
+            'If the translation succeeded, store it
             If (LenB(retString) <> 0) Then
                 
                 'Do a "quick and dirty" case fix for titlecase text
                 retString = GetFixedTitlecase(srcPhrase, retString)
                 
-                'Store the translation
-                m_AllPhrases(i).Translation = retString
-                
-                'Insert this translation into the original XML file
-                m_XMLEngine.UpdateTagAtLocation "translation", m_AllPhrases(i).Translation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_AllPhrases(i).Original)
+                'Store the translation, then insert it into the original XML file
+                m_Phrases(i).txtTranslation = retString
+                m_XMLEngine.UpdateTagAtLocation "translation", m_Phrases(i).txtTranslation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_Phrases(i).txtOriginal)
     
             End If
             
             'Every sixteen translations, perform an autosave
             If (i And 15) = 0 Then PerformAutosave
-            
-            'Translations can sometimes get "stuck" (for reasons unknown), so forcibly refresh them after attempting a translation
-            srcPhrase = vbNullString
-            retString = vbNullString
             
         End If
         
@@ -797,63 +758,48 @@ Private Sub cmdAutoTranslate_Click()
     
 AutoTranslateFailure:
     
-    'Auto-save whatever we've translated so far
+    'Auto-save everything translated so far
     PerformAutosave
     
     'Notify the user, then exit
-    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  Any existing work has been auto-saved.", vbCritical Or vbOKOnly, "Translations interrupted"
+    cString.Reset
+    cString.Append "The automatic translation process was interrupted.  Any completed translations have been auto-saved.  Please check your internet connection and try again."
+    PDMsgBox cString.ToString(), vbCritical Or vbOKOnly, "Automatic translations"
     
 End Sub
 
 Private Sub cmdCancel_Click()
     
-    'Before exiting, save some preference-like values for the user
+    'Before exiting, save any preference-like values (like the user's DeepL API key)
     UpdateStoredUserValues
-    
     Unload Me
     
 End Sub
 
-'Allow the user to delete the selected language file, if they so desire.
+'Allow the user to delete a selected language file, if they so desire.
 Private Sub cmdDeleteLanguage_Click()
     
     'Make sure a language is selected
     If (lstLanguages.ListIndex < 0) Then Exit Sub
     
-    Dim msgReturn As VbMsgBoxResult
-
-    'Display different warnings for official languages (which can be restored) and user languages (which cannot)
-    If Strings.StringsEqual(m_ListOfLanguages(GetLanguageIndexFromListIndex()).LangType, "Official", True) Then
+    'Make sure we have write access to the target folder.  (This is relevant for people who extract PD
+    ' to system-protected folders.)
+    If Files.PathExists(Files.FileGetPath(m_listOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
-        'Make sure we have write access to this folder before attempting to delete anything
-        If Files.PathExists(Files.FileGetPath(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
-        
-            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(This action cannot be undone.  To restore a deleted language file, you must download a fresh copy of PhotoDemon from photodemon.org.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
-            
-            If (msgReturn = vbYes) Then
-                Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
-                lstLanguages.RemoveItem lstLanguages.ListIndex
-                cmdDeleteLanguage.Enabled = False
-            End If
-        
-        'Write access not available
-        Else
-            PDMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly Or vbExclamation, "Administrator access required"
-        End If
-    
-    'User-folder languages are gone forever once deleted, so change the wording of the deletion confirmation.
-    Else
-    
-        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(This action cannot be undone.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+        Dim msgReturn As VbMsgBoxResult
+        msgReturn = PDMsgBox("Are you sure you want to delete %1?  (This action cannot be undone.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If (msgReturn = vbYes) Then
-            Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
+            Files.FileDeleteIfExists m_listOfLanguages(GetLanguageIndexFromListIndex()).FileName
             lstLanguages.RemoveItem lstLanguages.ListIndex
             cmdDeleteLanguage.Enabled = False
         End If
-        
+    
+    'Write access not available
+    Else
+        PDMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly Or vbExclamation, "Error"
     End If
-
+    
 End Sub
 
 Private Sub cmdNext_Click()
@@ -868,11 +814,9 @@ Private Sub PhraseFinished()
 
     If (lstPhrases.ListIndex < 0) Then Exit Sub
     
-    'Store this translation to the phrases array
-    m_AllPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation.Text
-    
-    'Insert this translation into the original XML file
-    m_XMLEngine.UpdateTagAtLocation "translation", txtTranslation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+    'Store this translation both locally, and in the original XML file
+    m_Phrases(GetPhraseIndexFromListIndex()).txtTranslation = txtTranslation.Text
+    m_XMLEngine.UpdateTagAtLocation "translation", txtTranslation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_Phrases(GetPhraseIndexFromListIndex()).txtOriginal)
     
     'Write an alternating backup out to file
     PerformAutosave
@@ -935,10 +879,10 @@ Private Sub PhraseFinished()
     
             'If the current translation now matches the reference phrases, this item is no longer part of
             ' the "mismatched phrases" group
-            If (Not m_PoComparison Is Nothing) Then
+            If (Not m_ReferencePO Is Nothing) Then
                     
                 Dim tmpString As String
-                m_PoComparison.GetItemByKey LCase$(m_AllPhrases(GetPhraseIndexFromListIndex()).Original), tmpString
+                m_ReferencePO.GetItemByKey LCase$(m_Phrases(GetPhraseIndexFromListIndex()).txtOriginal), tmpString
                 
                 If Strings.StringsEqual(tmpString, txtTranslation.Text, True) Then
                     newIndex = lstPhrases.ListIndex
@@ -996,48 +940,43 @@ Private Sub cmdPO_Click()
         
     End If
     
-    'Re-enable user input
-    Interface.EnableUserInput
-
 End Sub
 
 Private Sub cmdPrevious_Click()
     ChangeWizardPage False
 End Sub
 
-'Change the active wizard page.  If moveForward is set to TRUE, the wizard page will be advanced; otherwise, it will move
-' to the previous page.
+'Change the active wizard page.
 Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
-    Dim i As Long
-
     Dim unloadFormNow As Boolean
     unloadFormNow = False
-
-    'Before changing the page, maek sure all user input on the current page is valid
-    Select Case m_WizardPage
     
-        'The first page is the language selection page.  When the user leaves this page, we must load the language
-        ' they've selected into memory.
+    'To minimize localization requirements of this tool, some text is handled via pdString objects to avoid it
+    ' being marked for localization.
+    Dim cString As pdString
+    Set cString = New pdString
+    
+    'Before changing the page, maek sure all user input on the current page is valid
+    Select Case m_wizardPage
+    
+        'The first page is the language selection page.  When the user leaves this page,
+        ' we must load the language they've selected into memory and parse all phrases.
         Case 0
             
-            'Before doing anything, save the user's DeepL API key (if any) and reference PO (if any)
-            UpdateStoredUserValues
-            
-            'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
-            ' currently too lazy to write a more elegant warning!)
+            'If the user wants to edit an existing language, make sure they've selected one.
+            ' (I hate OK-only message boxes, but am currently too lazy to write a more elegant solution.)
             If (optBaseLanguage(1).Value And (lstLanguages.ListIndex < 0)) Then
-                PDMsgBox "You must select a language file to edit.", vbOKOnly Or vbInformation, "Please select a language"
+                cString.Reset
+                cString.Append "You must select a language file to edit."
+                PDMsgBox cString.ToString(), vbOKOnly Or vbInformation, "Error"
                 Exit Sub
             End If
             
-            'Show a brief hourglass while we load and validate the source language file
-            Screen.MousePointer = vbHourglass
-            
-            'If they want to start a new language file from scratch, set the load path to the MASTER English language file
-            ' (which is hopefully present... if not, there's not much we can do.)
+            'When starting a new language file (not editing an existing one), set the load path to match
+            ' PD's master English language file.
             If optBaseLanguage(0).Value Then
-                                
+                
                 If LoadAllPhrasesFromFile(UserPrefs.GetLanguagePath & "Master\MASTER.xml") Then
                     
                     'Populate the current language's metadata container with some default values
@@ -1063,11 +1002,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
-                m_curLanguage = m_ListOfLanguages(GetLanguageIndexFromListIndex())
-                m_curLanguage.FileName = UserPrefs.GetLanguagePath(True) & Files.FileGetName(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
+                m_curLanguage = m_listOfLanguages(GetLanguageIndexFromListIndex())
+                m_curLanguage.FileName = UserPrefs.GetLanguagePath(True) & Files.FileGetName(m_listOfLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
-                If LoadAllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
+                If LoadAllPhrasesFromFile(m_listOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
                     
                     'No further action is necessary!
                     
@@ -1080,28 +1019,20 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             
             End If
             
-            'If the user selected a 3rd-party .po file, parse it now so we can quickly compare translations
-            LoadReferencePO
-            
-            'If the user supplied a reference .po, and 1+ phrases were loaded from it, add a new listbox
-            ' option in the translation panel for "phrases that don't match reference".
-            If (Not m_PoComparison Is Nothing) Then
-                If (m_PoComparison.GetNumOfItems > 0) Then
-                    If (cboPhraseFilter.ListCount <= 3) Then
-                        cboPhraseFilter.AddItem "phrases that don't match reference"
-                    End If
-                End If
-            End If
-            
-            'If the user didn't supply a DeepL API key, hide the "auto translate" checkbox
-            chkOnlineTranslate.Value = (LenB(txtApiKey.Text) <> 0)
-            
             'Reset the mouse pointer
             Screen.MousePointer = vbDefault
             
         'The second page is the metadata editing page.
         Case 1
-        
+            
+            'Before doing anything, save the user's DeepL API key (if any) and reference PO (if any)
+            UpdateStoredUserValues
+            
+            'Also, automatically set the destination language of the online translation service
+            ' (and the API key, if one was provided)
+            m_AutoTranslate.SetDstLanguage Trim$(txtLangID(0))
+            If (LenB(Trim$(Me.txtApiKey.Text)) <> 0) Then m_AutoTranslate.SetAPIKey Trim$(Me.txtApiKey.Text) Else m_AutoTranslate.SetAPIKey vbNullString
+            
             'When leaving the metadata page, automatically copy all text box entries into the metadata holder
             With m_curLanguage
                 .langID = Trim$(txtLangID(0)) & "-" & Trim$(txtLangID(1))
@@ -1110,9 +1041,6 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 .langVersion = Trim$(txtLangVersion)
                 .Author = Trim$(txtLangAuthor)
             End With
-            
-            'Also, automatically set the destination language of the Google Translate interface
-            m_AutoTranslate.SetDstLanguage Trim$(txtLangID(0))
             
             'Write these updated tags into the original XML text
             With m_curLanguage
@@ -1126,14 +1054,24 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             'Update the autosave file
             PerformAutosave
             
-            'Hide the reference translation if a .po wasn't provided
+            'If the user selected a 3rd-party .po file, parse it now so we can quickly compare translations
+            LoadReferencePO
+            
+            'If the user supplied a reference .po, and 1+ phrases were loaded from it, add a new listbox
+            ' option in the translation panel for "phrases that don't match reference".
             Dim showReference As Boolean
-            showReference = (Not m_PoComparison Is Nothing)
-            If showReference Then showReference = (m_PoComparison.GetNumOfItems() > 0)
+            showReference = (Not m_ReferencePO Is Nothing)
+            If showReference Then showReference = (m_ReferencePO.GetNumOfItems() > 0)
+            
+            If showReference And (cboPhraseFilter.ListCount <= 3) Then
+                cboPhraseFilter.AddItem "phrases that don't match reference"
+            End If
+            
+            'Hide the reference translation if a .po wasn't provided
             lblTitle(11).Visible = showReference
             txtReference.Visible = showReference
             cmdUseReference.Visible = showReference
-        
+            
         'The third page is the phrase editing page.  This is the most important page in the wizard.
         Case 2
         
@@ -1179,13 +1117,13 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     'Everything has successfully validated, so go ahead and advance (or decrement) the page count
     If moveForward Then
-        m_WizardPage = m_WizardPage + 1
+        m_wizardPage = m_wizardPage + 1
     Else
-        m_WizardPage = m_WizardPage - 1
+        m_wizardPage = m_wizardPage - 1
     End If
     
     'We can now apply any entrance-timed panel changes
-    Select Case m_WizardPage
+    Select Case m_wizardPage
     
         'Language selection
         Case 0
@@ -1200,9 +1138,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             With m_curLanguage
             
                 'Language ID is the most complex, because we must parse the two halves into individual text boxes
-                If (InStr(1, .langID, "-") > 0) Then
-                    txtLangID(0) = Left$(.langID, InStr(1, .langID, "-") - 1)
-                    txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-") + 1, Len(.langID) - InStr(1, .langID, "-"))
+                If (InStr(1, .langID, "-", vbBinaryCompare) > 0) Then
+                    txtLangID(0) = Left$(.langID, InStr(1, .langID, "-", vbBinaryCompare) - 1)
+                    txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-", vbBinaryCompare) + 1, Len(.langID) - InStr(1, .langID, "-", vbBinaryCompare))
                 Else
                     txtLangID(0) = .langID
                     txtLangID(1) = vbNullString
@@ -1219,89 +1157,64 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         'Phrase editor
         Case 2
         
-            'If an XML file was successfully loaded, add its contents to the list box
-            If (Not m_xmlLoaded) Then
-            
-                m_xmlLoaded = True
-                
-                'Setting the ListIndex property will fire the _Click event, which will handle the actual phrase population
-                cboPhraseFilter.ListIndex = 0
-                cboPhraseFilter_Click
-                
-            End If
+            'By default, select the "show untranslated phrases" setting
+            cboPhraseFilter.ListIndex = 2
                 
     End Select
     
     'Hide all inactive panels (and show the active one)
+    Dim i As Long
     For i = 0 To picContainer.Count - 1
-        picContainer(i).Visible = (i = m_WizardPage)
+        picContainer(i).Visible = (i = m_wizardPage)
     Next i
     
     'If we are at the beginning, disable the previous button
-    cmdPrevious.Enabled = (m_WizardPage <> 0)
+    cmdPrevious.Enabled = (m_wizardPage <> 0)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
-    If (m_WizardPage = picContainer.Count - 1) Then
-        cmdNext.Caption = g_Language.TranslateMessage("Save and Exit")
+    If (m_wizardPage = picContainer.Count - 1) Then
+        cmdNext.Caption = g_Language.TranslateMessage("Save and exit")
     Else
         cmdNext.Caption = g_Language.TranslateMessage("Next")
     End If
     
-    'Finally, change the top title caption and left-hand help text to match the current step
-    lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
-    lblWizardTitle.Caption = lblWizardTitle.Caption & " "
+    'Finally, change the top title caption to match the current step
+    Dim wzTitle As pdString
+    Set wzTitle = New pdString
+    wzTitle.Append g_Language.TranslateMessage("Step %1:", m_wizardPage + 1)
+    wzTitle.Append " "
     
-    Dim helpText As pdString
-    Set helpText = New pdString
-    
-    Select Case m_WizardPage
+    Select Case m_wizardPage
     
         Case 0
-            lblWizardTitle.Caption = "step 1: select a language file"
-            
-            helpText.AppendLine "This tool allows you to create and edit PhotoDemon language files." & vbCrLf
-            helpText.AppendLine "Please start by selecting a base language file.  If the selected file already contains translation data, you can edit existing translations or fill-in missing ones." & vbCrLf
-            helpText.AppendLine "This page also allows you to delete unused language files.  There is no Undo option when deleting language files, so please be careful!" & vbCrLf
-            helpText.Append "(When you click ""Next"", the selected language file will parsed and validated.  This process may take several seconds.)"
+            wzTitle.Append g_Language.TranslateMessage("select language")
             
         Case 1
-            lblWizardTitle.Caption = "step 2: add language metadata"
-            
-            helpText.AppendLine "PhotoDemon needs a little bit of metadata for each language file.  This allows it to auto-select the most relevant language based on the locale of a user's PC." & vbCrLf
-            helpText.AppendLine "The most important items on this page are the language ID and language name.  Please double-check to ensure these are correct." & vbCrLf
-            helpText.AppendLine "If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please retain the original author's name." & vbCrLf
-            helpText.Append "(NOTE: changes made to this page won't be auto-saved until you click the Next or Previous button.)"
+            wzTitle.Append g_Language.TranslateMessage("apply language and translation settings")
             
         Case 2
-            lblWizardTitle.Caption = "step 3: localize phrases"
+            wzTitle.Append g_Language.TranslateMessage("localize phrases")
             
-            helpText.AppendLine "This final step allows you to edit individual phrases." & vbCrLf
-            helpText.AppendLine "Every time a phrase is modified, an autosave is automatically created in PhotoDemon's /Data/Languages folder.  This means you can exit at any time without losing your work." & vbCrLf
-            helpText.AppendLine "When you are done translating, use the Save and Exit button to save your work.  (Autosave data will be preserved either way.)" & vbCrLf
-            helpText.AppendLine "When you finish editing this language, please send it to me!  My current contact information is available at:" & vbCrLf
-            helpText.AppendLine "https://photodemon.org/about/" & vbCrLf
-            helpText.Append "Even partial translations are helpful.  Thank you."
-    
     End Select
     
-    lblExplanation.Caption = helpText.ToString()
+    lblWizardTitle.Caption = wzTitle.ToString()
         
 End Sub
 
 Private Sub cmdUseReference_Click()
-    If Strings.StringsNotEqual(txtTranslation.Text, txtReference.Text, False) Then lblTranslatedPhrase.Caption = "translated phrase (NOT YET SAVED):"
+    If Strings.StringsNotEqual(txtTranslation.Text, txtReference.Text, False) Then
+        lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase") & " " & g_Language.TranslateMessage("(NOT YET SAVED)")
+    End If
     txtTranslation.Text = txtReference.Text
 End Sub
 
 Private Sub Form_Load()
     
-    'Mark the XML file as not loaded
-    m_xmlLoaded = False
     m_curBackupFile = 0
     
     'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
     ' call to changeWizardPage in Form_Activate)
-    m_WizardPage = -1
+    m_wizardPage = -1
     
     'Fill the "phrases to display" combo box
     cboPhraseFilter.Clear
@@ -1338,7 +1251,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Given a source language file, find all phrase tags, and load them into a specialized phrase array
+'Given a source language file, find all phrase tags and load them into a specialized phrase array.
 Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
     
     LoadAllPhrasesFromFile = False
@@ -1351,31 +1264,28 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         'Validate the language file's contents
         If m_XMLEngine.IsPDDataType("Translation") And m_XMLEngine.ValidateLoadedXMLData("phrase") Then
         
-            'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
-            ' the rest of PD, the language editor now uses binary comparison mode exclusively.
             m_XMLEngine.SetTextCompareMode vbBinaryCompare
-        
+            
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
-            If m_XMLEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
+            If m_XMLEngine.FindAllTagLocations(phraseLocations, "phrase") Then
                 
-                m_NumOfPhrases = UBound(phraseLocations) + 1
-                ReDim m_AllPhrases(0 To m_NumOfPhrases - 1) As PD_Phrase
+                m_numOfPhrases = UBound(phraseLocations) + 1
+                ReDim m_Phrases(0 To m_numOfPhrases - 1) As PD_Phrase
                 
                 Dim tmpString As String
                 
                 Dim i As Long
-                For i = 0 To m_NumOfPhrases - 1
+                For i = 0 To m_numOfPhrases - 1
                     tmpString = m_XMLEngine.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
-                    m_AllPhrases(i).Original = tmpString
-                    m_AllPhrases(i).Length = Len(tmpString)
-                    m_AllPhrases(i).Translation = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(tmpString))
+                    m_Phrases(i).txtOriginal = tmpString
+                    m_Phrases(i).txtTranslation = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(tmpString))
                     
-                    'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
-                    ' and it can't be so long that it overflows the list box.
-                    If (InStr(1, tmpString, vbCr) > 0) Then tmpString = Replace(tmpString, vbCr, vbNullString)
-                    If (InStr(1, tmpString, vbLf) > 0) Then tmpString = Replace(tmpString, vbLf, vbNullString)
-                    m_AllPhrases(i).ListBoxEntry = tmpString
+                    'We also need a modified version of the string to add to the phrase list box.
+                    ' (This text can't include line breaks.)
+                    If (InStr(1, tmpString, vbCr, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbCr, vbNullString, 1, -1, vbBinaryCompare)
+                    If (InStr(1, tmpString, vbLf, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbLf, vbNullString, 1, -1, vbBinaryCompare)
+                    m_Phrases(i).txtForListBox = tmpString
                     
                 Next i
                 
@@ -1400,35 +1310,35 @@ End Sub
 'When the phrase box is clicked, display the original and translated (if available) text in the right-hand text boxes
 Private Sub lstPhrases_Click()
     
-    txtOriginal.Text = m_AllPhrases(GetPhraseIndexFromListIndex()).Original
+    Dim origText As String
+    origText = m_Phrases(GetPhraseIndexFromListIndex()).txtOriginal
     
-    'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
-    ' (contingent on the relevant check box setting)
-    lblTranslatedPhrase.Caption = "translated phrase"
+    txtOriginal.Text = origText
     
-    If (LenB(m_AllPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0) Then
-        txtTranslation.Text = m_AllPhrases(GetPhraseIndexFromListIndex()).Translation
-        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved):")
+    'If a translation exists for this phrase, load it.  If it does not, and we have an online service available,
+    ' query that online service for a translation.
+    lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
+    
+    If (LenB(m_Phrases(GetPhraseIndexFromListIndex()).txtTranslation) <> 0) Then
+        txtTranslation.Text = m_Phrases(GetPhraseIndexFromListIndex()).txtTranslation
+        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved)")
     Else
     
-        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
+        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED)")
         
-        If chkOnlineTranslate.Value Then
+        If (LenB(m_AutoTranslate.GetAPIKey) <> 0) Then
         
             txtTranslation.Text = g_Language.TranslateMessage("waiting...")
             
-            'Pull a phrase from the online service, if one is available
+            'Query the online service for a translation
             Dim retString As String
-            retString = m_AutoTranslate.GetDeepLTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            retString = m_AutoTranslate.GetDeepLTranslation(origText)
             
+            'Apply title case (as relevant) to the returned string
             If (LenB(retString) <> 0) Then
-                txtTranslation.Text = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
+                txtTranslation.Text = GetFixedTitlecase(origText, retString)
             Else
-                If (LenB(m_AutoTranslate.GetAPIKey()) > 0) Then
-                    txtTranslation.Text = "[translation failed]"
-                Else
-                    txtTranslation.Text = vbNullString
-                End If
+                txtTranslation.Text = g_Language.TranslateMessage("[translation failed]")
             End If
             
         Else
@@ -1437,15 +1347,15 @@ Private Sub lstPhrases_Click()
             
     End If
     
-    'If a .po reference was provided, look for this text there too.  Do this regardless of whether we have an
-    ' existing translation or not
-    If (Not m_PoComparison Is Nothing) And txtReference.Visible Then
+    'If a .po reference was provided, look for this text there too.
+    ' (Do this regardless of whether this phrase has already been translated or not)
+    If (Not m_ReferencePO Is Nothing) And txtReference.Visible Then
         
         Dim strReference As String
-        If m_PoComparison.GetItemByKey(LCase$(m_AllPhrases(GetPhraseIndexFromListIndex()).Original), strReference) Then
+        If m_ReferencePO.GetItemByKey(LCase$(origText), strReference) Then
             txtReference.Text = strReference
         Else
-            txtReference.Text = "[phrase not in file]"
+            txtReference.Text = g_Language.TranslateMessage("[phrase not in file]")
         End If
         
     End If
@@ -1470,10 +1380,10 @@ Private Sub PerformAutosave()
     'We keep two autosaves at all times; simply alternate between them each time a save is requested
     If (m_curBackupFile = 1) Then m_curBackupFile = 0 Else m_curBackupFile = 1
     
-    'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
-    ' (assuming they have different language IDs).
+    'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves exist for each
+    ' edited language (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Trim$(Str$(m_curBackupFile)) & ".tmpxml"
+    backupFile = UserPrefs.GetLanguagePath(True) & BACKUP_FILE_PREFIX & m_curLanguage.langID & "_" & Trim$(Str$(m_curBackupFile)) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
     m_XMLEngine.WriteXMLToFile backupFile, True
@@ -1484,7 +1394,7 @@ End Sub
 Private Sub PopulateAvailableLanguages()
     
     'Retrieve a list of available languages from the translation engine
-    g_Language.CopyListOfLanguages m_ListOfLanguages
+    g_Language.CopyListOfLanguages m_listOfLanguages
     
     'We now do a bit of additional work.  Look for any autosave files (with extension .tmpxml) in the user language folder.  Allow the
     ' user to load these if available.
@@ -1500,12 +1410,13 @@ Private Sub PopulateAvailableLanguages()
             Set tmpXML = New pdXML
             If tmpXML.LoadXMLFile(UserPrefs.GetLanguagePath(True) & chkFile) Then
             
-                'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+                'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name,
+                ' and 1+ phrases
                 If tmpXML.IsPDDataType("Translation") And tmpXML.ValidateLoadedXMLData("langid", "langname", "phrase") Then
                 
-                    ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As PDLanguageFile
+                    ReDim Preserve m_listOfLanguages(0 To UBound(m_listOfLanguages) + 1) As PDLanguageFile
                     
-                    With m_ListOfLanguages(UBound(m_ListOfLanguages))
+                    With m_listOfLanguages(UBound(m_listOfLanguages))
                     
                         'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
                         .langID = tmpXML.GetUniqueTag_String("langid")
@@ -1532,62 +1443,50 @@ Private Sub PopulateAvailableLanguages()
     
     'All autosave files have now been loaded as well
     
-    'Add the contents of that array to the list box on the opening panel (the list of available languages, from which the user
-    ' can select a language file as the "starting point" for their own translation).
+    'Add the contents of that array to the list box on the opening panel (the list of available languages,
+    ' from which the user can select a file as the "starting point" for their own translation).
     lstLanguages.Clear
+    lstLanguages.SetAutomaticRedraws False, False
     
     Dim i As Long
-    For i = 0 To UBound(m_ListOfLanguages)
+    For i = 0 To UBound(m_listOfLanguages)
     
         'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If Strings.StringsNotEqual(m_ListOfLanguages(i).LangType, "DEFAULT", True) Then
+        If Strings.StringsNotEqual(m_listOfLanguages(i).LangType, "DEFAULT", True) Then
+            
             Dim listEntry As String
-            listEntry = m_ListOfLanguages(i).LangName
+            listEntry = m_listOfLanguages(i).LangName & " "
+            
+            'Use the author name embedded in the file, if any
+            Dim authName As String
+            If (LenB(m_listOfLanguages(i).Author) <> 0) Then
+                authName = m_listOfLanguages(i).Author
+            Else
+                authName = g_Language.TranslateMessage("unknown author")
+            End If
             
             'For official translations, an author name will always be provided.  Include the author's name in the list.
-            If (m_ListOfLanguages(i).LangType = "Official") Then
-                listEntry = listEntry & " ("
-                listEntry = listEntry & g_Language.TranslateMessage("official translation by")
-                listEntry = listEntry & " " & m_ListOfLanguages(i).Author
-                listEntry = listEntry & ")"
-            
-            'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
-            ElseIf (m_ListOfLanguages(i).LangType = "Unofficial") Then
-                listEntry = listEntry & " "
-                listEntry = listEntry & g_Language.TranslateMessage("by")
-                listEntry = listEntry & " "
-                If (LenB(m_ListOfLanguages(i).Author) <> 0) Then
-                    listEntry = listEntry & m_ListOfLanguages(i).Author
-                Else
-                    listEntry = listEntry & g_Language.TranslateMessage("unknown author")
-                End If
+            If (m_listOfLanguages(i).LangType = "Official") Then
+                listEntry = listEntry & g_Language.TranslateMessage("(official translation by %1)", authName)
                 
-            'Anything else is an autosave.
+            'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
+            ElseIf (m_listOfLanguages(i).LangType = "Unofficial") Then
+                listEntry = listEntry & g_Language.TranslateMessage("by %1", authName)
+                
+            'Anything else is an autosave; on these we'll also append the autosave date
             Else
             
                 'Include author name if available
-                listEntry = listEntry & " "
-                listEntry = listEntry & g_Language.TranslateMessage("by")
-                listEntry = listEntry & " "
-                If (LenB(m_ListOfLanguages(i).Author) <> 0) Then
-                    listEntry = listEntry & m_ListOfLanguages(i).Author
-                Else
-                    listEntry = listEntry & g_Language.TranslateMessage("unknown author")
-                End If
+                listEntry = listEntry & g_Language.TranslateMessage("by %1", authName) & " "
                 
-                'Display autosave time and date
-                listEntry = listEntry & " ("
-                listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
-                listEntry = listEntry & " "
-                listEntry = listEntry & Format$(FileDateTime(m_ListOfLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
-                listEntry = listEntry & ") "
-            
+                'Add autosave time and date
+                listEntry = listEntry & g_Language.TranslateMessage("(autosaved on %1)", Format$(FileDateTime(m_listOfLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy"))
+                
             End If
             
-            'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
-            ' in our m_ListOfLanguages array.
+            'Add the finished text to the listbox
             lstLanguages.AddItem listEntry
-            m_ListOfLanguages(i).InternalDisplayName = listEntry
+            m_listOfLanguages(i).InternalDisplayName = listEntry
             
         Else
             'Ignore the default language entry entirely
@@ -1595,14 +1494,16 @@ Private Sub PopulateAvailableLanguages()
     Next i
     
     'By default, no language is selected for the user
+    lstLanguages.SetAutomaticRedraws True, True
     lstLanguages.ListIndex = -1
     
 End Sub
 
+'Mapping functions between internal arrays and on-screen listboxes
 Private Function GetLanguageIndexFromListIndex() As Long
     Dim i As Long
-    For i = LBound(m_ListOfLanguages) To UBound(m_ListOfLanguages)
-        If Strings.StringsEqual(lstLanguages.List(lstLanguages.ListIndex), m_ListOfLanguages(i).InternalDisplayName) Then
+    For i = LBound(m_listOfLanguages) To UBound(m_listOfLanguages)
+        If Strings.StringsEqual(lstLanguages.List(lstLanguages.ListIndex), m_listOfLanguages(i).InternalDisplayName) Then
             GetLanguageIndexFromListIndex = i
             Exit For
         End If
@@ -1611,16 +1512,19 @@ End Function
 
 Private Function GetPhraseIndexFromListIndex() As Long
     Dim i As Long
-    For i = LBound(m_AllPhrases) To UBound(m_AllPhrases)
-        If Strings.StringsEqual(lstPhrases.List(lstPhrases.ListIndex), m_AllPhrases(i).ListBoxEntry) Then
+    For i = LBound(m_Phrases) To UBound(m_Phrases)
+        If Strings.StringsEqual(lstPhrases.List(lstPhrases.ListIndex), m_Phrases(i).txtForListBox) Then
             GetPhraseIndexFromListIndex = i
             Exit For
         End If
     Next i
 End Function
 
-'On Win 7+, we attempt to automatically handle titlecase of translated text.  If the original English string used titlecase,
-' we'll set titlecase to the translated string as well.
+'On Win 7+, we attempt to automatically handle titlecase of translated text.
+'
+'If the original English string used titlecase, we'll set titlecase to the translated string as well, *if* the
+' translated string came from an online service.  (This ensures grammar uniformity across languages, even if the
+' online service doesn't attempt to match casing.)
 Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedString As String) As String
     
     On Error GoTo TitlecaseFail
@@ -1636,8 +1540,8 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
             strOrig = Split(origString, " ", , vbBinaryCompare)
             strTranslated = Split(translatedString, " ", , vbBinaryCompare)
             
-            'Only proceed with automatic casing if *both* strings contain multiple words.  (Some translations may not
-            ' result in 1:1 word counts.)
+            'Only proceed with automatic casing if *both* strings contain multiple words.
+            ' (Some translations may not result in 1:1 word counts.)
             Dim multWords As Boolean
             multWords = (UBound(strOrig) <> 0)
             If multWords Then multWords = (UBound(strTranslated) <> 0)
@@ -1726,21 +1630,22 @@ TitlecaseFail:
 
 End Function
 
+'Handle Ctrl+Enter specially (save current phrase and proceed to next one)
 Private Sub txtTranslation_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
 
     If (vKey = vbKeyReturn) And (Shift And vbCtrlMask = vbCtrlMask) Then
         preventFurtherHandling = True
-        m_InKeyEvent = True
+        m_inKeyEvent = True
         PhraseFinished
         txtTranslation.SelStart = Len(txtTranslation.Text)
     Else
-        m_InKeyEvent = False
+        m_inKeyEvent = False
     End If
 
 End Sub
 
 Private Sub txtTranslation_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
-    preventFurtherHandling = m_InKeyEvent
+    preventFurtherHandling = m_inKeyEvent
 End Sub
 
 'Call this to save any relevant form-level data to the prefs file (current includes the user's DeepL API key
@@ -1785,8 +1690,8 @@ Private Sub LoadReferencePO()
     'Quick sanity check for expected gettext markers
     Const MSG_ID As String = "msgid """
     Const MSG_STR As String = "msgstr """
-    If (InStr(1, srcText, MSG_ID) = 0) Then Exit Sub
-    If (InStr(1, srcText, MSG_STR) = 0) Then Exit Sub
+    If (InStr(1, srcText, MSG_ID, vbBinaryCompare) = 0) Then Exit Sub
+    If (InStr(1, srcText, MSG_STR, vbBinaryCompare) = 0) Then Exit Sub
     
     Const QUOTE_CHAR As String = """"
     Const SPACE_CHAR As String = " "
@@ -1800,7 +1705,7 @@ Private Sub LoadReferencePO()
     
     'For now, a simple hash table will suffice.  If I decide to explore fuzzy matching in the future,
     ' a different solution may be better.
-    Set m_PoComparison = New pdStringHash
+    Set m_ReferencePO = New pdStringHash
     
     'Parsing the .po text currently uses a "fast and dirty" approach.  We basically just scan, looking for
     ' key/value pairs and ignoring any clues, whitespace, etc.
@@ -1833,16 +1738,16 @@ Private Sub LoadReferencePO()
             If (InStr(1, curPhrase, vbCrLf, vbBinaryCompare) <> 0) Then
                 
                 'Replace valid quotes with a placeholder
-                curPhrase = Replace$(curPhrase, "\""", "&quot;")
+                curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
                 
                 'Remove linebreaks
-                curPhrase = Replace$(curPhrase, vbCrLf, vbNullString)
+                curPhrase = Replace$(curPhrase, vbCrLf, vbNullString, 1, -1, vbBinaryCompare)
                 
                 'Remove any remaining quotes
-                curPhrase = Replace$(curPhrase, """", vbNullString)
+                curPhrase = Replace$(curPhrase, """", vbNullString, 1, -1, vbBinaryCompare)
                 
                 'Restore valid quotes (that we hacked out at the beginning)
-                curPhrase = Replace$(curPhrase, "&quot;", """")
+                curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
                 
             End If
             
@@ -1872,16 +1777,16 @@ Private Sub LoadReferencePO()
                 If (InStr(1, curPhrase, vbCrLf, vbBinaryCompare) <> 0) Then
                     
                     'Replace valid quotes with a placeholder
-                    curPhrase = Replace$(curPhrase, "\""", "&quot;")
+                    curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
                     
                     'Remove linebreaks
-                    curPhrase = Replace$(curPhrase, vbCrLf, vbNullString)
+                    curPhrase = Replace$(curPhrase, vbCrLf, vbNullString, 1, -1, vbBinaryCompare)
                     
                     'Remove any remaining quotes
-                    curPhrase = Replace$(curPhrase, """", vbNullString)
+                    curPhrase = Replace$(curPhrase, """", vbNullString, 1, -1, vbBinaryCompare)
                     
                     'Restore valid quotes (that we hacked out at the beginning)
-                    curPhrase = Replace$(curPhrase, "&quot;", """")
+                    curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
                     
                 End If
                 
@@ -1897,16 +1802,16 @@ Private Sub LoadReferencePO()
                 
                 'Do a little pre-processing to both strings.  In particular, we don't want trailing ellipses
                 ' or markers for hotkeys (typically _); we're only interested in the actual text
-                If (InStr(1, msgID, ELLIPSIS) <> 0) Then msgID = Replace$(msgID, ELLIPSIS, vbNullString)
-                If (InStr(1, msgID, ELLIPSIS_CHAR) <> 0) Then msgID = Replace$(msgID, ELLIPSIS_CHAR, vbNullString)
-                If (InStr(1, msgID, UNDERSCORE_CHAR) <> 0) Then msgID = Replace$(msgID, UNDERSCORE_CHAR, vbNullString)
+                If (InStr(1, msgID, ELLIPSIS, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, ELLIPSIS, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgID, ELLIPSIS_CHAR, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, ELLIPSIS_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgID, UNDERSCORE_CHAR, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, UNDERSCORE_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
-                If (InStr(1, msgStr, ELLIPSIS) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS, vbNullString)
-                If (InStr(1, msgStr, ELLIPSIS_CHAR) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS_CHAR, vbNullString)
-                If (InStr(1, msgStr, UNDERSCORE_CHAR) <> 0) Then msgStr = Replace$(msgStr, UNDERSCORE_CHAR, vbNullString)
+                If (InStr(1, msgStr, ELLIPSIS, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgStr, ELLIPSIS_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgStr, UNDERSCORE_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, UNDERSCORE_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
                 'We want case-insensitive matching, so deliberately lcase all keys
-                m_PoComparison.AddItem LCase$(msgID), msgStr
+                m_ReferencePO.AddItem LCase$(msgID), msgStr
                 
             End If
             
@@ -1917,6 +1822,6 @@ Private Sub LoadReferencePO()
         
     Loop
     
-    If (Not m_PoComparison Is Nothing) Then PDDebug.LogAction "Loaded " & m_PoComparison.GetNumOfItems() & " phrases from the reference .po in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If (Not m_ReferencePO Is Nothing) Then PDDebug.LogAction "Loaded " & m_ReferencePO.GetNumOfItems() & " phrases from the reference .po in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub

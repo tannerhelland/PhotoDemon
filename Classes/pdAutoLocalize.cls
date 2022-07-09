@@ -134,6 +134,7 @@ Public Function GetDeepLTranslation(ByVal srcText As String) As String
         If (InStr(srcText, vbCr) <> 0) Then srcText = Replace$(srcText, vbCr, "%0A")
         
         'Also replace some other problematic forbidden chars
+        If (InStr(srcText, "&") <> 0) Then srcText = Replace$(srcText, "&", "%26")
         If (InStr(srcText, "\") <> 0) Then srcText = Replace$(srcText, "\", "%5C")
         If (InStr(srcText, "/") <> 0) Then srcText = Replace$(srcText, "/", "&#47;")
         If (InStr(srcText, " ") <> 0) Then srcText = Replace$(srcText, " ", "%20")
