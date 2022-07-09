@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.1659</langversion>
+		<langversion>8.9.1681</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -11043,6 +11043,23 @@ Would you like to save your batch list before exiting?</original>
 		<!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 		<phrase>
+			<original>Create color lookup table (LUT)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>modified image and layer</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+		<phrase>
 			<original>tools</original>
 			<translation></translation>
 		</phrase>
@@ -12633,6 +12650,297 @@ Would you like to save your batch list before exiting?</original>
 		<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 		<phrase>
+			<original>click here for detailed instructions</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>use</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Save this translation and proceed to the next phrase</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>translated phrase</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>original phrase</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>phrase groups</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>list of phrases (%1 items)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Auto-translate all missing phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>reference translation from .po file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>copy system locale</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>official ISO language codes at Wikipedia</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>author name(s)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language status</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language version</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language name</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language and country ID</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>optional translation aids</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>free DeepL.com API key for automatic translation suggestions</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language file (.po) from any other software, as a reference</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>official ISO country codes at Wikipedia</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>delete selected language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>start new language</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>edit existing language</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Automatic translations</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Processing phrase %1 of %2</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Automatic translation complete!</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Delete language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>New Language</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>incomplete</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>enter your name here</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
+
+To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Master language file missing</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
+
+To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Language file could not be loaded</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>phrases that don't match reference</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>XML file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Save current language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Save and exit</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Step %1</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>select language</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>apply language and translation settings</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>localize phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>(NOT YET SAVED)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>all phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>translated phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>untranslated phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>(saved)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>[translation failed]</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>[phrase not in file]</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>unknown author</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>(official translation by %1)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>by %1</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>(autosaved on %1)</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+
+		<phrase>
 			<original>Create macro from session history</original>
 			<translation></translation>
 		</phrase>
@@ -13548,29 +13856,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-		<phrase>
-			<original>Create color lookup table (LUT)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>add this to the "Adjustments > Color > Color lookup" tool</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>modified image and layer</original>
-			<translation></translation>
-		</phrase>
-
-		<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2577</phrasecount>
+		<phrasecount>2634</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5406 phrases. -->
-	<!-- 2829 are duplicates, so only 2577 unique phrases have been written to file. -->
-	<!-- These 2577 phrases contain approximately 11193 total words. -->
+	<!-- As of this build, PhotoDemon contains 5507 phrases. -->
+	<!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
+	<!-- These 2634 phrases contain approximately 11483 total words. -->
 
 	</pdData>

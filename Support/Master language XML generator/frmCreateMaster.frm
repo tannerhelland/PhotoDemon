@@ -1044,7 +1044,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
             Exit Sub
             
         'Some developer-only dialogs do not need to be translated.
-        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm", "Tools_LanguageEditor.frm"
+        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm"
             Exit Sub
     
     End Select
