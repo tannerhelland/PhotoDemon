@@ -853,6 +853,9 @@ Public Function StringsEqual(ByRef firstString As String, ByRef secondString As 
     If (LenB(firstString) <> LenB(secondString)) Then
         StringsEqual = False
     Else
+        
+        'String lengths are guaranteed equal beyond this point
+        
         If (LenB(firstString) = 0) Then
             StringsEqual = True
         Else

@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>de-DE</langid>
-<langname>Deutsch (DE)</langname>
-<langversion>9.0.1655</langversion>
+<langname>Deutsch (German)</langname>
+<langversion>9.0.1680</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -40,7 +40,7 @@
 
 <phrase>
 <original>Internet import</original>
-<translation>Import aus Internet</translation>
+<translation>Internet-Import</translation>
 </phrase>
 
 <phrase>
@@ -9935,7 +9935,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>In the final step, you will choose how you want the saved files to be named.</original>
-<translation>Im letzten Schritt wählen Sie, wie Sie die gespeicherten Dateien benennen wollen.</translation>
+<translation>Im abschließenden Schritt wählen Sie, wie die gespeicherten Dateien benannt werden sollen.</translation>
 </phrase>
 
 <phrase>
@@ -9945,7 +9945,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
-<translation>In diesem letzten Schritt muss PhotoDemon wissen, wo die verarbeiteten Bilder gespeichert werden und welchen Namen den neuen Dateien gegeben wird.</translation>
+<translation>In diesem abschließenden Schritt muss PhotoDemon wissen, wo die verarbeiteten Bilder gespeichert werden und welchen Namen den neuen Dateien gegeben wird.</translation>
 </phrase>
 
 <phrase>
@@ -10744,7 +10744,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation>Dateiextension entsprechend dem Farbmodell ändern</translation>
+<translation>Dateiextension ändern, um mit Farbmodell übereinzustimmen</translation>
 </phrase>
 
 <phrase>
@@ -10986,7 +10986,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation>(Auch Sie können ein Patron werden! Klicken Sie hier, um mehr zu erfahren.)</translation>
+<translation>(Auch Sie können zu einem Patron werden! Klicken Sie hier, um mehr zu erfahren.)</translation>
 </phrase>
 
 <!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -12708,12 +12708,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>click here for detailed instructions</original>
-<translation></translation>
+<translation>Klicken Sie hier für detaillierte Instruktionen (in Englisch)</translation>
 </phrase>
 
 <phrase>
 <original>use</original>
-<translation></translation>
+<translation>Verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12733,7 +12733,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>Phrasengruppen</translation>
 </phrase>
 
 <phrase>
@@ -12743,22 +12743,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>Alle fehlenden Phrasen automatisch übersetzen</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation></translation>
+<translation>Referenzübersetzung aus .po-Datei</translation>
 </phrase>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation></translation>
+<translation>(HINWEIS: STRG+ENTER speichert automatisch und fährt mit nächster Phrase fort.)</translation>
 </phrase>
 
 <phrase>
 <original>copy system locale</original>
-<translation></translation>
+<translation>System-Locale kopieren</translation>
 </phrase>
 
 <phrase>
@@ -12793,17 +12793,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>optional translation aids</original>
-<translation></translation>
+<translation>Optionale Übersetzungshilfen</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation></translation>
+<translation>Kostenloser DeepL.com API-Key für automatische Übersetzungsvorschläge</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation></translation>
+<translation>Sprachdatei (.po) aus beliebiger anderer Software, als Referenz</translation>
 </phrase>
 
 <phrase>
@@ -12813,27 +12813,27 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation></translation>
+<translation>Diese optionalen Einstellungen können den Übersetzungsprozess beschleunigen. Sie werden nicht in der Sprachdatei gespeichert.</translation>
 </phrase>
 
 <phrase>
 <original>delete selected language file</original>
-<translation></translation>
+<translation>Selektierte Sprachdatei löschen</translation>
 </phrase>
 
 <phrase>
 <original>start new language</original>
-<translation></translation>
+<translation>Neue Sprache beginnen</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation></translation>
+<translation>Vorhandene Sprache bearbeiten</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations</original>
-<translation></translation>
+<translation>Automatische Übersetzung</translation>
 </phrase>
 
 <phrase>
@@ -12848,7 +12848,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation></translation>
+<translation>Sind Sie sicher, dass Sie %1 löschen wollen? (Diese Aktion kann nicht rückgängig gemacht werden.)</translation>
 </phrase>
 
 <phrase>
@@ -12904,7 +12904,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation></translation>
+<translation>Phrasen, die nicht mit Referenz übereinstimmen</translation>
 </phrase>
 
 <phrase>
@@ -12919,7 +12919,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>Save and exit</original>
-<translation></translation>
+<translation>Speichern und beenden</translation>
 </phrase>
 
 <phrase>
@@ -12929,17 +12929,17 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>select language</original>
-<translation></translation>
+<translation>Sprache auswählen</translation>
 </phrase>
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>Sprach- und Übersetzungseinstellungen anwenden</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>Phrasen lokalisieren</translation>
 </phrase>
 
 <phrase>
@@ -12949,17 +12949,17 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>all phrases</original>
-<translation></translation>
+<translation>Alle Phrasen</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation></translation>
+<translation>Übersetzte Phrasen</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation></translation>
+<translation>Nicht übersetzte Phrasen</translation>
 </phrase>
 
 <phrase>
@@ -12969,12 +12969,12 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>[translation failed]</original>
-<translation></translation>
+<translation>[Übersetzung fehlgeschlagen]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation></translation>
+<translation>[Phrase nicht in Datei]</translation>
 </phrase>
 
 <phrase>
@@ -12984,17 +12984,17 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>(official translation by %1)</original>
-<translation></translation>
+<translation>(offizielle Übersetzung von %1)</translation>
 </phrase>
 
 <phrase>
 <original>by %1</original>
-<translation></translation>
+<translation>von %1</translation>
 </phrase>
 
 <phrase>
 <original>(autosaved on %1)</original>
-<translation></translation>
+<translation>(autom. gespeichert um/am %1)</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->

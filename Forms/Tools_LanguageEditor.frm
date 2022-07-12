@@ -35,7 +35,7 @@ Begin VB.Form FormLanguageEditor
       _ExtentX        =   11245
       _ExtentY        =   661
       Alignment       =   2
-      Caption         =   "click here for detailed instructions"
+      Caption         =   "click here for detailed instructions (in English)"
       URL             =   "https://github.com/tannerhelland/PhotoDemon/tree/main/App/PhotoDemon/Languages#readme"
    End
    Begin PhotoDemon.pdButton cmdPrevious 
@@ -88,23 +88,23 @@ Begin VB.Form FormLanguageEditor
       _ExtentX        =   21008
       _ExtentY        =   13150
       Begin PhotoDemon.pdButton cmdUseReference 
-         Height          =   1095
-         Left            =   11040
+         Height          =   495
+         Left            =   5280
          TabIndex        =   20
-         Top             =   5160
-         Width           =   615
-         _ExtentX        =   1085
-         _ExtentY        =   1931
-         Caption         =   "use"
+         Top             =   5760
+         Width           =   6375
+         _ExtentX        =   11245
+         _ExtentY        =   873
+         Caption         =   "replace translation with reference text (Ctrl+U)"
       End
       Begin PhotoDemon.pdTextBox txtReference 
-         Height          =   1095
+         Height          =   735
          Left            =   5040
          TabIndex        =   19
-         Top             =   5160
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1931
+         Top             =   4920
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1296
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdListBox lstPhrases 
@@ -136,29 +136,29 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "Save this translation and proceed to the next phrase"
       End
       Begin PhotoDemon.pdTextBox txtTranslation 
-         Height          =   1965
+         Height          =   1845
          Left            =   5040
          TabIndex        =   5
-         Top             =   2760
+         Top             =   2640
          Width           =   6615
          _ExtentX        =   11668
-         _ExtentY        =   3466
+         _ExtentY        =   3254
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdTextBox txtOriginal 
-         Height          =   1995
+         Height          =   1875
          Left            =   5040
          TabIndex        =   7
          Top             =   360
          Width           =   6615
          _ExtentX        =   11668
-         _ExtentY        =   3519
+         _ExtentY        =   3307
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdLabel lblTranslatedPhrase 
          Height          =   285
          Left            =   4920
-         Top             =   2400
+         Top             =   2280
          Width           =   6735
          _ExtentX        =   11880
          _ExtentY        =   503
@@ -215,7 +215,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   11
          Left            =   4920
-         Top             =   4800
+         Top             =   4560
          Width           =   6705
          _ExtentX        =   11827
          _ExtentY        =   503
@@ -542,8 +542,8 @@ Attribute VB_Exposed = False
 'Interactive Language (i18n) Editor
 'Copyright 2013-2022 by Tanner Helland
 'Created: 28/August/13
-'Last updated: 08/July/22
-'Last update: rework UI, underlying code as part of broader modernization
+'Last updated: 12/July/22
+'Last update: continue fixing UI annoyances and bugs
 '
 'This tool can simplify the PhotoDemon localization process.  The original version (built in 2013) was
 ' heavily influenced by feedback from Frank Donckers.  Many thanks to Frank for his contributions to
@@ -654,7 +654,7 @@ Private Sub cboPhraseFilter_Click()
                     
                     For i = 0 To m_numOfPhrases - 1
                         If m_ReferencePO.GetItemByKey(LCase$(m_Phrases(i).txtOriginal), tmpString) Then
-                            If Strings.StringsNotEqual(tmpString, m_Phrases(i).txtTranslation, True) Then
+                            If Strings.StringsNotEqual(Trim$(tmpString), Trim$(m_Phrases(i).txtTranslation), True) Then
                                 lstPhrases.AddItem m_Phrases(i).txtForListBox
                             End If
                         End If
@@ -723,6 +723,7 @@ Private Sub cmdAutoTranslate_Click()
             'Regardless of whether or not we succeed, increment the counter
             totalTranslated = totalTranslated + 1
             cmdAutoTranslate.Caption = g_Language.TranslateMessage("Processing phrase %1 of %2", totalTranslated, totalUntranslated)
+            DoEvents
             
             'Retrieve the original text, then request a translation from the online service
             srcPhrase = m_Phrases(i).txtOriginal
@@ -1202,10 +1203,34 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
 End Sub
 
 Private Sub cmdUseReference_Click()
+    UseReferenceText
+    txtTranslation.SetFocusToEditBox False
+End Sub
+
+Private Sub UseReferenceText()
+    
+    'Update header label to reflect save state
     If Strings.StringsNotEqual(txtTranslation.Text, txtReference.Text, False) Then
         lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase") & " " & g_Language.TranslateMessage("(NOT YET SAVED)")
     End If
-    txtTranslation.Text = txtReference.Text
+    
+    'Try to match case when using an alternate string
+    If Strings.StringsEqual(txtOriginal.Text, LCase$(txtOriginal.Text), False) Then
+        txtTranslation.Text = LCase$(txtReference.Text)
+    
+    ElseIf Strings.StringsEqual(txtOriginal.Text, UCase$(txtOriginal.Text), False) Then
+        txtTranslation.Text = UCase$(txtReference.Text)
+    
+    'Note: this will fail on XP or Vista, returning only the original string (by design).  As of 2022 I try to
+    ' minimize the time I spend fussing with bug-fixes like this in esoteric corners of the project, but I can
+    ' revisit if a localizer requests it.
+    ElseIf Strings.StringsEqual(txtOriginal.Text, Strings.StringRemap(txtOriginal.Text, sr_Titlecase), False) Then
+        txtTranslation.Text = Strings.StringRemap(txtReference.Text, sr_Titlecase)
+    
+    Else
+        txtTranslation.Text = txtReference.Text
+    End If
+    
 End Sub
 
 Private Sub Form_Load()
@@ -1326,9 +1351,11 @@ Private Sub lstPhrases_Click()
     
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED)")
         
-        If (LenB(m_AutoTranslate.GetAPIKey) <> 0) Then
+        'Only auto-translate when we are *not* in "phrases not in .po" mode
+        If (LenB(m_AutoTranslate.GetAPIKey) <> 0) And (Me.cboPhraseFilter.ListIndex <> 3) Then
         
             txtTranslation.Text = g_Language.TranslateMessage("waiting...")
+            DoEvents
             
             'Query the online service for a translation
             Dim retString As String
@@ -1630,14 +1657,29 @@ TitlecaseFail:
 
 End Function
 
-'Handle Ctrl+Enter specially (save current phrase and proceed to next one)
+'Handle Ctrl+[key] shortcuts specially
 Private Sub txtTranslation_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
 
-    If (vKey = vbKeyReturn) And (Shift And vbCtrlMask = vbCtrlMask) Then
-        preventFurtherHandling = True
-        m_inKeyEvent = True
-        PhraseFinished
-        txtTranslation.SelStart = Len(txtTranslation.Text)
+    If (Shift And vbCtrlMask = vbCtrlMask) Then
+         
+        'Save and proceed to next phrase
+        If (vKey = vbKeyReturn) Then
+            preventFurtherHandling = True
+            m_inKeyEvent = True
+            PhraseFinished
+            txtTranslation.SelStart = Len(txtTranslation.Text)
+        
+        'Replace existing translation with translation from 3rd-party reference file
+        ElseIf (vKey = vbKeyU) Then
+            preventFurtherHandling = True
+            m_inKeyEvent = True
+            UseReferenceText
+            txtTranslation.SelStart = Len(txtTranslation.Text)
+            
+        Else
+            m_inKeyEvent = False
+        End If
+        
     Else
         m_inKeyEvent = False
     End If
@@ -1754,7 +1796,7 @@ Private Sub LoadReferencePO()
         End If
         
         'We now have the ID phrase.  Store it, because we've got more parsing to do.
-        msgID = curPhrase
+        msgID = Trim$(curPhrase)
         
         '(Note that many .po files start with a blank tag followed by metadata; ignore those tags.)
         If (LenB(msgID) > 0) Then
@@ -1795,7 +1837,7 @@ Private Sub LoadReferencePO()
             End If
             
             'We now have the translation.
-            msgStr = curPhrase
+            msgStr = Trim$(curPhrase)
             
             'Only store key+value pairs where both entities exist
             If (LenB(msgID) > 0) Then
