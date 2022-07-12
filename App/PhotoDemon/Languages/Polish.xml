@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.105</langversion>
+<langversion>8.0.106</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -12703,12 +12703,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 <!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
-<original>click here for detailed instructions</original>
+<original>click here for detailed instructions (in English)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use</original>
+<original>replace translation with reference text (Ctrl+U)</original>
 <translation></translation>
 </phrase>
 
@@ -13921,6 +13921,6 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- As of this build, PhotoDemon contains 5507 phrases. -->
 <!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 11483 total words. -->
+<!-- These 2634 phrases contain approximately 11489 total words. -->
 
 </pdData>

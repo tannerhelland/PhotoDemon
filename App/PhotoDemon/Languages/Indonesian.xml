@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.544</langversion>
+<langversion>6.6.545</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -12707,12 +12707,12 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
-<original>click here for detailed instructions</original>
+<original>click here for detailed instructions (in English)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use</original>
+<original>replace translation with reference text (Ctrl+U)</original>
 <translation></translation>
 </phrase>
 
@@ -13927,6 +13927,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- As of this build, PhotoDemon contains 5507 phrases. -->
 <!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 11483 total words. -->
+<!-- These 2634 phrases contain approximately 11489 total words. -->
 
 </pdData>

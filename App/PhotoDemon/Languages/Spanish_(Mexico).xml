@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.0</langversion>
+<langversion>9.0.1</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -1509,7 +1509,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Desafortunadamente, esta PC no tiene suficiente memoria para crear un </translation>
+<translation>Lamentablemente, este PC no tiene suficiente memoria para crear una imagen %1x%2.  Por favor, reduzca el tamaño solicitado e inténtelo de nuevo.</translation>
 </phrase>
 
 <phrase>
@@ -1585,7 +1585,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <phrase>
 <original>Total colors: %1</original>
-<translation>Colores totales: </translation>
+<translation>Colores totales: %1</translation>
 </phrase>
 
 <phrase>
@@ -2225,7 +2225,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 
 <phrase>
 <original>Frame %1</original>
-<translation>Marco y</translation>
+<translation>Cuadro %1</translation>
 </phrase>
 
 <phrase>
@@ -2242,14 +2242,14 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation>Advertencia - archivo no encontrado: </translation>
+<translation>Advertencia - archivo no encontrado: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Por desgracia, la imagen de ' %1' no podría ser found.
+<translation>Por desgracia, la imagen de '%1' no podría ser found.
 
 If esta imagen se encontraba originalmente en un medio extraíble (DVD, unidad USB, etc), por favor, vuelva a insertar o volver a adjuntar los medios de comunicación y vuelva a intentarlo.</translation>
 </phrase>
@@ -2261,14 +2261,16 @@ If esta imagen se encontraba originalmente en un medio extraíble (DVD, unidad U
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation>Advertencia - archivo bloqueado: </translation>
+<translation>Advertencia - archivo bloqueado: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation>Desafortunadamente, el archivo '</translation>
+<translation>Lamentablemente, el archivo '%1' está bloqueado por otro programa en este PC.
+
+Por favor, cierre este archivo en cualquier otro programa que se esté ejecutando e inténtelo de nuevo.</translation>
 </phrase>
 
 <phrase>
@@ -2292,9 +2294,11 @@ Please close this file in any other running programs, then try again.</original>
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>Desafortunadamente, PhotoDemon no pudo cargar la siguiente imagen: 
+<translation>Desafortunadamente, PhotoDemon no pudo cargar la siguiente imagen:
 
-</translation>
+%1
+
+Por favor, utilice otro programa para guardar esta imagen en un formato genérico (como JPEG o PNG) antes de cargarla.  Gracias.</translation>
 </phrase>
 
 <phrase>
@@ -2663,7 +2667,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>El escáner ha devuelto un código de error que no se especifica en la documentación EZTW32.dll (Error # %1). Por favor, visite http://www.eztwain.com para más información.</translation>
+<translation>El escáner devolvió un código de error que no estaba especificado en la documentación de EZTW32.dll (Error #%1).  Visite http://www.eztwain.com para obtener más información.</translation>
 </phrase>
 
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -3040,7 +3044,9 @@ Description: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon ha abierto automáticamente la página web de informes de errores para ti.  Por favor, haga clic en el botón "Nuevo número", y luego seleccione "Informe de errores".  Responde a las preguntas lo mejor que puedas, y por favor incluye el siguiente número de error en algún lugar de tu informe: </translation>
+<translation>PhotoDemon ha abierto automáticamente la página web de informe de errores para usted.  Por favor, haz clic en el botón "New Issue", y luego selecciona "Bug Report".  Responde a las preguntas lo mejor que puedas, y por favor incluye el siguiente número de error en algún lugar de tu informe: %1
+
+Cuando termine, haga clic en el botón "Submit New Issue".  Gracias.</translation>
 </phrase>
 
 <phrase>
@@ -3117,7 +3123,7 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 
 <phrase>
 <original>Saving %1 image</original>
-<translation>1 imagen Ahorro%</translation>
+<translation>Guardando la imagen %1</translation>
 </phrase>
 
 <phrase>
@@ -3719,17 +3725,17 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation>Optimizar el marco de la animación y</translation>
+<translation>Optimizando el cuadro de animación %1 de %2</translation>
 </phrase>
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation>Guardando el cuadro de la animación y</translation>
+<translation>Guardando el cuadro de animación %1 de %2 </translation>
 </phrase>
 
 <phrase>
 <original>Finalizing image</original>
-<translation>Imagen final</translation>
+<translation>Finalizando la imagen</translation>
 </phrase>
 
 <!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -4080,14 +4086,14 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
-<translation>paleta exportada por PhotoDemon y</translation>
+<translation>paleta exportada por PhotoDemon %1</translation>
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation>Analizando el cuadro de animación y</translation>
+<translation>Analizando el cuadro de animación %1 de %2</translation>
 </phrase>
 
 <!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4312,7 +4318,7 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
-<translation>RGB (Y</translation>
+<translation>RGB (%1, %2, %3)</translation>
 </phrase>
 
 <phrase>
@@ -4529,7 +4535,7 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation>Marco actual: </translation>
+<translation>Cuadro actual: %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -4718,7 +4724,7 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>PhotoDemon doesn't understand the expression: %1</original>
-<translation>PhotoDemon no entiende la expresión: </translation>
+<translation>PhotoDemon no entiende la expresión: %1</translation>
 </phrase>
 
 <!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -5863,7 +5869,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>Isolating the %1 channel</original>
-<translation>Aislando el 1 canal%</translation>
+<translation>Aislamiento del canal %1</translation>
 </phrase>
 
 <!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -6635,7 +6641,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation>paletas en este archivo (</translation>
+<translation>paletas en este archivo (%1)</translation>
 </phrase>
 
 <phrase>
@@ -6932,7 +6938,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Un gradiente con el nombre "".</translation>
+<translation>Ya existe un degradado con el nombre "%1" en su colección.  ¿Desea sobrescribirlo?</translation>
 </phrase>
 
 <phrase>
@@ -6972,7 +6978,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation>Desafortunadamente, el archivo de gradientes "</translation>
+<translation>Lamentablemente, el archivo de degradado "%1" no parece ser un archivo de degradado válido.</translation>
 </phrase>
 
 <phrase>
@@ -7022,7 +7028,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Su colección de gradientes se almacena en el "".</translation>
+<translation>Su colección de degradados se almacena en la carpeta "%1".</translation>
 </phrase>
 
 <phrase>
@@ -7299,7 +7305,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>Translation by %1</original>
-<translation>Traducción de </translation>
+<translation>Traducción de %1</translation>
 </phrase>
 
 <phrase>
@@ -7331,7 +7337,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Repita esta acción para todas las imágenes que no haya guardado ( %1 en total)</translation>
+<translation>Repita esta acción para todas las imágenes que no haya guardado (%1 en total)</translation>
 </phrase>
 
 <phrase>
@@ -7380,7 +7386,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>unnamed image %1</original>
-<translation>imagen sin nombre y</translation>
+<translation>imagen sin nombre %1</translation>
 </phrase>
 
 <phrase>
@@ -7538,7 +7544,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>Fading previous action (%1)</original>
-<translation>Fading acción anterior ( %1)</translation>
+<translation>Fading acción anterior (%1)</translation>
 </phrase>
 
 <phrase>
@@ -7609,7 +7615,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>layer: %1</original>
-<translation>capa: </translation>
+<translation>capa: %1</translation>
 </phrase>
 
 <phrase>
@@ -7799,7 +7805,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>Animating image (stage %1 of %2)</original>
-<translation>Animación de imagen (etapa 1 %de %2)</translation>
+<translation>Imagen animada (etapa %1 de %2)</translation>
 </phrase>
 
 <phrase>
@@ -8138,7 +8144,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>standard deviation (%1)</original>
-<translation>desviación estándar (</translation>
+<translation>desviación estándar (%1)</translation>
 </phrase>
 
 <phrase>
@@ -8352,7 +8358,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>Applying %1 distortion</original>
-<translation>La aplicación de 1 %de distorsión</translation>
+<translation>Aplicando la distorsión %1</translation>
 </phrase>
 
 <phrase>
@@ -8844,7 +8850,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation>Calculando los gradientes de energía (pasa y</translation>
+<translation>Cálculo de los gradientes de energía (paso %1 de %2)</translation>
 </phrase>
 
 <phrase>
@@ -8859,7 +8865,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>8-way</original>
-<translation>8 vías...</translation>
+<translation>8 vías</translation>
 </phrase>
 
 <phrase>
@@ -9111,7 +9117,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>Applying unsharp mask (step %1 of %2)</original>
-<translation>La aplicación de máscara de enfoque (paso 1 %de %2)</translation>
+<translation>Aplicar máscara de desenfoque (paso %1 de %2)</translation>
 </phrase>
 
 <!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9521,12 +9527,12 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>procesando el archivo y</translation>
+<translation>tratamiento del fichero %1 de %2 (%3 reparaciones realizadas)</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation>Reparaciones completas.</translation>
+<translation>Reparaciones completadas.  %1 archivos reparados.</translation>
 </phrase>
 
 <phrase>
@@ -10026,7 +10032,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(Específicamente, JPEG con una calidad del 92 %para las fotografías, y PNG sin pérdida para los no fotografías)</translation>
+<translation>(Específicamente, JPEG con una calidad del 92% para las fotografías, y PNG sin pérdida para los no fotografías)</translation>
 </phrase>
 
 <phrase>
@@ -10051,7 +10057,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation>Procesando la imagen </translation>
+<translation>Procesando la imagen %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -10061,12 +10067,12 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>Conversión de lotes cancelada.</translation>
+<translation>Conversión por lotes cancelada.  Se han procesado %1 imágenes antes de la cancelación.  La última imagen procesada fue "%2".</translation>
 </phrase>
 
 <phrase>
 <original>Estimated time remaining: %1:%2</original>
-<translation>Tiempo estimado restante: </translation>
+<translation>Tiempo estimado restante: %1:%2</translation>
 </phrase>
 
 <phrase>
@@ -10957,7 +10963,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon tiene derechos de autor y</translation>
+<translation>PhotoDemon es Copyright %1 2000-%2 por Tanner Helland y colaboradores</translation>
 </phrase>
 
 <phrase>
@@ -11033,7 +11039,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>difference between %1 and %2</original>
-<translation>diferencia entre </translation>
+<translation>diferencia entre %1 y %2</translation>
 </phrase>
 
 <phrase>
@@ -11068,7 +11074,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation>Como una estimación aproximada, estas imágenes son...</translation>
+<translation>Como estimación aproximada, estas imágenes son un %1% similares.</translation>
 </phrase>
 
 <phrase>
@@ -11094,6 +11100,23 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Create color lookup table (LUT)</original>
+<translation>Crear tabla de búsqueda de color (LUT)</translation>
+</phrase>
+
+<phrase>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+<translation>añadir esto a la herramienta "Ajustes > Color > Búsqueda de color"</translation>
+</phrase>
+
+<phrase>
+<original>modified image and layer</original>
+<translation>imagen y capa modificadas</translation>
+</phrase>
+
+<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>tools</original>
@@ -11312,7 +11335,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>list of %1, one entry per line</original>
-<translation>lista de </translation>
+<translation>lista de %1, una entrada por línea</translation>
 </phrase>
 
 <!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
@@ -11841,7 +11864,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation>Tecla de atajo: </translation>
+<translation>Tecla de atajo: %1</translation>
 </phrase>
 
 <phrase>
@@ -12080,7 +12103,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>RGB %</original>
-<translation>RGB Y</translation>
+<translation>RGB %</translation>
 </phrase>
 
 <phrase>
@@ -12686,6 +12709,301 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>click here for detailed instructions (in English)</original>
+<translation>haga clic aquí para obtener instrucciones detalladas (en inglés)</translation>
+</phrase>
+
+<phrase>
+<original>replace translation with reference text (Ctrl+U)</original>
+<translation>sustituir la traducción por el texto de referencia (Ctrl+U)</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>Guarde esta traducción y pase a la siguiente frase</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>frase traducida</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>frase original</translation>
+</phrase>
+
+<phrase>
+<original>phrase groups</original>
+<translation>grupos de frases</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>lista de frases (%1 elementos)</translation>
+</phrase>
+
+<phrase>
+<original>Auto-translate all missing phrases</original>
+<translation>Traducir automáticamente todas las frases que faltan</translation>
+</phrase>
+
+<phrase>
+<original>reference translation from .po file</original>
+<translation>traducción de referencia del archivo .po</translation>
+</phrase>
+
+<phrase>
+<original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
+<translation>(NOTA: CTRL+ENTER guarda automáticamente y pasa a la siguiente frase)</translation>
+</phrase>
+
+<phrase>
+<original>copy system locale</original>
+<translation>copiar la configuración regional del sistema</translation>
+</phrase>
+
+<phrase>
+<original>official ISO language codes at Wikipedia</original>
+<translation>códigos lingüísticos oficiales de la ISO en Wikipedia</translation>
+</phrase>
+
+<phrase>
+<original>author name(s)</original>
+<translation>nombre del autor</translation>
+</phrase>
+
+<phrase>
+<original>language status</original>
+<translation>situación lingüística</translation>
+</phrase>
+
+<phrase>
+<original>language version</original>
+<translation>versión lingüística</translation>
+</phrase>
+
+<phrase>
+<original>language name</original>
+<translation>nombre de la lengua</translation>
+</phrase>
+
+<phrase>
+<original>language and country ID</original>
+<translation>idioma e identificación del país</translation>
+</phrase>
+
+<phrase>
+<original>optional translation aids</original>
+<translation>ayudas a la traducción opcionales</translation>
+</phrase>
+
+<phrase>
+<original>free DeepL.com API key for automatic translation suggestions</original>
+<translation>clave API gratuita de DeepL.com para las sugerencias de traducción automática</translation>
+</phrase>
+
+<phrase>
+<original>language file (.po) from any other software, as a reference</original>
+<translation>archivo de lenguaje (.po) de cualquier otro software, como referencia</translation>
+</phrase>
+
+<phrase>
+<original>official ISO country codes at Wikipedia</original>
+<translation>códigos oficiales de países ISO en Wikipedia</translation>
+</phrase>
+
+<phrase>
+<original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
+<translation>Estos ajustes opcionales pueden acelerar el proceso de traducción.  No se guardan en el archivo de idioma.</translation>
+</phrase>
+
+<phrase>
+<original>delete selected language file</original>
+<translation>eliminar el archivo de idioma seleccionado</translation>
+</phrase>
+
+<phrase>
+<original>start new language</original>
+<translation>iniciar un nuevo idioma</translation>
+</phrase>
+
+<phrase>
+<original>edit existing language</original>
+<translation>editar el lenguaje existente</translation>
+</phrase>
+
+<phrase>
+<original>Automatic translations</original>
+<translation>Traducciones automáticas</translation>
+</phrase>
+
+<phrase>
+<original>Processing phrase %1 of %2</original>
+<translation>Procesando la frase %1 de %2</translation>
+</phrase>
+
+<phrase>
+<original>Automatic translation complete!</original>
+<translation>Traducción automática completa</translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
+<translation>¿Seguro que quiere borrar %1? (Esta acción no se puede deshacer)</translation>
+</phrase>
+
+<phrase>
+<original>Delete language file</original>
+<translation>Eliminar el archivo de idioma</translation>
+</phrase>
+
+<phrase>
+<original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
+<translation>No tiene acceso a esta carpeta.  Por favor, inicie sesión como administrador e inténtelo de nuevo.</translation>
+</phrase>
+
+<phrase>
+<original>New Language</original>
+<translation>Nueva lengua</translation>
+</phrase>
+
+<phrase>
+<original>incomplete</original>
+<translation>incompleto</translation>
+</phrase>
+
+<phrase>
+<original>enter your name here</original>
+<translation>introduzca su nombre aquí</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
+
+To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+<translation>Desafortunadamente, el archivo de idioma en-US de PhotoDemon no pudo ser localizado en esta PC.  Este archivo se incluye con la versión oficial de PhotoDemon, pero es posible que no se incluya con las versiones de desarrollo o beta.
+
+Para iniciar una nueva traducción, por favor descargue una nueva copia de PhotoDemon desde photodemon.org.</translation>
+</phrase>
+
+<phrase>
+<original>Master language file missing</original>
+<translation>Falta el archivo de idioma principal</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
+
+To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+<translation>Desafortunadamente, este archivo de idioma no pudo ser cargado.  Es posible que la copia en este PC esté desactualizada.
+
+Para continuar, descargue una copia nueva de PhotoDemon desde photodemon.org.</translation>
+</phrase>
+
+<phrase>
+<original>Language file could not be loaded</original>
+<translation>No se ha podido cargar el archivo de idioma</translation>
+</phrase>
+
+<phrase>
+<original>phrases that don't match reference</original>
+<translation>frases que no coinciden con la referencia</translation>
+</phrase>
+
+<phrase>
+<original>XML file</original>
+<translation>Archivo XML</translation>
+</phrase>
+
+<phrase>
+<original>Save current language file</original>
+<translation>Guardar el archivo de idioma actual</translation>
+</phrase>
+
+<phrase>
+<original>Save and exit</original>
+<translation>Guardar y salir</translation>
+</phrase>
+
+<phrase>
+<original>Step %1</original>
+<translation>Paso %1</translation>
+</phrase>
+
+<phrase>
+<original>select language</original>
+<translation>seleccionar idioma</translation>
+</phrase>
+
+<phrase>
+<original>apply language and translation settings</original>
+<translation>aplicar los ajustes de idioma y traducción</translation>
+</phrase>
+
+<phrase>
+<original>localize phrases</original>
+<translation>localizar frases</translation>
+</phrase>
+
+<phrase>
+<original>(NOT YET SAVED)</original>
+<translation>(AÚN NO SE HA GUARDADO)</translation>
+</phrase>
+
+<phrase>
+<original>all phrases</original>
+<translation>todas las frases</translation>
+</phrase>
+
+<phrase>
+<original>translated phrases</original>
+<translation>frases traducidas</translation>
+</phrase>
+
+<phrase>
+<original>untranslated phrases</original>
+<translation>frases sin traducir</translation>
+</phrase>
+
+<phrase>
+<original>(saved)</original>
+<translation>(guardado)</translation>
+</phrase>
+
+<phrase>
+<original>[translation failed]</original>
+<translation>[traducción fallida]</translation>
+</phrase>
+
+<phrase>
+<original>[phrase not in file]</original>
+<translation>[frase no en el archivo]</translation>
+</phrase>
+
+<phrase>
+<original>unknown author</original>
+<translation>autor desconocido</translation>
+</phrase>
+
+<phrase>
+<original>(official translation by %1)</original>
+<translation>(traducción oficial de %1)</translation>
+</phrase>
+
+<phrase>
+<original>by %1</original>
+<translation>por %1</translation>
+</phrase>
+
+<phrase>
+<original>(autosaved on %1)</original>
+<translation>(autoguardado en %1)</translation>
+</phrase>
+
+<!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+
+<phrase>
 <original>Create macro from session history</original>
 <translation>Crear una macro a partir del historial de sesiones</translation>
 </phrase>
@@ -12717,7 +13035,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>Your final macro will contain %1 action(s).</original>
-<translation>Su última macro contendrá...</translation>
+<translation>Su macro final contendrá %1 acción(es).</translation>
 </phrase>
 
 <!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -13540,7 +13858,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation>La grabación comenzará en </translation>
+<translation>La grabación comenzará en %1</translation>
 </phrase>
 
 <phrase>
@@ -13607,29 +13925,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Create color lookup table (LUT)</original>
-<translation>Crear tabla de búsqueda de color (LUT)</translation>
-</phrase>
-
-<phrase>
-<original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation>añadir esto a la herramienta "Ajustes > Color > Búsqueda de color</translation>
-</phrase>
-
-<phrase>
-<original>modified image and layer</original>
-<translation>imagen y capa modificadas</translation>
-</phrase>
-
-<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2634</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5406 phrases. -->
-<!-- 2829 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11193 total words. -->
+<!-- As of this build, PhotoDemon contains 5507 phrases. -->
+<!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
+<!-- These 2634 phrases contain approximately 11489 total words. -->
 
 </pdData>
