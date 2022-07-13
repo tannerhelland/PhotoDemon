@@ -1,6 +1,6 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
-'Misc VB6 Hacks
+'Misc VB6 Hacks (stripped down version of the PD original)
 'Copyright 2016-2022 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 27/May/22
@@ -24,10 +24,42 @@ Attribute VB_Name = "VBHacks"
 
 Option Explicit
 
-'Data constants
+'Some of these are copied from elsewhere in PD to allow this module version to stand alone
 Public Const LONG_MAX As Long = 2147483647
 Public Const DOUBLE_MAX As Double = 1.79769313486231E+308
 Public Const SINGLE_MAX As Single = 3.402823E+38!
+
+Public Type RGBQuad
+    Blue As Byte
+    Green As Byte
+    Red As Byte
+    Alpha As Byte
+End Type
+
+'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
+Public Type SafeArrayBound
+    cElements As Long
+    lBound   As Long
+End Type
+
+Public Type SafeArray2D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    Bounds(1)  As SafeArrayBound
+End Type
+
+Public Type SafeArray1D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    cElements As Long
+    lBound   As Long
+End Type
 
 Private Type DROPFILES
     pFiles As Long
@@ -128,11 +160,6 @@ Private Declare Function QueryPerformanceCounter Lib "kernel32" (ByRef lpPerform
 Private Declare Function QueryPerformanceFrequency Lib "kernel32" (ByRef lpFrequency As Currency) As Long
 Private m_TimerFrequency As Currency
 
-'Because AddressOf doesn't work in classes, we have to jump through some hoops to allow class-based keyboard hooking
-Private m_EditBoxRef As pdEditBoxW
-Private m_AcceleratorRef As pdAccelerator
-Private m_PDIKRef As pdInputKeyboard
-
 Private m_BitFlags(0 To 31) As Long, m_BitFlagsReady As Boolean
 
 '"Wrap" an arbitrary VB array at some other arbitrary array.  The new array must *NOT* be initialized
@@ -174,17 +201,6 @@ End Sub
 Public Sub Unalias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
     PutMem4 VarPtrArray(new2DArray), 0&
 End Sub
-
-'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this
-' function instead.  The unique TimerID we specify is actually a handle to the timer instance.
-' (Thank you to Karl Peterson for suggesting this excellent trick: http://vb.mvps.org/samples/TimerObj/)
-Public Sub StandInTimerProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal cTimer As pdTimer, ByVal dwTime As Long)
-    If (Not cTimer Is Nothing) Then cTimer.TimerEventArrived
-End Sub
-
-Public Function StandInEnumChildWndProc(ByVal hWnd As Long, ByVal cTheme As pdTheme) As Long
-    StandInEnumChildWndProc = cTheme.EnumChildProc(hWnd)
-End Function
 
 'This beautiful little function comes courtesy of coder Merri:
 ' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
@@ -350,9 +366,9 @@ End Function
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
-Public Sub DoEvents_SingleHwnd(ByVal srcHwnd As Long)
+Public Sub DoEvents_SingleHwnd(ByVal srcHWnd As Long)
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1&)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1&)
         TranslateMessage tmpMsg
         DispatchMessageW tmpMsg
     Loop
@@ -372,7 +388,7 @@ End Sub
 
 'PD sometimes wants to yield for paint events (e.g. updating a status bar) without risking
 ' reentrancy from input events.
-Public Sub DoEvents_PaintOnly(Optional ByVal alsoPurgeInputEvents As Boolean = True)
+Public Sub DoEvents_PaintOnly(ByVal targetHWnd As Long, Optional ByVal alsoPurgeInputEvents As Boolean = True)
     
     Dim tmpMsg As winMsg
     Const QS_PAINT As Long = &H20&
@@ -382,7 +398,7 @@ Public Sub DoEvents_PaintOnly(Optional ByVal alsoPurgeInputEvents As Boolean = T
         DispatchMessageA tmpMsg
     Loop
     
-    If alsoPurgeInputEvents Then VBHacks.PurgeInputMessages FormMain.hWnd
+    If alsoPurgeInputEvents Then VBHacks.PurgeInputMessages targetHWnd
     
 End Sub
 
@@ -397,7 +413,7 @@ Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
     Loop
 End Sub
 
-Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
+Public Sub PurgeInputMessages(ByVal srcHWnd As Long)
     
     Const QS_MOUSEMOVE = &H2
     Const QS_MOUSEBUTTON = &H4
@@ -407,7 +423,7 @@ Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
     Const PM_QS_INPUT = (QS_INPUT * (2& ^ 16&))
     
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1& Or PM_QS_INPUT)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1& Or PM_QS_INPUT)
     Loop
     
 End Sub
@@ -679,80 +695,6 @@ Public Sub UnwrapArrayFromPtr_Float(ByRef dstFloats() As Single)
     PutMem4 VarPtrArray(dstFloats), 0&
 End Sub
 
-'Subclassing helper functions follow
-Public Function StartSubclassing(ByVal hWnd As Long, ByVal Thing As ISubclass, Optional dwRefData As Long) As Boolean
-    StartSubclassing = CBool(SetWindowSubclass(hWnd, AddressOf SubclassProc, ObjPtr(Thing), dwRefData))
-End Function
-
-Public Function StopSubclassing(ByVal hWnd As Long, ByVal Thing As ISubclass) As Boolean
-    StopSubclassing = CBool(RemoveWindowSubclass(hWnd, AddressOf SubclassProc, ObjPtr(Thing)))
-End Function
-
-Public Function DefaultSubclassProc(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    DefaultSubclassProc = DefSubclassProc(hWnd, uiMsg, wParam, lParam)
-End Function
-
-'As a failsafe against client negligence, this function will automatically remove subclassing when WM_NCDESTROY
-' is received.  (PD assumes automatic teardown behavior in a number of places, so *do not* remove the WM_NCDESTROY
-' check in this function!)  Note that there is no problem if the caller manually unsubclasses prior to returning;
-' the API will simply return FALSE because the hWnd/key pair doesn't exist in the object table.
-Public Function SubclassProc(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As ISubclass, ByVal dwRefData As Long) As Long
-   SubclassProc = uIdSubclass.WindowMsg(hWnd, uiMsg, wParam, lParam, dwRefData)
-   If (uiMsg = WM_NCDESTROY) Then StopSubclassing hWnd, uIdSubclass
-End Function
-
-'When a pdInputKeyboard class needs to hook the keyboard, it notifies us via this function.  This function returns the
-' hook ID generated by the hook request.
-Public Function NotifyPDIKHookNeeded(ByRef srcPDIK As pdInputKeyboard) As Long
-    Set m_PDIKRef = srcPDIK
-    NotifyPDIKHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcPDIK, App.hInstance, App.ThreadID)
-End Function
-
-'If we mistakenly call a class that has unhooked itself, it can notify us via this function.  We'll release
-' our reference if it hasn't already been stolen by another pdIK instance.
-Public Sub NotifyPDIKHookNotNeeded(ByVal objPointer As Long)
-    If (ObjPtr(m_PDIKRef) = objPointer) Then Set m_PDIKRef = Nothing
-End Sub
-
-'Hooked keyboard events happen here; we simply relay the results to last-referenced pdInputKeyboard class
-Public Function KeyboardHookProcPDIK(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    If (Not m_PDIKRef Is Nothing) Then
-        KeyboardHookProcPDIK = m_PDIKRef.PDIKKeyboardProc(nCode, wParam, lParam)
-    End If
-End Function
-
-'Same idea as the three previous functions, but for the main pdAccelerator instance on FormMain
-Public Function NotifyAcceleratorHookNeeded(ByRef srcAccelerator As pdAccelerator) As Long
-    Set m_AcceleratorRef = srcAccelerator
-    NotifyAcceleratorHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcAccelerator, App.hInstance, App.ThreadID)
-End Function
-
-Public Sub NotifyAcceleratorHookNotNeeded(ByVal objPointer As Long)
-    If (ObjPtr(m_AcceleratorRef) = objPointer) Then Set m_AcceleratorRef = Nothing
-End Sub
-
-Public Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    If (Not m_AcceleratorRef Is Nothing) Then
-        KeyboardHookProcAccelerator = m_AcceleratorRef.KeyboardHookProcAccelerator(nCode, wParam, lParam)
-    End If
-End Function
-
-'Same idea as the three previous functions, but for individual pdEditBox instances
-Public Function NotifyEditBoxHookNeeded(ByRef srcPDEditBox As pdEditBoxW) As Long
-    Set m_EditBoxRef = srcPDEditBox
-    NotifyEditBoxHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcEditBox, App.hInstance, App.ThreadID)
-End Function
-
-Public Sub NotifyEditBoxHookNotNeeded(ByVal objPointer As Long)
-    If (ObjPtr(m_EditBoxRef) = objPointer) Then Set m_EditBoxRef = Nothing
-End Sub
-
-Public Function KeyboardHookProcEditBox(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    If (Not m_EditBoxRef Is Nothing) Then
-        KeyboardHookProcEditBox = m_EditBoxRef.EditBoxKeyboardProc(nCode, wParam, lParam)
-    End If
-End Function
-
 'PD can use standard VB6 OLEDragDrop/Over events, but we need to perform some hackery to prevent
 ' VB from downsampling paths and filenames from 16-bits per char to 8.  Use this function to
 ' do the hackery for you.
@@ -887,10 +829,3 @@ DragDropFilesFailed:
     PDDebug.LogAction "WARNING!  VBHacks.GetDragDropFileListW() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
-
-'If you have any hack-related cleanup that needs to be performed at shutdown time, use this function.
-Public Sub ShutdownCleanup()
-    Set m_EditBoxRef = Nothing
-    Set m_AcceleratorRef = Nothing
-    Set m_PDIKRef = Nothing
-End Sub

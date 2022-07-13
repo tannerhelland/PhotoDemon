@@ -1002,6 +1002,6 @@ Friend Sub PrintAdditionalDebugInfo()
     End If
     
     'If the fast translation cache exists, it may have additional debug info to report
-    If (Not m_FoundTranslations Is Nothing) Then m_FoundTranslations.PrintAdditionalDebugInfo
+    If (Not m_FoundTranslations Is Nothing) Then m_FoundTranslations.PrintClassDebugInfo
     
 End Sub

@@ -137,46 +137,17 @@ End Sub
 
 'Retrieve a string from the stack, with optional support for locale invariant conversions (when the caller expects the string
 ' to represent a number of some sort)
-Friend Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
-
+Friend Function GetString(ByVal strIndex As Long) As String
     If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
-        
-        'Some callers may use this function to return a numeric value as a String, e.g. prior to creating a param string.
-        ' They can use the assumeLocaleInvariantNumber parameter to notify us of this, and we will translate the key
-        ' at this point to a safe, locale-invariant string representation.
-        If assumeLocaleInvariantNumber Then
-        
-            'If the string representation of this key can be coerced into a numeric value, use a (rather ugly) series
-            ' of transforms to ensure that the string representation of the number *never* varies by locale.  This is
-            ' important as the original string may be locale-specific (especially if it originated from a text box),
-            ' but we only want to use locale-invariant versions internally.
-            Dim testString As String
-            testString = m_Strings(strIndex)
-            
-            If IsNumberLocaleUnaware(testString) Then
-                GetString = Trim$(Str$(Val(testString)))
-            Else
-                GetString = testString
-            End If
-        
-        Else
-            GetString = m_Strings(strIndex)
-        End If
-    Else
-        Debug.Print "WARNING!  Someone asked pdStringStack for a string outside stack bounds.  Fix this!"
+        GetString = m_Strings(strIndex)
     End If
-
 End Function
 
 'Retrieve a string pointer from the stack; helpful for API interactions
 Friend Function GetStringPointer(ByVal strIndex As Long) As Long
-
     If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
         GetStringPointer = StrPtr(m_Strings(strIndex))
-    Else
-        Debug.Print "WARNING!  Someone asked pdStringStack for a string outside stack bounds.  Fix this!"
     End If
-
 End Function
 
 'This function may seem like a ridiculous addition, but it's actually very helpful in PD.  pdStringStack is used by pdFSO

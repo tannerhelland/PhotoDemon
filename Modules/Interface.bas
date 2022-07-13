@@ -196,6 +196,15 @@ Public Sub SetDialogResizeFlag(ByVal newFlag As Boolean)
     m_DialogActivelyResizing = newFlag
 End Sub
 
+Public Sub SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As String)
+    If (LenB(srcCaption) > 0) Then srcCaption = " " & srcCaption
+    If (Not g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW dstForm.hWnd, srcCaption
+    Else
+        dstForm.Caption = srcCaption
+    End If
+End Sub
+
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
 ' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.

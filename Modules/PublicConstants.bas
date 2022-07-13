@@ -28,11 +28,6 @@ Public Const PDP_GENERIC_ERROR As Long = 9001
 ' have to manually change them when I think up better or more appropriate ones)
 Public Const MACRO_EXT As String * 3 = "pdm"
 
-'Data constants
-Public Const LONG_MAX As Long = 2147483647
-Public Const DOUBLE_MAX As Double = 1.79769313486231E+308
-Public Const SINGLE_MAX As Single = 3.402823E+38!
-
 'Standard API constants
 Public Const MAX_PATH_LEN As Long = 260
 

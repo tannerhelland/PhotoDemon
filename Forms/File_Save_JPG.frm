@@ -440,7 +440,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG")
     
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     

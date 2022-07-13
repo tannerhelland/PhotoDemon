@@ -683,7 +683,7 @@ Public Function GetSystemTimeAsCurrency() As Currency
 End Function
 
 'Is Aero enabled (requires Vista+ and classic theme must *not* be in use)
-Public Function IsAeroAvailable() As Boolean
+Public Function IsAeroAvailable(ByVal srcHwnd As Long) As Boolean
     
     'Only check this once; it does not change per-session
     If (m_ThemingAvailable = pdta_Unknown) Then
@@ -700,7 +700,7 @@ Public Function IsAeroAvailable() As Boolean
         Else
             Dim hTheme As Long, sClass As String
             sClass = "Window"
-            hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
+            hTheme = OpenThemeData(srcHwnd, StrPtr(sClass))
             If (hTheme <> 0) Then
                 m_ThemingAvailable = pdta_True
                 CloseThemeData hTheme
@@ -958,17 +958,17 @@ Public Sub SetRestartRestoreBehavior(ByVal allowToRestore As Boolean)
 End Sub
 
 'If desired, a custom state can be set for the taskbar.  (Normally this is handled by the SetTaskbarProgressValue function.)
-Public Function SetTaskbarProgressState(ByVal tbpFlags As PD_TaskBarProgress) As Long
-    If WIN7_FEATURES_ALLOWED Then SetTaskbarProgressState = CallInterface(m_taskbarObjHandle, SetProgressState_, 2, FormMain.hWnd, tbpFlags)
+Public Function SetTaskbarProgressState(ByVal tbpFlags As PD_TaskBarProgress, ByVal srcHwnd As Long) As Long
+    If WIN7_FEATURES_ALLOWED Then SetTaskbarProgressState = CallInterface(m_taskbarObjHandle, SetProgressState_, 2, srcHwnd, tbpFlags)
 End Function
 
-Public Function SetTaskbarProgressValue(ByVal amtCompleted As Long, ByVal amtTotal As Long) As Long
+Public Function SetTaskbarProgressValue(ByVal amtCompleted As Long, ByVal amtTotal As Long, ByVal srcHwnd As Long) As Long
     If WIN7_FEATURES_ALLOWED Then
         If (amtCompleted = 0) Then
-            SetTaskbarProgressState TBP_NoProgress
+            SetTaskbarProgressState TBP_NoProgress, srcHwnd
         Else
-            SetTaskbarProgressState TBP_Normal
-            SetTaskbarProgressValue = CallInterface(m_taskbarObjHandle, SetProgressValue_, 5, FormMain.hWnd, amtCompleted, 0, amtTotal, 0)
+            SetTaskbarProgressState TBP_Normal, srcHwnd
+            SetTaskbarProgressValue = CallInterface(m_taskbarObjHandle, SetProgressValue_, 5, srcHwnd, amtCompleted, 0, amtTotal, 0)
         End If
     End If
 End Function

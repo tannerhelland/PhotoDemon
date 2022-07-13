@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmCreateMaster 
    BackColor       =   &H80000005&
    Caption         =   " PhotoDemon Master Language XML Generator"
-   ClientHeight    =   8100
+   ClientHeight    =   8190
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   14535
@@ -16,7 +16,7 @@ Begin VB.Form frmCreateMaster
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   540
+   ScaleHeight     =   546
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
@@ -368,8 +368,7 @@ Private m_MasterText As String, m_OldLanguageText As String, m_NewLanguageText A
 Private m_OldLanguagePath As String
 
 'Variables used to build a blacklist of text that does not need to be translated
-Private m_Blacklist() As String
-Private m_numOfBlacklistEntries As Long
+Private m_Blacklist As pdStringHash
 
 'String to store the version of the current VBP file (which will be written out to the master XML file for guidance)
 Private m_VersionString As String
@@ -395,7 +394,7 @@ Private Sub cmdConvertLabels_Click()
         srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
         
         Dim fileContents As String
-        fileContents = GetFileAsString(srcFilename)
+        Files.FileLoadAsString srcFilename, fileContents, True
         
         Dim fileLines() As String
         fileLines = Split(fileContents, vbCrLf)
@@ -472,7 +471,7 @@ nextLine:
         ' We are now going to overwrite the original file (gasp) with these new contents.
         
         'Start by killing the original copy
-        If FileExist(srcFilename) Then Kill srcFilename
+        Files.FileDeleteIfExists srcFilename
         
         'Open the file anew
         Dim fHandle As Integer
@@ -511,9 +510,15 @@ Private Function IsValidPDLabelProperty(ByVal srcString As String) As Boolean
     If InStr(1, srcString, "Alignment", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "BackColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "Caption", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    
+    'Attempt a periodic exit (since we can't short-circuit VB code otherwise argh)
+    If IsValidPDLabelProperty Then Exit Function
+    
     If InStr(1, srcString, "Enabled", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "ForeColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "Height", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If IsValidPDLabelProperty Then Exit Function
+    
     If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
@@ -524,17 +529,17 @@ End Function
 
 Private Sub cmdMaster_Click()
 
-    Dim cDlg As cCommonDialog
-    Set cDlg = New cCommonDialog
+    Dim cDialog As pdOpenSaveDialog
+    Set cDialog = New pdOpenSaveDialog
     
+    'This project should be located in a sub-path of a normal PhotoDemon install.
+    ' You could easily modify this to dynamically calculate the corresponding folder, but I hard-code
+    ' a path to the typical folder on my dev PC.
     Dim fPath As String
     fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\Master\MASTER.xml"
     
-    If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
-    
-        'Load the file into a string
-        m_MasterText = GetFileAsString(fPath)
-                
+    If cDialog.GetOpenFileName(fPath, , True, False, "XML - PhotoDemon Language File|*.xml", 1, , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+        Files.FileLoadAsString fPath, m_MasterText, True
     End If
     
 End Sub
@@ -648,15 +653,15 @@ Private Sub cmdMerge_Click()
     Loop While sPos > 0
     
     'Prompt the user to save the results
-    Dim cDlg As cCommonDialog
-    Set cDlg = New cCommonDialog
+    Dim cDialog As pdOpenSaveDialog
+    Set cDialog = New pdOpenSaveDialog
     
     Dim fPath As String
     fPath = m_OldLanguagePath
     
-    If cDlg.VBGetSaveFileName(fPath, , True, "XML - PhotoDemon Language File|*.xml", , , "Save the merged language file (XML)", "xml", Me.hWnd) Then
+    If cDialog.GetSaveFileName(fPath, , True, "XML - PhotoDemon Language File|*.xml", 1, , "Save the merged language file (XML)", "xml", Me.hWnd) Then
     
-        If FileExist(fPath) Then
+        If Files.FileExists(fPath) Then
             MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
             Exit Sub
         End If
@@ -767,7 +772,7 @@ Private Sub cmdMergeAll_Click()
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     'Auto-load the latest master language file
-    m_MasterText = GetFileAsString(srcFolder & "Master\MASTER.xml")
+    Files.FileLoadAsString srcFolder & "Master\MASTER.xml", m_MasterText, True
     
     'Rather than backup the old files to the dev language folder (which is confusing),
     ' I now place them inside a dedicated backup folder.
@@ -785,8 +790,8 @@ Private Sub cmdMergeAll_Click()
     Do While (LenB(chkFile) > 0)
         
         'Load the file into a string
-        m_OldLanguageText = GetFileAsString(srcFolder & chkFile)
         m_OldLanguagePath = srcFolder & chkFile
+        Files.FileLoadAsString m_OldLanguagePath, m_OldLanguageText, True
         
         'BEGIN COPY OF CODE FROM cmdMerge
         
@@ -875,7 +880,7 @@ Private Sub cmdMergeAll_Click()
                 'Start by backing up the old file
                 FileCopy m_OldLanguagePath, backupFolder & chkFile
                 
-                If FileExist(m_OldLanguagePath) Then
+                If Files.FileExists(m_OldLanguagePath) Then
                     Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
                 End If
                 
@@ -901,20 +906,17 @@ End Sub
 
 Private Sub cmdOldLanguage_Click()
     
-    Dim cDlg As cCommonDialog
-    Set cDlg = New cCommonDialog
+    Dim cDialog As pdOpenSaveDialog
+    Set cDialog = New pdOpenSaveDialog
     
     Dim fPath As String
     fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     Dim tmpLangFile As String
     
-    If cDlg.VBGetOpenFileName(tmpLangFile, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
-    
-        'Load the file into a string
-        m_OldLanguageText = GetFileAsString(tmpLangFile)
+    If cDialog.GetOpenFileName(tmpLangFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+        Files.FileLoadAsString tmpLangFile, m_OldLanguagePath, True
         m_OldLanguagePath = tmpLangFile
-                
     End If
     
 End Sub
@@ -994,10 +996,9 @@ Private Sub cmdProcess_Click()
     
     'We are now going to compare the length of the old file and new file.  If the lengths match, there's no reason to write out this new file.
     Dim oldFileString As String
-    oldFileString = GetFileAsString(outputFile)
+    Files.FileLoadAsString outputFile, oldFileString, True
     
     Dim newFileLen As Long, oldFileLen As Long
-    
     newFileLen = LenB(Trim$(Replace$(Replace$(m_outputText.ToString(), vbCrLf, vbNullString), vbTab, vbNullString)))
     oldFileLen = LenB(Trim$(Replace$(Replace$(oldFileString, vbCrLf, vbNullString), vbTab, vbNullString)))
         
@@ -1020,7 +1021,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
 
     If (LenB(srcFile) = 0) Then Exit Sub
 
-    m_FileName = getFilename(srcFile)
+    m_FileName = Files.FileGetName(srcFile)
     
     'Certain files can be ignored.  I generate this list manually, on account of knowing which files (classes, mostly) contain
     ' no special text.  I could probably add many more files to this list, but I primarily want to blacklist those that create
@@ -1052,7 +1053,8 @@ Private Sub ProcessFile(ByVal srcFile As String)
     
     'Start by copying all text from the file into a line-by-line array
     Dim fileContents As String
-    fileContents = GetFileAsString(srcFile)
+    Files.FileLoadAsString srcFile, fileContents, True
+    
     Dim fileLines() As String
     fileLines = Split(fileContents, vbCrLf)
     
@@ -1837,16 +1839,15 @@ End Function
 
 'Extract a list of all project files from a VBP file
 Private Sub cmdSelectVBP_Click()
-
-    Dim cDlg As cCommonDialog
-    Set cDlg = New cCommonDialog
     
     m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
     lblVBP = "Active VBP: " & m_VBPFile
-    m_VBPPath = GetDirectory(m_VBPFile)
+    m_VBPPath = Files.FileGetPath(m_VBPFile)
     
     'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
-    'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
+    'Dim cDialog As pdOpenSaveDialog
+    'Set cDialog = New pdOpenSaveDialog
+    'If cDialog.GetOpenFileName (m_VBPFile, , True, False, "VBP - Visual Basic Project|*.vbp", 1, , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
     '    lblVBP = "Active VBP: " & m_VBPFile
     '    m_VBPPath = GetDirectory(m_VBPFile)
     'Else
@@ -1855,7 +1856,8 @@ Private Sub cmdSelectVBP_Click()
     
     'Load the file into a string array, split up line-by-line
     Dim vbpContents As String
-    vbpContents = GetFileAsString(m_VBPFile)
+    Files.FileLoadAsString m_VBPFile, vbpContents, True
+    
     vbpText = Split(vbpContents, vbCrLf)
     ReDim vbpFiles(0 To UBound(vbpText)) As String
     Dim numOfFiles As Long
@@ -1934,38 +1936,6 @@ Private Function GetDirectory(ByRef sString As String) As String
     
 End Function
 
-'Retrieve an entire file and return it as a string.  pdXML is used to support UTF-8 encodings (which PD's language files default to).
-Private Function GetFileAsString(ByVal fName As String) As String
-           
-    'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
-    If m_XML.LoadXMLFile(fName) Then
-        GetFileAsString = m_XML.ReturnCurrentXMLString(True)
-        
-    Else
-        
-        'Ensure that the file exists before attempting to load it
-        If FileExist(fName) Then
-        
-            Dim fileNum As Integer
-            fileNum = FreeFile
-            
-            Open fName For Binary As #fileNum
-                GetFileAsString = Space$(LOF(fileNum))
-                Get #fileNum, , GetFileAsString
-            Close #fileNum
-            
-            'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-            If (InStr(1, GetFileAsString, vbTab) <> 0) Then GetFileAsString = Replace$(GetFileAsString, vbTab, vbNullString)
-            
-        Else
-            Debug.Print "File does not exist; exiting."
-            GetFileAsString = vbNullString
-        End If
-            
-    End If
-    
-End Function
-
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
 Private Function CountWordsInString(ByVal srcString As String) As Long
 
@@ -2019,8 +1989,7 @@ Private Sub Form_Load()
         
     'Build a blacklist of phrases that are in the software, but do not need to be translated.  (These are complex phrases that
     ' may include things like names, but the automatic text generator has no way of knowing that the text is non-translatable.)
-    ReDim m_Blacklist(0) As String
-    m_numOfBlacklistEntries = 0
+    Set m_Blacklist = New pdStringHash
     
     AddBlacklist "*"
     AddBlacklist "("
@@ -2122,25 +2091,11 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub AddBlacklist(ByRef blString As String)
-    m_Blacklist(m_numOfBlacklistEntries) = LCase$(blString)
-    m_numOfBlacklistEntries = m_numOfBlacklistEntries + 1
-    ReDim Preserve m_Blacklist(0 To m_numOfBlacklistEntries) As String
+    m_Blacklist.AddItem LCase$(blString), vbNullString
 End Sub
 
 Private Function IsBlacklisted(ByVal blString As String) As Boolean
-
-    IsBlacklisted = False
-    blString = LCase$(blString)
-    
-    'Search the blacklist for this string.  If it is found, immediately return TRUE.
-    Dim i As Long
-    For i = 0 To m_numOfBlacklistEntries - 1
-        If (StrComp(blString, m_Blacklist(i), vbBinaryCompare) = 0) Then
-            IsBlacklisted = True
-            Exit Function
-        End If
-    Next i
-
+    IsBlacklisted = m_Blacklist.GetItemByKey(LCase$(blString), blString)
 End Function
 
 'Used to roughly estimate if a string is purely alphabetical

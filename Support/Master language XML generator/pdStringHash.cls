@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2022-2022 by Tanner Helland
 'Created: 07/March/22
 'Last updated: 13/July/22
-'Last update: remove profiling code; this class is plenty fast now!
+'Last update: copy from PD and replace lib-deflate-based hash with internal VB one
 '
 'PhotoDemon's run-time localization engine has to manage a ton of strings.  Historically, we've just
 ' pulled strings on-demand from the base XML string.  This is very fast (especially since localization
@@ -276,12 +276,21 @@ End Sub
 Private Function GetKeyHash(ByRef srcKey As String) As Long
     
     'Note that zero-length keys have undefined behavior, by design.  (PD does not use these.)
-    ' You could handle these yourself, but you'd need to add an extra tracking member to the underlying
-    ' table struct to distinguish between null and unused entries.
     
-    'Hash the string using libdeflate, and use the length of the incoming string as the
-    ' initial crc key.  (This slightly improves entropy for our purposes.)
-    GetKeyHash = Plugin_libdeflate.GetCrc32(StrPtr(srcKey), LenB(srcKey), LenB(srcKey), False) And HASH_TABLE_MASK
+    'Hash using the classic djb2 algorithm, which is both VB-friendly and "good enough" for our purposes.
+    ' (descriptive link: https://theartincode.stanis.me/008-djb2/)
+    ' (Note that overflow must be handled manually in VB to avoid issues when compiling with default flags;
+    ' this means this is *not* a pure djb2 implementation and has accordingly reduced entropy, but it also
+    ' makes this function portable for other VB6 users.)
+    Const INIT_HASH As Long = 5381
+    GetKeyHash = INIT_HASH
+    
+    Const OVERFLOW_PREVENTION_MASK As Long = &H1FFFFFF
+    
+    Dim i As Long
+    For i = 1 To Len(srcKey)
+        GetKeyHash = ((GetKeyHash * 33) + AscW(Mid$(srcKey, i, 1))) And OVERFLOW_PREVENTION_MASK
+    Next i
     
 End Function
 
@@ -337,10 +346,13 @@ Private Sub Class_Initialize()
     Me.Reset
 End Sub
 
-'If you're curious about occupancy rates, this function will describe it to you
-Friend Sub PrintClassDebugInfo()
+Friend Sub PrintAdditionalDebugInfo()
+    
+    'I'm currently interested in several things:
+    ' 1) The size of the translation cache during a given session
     Dim numItemsInTable As Long
     numItemsInTable = Me.GetNumOfItems()
-    PDDebug.LogAction "Unique entries in this cache: " & numItemsInTable
+    PDDebug.LogAction "Unique entries in translation cache: " & numItemsInTable
     PDDebug.LogAction " (" & Format$((numItemsInTable - (m_idxOverflow - 1)) / (UBound(m_hashTable) + 1), "0.0%") & " table occupancy, final table size was " & (UBound(m_hashTable) + 1) & "x2)"
+    
 End Sub

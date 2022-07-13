@@ -341,7 +341,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG-2000")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG-2000")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

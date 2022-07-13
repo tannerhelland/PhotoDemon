@@ -414,7 +414,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PNG")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PNG")
     
     'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
     UpdateStandardPanelVisibility

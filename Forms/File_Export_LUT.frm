@@ -31,8 +31,8 @@ Begin VB.Form dialog_ExportLUT
       TabIndex        =   4
       Top             =   3000
       Width           =   9375
-      _extentx        =   16536
-      _extenty        =   1296
+      _ExtentX        =   16536
+      _ExtentY        =   1296
    End
    Begin PhotoDemon.pdSlider sldGridPoints 
       Height          =   495
@@ -40,13 +40,13 @@ Begin VB.Form dialog_ExportLUT
       TabIndex        =   3
       Top             =   3840
       Width           =   9375
-      _extentx        =   16536
-      _extenty        =   873
-      max             =   64
-      min             =   2
-      value           =   17
-      notchposition   =   2
-      notchvaluecustom=   17
+      _ExtentX        =   16536
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   64
+      Value           =   17
+      NotchPosition   =   2
+      NotchValueCustom=   17
    End
    Begin PhotoDemon.pdTextBox txtDescription 
       Height          =   495
@@ -54,8 +54,8 @@ Begin VB.Form dialog_ExportLUT
       TabIndex        =   1
       Top             =   600
       Width           =   9375
-      _extentx        =   16536
-      _extenty        =   873
+      _ExtentX        =   16536
+      _ExtentY        =   873
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
@@ -63,10 +63,10 @@ Begin VB.Form dialog_ExportLUT
       Left            =   120
       Top             =   120
       Width           =   9615
-      _extentx        =   16960
-      _extenty        =   661
-      caption         =   "description"
-      fontsize        =   12
+      _ExtentX        =   16960
+      _ExtentY        =   661
+      Caption         =   "description"
+      FontSize        =   12
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -75,9 +75,9 @@ Begin VB.Form dialog_ExportLUT
       TabIndex        =   0
       Top             =   4560
       Width           =   9870
-      _extentx        =   17410
-      _extenty        =   1323
-      dontautounloadparent=   -1
+      _ExtentX        =   17410
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
@@ -85,10 +85,10 @@ Begin VB.Form dialog_ExportLUT
       Left            =   120
       Top             =   1320
       Width           =   9615
-      _extentx        =   16960
-      _extenty        =   661
-      caption         =   "copyright"
-      fontsize        =   12
+      _ExtentX        =   16960
+      _ExtentY        =   661
+      Caption         =   "copyright"
+      FontSize        =   12
    End
    Begin PhotoDemon.pdTextBox txtCopyright 
       Height          =   495
@@ -96,8 +96,8 @@ Begin VB.Form dialog_ExportLUT
       TabIndex        =   2
       Top             =   1800
       Width           =   9375
-      _extentx        =   16536
-      _extenty        =   873
+      _ExtentX        =   16536
+      _ExtentY        =   873
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
@@ -105,10 +105,10 @@ Begin VB.Form dialog_ExportLUT
       Left            =   120
       Top             =   2520
       Width           =   9615
-      _extentx        =   16960
-      _extenty        =   661
-      caption         =   "grid points"
-      fontsize        =   12
+      _ExtentX        =   16960
+      _ExtentY        =   661
+      Caption         =   "grid points"
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "dialog_ExportLUT"
@@ -215,7 +215,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "Color lookup")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "Color lookup")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

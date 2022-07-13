@@ -156,7 +156,7 @@ Public Sub ShowDialog(ByVal hResvgTree As Long, ByVal srcWidth As Long, ByVal sr
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "SVG")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "SVG")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

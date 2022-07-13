@@ -47,11 +47,11 @@ Public Sub SetProgBarVal(ByVal pbVal As Double)
         FormMain.MainCanvas(0).ProgBar_SetValue pbVal
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
-        If OS.IsWin7OrLater Then OS.SetTaskbarProgressValue pbVal, GetProgBarMax
+        If OS.IsWin7OrLater Then OS.SetTaskbarProgressValue pbVal, GetProgBarMax, FormMain.hWnd
         
         'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
         ' when PD is in the midst of a long-running action.
-        VBHacks.DoEvents_PaintOnly
+        VBHacks.DoEvents_PaintOnly FormMain.hWnd
         
     End If
     
@@ -103,6 +103,6 @@ Public Sub ReleaseProgressBar()
     FormMain.MainCanvas(0).ProgBar_SetVisibility False
     
     'On Win 7+, also reset the taskbar progress indicator
-    If OS.IsWin7OrLater Then OS.SetTaskbarProgressState TBP_NoProgress
+    If OS.IsWin7OrLater Then OS.SetTaskbarProgressState TBP_NoProgress, FormMain.hWnd
     
 End Sub

@@ -83,50 +83,6 @@ Private Const PAGE_READONLY As Long = &H2
 Private Const PAGE_READWRITE As Long = &H4
 Private Const REPLACEFILE_IGNORE_MERGE_ERRORS As Long = &H2
 
-'Because our file patching code affects critical PhotoDemon files, we need to make sure we return detailed success/failure information.
-Public Enum PD_FILE_PATCH_RESULT
-    FPR_SUCCESS = 0
-    FPR_FAIL_NOTHING_CHANGED = 1
-    FPR_FAIL_OLD_FILE_REMOVED = 2
-    FPR_FAIL_NEW_FILE_REMOVED = 3
-    FPR_FAIL_BOTH_FILES_REMOVED = 4
-End Enum
-
-#If False Then
-    Private Const FPR_SUCCESS = 0, FPR_FAIL_NOTHING_CHANGED = 1, FPR_FAIL_OLD_FILE_REMOVED = 2, FPR_FAIL_NEW_FILE_REMOVED = 3, FPR_FAIL_BOTH_FILES_REMOVED = 4
-#End If
-
-Public Enum PD_FILE_ACCESS_OPTIMIZE
-    OptimizeNone = 0
-    OptimizeRandomAccess = 1
-    OptimizeSequentialAccess = 2
-    OptimizeTempFile = 3
-End Enum
-
-#If False Then
-    Private Const OptimizeNone = 0, OptimizeRandomAccess = 1, OptimizeSequentialAccess = 2, OptimizeTempFile = 3
-#End If
-
-Public Enum FILE_POINTER_MOVE_METHOD
-    FILE_BEGIN = 0
-    FILE_CURRENT = 1
-    FILE_END = 2
-End Enum
-
-#If False Then
-    Private Const FILE_BEGIN = 0, FILE_CURRENT = 1, FILE_END = 2
-#End If
-
-Public Enum PD_FILE_TIME
-    PDFT_CreateTime = 0
-    PDFT_AccessTime = 1
-    PDFT_WriteTime = 2
-End Enum
-
-#If False Then
-    Private Const PDFT_CreateTime = 0, PDFT_AccessTime = 1, PDFT_WriteTime = 2
-#End If
-
 'Type comments derived from http://allapi.mentalis.org/apilist/FileGetVersionInfo.shtml
 ' Thank you to those authors for demystifying obscure API calls.
 Private Type VS_FIXEDFILEINFO
