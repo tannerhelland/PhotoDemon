@@ -540,6 +540,9 @@ Private Sub cmdMaster_Click()
     
     If cDialog.GetOpenFileName(fPath, , True, False, "XML - PhotoDemon Language File|*.xml", 1, , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
         Files.FileLoadAsString fPath, m_MasterText, True
+        
+        'Remove tabstops, if any exist
+        m_MasterText = Replace$(m_MasterText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
     End If
     
 End Sub
@@ -583,7 +586,7 @@ End Sub
 Private Sub cmdMerge_Click()
 
     'Make sure our source file strings are not empty
-    If Len(m_MasterText) = 0 Or Len(m_OldLanguageText) = 0 Then
+    If (LenB(m_MasterText) = 0) Or (LenB(m_OldLanguageText) = 0) Then
         MsgBox "One or more source files are missing.  Supply those before attempting a merge."
         Exit Sub
     End If
@@ -593,7 +596,7 @@ Private Sub cmdMerge_Click()
     m_NewLanguageText = m_MasterText
         
     Dim sPos As Long
-    sPos = InStr(1, m_NewLanguageText, "<phrase>")
+    sPos = InStr(1, m_NewLanguageText, "<phrase>", vbBinaryCompare)
     
     Dim origText As String, translatedText As String
     Dim findText As String, replaceText As String
@@ -622,22 +625,19 @@ Private Sub cmdMerge_Click()
         translatedText = GetTranslationTagFromCaption(origText)
                 
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If Len(translatedText) = 0 Then
+        If (LenB(translatedText) = 0) Then
             If (InStr(1, origText, vbCrLf) > 0) Then
                 translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
         End If
                 
         'If a translation was found, insert it into the new file
-        If Len(translatedText) <> 0 Then
-            findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation></translation>"
-            replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
-            m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
+        If (LenB(translatedText) <> 0) Then
             
             'As a failsafe, try the same thing without tabs
             findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
             replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
-            m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
+            m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText)
             
             phrasesFound = phrasesFound + 1
         Else
@@ -645,10 +645,13 @@ Private Sub cmdMerge_Click()
         End If
     
         'Find the next occurrence of a <phrase> tag
-        sPos = InStr(sPos + 1, m_MasterText, "<phrase>")
+        sPos = InStr(sPos + 1, m_MasterText, "<phrase>", vbBinaryCompare)
         
-        lblUpdates.Caption = phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
-        lblUpdates.Refresh
+        If ((phrasesProcessed And 7) = 0) Then
+            lblUpdates.Caption = phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
+            lblUpdates.Refresh
+            If ((phrasesProcessed And 63) = 0) Then DoEvents
+        End If
         
     Loop While sPos > 0
     
@@ -667,9 +670,8 @@ Private Sub cmdMerge_Click()
         End If
         
         'Use pdXML to write out a UTF-8 encoded XML file
-        m_NewLanguageText = Replace$(m_NewLanguageText, "&", vbNullString)
         m_XML.LoadXMLFromString m_NewLanguageText
-        m_XML.WriteXMLToFile m_OldLanguagePath, True
+        m_XML.WriteXMLToFile fPath, True
         
     End If
     
@@ -771,8 +773,9 @@ Private Sub cmdMergeAll_Click()
     Dim srcFolder As String
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
-    'Auto-load the latest master language file
+    'Auto-load the latest master language file and remove tabstops from the text (if any exist)
     Files.FileLoadAsString srcFolder & "Master\MASTER.xml", m_MasterText, True
+    m_MasterText = Replace$(m_MasterText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
     
     'Rather than backup the old files to the dev language folder (which is confusing),
     ' I now place them inside a dedicated backup folder.
@@ -789,9 +792,10 @@ Private Sub cmdMergeAll_Click()
     
     Do While (LenB(chkFile) > 0)
         
-        'Load the file into a string
+        'Load the current language file into a string and remove tabstops from it (if any exist)
         m_OldLanguagePath = srcFolder & chkFile
         Files.FileLoadAsString m_OldLanguagePath, m_OldLanguageText, True
+        m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
         
         'BEGIN COPY OF CODE FROM cmdMerge
         
@@ -837,19 +841,19 @@ Private Sub cmdMergeAll_Click()
                 'If no translation was found, and this string contains vbCrLf characters,
                 ' replace them with plain vbLF characters and try again
                 If (LenB(translatedText) = 0) Then
-                    If (InStr(1, origText, vbCrLf) > 0) Then
-                        translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
+                    If (InStr(1, origText, vbCrLf, vbBinaryCompare) > 0) Then
+                        translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
                     End If
                 End If
                 
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
-                If (InStr(translatedText, vbTab) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, , , vbBinaryCompare)
+                If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
                 
                 'If a translation was found, insert it into the new file
                 If (LenB(translatedText) <> 0) Then
                     findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
                     replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
-                    m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText)
+                    m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
                     phrasesFound = phrasesFound + 1
                 Else
                     phrasesMissed = phrasesMissed + 1
@@ -859,9 +863,10 @@ Private Sub cmdMergeAll_Click()
                 sPos = InStr(sPos + 1, m_MasterText, PHRASE_START, vbBinaryCompare)
                 
                 If (Not m_SilentMode) Then
-                    If (phrasesProcessed And 127) = 0 Then
+                    If ((phrasesProcessed And 127) = 0) Then
                         lblUpdates.Caption = chkFile & ": " & phrasesProcessed & " phrases processed (" & phrasesFound & " found, " & phrasesMissed & " missed)"
                         lblUpdates.Refresh
+                        DoEvents
                     End If
                 End If
             
@@ -915,8 +920,13 @@ Private Sub cmdOldLanguage_Click()
     Dim tmpLangFile As String
     
     If cDialog.GetOpenFileName(tmpLangFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
-        Files.FileLoadAsString tmpLangFile, m_OldLanguagePath, True
+        
         m_OldLanguagePath = tmpLangFile
+        
+        'Load the language file and strip tabstops from it
+        Files.FileLoadAsString tmpLangFile, m_OldLanguageText, True
+        m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
+        
     End If
     
 End Sub
@@ -1136,67 +1146,15 @@ Private Sub ProcessFile(ByVal srcFile As String)
         ElseIf ((InStr(1, ucCurLineText, "BEGIN VB.", vbBinaryCompare) > 0) Or (InStr(1, ucCurLineText, "BEGIN PHOTODEMON.", vbBinaryCompare) > 0)) And (InStr(1, ucCurLineText, "PICTUREBOX", vbBinaryCompare) = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, ".Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
             processedText = FindControlCaption(fileLines, curLineNumber)
         
-        '3) Check for tooltip text (several varations of this exist due to custom controls having unique tooltip property names)
-        ElseIf InStr(1, ucCurLineText, "TOOLTIPTEXT", vbBinaryCompare) And (InStr(1, ucCurLineText, ".TOOLTIPTEXT", vbBinaryCompare) = 0) Then
-            processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
-                        
-        ElseIf (InStr(1, ucCurLineText, "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, ucCurLineText, ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPTEXT", vbBinaryCompare) = 0) Then
+        '3) Check for tooltip text on PD controls (assigned via the custom .AssignTooltip function)
+        ElseIf (InStr(1, ucCurLineText, ".ASSIGNTOOLTIP ") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
             
-            'Tooltips represent a complicated situation in PD.  They can appear in several forms, such as being set via the standard property dialog,
-            ' or being manually assigned to a custom pdToolTip object.  Because the term "tooltip" appears so frequently, I have to go to rather elaborate
-            ' lengths to make sure only valid tooltip text is parsed, and not false-positive lines that simply happen to contain the word "tooltip" in them.
+            'Process the tooltip text itself
+            processedText = FindTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
             
-            'The massive chunk of text below is designed to address this problem, when checking for tooltips set via VB's property window.
+            'Process the title, if any
+            If toolTipSecondCheckNeeded Then processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
             
-            '3a) Check for tooltip text embedded as a VB property
-            If (InStr(1, ucCurLineText, "TOOLTIPBACKCOLOR", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPTYPE", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "M_TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "CLSTOOLTIP", vbBinaryCompare) = 0) Then
-            If (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, ucCurLineText, "DELAYTIME", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "ECONTROL.TOOLTIPTEXT", vbBinaryCompare) = 0) Then
-            If (InStr(1, ucCurLineText, "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPMANAGER", vbBinaryCompare) = 0) Then
-            If (InStr(1, ucCurLineText, "M_PREVIOUSTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "ASSIGNTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SETTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "PDTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "ISTOOLTIPACTIVE", vbBinaryCompare) = 0) Then
-            If (InStr(1, ucCurLineText, "BTTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPINDEX", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SYNCHRONIZETOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "UCTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOL_TOOLTIP", vbBinaryCompare) = 0) Then
-            If (InStr(1, ucCurLineText, "RAISETOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "HIDETOOLTIP", vbBinaryCompare) = 0) Then
-                processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
-                If InStr(1, processedText, "MANUAL FIX REQUIRED") Then Debug.Print "Tooltip error occurred on line " & curLineNumber & " of " & m_FileName
-            End If
-            End If
-            End If
-            End If
-            End If
-            End If
-            
-            'In current builds, the more likely place for tooltip text is assignment via a pdToolTip object.  These are much simpler to detect, as they
-            ' will rely exclusively on an .assignToolTip request.  Note, however, that we must search for two pieces of translated text: the tooltip text,
-            ' and a potential title.
-            
-            '3b) Check for tooltip text that has been manually assigned to a custom PhotoDemon object.  Note that we (obviously) avoid .assignToolTip
-            '     function declarations themselves.
-            If (InStr(1, ucCurLineText, ".ASSIGNTOOLTIP ") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
-                
-                'Process the tooltip text itself
-                processedText = FindTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
-                
-                'Process the title, if any
-                If toolTipSecondCheckNeeded Then processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
-            
-            End If
-            
-            '3b) Check for tooltip text that has been manually assigned to a PhotoDemon pdToolTip object.  Note that we (obviously) avoid
-            '     .setToolTip function declarations themselves.
-            If (InStr(1, ucCurLineText, ".SETTOOLTIP") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
-                
-                'Process the tooltip text itself
-                processedText = FindTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
-                
-                'Process the title, if any
-                If toolTipSecondCheckNeeded Then processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
-            
-            End If
-            
-            
-        
-        ElseIf InStr(1, ucCurLineText, "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (InStr(1, ucCurLineText, "NEWTOOLTIPTITLE") = 0) And (Not m_FileName = "jcButton.ctl") Then
-            processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
-        
         '4) Check for text added to a combo box or list box control at run-time
         ElseIf InStr(1, curLineText, ".AddItem """) <> 0 Then
             processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber)
@@ -2094,39 +2052,38 @@ Private Sub AddBlacklist(ByRef blString As String)
     m_Blacklist.AddItem LCase$(blString), vbNullString
 End Sub
 
-Private Function IsBlacklisted(ByVal blString As String) As Boolean
-    IsBlacklisted = m_Blacklist.GetItemByKey(LCase$(blString), blString)
+Private Function IsBlacklisted(ByRef blString As String) As Boolean
+    IsBlacklisted = m_Blacklist.GetItemByKey(LCase$(blString), vbNullString)
 End Function
 
-'Used to roughly estimate if a string is purely alphabetical
-' (this project uses it to check if a statement is a "word" or not).
+'Used to estimate if a given string is an English word or not (where not means a number, standalone punctuation, etc).
+' (PhotoDemon uses this to *VERY* roughly estimate word count in language files.)
 Private Function IsAlpha(ByRef srcString As String) As Boolean
     
-    IsAlpha = True
-    Dim charID As Byte
+    IsAlpha = False
     
-    Dim i As Long
-    For i = 1 To Len(srcString)
-        charID = AscW(UCase$(Mid$(srcString, i, 1)))
+    If (Len(srcString) = 1) Then
+        IsAlpha = (UCase$(srcString) = "A") Or (UCase$(srcString) = "I")
+    Else
         
-        'First, check to see if the character lies outside the ASCII alphabet range
-        If ((charID < 65) Or (charID > 90)) Then
+        Dim charID As Long
         
-            'Next, if the length of the source string is greater than one, check to see if this is a hyphenated or punctuated word
-            If (Len(srcString) > 1) Then
-                
-                'Allow certain punctuation to still count as "alphabetical"
-                If Not ((charID = 33) Or (charID = 34) Or (charID = 38) Or (charID = 40) Or (charID = 41) Or (charID = 44) Or (charID = 45) Or (charID = 46) Or (charID = 58) Or (charID = 59) Or (charID = 63) Or (charID = 64) Or (charID = 96)) Then
-                    IsAlpha = False
-                    Exit For
-                End If
-                
-            Else
-                IsAlpha = False
-                Exit For
+        Dim numAlphaChars As Long
+        numAlphaChars = 0
+        
+        Dim i As Long
+        For i = 1 To Len(srcString)
+            charID = AscW(UCase$(Mid$(srcString, i, 1)))
+            
+            'Look for at least 2 alpha chars; that's good enough to assume this is a word
+            If ((charID >= 65) And (charID <= 90)) Then numAlphaChars = numAlphaChars + 1
+            If (numAlphaChars >= 2) Then
+                IsAlpha = True
+                Exit Function
             End If
             
-        End If
-    Next i
-    
+        Next i
+        
+    End If
+        
 End Function

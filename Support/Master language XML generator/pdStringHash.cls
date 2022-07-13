@@ -292,6 +292,8 @@ Private Function GetKeyHash(ByRef srcKey As String) As Long
         GetKeyHash = ((GetKeyHash * 33) + AscW(Mid$(srcKey, i, 1))) And OVERFLOW_PREVENTION_MASK
     Next i
     
+    GetKeyHash = GetKeyHash And HASH_TABLE_MASK
+    
 End Function
 
 'This function imposes a large performance penalty.  *Please* call it sparingly!
