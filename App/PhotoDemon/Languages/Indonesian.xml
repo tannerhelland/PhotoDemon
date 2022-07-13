@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.545</langversion>
+<langversion>6.6.546</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1456,7 +1456,7 @@
 
 <phrase>
 <original>Open an image</original>
-<translation>Buka Gambar </translation>
+<translation>Buka Gambar</translation>
 </phrase>
 
 <phrase>
@@ -2316,7 +2316,7 @@ Please gunakan program lain untuk menyimpan gambar ini dalam format generik (sep
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation> %1 dari %2 gambar berhasil dimuat</translation>
+<translation>%1 dari %2 gambar berhasil dimuat</translation>
 </phrase>
 
 <phrase>
@@ -3299,7 +3299,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a value between %2 and %3.</original>
-<translation> %1 bukan entry.
+<translation>%1 bukan entry.
 Please yang sah masukkan nilai antara 2 %dan 3%.</translation>
 </phrase>
 
@@ -3311,7 +3311,7 @@ Please yang sah masukkan nilai antara 2 %dan 3%.</translation>
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a numeric value.</original>
-<translation> %1 tidak sah entry.
+<translation>%1 tidak sah entry.
 Please masukkan nilai berangka.</translation>
 </phrase>
 
@@ -3504,7 +3504,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation> %1. %2 %3 Beta</translation>
+<translation>%1. %2 %3 Beta</translation>
 </phrase>
 
 <phrase>
@@ -5291,7 +5291,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Edge</original>
-<translation> Ujung</translation>
+<translation>Ujung</translation>
 </phrase>
 
 <phrase>
@@ -7379,7 +7379,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation> %1 mempunyai perubahan yang belum disimpan. Apa yang anda lakukan?</translation>
+<translation>%1 mempunyai perubahan yang belum disimpan. Apa yang anda lakukan?</translation>
 </phrase>
 
 <phrase>
@@ -9537,7 +9537,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 file diperbaiki.
+<translation>%1 file diperbaiki.
 
 R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki tetap berada di lokasi aslinya.</translation>
 </phrase>
@@ -10060,7 +10060,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>%1 files were successfully processed!</original>
-<translation> %1 Fail telah berjaya diproses!</translation>
+<translation>%1 Fail telah berjaya diproses!</translation>
 </phrase>
 
 <phrase>
@@ -10403,7 +10403,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation> %1 tidak dapat mencetak imej. Sila pastikan bahawa pencetak yang dinyatakan ( %2) adalah berkuasa ke dan sedia untuk dicetak.</translation>
+<translation>%1 tidak dapat mencetak imej. Sila pastikan bahawa pencetak yang dinyatakan ( %2) adalah berkuasa ke dan sedia untuk dicetak.</translation>
 </phrase>
 
 <phrase>
@@ -11158,7 +11158,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation> %1 kelompok dalam gambar ini</translation>
+<translation>%1 kelompok dalam gambar ini</translation>
 </phrase>
 
 <phrase>
@@ -11218,7 +11218,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation> %1 tag dalam kategori ini</translation>
+<translation>%1 tag dalam kategori ini</translation>
 </phrase>
 
 <phrase>
@@ -11365,7 +11365,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>pemasangan inclusively, dengan Border transparan Seperti Yang Di Perlukan </translation>
+<translation>pemasangan inclusively, dengan Border transparan Seperti Yang Di Perlukan</translation>
 </phrase>
 
 <phrase>
@@ -13632,7 +13632,7 @@ A Anda yakin ingin melanjutkan?</translation>
 
 <phrase>
 <original>never (not recommended)</original>
-<translation>TIDAK PERNAH (TIDAK digalakkan) </translation>
+<translation>TIDAK PERNAH (TIDAK digalakkan)</translation>
 </phrase>
 
 <phrase>
@@ -13767,7 +13767,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>%1 summary</original>
-<translation> %1 ringkasan</translation>
+<translation>%1 ringkasan</translation>
 </phrase>
 
 <phrase>

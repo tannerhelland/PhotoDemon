@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1604</langversion>
+<langversion>8.9.1605</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -2587,7 +2587,7 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>PhotoDemon si trova in una cartella di sistema con restrizioni.   Poichè PhotoDemon non dispone di privilegi amministrativi, non può scaricare file.  Per favore sposta PhotoDemon in una cartella senza restrizioni di scrittura e riprova. </translation>
+<translation>PhotoDemon si trova in una cartella di sistema con restrizioni.   Poichè PhotoDemon non dispone di privilegi amministrativi, non può scaricare file.  Per favore sposta PhotoDemon in una cartella senza restrizioni di scrittura e riprova.</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -10449,7 +10449,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation>La compressione AVIF richiede molte risorse.  Su PC più lenti o meno recenti, potresti voler disabilitare le anteprime live. </translation>
+<translation>La compressione AVIF richiede molte risorse.  Su PC più lenti o meno recenti, potresti voler disabilitare le anteprime live.</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->

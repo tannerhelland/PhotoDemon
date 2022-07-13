@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.104</langversion>
+<langversion>8.0.105</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -9537,7 +9537,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 archivos reparados.
+<translation>%1 archivos reparados.
 
 Los archivos reparados se han guardado en la carpeta destino. Los archivos sin reparar permanecen en sus ubicaciones originales.</translation>
 </phrase>
@@ -10055,7 +10055,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation>Procesando la imagen </translation>
+<translation>Procesando la imagen</translation>
 </phrase>
 
 <phrase>

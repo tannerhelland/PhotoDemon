@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.92</langversion>
+<langversion>8.0.93</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -565,7 +565,7 @@
 
 <phrase>
 <original>Rasterize layer</original>
-<translation>Rasterizeer laag </translation>
+<translation>Rasterizeer laag</translation>
 </phrase>
 
 <phrase>
@@ -3503,7 +3503,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation> %1.%2 Beta %3</translation>
+<translation>%1.%2 Beta %3</translation>
 </phrase>
 
 <phrase>
@@ -10055,12 +10055,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation>Verwerking van het beeld </translation>
+<translation>Verwerking van het beeld</translation>
 </phrase>
 
 <phrase>
 <original>%1 files were successfully processed!</original>
-<translation> %1 bestanden zijn succesvol verwerkt!</translation>
+<translation>%1 bestanden zijn succesvol verwerkt!</translation>
 </phrase>
 
 <phrase>
@@ -10309,7 +10309,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>screenshot source</original>
-<translation>bron schermafdruk </translation>
+<translation>bron schermafdruk</translation>
 </phrase>
 
 <phrase>
@@ -11218,7 +11218,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation> %1 labels in deze categorie</translation>
+<translation>%1 labels in deze categorie</translation>
 </phrase>
 
 <phrase>
@@ -11402,7 +11402,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>border regions</original>
-<translation>randgebieden </translation>
+<translation>randgebieden</translation>
 </phrase>
 
 <phrase>
@@ -11832,7 +11832,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Je hebt de "veilig" opslaan modus gespecificeerd, wat betekent dat elke opslag een nieuw bestand zal creëren met een auto-increment bestandsnaam. </translation>
+<translation>Je hebt de "veilig" opslaan modus gespecificeerd, wat betekent dat elke opslag een nieuw bestand zal creëren met een auto-increment bestandsnaam.</translation>
 </phrase>
 
 <phrase>

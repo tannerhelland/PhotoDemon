@@ -924,7 +924,7 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     If (UBound(ExtraText) >= LBound(ExtraText)) Then
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
-            newString = Replace$(newString, "%" & CStr(i + 1), ExtraText(i), , , vbBinaryCompare)
+            newString = Replace$(newString, "%" & CStr(i + 1), ExtraText(i), 1, -1, vbBinaryCompare)
         Next i
     End If
     

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.106</langversion>
+<langversion>8.0.107</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -2310,7 +2310,7 @@ Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadow
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation> %1 z %2 obrazów pomyślnie załadowano</translation>
+<translation>%1 z %2 obrazów pomyślnie załadowano</translation>
 </phrase>
 
 <phrase>
@@ -3292,7 +3292,7 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a value between %2 and %3.</original>
-<translation> %1 nie jest poprawnym wpisem.
+<translation>%1 nie jest poprawnym wpisem.
 Wprowadź wartość między 2% a 3%.</translation>
 </phrase>
 
@@ -3304,7 +3304,7 @@ Wprowadź wartość między 2% a 3%.</translation>
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a numeric value.</original>
-<translation> %1 nie jest poprawnym wpisem.
+<translation>%1 nie jest poprawnym wpisem.
 Wprowadź wartość liczbową.</translation>
 </phrase>
 
@@ -3497,7 +3497,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation> %1. %2 Beta %3</translation>
+<translation>%1. %2 Beta %3</translation>
 </phrase>
 
 <phrase>
@@ -7147,7 +7147,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>HDR image identified</original>
-<translation>Zidentyfikowano obraz HDR </translation>
+<translation>Zidentyfikowano obraz HDR</translation>
 </phrase>
 
 <phrase>
@@ -7370,7 +7370,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation> Obraz %1 zawiera niezapisane zmiany. Co chcesz zrobić?</translation>
+<translation>Obraz %1 zawiera niezapisane zmiany. Co chcesz zrobić?</translation>
 </phrase>
 
 <phrase>
@@ -9179,7 +9179,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>use palette's alpha values</original>
-<translation>Użyj wartości alfa palety </translation>
+<translation>Użyj wartości alfa palety</translation>
 </phrase>
 
 <phrase>
@@ -9528,7 +9528,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 plik(-ów) naprawiono.
+<translation>%1 plik(-ów) naprawiono.
 Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione pozostały w oryginalnych lokalizacjach.</translation>
 </phrase>
 
@@ -10394,7 +10394,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation> %1 nie była w stanie wydrukować obrazu. Upewnij się, że wskazana drukarka (%2) jest gotowa do drukowania.</translation>
+<translation>%1 nie była w stanie wydrukować obrazu. Upewnij się, że wskazana drukarka (%2) jest gotowa do drukowania.</translation>
 </phrase>
 
 <phrase>
@@ -11154,7 +11154,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation> %1 grup w tym obrazie</translation>
+<translation>%1 grup w tym obrazie</translation>
 </phrase>
 
 <phrase>
@@ -11214,7 +11214,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation> %1 tagów w tej kategorii</translation>
+<translation>%1 tagów w tej kategorii</translation>
 </phrase>
 
 <phrase>
@@ -11314,17 +11314,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>%1 characters max</original>
-<translation> %1 znaków maksymalnie</translation>
+<translation>%1 znaków maksymalnie</translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation> %1 bajtów maksymalnie</translation>
+<translation>%1 bajtów maksymalnie</translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation> %1 liczb maksymalnie</translation>
+<translation>%1 liczb maksymalnie</translation>
 </phrase>
 
 <phrase>
@@ -13761,7 +13761,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>%1 summary</original>
-<translation> %1 podsumowanie</translation>
+<translation>%1 podsumowanie</translation>
 </phrase>
 
 <phrase>

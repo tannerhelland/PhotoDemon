@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.1</langversion>
+<langversion>9.0.2</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -3730,7 +3730,7 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation>Guardando el cuadro de animación %1 de %2 </translation>
+<translation>Guardando el cuadro de animación %1 de %2</translation>
 </phrase>
 
 <phrase>

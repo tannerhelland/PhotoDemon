@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.4</langversion>
+<langversion>9.0b1373.5</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -1791,7 +1791,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Saving %1 file</original>
-<translation>正在保有 %1 </translation>
+<translation>正在保有 %1</translation>
 </phrase>
 
 <phrase>
@@ -3116,7 +3116,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Saving %1 image</original>
-<translation>正在保存图像 %1 </translation>
+<translation>正在保存图像 %1</translation>
 </phrase>
 
 <phrase>
@@ -11068,7 +11068,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation>据估算，这些图像相似度为 %1% </translation>
+<translation>据估算，这些图像相似度为 %1%</translation>
 </phrase>
 
 <phrase>

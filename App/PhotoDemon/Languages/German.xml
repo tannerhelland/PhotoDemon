@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1681</langversion>
+<langversion>9.0.1682</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7094,7 +7094,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>line cap shape</original>
-<translation>Linienkappenform </translation>
+<translation>Linienkappenform</translation>
 </phrase>
 
 <phrase>

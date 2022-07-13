@@ -324,10 +324,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Master English Language File (XML) Generator
-'Copyright ©2013-2015 by Tanner Helland
+'Copyright 2013-2022 by Tanner Helland
 'Created: 23/January/13
-'Last updated: 02/September/20
-'Last update: switch to pdString for much better perf when constructing the original master language file
+'Last updated: 13/July/22
+'Last update: switch to using various PhotoDemon code files directly (instead of using local, manually edited copies)
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
 ' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
@@ -381,6 +381,10 @@ Private m_XML As pdXML
 
 'If duplicates are assigned for removal, this flag is set to TRUE
 Private m_RemoveDuplicates As Boolean
+
+'During silent mode (used to synchronize localizations), we use a fast string hash table to update
+' language files.  This greatly improves performance, especially given how many language files PD ships.
+Private m_PhraseCollection As pdStringHash
 
 'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
 ' manually converting all the labels in the program.
@@ -650,7 +654,7 @@ Private Sub cmdMerge_Click()
         If ((phrasesProcessed And 7) = 0) Then
             lblUpdates.Caption = phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
             lblUpdates.Refresh
-            If ((phrasesProcessed And 63) = 0) Then DoEvents
+            If ((phrasesProcessed And 63) = 0) Then VBHacks.DoEvents_PaintOnly Me.hWnd, True
         End If
         
     Loop While sPos > 0
@@ -792,15 +796,45 @@ Private Sub cmdMergeAll_Click()
     
     Do While (LenB(chkFile) > 0)
         
-        'Load the current language file into a string and remove tabstops from it (if any exist)
+        'Load the target language file into an XML parser
         m_OldLanguagePath = srcFolder & chkFile
         Files.FileLoadAsString m_OldLanguagePath, m_OldLanguageText, True
         m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
         
-        'BEGIN COPY OF CODE FROM cmdMerge
+        Dim oldLangXML As pdXML
+        Set oldLangXML = New pdXML
+        oldLangXML.LoadXMLFromString m_OldLanguageText
+        oldLangXML.SetTextCompareMode vbBinaryCompare
+        
+        'Retrieve all phrase tag locations
+        Dim phraseLocations() As Long
+        oldLangXML.FindAllTagLocations phraseLocations, "phrase"
+        
+        Dim numOldPhrases As Long
+        numOldPhrases = UBound(phraseLocations) + 1
+        
+        Dim origText As String, translatedText As String
+        Dim findText As String, replaceText As String
+        
+        'Build a collection of all phrases in the current translation file.  Some phrases may not be
+        ' translated and that's fine - we'll leave them blank and simply plug-in the phrases we *do* have.
+        Set m_PhraseCollection = New pdStringHash
+        
+        If (numOldPhrases > 0) Then
+            
+            Dim i As Long
+            For i = 0 To numOldPhrases - 1
+                origText = oldLangXML.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
+                translatedText = oldLangXML.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(origText))
+                m_PhraseCollection.AddItem origText, translatedText
+            Next i
+            
+        End If
+        
+        'BEGIN COPY OF CODE FROM cmdMerge (with changes to accelerate the process, since we don't need a UI)
         
             'Make sure our source file strings are not empty
-            If (LenB(m_MasterText) = 0) Or (LenB(m_OldLanguageText) = 0) Then
+            If (LenB(m_MasterText) = 0) Or (numOldPhrases <= 0) Then
                 Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
                 Exit Sub
             End If
@@ -812,8 +846,8 @@ Private Sub cmdMergeAll_Click()
             Dim sPos As Long
             sPos = InStr(1, m_NewLanguageText, PHRASE_START)
             
-            Dim origText As String, translatedText As String
-            Dim findText As String, replaceText As String
+            'Dim origText As String, translatedText As String
+            'Dim findText As String, replaceText As String
             
             'Copy over all top-level language and author information
             ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
@@ -836,23 +870,29 @@ Private Sub cmdMergeAll_Click()
                 origText = GetTextBetweenTags(m_MasterText, "original", sPos)
                 
                 'Attempt to retrieve a translation for this phrase using the old language file
-                translatedText = GetTranslationTagFromCaption(origText)
+                If (Not m_PhraseCollection.GetItemByKey(origText, translatedText)) Then
                 
-                'If no translation was found, and this string contains vbCrLf characters,
-                ' replace them with plain vbLF characters and try again
-                If (LenB(translatedText) = 0) Then
+                    translatedText = vbNullString
+                    
+                    'If no translation was found, and this string contains vbCrLf characters,
+                    ' replace them with plain vbLF characters and try again
                     If (InStr(1, origText, vbCrLf, vbBinaryCompare) > 0) Then
                         translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
                     End If
+                    
                 End If
                 
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
                 If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
                 
                 'If a translation was found, insert it into the new file
+                Const ORIG_TAG_OPEN As String = "<original>"
+                Const ORIG_TAG_CLOSE As String = "</original>" & vbCrLf & "<translation></translation>"
+                Const TRANSLATE_TAG_INTERIOR As String = "</original>" & vbCrLf & "<translation>"
+                Const TRANSLATE_TAG_CLOSE As String = "</translation>"
                 If (LenB(translatedText) <> 0) Then
-                    findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
-                    replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
+                    findText = ORIG_TAG_OPEN & origText & ORIG_TAG_CLOSE
+                    replaceText = ORIG_TAG_OPEN & origText & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
                     m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
                     phrasesFound = phrasesFound + 1
                 Else
@@ -866,7 +906,7 @@ Private Sub cmdMergeAll_Click()
                     If ((phrasesProcessed And 127) = 0) Then
                         lblUpdates.Caption = chkFile & ": " & phrasesProcessed & " phrases processed (" & phrasesFound & " found, " & phrasesMissed & " missed)"
                         lblUpdates.Refresh
-                        DoEvents
+                        VBHacks.DoEvents_PaintOnly Me.hWnd, True
                     End If
                 End If
             
@@ -883,10 +923,11 @@ Private Sub cmdMergeAll_Click()
                 'Unlike the normal merge option, we will automatically save the results to a new XML file
                 
                 'Start by backing up the old file
-                FileCopy m_OldLanguagePath, backupFolder & chkFile
+                Files.FileDeleteIfExists backupFolder & chkFile
+                Files.FileCopyW m_OldLanguagePath, backupFolder & chkFile
                 
                 If Files.FileExists(m_OldLanguagePath) Then
-                    Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
+                    Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") will be erased.  Hope this is what you wanted!"
                 End If
                 
                 'Use pdXML to write out a UTF-8 encoded XML file

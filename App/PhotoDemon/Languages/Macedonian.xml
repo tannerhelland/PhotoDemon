@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.399</langversion>
+<langversion>1.0.400</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1429,7 +1429,7 @@
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation>Почекајте додека се создаде база на податоци за ознаки </translation>
+<translation>Почекајте додека се создаде база на податоци за ознаки</translation>
 </phrase>
 
 <phrase>
@@ -2310,7 +2310,7 @@ Please користите друга програма да ја зачувате
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation> %1 %2 слики успешно вчитан</translation>
+<translation>%1 %2 слики успешно вчитан</translation>
 </phrase>
 
 <phrase>
@@ -3293,7 +3293,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a value between %2 and %3.</original>
-<translation> %1 не е валидна entry.
+<translation>%1 не е валидна entry.
  внесете вредност помеѓу 2 %и 3%.</translation>
 </phrase>
 
@@ -3305,7 +3305,7 @@ Please enter a value between %2 and %3.</original>
 <phrase>
 <original>%1 is not a valid entry.
 Please enter a numeric value.</original>
-<translation> %1 не е валидна entry.
+<translation>%1 не е валидна entry.
  внесете нумеричка вредност.</translation>
 </phrase>
 
@@ -3498,7 +3498,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation> %1 %2 %3 Бета</translation>
+<translation>%1 %2 %3 Бета</translation>
 </phrase>
 
 <phrase>
@@ -7373,7 +7373,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation> %1 незачувани промени. Што би сакале да се направи?</translation>
+<translation>%1 незачувани промени. Што би сакале да се направи?</translation>
 </phrase>
 
 <phrase>
@@ -9531,7 +9531,7 @@ If сакате да ја спаси со друго име на датотек�
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 датотека (а) repaired.
+<translation>%1 датотека (а) repaired.
  
  Поправените датотеки се зачувани во папката дестинација. Unrepaired датотеки остане во нивната оригинална локации.</translation>
 </phrase>
@@ -10054,7 +10054,7 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>%1 files were successfully processed!</original>
-<translation> %1 фајлови беа успешно обработени!</translation>
+<translation>%1 фајлови беа успешно обработени!</translation>
 </phrase>
 
 <phrase>
@@ -10397,7 +10397,7 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation> %1 не беше во можност да ја испечатите сликата. Ве молиме бидете сигурни дека одредениот печатач ( %2) се напојува-и е подготвен за печатење.</translation>
+<translation>%1 не беше во можност да ја испечатите сликата. Ве молиме бидете сигурни дека одредениот печатач ( %2) се напојува-и е подготвен за печатење.</translation>
 </phrase>
 
 <phrase>
@@ -11152,7 +11152,7 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation> %1 групи во оваа слика</translation>
+<translation>%1 групи во оваа слика</translation>
 </phrase>
 
 <phrase>
@@ -11212,7 +11212,7 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation> %1 тагови во оваа категорија</translation>
+<translation>%1 тагови во оваа категорија</translation>
 </phrase>
 
 <phrase>
@@ -11312,17 +11312,17 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>%1 characters max</original>
-<translation> %1 карактери макс</translation>
+<translation>%1 карактери макс</translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation> %1 бајти макс</translation>
+<translation>%1 бајти макс</translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation> %1 броеви макс</translation>
+<translation>%1 броеви макс</translation>
 </phrase>
 
 <phrase>
@@ -13761,7 +13761,7 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrase>
 <original>%1 summary</original>
-<translation> %1 резиме</translation>
+<translation>%1 резиме</translation>
 </phrase>
 
 <phrase>
