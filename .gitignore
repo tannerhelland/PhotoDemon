@@ -72,7 +72,7 @@ PhotoDemon.exe
 /App/PhotoDemon/Themes/Core_Icons.pdrc
 /App/PhotoDemon/Plugins/Experimental
 /Support/Plugin compressor/Compress.exe
-/Support/Master language XML generator/MasterTranslation.exe
+/Support/i18n-manager/Generate_i18n.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe
 /Support/Update builder/zlibwapi.dll
 /Support/Update Builder 2.0/PhotoDemon_Update_Generator.exe

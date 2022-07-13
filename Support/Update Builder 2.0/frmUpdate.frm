@@ -127,7 +127,7 @@ Attribute VB_Exposed = False
 'This project was built to help assemble automatic update information for PhotoDemon.  It is run by the nightly build batch
 ' script, and it assembles a few different things:
 ' - New pdPackage archives for the latest stable, beta (if relevant), and nightly build entries.
-' - A master update file with version numbers and checksums for each of the pdPackage files
+' - A central update file with version numbers and checksums for each of the pdPackage files
 '
 'NOTE: this project is intended only as a support tool for PhotoDemon.  It is not designed or tested for general-purpose use.
 '       I do not have any intention of supporting this tool outside its intended use, so please do not submit bug reports
@@ -285,7 +285,7 @@ Private Sub AssembleStableAndBetaBuilds()
     
 End Sub
 
-'Generate a master version XML file, by reading the version numbers from each .exe.
+'Generate a central version XML file, by reading the version numbers from each .exe.
 Private Sub MakeVersionFile()
     
     'Retrieve stable, beta, developer build versions
@@ -378,7 +378,7 @@ Private Sub MakeVersionFile()
     
 End Sub
 
-'Given a path to the release announcement URL file, copy those links into the master language version XML file
+'Given a path to the release announcement URL file, copy those links into the central language version XML file
 Private Sub AddReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath As String)
 
     'Create an XML engine to parse the source document
@@ -476,7 +476,7 @@ Private Sub Form_Load()
         'Assemble the stable and beta build update packages
         Call cmdAction_Click(1)
         
-        'Generate the master version and checksum file
+        'Generate the central version and checksum file
         Call cmdAction_Click(2)
         
         'If the program is running in silent mode, unload it now

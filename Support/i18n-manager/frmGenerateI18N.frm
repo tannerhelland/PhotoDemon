@@ -1,7 +1,7 @@
 VERSION 5.00
-Begin VB.Form frmCreateMaster 
+Begin VB.Form frmMain 
    BackColor       =   &H80000005&
-   Caption         =   " PhotoDemon Master Language XML Generator"
+   Caption         =   " PhotoDemon i18n manager"
    ClientHeight    =   8190
    ClientLeft      =   120
    ClientTop       =   450
@@ -38,7 +38,7 @@ Begin VB.Form frmCreateMaster
       Width           =   11775
    End
    Begin VB.CommandButton cmdMergeAll 
-      Caption         =   "2a (Optional) Automatically merge all language files with newest Master XML file..."
+      Caption         =   "2a (Optional) Automatically merge all PhotoDemon localizations against the latest en-US data..."
       BeginProperty Font 
          Name            =   "Segoe UI"
          Size            =   9.75
@@ -74,7 +74,7 @@ Begin VB.Form frmCreateMaster
       Width           =   3015
    End
    Begin VB.CommandButton cmdMerge 
-      Caption         =   "3) Merge the files into an updated non-English XML file (NOTE: this will not modify the source files)"
+      Caption         =   "3) Merge the files into an updated localized XML file        (NOTE: this will not modify the source files)"
       BeginProperty Font 
          Name            =   "Segoe UI"
          Size            =   9.75
@@ -91,7 +91,7 @@ Begin VB.Form frmCreateMaster
       Width           =   5775
    End
    Begin VB.CommandButton cmdOldLanguage 
-      Caption         =   "2) Select old non-English XML file..."
+      Caption         =   "2) Select localized XML file..."
       BeginProperty Font 
          Name            =   "Segoe UI"
          Size            =   9.75
@@ -108,7 +108,7 @@ Begin VB.Form frmCreateMaster
       Width           =   3255
    End
    Begin VB.CommandButton cmdMaster 
-      Caption         =   "1) Select master English XML file..."
+      Caption         =   "1) Select en-US XML file..."
       BeginProperty Font 
          Name            =   "Segoe UI"
          Size            =   9.75
@@ -191,7 +191,7 @@ Begin VB.Form frmCreateMaster
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"frmCreateMaster.frx":0000
+      Caption         =   $"frmGenerateI18N.frx":0000
       BeginProperty Font 
          Name            =   "Segoe UI"
          Size            =   12
@@ -317,7 +317,7 @@ Begin VB.Form frmCreateMaster
       Width           =   2175
    End
 End
-Attribute VB_Name = "frmCreateMaster"
+Attribute VB_Name = "frmMain"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
