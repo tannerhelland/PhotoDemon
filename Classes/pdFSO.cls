@@ -163,6 +163,7 @@ Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByV
 Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
+Private Declare Function PathCanonicalizeW Lib "shlwapi" (ByVal out_pszBuf As Long, ByVal in_pszPath As Long) As Long
 Private Declare Function PathCommonPrefixW Lib "shlwapi" (ByVal pszFile1 As Long, ByVal pszFile2 As Long, ByVal achPath As Long) As Long
 Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 'These next two APIs are approximately interchangeable for our purposes; Ctrl+F to see comments on their usage here
@@ -1559,6 +1560,26 @@ Friend Function PathBrowseDialog(ByVal srcHWnd As Long, Optional ByVal initFolde
     
     'PD folder functions enforce a trailing slash, to simplify subsequent concatenations
     If (LenB(PathBrowseDialog) <> 0) Then PathBrowseDialog = Me.PathAddBackslash(PathBrowseDialog)
+    
+End Function
+
+'Per MSDN: "Simplifies a path by removing navigation elements such as "." and ".." to produce a direct, well-formed path."
+'
+'Uses the old XP-compatible function instead of the newer (and safer) CCh-prefixed Win 8+ ones,
+' but path buffer length is strictly enforced so overruns should not be possible.
+Friend Function PathCanonicalize(ByVal srcPath As String, ByRef dstPath As String) As Boolean
+    
+    'This function does not support paths longer than MAX_PATH
+    PathCanonicalize = False
+    If (Len(srcPath) > MAX_PATH) Then Exit Function
+    
+    'This function does not convert forward slashes to backward ones; handle that manually
+    If (InStr(1, srcPath, "/", vbBinaryCompare) <> 0) Then srcPath = Replace$(srcPath, "/", "\", 1, -1, vbBinaryCompare)
+    
+    'Canonicalize the string and auto-trim on a successful return
+    dstPath = String$(MAX_PATH, 0)
+    PathCanonicalize = (PathCanonicalizeW(StrPtr(dstPath), StrPtr(srcPath)) = 1)
+    If PathCanonicalize Then dstPath = Strings.TrimNull(dstPath)
     
 End Function
 

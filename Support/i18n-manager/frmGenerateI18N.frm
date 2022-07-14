@@ -202,7 +202,7 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   1335
+      Height          =   975
       Left            =   240
       TabIndex        =   12
       Top             =   120
@@ -273,8 +273,8 @@ Begin VB.Form frmMain
       BorderColor     =   &H8000000D&
       X1              =   8
       X2              =   960
-      Y1              =   336
-      Y2              =   336
+      Y1              =   344
+      Y2              =   344
    End
    Begin VB.Label lblExtract 
       AutoSize        =   -1  'True
@@ -793,10 +793,13 @@ Private Sub cmdMergeAll_Click()
     
     'String constants to prevent constant allocations
     Const PHRASE_START As String = "<phrase>"
+    Const AMPERSAND_CHAR As String = "&"
     
     Do While (LenB(chkFile) > 0)
         
-        'Load the target language file into an XML parser
+        'Load the target language file into an XML parser, enforce Windows line-endings, and strip any
+        ' tab stops from the text.  (PD never uses tab stops in official text because it can cause unpredictable
+        ' layout issues, but 3rd-party editors may add tabs as a "convenience" when editing XML.)
         m_OldLanguagePath = srcFolder & chkFile
         Files.FileLoadAsString m_OldLanguagePath, m_OldLanguageText, True
         m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
@@ -824,9 +827,18 @@ Private Sub cmdMergeAll_Click()
             
             Dim i As Long
             For i = 0 To numOldPhrases - 1
+                
                 origText = oldLangXML.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
                 translatedText = oldLangXML.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(origText))
+                
+                'Old PhotoDemon language files used manually inserted & characters for keyboard accelerators.
+                ' Accelerators are now handled automatically on a per-language basis.  To ensure work isn't lost
+                ' when upgrading these old files, strip any accelerators from the incoming text.
+                If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                
                 m_PhraseCollection.AddItem origText, translatedText
+                
             Next i
             
         End If

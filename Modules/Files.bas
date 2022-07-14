@@ -396,6 +396,10 @@ Public Function PathBrowseDialog(ByVal srcHWnd As Long, Optional ByVal initFolde
     If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHWnd, initFolder, dialogTitleText)
 End Function
 
+Public Function PathCanonicalize(ByVal srcPath As String, ByRef dstPath As String) As Boolean
+    If InitializeFSO Then PathCanonicalize = m_FSO.PathCanonicalize(srcPath, dstPath)
+End Function
+
 Public Function PathCommonPrefix(ByRef srcPath1 As String, ByRef srcPath2 As String, ByRef dstCommonPrefix As String) As Boolean
     If InitializeFSO Then PathCommonPrefix = m_FSO.PathCommonPrefix(srcPath1, srcPath2, dstCommonPrefix)
 End Function
