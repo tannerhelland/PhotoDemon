@@ -2251,7 +2251,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Leider konnte das Bild '%1' nicht gefunden werden.
 
-Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk etc.) befindet, müssen Sie das Medium wieder einlegen bzw. anschließen und es erneut versuchen.</translation>
+Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Laufwerk etc.) befunden hat, legen Sie bitte das Medium wieder ein oder schließen Sie es wieder an, dann wiederholen Sie den Vorgang.</translation>
 </phrase>
 
 <phrase>
@@ -2751,7 +2751,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
+<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn diese sich auf einem Wechseldatenträger befunden hat, legen Sie bitte die richtige Floppy-Disk, CD wieder ein oder oder schließen das portable Laufwerk wieder an. Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
 2) der in PhotoDemon angebotene Dateiort korrekt ist.</translation>
 </phrase>
@@ -5368,7 +5368,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Language</original>
-<translation>Sprache</translation>
+<translation>Sprache (Language)</translation>
 </phrase>
 
 <phrase>
@@ -5637,7 +5637,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
 <translation>Eine neue Version von PhotoDemon ist verfügbar! 
 
-Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Benachrichtigung erhalten, wenn dies abgeschlossen ist.</translation>
+Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Benachrichtigung erhalten, wenn es abgeschlossen ist.</translation>
 </phrase>
 
 <phrase>
@@ -7255,7 +7255,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>language</original>
-<translation>Sprache (Language)</translation>
+<translation>Sprache</translation>
 </phrase>
 
 <phrase>
@@ -7398,7 +7398,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Update ready</original>
-<translation>Update fertig</translation>
+<translation>Update bereit</translation>
 </phrase>
 
 <phrase>
@@ -10931,7 +10931,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation>Beteiligen Sie sich an Development-, Design- oder Übersetzungsarbeiten</translation>
+<translation>Partizipieren Sie an Development-, Design- oder Übersetzungsarbeiten</translation>
 </phrase>
 
 <phrase>
@@ -12713,7 +12713,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
-<translation></translation>
+<translation>Übersetzung durch Referenztext ersetzen (Strg+U)</translation>
 </phrase>
 
 <phrase>
@@ -12763,7 +12763,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>official ISO language codes at Wikipedia</original>
-<translation></translation>
+<translation>Official ISO Language Codes auf Wikipedia</translation>
 </phrase>
 
 <phrase>
@@ -12773,22 +12773,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>language status</original>
-<translation></translation>
+<translation>Sprachstatus</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation></translation>
+<translation>Sprachversion</translation>
 </phrase>
 
 <phrase>
 <original>language name</original>
-<translation>Name der Sprache</translation>
+<translation>Sprachname</translation>
 </phrase>
 
 <phrase>
 <original>language and country ID</original>
-<translation></translation>
+<translation>Sprache (Language) und Länderkennung (Country ID)</translation>
 </phrase>
 
 <phrase>
@@ -12808,7 +12808,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>official ISO country codes at Wikipedia</original>
-<translation></translation>
+<translation>Official ISO Country Codes auf Wikipedia</translation>
 </phrase>
 
 <phrase>
@@ -12873,14 +12873,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>enter your name here</original>
-<translation>Hier Ihren Namen eingeben</translation>
+<translation>Geben Sie hier Ihren Namen ein</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation></translation>
+<translation>Leider konnte die en-US Sprachdatei von PhotoDemon auf diesem PC nicht lokalisiert werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, aber möglicherweise nicht in Development- oder Beta-Builds.
+
+Um eine neue Übersetzung zu starten, laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
@@ -12894,7 +12896,7 @@ To start a new translation, please download a fresh copy of PhotoDemon from phot
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte diese Sprachdatei nicht geladen werden. Es ist möglich, dass das Exemplar auf diesem PC veraltet ist.
 
-Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
+Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
@@ -12939,7 +12941,7 @@ Zum Fortsetzen laden Sie bitte eine neue Version von PhotoDemon von photodemon.o
 
 <phrase>
 <original>localize phrases</original>
-<translation>Phrasen lokalisieren</translation>
+<translation>Phrasen in die Landessprache übersetzen</translation>
 </phrase>
 
 <phrase>
@@ -13662,7 +13664,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht. Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn es bereit ist, ein Update anzuwenden. Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
 </phrase>
 
 <phrase>
