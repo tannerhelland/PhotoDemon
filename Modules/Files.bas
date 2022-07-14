@@ -292,6 +292,10 @@ Private Function InitializeFSO() As Boolean
     InitializeFSO = True
 End Function
 
+Public Function AppPathW() As String
+    If InitializeFSO Then AppPathW = m_FSO.AppPathW()
+End Function
+
 Public Function FileCopyW(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
     If InitializeFSO Then FileCopyW = m_FSO.FileCopyW(srcFilename, dstFilename)
 End Function

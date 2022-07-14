@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmMain 
    BackColor       =   &H80000005&
    Caption         =   " PhotoDemon i18n manager"
-   ClientHeight    =   8190
+   ClientHeight    =   7590
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   14535
@@ -16,27 +16,10 @@ Begin VB.Form frmMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   546
+   ScaleHeight     =   506
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton cmdConvertLabels 
-      Caption         =   "Convert labels in selected project file to pdLabel format.  (This cannot be undone; use cautiously!)"
-      BeginProperty Font 
-         Name            =   "Segoe UI"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   570
-      Left            =   2520
-      TabIndex        =   15
-      Top             =   4380
-      Width           =   11775
-   End
    Begin VB.CommandButton cmdMergeAll 
       Caption         =   "2a (Optional) Automatically merge all PhotoDemon localizations against the latest en-US data..."
       BeginProperty Font 
@@ -49,9 +32,9 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   735
-      Left            =   4800
+      Left            =   4560
       TabIndex        =   13
-      Top             =   7320
+      Top             =   6600
       Width           =   9495
    End
    Begin VB.CheckBox chkRemoveDuplicates 
@@ -85,9 +68,9 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   735
-      Left            =   8520
+      Left            =   8280
       TabIndex        =   7
-      Top             =   6360
+      Top             =   5640
       Width           =   5775
    End
    Begin VB.CommandButton cmdOldLanguage 
@@ -102,9 +85,9 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   735
-      Left            =   4800
+      Left            =   4560
       TabIndex        =   6
-      Top             =   6360
+      Top             =   5640
       Width           =   3255
    End
    Begin VB.CommandButton cmdMaster 
@@ -119,9 +102,9 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   735
-      Left            =   1080
+      Left            =   840
       TabIndex        =   5
-      Top             =   6360
+      Top             =   5640
       Width           =   3255
    End
    Begin VB.CommandButton cmdProcess 
@@ -166,27 +149,6 @@ Begin VB.Form frmMain
       Top             =   1920
       Width           =   3015
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "other support tools:"
-      BeginProperty Font 
-         Name            =   "Segoe UI"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   315
-      Index           =   2
-      Left            =   240
-      TabIndex        =   14
-      Top             =   4500
-      Width           =   2040
-   End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -221,10 +183,10 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   495
+      Height          =   375
       Left            =   4080
       TabIndex        =   11
-      Top             =   5280
+      Top             =   4680
       Width           =   10215
    End
    Begin VB.Label lblTitle 
@@ -243,9 +205,9 @@ Begin VB.Form frmMain
       ForeColor       =   &H00404040&
       Height          =   315
       Index           =   1
-      Left            =   720
+      Left            =   480
       TabIndex        =   10
-      Top             =   5880
+      Top             =   5160
       Width           =   4275
    End
    Begin VB.Label lblTitle 
@@ -256,7 +218,7 @@ Begin VB.Form frmMain
          Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
-         Weight          =   400
+         Weight          =   700
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
@@ -266,15 +228,15 @@ Begin VB.Form frmMain
       Index           =   0
       Left            =   240
       TabIndex        =   9
-      Top             =   5280
-      Width           =   2970
+      Top             =   4680
+      Width           =   3300
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       X1              =   8
       X2              =   960
-      Y1              =   344
-      Y2              =   344
+      Y1              =   296
+      Y2              =   296
    End
    Begin VB.Label lblExtract 
       AutoSize        =   -1  'True
@@ -356,6 +318,14 @@ Attribute VB_Exposed = False
 Option Explicit
 Option Compare Binary
 
+'PD currently uses an XML-like structure for its language files.  This means the same tags are
+' written over and over and over.
+Private Const XML_PHRASE_OPEN As String = "<phrase>"
+Private Const XML_PHRASE_CLOSE As String = "</phrase>"
+Private Const XML_ORIGINAL_OPEN As String = "<original>"
+Private Const XML_ORIGINAL_CLOSE As String = "</original>"
+Private Const XML_TRANSLATION_PAIR As String = "<translation></translation>"
+
 'Variables used to generate the master translation file
 Private m_VBPFile As String, m_VBPPath As String
 Private m_FormName As String, m_ObjectName As String, m_FileName As String
@@ -382,154 +352,13 @@ Private m_XML As pdXML
 'If duplicates are assigned for removal, this flag is set to TRUE
 Private m_RemoveDuplicates As Boolean
 
+'When creating the default en-US language file, we track phrases we've already detected.  Duplicates
+' are flagged and removed automatically.
+Private m_enUSPhrases As pdStringHash
+
 'During silent mode (used to synchronize localizations), we use a fast string hash table to update
 ' language files.  This greatly improves performance, especially given how many language files PD ships.
 Private m_PhraseCollection As pdStringHash
-
-'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
-' manually converting all the labels in the program.
-Private Sub cmdConvertLabels_Click()
-
-    'Make sure a file has been selected
-    If (lstProjectFiles.ListIndex <> -1) Then
-
-        'Read the file into a string array
-        Dim srcFilename As String
-        srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
-        
-        Dim fileContents As String
-        Files.FileLoadAsString srcFilename, fileContents, True
-        
-        Dim fileLines() As String
-        fileLines = Split(fileContents, vbCrLf)
-        
-        Dim curLineNumber As Long, curLineText As String
-        curLineNumber = 0
-        
-        Dim startLine As Long, endLine As Long, i As Long, numLabelsReplaced As Long
-        numLabelsReplaced = 0
-        
-        Dim ignoreThisLine As Boolean
-                
-        'Now, start processing the file one line at a time, searching for label entries as we go
-        Do
-        
-            curLineText = fileLines(curLineNumber)
-            
-            'Before processing this line, make sure is isn't a comment.
-            If Left$(Trim$(curLineText), 1) = "'" Then GoTo nextLine
-            
-            'Check for a VB label identifier.  The format of these declarations is always the same.
-            If (InStr(1, UCase$(curLineText), "BEGIN VB.LABEL", vbBinaryCompare) > 0) Then
-            
-                'This line is the start of a VB label identifier.
-                startLine = curLineNumber
-                numLabelsReplaced = numLabelsReplaced + 1
-                
-                'Next, we are going to continue looping through the file, looking for the End identifier that marks the end of this label's properties.
-                Do While (StrComp(Trim$(curLineText), "End", vbBinaryCompare) = 0)
-                    curLineNumber = curLineNumber + 1
-                    curLineText = fileLines(curLineNumber)
-                Loop
-                
-                'curLineNumber now contains the index of the last line of this label's properties.  Mark it.
-                endLine = curLineNumber
-                
-                'Convert the starting line to represent a pdLabel instead of a VB label
-                fileLines(startLine) = Replace$(fileLines(startLine), "VB.Label", "PhotoDemon.pdLabel")
-                
-                'Now, we need to iterate through the properties this label might have.  pdLabel objects have a much smaller property
-                ' list than standard VB labels.  Incompatible properties must be removed, or the IDE will throw errors.
-                For i = startLine + 1 To endLine - 1
-                    
-                    'See if this line contains a valid pdLabel property
-                    ignoreThisLine = IsValidPDLabelProperty(fileLines(i))
-                    
-                    'If this line does not contain a valid pdLabel property, perform some special checks for compatible properties
-                    ' with different names.
-                    If Not ignoreThisLine Then
-                        
-                        'Font size descriptions should be renamed from Size to FontSize
-                        If InStr(1, Trim$(fileLines(i)), vbTab & "Size") Then
-                            fileLines(i) = Replace$(fileLines(i), "Size", "FontSize")
-                            ignoreThisLine = True
-                        End If
-                    
-                    End If
-                    
-                    'If the line is still not compatible, replace its contents with a uniquely identifiable string
-                    If Not ignoreThisLine Then fileLines(i) = "INVALID PROPERTY LINE"
-                    
-                Next i
-            
-            End If
-            
-            
-        'Continue to the next line in the file
-nextLine:
-            curLineNumber = curLineNumber + 1
-    
-        Loop While curLineNumber < UBound(fileLines)
-        
-        'The fileLines array now contains the original file's contents, but with all invalid lines marked for removal.
-        ' We are now going to overwrite the original file (gasp) with these new contents.
-        
-        'Start by killing the original copy
-        Files.FileDeleteIfExists srcFilename
-        
-        'Open the file anew
-        Dim fHandle As Integer
-        fHandle = FreeFile
-        
-        Open srcFilename For Output As #fHandle
-        
-            'Write the modified file contents out to file
-            For i = LBound(fileLines) To UBound(fileLines)
-                
-                If StrComp(fileLines(i), "INVALID PROPERTY LINE", vbBinaryCompare) <> 0 Then
-                    Print #fHandle, fileLines(i)
-                End If
-                
-            Next i
-        
-        Close #fHandle
-        
-        MsgBox numLabelsReplaced & " labels replaced successfully.", vbOKOnly + vbApplicationModal + vbInformation, "Label replacement complete"
-            
-    Else
-        MsgBox "Select a file first.", vbOKOnly + vbApplicationModal + vbInformation, "No file selected"
-    End If
-    
-End Sub
-
-'See if a given line from a VB Form contains a valid pdLabel property
-Private Function IsValidPDLabelProperty(ByVal srcString As String) As Boolean
-    
-    IsValidPDLabelProperty = False
-    
-    'Trim the source string to make comparisons easier
-    srcString = Trim$(LCase$(srcString))
-    
-    'The list of valid properties is hardcoded.
-    If InStr(1, srcString, "Alignment", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "BackColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Caption", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    
-    'Attempt a periodic exit (since we can't short-circuit VB code otherwise argh)
-    If IsValidPDLabelProperty Then Exit Function
-    
-    If InStr(1, srcString, "Enabled", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "ForeColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Height", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If IsValidPDLabelProperty Then Exit Function
-    
-    If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Top", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
-    
-End Function
 
 Private Sub cmdMaster_Click()
 
@@ -537,54 +366,19 @@ Private Sub cmdMaster_Click()
     Set cDialog = New pdOpenSaveDialog
     
     'This project should be located in a sub-path of a normal PhotoDemon install.
-    ' You could easily modify this to dynamically calculate the corresponding folder, but I hard-code
-    ' a path to the typical folder on my dev PC.
-    Dim fPath As String
-    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\Master\MASTER.xml"
+    ' We can use shlwapi's PathCanonicalize function to automatically "guess" at the location of PD's
+    ' base en-US language file.
+    Dim likelyDefaultLocation As String
+    If Files.PathCanonicalize(Files.AppPathW() & "..\..", likelyDefaultLocation) Then likelyDefaultLocation = Files.PathAddBackslash(likelyDefaultLocation)
+    likelyDefaultLocation = likelyDefaultLocation & "App\PhotoDemon\Languages\Master\MASTER.xml"
     
-    If cDialog.GetOpenFileName(fPath, , True, False, "XML - PhotoDemon Language File|*.xml", 1, , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
-        Files.FileLoadAsString fPath, m_MasterText, True
+    If cDialog.GetOpenFileName(likelyDefaultLocation, , True, False, "XML - PhotoDemon Language File|*.xml", 1, , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+        Files.FileLoadAsString likelyDefaultLocation, m_MasterText, True
         
         'Remove tabstops, if any exist
         m_MasterText = Replace$(m_MasterText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
     End If
     
-End Sub
-
-Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String, Optional ByVal alsoIncrementVersion As Boolean = True)
-
-    Dim openTagName As String, closeTagName As String
-    openTagName = "<" & origTagName & ">"
-    closeTagName = "</" & origTagName & ">"
-    
-    Dim findText As String, replaceText As String
-    findText = openTagName & GetTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
-    
-    'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place; as such, we want to
-    ' auto-increment the language's version number to trigger an update on client machines.
-    If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
-        
-        findText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
-        
-        'Retrieve the current language version
-        Dim curVersion As String
-        curVersion = GetTextBetweenTags(sourceTextTranslation, origTagName)
-        
-        'Parse the current version into two discrete chunks: the major/minor value, and the revision value
-        Dim curMajorMinor As String, curRevision As Long
-        curMajorMinor = RetrieveVersionMajorMinorAsString(curVersion)
-        curRevision = RetrieveVersionRevisionAsLong(curVersion)
-        
-        'Increment the revision value by 1, then assemble the modified replacement text
-        curRevision = curRevision + 1
-        replaceText = openTagName & curMajorMinor & "." & Trim$(Str$(curRevision)) & closeTagName
-            
-    Else
-        replaceText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
-    End If
-    
-    destinationText = Replace$(destinationText, findText, replaceText)
-
 End Sub
 
 Private Sub cmdMerge_Click()
@@ -600,7 +394,7 @@ Private Sub cmdMerge_Click()
     m_NewLanguageText = m_MasterText
         
     Dim sPos As Long
-    sPos = InStr(1, m_NewLanguageText, "<phrase>", vbBinaryCompare)
+    sPos = InStr(1, m_NewLanguageText, XML_PHRASE_OPEN, vbBinaryCompare)
     
     Dim origText As String, translatedText As String
     Dim findText As String, replaceText As String
@@ -639,8 +433,8 @@ Private Sub cmdMerge_Click()
         If (LenB(translatedText) <> 0) Then
             
             'As a failsafe, try the same thing without tabs
-            findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
-            replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
+            findText = XML_ORIGINAL_OPEN & origText & XML_ORIGINAL_CLOSE & vbCrLf & XML_TRANSLATION_PAIR
+            replaceText = XML_ORIGINAL_OPEN & origText & XML_ORIGINAL_CLOSE & vbCrLf & "<translation>" & translatedText & "</translation>"
             m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText)
             
             phrasesFound = phrasesFound + 1
@@ -649,7 +443,7 @@ Private Sub cmdMerge_Click()
         End If
     
         'Find the next occurrence of a <phrase> tag
-        sPos = InStr(sPos + 1, m_MasterText, "<phrase>", vbBinaryCompare)
+        sPos = InStr(sPos + 1, m_MasterText, XML_PHRASE_OPEN, vbBinaryCompare)
         
         If ((phrasesProcessed And 7) = 0) Then
             lblUpdates.Caption = phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
@@ -704,7 +498,7 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
     PreprocessText origCaption
-    origCaption = "<original>" & origCaption & "</original>"
+    origCaption = XML_ORIGINAL_OPEN & origCaption & XML_ORIGINAL_CLOSE
     
     Dim phraseLocation As Long
     phraseLocation = GetPhraseTagLocation(origCaption)
@@ -771,11 +565,16 @@ Private Sub PreprocessText(ByRef srcString As String)
     
 End Sub
 
-'New option added 09 September 2013 - Merge all language files automatically.  This will save me some trouble in the future.
+'PD's build script uses this function to update all languages files against the latest en-US project text.
 Private Sub cmdMergeAll_Click()
-
+    
+    'Assuming this app instance is in its normal location (/Support/i18n-manager/), calculate a relevant
+    ' neighboring folder where language files will be located.
+    Dim baseFolder As String
+    If Files.PathCanonicalize(Files.AppPathW() & "..\..", baseFolder) Then baseFolder = Files.PathAddBackslash(baseFolder)
+    
     Dim srcFolder As String
-    srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
+    srcFolder = baseFolder & "App\PhotoDemon\Languages\"
     
     'Auto-load the latest master language file and remove tabstops from the text (if any exist)
     Files.FileLoadAsString srcFolder & "Master\MASTER.xml", m_MasterText, True
@@ -784,7 +583,8 @@ Private Sub cmdMergeAll_Click()
     'Rather than backup the old files to the dev language folder (which is confusing),
     ' I now place them inside a dedicated backup folder.
     Dim backupFolder As String
-    backupFolder = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\dev_backup\"
+    backupFolder = baseFolder & "no_sync\PD_Language_File_Tmp\dev_backup\"
+    If (Not Files.PathExists(backupFolder, True)) Then Files.PathCreate backupFolder, True
     
     'Iterate through every language file in the default PD directory
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
@@ -818,6 +618,8 @@ Private Sub cmdMergeAll_Click()
         
         Dim origText As String, translatedText As String
         Dim findText As String, replaceText As String
+        Const TAG_NAME_ORIG As String = "original"
+        Const TAG_NAME_TRNS As String = "translation"
         
         'Build a collection of all phrases in the current translation file.  Some phrases may not be
         ' translated and that's fine - we'll leave them blank and simply plug-in the phrases we *do* have.
@@ -828,8 +630,8 @@ Private Sub cmdMergeAll_Click()
             Dim i As Long
             For i = 0 To numOldPhrases - 1
                 
-                origText = oldLangXML.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
-                translatedText = oldLangXML.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(origText))
+                origText = oldLangXML.GetUniqueTag_String(TAG_NAME_ORIG, vbNullString, phraseLocations(i))
+                translatedText = oldLangXML.GetUniqueTag_String(TAG_NAME_TRNS, vbNullString, phraseLocations(i) + Len(origText))
                 
                 'Old PhotoDemon language files used manually inserted & characters for keyboard accelerators.
                 ' Accelerators are now handled automatically on a per-language basis.  To ensure work isn't lost
@@ -858,9 +660,6 @@ Private Sub cmdMergeAll_Click()
             Dim sPos As Long
             sPos = InStr(1, m_NewLanguageText, PHRASE_START)
             
-            'Dim origText As String, translatedText As String
-            'Dim findText As String, replaceText As String
-            
             'Copy over all top-level language and author information
             ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
             ReplaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
@@ -873,38 +672,32 @@ Private Sub cmdMergeAll_Click()
             phrasesFound = 0
             phrasesMissed = 0
             
+            Const ORIG_TAG_CLOSE As String = "</original>" & vbCrLf & "<translation></translation>"
+            Const TRANSLATE_TAG_INTERIOR As String = "</original>" & vbCrLf & "<translation>"
+            Const TRANSLATE_TAG_CLOSE As String = "</translation>"
+                
             'Start parsing the master text for <phrase> tags
             Do
             
                 phrasesProcessed = phrasesProcessed + 1
             
                 'Retrieve the original text associated with this phrase tag
-                origText = GetTextBetweenTags(m_MasterText, "original", sPos)
+                origText = GetTextBetweenTags(m_MasterText, TAG_NAME_ORIG, sPos)
                 
                 'Attempt to retrieve a translation for this phrase using the old language file
-                If (Not m_PhraseCollection.GetItemByKey(origText, translatedText)) Then
-                
+                If m_PhraseCollection.GetItemByKey(origText, translatedText) Then
+                    
+                    'Remove any tab stops from the translated text (which may have been added by an outside editor)
+                    If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
+                    
+                Else
                     translatedText = vbNullString
-                    
-                    'If no translation was found, and this string contains vbCrLf characters,
-                    ' replace them with plain vbLF characters and try again
-                    If (InStr(1, origText, vbCrLf, vbBinaryCompare) > 0) Then
-                        translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
-                    End If
-                    
                 End If
                 
-                'Remove any tab stops from the translated text (which may have been added by an outside editor)
-                If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
-                
                 'If a translation was found, insert it into the new file
-                Const ORIG_TAG_OPEN As String = "<original>"
-                Const ORIG_TAG_CLOSE As String = "</original>" & vbCrLf & "<translation></translation>"
-                Const TRANSLATE_TAG_INTERIOR As String = "</original>" & vbCrLf & "<translation>"
-                Const TRANSLATE_TAG_CLOSE As String = "</translation>"
                 If (LenB(translatedText) <> 0) Then
-                    findText = ORIG_TAG_OPEN & origText & ORIG_TAG_CLOSE
-                    replaceText = ORIG_TAG_OPEN & origText & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
+                    findText = XML_ORIGINAL_OPEN & origText & ORIG_TAG_CLOSE
+                    replaceText = XML_ORIGINAL_OPEN & origText & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
                     m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
                     phrasesFound = phrasesFound + 1
                 Else
@@ -967,12 +760,14 @@ Private Sub cmdOldLanguage_Click()
     Dim cDialog As pdOpenSaveDialog
     Set cDialog = New pdOpenSaveDialog
     
-    Dim fPath As String
-    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
+    'Assuming this app instance is in its normal location (/Support/i18n-manager/), calculate a relevant
+    ' neighboring folder where language files will be located.
+    Dim likelyDefaultLocation As String
+    If Files.PathCanonicalize(Files.AppPathW() & "..\..", likelyDefaultLocation) Then likelyDefaultLocation = Files.PathAddBackslash(likelyDefaultLocation)
+    likelyDefaultLocation = likelyDefaultLocation & "App\PhotoDemon\Languages\"
     
     Dim tmpLangFile As String
-    
-    If cDialog.GetOpenFileName(tmpLangFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+    If cDialog.GetOpenFileName(tmpLangFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, likelyDefaultLocation, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
         
         m_OldLanguagePath = tmpLangFile
         
@@ -1064,7 +859,7 @@ Private Sub cmdProcess_Click()
     Dim newFileLen As Long, oldFileLen As Long
     newFileLen = LenB(Trim$(Replace$(Replace$(m_outputText.ToString(), vbCrLf, vbNullString), vbTab, vbNullString)))
     oldFileLen = LenB(Trim$(Replace$(Replace$(oldFileString, vbCrLf, vbNullString), vbTab, vbNullString)))
-        
+    
     If (newFileLen <> oldFileLen) Then
         
         'Use pdXML to write a UTF-8 encoded text file
@@ -1092,13 +887,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
     ' up the parser as it thinks it's found hundreds of tooltips in each file.)
     Select Case m_FileName
     
-        Case "clsToolTip.cls", "pdToolTip.cls", "clsControlImages.cls"
-            Exit Sub
-            
-        Case "pdFilterSupport.cls", "cSelfSubHookCallback.cls"
-            Exit Sub
-            
-        Case "VBP_PublicVariables.bas", "pdParamString.cls", "VBP_ToolbarDebug.frm"
+        Case "pdToolTip.cls", "pdFilterSupport.cls", "pdParamString.cls"
             Exit Sub
             
         Case "pdButtonStrip.ctl", "pdButtonStripVertical.ctl"
@@ -1244,9 +1033,6 @@ Private Sub ProcessFile(ByVal srcFile As String)
             processedTextSecondary = FindMessage(fileLines, curLineNumber, True)
         End If
         
-        'DEBUG! Check for certain text entries here
-        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) <> 0 Then MsgBox processedText
-        
         'We now have text in potentially two places: processedText, and processedTextSecondary (for message box titles)
         chkText = Trim$(processedText)
         
@@ -1342,52 +1128,57 @@ End Sub
 
 'Add a discovered phrase to the XML file.  If this phrase already exists in the file, ignore it.
 Private Function AddPhrase(ByRef phraseText As String) As Boolean
-                        
+    
     'Replace double double-quotes (which are required in code) with just one set of double-quotes
-    If InStr(1, phraseText, """""") Then phraseText = Replace$(phraseText, """""", """")
-            
+    If (InStr(1, phraseText, """""", vbBinaryCompare) <> 0) Then phraseText = Replace$(phraseText, """""", """", 1, -1, vbBinaryCompare)
+    
     'Next, do the same pre-processing that we do in the translation engine
     
     '1) Trim the text.  Extra spaces will be handled by the translation engine.
     phraseText = Trim$(phraseText)
     
     '2) Check for a trailing "..." and remove it
-    If Right$(phraseText, 3) = "..." Then phraseText = Left$(phraseText, Len(phraseText) - 3)
+    If (Right$(phraseText, 3) = "...") Then phraseText = Left$(phraseText, Len(phraseText) - 3)
     
     '3) Check for a trailing colon ":" and remove it
-    If Right$(phraseText, 1) = ":" Then phraseText = Left$(phraseText, Len(phraseText) - 1)
+    If (Right$(phraseText, 1) = ":") Then phraseText = Left$(phraseText, Len(phraseText) - 1)
+    
+    'Perform a final failsafe check for null-length phrases.
+    If (LenB(phraseText) = 0) Then
+        AddPhrase = False
+        Exit Function
+    End If
     
     'This phrase is now ready to write to file.
     
-    'Before writing the phrase out, check to see if it already exists
-    If m_RemoveDuplicates Then
-                
-        If m_outputText.StrStr("<original>" & phraseText & "</original>") Then
-            AddPhrase = False
-        Else
-            AddPhrase = (LenB(phraseText) <> 0)
-        End If
-        
-    Else
-        AddPhrase = (LenB(phraseText) <> 0)
-    End If
+    'Before writing the phrase out, check to see if it already exists.
+    ' (By default, PD suppresses duplicate entries.)
+    If m_RemoveDuplicates Then AddPhrase = Not m_enUSPhrases.GetItemByKey(phraseText, vbNullString)
     
     'If the phrase does not exist, add it now
     If AddPhrase Then
+    
+        'Physically place this tag in the output XML
         m_outputText.AppendLineBreak
         m_outputText.AppendLineBreak
-        m_outputText.AppendLine vbTab & vbTab & "<phrase>"
-        m_outputText.Append vbTab & vbTab & vbTab & "<original>"
+        m_outputText.AppendLine XML_PHRASE_OPEN
+        m_outputText.Append XML_ORIGINAL_OPEN
         m_outputText.Append phraseText
-        m_outputText.AppendLine "</original>"
-        m_outputText.AppendLine vbTab & vbTab & vbTab & "<translation></translation>"
-        m_outputText.Append vbTab & vbTab & "</phrase>"
+        m_outputText.AppendLine XML_ORIGINAL_CLOSE
+        m_outputText.AppendLine XML_TRANSLATION_PAIR
+        m_outputText.Append XML_PHRASE_CLOSE
+        
+        'Add the phrase to our running "duplicate phrase" detector
+        m_enUSPhrases.AddItem phraseText, vbNullString
+        
+        'Keep a running tally of total word count (approximately)
         m_numOfWords = m_numOfWords + CountWordsInString(phraseText)
+        
     End If
     
 End Function
 
-'Given a line number and the original file contents, search for a custom PhotoDemon translation request
+'Given a line number and the original file contents, search for a custom PhotoDemon translation request.
 Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
@@ -1436,10 +1227,9 @@ Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
     Dim lineBreak As String
     lineBreak = """ & vbCrLf & """
-    If InStr(1, FindMessage, lineBreak) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf)
+    If (InStr(1, FindMessage, lineBreak, vbBinaryCompare) <> 0) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf)
     lineBreak = """ & vbCrLf & vbCrLf & """
-    If InStr(1, FindMessage, lineBreak) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf & vbCrLf)
-
+    If (InStr(1, FindMessage, lineBreak, vbBinaryCompare) <> 0) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf & vbCrLf)
     
 End Function
 
@@ -1458,15 +1248,6 @@ Private Function FindTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
         initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP ")
     Else
         initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP ")
-    End If
-    
-    'If text is not found, try again, using a different tooltip assignment command
-    If initPosition = 0 Then
-        If inReverse Then
-            initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".SETTOOLTIP ")
-        Else
-            initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".SETTOOLTIP ")
-        End If
     End If
     
     Dim startQuote As Long
@@ -1752,8 +1533,7 @@ Private Function FindControlCaption(ByRef srcLines() As String, ByRef lineNumber
     Loop While Mid$(objectName, sPos, 1) <> " "
     
     m_ObjectName = Right$(objectName, Len(objectName) - sPos)
-    'MsgBox "OBJECT NAME: " & objectName
-
+    
     Do While InStr(1, UCase$(srcLines(lineNumber)), "CAPTION", vbBinaryCompare) = 0
         lineNumber = lineNumber + 1
         
@@ -1761,7 +1541,7 @@ Private Function FindControlCaption(ByRef srcLines() As String, ByRef lineNumber
         ' NOTE: we must use a binary comparison here, or entries with "End" in them will fail to work!
         If (InStr(1, srcLines(lineNumber), "End", vbBinaryCompare) > 0) And Not (InStr(1, srcLines(lineNumber), "EndProperty", vbBinaryCompare) > 0) Then
             foundCaption = False
-            lineNumber = originalLineNumber '+ 1
+            lineNumber = originalLineNumber
             Exit Do
         End If
         
@@ -1817,7 +1597,6 @@ Private Function FindFormCaption(ByRef srcLines() As String, ByRef lineNumber As
     Loop While Mid$(objectName, sPos, 1) <> " "
     
     m_FormName = Right$(objectName, Len(objectName) - sPos)
-    'MsgBox "FORM NAME: " & objectName
     
     Do While InStr(1, srcLines(lineNumber), "Caption") = 0
         lineNumber = lineNumber + 1
@@ -1851,7 +1630,13 @@ End Function
 'Extract a list of all project files from a VBP file
 Private Sub cmdSelectVBP_Click()
     
-    m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
+    'This project should be located in a sub-path of a normal PhotoDemon install.
+    ' We can use shlwapi's PathCanonicalize function to automatically "guess" at the location of PD's
+    ' base en-US language file.
+    Dim likelyDefaultLocation As String
+    If Files.PathCanonicalize(Files.AppPathW() & "..\..", likelyDefaultLocation) Then likelyDefaultLocation = Files.PathAddBackslash(likelyDefaultLocation)
+    m_VBPFile = likelyDefaultLocation & "PhotoDemon.vbp"
+    
     lblVBP = "Active VBP: " & m_VBPFile
     m_VBPPath = Files.FileGetPath(m_VBPFile)
     
@@ -1923,7 +1708,7 @@ Private Sub cmdSelectVBP_Click()
     lstProjectFiles.Clear
     
     For i = 0 To UBound(vbpFiles)
-        If Len(vbpFiles(i)) > 0 Then lstProjectFiles.AddItem vbpFiles(i)
+        If (LenB(vbpFiles(i)) <> 0) Then lstProjectFiles.AddItem vbpFiles(i)
     Next i
     
     'Build a complete version string
@@ -1932,20 +1717,6 @@ Private Sub cmdSelectVBP_Click()
     cmdProcess.Caption = "Begin processing"
 
 End Sub
-
-'Given a full file name, remove everything but the directory structure
-Private Function GetDirectory(ByRef sString As String) As String
-    
-    Dim x As Long
-    
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            GetDirectory = Left$(sString, x)
-            Exit Function
-        End If
-    Next x
-    
-End Function
 
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
 Private Function CountWordsInString(ByVal srcString As String) As Long
@@ -1997,9 +1768,11 @@ End Function
 Private Sub Form_Load()
     
     Set m_XML = New pdXML
+    Set m_enUSPhrases = New pdStringHash
         
-    'Build a blacklist of phrases that are in the software, but do not need to be translated.  (These are complex phrases that
-    ' may include things like names, but the automatic text generator has no way of knowing that the text is non-translatable.)
+    'Build a blacklist of phrases that are in the software, but do not need to be translated.
+    ' (These are complex phrases that may include things like proper nouns or mathematical terms,
+    ' but the automatic text generator has no way of knowing that the text is non-translatable.)
     Set m_Blacklist = New pdStringHash
     
     AddBlacklist "*"
@@ -2140,3 +1913,39 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
     End If
         
 End Function
+
+Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String, Optional ByVal alsoIncrementVersion As Boolean = True)
+
+    Dim openTagName As String, closeTagName As String
+    openTagName = "<" & origTagName & ">"
+    closeTagName = "</" & origTagName & ">"
+    
+    Dim findText As String, replaceText As String
+    findText = openTagName & GetTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
+    
+    'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place;
+    ' as such, we want to auto-increment the language's version number to trigger an update on client machines.
+    If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
+        
+        findText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+        
+        'Retrieve the current language version
+        Dim curVersion As String
+        curVersion = GetTextBetweenTags(sourceTextTranslation, origTagName)
+        
+        'Parse the current version into two discrete chunks: the major/minor value, and the revision value
+        Dim curMajorMinor As String, curRevision As Long
+        curMajorMinor = RetrieveVersionMajorMinorAsString(curVersion)
+        curRevision = RetrieveVersionRevisionAsLong(curVersion)
+        
+        'Increment the revision value by 1, then assemble the modified replacement text
+        curRevision = curRevision + 1
+        replaceText = openTagName & curMajorMinor & "." & Trim$(Str$(curRevision)) & closeTagName
+            
+    Else
+        replaceText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+    End If
+    
+    destinationText = Replace$(destinationText, findText, replaceText)
+
+End Sub
