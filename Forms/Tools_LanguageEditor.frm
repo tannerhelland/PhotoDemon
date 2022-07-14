@@ -1852,6 +1852,12 @@ Private Sub LoadReferencePO()
                 If (InStr(1, msgStr, ELLIPSIS_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, msgStr, UNDERSCORE_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, UNDERSCORE_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
+                'For translations themselves, apply Unicode normalization.  Linux (and certain text editors) use
+                ' different normalize behavior from Windows, so characters may be in e.g. decomposed form while
+                ' Windows defaults to composed form.  This can cause PD to think strings are different when really
+                ' they are not.
+                msgStr = Strings.StringNormalize(msgStr)
+                
                 'We want case-insensitive matching, so deliberately lcase all keys
                 m_ReferencePO.AddItem LCase$(msgID), msgStr
                 

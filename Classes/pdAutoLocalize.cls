@@ -195,6 +195,9 @@ Public Function GetDeepLTranslation(ByVal srcText As String) As String
                 If (InStr(returnText, ChrW$(174)) <> 0) Then returnText = Replace$(returnText, ChrW$(174), "'")
                 If (InStr(returnText, ChrW$(175)) <> 0) Then returnText = Replace$(returnText, ChrW$(175), "'")
                 
+                'Finally, normalize the return string to form C (composed, the Windows default)
+                returnText = Strings.StringNormalize(returnText)
+                
             End If
             
         Else
