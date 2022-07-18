@@ -113,6 +113,19 @@ Begin VB.UserControl pdCommandBar
       AutoToggle      =   -1  'True
       UseCustomBackColor=   -1  'True
    End
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   570
+      Index           =   5
+      Left            =   5670
+      TabIndex        =   8
+      Top             =   90
+      Visible         =   0   'False
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1005
+      AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
+   End
 End
 Attribute VB_Name = "pdCommandBar"
 Attribute VB_GlobalNameSpace = False
@@ -633,6 +646,10 @@ Private Sub cmdAction_Click(Index As Integer, ByVal Shift As ShiftConstants)
                 LoadPresetFromString m_StateStack.GetString(m_StackIndex)
                 UpdateStateStack False, True
             End If
+            
+        'Submit bug report
+        Case 5
+            Actions.LaunchAction_ByName "help_reportbug"
     
     End Select
     
@@ -1524,18 +1541,19 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             cmdAction(1).AssignImage "generic_random", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(2).AssignImage "generic_savepreset", , cmdButtonImageSize, cmdButtonImageSize
             
+            'In nightly builds, a special "submit bug report" button is made available
+            If (PD_BUILD_QUALITY = PD_PRODUCTION) Then
+                cmdAction(5).Visible = False
+            Else
+                cmdAction(5).Visible = True
+                cmdAction(5).AssignImage "help_reportbug", , cmdButtonImageSize, cmdButtonImageSize
+            End If
+            
             cmdButtonImageSize = Interface.FixDPI(14)
             cmdAction(3).AssignImage "generic_undo", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(4).AssignImage "generic_redo", , cmdButtonImageSize, cmdButtonImageSize
             
         End If
-        
-        'I've gone back and forth on whether these tooltips are useful.  My current $0.02 is that
-        ' they are not, and they just add visual clutter.  (It's also complicated because their
-        ' meaning really varies by tool - e.g. some tools apply actions to the whole image,
-        ' other to just the active layer.)
-        'cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
-        'cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
         
         'The other buttons on the command-bar do require some explanation.
         cmdAction(0).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarReset)
@@ -1544,6 +1562,9 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmdAction(3).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarUndo)
         cmdAction(4).AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarRedo)
         cboPreset.AssignTooltip UserControls.GetCommonTranslation(pduct_CommandBarPresetList)
+        
+        'The "submit bug" button only needs localization if it's visible
+        If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then cmdAction(5).AssignTooltip "This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.", "Submit bug report or feedback"
         
         'Because all controls on the command bar are synchronized against a non-standard backcolor,
         ' we need to make sure any new colors are loaded FIRST

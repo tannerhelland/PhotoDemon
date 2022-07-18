@@ -1409,7 +1409,7 @@ Private Function Launch_ByName_MenuHelp(ByRef srcMenuName As String, Optional By
             FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://tannerhelland.github.io/PhotoDemon-Updates-v2/", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
             
         Case "help_reportbug"
-            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
+            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new/choose"
             
         Case "help_license"
             Web.OpenURL "https://photodemon.org/license/"
