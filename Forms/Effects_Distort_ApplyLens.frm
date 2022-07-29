@@ -122,7 +122,7 @@ Begin VB.Form FormLens
       Width           =   5655
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      Caption         =   "you can also set a center position by clicking the preview window"
       ForeColor       =   4210752
       Layout          =   1
    End

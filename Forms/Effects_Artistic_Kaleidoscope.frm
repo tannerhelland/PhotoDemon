@@ -56,53 +56,6 @@ Begin VB.Form FormKaleidoscope
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   3495
-      Index           =   1
-      Left            =   5880
-      Top             =   360
-      Visible         =   0   'False
-      Width           =   6135
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltAngle2 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   2
-         Top             =   240
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "secondary angle"
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.pdSlider sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   4
-         Top             =   1200
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "radius (percentage)"
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.pdButtonStrip btsQuality 
-         Height          =   1080
-         Left            =   120
-         TabIndex        =   5
-         Top             =   2160
-         Width           =   5715
-         _ExtentX        =   10081
-         _ExtentY        =   1905
-         Caption         =   "render emphasis"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   3495
       Index           =   0
       Left            =   5880
       Top             =   360
@@ -171,7 +124,7 @@ Begin VB.Form FormKaleidoscope
          Width           =   5655
          _ExtentX        =   0
          _ExtentY        =   0
-         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         Caption         =   "you can also set a center position by clicking the preview window"
          ForeColor       =   4210752
          Layout          =   1
       End
@@ -186,6 +139,53 @@ Begin VB.Form FormKaleidoscope
          Caption         =   "center position (x, y)"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   3495
+      Index           =   1
+      Left            =   5880
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdSlider sltAngle2 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   2
+         Top             =   240
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "secondary angle"
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.pdSlider sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1200
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdButtonStrip btsQuality 
+         Height          =   1080
+         Left            =   120
+         TabIndex        =   5
+         Top             =   2160
+         Width           =   5715
+         _ExtentX        =   10081
+         _ExtentY        =   1905
+         Caption         =   "render emphasis"
       End
    End
 End

@@ -56,71 +56,6 @@ Begin VB.Form FormDonut
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4335
-      Index           =   0
-      Left            =   5880
-      Top             =   120
-      Width           =   6135
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltAngle 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   3
-         Top             =   120
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "initial angle"
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.pdSlider sltSpread 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   4
-         Top             =   1080
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "spread"
-         Max             =   360
-         SigDigits       =   1
-         Value           =   360
-         NotchPosition   =   2
-         NotchValueCustom=   360
-      End
-      Begin PhotoDemon.pdSlider sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   5
-         Top             =   2040
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "interior radius"
-         Max             =   100
-         SigDigits       =   1
-         NotchPosition   =   2
-      End
-      Begin PhotoDemon.pdSlider sltHeight 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   6
-         Top             =   3000
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "height"
-         Max             =   100
-         SigDigits       =   1
-         Value           =   50
-         NotchPosition   =   2
-         NotchValueCustom=   50
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4335
       Index           =   1
       Left            =   5880
       Top             =   120
@@ -211,9 +146,74 @@ Begin VB.Form FormDonut
          Width           =   5655
          _ExtentX        =   0
          _ExtentY        =   0
-         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         Caption         =   "you can also set a center position by clicking the preview window"
          ForeColor       =   4210752
          Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4335
+      Index           =   0
+      Left            =   5880
+      Top             =   120
+      Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdSlider sltAngle 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   3
+         Top             =   120
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "initial angle"
+         Min             =   -360
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.pdSlider sltSpread 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1080
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "spread"
+         Max             =   360
+         SigDigits       =   1
+         Value           =   360
+         NotchPosition   =   2
+         NotchValueCustom=   360
+      End
+      Begin PhotoDemon.pdSlider sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   5
+         Top             =   2040
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "interior radius"
+         Max             =   100
+         SigDigits       =   1
+         NotchPosition   =   2
+      End
+      Begin PhotoDemon.pdSlider sltHeight 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   6
+         Top             =   3000
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "height"
+         Max             =   100
+         SigDigits       =   1
+         Value           =   50
+         NotchPosition   =   2
+         NotchValueCustom=   50
       End
    End
 End

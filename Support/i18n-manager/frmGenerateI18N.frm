@@ -305,10 +305,7 @@ Attribute VB_Exposed = False
 ' two before a formal release, so I can hand off new XML files to translators for them to update with any new or modified text.
 '
 'NOTE: this project is intended only as a support tool for PhotoDemon.  It is not designed or tested for general-purpose use.
-'       I do not have any intention of supporting this tool outside its intended use, so please do not submit bug reports
-'       regarding this project unless they directly relate to its intended purpose (generating a PhotoDemon XML language file).
-'
-'      Also, given this project's purpose, the code is pretty ugly.  Organization is minimal.  Read at your own risk.
+'      As such, the code is pretty ugly.  Organization is minimal.  Read at your own risk.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -445,10 +442,8 @@ Private Sub cmdMerge_Click()
         'Find the next occurrence of a <phrase> tag
         sPos = InStr(sPos + 1, m_MasterText, XML_PHRASE_OPEN, vbBinaryCompare)
         
-        If ((phrasesProcessed And 7) = 0) Then
-            lblUpdates.Caption = phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
-            lblUpdates.Refresh
-            If ((phrasesProcessed And 63) = 0) Then VBHacks.DoEvents_PaintOnly Me.hWnd, True
+        If ((phrasesProcessed And 15) = 0) Then
+            Message phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
         End If
         
     Loop While sPos > 0
@@ -568,6 +563,8 @@ End Sub
 'PD's build script uses this function to update all languages files against the latest en-US project text.
 Private Sub cmdMergeAll_Click()
     
+    Message "Loading en-US text file..."
+    
     'Assuming this app instance is in its normal location (/Support/i18n-manager/), calculate a relevant
     ' neighboring folder where language files will be located.
     Dim baseFolder As String
@@ -586,6 +583,24 @@ Private Sub cmdMergeAll_Click()
     backupFolder = baseFolder & "no_sync\PD_Language_File_Tmp\dev_backup\"
     If (Not Files.PathExists(backupFolder, True)) Then Files.PathCreate backupFolder, True
     
+    'As part of the merge, I want to try and save translations where the en-US text has only been
+    ' slightly modified (e.g. fixing a typo).  The merger looks for identical matches to existing en-US text -
+    ' - as it should - but sometimes these little changes cause translations to be lost.  Because there's no
+    ' easy way to automate the determination of "minor enough change to warrant reusing existing translation",
+    ' I instead dump near-matches to a text file and review it manually after modifying en-US text.
+    '
+    'Because each language has a different set of complete vs incomplete translations, we store all changes
+    ' to a single text file *but* calculated on a per-language basis.  Also, we only do this for translations
+    ' where a translation exists, *but* the corresponding en-US text is not used in the present file.
+    
+    'Per-language misses
+    Dim curLangMisses As pdStringHash
+    Set curLangMisses = New pdStringHash
+    
+    'Total misses (from *all* languages, stitched together into one file)
+    Dim totalMisses As pdString
+    Set totalMisses = New pdString
+    
     'Iterate through every language file in the default PD directory
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String
@@ -596,6 +611,11 @@ Private Sub cmdMergeAll_Click()
     Const AMPERSAND_CHAR As String = "&"
     
     Do While (LenB(chkFile) > 0)
+        
+        Message "Loading " & chkFile & "..."
+        
+        'On a new language, reset the current misses collection
+        curLangMisses.Reset
         
         'Load the target language file into an XML parser, enforce Windows line-endings, and strip any
         ' tab stops from the text.  (PD never uses tab stops in official text because it can cause unpredictable
@@ -618,16 +638,17 @@ Private Sub cmdMergeAll_Click()
         
         Dim origText As String, translatedText As String
         Dim findText As String, replaceText As String
+        
         Const TAG_NAME_ORIG As String = "original"
         Const TAG_NAME_TRNS As String = "translation"
         
         'Build a collection of all phrases in the current translation file.  Some phrases may not be
         ' translated and that's fine - we'll leave them blank and simply plug-in the phrases we *do* have.
         Set m_PhraseCollection = New pdStringHash
+        Dim i As Long
         
         If (numOldPhrases > 0) Then
             
-            Dim i As Long
             For i = 0 To numOldPhrases - 1
                 
                 origText = oldLangXML.GetUniqueTag_String(TAG_NAME_ORIG, vbNullString, phraseLocations(i))
@@ -639,7 +660,7 @@ Private Sub cmdMergeAll_Click()
                 If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
-                m_PhraseCollection.AddItem origText, translatedText
+                If (LenB(translatedText) > 0) Then m_PhraseCollection.AddItem origText, translatedText
                 
             Next i
             
@@ -647,100 +668,260 @@ Private Sub cmdMergeAll_Click()
         
         'BEGIN COPY OF CODE FROM cmdMerge (with changes to accelerate the process, since we don't need a UI)
         
-            'Make sure our source file strings are not empty
-            If (LenB(m_MasterText) = 0) Or (numOldPhrases <= 0) Then
-                Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
-                Exit Sub
-            End If
+        'Make sure our source file strings are not empty
+        If (LenB(m_MasterText) = 0) Or (numOldPhrases <= 0) Then
+            Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
+            Exit Sub
+        End If
+        
+        'Start by copying the contents of the master file into the destination string.
+        ' We will use that as our base, and update it with the old translations as best we can.
+        m_NewLanguageText = m_MasterText
+        
+        'This table stores phrases that are successfully copied from the source file to the destination file.
+        ' (From this, we can produce a list of phrases that were *not* successfully copied.)
+        Dim localizedPhrasesHit As pdStringHash
+        Set localizedPhrasesHit = New pdStringHash
+        
+        Dim sPos As Long
+        sPos = InStr(1, m_NewLanguageText, PHRASE_START)
+        
+        'Copy over all top-level language and author information
+        ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
+        ReplaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
+        ReplaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
+        ReplaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
+        ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText, False
             
-            'Start by copying the contents of the master file into the destination string.
-            ' We will use that as our base, and update it with the old translations as best we can.
-            m_NewLanguageText = m_MasterText
+        Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
+        phrasesProcessed = 0
+        phrasesFound = 0
+        phrasesMissed = 0
+        
+        Const ORIG_TAG_CLOSE As String = "</original>" & vbCrLf & "<translation></translation>"
+        Const TRANSLATE_TAG_INTERIOR As String = "</original>" & vbCrLf & "<translation>"
+        Const TRANSLATE_TAG_CLOSE As String = "</translation>"
+            
+        'Start parsing the master text for <phrase> tags
+        Do
+        
+            phrasesProcessed = phrasesProcessed + 1
+        
+            'Retrieve the original text associated with this phrase tag
+            origText = GetTextBetweenTags(m_MasterText, TAG_NAME_ORIG, sPos)
+            
+            'Attempt to retrieve a translation for this phrase using the old language file
+            If m_PhraseCollection.GetItemByKey(origText, translatedText) Then
                 
-            Dim sPos As Long
-            sPos = InStr(1, m_NewLanguageText, PHRASE_START)
-            
-            'Copy over all top-level language and author information
-            ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            ReplaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            ReplaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            ReplaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText, False
+                'Remove any tab stops from the translated text (which may have been added by an outside editor)
+                If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
                 
-            Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
-            phrasesProcessed = 0
-            phrasesFound = 0
-            phrasesMissed = 0
-            
-            Const ORIG_TAG_CLOSE As String = "</original>" & vbCrLf & "<translation></translation>"
-            Const TRANSLATE_TAG_INTERIOR As String = "</original>" & vbCrLf & "<translation>"
-            Const TRANSLATE_TAG_CLOSE As String = "</translation>"
-                
-            'Start parsing the master text for <phrase> tags
-            Do
-            
-                phrasesProcessed = phrasesProcessed + 1
-            
-                'Retrieve the original text associated with this phrase tag
-                origText = GetTextBetweenTags(m_MasterText, TAG_NAME_ORIG, sPos)
-                
-                'Attempt to retrieve a translation for this phrase using the old language file
-                If m_PhraseCollection.GetItemByKey(origText, translatedText) Then
-                    
-                    'Remove any tab stops from the translated text (which may have been added by an outside editor)
-                    If (InStr(1, translatedText, vbTab, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
-                    
-                Else
-                    translatedText = vbNullString
-                End If
-                
-                'If a translation was found, insert it into the new file
-                If (LenB(translatedText) <> 0) Then
-                    findText = XML_ORIGINAL_OPEN & origText & ORIG_TAG_CLOSE
-                    replaceText = XML_ORIGINAL_OPEN & origText & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
-                    m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
-                    phrasesFound = phrasesFound + 1
-                Else
-                    phrasesMissed = phrasesMissed + 1
-                End If
-            
-                'Find the next occurrence of a <phrase> tag
-                sPos = InStr(sPos + 1, m_MasterText, PHRASE_START, vbBinaryCompare)
-                
-                If (Not m_SilentMode) Then
-                    If ((phrasesProcessed And 127) = 0) Then
-                        lblUpdates.Caption = chkFile & ": " & phrasesProcessed & " phrases processed (" & phrasesFound & " found, " & phrasesMissed & " missed)"
-                        lblUpdates.Refresh
-                        VBHacks.DoEvents_PaintOnly Me.hWnd, True
-                    End If
-                End If
-            
-            Loop While sPos > 0
-            
-            'See if the old and new language files are equal.  If they are, we won't bother writing the results out to file.
-            If (LenB(Trim$(m_NewLanguageText)) = LenB(Trim$(m_OldLanguageText))) Then
-                Debug.Print "New language file and old language file are identical for " & chkFile & ".  Merge abandoned."
             Else
-                
-                'Update the version number by 1
-                ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
-                
-                'Unlike the normal merge option, we will automatically save the results to a new XML file
-                
-                'Start by backing up the old file
-                Files.FileDeleteIfExists backupFolder & chkFile
-                Files.FileCopyW m_OldLanguagePath, backupFolder & chkFile
-                
-                If Files.FileExists(m_OldLanguagePath) Then
-                    Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") will be erased.  Hope this is what you wanted!"
-                End If
-                
-                'Use pdXML to write out a UTF-8 encoded XML file
-                m_XML.LoadXMLFromString m_NewLanguageText
-                m_XML.WriteXMLToFile m_OldLanguagePath, True
-                
+                translatedText = vbNullString
             End If
             
+            'If a translation was found, insert it into the new file
+            If (LenB(translatedText) <> 0) Then
+                findText = XML_ORIGINAL_OPEN & origText & ORIG_TAG_CLOSE
+                replaceText = XML_ORIGINAL_OPEN & origText & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
+                m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
+                phrasesFound = phrasesFound + 1
+                localizedPhrasesHit.AddItem origText, vbNullString
+            Else
+                phrasesMissed = phrasesMissed + 1
+                
+                'Store this phrase to the "miss" list of phrases; we'll try and find approximate matches for
+                ' this phrase after we finish parsing this file.
+                curLangMisses.AddItem origText, vbNullString
+                
+            End If
+        
+            'Find the next occurrence of a <phrase> tag
+            sPos = InStr(sPos + 1, m_MasterText, PHRASE_START, vbBinaryCompare)
+            
+            If ((phrasesProcessed And 15) = 0) Then
+                Message chkFile & ": " & phrasesProcessed & " phrases processed (" & phrasesFound & " found, " & phrasesMissed & " missed)"
+            End If
+            
+        Loop While sPos > 0
+        
+        'All translated phrases with exact en-US matches have now been merged into a new language file.
+        
+        'Next, we want to look for translations that exist in the old file but their corresponding en-US phrase
+        ' does *not* appear in the current en-US language file.  This can happen if I fix a typo or make a trivial
+        ' text change, and I do not want to lose translations like this.
+        
+        'So let's start by looking for any en-US phrases that exist in the translation file but
+        ' *not* the latest master en-US phrase list.
+        If (curLangMisses.GetNumOfItems > 0) Then
+            
+            'To ensure text is only written out if at least one phrase is "saved" (e.g. salvaged),
+            ' we track how many potential phrases we've "saved".
+            Dim numSavesMade As Long
+            numSavesMade = 0
+            
+            'Retrieve a list of *all* phrases in the localized language file.
+            ' (Note that we only need the phrases - the translations don't matter in this list.)
+            Dim tmpL10nKeys() As String, tmpL10nItems() As String
+            m_PhraseCollection.GetAllItems tmpL10nKeys, tmpL10nItems
+            Erase tmpL10nItems
+            
+            'Next, we want to build a list of translations that existed in the source translation file
+            ' but were *not* transferred to the new merged translation file.
+            Dim unusedPhrases() As String, numUnusedPhrases As Long
+            numUnusedPhrases = 0
+            
+            Const INIT_SIZE_UNUSED_PHRASES As Long = 128
+            ReDim unusedPhrases(0 To INIT_SIZE_UNUSED_PHRASES - 1) As String
+            
+            For i = 0 To UBound(tmpL10nKeys)
+                
+                'See if this phrase (from the localized file) was matched to an active en-US phrase
+                If (Not localizedPhrasesHit.GetItemByKey(tmpL10nKeys(i), vbNullString)) Then
+                    If (numUnusedPhrases > UBound(unusedPhrases)) Then ReDim Preserve unusedPhrases(0 To numUnusedPhrases * 2 - 1) As String
+                    unusedPhrases(numUnusedPhrases) = tmpL10nKeys(i)
+                    numUnusedPhrases = numUnusedPhrases + 1
+                End If
+                
+            Next i
+            
+            'Grab the list of en-US phrases that didn't have a matching translation in this language.
+            ' (Note that the list of items is unused here - they will just be null strings, by design.)
+            Dim untranslatedPhrases() As String
+            curLangMisses.GetAllItems untranslatedPhrases, tmpL10nItems
+            curLangMisses.Reset
+            
+            'Sometimes I need to fix typos or slightly reword en-US text.  Unfortunately, minor changes like this
+            ' will cause the translated versions of these phrases - if any - to be lost, because the en-US "key" phrase
+            ' in the translation file will no longer match the modified en-US text in the "master" language file.
+            Dim numRescuedPhrases As Long
+            numRescuedPhrases = 0
+            
+            'We're going to try to fix this by searching for phrases that are "similar but not identical".  If they
+            ' exceed an arbitrary threshold, we'll dump them to file so I can manually review and copy+paste
+            ' translations that should be retained.
+            For i = 0 To UBound(untranslatedPhrases)
+                
+                Dim distMin As Long, distCur As Long, idxBestMatch As Long
+                distMin = LONG_MAX
+                idxBestMatch = -1
+                
+                'Failsafe check for non-null phrases
+                Dim lenOrig As Long
+                lenOrig = Len(untranslatedPhrases(i))
+                
+                If (lenOrig > 0) Then
+                    
+                    'We now want to iterate all phrases in the "unused phrases" list to find the best match.
+                    Dim j As Long
+                    For j = 0 To numUnusedPhrases - 1
+                        
+                        'Don't compare strings unless their total length is 80% similar
+                        Const LENGTH_SIMILARITY_THRESHOLD As Double = 0.2
+                        If ((Abs(lenOrig - Len(unusedPhrases(j))) / lenOrig) <= LENGTH_SIMILARITY_THRESHOLD) Then
+                            
+                            'Calculate distance, and only treat it as relevant if the target phrases are at least
+                            ' 75% similar.  (This threshold is effectively arbitrary; it's meant to filter out
+                            ' low-quality matches to avoid wasting my time during manual review.)
+                            distCur = Strings.StringDistance(untranslatedPhrases(i), unusedPhrases(j), True)
+                            
+                            Const DISTANCE_SIMILARITY_THRESHOLD As Double = 0.25
+                            If (distCur < distMin) Then
+                                If ((distCur / lenOrig) < DISTANCE_SIMILARITY_THRESHOLD) Then
+                                    distMin = distCur
+                                    idxBestMatch = j
+                                End If
+                            End If
+                            
+                        End If
+                            
+                    Next j
+                    
+                End If
+                    
+                'Write the best match (and its associated translation) out to the merged report
+                If (distMin < LONG_MAX) And (idxBestMatch >= 0) Then
+                    
+                    translatedText = vbNullString
+                    If m_PhraseCollection.GetItemByKey(unusedPhrases(idxBestMatch), translatedText) And (LenB(translatedText) > 0) Then
+                        
+                        'If this is the first translation we've "saved" in this file, write a header first
+                        If (numSavesMade = 0) Then
+                            totalMisses.AppendLineBreak
+                            totalMisses.AppendLine String$(32, "*")
+                            totalMisses.AppendLine "Best-match report for " & chkFile
+                            totalMisses.AppendLine String$(32, "*")
+                            totalMisses.AppendLineBreak
+                        End If
+                        
+                        'If the score is 0, it means the translation file has a translation for an en-US phrase
+                        ' that is identical to the target phrase *except* for casing.  This is 100% okay -
+                        ' I probably just tweaked something in the source code, and we should just use the existing
+                        ' translation as-is.  (Note that we do not try to propagate the case change to the translated
+                        ' text because the rules for this vary by language and it might affect meaning in unintended ways!)
+                        If (distMin = 0) Then
+                        
+                            findText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & ORIG_TAG_CLOSE
+                            replaceText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
+                            m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
+                            numRescuedPhrases = numRescuedPhrases + 1
+                            
+                        'If the score is *not* 0, it means a translation exists for a similar - but *not* identical -
+                        ' en-US phrase.  These cases require manual review because it's not always obvious whether the
+                        ' two phrases are close enough to matter.
+                        Else
+                            totalMisses.AppendLineBreak
+                            totalMisses.AppendLine "New text: " & untranslatedPhrases(i)
+                            totalMisses.AppendLine "Old text: " & unusedPhrases(idxBestMatch)
+                            totalMisses.AppendLine "Match distance: " & distMin
+                            totalMisses.AppendLine "<original>" & untranslatedPhrases(i) & "</original>"
+                            totalMisses.AppendLine "<translation>" & translatedText & "</translation>"
+                            totalMisses.AppendLineBreak
+                        End If
+                        
+                        numSavesMade = numSavesMade + 1
+                        
+                    End If
+                        
+                End If
+                
+                If ((i And 15) = 0) Then
+                    Message chkFile & ": " & (i + 1) & " of " & (UBound(untranslatedPhrases) + 1) & " missing phrases estimated, " & numSavesMade & " potentially salvaged)"
+                End If
+                
+            Next i
+            
+        End If
+        
+        'All exact translations have now been merged, and near-exact translations have been written out to a
+        ' text file for human review.
+        If (numRescuedPhrases > 0) Then Debug.Print "NOTE: " & numRescuedPhrases & " near-identical phrases were rescued!"
+        
+        'We can now save the final merged text out to file.
+        
+        'See if the old and new language files are equal.  If they are, we won't bother writing the results out to file.
+        If (LenB(Trim$(m_NewLanguageText)) = LenB(Trim$(m_OldLanguageText))) Then
+            Debug.Print "New language file and old language file are identical for " & chkFile & ".  Merge abandoned."
+        Else
+            
+            'Update the version number by 1
+            ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            
+            'Unlike the normal merge option, we will automatically save the results to a new XML file
+            
+            'Start by backing up the old file
+            Files.FileDeleteIfExists backupFolder & chkFile
+            Files.FileCopyW m_OldLanguagePath, backupFolder & chkFile
+            
+            If Files.FileExists(m_OldLanguagePath) Then
+                Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") will be erased.  Hope this is what you wanted!"
+            End If
+            
+            'Use pdXML to write out a UTF-8 encoded XML file
+            m_XML.LoadXMLFromString m_NewLanguageText
+            m_XML.WriteXMLToFile m_OldLanguagePath, True
+            
+        End If
         
         'END COPY OF CODE FROM cmdMerge
         
@@ -749,10 +930,12 @@ Private Sub cmdMergeAll_Click()
         
     Loop
     
-    lblUpdates.Caption = "All language files processed successfully."
-    lblUpdates.Refresh
-    DoEvents
-
+    'If some translations were lost (usually due to me making changes to existing en-US text), dump any
+    ' suggested translation replacements to file for later human review.
+    If (LenB(totalMisses.ToString) > 0) Then Files.FileSaveAsText totalMisses.ToString, srcFolder & "final_report.txt", True, True
+    
+    Message "All language files processed successfully."
+    
 End Sub
 
 Private Sub cmdOldLanguage_Click()
@@ -1764,6 +1947,14 @@ End Function
 Private Function IsURL(ByRef srcString As String) As Boolean
     IsURL = (Left$(srcString, 6) = "ftp") Or (Left$(srcString, 7) = "http")
 End Function
+
+Private Sub Message(ByRef msgText As String)
+    If (Not m_SilentMode) Then
+        lblUpdates.Caption = msgText
+        lblUpdates.Refresh
+        VBHacks.DoEvents_PaintOnly Me.hWnd, True
+    End If
+End Sub
 
 Private Sub Form_Load()
     

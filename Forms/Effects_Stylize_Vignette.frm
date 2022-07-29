@@ -144,7 +144,8 @@ Begin VB.Form FormVignette
       Width           =   5655
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      Alignment       =   2
+      Caption         =   "you can also set a center position by clicking the preview window"
       FontSize        =   9
       ForeColor       =   4210752
       Layout          =   1

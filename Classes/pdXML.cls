@@ -653,11 +653,10 @@ Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
         
     End If
     
-    Dim tmpString As String
-    tmpString = GetTextBetweenTags(tagName, searchLocation)
+    GetUniqueTag_String = GetTextBetweenTags(tagName, searchLocation)
     
-    If (LenB(tmpString) <> 0) Then
-        GetUniqueTag_String = Trim$(tmpString)
+    If (LenB(GetUniqueTag_String) <> 0) Then
+        GetUniqueTag_String = Trim$(GetUniqueTag_String)
     Else
         GetUniqueTag_String = defaultReturn
     End If
@@ -936,7 +935,7 @@ Private Function GetTextBetweenTags(ByRef tagName As String, Optional ByVal sear
             
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
-            If (whereTagFound <> -1) Then whereTagFound = tagEnd + Len(tagName) + 2
+            whereTagFound = tagEnd + Len(tagName) + 2
             GetTextBetweenTags = Mid$(m_xmlContents, tagStart, tagEnd - tagStart)
             
         Else

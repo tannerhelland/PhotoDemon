@@ -157,7 +157,7 @@ Begin VB.Form FormDroste
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   2
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      Caption         =   "you can also set a center position by clicking the preview window"
       FontSize        =   9
       ForeColor       =   4210752
       Layout          =   1

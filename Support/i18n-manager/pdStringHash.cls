@@ -170,6 +170,41 @@ Friend Function AddItem(ByRef srcKey As String, ByRef srcItem As String) As Bool
         
 End Function
 
+'Retrieve all stored entries into dedicated key and item arrays; this can be useful if the caller needs
+' to do some custom-matching or iteration of entries.
+'
+'Returns the total number of entries returned.  Both arrays are guaranteed to have the same UBound,
+' and this UBound is guaranteed to be [return_value - 1].  If the return value is 0, the returned arrays
+' may *not* be initialized - plan accordingly!
+Friend Function GetAllItems(ByRef dstKeys() As String, ByRef dstItems() As String) As Long
+    
+    GetAllItems = Me.GetNumOfItems()
+    If (GetAllItems <= 0) Then Exit Function
+    
+    ReDim dstKeys(0 To GetAllItems - 1) As String
+    ReDim dstItems(0 To GetAllItems - 1) As String
+    
+    Dim idxDst As Long: idxDst = 0
+    
+    Dim i As Long
+    For i = 0 To UBound(m_hashTable)
+        If (LenB(m_hashTable(i).sKey) <> 0) Then
+            dstKeys(idxDst) = m_hashTable(i).sKey
+            dstItems(idxDst) = m_hashTable(i).sItem
+            idxDst = idxDst + 1
+        End If
+    Next i
+    
+    If (m_idxOverflow > 1) Then
+        For i = 1 To m_idxOverflow - 1
+            dstKeys(idxDst) = m_overflowTable(i).sKey
+            dstItems(idxDst) = m_overflowTable(i).sItem
+            idxDst = idxDst + 1
+        Next i
+    End If
+    
+End Function
+
 'Return the stored item for a given key.  Returns TRUE if key exists, FALSE otherwise.
 Friend Function GetItemByKey(ByRef srcKey As String, ByRef dstItem As String) As Boolean
     

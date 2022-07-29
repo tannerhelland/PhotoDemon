@@ -507,6 +507,7 @@ Begin VB.Form FormLanguageEditor
          _ExtentX        =   5741
          _ExtentY        =   1217
          Caption         =   "delete selected language file"
+         Enabled         =   0   'False
       End
       Begin PhotoDemon.pdRadioButton optBaseLanguage 
          Height          =   375
@@ -994,7 +995,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
                     Screen.MousePointer = vbDefault
-                    PDMsgBox "Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Master language file missing"
+                    PDMsgBox "Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Error"
                     Unload Me
                 End If
             
@@ -1740,6 +1741,7 @@ Private Sub LoadReferencePO()
     Const DOUBLE_LINEBREAK As String = vbCrLf & vbCrLf
     Const UNDERSCORE_CHAR As String = "_"
     Const ELLIPSIS As String = "..."
+    Const COLON_CHAR As String = ":"
     Dim ELLIPSIS_CHAR As String: ELLIPSIS_CHAR = ChrW$(&H2026)
     
     'Looks like this is a normal .po file.  We now want to load all phrases (ugh) into some kind of dictionary,
@@ -1776,11 +1778,11 @@ Private Sub LoadReferencePO()
             If (Left$(curPhrase, 1) = QUOTE_CHAR) Then curPhrase = Right$(curPhrase, Len(curPhrase) - 1)
             If (Right$(curPhrase, 1) = QUOTE_CHAR) Then curPhrase = Left$(curPhrase, Len(curPhrase) - 1)
             
+            'Replace valid quotes with a placeholder
+            curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
+                
             'Messages can be multiline.  Look for line breaks in the text and remove them if found.
             If (InStr(1, curPhrase, vbCrLf, vbBinaryCompare) <> 0) Then
-                
-                'Replace valid quotes with a placeholder
-                curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
                 
                 'Remove linebreaks
                 curPhrase = Replace$(curPhrase, vbCrLf, vbNullString, 1, -1, vbBinaryCompare)
@@ -1788,10 +1790,10 @@ Private Sub LoadReferencePO()
                 'Remove any remaining quotes
                 curPhrase = Replace$(curPhrase, """", vbNullString, 1, -1, vbBinaryCompare)
                 
-                'Restore valid quotes (that we hacked out at the beginning)
-                curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
-                
             End If
+            
+            'Restore valid quotes (that we hacked out before doing multi-line checks)
+            curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
             
         End If
         
@@ -1815,11 +1817,11 @@ Private Sub LoadReferencePO()
                 If (Left$(curPhrase, 1) = QUOTE_CHAR) Then curPhrase = Right$(curPhrase, Len(curPhrase) - 1)
                 If (Right$(curPhrase, 1) = QUOTE_CHAR) Then curPhrase = Left$(curPhrase, Len(curPhrase) - 1)
                 
+                'Replace valid quotes with a placeholder
+                curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
+                
                 'Messages can be multiline.  Look for line breaks in the text and remove them if found.
                 If (InStr(1, curPhrase, vbCrLf, vbBinaryCompare) <> 0) Then
-                    
-                    'Replace valid quotes with a placeholder
-                    curPhrase = Replace$(curPhrase, "\""", "&quot;", 1, -1, vbBinaryCompare)
                     
                     'Remove linebreaks
                     curPhrase = Replace$(curPhrase, vbCrLf, vbNullString, 1, -1, vbBinaryCompare)
@@ -1827,10 +1829,10 @@ Private Sub LoadReferencePO()
                     'Remove any remaining quotes
                     curPhrase = Replace$(curPhrase, """", vbNullString, 1, -1, vbBinaryCompare)
                     
-                    'Restore valid quotes (that we hacked out at the beginning)
-                    curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
-                    
                 End If
+                
+                'Restore valid quotes (that we hacked out before doing multiline checks)
+                curPhrase = Replace$(curPhrase, "&quot;", """", 1, -1, vbBinaryCompare)
                 
                 'Debug.Print "-----" & vbCrLf & curPhrase & vbCrLf & "-----"
                 
@@ -1843,19 +1845,21 @@ Private Sub LoadReferencePO()
             If (LenB(msgID) > 0) Then
                 
                 'Do a little pre-processing to both strings.  In particular, we don't want trailing ellipses
-                ' or markers for hotkeys (typically _); we're only interested in the actual text
+                ' or colons, or markers for hotkeys (typically _); we're only interested in the text itself
                 If (InStr(1, msgID, ELLIPSIS, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, ELLIPSIS, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, msgID, ELLIPSIS_CHAR, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, ELLIPSIS_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, msgID, UNDERSCORE_CHAR, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, UNDERSCORE_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgID, COLON_CHAR, vbBinaryCompare) <> 0) Then msgID = Replace$(msgID, COLON_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
                 If (InStr(1, msgStr, ELLIPSIS, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, msgStr, ELLIPSIS_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, ELLIPSIS_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 If (InStr(1, msgStr, UNDERSCORE_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, UNDERSCORE_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                If (InStr(1, msgStr, COLON_CHAR, vbBinaryCompare) <> 0) Then msgStr = Replace$(msgStr, COLON_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
-                'For translations themselves, apply Unicode normalization.  Linux (and certain text editors) use
-                ' different normalize behavior from Windows, so characters may be in e.g. decomposed form while
-                ' Windows defaults to composed form.  This can cause PD to think strings are different when really
-                ' they are not.
+                'Finally, apply Unicode normalization.  Linux (and certain text editors) use different normalize
+                ' behavior from Windows, so characters may be in e.g. decomposed form while Windows defaults to
+                ' composed form.  This can cause PD to think strings are different when really they are not.
+                msgID = Strings.StringNormalize(msgID)
                 msgStr = Strings.StringNormalize(msgStr)
                 
                 'We want case-insensitive matching, so deliberately lcase all keys

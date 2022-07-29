@@ -829,3 +829,12 @@ DragDropFilesFailed:
     PDDebug.LogAction "WARNING!  VBHacks.GetDragDropFileListW() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
+
+'Return the minimum of three integer values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Min3Int(ByVal rR As Long, ByVal rG As Long, ByVal rB As Long) As Long
+    If (rR < rG) Then
+        If (rR < rB) Then Min3Int = rR Else Min3Int = rB
+    Else
+        If (rB < rG) Then Min3Int = rB Else Min3Int = rG
+    End If
+End Function

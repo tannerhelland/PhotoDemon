@@ -460,6 +460,82 @@ Public Function SplitIntegers(ByRef srcString As String, ByRef dstInts() As Long
     
 End Function
 
+'Given two strings, calculate the Levenshtein distance between the two.  Code translated from pseudocode given at Wikipedia:
+' https://en.wikipedia.org/wiki/Levenshtein_distance
+'
+'RETURNS: 0 for identical strings, otherwise a number representing how many single-character operations
+' (insert, delete, substitute) are required to convert the base string into the match string.  Low numbers
+' indicate two strings with similar construction, while two strings that mismatch in every position will
+' return a max distance value (the length of the longest input string).
+'
+'IMPORTANT NOTE: currently assumes a distance < 32k (which allows 2-byte table entries ); change d() to Long
+' if comparing strings with length > 32k.
+Public Function StringDistance(ByRef baseString As String, ByRef compareString As String, Optional ignoreCase As Boolean = True) As Long
+    
+    'Length of each string determines table size
+    Dim str1 As String, str2 As String
+    If ignoreCase Then
+        str1 = LCase$(baseString)
+        str2 = LCase$(compareString)
+    Else
+        str1 = baseString
+        str2 = compareString
+    End If
+    
+    Dim m As Long, n As Long
+    m = Len(str1)
+    n = Len(str2)
+    
+    'Short-circuit check for null-strings
+    If (m = 0) Or (n = 0) Then
+        If (m > n) Then StringDistance = m Else StringDistance = n
+        Exit Function
+    End If
+    
+    'Note that long is likely excessive here
+    Dim d() As Integer
+    ReDim d(0 To m, 0 To n) As Integer
+    
+    'Default values for init row/column are simply ascending scores representing an insertion
+    ' of each char against a null string.
+    Dim i As Long, j As Long
+    For i = 1 To m
+        d(i, 0) = i
+    Next i
+    
+    For j = 1 To n
+        d(0, j) = j
+    Next j
+    
+    'Populate table
+    For j = 1 To n
+    For i = 1 To m
+        
+        'VB uses [0] for false, [-1] for true, so we can avoid branching with a little arithmetic...
+        ' (the idea is that equality produces a -1 result, and we add one to get a 0 substitution cost;
+        ' a mismatch produces a 0 result, and we add one to get a 1 substitution cost).
+        Dim subCost As Long
+        subCost = Int(Mid$(str1, i, 1) = Mid$(str2, j, 1)) + 1
+        
+        'Store minimum of delete, insert, substitute op
+        d(i, j) = Min3Int(d(i - 1, j) + 1, d(i, j - 1) + 1, d(i - 1, j - 1) + subCost)
+        
+    Next i
+    Next j
+    
+    'Final distance is bottom-right corner of the table
+    StringDistance = d(m, n)
+    
+    'A few quick notes:
+    ' 1) You can walk the resulting array backward to produce the intermediate changes required to convert
+    ' [base] into [compare].
+    ' 2) If you don't care about the ability to do (1), you could rework this code to only store two lines
+    ' of comparisons - current and previous - and simply swap SafeArray headers between passes to avoid copying.
+    ' (PD does this in its pixel dithering code, for example - it's messy but works OK, even with compile-time
+    '  optimizations enabled.)
+    
+End Function
+
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
 ' into a VB string.
 '
