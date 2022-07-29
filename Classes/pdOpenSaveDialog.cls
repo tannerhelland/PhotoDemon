@@ -211,7 +211,7 @@ Friend Function GetOpenFileName(ByRef dstFilename As String, _
     ' as we can't simply "try again" without re-raising a modal dialog, so I'm hoping my current default
     ' buffer size is always sufficient.
     If (lReturn = 0) And (CommDlgExtendedError() = FNERR_BUFFERTOOSMALL) Then
-        PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error"
+        PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.", vbExclamation Or vbOKOnly, "Error"
         PDDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
     End If
     

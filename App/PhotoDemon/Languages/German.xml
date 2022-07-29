@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1682</langversion>
+<langversion>9.0.1683</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4073,7 +4073,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
 <translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation einkalkuliert. Bitte versuchen Sie es erneut mit einem kleineren Set an selektierten Bildern.</translation>
 </phrase>
 
@@ -4442,7 +4442,17 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <translation>Zuletzt-verwendete Einstellungen</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submit bug report or feedback</original>
+<translation>Bug-Bericht oder Feedback einreichen</translation>
+</phrase>
+
+<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5597,11 +5607,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Submit bug report or feedback</original>
-<translation>Bug-Bericht oder Feedback einreichen</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon forum</original>
 <translation>PhotoDemon - Forum</translation>
 </phrase>
@@ -5689,7 +5694,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 211 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7902,6 +7907,26 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>number of mirrors</original>
+<translation>Anzahl von Spiegeln</translation>
+</phrase>
+
+<phrase>
+<original>primary angle</original>
+<translation>Primärer Winkel</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster</translation>
+</phrase>
+
+<phrase>
+<original>center position (x, y)</original>
+<translation>Mittelposition (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary angle</original>
 <translation>Sekundärer Winkel</translation>
 </phrase>
@@ -7914,26 +7939,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>render emphasis</original>
 <translation>Render-Schwerpunkt</translation>
-</phrase>
-
-<phrase>
-<original>number of mirrors</original>
-<translation>Anzahl von Spiegeln</translation>
-</phrase>
-
-<phrase>
-<original>primary angle</original>
-<translation>Primärer Winkel</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster.</translation>
-</phrase>
-
-<phrase>
-<original>center position (x, y)</original>
-<translation>Mittelposition (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -8281,11 +8286,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>you can also set a center position by clicking the preview window</original>
-<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster</translation>
-</phrase>
-
-<phrase>
 <original>correction strength</original>
 <translation>Korrekturstärke</translation>
 </phrase>
@@ -8300,7 +8300,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bildverzerrung wird korrigiert</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -12886,11 +12886,6 @@ Um eine neue Übersetzung zu starten, laden Sie bitte eine neue Version von Phot
 </phrase>
 
 <phrase>
-<original>Master language file missing</original>
-<translation>Master-Sprachdatei fehlend</translation>
-</phrase>
-
-<phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
@@ -12999,7 +12994,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 <translation>(autom. gespeichert um/am %1)</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13925,10 +13920,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2634</phrasecount>
+<phrasecount>2633</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5507 phrases. -->
-<!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 11489 total words. -->
+<!-- As of this build, PhotoDemon contains 5509 phrases. -->
+<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
+<!-- These 2633 phrases contain approximately 11409 total words. -->
 
 </pdData>

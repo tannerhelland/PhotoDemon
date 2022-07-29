@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.5</langversion>
+<langversion>9.0b1373.6</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -4067,7 +4067,7 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
 <translation>选择的图像数量超出Windows允许的最大数，请重新选择。</translation>
 </phrase>
 
@@ -4436,7 +4436,17 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>最后使用的设置</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submit bug report or feedback</original>
+<translation>提交错误报告或反馈</translation>
+</phrase>
+
+<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5591,11 +5601,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Submit bug report or feedback</original>
-<translation>提交错误报告或反馈</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon forum</original>
 <translation>PhotoDemon论坛</translation>
 </phrase>
@@ -5682,7 +5687,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 211 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7896,6 +7901,26 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>number of mirrors</original>
+<translation>镜像的数量</translation>
+</phrase>
+
+<phrase>
+<original>primary angle</original>
+<translation>主角</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>您还可以通过单击预览窗口设置中心位置</translation>
+</phrase>
+
+<phrase>
+<original>center position (x, y)</original>
+<translation>中心位置（x，y）</translation>
+</phrase>
+
+<phrase>
 <original>secondary angle</original>
 <translation>二次角</translation>
 </phrase>
@@ -7908,26 +7933,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>render emphasis</original>
 <translation>渲染重点</translation>
-</phrase>
-
-<phrase>
-<original>number of mirrors</original>
-<translation>镜像的数量</translation>
-</phrase>
-
-<phrase>
-<original>primary angle</original>
-<translation>主角</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>注意：您还可以设置一个中心位置通过单击预览窗口。</translation>
-</phrase>
-
-<phrase>
-<original>center position (x, y)</original>
-<translation>中心位置（x，y）</translation>
 </phrase>
 
 <phrase>
@@ -8275,11 +8280,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>you can also set a center position by clicking the preview window</original>
-<translation>您还可以通过单击预览窗口设置中心位置</translation>
-</phrase>
-
-<phrase>
 <original>correction strength</original>
 <translation>校正强度</translation>
 </phrase>
@@ -8294,7 +8294,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>校正图像失真</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -12880,11 +12880,6 @@ To start a new translation, please download a fresh copy of PhotoDemon from phot
 </phrase>
 
 <phrase>
-<original>Master language file missing</original>
-<translation>主语言文件丢失</translation>
-</phrase>
-
-<phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
@@ -12993,7 +12988,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation></translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13917,10 +13912,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2634</phrasecount>
+<phrasecount>2633</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5507 phrases. -->
-<!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 11489 total words. -->
+<!-- As of this build, PhotoDemon contains 5509 phrases. -->
+<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
+<!-- These 2633 phrases contain approximately 11409 total words. -->
 
 </pdData>

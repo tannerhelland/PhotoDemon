@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1699</langversion>
+<langversion>8.9.1700</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -210,7 +210,7 @@
 
 <phrase>
 <original>Fill</original>
-<translation>Наслов </translation>
+<translation>Наслов</translation>
 </phrase>
 
 <phrase>
@@ -4064,7 +4064,7 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
 <translation>За жал, бројот на сликите што ги избраните надминува она што Windows' овозможува една операција оптоварување. Ве молиме обидете се со помала група на избрани слики.</translation>
 </phrase>
 
@@ -4433,7 +4433,17 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submit bug report or feedback</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5587,11 +5597,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Submit bug report or feedback</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon forum</original>
 <translation></translation>
 </phrase>
@@ -5679,7 +5684,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 211 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7892,6 +7897,26 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>number of mirrors</original>
+<translation>број на огледала</translation>
+</phrase>
+
+<phrase>
+<original>primary angle</original>
+<translation>примарната агол</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Забелешка: Можете исто така може да се постави позиција со кликнување на прозорецот за преглед.</translation>
+</phrase>
+
+<phrase>
+<original>center position (x, y)</original>
+<translation>централна позиција (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary angle</original>
 <translation>средно агол</translation>
 </phrase>
@@ -7904,26 +7929,6 @@ If сакате да ја спаси со друго име на датотек�
 <phrase>
 <original>render emphasis</original>
 <translation>даваат акцент</translation>
-</phrase>
-
-<phrase>
-<original>number of mirrors</original>
-<translation>број на огледала</translation>
-</phrase>
-
-<phrase>
-<original>primary angle</original>
-<translation>примарната агол</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Забелешка: Можете исто така може да се постави централна позиција со кликнување на прозорецот за преглед.</translation>
-</phrase>
-
-<phrase>
-<original>center position (x, y)</original>
-<translation>централна позиција (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -8271,11 +8276,6 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>you can also set a center position by clicking the preview window</original>
-<translation>Забелешка: Можете исто така може да се постави позиција со кликнување на прозорецот за преглед.</translation>
-</phrase>
-
-<phrase>
 <original>correction strength</original>
 <translation>Јачина на корекција</translation>
 </phrase>
@@ -8290,7 +8290,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Корекција на изобличувањето на сликата</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -9071,7 +9071,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>length</original>
-<translation>улица </translation>
+<translation>улица</translation>
 </phrase>
 
 <phrase>
@@ -12878,11 +12878,6 @@ To започне нов превод, ве молиме симнете свеж
 </phrase>
 
 <phrase>
-<original>Master language file missing</original>
-<translation>Господар датотека јазик недостасува</translation>
-</phrase>
-
-<phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
@@ -12991,7 +12986,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation></translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 44 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13913,10 +13908,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2634</phrasecount>
+<phrasecount>2633</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5507 phrases. -->
-<!-- 2873 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 11489 total words. -->
+<!-- As of this build, PhotoDemon contains 5509 phrases. -->
+<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
+<!-- These 2633 phrases contain approximately 11409 total words. -->
 
 </pdData>
