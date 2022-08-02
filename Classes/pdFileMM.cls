@@ -265,7 +265,7 @@ Friend Function FastDumpStreamToFile(ByRef srcStream As pdStream, ByRef dstFile 
             'Attempt the map, and if it fails, reduce chunk size to the nearest power of two.
             mapOK = Me.EnsureMapAvailable(dataWritten, writeSize, dstPtr)
             Do While (Not mapOK)
-                writeSize = PDMath.NearestPowerOfTwo(writeSize \ 2)
+                writeSize = NearestPowerOfTwo(writeSize \ 2)
                 If (writeSize <= 2) Then Exit Do
             Loop
             
@@ -379,6 +379,21 @@ Private Sub InternalError(ByRef functionName As String, ByRef errText As String,
     End If
     
 End Sub
+
+'Cheap and easy way to find the nearest power of two.  Note that you could also do this with logarithms
+' (or even bitshifts maybe?) but I haven't thought about it hard enough lol
+Private Function NearestPowerOfTwo(ByVal srcNumber As Long) As Long
+    
+    Dim curPower As Long
+    curPower = 1
+    
+    Do While (curPower < srcNumber)
+        curPower = curPower * 2
+    Loop
+    
+    NearestPowerOfTwo = curPower
+    
+End Function
 
 Private Sub ResetMapTrackers()
     If (m_MapAddress <> UNMAPPED_VIEW) Then m_FSO.FileUnmapView m_MapAddress
