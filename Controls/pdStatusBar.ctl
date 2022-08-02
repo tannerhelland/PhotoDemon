@@ -143,7 +143,7 @@ Begin VB.UserControl pdStatusBar
       _ExtentY        =   503
       Alignment       =   1
       BackColor       =   -2147483626
-      Caption         =   "(messages will appear here at run-time)"
+      Caption         =   ""
       FontSize        =   9
       UseCustomBackColor=   -1  'True
    End
