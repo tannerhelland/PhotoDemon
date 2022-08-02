@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1683</langversion>
+<langversion>9.0.1701</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4444,7 +4444,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation></translation>
+<translation>Dieser Button wird eine neue Issue-Seite in Ihrem Webbrowser öffnen. Sie benötigen einen GitHub-Account, um fortzufahren.</translation>
 </phrase>
 
 <phrase>
@@ -4745,11 +4745,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(Nachrichten werden bei Laufzeit hier erscheinen)</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Anpassen des Bildes auf dem Screen</translation>
 </phrase>
@@ -4774,7 +4769,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <translation>Die links von dieser Box angezeigte Bildgrößeneinheit ändern</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -12712,8 +12707,23 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>UI elements</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
 <translation>Übersetzung durch Referenztext ersetzen (Strg+U)</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>Liste der Phrasen (%1 Items)</translation>
+</phrase>
+
+<phrase>
+<original>phrase groups</original>
+<translation>Phrasengruppen</translation>
 </phrase>
 
 <phrase>
@@ -12732,16 +12742,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>phrase groups</original>
-<translation>Phrasengruppen</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>Liste der Phrasen (%1 Items)</translation>
-</phrase>
-
-<phrase>
 <original>Auto-translate all missing phrases</original>
 <translation>Alle fehlenden Phrasen automatisch übersetzen</translation>
 </phrase>
@@ -12754,6 +12754,41 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
 <translation>(HINWEIS: STRG+ENTER speichert automatisch und fährt mit nächster Phrase fort.)</translation>
+</phrase>
+
+<phrase>
+<original>phrase types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>action names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>message boxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status bar messages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tooltips</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>files where this phrase occurs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miscellaneous</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12994,7 +13029,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 <translation>(autom. gespeichert um/am %1)</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13918,12 +13953,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- Automatic text extraction complete. -->
+<!-- Automatic text generation complete. -->
 
-<phrasecount>2633</phrasecount>
+<phrasecount>2640</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5509 phrases. -->
-<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
-<!-- These 2633 phrases contain approximately 11409 total words. -->
+<!-- As of this build, PhotoDemon contains 5515 phrases. -->
+<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11421 total words. -->
 
 </pdData>

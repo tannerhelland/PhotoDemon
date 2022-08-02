@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.3</langversion>
+<langversion>9.0.4</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -4745,11 +4745,6 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(mensajes aparecerán aquí en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Colocar la imagen en la pantalla</translation>
 </phrase>
@@ -4774,7 +4769,7 @@ El valor final debe estar entre %3 y %4.</translation>
 <translation>Cambie la unidad de tamaño de la imagen que aparece a la izquierda de este cuadro</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -12714,8 +12709,23 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>UI elements</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
 <translation>sustituir la traducción por el texto de referencia (Ctrl+U)</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>lista de frases (%1 elementos)</translation>
+</phrase>
+
+<phrase>
+<original>phrase groups</original>
+<translation>grupos de frases</translation>
 </phrase>
 
 <phrase>
@@ -12734,16 +12744,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>phrase groups</original>
-<translation>grupos de frases</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>lista de frases (%1 elementos)</translation>
-</phrase>
-
-<phrase>
 <original>Auto-translate all missing phrases</original>
 <translation>Traducir automáticamente todas las frases que faltan</translation>
 </phrase>
@@ -12756,6 +12756,41 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
 <translation>(NOTA: CTRL+ENTER guarda automáticamente y pasa a la siguiente frase)</translation>
+</phrase>
+
+<phrase>
+<original>phrase types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>action names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>message boxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status bar messages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tooltips</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>files where this phrase occurs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miscellaneous</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12996,7 +13031,7 @@ Para continuar, descargue una copia nueva de PhotoDemon desde photodemon.org.</t
 <translation>(autoguardado en %1)</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13920,12 +13955,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- Automatic text extraction complete. -->
+<!-- Automatic text generation complete. -->
 
-<phrasecount>2633</phrasecount>
+<phrasecount>2640</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5509 phrases. -->
-<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
-<!-- These 2633 phrases contain approximately 11409 total words. -->
+<!-- As of this build, PhotoDemon contains 5515 phrases. -->
+<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11421 total words. -->
 
 </pdData>

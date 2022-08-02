@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.6</langversion>
+<langversion>9.0b1373.7</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -4739,11 +4739,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>（在运行时出现消息）</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>适合图像到屏幕</translation>
 </phrase>
@@ -4768,7 +4763,7 @@ The final value must be between %3 and %4.</original>
 <translation>将图像大小单位显示为左边框的值</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -12708,7 +12703,22 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>UI elements</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>总项目数(%1)</translation>
+</phrase>
+
+<phrase>
+<original>phrase groups</original>
 <translation></translation>
 </phrase>
 
@@ -12728,16 +12738,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>phrase groups</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>总项目数(%1)</translation>
-</phrase>
-
-<phrase>
 <original>Auto-translate all missing phrases</original>
 <translation></translation>
 </phrase>
@@ -12749,6 +12749,41 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>phrase types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>action names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>message boxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status bar messages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tooltips</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>files where this phrase occurs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miscellaneous</original>
 <translation></translation>
 </phrase>
 
@@ -12988,7 +13023,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation></translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 101 phrases. 45 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13910,12 +13945,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- Automatic text extraction complete. -->
+<!-- Automatic text generation complete. -->
 
-<phrasecount>2633</phrasecount>
+<phrasecount>2640</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5509 phrases. -->
-<!-- 2876 are duplicates, so only 2633 unique phrases have been written to file. -->
-<!-- These 2633 phrases contain approximately 11409 total words. -->
+<!-- As of this build, PhotoDemon contains 5515 phrases. -->
+<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11421 total words. -->
 
 </pdData>

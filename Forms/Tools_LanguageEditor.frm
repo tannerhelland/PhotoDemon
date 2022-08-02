@@ -87,6 +87,27 @@ Begin VB.Form FormLanguageEditor
       Width           =   11910
       _ExtentX        =   21008
       _ExtentY        =   13150
+      Begin PhotoDemon.pdLabel lblPhraseWhere 
+         Height          =   330
+         Left            =   5040
+         Top             =   4440
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   794
+         Caption         =   ""
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   0
+         Left            =   120
+         TabIndex        =   28
+         Top             =   5520
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "UI elements"
+      End
       Begin PhotoDemon.pdButton cmdUseReference 
          Height          =   495
          Left            =   5280
@@ -98,32 +119,34 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "replace translation with reference text (Ctrl+U)"
       End
       Begin PhotoDemon.pdTextBox txtReference 
-         Height          =   735
+         Height          =   495
          Left            =   5040
          TabIndex        =   19
-         Top             =   4920
+         Top             =   5160
          Width           =   6615
          _ExtentX        =   11668
-         _ExtentY        =   1296
+         _ExtentY        =   873
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdListBox lstPhrases 
-         Height          =   5295
-         Left            =   240
+         Height          =   4095
+         Left            =   0
          TabIndex        =   6
-         Top             =   1320
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   9340
+         Top             =   960
+         Width           =   4695
+         _ExtentX        =   8281
+         _ExtentY        =   7223
+         Caption         =   "list of phrases (%1 items)"
       End
       Begin PhotoDemon.pdDropDown cboPhraseFilter 
-         Height          =   375
-         Left            =   240
+         Height          =   735
+         Left            =   0
          TabIndex        =   9
-         Top             =   360
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   661
+         Top             =   0
+         Width           =   4695
+         _ExtentX        =   8281
+         _ExtentY        =   1296
+         Caption         =   "phrase groups"
       End
       Begin PhotoDemon.pdButton cmdNextPhrase 
          Height          =   615
@@ -136,17 +159,17 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "Save this translation and proceed to the next phrase"
       End
       Begin PhotoDemon.pdTextBox txtTranslation 
-         Height          =   1845
+         Height          =   1605
          Left            =   5040
          TabIndex        =   5
-         Top             =   2640
+         Top             =   2400
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   3254
          Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdTextBox txtOriginal 
-         Height          =   1875
+         Height          =   1635
          Left            =   5040
          TabIndex        =   7
          Top             =   360
@@ -158,7 +181,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdLabel lblTranslatedPhrase 
          Height          =   285
          Left            =   4920
-         Top             =   2280
+         Top             =   2040
          Width           =   6735
          _ExtentX        =   11880
          _ExtentY        =   503
@@ -178,29 +201,6 @@ Begin VB.Form FormLanguageEditor
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   0
-         Width           =   4785
-         _ExtentX        =   8440
-         _ExtentY        =   503
-         Caption         =   "phrase groups"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPhraseBox 
-         Height          =   285
-         Left            =   0
-         Top             =   840
-         Width           =   4785
-         _ExtentX        =   8440
-         _ExtentY        =   503
-         Caption         =   "list of phrases (%1 items)"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
       Begin PhotoDemon.pdButton cmdAutoTranslate 
          Height          =   615
          Left            =   240
@@ -215,7 +215,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   11
          Left            =   4920
-         Top             =   4560
+         Top             =   4800
          Width           =   6705
          _ExtentX        =   11827
          _ExtentY        =   503
@@ -233,6 +233,85 @@ Begin VB.Form FormLanguageEditor
          _ExtentY        =   503
          Caption         =   "(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)"
          ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   5160
+         Width           =   4785
+         _ExtentX        =   11827
+         _ExtentY        =   503
+         Caption         =   "phrase types"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   1
+         Left            =   120
+         TabIndex        =   29
+         Top             =   5880
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "action names"
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   2
+         Left            =   120
+         TabIndex        =   30
+         Top             =   6240
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "message boxes"
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   3
+         Left            =   2520
+         TabIndex        =   31
+         Top             =   5520
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "status bar messages"
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   4
+         Left            =   2520
+         TabIndex        =   32
+         Top             =   5880
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "tooltips"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   12
+         Left            =   4920
+         Top             =   4080
+         Width           =   6705
+         _ExtentX        =   11827
+         _ExtentY        =   503
+         Caption         =   "files where this phrase occurs:"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdCheckBox chkPhraseTypes 
+         Height          =   300
+         Index           =   5
+         Left            =   2520
+         TabIndex        =   33
+         Top             =   6240
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "miscellaneous"
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -581,13 +660,36 @@ Private m_listOfLanguages() As PDLanguageFile
 'The language currently being edited.
 Private m_curLanguage As PDLanguageFile
 
+'As of v9.0, PD's auto-localizer creates a mini database of info about each phrase in the app.  We can group
+' phrases according to this criteria, or see where they appear in PD.
+Private Enum PD_PhraseType
+    pt_UIElement = 1
+    pt_ActionName = 2
+    pt_MsgBox = 4
+    pt_StatusBar = 8
+    pt_Tooltip = 16
+    pt_Miscellaneous = 32
+End Enum
+
+#If False Then
+    Private Const pt_UIElement = 1, pt_ActionName = 2, pt_MsgBox = 4, pt_StatusBar = 8, pt_Tooltip = 16, pt_Miscellaneous = 32
+#End If
+
+Private m_phraseDBOK As Boolean
+
 'All phrases from the existing language file
 Private Type PD_Phrase
     txtOriginal As String
     txtTranslation As String
     txtForListBox As String
+    occursInFiles As String
+    phraseType As PD_PhraseType
 End Type
 Private m_numOfPhrases As Long, m_Phrases() As PD_Phrase
+
+'For faster mapping between phrase indices in the primary array, and whatever arbitrary indices the current
+' list box of phrases is using, we use a hash table.
+Private m_PhraseHash As pdStringHash
 
 'The current wizard page
 Private m_wizardPage As Long
@@ -616,60 +718,11 @@ Private m_ReferencePO As pdStringHash
 ' "only untranslated phrases").  Available options vary according to user settings; for example, phrases matching
 ' a reference PO are only available if a reference PO file was supplied.
 Private Sub cboPhraseFilter_Click()
+    UpdateCurrentPhraseList
+End Sub
 
-    lstPhrases.Clear
-    lstPhrases.SetAutomaticRedraws False
-    
-    Dim i As Long
-                
-    Select Case cboPhraseFilter.ListIndex
-    
-        'All phrases
-        Case 0
-            For i = 0 To m_numOfPhrases - 1
-                lstPhrases.AddItem m_Phrases(i).txtForListBox
-            Next i
-        
-        'Translated phrases
-        Case 1
-            For i = 0 To m_numOfPhrases - 1
-                If (LenB(m_Phrases(i).txtTranslation) <> 0) Then
-                    lstPhrases.AddItem m_Phrases(i).txtForListBox
-                End If
-            Next i
-        
-        'Untranslated phrases
-        Case 2
-            For i = 0 To m_numOfPhrases - 1
-                If (LenB(m_Phrases(i).txtTranslation) = 0) Then
-                    lstPhrases.AddItem m_Phrases(i).txtForListBox
-                End If
-            Next i
-            
-        '(Optional) phrases that don't match the supplied reference .po
-        Case 3
-            If (Not m_ReferencePO Is Nothing) Then
-                If (m_ReferencePO.GetNumOfItems > 0) Then
-                    
-                    Dim tmpString As String
-                    
-                    For i = 0 To m_numOfPhrases - 1
-                        If m_ReferencePO.GetItemByKey(LCase$(m_Phrases(i).txtOriginal), tmpString) Then
-                            If Strings.StringsNotEqual(Trim$(tmpString), Trim$(m_Phrases(i).txtTranslation), True) Then
-                                lstPhrases.AddItem m_Phrases(i).txtForListBox
-                            End If
-                        End If
-                    Next i
-                    
-                End If
-            End If
-    
-    End Select
-                
-    'Redraw the listbox *now*
-    lstPhrases.SetAutomaticRedraws True, True
-    UpdatePhraseBoxTitle
-    
+Private Sub chkPhraseTypes_Click(Index As Integer)
+    UpdateCurrentPhraseList
 End Sub
 
 'Locale can be pulled from the OS; useful for users creating a new language, so they don't have to look up
@@ -954,6 +1007,8 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     Dim unloadFormNow As Boolean
     unloadFormNow = False
     
+    Dim i As Long
+    
     'To minimize localization requirements of this tool, some text is handled via pdString objects to avoid it
     ' being marked for localization.
     Dim cString As pdString
@@ -1019,6 +1074,75 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                     Unload Me
                 End If
             
+            End If
+            
+            'Regardless of which type of language file is being edited, load the mini phrase database
+            ' (with info on where each phrase appears).
+            m_phraseDBOK = False
+            
+            Dim dbFilePath As String
+            dbFilePath = UserPrefs.GetLanguagePath & "Master\Phrases.db"
+            
+            If Files.FileExists(dbFilePath) Then
+                
+                'Deletion of existing files isn't necessary; the file will be auto-trimmed at the end
+                Dim cStream As pdStream: Set cStream = New pdStream
+                If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, dbFilePath) Then
+                    
+                    'Quick validation
+                    Const PHRASE_DB_ID As String = "pdPhraseDB"
+                    If (cStream.ReadString_ASCII(Len(PHRASE_DB_ID)) = PHRASE_DB_ID) Then
+                        
+                        'Future-proofing against format changes
+                        Const PHRASE_DB_VERSION As Long = 1
+                        If (cStream.ReadLong() = PHRASE_DB_VERSION) Then
+                            
+                            'Minimal sanity checks
+                            Dim numPhrasesInDB As Long
+                            numPhrasesInDB = cStream.ReadLong()
+                            If (numPhrasesInDB > 0) Then
+                                
+                                m_phraseDBOK = True
+                                
+                                For i = 0 To numPhrasesInDB - 1
+                                    
+                                    'Pull phrase type
+                                    Dim tmpPhraseType As PD_PhraseType
+                                    tmpPhraseType = cStream.ReadByte()
+                                    
+                                    'Pull original phrase
+                                    Dim lenThisPhrase As Long, tmpString As String, strTmpIdx As String
+                                    lenThisPhrase = cStream.ReadIntUnsigned()
+                                    tmpString = cStream.ReadString_UTF8(lenThisPhrase)
+                                    
+                                    'Replace line-breaks (if any), and use that to retrieve an index into the already-created
+                                    ' main phrase collection array.
+                                    If (InStr(1, tmpString, vbCr, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbCr, vbNullString, 1, -1, vbBinaryCompare)
+                                    If (InStr(1, tmpString, vbLf, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbLf, vbNullString, 1, -1, vbBinaryCompare)
+                                    
+                                    If m_PhraseHash.GetItemByKey(tmpString, strTmpIdx) Then
+                                        
+                                        With m_Phrases(Val(strTmpIdx))
+                                            .phraseType = tmpPhraseType
+                                            lenThisPhrase = cStream.ReadIntUnsigned()
+                                            .occursInFiles = cStream.ReadString_UTF8(lenThisPhrase)
+                                        End With
+                                        
+                                    '/Else just means this en-US phrase doesn't exist in this language file; ignore it!
+                                    End If
+                                
+                                Next i
+                                
+                            End If
+                        
+                        End If
+                        
+                    End If
+                        
+                End If
+                
+                Set cStream = Nothing
+                
             End If
             
             'Reset the mouse pointer
@@ -1165,7 +1289,6 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     End Select
     
     'Hide all inactive panels (and show the active one)
-    Dim i As Long
     For i = 0 To picContainer.Count - 1
         picContainer(i).Visible = (i = m_wizardPage)
     Next i
@@ -1283,6 +1406,7 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
     LoadAllPhrasesFromFile = False
     
     Set m_XMLEngine = New pdXML
+    Set m_PhraseHash = New pdStringHash
     
     'Attempt to load the language file
     If m_XMLEngine.LoadXMLFile(srcLangFile) Then
@@ -1303,6 +1427,7 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                 
                 Dim i As Long
                 For i = 0 To m_numOfPhrases - 1
+                
                     tmpString = m_XMLEngine.GetUniqueTag_String("original", vbNullString, phraseLocations(i))
                     m_Phrases(i).txtOriginal = tmpString
                     m_Phrases(i).txtTranslation = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocations(i) + Len(tmpString))
@@ -1312,6 +1437,9 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                     If (InStr(1, tmpString, vbCr, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbCr, vbNullString, 1, -1, vbBinaryCompare)
                     If (InStr(1, tmpString, vbLf, vbBinaryCompare) > 0) Then tmpString = Replace(tmpString, vbLf, vbNullString, 1, -1, vbBinaryCompare)
                     m_Phrases(i).txtForListBox = tmpString
+                    
+                    'Map the phrase itself to its array location in a fast hash table
+                    m_PhraseHash.AddItem tmpString, Trim$(Str$(i))
                     
                 Next i
                 
@@ -1336,17 +1464,24 @@ End Sub
 'When the phrase box is clicked, display the original and translated (if available) text in the right-hand text boxes
 Private Sub lstPhrases_Click()
     
-    Dim origText As String
-    origText = m_Phrases(GetPhraseIndexFromListIndex()).txtOriginal
+    'Map the current listbox position to an index in the central phrase array
+    Dim idxPhrase As Long
+    idxPhrase = GetPhraseIndexFromListIndex()
     
+    'Display original en-US text
+    Dim origText As String
+    origText = m_Phrases(idxPhrase).txtOriginal
     txtOriginal.Text = origText
+    
+    'Show file(s) where this phrase occurs
+    If (LenB(m_Phrases(idxPhrase).occursInFiles) <> 0) Then lblPhraseWhere.Caption = m_Phrases(idxPhrase).occursInFiles
     
     'If a translation exists for this phrase, load it.  If it does not, and we have an online service available,
     ' query that online service for a translation.
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
-    If (LenB(m_Phrases(GetPhraseIndexFromListIndex()).txtTranslation) <> 0) Then
-        txtTranslation.Text = m_Phrases(GetPhraseIndexFromListIndex()).txtTranslation
+    If (LenB(m_Phrases(idxPhrase).txtTranslation) <> 0) Then
+        txtTranslation.Text = m_Phrases(idxPhrase).txtTranslation
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved)")
     Else
     
@@ -1387,7 +1522,6 @@ Private Sub lstPhrases_Click()
         End If
         
     End If
-    
         
 End Sub
 
@@ -1399,7 +1533,7 @@ End Sub
 Private Sub UpdatePhraseBoxTitle()
     Dim numPhrasesDisplay As Long
     If (lstPhrases.ListCount > 0) Then numPhrasesDisplay = lstPhrases.ListCount - 1 Else numPhrasesDisplay = 0
-    lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", numPhrasesDisplay)
+    lstPhrases.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", numPhrasesDisplay)
 End Sub
 
 'Call this function whenever we want the in-memory XML data saved to an autosave file
@@ -1539,13 +1673,12 @@ Private Function GetLanguageIndexFromListIndex() As Long
 End Function
 
 Private Function GetPhraseIndexFromListIndex() As Long
-    Dim i As Long
-    For i = LBound(m_Phrases) To UBound(m_Phrases)
-        If Strings.StringsEqual(lstPhrases.List(lstPhrases.ListIndex), m_Phrases(i).txtForListBox) Then
-            GetPhraseIndexFromListIndex = i
-            Exit For
-        End If
-    Next i
+    Dim strTmp As String
+    If m_PhraseHash.GetItemByKey(lstPhrases.List(lstPhrases.ListIndex), strTmp) Then
+        GetPhraseIndexFromListIndex = Val(strTmp)
+    Else
+        GetPhraseIndexFromListIndex = 0
+    End If
 End Function
 
 'On Win 7+, we attempt to automatically handle titlecase of translated text.
@@ -1689,6 +1822,75 @@ End Sub
 
 Private Sub txtTranslation_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     preventFurtherHandling = m_inKeyEvent
+End Sub
+
+'Update the current list of phrases.  The user can toggle many category and phrase property settings, all of which
+' affect the active list box.
+Private Sub UpdateCurrentPhraseList()
+
+    lstPhrases.SetAutomaticRedraws False
+    lstPhrases.Clear
+    
+    Dim i As Long
+    
+    'If the phrase DB loaded OK, we'll use it to further refine the phrase list
+    Dim phraseFlags As Long
+    If m_phraseDBOK Then
+        For i = 0 To chkPhraseTypes.UBound
+            If chkPhraseTypes(i).Value Then phraseFlags = phraseFlags Or (2 ^ i)
+        Next i
+    Else
+        phraseFlags = &H8FFFFFFF
+    End If
+    
+    Select Case cboPhraseFilter.ListIndex
+    
+        'All phrases
+        Case 0
+            For i = 0 To m_numOfPhrases - 1
+                If ((m_Phrases(i).phraseType And phraseFlags) <> 0) Then lstPhrases.AddItem m_Phrases(i).txtForListBox
+            Next i
+        
+        'Translated phrases
+        Case 1
+            For i = 0 To m_numOfPhrases - 1
+                If (LenB(m_Phrases(i).txtTranslation) <> 0) Then
+                    If ((m_Phrases(i).phraseType And phraseFlags) <> 0) Then lstPhrases.AddItem m_Phrases(i).txtForListBox
+                End If
+            Next i
+        
+        'Untranslated phrases
+        Case 2
+            For i = 0 To m_numOfPhrases - 1
+                If (LenB(m_Phrases(i).txtTranslation) = 0) Then
+                    If ((m_Phrases(i).phraseType And phraseFlags) <> 0) Then lstPhrases.AddItem m_Phrases(i).txtForListBox
+                End If
+            Next i
+            
+        '(Optional) phrases that don't match the supplied reference .po
+        Case 3
+            If (Not m_ReferencePO Is Nothing) Then
+                If (m_ReferencePO.GetNumOfItems > 0) Then
+                    
+                    Dim tmpString As String
+                    
+                    For i = 0 To m_numOfPhrases - 1
+                        If m_ReferencePO.GetItemByKey(LCase$(m_Phrases(i).txtOriginal), tmpString) Then
+                            If Strings.StringsNotEqual(Trim$(tmpString), Trim$(m_Phrases(i).txtTranslation), True) Then
+                                If ((m_Phrases(i).phraseType And phraseFlags) <> 0) Then lstPhrases.AddItem m_Phrases(i).txtForListBox
+                            End If
+                        End If
+                    Next i
+                    
+                End If
+            End If
+    
+    End Select
+                
+    'Redraw the listbox *now*
+    lstPhrases.SetAutomaticRedraws True, True
+    UpdatePhraseBoxTitle
+    
 End Sub
 
 'Call this to save any relevant form-level data to the prefs file (current includes the user's DeepL API key
