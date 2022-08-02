@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon List Box support class
 'Copyright 2015-2022 by Tanner Helland
 'Created: 22/December/15
-'Last updated: 18/February/16
-'Last update: continued integration with pdListBoxView
+'Last updated: 02/August/22
+'Last update: fix PgDn keypress increment calculation
 '
 'PD makes use of a lot of custom-drawn list boxes.  To simplify these, I've tried to move a bunch of list-box-agnostic
 ' code elements into this class, elements that can then be reused by individual boxes.  This can be somewhat confusing,
@@ -592,7 +592,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         Case VK_PAGEDOWN
             If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_DD) Then
-                newListIndex = m_LastRenderIndex + 1
+                newListIndex = newListIndex + (m_LastRenderIndex - m_FirstRenderIndex)
             Else
                 newListIndex = newListIndex + 1
             End If
@@ -600,7 +600,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         Case VK_PAGEUP
             If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_DD) Then
-                newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
+                newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex)
             Else
                 newListIndex = newListIndex - 1
             End If
