@@ -42,12 +42,12 @@ Complex editing actions can be recorded as macros (similar to Office software). 
 Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), and all major camera RAW formats
-* Color-managed workflow, including full support for embedded ICC profiles
+* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), GIMP (XCF), and all major camera RAW formats
 * Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
+* Color-managed workflow, including full support for embedded ICC profiles
 * On-canvas tools: digital paintbrushes, clone and pattern brushes, interactive gradients, and more
 * Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, and many more
-* Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, green screen, lens diffraction, vignetting, and many more
+* Filters and effects: perspective correction, edge detection, noise removal, content-aware fill, unsharp masking, green screen, distortion correction, and many more
 * More than 200 tools are provided in the current build.
 
 ### Limitations
@@ -74,6 +74,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Comprehensive import support for [Symbian (mbm, aif) images](https://en.wikipedia.org/wiki/MBM_(file_format))
 - All-new [GIF import and export engines](https://github.com/tannerhelland/PhotoDemon/commit/cfee72e569721a71efe4a5bc8b8858a5f8501517), including a new [best-in-class GIF optimizer](https://github.com/tannerhelland/PhotoDemon/commit/aaab70c06a0697b56d0336e22477782b9af59093).
 - New [neural-network color quantizer](https://github.com/tannerhelland/PhotoDemon/commit/fc27cfc6a5ce7ab42a7d929e80e220281c818bb6) for maximum-quality results when saving to 256-color image formats, like GIF or web-optimized PNGs.  (The new quantizer is also directly accessible from the `Effects > Stylize > Palettize` tool.)
+- [Safe overwrite behavior](https://github.com/tannerhelland/PhotoDemon/commit/18a6a152f0923ab0ad737e6f46ea54e6aa28b1b7) has now been extended to *all* file format exporters.
 
 ### Effects
 
@@ -83,12 +84,14 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - New [`Effects > Render > Truchet Tiles` tool](https://github.com/tannerhelland/PhotoDemon/pull/358)
 - New `Effects > Animation menu`, including new [Foreground and Background effects](https://github.com/tannerhelland/PhotoDemon/commit/06a4f1df3a5231eb0cac17dd7f426a049e44f7e7) (for automatically applying a background or foreground to an animated image) and an [Animation speed effect](https://github.com/tannerhelland/PhotoDemon/pull/400) (for changing an animation's playback speed)
 - New [`Effects > Edge > Gradient flow`](https://github.com/tannerhelland/PhotoDemon/commit/f7e28487c087f1483dac435290ab3c30f7c18ac0) tool
-- Greatly improved `Effects > Transform > Perspective` tool, with new live preview support and precise control over all corner coordinates.
+- Greatly improved `Effects > Transform > Perspective` tool, with new live preview support and precision control for corner coordinates.
 - Greatly improved and accelerated [`Effects > Artistic > Stained Glass`](https://github.com/tannerhelland/PhotoDemon/commit/02f60a5c6807cec763fcfb7628332b9b6de897f2) and [`Effects > Pixelate > Crystallize`](https://github.com/tannerhelland/PhotoDemon/commit/ac2772d145a30b5e1a4bccd334c642062f63708c) tools
 
 ### Adjustments
 
-- New [`Adjustments > Color > Color lookup`](https://github.com/tannerhelland/PhotoDemon/commit/5739253c850fbeb86af85f2ba4020da0ce1262d7) tool, with built-in support for [all 3D LUT formats that ship with Photoshop](https://helpx.adobe.com/photoshop/how-to/edit-photo-color-lookup-adjustment.html) (cube, look, 3dl) and [high-performance tetrahedral interpolation](https://www.nvidia.com/content/GTC/posters/2010/V01-Real-Time-Color-Space-Conversion-for-High-Resolution-Video.pdf) for best-in-class quality  
+- New [`Adjustments > Color > Color lookup`](https://github.com/tannerhelland/PhotoDemon/commit/5739253c850fbeb86af85f2ba4020da0ce1262d7) tool, with built-in support for [all 3D LUT formats that ship with Photoshop](https://helpx.adobe.com/photoshop/how-to/edit-photo-color-lookup-adjustment.html) (cube, look, 3dl) and [high-performance tetrahedral interpolation](https://www.nvidia.com/content/GTC/posters/2010/V01-Real-Time-Color-Space-Conversion-for-High-Resolution-Video.pdf) for best-in-class quality
+- All photo adjustments (in any combination) can now be exported to [standalone 3D LUT files](https://github.com/tannerhelland/PhotoDemon/pull/415), enabling use of your favorite PhotoDemon adjustments in other software
+- PhotoDemon now ships with [a default set of public-domain 3D LUTs](https://github.com/tannerhelland/PhotoDemon/commit/6b769ea70b134fc1190d98f7272aedb6b7dcc510)
 - New [`Adjustments > Lighting > Dehaze` tool](https://github.com/tannerhelland/PhotoDemon/commit/dde19d0c6e45b41f9c0d88d6d7c62a4651595836)
 - Overhauled [`Adjustments > Curves` tool](https://github.com/tannerhelland/PhotoDemon/commit/989f861d8cf4b32e5a49c10cc87c094cc7f38b33), with improved performance and a new UI
 - Completely redesigned [`Adjustments > Color > Photo filter`](https://github.com/tannerhelland/PhotoDemon/commit/f142633977c1eed9f627f6ab6ab84053960914a1) tool, to better match the identical tool in Photoshop 
@@ -111,11 +114,12 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ### User interface 
 
-- A [new toolpanel design](https://github.com/tannerhelland/PhotoDemon/commit/471070d3b01b44261ba2289dc32095a9346990a0) takes up less space than ever before, while still providing one-click access to all of PhotoDemon's advanced on-canvas tool features.  (This also enables PhotoDemon to successfully work all the way down to 1024x768 screen resolutions - a rare case of supporting even *older* hardware than previous versions of the app!)
+- A [new compact toolpanel design](https://github.com/tannerhelland/PhotoDemon/commit/471070d3b01b44261ba2289dc32095a9346990a0) takes up less on-screen space, while still providing one-click access to all of PhotoDemon's advanced on-canvas tool features.  (This also enables PhotoDemon to successfully work all the way down to 1024x768 screen resolutions - a rare case of supporting even *older* hardware than previous versions of the app!)
 - Adjustment and Effect dialogs are no longer fixed-size - [you can resize every last one of them at run-time](https://github.com/tannerhelland/PhotoDemon/commit/ab5363a885aec5529a81c28255defe77a516b285)!
 - Adjustment and Effect tools now have [built-in Undo/Redo on each dialog](https://github.com/tannerhelland/PhotoDemon/commit/9d7adda0ab158f00d2f0ac393bc19ef800b31b30)
-- [Faster app startup time](https://github.com/tannerhelland/PhotoDemon/commit/a56af482d262f6dab1ff016f111a0e909d9bfb98), particularly on Windows 10
+- [Faster app startup time](https://github.com/tannerhelland/PhotoDemon/commit/a56af482d262f6dab1ff016f111a0e909d9bfb98), particularly on Windows 10 and 11
 - PhotoDemon can now [automatically restore your previous session](https://github.com/tannerhelland/PhotoDemon/commit/735ba00b2f8da59356fab95c8486cda54b915939) if a system reboot interrupts your work.
+- [Improved localization tools](https://github.com/tannerhelland/PhotoDemon/commit/e91936f0a900f2ed5b8513bf046bdfedb0ff0897), including [automated matching against other open-source translations](https://github.com/tannerhelland/PhotoDemon/commit/f0b26251d397de5263ee065d423bbd3989b77629), provide a significantly improved experience for non-EN-US locales.
 - [Improved clipboard support](https://github.com/tannerhelland/PhotoDemon/commit/84f84be77b7a1f52cb1151eeef8e5df1bbec5fad) when copy/pasting to/from Google Chrome
 - New [background image compressor](https://github.com/tannerhelland/PhotoDemon/commit/dbac890b93ec10b36fd2e63aecf96d5e92904c6f) greatly reduces memory usage when working with multiple images at once
 - Similarly, a new [run-time resource minimizer](https://github.com/tannerhelland/PhotoDemon/commit/f00f0a81bf9f8fbff0a2c125b774884111de82e3) specifically designed for UI elements makes PhotoDemon - already among the lightest photo editors - even lighter on system resources.
