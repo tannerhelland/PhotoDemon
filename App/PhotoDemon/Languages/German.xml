@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1701</langversion>
+<langversion>9.0.1705</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11380,7 +11380,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem es stattdessen leere Rahmungen oder Cropping verwendet.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann es zu unerwünschten Dehnungen kommen. PhotoDemon kann dies vermeiden, indem es stattdessen leere Rahmungen oder Cropping verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -12708,7 +12708,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>UI-Elemente</translation>
 </phrase>
 
 <phrase>
@@ -12758,37 +12758,37 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>Phrasentypen</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>Aktionsnamen</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>Nachrichtenfelder</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>Statusleiste-Nachrichten</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>Tooltips</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>Dateien, in denen diese Phrase vorkommt</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>Verschiedenes</translation>
 </phrase>
 
 <phrase>
@@ -13859,7 +13859,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>an AVIF image</original>
-<translation>einem AVIF-Bild</translation>
+<translation>Einem AVIF-Bild</translation>
 </phrase>
 
 <phrase>
