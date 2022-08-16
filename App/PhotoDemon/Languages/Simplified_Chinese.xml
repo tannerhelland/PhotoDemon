@@ -4438,7 +4438,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation></translation>
+<translation>这个按钮将在你的网页浏览器中打开一个新的问题页面。  你将需要一个GitHub账户来继续。</translation>
 </phrase>
 
 <phrase>
@@ -12699,17 +12699,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation></translation>
+<translation>点击这里查看详细说明（英文）</translation>
 </phrase>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>UI元素</translation>
 </phrase>
 
 <phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
-<translation></translation>
+<translation>用参考文本替换翻译（Ctrl+U）。</translation>
 </phrase>
 
 <phrase>
@@ -12719,7 +12719,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>短语组</translation>
 </phrase>
 
 <phrase>
@@ -12739,62 +12739,62 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>自动翻译所有缺失的短语</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation></translation>
+<translation>参考译文来自.po文件</translation>
 </phrase>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation></translation>
+<translation>(注意：CTRL+ENTER自动保存并进入下一乐句)。</translation>
 </phrase>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>短语类型</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>行动名称</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>信息框</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>状态栏信息</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>工具提示</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>出现这句话的文件</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>杂项</translation>
 </phrase>
 
 <phrase>
 <original>copy system locale</original>
-<translation></translation>
+<translation>复制系统定位</translation>
 </phrase>
 
 <phrase>
 <original>official ISO language codes at Wikipedia</original>
-<translation></translation>
+<translation>维基百科上的ISO官方语言代码</translation>
 </phrase>
 
 <phrase>
@@ -12804,12 +12804,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>language status</original>
-<translation></translation>
+<translation>语言状况</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation></translation>
+<translation>语言版本</translation>
 </phrase>
 
 <phrase>
@@ -12819,52 +12819,52 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>language and country ID</original>
-<translation></translation>
+<translation>语言和国家ID</translation>
 </phrase>
 
 <phrase>
 <original>optional translation aids</original>
-<translation></translation>
+<translation>可选的翻译辅助工具</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation></translation>
+<translation>免费的DeepL.com API密钥用于自动翻译建议</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation></translation>
+<translation>从任何其他软件的语言文件（.po），作为一个参考</translation>
 </phrase>
 
 <phrase>
 <original>official ISO country codes at Wikipedia</original>
-<translation></translation>
+<translation>维基百科上的官方ISO国家代码</translation>
 </phrase>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation></translation>
+<translation>这些可选设置可以加速翻译过程。  它们不会被保存到语言文件中。</translation>
 </phrase>
 
 <phrase>
 <original>delete selected language file</original>
-<translation></translation>
+<translation>删除选定的语言文件</translation>
 </phrase>
 
 <phrase>
 <original>start new language</original>
-<translation></translation>
+<translation>开始新的语言</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation></translation>
+<translation>编辑现有语言</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations</original>
-<translation></translation>
+<translation>自动翻译</translation>
 </phrase>
 
 <phrase>
@@ -12879,7 +12879,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation></translation>
+<translation>你确定要删除%1吗？ (这个动作不能撤销。)</translation>
 </phrase>
 
 <phrase>
@@ -12911,7 +12911,9 @@ Would you like to save your batch list before exiting?</original>
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation></translation>
+<translation>很遗憾，在这台电脑上无法找到 PhotoDemon 的 en-US 语言文件。  该文件包含在PhotoDemon的正式版本中，但它可能不包含在开发或测试版中。
+
+要开始一个新的翻译，请从 photodemon.org 下载一个新的 PhotoDemon 版本。</translation>
 </phrase>
 
 <phrase>
@@ -12930,7 +12932,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation></translation>
+<translation>不符合参考的短语</translation>
 </phrase>
 
 <phrase>
@@ -12945,7 +12947,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Save and exit</original>
-<translation></translation>
+<translation>保存并退出</translation>
 </phrase>
 
 <phrase>
@@ -12955,17 +12957,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>select language</original>
-<translation></translation>
+<translation>选择语言</translation>
 </phrase>
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>应用语言和翻译设置</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>本地化短语</translation>
 </phrase>
 
 <phrase>
@@ -12975,17 +12977,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>all phrases</original>
-<translation></translation>
+<translation>所有短语</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation></translation>
+<translation>翻译的短语</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation></translation>
+<translation>未翻译的短语</translation>
 </phrase>
 
 <phrase>
@@ -12995,12 +12997,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[translation failed]</original>
-<translation></translation>
+<translation>[翻译失败]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation></translation>
+<translation>[文件中没有这句话]</translation>
 </phrase>
 
 <phrase>
@@ -13010,17 +13012,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>(official translation by %1)</original>
-<translation></translation>
+<translation>(官方翻译：%1)</translation>
 </phrase>
 
 <phrase>
 <original>by %1</original>
-<translation></translation>
+<translation>由 %1</translation>
 </phrase>
 
 <phrase>
 <original>(autosaved on %1)</original>
-<translation></translation>
+<translation>(自动保存在 %1)</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->

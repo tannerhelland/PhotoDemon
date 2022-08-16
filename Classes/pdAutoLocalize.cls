@@ -133,12 +133,28 @@ Public Function GetDeepLTranslation(ByVal srcText As String) As String
         If (InStr(srcText, vbLf) <> 0) Then srcText = Replace$(srcText, vbLf, "%0A")
         If (InStr(srcText, vbCr) <> 0) Then srcText = Replace$(srcText, vbCr, "%0A")
         
-        'Also replace some other problematic forbidden chars
-        If (InStr(srcText, "&") <> 0) Then srcText = Replace$(srcText, "&", "%26")
+        'Also replace some other problematic forbidden chars.  (This could likely be replaced
+        ' with a call to InternetCanonicalizeUrlW() but I haven't studied it in-depth...)
+        If (InStr(srcText, ":") <> 0) Then srcText = Replace$(srcText, ":", "%3A")
+        If (InStr(srcText, "/") <> 0) Then srcText = Replace$(srcText, "/", "%2F")
         If (InStr(srcText, "\") <> 0) Then srcText = Replace$(srcText, "\", "%5C")
-        If (InStr(srcText, "/") <> 0) Then srcText = Replace$(srcText, "/", "&#47;")
-        If (InStr(srcText, " ") <> 0) Then srcText = Replace$(srcText, " ", "%20")
+        If (InStr(srcText, "?") <> 0) Then srcText = Replace$(srcText, "?", "%3F")
+        If (InStr(srcText, "#") <> 0) Then srcText = Replace$(srcText, "#", "%23")
         If (InStr(srcText, "[") <> 0) Then srcText = Replace$(srcText, "[", "%5B")
+        If (InStr(srcText, "]") <> 0) Then srcText = Replace$(srcText, "]", "%5D")
+        If (InStr(srcText, "@") <> 0) Then srcText = Replace$(srcText, "@", "%40")
+        If (InStr(srcText, "!") <> 0) Then srcText = Replace$(srcText, "!", "%21")
+        If (InStr(srcText, "$") <> 0) Then srcText = Replace$(srcText, "$", "%24")
+        If (InStr(srcText, "&") <> 0) Then srcText = Replace$(srcText, "&", "%26")
+        If (InStr(srcText, "'") <> 0) Then srcText = Replace$(srcText, "'", "%27")
+        If (InStr(srcText, "(") <> 0) Then srcText = Replace$(srcText, "(", "%28")
+        If (InStr(srcText, ")") <> 0) Then srcText = Replace$(srcText, ")", "%29")
+        If (InStr(srcText, "*") <> 0) Then srcText = Replace$(srcText, "*", "%2A")
+        If (InStr(srcText, "+") <> 0) Then srcText = Replace$(srcText, "+", "%2B")
+        If (InStr(srcText, ",") <> 0) Then srcText = Replace$(srcText, ",", "%2C")
+        If (InStr(srcText, ";") <> 0) Then srcText = Replace$(srcText, ";", "%3B")
+        If (InStr(srcText, "=") <> 0) Then srcText = Replace$(srcText, "=", "%3D")
+        If (InStr(srcText, " ") <> 0) Then srcText = Replace$(srcText, " ", "%20")
         If (InStr(srcText, """") <> 0) Then srcText = Replace$(srcText, """", "%22")
         
         'Return nothing on failure
@@ -182,7 +198,15 @@ Public Function GetDeepLTranslation(ByVal srcText As String) As String
             idxStart = InStr(1, LCase$(returnText), TRNS_RETURN, vbBinaryCompare) + Len(TRNS_RETURN)
             idxEnd = InStrRev(returnText, TRNS_END, -1, vbBinaryCompare)
             
-            returnText = Mid$(returnText, idxStart, idxEnd - idxStart)
+            If (idxEnd > idxStart) Then
+                returnText = Mid$(returnText, idxStart, idxEnd - idxStart)
+            Else
+                If (InStr(1, returnText, "Value for 'target_lang' not supported.", vbTextCompare) <> 0) Then
+                    returnText = "[this language is not supported by DeepL]"
+                Else
+                    returnText = vbNullString
+                End If
+            End If
             
             'Note that these post-processing steps are specific to DeepL.  Other services may have their own quirks.
             If (LenB(returnText) <> 0) Then

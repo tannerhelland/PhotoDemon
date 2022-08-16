@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.591</langversion>
+<langversion>6.7.592</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -1295,7 +1295,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation>Plugin Photoshop (8bf) </translation>
+<translation>Plugin Photoshop (8bf)</translation>
 </phrase>
 
 <phrase>
@@ -1541,7 +1541,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 
 <phrase>
 <original>Calculating film negative values</original>
-<translation>Calcul des valeurs négatives du film </translation>
+<translation>Calcul des valeurs négatives du film</translation>
 </phrase>
 
 <phrase>
@@ -1690,7 +1690,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Cropping image</original>
-<translation>Rognage de l'image </translation>
+<translation>Rognage de l'image</translation>
 </phrase>
 
 <phrase>
@@ -1918,12 +1918,12 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>Color burn</original>
-<translation>Densité couleur + </translation>
+<translation>Densité couleur +</translation>
 </phrase>
 
 <phrase>
 <original>Linear burn</original>
-<translation>Densité linéaire + </translation>
+<translation>Densité linéaire +</translation>
 </phrase>
 
 <phrase>
@@ -1938,12 +1938,12 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>Color dodge</original>
-<translation>Densité couleur - </translation>
+<translation>Densité couleur -</translation>
 </phrase>
 
 <phrase>
 <original>Linear dodge</original>
-<translation>Densité linéaire - </translation>
+<translation>Densité linéaire -</translation>
 </phrase>
 
 <phrase>
@@ -4071,7 +4071,7 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
 <translation>Malheureusement, le nombre d'images que vous avez sélectionné dépasse ce que Windows® permet pour une seule opération de chargement. Veuillez essayer de nouveau avec un petit set d'images sélectionnées.</translation>
 </phrase>
 
@@ -4119,7 +4119,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Reconstructing image</original>
-<translation>Reconstruction de l'image </translation>
+<translation>Reconstruction de l'image</translation>
 </phrase>
 
 <phrase>
@@ -4195,7 +4195,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
-<translation>Molette de la souris = DÉFILEMENT VERTICAL, Maj + molette = DÉFILEMENT HORIZONTAL, Ctrl + molette = ZOOM </translation>
+<translation>Molette de la souris = DÉFILEMENT VERTICAL, Maj + molette = DÉFILEMENT HORIZONTAL, Ctrl + molette = ZOOM</translation>
 </phrase>
 
 <phrase>
@@ -4440,7 +4440,17 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>derniers paramètres utilisés</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submit bug report or feedback</original>
+<translation>Soumettez un bug, un commentaire, une suggestion</translation>
+</phrase>
+
+<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4733,11 +4743,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(les messages apparaissent ici au moment de l'exécution)</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Adapter l'image à l'écran</translation>
 </phrase>
@@ -4762,7 +4767,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 <translation>Changer l'unité de taille de l'image (affichée à gauche de cette boîte)</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -4916,7 +4921,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Rotate 180</original>
-<translation>Pivoter à 180° (à l'envers) </translation>
+<translation>Pivoter à 180° (à l'envers)</translation>
 </phrase>
 
 <phrase>
@@ -5031,7 +5036,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Move layer up</original>
-<translation>Monter le calque </translation>
+<translation>Monter le calque</translation>
 </phrase>
 
 <phrase>
@@ -5081,7 +5086,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Fit to image</original>
-<translation>Ajuster à l'image </translation>
+<translation>Ajuster à l'image</translation>
 </phrase>
 
 <phrase>
@@ -5386,7 +5391,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Create macro</original>
-<translation>Créer une Macro (enregistrement d'actions) </translation>
+<translation>Créer une Macro (enregistrement d'actions)</translation>
 </phrase>
 
 <phrase>
@@ -5595,11 +5600,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
-<original>Submit bug report or feedback</original>
-<translation>Soumettez un bug, un commentaire, une suggestion</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon forum</original>
 <translation>Forum PhotoDemon</translation>
 </phrase>
@@ -5640,7 +5640,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>PhotoDemon Updates</original>
-<translation>Mises à jour de PhotoDemon </translation>
+<translation>Mises à jour de PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5687,7 +5687,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 211 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5970,7 +5970,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>hue</original>
-<translation>teinte </translation>
+<translation>teinte</translation>
 </phrase>
 
 <phrase>
@@ -6649,7 +6649,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>wheels + history</original>
-<translation>cercle chromatique + historique </translation>
+<translation>cercle chromatique + historique</translation>
 </phrase>
 
 <phrase>
@@ -6941,7 +6941,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Duplicate name</original>
-<translation>Dupliquer le nom </translation>
+<translation>Dupliquer le nom</translation>
 </phrase>
 
 <phrase>
@@ -7900,6 +7900,26 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>number of mirrors</original>
+<translation>nombre de miroirs</translation>
+</phrase>
+
+<phrase>
+<original>primary angle</original>
+<translation>angle primaire</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>vous pouvez également définir une position centrale en cliquant sur la fenêtre d'aperçu</translation>
+</phrase>
+
+<phrase>
+<original>center position (x, y)</original>
+<translation>position du point (x,y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary angle</original>
 <translation>angle secondaire</translation>
 </phrase>
@@ -7912,26 +7932,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>render emphasis</original>
 <translation>accentuation du rendu</translation>
-</phrase>
-
-<phrase>
-<original>number of mirrors</original>
-<translation>nombre de miroirs</translation>
-</phrase>
-
-<phrase>
-<original>primary angle</original>
-<translation>angle primaire</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Remarque: vous pouvez également définir une position centrale en cliquant sur la fenêtre de prévisualisation.</translation>
-</phrase>
-
-<phrase>
-<original>center position (x, y)</original>
-<translation>position du point (x,y)</translation>
 </phrase>
 
 <phrase>
@@ -8279,13 +8279,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>you can also set a center position by clicking the preview window</original>
-<translation>vous pouvez également définir une position centrale en cliquant sur la fenêtre d'aperçu</translation>
-</phrase>
-
-<phrase>
 <original>correction strength</original>
-<translation>force de la correction </translation>
+<translation>force de la correction</translation>
 </phrase>
 
 <phrase>
@@ -8298,7 +8293,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Correction de la distorsion d'image</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -9980,7 +9975,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Save the current list of images</original>
-<translation>Enregistrer la liste actuelle des images </translation>
+<translation>Enregistrer la liste actuelle des images</translation>
 </phrase>
 
 <phrase>
@@ -10117,7 +10112,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>fixed</original>
-<translation>fixe </translation>
+<translation>fixe</translation>
 </phrase>
 
 <phrase>
@@ -11098,6 +11093,23 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Create color lookup table (LUT)</original>
+<translation>Créer une table de correspondance de couleur</translation>
+</phrase>
+
+<phrase>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+<translation>ajouter comme paramètre prédéfini dans "Ajustements > Couleur > Correspondance de couleur"</translation>
+</phrase>
+
+<phrase>
+<original>modified image and layer</original>
+<translation>image et calque modifiés</translation>
+</phrase>
+
+<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>tools</original>
@@ -12696,6 +12708,332 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>click here for detailed instructions (in English)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>UI elements</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>replace translation with reference text (Ctrl+U)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>phrase groups</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto-translate all missing phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reference translation from .po file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>phrase types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>action names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>message boxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status bar messages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tooltips</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>files where this phrase occurs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miscellaneous</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>copy system locale</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>official ISO language codes at Wikipedia</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>author name(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language status</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language version</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language and country ID</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optional translation aids</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>free DeepL.com API key for automatic translation suggestions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language file (.po) from any other software, as a reference</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>official ISO country codes at Wikipedia</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete selected language file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start new language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Automatic translations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Processing phrase %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Automatic translation complete!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete language file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New Language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>incomplete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enter your name here</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
+
+To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
+
+To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Language file could not be loaded</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>phrases that don't match reference</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XML file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Save current language file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Save and exit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Step %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>select language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply language and translation settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>localize phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(NOT YET SAVED)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>translated phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>untranslated phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(saved)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>[translation failed]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>[phrase not in file]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>unknown author</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(official translation by %1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(autosaved on %1)</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+
+<phrase>
 <original>Create macro from session history</original>
 <translation>Créer une Macro à partir de l'historique</translation>
 </phrase>
@@ -13158,7 +13496,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais Photodemon peut toujours tenter de les extraire </translation>
+<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais Photodemon peut toujours tenter de les extraire</translation>
 </phrase>
 
 <phrase>
@@ -13193,7 +13531,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours,. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquez "dernier dossier utilisé" pour gagner du temps </translation>
+<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours,. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquez "dernier dossier utilisé" pour gagner du temps</translation>
 </phrase>
 
 <phrase>
@@ -13626,29 +13964,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>Create color lookup table (LUT)</original>
-<translation>Créer une table de correspondance de couleur</translation>
-</phrase>
+<!-- Automatic text generation complete. -->
 
-<phrase>
-<original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation>ajouter comme paramètre prédéfini dans "Ajustements > Couleur > Correspondance de couleur"</translation>
-</phrase>
+<phrasecount>2640</phrasecount>
 
-<phrase>
-<original>modified image and layer</original>
-<translation>image et calque modifiés</translation>
-</phrase>
-
-<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- Automatic text extraction complete. -->
-
-<phrasecount>2577</phrasecount>
-
-<!-- As of this build, PhotoDemon contains 5406 phrases. -->
-<!-- 2829 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11193 total words. -->
+<!-- As of this build, PhotoDemon contains 5515 phrases. -->
+<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
+<!-- These 2640 phrases contain approximately 11421 total words. -->
 
 </pdData>
