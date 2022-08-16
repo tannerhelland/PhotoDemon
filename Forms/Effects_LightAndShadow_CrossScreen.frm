@@ -34,13 +34,13 @@ Begin VB.Form FormCrossScreen
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   5625
+      Height          =   5340
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   9419
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
