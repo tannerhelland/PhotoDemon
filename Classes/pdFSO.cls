@@ -772,7 +772,7 @@ Friend Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOf
 
 End Function
 
-'Given an arbitrary file path, return embeded versioning information.  The optional getProductVersionInstead value sets whether
+'Given an arbitrary file path, return embedded versioning information.  The optional getProductVersionInstead value sets whether
 ' file or product version values are returned.  These are often the same, as Visual Studio inheritance rules typically make the
 ' Product value match the File value if it isn't explicitly given
 ' (http://all-things-pure.blogspot.com/2009/09/assembly-version-file-version-product.html).
@@ -2243,7 +2243,7 @@ RetrievalProblem:
 End Function
 
 'Helper function for FileGetTimeAsDate, above.  Once again, thank you to http://vb.mvps.org/hardcore/html/filedatestimes.htm
-' for the original verison of this code.
+' for the original version of this code.
 Private Function Win32ToVBTime(ByRef fileTimeUTC As Currency) As Date
     
     'Convert from UTC time to local time
