@@ -3,8 +3,9 @@ Attribute VB_Name = "Actions"
 'Action Handler
 'Copyright 2001-2022 by Tanner Helland
 'Created: 07/October/21
-'Last updated: 10/October/21
-'Last update: add new support for recent files and macros (so they can be accessed from the search bar)
+'Last updated: 19/August/22
+'Last update: build a rudimentary "action database" at run-time, which stores action names and corresponding
+'             process IDs, and some attributes (like whether this action can be repeated or faded)
 '
 'Want to execute a program operation?  Call this module.
 '
@@ -56,12 +57,32 @@ End Enum
     Private Const pdas_Hotkey = 0, pdas_Menu = 0, pdas_Search = 0
 #End If
 
+'This table maps between internal action names and their associated Process module calls.  The plan
+' (post 9.0 release) is to rework PD's central processor so that it operates directly on action names.
+' This is an extremely messy overhaul, however, because every function in the program (literally *every*
+' function) calls into the Process module, and all of those calls will need to be reworked to use
+' action names instead.  PD's localization generator also relies on "Process [x]" commands to find
+' action names that need to localized, so that's another concern.  (Localized action names are necessary
+' for populating run-time commands like "Undo [x]", "Repeat [x]", etc.)
+'
+'Anyway, for the 9.0 release this table is used to map between action and processor names, and I've also
+' decided to use it to collect generic action attributes like "should this action be reflected in the
+' Edit > Repeat Last Action menu"
+Private Type PD_Action
+    actionName As String
+    processName As String
+    isRepeatable As Boolean
+    isFadeable As Boolean
+End Type
+
+Private m_numActions As Long, m_Actions() As PD_Action
+
 'Given a menu search string, apply the corresponding default processor action.
 Public Function LaunchAction_BySearch(ByRef srcSearchText As String) As Boolean
     LaunchAction_BySearch = Actions.LaunchAction_ByName(Menus.GetNameFromSearchText(srcSearchText), pdas_Search)
 End Function
 
-'Given a menu name, apply the corresponding default processor action.  This function is referenced in many places
+'Given an action name, apply the corresponding default processor action.  This function is referenced in many places
 ' throughout PD (e.g. the program's menus pretty much all reference this!) and it is distinct from PD's Processor
 ' module because it validates actions before executing them.  For example - if you request an operation associated
 ' with a menu, it won't apply that action if the associated menu isn't enabled.  Similarly, if you request an
@@ -1588,3 +1609,437 @@ Public Sub GetMiscellaneousSearchActions(ByRef dstNames As pdStringStack, ByRef 
     End If
     
 End Sub
+
+'Build a list of all internal action names and their basic attributes
+Public Sub BuildActionDatabase()
+    
+    m_numActions = 0
+    ReDim m_Actions(0 To 255) As PD_Action
+    
+    AddAction "file_new", "New image"
+    AddAction "file_open", "Open"
+    'AddAction "file_openrecent"
+    'AddAction "file_open_allrecent"
+    'AddAction "file_open_clearrecent"
+    'AddAction "file_import"
+    AddAction "file_import_paste", "Paste to new image"
+    AddAction "file_import_scanner", "Scan image"
+    AddAction "file_import_selectscanner", "Select scanner or camera"
+    AddAction "file_import_web", "Internet import"
+    AddAction "file_import_screenshot", "Screen capture"
+    AddAction "file_close", "Close"
+    AddAction "file_closeall", "Close all"
+    AddAction "file_save", "Save"
+    AddAction "file_savecopy", "Save copy"
+    AddAction "file_saveas", "Save as"
+    AddAction "file_revert", "Revert"
+    'AddAction "file_export"
+    AddAction "file_export_animatedgif", "Export animated GIF"
+    AddAction "file_export_animatedpng", "Export animated PNG"
+    AddAction "file_export_animatedwebp", "Export animated WebP"
+    AddAction "file_export_colorlookup", "Export color lookup"
+    AddAction "file_export_colorprofile", "Export color profile"
+    AddAction "file_export_palette", "Export palette"
+    'AddAction "file_batch"
+    AddAction "file_batch_process", "Batch wizard"
+    'AddAction "file_batch_repair"
+    AddAction "file_print", "Print"
+    AddAction "file_quit", "Exit program"
+    
+    AddAction "edit_undo", "Undo"
+    AddAction "edit_redo", "Redo"
+    AddAction "edit_history", "Undo history"
+    AddAction "edit_repeat", "Repeat last action"
+    AddAction "edit_fade", "Fade"
+    AddAction "edit_cutlayer", "Cut"
+    AddAction "edit_cutmerged", "Cut merged"
+    AddAction "edit_copylayer", "Copy"
+    AddAction "edit_copymerged", "Copy merged"
+    AddAction "edit_pasteaslayer", "Paste"
+    AddAction "edit_pastetocursor", "Paste to cursor"
+    AddAction "edit_pasteasimage", "Paste to new image"
+    AddAction "edit_specialcut", "Cut special"
+    AddAction "edit_specialcopy", "Copy special"
+    AddAction "edit_specialpaste", "Paste special"
+    AddAction "edit_emptyclipboard", "Empty clipboard"
+    AddAction "edit_clear", "Clear", True, True
+    AddAction "edit_contentawarefill", "Content-aware fill", True, True
+    AddAction "edit_fill", "Fill", True, True
+    AddAction "edit_stroke", "Stroke", True, True
+    
+    AddAction "image_duplicate", "Duplicate image"
+    AddAction "image_resize", "Resize image", True
+    AddAction "image_contentawareresize", "Content-aware image resize", True
+    AddAction "image_canvassize", "Canvas size", True
+    AddAction "image_fittolayer", "Fit canvas to active layer"
+    AddAction "image_fitalllayers", "Fit canvas around all layers"
+    AddAction "image_crop", "Crop"
+    AddAction "image_trim", "Trim empty image borders"
+    'AddAction "image_rotate"
+    AddAction "image_straighten", "Straighten image", True
+    AddAction "image_rotate90", "Rotate image 90 clockwise", True
+    AddAction "image_rotate270", "Rotate image 90 counter-clockwise", True
+    AddAction "image_rotate180", "Rotate image 180", True
+    AddAction "image_rotatearbitrary", "Arbitrary image rotation", True
+    AddAction "image_fliphorizontal", "Flip image horizontally", True
+    AddAction "image_flipvertical", "Flip image vertically", True
+    AddAction "image_mergevisible", "Merge visible layers", True
+    AddAction "image_flatten", "Flatten image"
+    AddAction "image_animation", "Animation options"
+    'AddAction "image_compare"
+    AddAction "image_createlut", "Create color lookup"
+    AddAction "image_similarity", "Compare similarity"
+    'AddAction "image_metadata"
+    AddAction "image_editmetadata", "Edit metadata"
+    AddAction "image_removemetadata", "Remove all metadata"
+    AddAction "image_countcolors", "Count unique colors"
+    AddAction "image_maplocation", vbNullString
+    
+    'AddAction "layer_add"
+    AddAction "layer_addbasic", "Add new layer", True
+    AddAction "layer_addblank", "Add blank layer", True
+    AddAction "layer_duplicate", "Duplicate Layer", True
+    AddAction "layer_addfromclipboard", "Paste"
+    AddAction "layer_addfromfile", "New layer from file"
+    AddAction "layer_addfromvisiblelayers", "New layer from visible layers", True
+    AddAction "layer_addviacopy", "Layer via copy", True
+    AddAction "layer_addviacut", "Layer via cut", True
+    'AddAction "layer_delete"
+    AddAction "layer_deletecurrent", "Delete layer", True
+    AddAction "layer_deletehidden", "Delete hidden layers"
+    'AddAction "layer_replace"
+    AddAction "layer_replacefromclipboard", "Replace layer from clipboard"
+    AddAction "layer_replacefromfile", "Replace layer from file"
+    AddAction "layer_replacefromvisiblelayers", "Replace layer from visible layers"
+    AddAction "layer_mergeup", "Merge layer up", True
+    AddAction "layer_mergedown", "Merge layer down", True
+    'AddAction "layer_order"
+    AddAction "layer_gotop", "Go to top layer"
+    AddAction "layer_goup", "Go to layer above"
+    AddAction "layer_godown", "Go to layer below"
+    AddAction "layer_gobottom", "Go to bottom layer"
+    AddAction "layer_movetop", "Raise layer to top"
+    AddAction "layer_moveup", "Raise layer"
+    AddAction "layer_movedown", "Lower layer"
+    AddAction "layer_movebottom", "Lower layer to bottom"
+    AddAction "layer_reverse", "Reverse layer order"
+    'AddAction "layer_visibility"
+    AddAction "layer_show", "Toggle layer visibility"
+    AddAction "layer_showonly", "Show only this layer"
+    AddAction "layer_hideonly", "Hide only this layer"
+    AddAction "layer_showall", "Show all layers"
+    AddAction "layer_hideall", "Hide all layers"
+    'AddAction "layer_crop"
+    AddAction "layer_cropselection", "Crop layer to selection"
+    AddAction "layer_pad", "Pad layer to image size"
+    AddAction "layer_trim", "Trim empty layer borders"
+    'AddAction "layer_orientation"
+    AddAction "layer_straighten", "Straighten layer", True
+    AddAction "layer_rotate90", "Rotate layer 90 clockwise", True
+    AddAction "layer_rotate270", "Rotate layer 90 counter-clockwise", True
+    AddAction "layer_rotate180", "Rotate layer 180", True
+    AddAction "layer_rotatearbitrary", "Arbitrary layer rotation", True
+    AddAction "layer_fliphorizontal", "Flip layer horizontally", True
+    AddAction "layer_flipvertical", "Flip layer vertically", True
+    'AddAction "layer_size"
+    AddAction "layer_resetsize", "Reset layer size"
+    AddAction "layer_resize", "Resize layer", True
+    AddAction "layer_contentawareresize", "Content-aware layer resize", True
+    AddAction "layer_fittoimage", "Fit layer to image"
+    'AddAction "layer_transparency"
+    AddAction "layer_colortoalpha", "Color to alpha"
+    AddAction "layer_luminancetoalpha", "Luminance to alpha"
+    AddAction "layer_removealpha", "Remove alpha channel"
+    AddAction "layer_thresholdalpha", "Threshold alpha"
+    'AddAction "layer_rasterize"
+    AddAction "layer_rasterizecurrent", "Rasterize layer"
+    AddAction "layer_rasterizeall", "Rasterize all layers"
+    'AddAction "layer_split"
+    AddAction "layer_splitlayertoimage", "Split layer into image"
+    AddAction "layer_splitalllayerstoimages", "Split layers into images"
+    AddAction "layer_splitimagestolayers", "Split images into layers"
+    
+    AddAction "select_all", "Select all"
+    AddAction "select_none", "Remove selection"
+    AddAction "select_invert", "Invert selection", True
+    AddAction "select_grow", "Grow selection", True
+    AddAction "select_shrink", "Shrink selection", True
+    AddAction "select_border", "Border selection", True
+    AddAction "select_feather", "Feather selection", True
+    AddAction "select_sharpen", "Sharpen selection", True
+    AddAction "select_erasearea", "Erase selected area", True
+    AddAction "select_fill", "Fill selected area", True, True
+    AddAction "select_heal", "Heal selected area", True, True
+    AddAction "select_stroke", "Stroke selection outline", True, True
+    AddAction "select_load", "Load selection"
+    AddAction "select_save", "Save selection"
+    'AddAction "select_export"
+    AddAction "select_exportarea", "Export selected area as image"
+    AddAction "select_exportmask", "Export selection mask as image"
+    
+    AddAction "adj_autocorrect", "Auto correct", True, True
+    AddAction "adj_autoenhance", "Auto enhance", True, True
+    AddAction "adj_blackandwhite", "Black and white", True, True
+    AddAction "adj_bandc", "Brightness and contrast", True, True
+    AddAction "adj_colorbalance", "Color balance", True, True
+    AddAction "adj_curves", "Curves", True, True
+    AddAction "adj_levels", "Levels", True, True
+    AddAction "adj_sandh", "Shadows and highlights", True, True
+    AddAction "adj_vibrance", "Vibrance", True, True
+    AddAction "adj_whitebalance", "White balance", True, True
+    'AddAction "adj_channels"
+    AddAction "adj_channelmixer", "Channel mixer", True, True
+    AddAction "adj_rechannel", "Rechannel", True, True
+    AddAction "adj_maxchannel", "Maximum channel", True, True
+    AddAction "adj_minchannel", "Minimum channel", True, True
+    AddAction "adj_shiftchannelsleft", "Shift colors (left)", True, True
+    AddAction "adj_shiftchannelsright", "Shift colors (right)", True, True
+    'AddAction "adj_color"
+    AddAction "adj_hsl", "Hue and saturation", True, True
+    AddAction "adj_temperature", "Temperature", True, True
+    AddAction "adj_tint", "Tint", True, True
+    AddAction "adj_colorlookup", "Color lookup", True, True
+    AddAction "adj_colorize", "Colorize", True, True
+    AddAction "adj_photofilters", "Photo filter", True, True
+    AddAction "adj_replacecolor", "Replace color", True, True
+    AddAction "adj_sepia", "Sepia", True, True
+    AddAction "adj_splittone", "Split toning", True, True
+    'AddAction "adj_histogram"
+    'AddAction "adj_histogramdisplay"
+    AddAction "adj_histogramequalize", "Equalize", True, True
+    AddAction "adj_histogramstretch", "Stretch histogram", True, True
+    'AddAction "adj_invert
+    AddAction "adj_invertcmyk", "Film negative", True, True
+    AddAction "adj_inverthue", "Invert hue", True, True
+    AddAction "adj_invertrgb", "Invert RGB", True, True
+    'AddAction "adj_lighting"
+    AddAction "adj_dehaze", "Dehaze", True, True
+    AddAction "adj_exposure", "Exposure", True, True
+    AddAction "adj_gamma", "Gamma", True, True
+    AddAction "adj_hdr", "HDR", True, True
+    'AddAction "adj_map"
+    AddAction "adj_gradientmap", "Gradient map", True, True
+    AddAction "adj_palettemap", "Palette map", True, True
+    'AddAction "adj_monochrome"
+    AddAction "adj_colortomonochrome", "Color to monochrome", True, True
+    AddAction "adj_monochrometogray", "Monochrome to gray", True, True
+    
+    'AddAction "effects_artistic"
+    AddAction "effects_colorpencil", "Colored pencil", True, True
+    AddAction "effects_comicbook", "Comic book", True, True
+    AddAction "effects_figuredglass", "Figured glass", True, True
+    AddAction "effects_filmnoir", "Film noir", True, True
+    AddAction "effects_glasstiles", "Glass tiles", True, True
+    AddAction "effects_kaleidoscope", "Kaleidoscope", True, True
+    AddAction "effects_modernart", "Modern art", True, True
+    AddAction "effects_oilpainting", "Oil painting", True, True
+    AddAction "effects_plasticwrap", "Plastic wrap", True, True
+    AddAction "effects_posterize", "Posterize", True, True
+    AddAction "effects_relief", "Relief", True, True
+    AddAction "effects_stainedglass", "Stained glass", True, True
+    'AddAction "effects_blur"
+    AddAction "effects_boxblur", "Box blur", True, True
+    AddAction "effects_gaussianblur", "Gaussian blur", True, True
+    AddAction "effects_surfaceblur", "Surface blur", True, True
+    AddAction "effects_motionblur", "Motion blur", True, True
+    AddAction "effects_radialblur", "Radial blur", True, True
+    AddAction "effects_zoomblur", "Zoom blur", True, True
+    'AddAction "effects_distort"
+    AddAction "effects_fixlensdistort", "Correct lens distortion", True, True
+    AddAction "effects_donut", "Donut", True, True
+    AddAction "effects_droste", "Droste", True, True
+    AddAction "effects_lens", "Apply lens distortion", True, True
+    AddAction "effects_pinchandwhirl", "Pinch and whirl", True, True
+    AddAction "effects_poke", "Poke", True, True
+    AddAction "effects_ripple", "Ripple", True, True
+    AddAction "effects_squish", "Squish", True, True
+    AddAction "effects_swirl", "Swirl", True, True
+    AddAction "effects_waves", "Waves", True, True
+    AddAction "effects_miscdistort", "Miscellaneous distort", True, True
+    'AddAction "effects_edges"
+    AddAction "effects_emboss", "Emboss", True, True
+    AddAction "effects_enhanceedges", "Enhance edges", True, True
+    AddAction "effects_findedges", "Find edges", True, True
+    AddAction "effects_gradientflow", "Gradient flow", True, True
+    AddAction "effects_rangefilter", "Range filter", True, True
+    AddAction "effects_tracecontour", "Trace contour", True, True
+    'AddAction "effects_lightandshadow"
+    AddAction "effects_blacklight", "Black light", True, True
+    AddAction "effects_bumpmap", "Bump map", True, True
+    AddAction "effects_crossscreen", "Cross-screen", True, True
+    AddAction "effects_rainbow", "Rainbow", True, True
+    AddAction "effects_sunshine", "Sunshine", True, True
+    AddAction "effects_dilate", "Dilate (maximum rank)", True, True
+    AddAction "effects_erode", "Erode (minimum rank)", True, True
+    'AddAction "effects_natural"
+    AddAction "effects_atmosphere", "Atmosphere", True, True
+    AddAction "effects_fog", "Fog", True, True
+    AddAction "effects_ignite", "Ignite", True, True
+    AddAction "effects_lava", "Lava", True, True
+    AddAction "effects_metal", "Metal", True, True
+    AddAction "effects_snow", "Snow", True, True
+    AddAction "effects_underwater", "Water", True, True
+    'AddAction "effects_noise"
+    AddAction "effects_filmgrain", "Add film grain", True, True
+    AddAction "effects_rgbnoise", "Add RGB noise", True, True
+    AddAction "effects_anisotropic", "Anisotropic diffusion", True, True
+    AddAction "effects_bilateral", "Surface blur", True, True 'For legacy macros only; bilateral has been replaced by Blur > Surface Blur
+    AddAction "effects_dustandscratches", "Dust and scratches", True, True
+    AddAction "effects_harmonicmean", "Harmonic mean", True, True
+    AddAction "effects_meanshift", "Mean shift", True, True
+    AddAction "effects_median", "Median", True, True
+    AddAction "effects_snn", "Symmetric nearest-neighbor", True, True
+    'AddAction "effects_pixelate"
+    AddAction "effects_colorhalftone", "Color halftone", True, True
+    AddAction "effects_crystallize", "Crystallize", True, True
+    AddAction "effects_fragment", "Fragment", True, True
+    AddAction "effects_mezzotint", "Mezzotint", True, True
+    AddAction "effects_mosaic", "Mosaic", True, True
+    AddAction "effects_pointillize", "Pointillize", True, True
+    'AddAction "effects_render"
+    AddAction "effects_clouds", "Clouds", True, True
+    AddAction "effects_fibers", "Fibers", True, True
+    AddAction "effects_truchet", "Truchet", True, True
+    '"effects_sharpentop"
+    AddAction "effects_sharpen", "Sharpen", True, True
+    AddAction "effects_unsharp", "Unsharp mask", True, True
+    'AddAction "effects_stylize"
+    AddAction "effects_antique", "Antique", True, True
+    AddAction "effects_diffuse", "Diffuse", True, True
+    AddAction "effects_kuwahara", "Kuwahara filter", True, True
+    AddAction "effects_outline", "Outline", True, True
+    AddAction "effects_palette", "Palette", True, True
+    AddAction "effects_portraitglow", "Portrait glow", True, True
+    AddAction "effects_solarize", "Solarize", True, True
+    AddAction "effects_twins", "Twins", True, True
+    AddAction "effects_vignetting", "Vignetting", True, True
+    '"effects_transform"
+    AddAction "effects_panandzoom", "Offset and zoom", True, True
+    AddAction "effects_perspective", "Perspective", True, True
+    AddAction "effects_polarconversion", "Polar conversion", True, True
+    AddAction "effects_rotate", "Rotate", True, True
+    AddAction "effects_shear", "Shear", True, True
+    AddAction "effects_spherize", "Spherize", True, True
+    'AddAction "effects_animation"
+    AddAction "effects_animation_background", "Animation background"
+    AddAction "effects_animation_foreground", "Animation foreground"
+    AddAction "effects_animation_speed", "Animation playback speed"
+    AddAction "effects_customfilter", "Custom filter", True, True
+    AddAction "effects_8bf", "Photoshop (8bf) plugin", True, True
+    'AddAction "tools_language"
+    AddAction "tools_languageeditor", vbNullString
+    AddAction "tools_theme", vbNullString
+    'AddAction "tools_macrocreatetop"
+    AddAction "tools_macrofromhistory", vbNullString
+    AddAction "tools_recordmacro", "Start macro recording"
+    AddAction "tools_stopmacro", "Stop macro recording"
+    AddAction "tools_playmacro""Play macro"
+    'AddAction "tools_recentmacros"
+    AddAction "tools_screenrecord", vbNullString
+    AddAction "tools_options", vbNullString
+    AddAction "tools_3rdpartylibs", vbNullString
+    'AddAction "tools_developers"
+    'AddAction "tools_themeeditor", vbNullString
+    'AddAction "tools_themepackage"
+    'AddAction "tools_standalonepackage"
+    'AddAction "effects_developertest"
+    AddAction "view_fit", vbNullString
+    AddAction "view_zoomin", vbNullString
+    AddAction "view_zoomout", vbNullString
+    'AddAction "view_zoomtop"
+    AddAction "zoom_16_1", vbNullString
+    AddAction "zoom_8_1", vbNullString
+    AddAction "zoom_4_1", vbNullString
+    AddAction "zoom_2_1", vbNullString
+    AddAction "zoom_actual", vbNullString
+    AddAction "zoom_1_2", vbNullString
+    AddAction "zoom_1_4", vbNullString
+    AddAction "zoom_1_8", vbNullString
+    AddAction "zoom_1_16", vbNullString
+    AddAction "view_rulers", vbNullString
+    AddAction "view_statusbar", vbNullString
+    'AddAction "window_toolbox"
+    AddAction "window_displaytoolbox", vbNullString
+    AddAction "window_displaytoolcategories", vbNullString
+    AddAction "window_smalltoolbuttons", vbNullString
+    AddAction "window_mediumtoolbuttons", vbNullString
+    AddAction "window_largetoolbuttons", vbNullString
+    AddAction "window_tooloptions", vbNullString
+    AddAction "window_layers", vbNullString
+    'AddAction "window_imagetabstrip"
+    AddAction "window_imagetabstrip_alwaysshow", vbNullString
+    AddAction "window_imagetabstrip_shownormal", vbNullString
+    AddAction "window_imagetabstrip_nevershow", vbNullString
+    AddAction "window_imagetabstrip_alignleft", vbNullString
+    AddAction "window_imagetabstrip_aligntop", vbNullString
+    AddAction "window_imagetabstrip_alignright", vbNullString
+    AddAction "window_imagetabstrip_alignbottom", vbNullString
+    AddAction "window_resetsettings", vbNullString
+    AddAction "window_next", vbNullString
+    AddAction "window_previous", vbNullString
+    
+    AddAction "help_patreon", vbNullString
+    AddAction "help_donate", vbNullString
+    AddAction "help_forum", vbNullString
+    AddAction "help_checkupdates", vbNullString
+    AddAction "help_reportbug", vbNullString
+    AddAction "help_license", vbNullString
+    AddAction "help_sourcecode", vbNullString
+    AddAction "help_website", vbNullString
+    AddAction "help_about", vbNullString
+        
+End Sub
+
+Private Sub AddAction(ByVal actionName As String, Optional ByRef processName As String = vbNullString, Optional ByVal isRepeatable As Boolean = False, Optional ByVal isFadeable As Boolean = False)
+    
+    If (m_numActions > UBound(m_Actions)) Then ReDim Preserve m_Actions(0 To m_numActions * 2 - 1) As PD_Action
+    
+    With m_Actions(m_numActions)
+        .actionName = actionName
+        .processName = processName
+        .isRepeatable = isRepeatable
+        .isFadeable = isFadeable
+    End With
+    
+    m_numActions = m_numActions + 1
+    
+End Sub
+
+Private Function GetActionIndexFromName(ByRef actionName As String, Optional ByVal nameIsProcessName As Boolean = False) As Long
+    
+    GetActionIndexFromName = -1
+    
+    If (m_numActions > 0) And (LenB(actionName) > 0) Then
+        
+        Dim i As Long
+        If nameIsProcessName Then
+            For i = 0 To m_numActions - 1
+                If Strings.StringsEqual(actionName, m_Actions(i).processName, True) Then
+                    GetActionIndexFromName = i
+                    Exit For
+                End If
+            Next i
+        Else
+            For i = 0 To m_numActions - 1
+                If Strings.StringsEqual(actionName, m_Actions(i).actionName, True) Then
+                    GetActionIndexFromName = i
+                    Exit For
+                End If
+            Next i
+        End If
+        
+    End If
+    
+End Function
+
+Public Function IsActionRepeatable(ByRef actionName As String, Optional ByVal nameIsProcessName As Boolean = False) As Boolean
+    Dim idxAction As Long
+    idxAction = GetActionIndexFromName(actionName, nameIsProcessName)
+    If (idxAction >= 0) Then IsActionRepeatable = m_Actions(idxAction).isRepeatable Else IsActionRepeatable = False
+End Function
+
+Public Function IsActionFadeable(ByRef actionName As String, Optional ByVal nameIsProcessName As Boolean = False) As Boolean
+    Dim idxAction As Long
+    idxAction = GetActionIndexFromName(actionName, nameIsProcessName)
+    If (idxAction >= 0) Then IsActionFadeable = m_Actions(idxAction).isFadeable Else IsActionFadeable = False
+End Function

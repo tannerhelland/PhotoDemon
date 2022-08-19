@@ -590,12 +590,16 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Initialize tools"
     LogStartupEvent "Initializing image tools..."
     
-    'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance, and it saves a bit of memory
-    ' if a user doesn't use a tool during a given session.
+    'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance,
+    ' and it saves a bit of memory if a user doesn't use a tool during a given session.  This negates the need
+    ' to initialize any tools here.
     
-    'Also, while here, prep the specialized non-destructive tool handler in the central processor
+    'But while we're here, let's prep the specialized non-destructive tool handler in the central processor
     Processor.InitializeProcessor
     
+    'Similarly, build a "database" of action names and attributes.  This is queried by multiple parts of the
+    ' app to determine if an action is e.g. "repeat-able" or "fade-able", etc
+    Actions.BuildActionDatabase
     
     '*************************************************************************************************************************************
     ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.
