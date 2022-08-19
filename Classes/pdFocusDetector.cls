@@ -145,7 +145,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             RaiseEvent GotFocusReliable
         End If
 
-        'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396)...
+        'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633)...
         ' "When the wParam parameter is FALSE, an application should return TRUE to indicate that the system
         '  should proceed with the default processing, or it should return FALSE to prevent the change.
         '  When wParam is TRUE, the return value is ignored."
