@@ -873,15 +873,29 @@ Friend Function DoesStackContainRepeatableCommand(Optional ByRef nameOfProcessor
         
             With m_UndoStack(i)
                 
-                If (.srcProcCall.pcUndoType <> UNDO_Nothing) And (.srcProcCall.pcUndoType <> UNDO_Selection) Then
+                If (.srcProcCall.pcUndoType <> UNDO_Nothing) Then
                     
-                    'Certain actions are not repeatable; specifically, "Fade" and "Repeat" cannot be "faded" or "repeated".
-                    ' In these instances, we want to continue searching backward, to find the original function that those
-                    ' calls faded or repeated.
-                    If (Not Strings.StringsEqual(.srcProcCall.pcID, "FADE", True)) And (Not Strings.StringsEqual(.srcProcCall.pcID, "REPEAT", True)) Then
-                        actionFound = True
-                        nameOfProcessorAction = .srcProcCall.pcID
+                    'Certain actions are not repeatable (e.g. "Fade" and "Repeat" cannot be "faded" or "repeated",
+                    ' some selection actions can be repeated - e.g. "grow selection" - but not faded); if we encounter
+                    ' a non-repeatable action, continue searching backward until we arrive at a function that *can* be
+                    ' faded or repeated.
+                    If Actions.IsActionRepeatable(.srcProcCall.pcID, True) Then
+                        
+                        'If this action is repeatable, but it requires a selection, make sure a selection exists.
+                        If (.srcProcCall.pcUndoType = UNDO_Selection) Then
+                            If PDImages.IsImageActive() Then
+                                If PDImages.GetActiveImage.IsSelectionActive() Then
+                                    actionFound = True
+                                    nameOfProcessorAction = .srcProcCall.pcID
+                                End If
+                            End If
+                        Else
+                            actionFound = True
+                            nameOfProcessorAction = .srcProcCall.pcID
+                        End If
+                        
                         Exit For
+                        
                     End If
                     
                 End If
@@ -910,8 +924,8 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
     
     If (m_UndoNum <> 0) Then
     
-        'First things first: start searching the Undo/Redo stack for a layer-specific edit.  We don't care which edit, just that
-        ' it's a layer-specific action.
+        'First things first: start searching the Undo/Redo stack for a layer-specific edit.
+        ' We don't care *which* edit, just that it's a layer-specific action.
         Dim actionFound As Boolean: actionFound = False
         Dim layerChangeIndex As Long: layerChangeIndex = -1
         
@@ -921,10 +935,14 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
             'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
             ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
             ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
-            If (m_UndoStack(i).srcProcCall.pcUndoType = UNDO_Layer) Or (m_UndoStack(i).srcProcCall.pcUndoType = UNDO_Layer_VectorSafe) Then
-                
-                'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
-                ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
+            'If (m_UndoStack(i).srcProcCall.pcUndoType = UNDO_Layer) Or (m_UndoStack(i).srcProcCall.pcUndoType = UNDO_Layer_VectorSafe) Then
+            
+            'New plan!  Use the action database to determine fadeability for us.
+            If Actions.IsActionFadeable(m_UndoStack(i).srcProcCall.pcID, True) Then
+            
+                'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be
+                ' "faded" or "repeated".  In these instances, we want to continue searching backward, to find
+                ' the original function that was faded or repeated.
                 If Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Fade", True) Then
                     If Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Repeat", True) Then
                         actionFound = True
@@ -939,26 +957,29 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         
         Next i
         
-        'If a relevant layer was found, actionFound will be set to TRUE.  If a relevant layer was not found, return FALSE and exit.
+        'If a relevant layer was found, actionFound will be set to TRUE.
         If actionFound Then
             
             FillDIBWithLastUndoCopy = True
             
-            'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
-            ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
+            'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.
+            ' They don't actually need us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
             If (Not checkStateOnly) Then
                 
-                'Armed with the knowledge of which layer is being affected, we now need to find the last relevant DIFF index for that layer.
-                ' Use the built-in function to do that.
+                'Armed with the knowledge of which layer is being affected, we now need to find the last relevant
+                ' DIFF index for that layer.
                 Dim relevantDiffIndex As Long
                 relevantDiffIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_Layer, affectedLayerID)
                 
-                'Check also for vector-safe actions, which are identical to UNDO_LAYER but for operations that support vector-safe modifications.
+                'Check also for vector-safe actions, which are identical to UNDO_LAYER but for operations that
+                ' support vector-safe modifications.
                 Dim relevantVectorIndex As Long
                 relevantVectorIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_Layer_VectorSafe, affectedLayerID)
                 
-                'relevantDiffIndex will now contain the index in the m_undoStack array corresponding to the previous state of the affected layer.
-                ' Load the relevant portion of that Undo file into the target DIB.
+                'relevantDiffIndex will now contain the index in the m_undoStack array corresponding to the
+                ' previous state of the affected layer.
+                '
+                'Load the relevant portion of that Undo file into the target DIB.
                 Dim tmpLayer As pdLayer
                 Set tmpLayer = New pdLayer
                 
@@ -974,6 +995,7 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
                 
             End If
             
+        '/(If a relevant layer was not found, provide a default FALSE return and perform no further processing)
         End If
         
     End If

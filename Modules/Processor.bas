@@ -184,7 +184,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If (createUndo <> UNDO_Nothing) Then
         
         'Save this action's information in the m_LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
-        m_LastProcess = thisProcData
+        If Actions.IsActionRepeatable(processID, True) Then m_LastProcess = thisProcData
         
         'If the user wants us to time how long this action takes, mark the current time now
         If g_DisplayTimingReports Then VBHacks.GetHighResTime m_ProcessingTime
