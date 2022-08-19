@@ -730,7 +730,10 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
     For pageToLoad = 1 To numOfPages - 1
         
         Message "Loading page %1 of %2...", CStr(pageToLoad + 1), numOfPages, "DONOTLOG"
-        If ((pageToLoad And 7) = 0) Then VBHacks.DoEvents_SingleHwnd FormMain.hWnd
+        If ((pageToLoad And 7) = 0) Then
+            VBHacks.PurgeInputMessages FormMain.hWnd
+            VBHacks.DoEvents_SingleHwnd FormMain.hWnd
+        End If
         
         'Lock the current page
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)

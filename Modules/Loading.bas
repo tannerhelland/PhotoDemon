@@ -68,6 +68,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     PDDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
     PDDebug.LogAction vbNullString, PDM_Mem_Report
     
+    'Before doing anything else, purge the input queue to ensure no stray key or mouse events are "left over"
+    ' from things like a common dialog interaction.  (Refer to the DoEvents warning, above, about the precautions
+    ' this function takes to ensure no message loop funny business.)
+    VBHacks.PurgeInputMessages FormMain.hWnd
+    
     'Display a busy cursor
     If handleUIDisabling Then
         Message "Loading image..."
@@ -493,6 +498,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     ' As all images have now loaded, re-enable the main form
     '*************************************************************************************************************************************
+    
+    'Purge any input events that may have occurred during the load process
+    VBHacks.PurgeInputMessages FormMain.hWnd
     
     'Synchronize all interface elements to match the newly loaded image(s)
     If handleUIDisabling Then Interface.SyncInterfaceToCurrentImage
