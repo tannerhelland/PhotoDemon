@@ -126,19 +126,18 @@ Public Function GetCommonDialogInputFormats() As String
     GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
-'Return the index of given output FIF
+'Return the index of given output FIF.  Returns -1 if PD cannot export a given format.
 Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
+    
+    GetIndexOfOutputPDIF = -1
     
     Dim i As Long
     For i = 0 To GetNumOfOutputFormats
         If outputPDIFs(i) = srcFIF Then
             GetIndexOfOutputPDIF = i
-            Exit Function
+            Exit For
         End If
     Next i
-    
-    'If we reach this line of code, no match was found.  Return -1.
-    GetIndexOfOutputPDIF = -1
     
 End Function
 

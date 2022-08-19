@@ -30,7 +30,12 @@ Public Function IsCommonDialogRequired(ByRef srcImage As pdImage) As Boolean
     
     'At present, this heuristic is pretty simple: if the image hasn't been saved to disk before, require a Save As instead.
     IsCommonDialogRequired = (LenB(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0)
-
+    
+    'An additional consideration is if the image exists on disk, *but* in a format we cannot save to.
+    If (Not IsCommonDialogRequired) Then
+        IsCommonDialogRequired = (ImageFormats.GetIndexOfOutputPDIF(srcImage.GetCurrentFileFormat) < 0)
+    End If
+    
 End Function
 
 'This routine will blindly save the composited layer contents (from the pdImage object specified by srcPDImage) to dstPath.

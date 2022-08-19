@@ -156,7 +156,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
 
 End Function
 
-'Subroutine for displaying a commondialog save box, then saving an image to the specified file
+'Subroutine for displaying a "save" common dialog, then saving an image to the specified file
 Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     If (srcImage Is Nothing) Then Exit Function
@@ -220,10 +220,13 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     End If
     
-    '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
-    '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)
-    '   If that preference is selected, it takes precedence, unless the user has not yet saved any images, in which case we default to
-    '   the standard method (of using heuristics on the current image, and suggesting the most appropriate format accordingly).
+    '2) What file format to suggest.  There is a user preference for persistently defaulting *not* to the
+    ' current image's format, but to the last format used in the Save screen.  (This is useful when
+    ' mass-converting RAW files to JPEG, for example.)
+    '
+    ' If that preference is selected, it takes precedence UNLESS the user has not yet saved any images,
+    ' in which case we default to the standard method (of using heuristics on the current image,
+    ' and suggesting the most appropriate format accordingly).
     Dim cdFormatIndex As Long
     Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
     
@@ -284,8 +287,15 @@ End Function
 
 Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, ByRef dstSuggestedExtension As String) As PD_IMAGE_FORMAT
     
-    'First, see if the image has a file format already.  If it does, we need to suggest that preferentially
+    'First, see if the image has a file format already.  If it does, we need to suggest that preferentially.
     GetSuggestedSaveFormatAndExtension = srcImage.GetCurrentFileFormat
+    
+    'One caveat here is if the image already has a format *but* PhotoDemon can't export that format.
+    ' If that happens, treat the image as if has never been saved at all (and use heuristics to suggest
+    ' a most-appropriate format).
+    If (ImageFormats.GetIndexOfOutputPDIF(GetSuggestedSaveFormatAndExtension) < 0) Then GetSuggestedSaveFormatAndExtension = PDIF_UNKNOWN
+    
+    'For unknown formats, use heuristics to suggest an appropriate output format.
     If (GetSuggestedSaveFormatAndExtension = PDIF_UNKNOWN) Then
     
         'This image must have come from a source where the best save format isn't clear (like a generic clipboard DIB).
@@ -308,8 +318,8 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         'Also return a proper extension that matches the selected format
         dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
         
-    'If the image already has a format, let's reuse its existing file extension instead of suggesting a new one.  This is relevant
-    ' for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
+    'If the image already has a format, let's reuse its existing file extension instead of suggesting a new one.
+    ' This is relevant for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
     Else
         dstSuggestedExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension")
         If (LenB(dstSuggestedExtension) = 0) Then dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
