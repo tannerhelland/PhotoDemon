@@ -332,9 +332,10 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
         
         With m_Hotkeys(hkID)
             
-            If (.hkShiftState And vbCtrlMask) Then GetHotkeyText = m_CommonMenuText(cmt_Ctrl) & "+"
+            GetHotkeyText = vbNullString
             If (.hkShiftState And vbAltMask) Then GetHotkeyText = GetHotkeyText & m_CommonMenuText(cmt_Alt) & "+"
             If (.hkShiftState And vbShiftMask) Then GetHotkeyText = GetHotkeyText & m_CommonMenuText(cmt_Shift) & "+"
+            If (.hkShiftState And vbCtrlMask) Then GetHotkeyText = GetHotkeyText & m_CommonMenuText(cmt_Ctrl) & "+"
             
             'Processing the string itself takes a bit of extra work, as some keyboard keys don't automatically map to a
             ' string equivalent.  (Also, translations need to be considered.)
