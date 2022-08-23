@@ -206,10 +206,12 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKeyB, vbCtrlMask, "file_batch_process"
     Hotkeys.AddHotkey vbKeyP, vbCtrlMask, "file_print"
     Hotkeys.AddHotkey vbKeyQ, vbCtrlMask, "file_quit"
-        
+    
     'Edit menu
     Hotkeys.AddHotkey vbKeyZ, vbCtrlMask, "edit_undo"
     Hotkeys.AddHotkey vbKeyY, vbCtrlMask, "edit_redo"
+    
+    Hotkeys.AddHotkey vbKeyY, vbCtrlMask Or vbShiftMask, "edit_repeat"
     
     Hotkeys.AddHotkey vbKeyX, vbCtrlMask, "edit_cutlayer"
     Hotkeys.AddHotkey vbKeyC, vbCtrlMask, "edit_copylayer"
