@@ -2501,21 +2501,19 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
             Dim initX As Long, initY As Long, finalX As Long, finalY As Long
             initX = 0
             initY = 0
-            finalX = (srcDIB.GetDIBWidth - 1)
-            finalY = (srcDIB.GetDIBHeight - 1)
+            finalX = srcDIB.GetDIBWidth - 1
+            finalY = srcDIB.GetDIBHeight - 1
             
             'Construct a lookup table of premultiplied input values
-            Dim lTable() As Long
-            ReDim lTable(0 To 255) As Long
-            
+            Dim lTable(0 To 255) As Long
             Dim tmpA As Single, tmpQuad As RGBQuad
             
             For x = 0 To 255
                 tmpQuad.Alpha = x
                 tmpA = x * (x / 255)
-                tmpQuad.Red = tmpA
-                tmpQuad.Green = tmpA
-                tmpQuad.Blue = tmpA
+                tmpQuad.Red = Int(tmpA)
+                tmpQuad.Green = Int(tmpA)
+                tmpQuad.Blue = Int(tmpA)
                 CopyMemoryStrict VarPtr(lTable(x)), VarPtr(tmpQuad), LenB(tmpQuad)
             Next x
             

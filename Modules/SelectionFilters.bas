@@ -354,14 +354,17 @@ Public Sub Selection_Shrink(ByVal displayDialog As Boolean, Optional ByVal shrin
         arrWidth = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
         arrHeight = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBHeight
         
-        Dim tmpArray() As Byte
-        ReDim tmpArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
+        Dim tmpArray() As Byte, srcBytes() As Byte
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
+        Filters_ByteArray.PadByteArray_NoClamp tmpArray, arrWidth, arrHeight, srcBytes, 1, 1
         
-        Dim srcBytes() As Byte
-        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcBytes
+        ReDim tmpArray(0 To arrWidth + 1, 0 To arrHeight + 1) As Byte
+        Filters_ByteArray.Erode_ByteArray shrinkSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth + 2, arrHeight + 2
         
-        Filters_ByteArray.Erode_ByteArray shrinkSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight
-        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, tmpArray
+        ReDim srcBytes(0 To arrWidth, 0 To arrHeight) As Byte
+        Filters_ByteArray.UnPadByteArray srcBytes, arrWidth, arrHeight, tmpArray, 1, 1, True
+        
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcBytes
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)

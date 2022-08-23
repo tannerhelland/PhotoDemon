@@ -3,17 +3,16 @@ Attribute VB_Name = "Filters_ByteArray"
 'Byte Array Filters Module
 'Copyright 2014-2022 by Tanner Helland
 'Created: 02/April/15
-'Last updated: 02/April/15
-'Last update: start assembling byte-array-specific filter collection
+'Last updated: 23/August/22
+'Last update: minor perf improvements to dilate/erode
 '
-'After version 6.6 released, I started work on a number of modified PD filters.  Unlike most filters in the project
-' - which explicitly operate on pdDIB objects - these filters are modified to run on single-channel 2D byte arrays.
-' In some places in the project, byte arrays contain sufficient detail for things like bumpmaps, and they consume
-' less memory and are faster to process than a three- or four-channel DIB.
+'This module contains various image filters, but rewritten to work on single-channel byte arrays
+' instead of three- or four-channel RGB/A images.  (In some cases, PD can use these filters for
+' meaningful perf improvements over multichannel implementations - like operations on a mask.)
 '
-'Going forward, it would be nice to further expand this function collection, but in the meantime, just know that
-' the functions in this module cannot directly operate on images.  Also, they do not generally support progress
-' bar reports (by design) as their emphasis is on raw performance.
+'Going forward, it would be nice to further expand this collection, but for now just know that
+' the functions in this module cannot directly operate on images.  Also, they do not generally
+' support progress bar reports (by design) as their emphasis is on raw performance.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -487,7 +486,28 @@ Public Sub PadByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVa
     
 End Sub
 
-'Sister function to PadByteArray(), above.  Make sure you pass identical values to both functions!
+'Pad the edges of a byte array by some arbitrary amount.  The padded edges will be filled with zeroes.
+Public Sub PadByteArray_NoClamp(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByRef dstArray() As Byte, Optional ByVal padHorizontal As Long = 0, Optional ByVal padVertical As Long = 0)
+    
+    'Ensure valid inputs
+    If (arrayWidth <= 0) Or (arrayHeight <= 0) Or (padHorizontal < 0) Or (padVertical < 0) Or ((padHorizontal = 0) And (padVertical = 0)) Then Exit Sub
+    
+    'Calculate new dimensions and prep the destination array
+    Dim newWidth As Long, newHeight As Long
+    newWidth = arrayWidth + padHorizontal * 2
+    newHeight = arrayHeight + padVertical * 2
+    
+    ReDim dstArray(0 To newWidth - 1, 0 To newHeight - 1) As Byte
+    
+    Dim y As Long
+    For y = 0 To arrayHeight - 1
+        CopyMemoryStrict VarPtr(dstArray(padHorizontal, y + padVertical)), VarPtr(srcArray(0, y)), arrayWidth
+    Next y
+    
+End Sub
+
+'Sister function to various PadByteArray() functions, above.
+' NOTE: pass identical values to both functions!  If you don't, this will break!
 Public Sub UnPadByteArray(ByRef dstArray() As Byte, ByVal dstArrayWidth As Long, ByVal dstArrayHeight As Long, ByRef srcArray() As Byte, Optional ByVal padHorizontal As Long = 0, Optional ByVal padVertical As Long = 0, Optional ByVal dstIsAlreadySized As Boolean = True)
     
     'Ensure valid inputs
@@ -525,7 +545,6 @@ Public Function AddNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As 
     For y = initY To finalY
                 
         oldValue = srcArray(x, y)
-        
         newValue = oldValue + ((Rnd * noiseAmount) - halfNoise)
         
         If (newValue < 0) Then
@@ -1148,13 +1167,15 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
             'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
             For y = startY To stopY Step yStep
             
-                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
-                ' actual median value.
+                'With a local histogram successfully built for the area surrounding this pixel,
+                ' we can now rapidly find the local maximum
                 
-                'Loop through each color component histogram, until we've passed the desired percentile of pixels
-                For i = 255 To 0 Step -1
-                    If (lValues(i) <> 0) Then Exit For
-                Next i
+                'Loop through histogram entries until we reach a non-zero value (meaning there is
+                ' at least one pixel in this region with that value)
+                i = 255
+                Do While (lValues(i) = 0)
+                    i = i - 1
+                Loop
                 
                 'Finally, apply the results to the destination array.
                 dstArray(x, y) = i
@@ -1193,7 +1214,7 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
     
 End Function
 
-'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
+'Find the minimum value of each block of a given byte array.  pdPixelIterator is used.
 Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PixelRegionShape, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -1211,8 +1232,7 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
     
     If (mRadius < 1) Then mRadius = 1
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
+    'To keep processing quick, only update the progress bar periodically.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
         If modifyProgBarMax = -1 Then
@@ -1223,14 +1243,13 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
-    'The number of pixels in the current median box are tracked dynamically.
+    'The number of pixels in the current box are tracked dynamically.
     Dim numOfPixels As Long
     numOfPixels = 0
             
-    'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
+    'We use an optimized histogram technique for tracking pixel values
     Dim lValues() As Long
     ReDim lValues(0 To 255) As Long
-    
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
     Dim directionDown As Boolean
@@ -1244,10 +1263,10 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
     
         numOfPixels = cPixelIterator.LockTargetHistograms_ByteArray(lValues)
         
-        'Loop through each pixel in the image, applying the filter as we go
+        'Loop through each pixel in the image, updating our sliding window box as we go
         For x = initX To finalX
             
-            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            'Based on the direction we're traveling, reverse the interior loop boundaries at edges
             If directionDown Then
                 startY = initY
                 stopY = finalY
@@ -1258,16 +1277,19 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
                 yStep = -1
             End If
             
-            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            'Process the next column.  This step is pretty much identical to the row steps above,
+            ' but in a vertical direction
             For y = startY To stopY Step yStep
             
-                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
-                ' actual median value.
+                'With a local histogram successfully built for the area surrounding this pixel,
+                ' we can now rapidly find the local minimum
                 
-                'Loop through each color component histogram, until we've passed the desired percentile of pixels
-                For i = 0 To 255
-                    If (lValues(i) <> 0) Then Exit For
-                Next i
+                'Loop through histogram entries until we reach a non-zero value (meaning there is
+                ' at least one pixel in this region with that value)
+                i = 0
+                Do While (lValues(i) = 0)
+                    i = i + 1
+                Loop
                 
                 'Finally, apply the results to the destination array.
                 dstArray(x, y) = i
