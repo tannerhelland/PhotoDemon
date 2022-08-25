@@ -497,8 +497,8 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
     
     ClipboardPaste = pasteWasSuccessful
     
-    'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
-    ' new layer has been pasted.
+    'If a paste operation was successful, switch the current tool to the layer move/resize tool,
+    ' which is most likely needed after a new layer has been pasted.
     If pasteWasSuccessful Then
         
         If srcIsMeantAsLayer And (pasteToThisDIBInstead Is Nothing) Then
@@ -597,20 +597,19 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
             
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If (Not pasteToThisDIBInstead Is Nothing) Then
-                Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
+                ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFile, pasteToThisDIBInstead, False, False)
             Else
                 If srcIsMeantAsLayer Then
                     m_LayerCounter = m_LayerCounter + 1
-                    Layers.LoadImageAsNewLayer False, m_StashFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
+                    ClipboardPaste_InternalData = Layers.LoadImageAsNewLayer(False, m_StashFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
                 Else
-                    Loading.LoadFileAsNewImage m_StashFile, sTitle, False
+                    ClipboardPaste_InternalData = Loading.LoadFileAsNewImage(m_StashFile, sTitle, False)
                 End If
             End If
                 
             'If we made it all the way here, the load was (probably?) successful
-            Message "Clipboard data imported successfully "
-            ClipboardPaste_InternalData = True
-                
+            If ClipboardPaste_InternalData Then Message "Clipboard data imported successfully "
+            
         Else
             PDDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed to find a stash file.  Paste abandoned."
         End If
@@ -667,13 +666,13 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If (Not pasteToThisDIBInstead Is Nothing) Then
-                    Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
+                    ClipboardPaste_CustomImageFormat = Loading.QuickLoadImageToDIB(m_StashFile, pasteToThisDIBInstead, False, False)
                 Else
                     If srcIsMeantAsLayer Then
                         m_LayerCounter = m_LayerCounter + 1
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
+                        ClipboardPaste_CustomImageFormat = Layers.LoadImageAsNewLayer(False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
                     Else
-                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                        ClipboardPaste_CustomImageFormat = LoadFileAsNewImage(tmpClipboardFile, sTitle, False)
                     End If
                 End If
                 
@@ -681,8 +680,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 Files.FileDeleteIfExists tmpClipboardFile
                 
                 'If we made it all the way here, the load was (probably?) successful
-                Message "Clipboard data imported successfully "
-                ClipboardPaste_CustomImageFormat = True
+                If ClipboardPaste_CustomImageFormat Then Message "Clipboard data imported successfully "
                 
             Else
                 PDDebug.LogAction "WARNING!  Clipboard image data (probably PNG) could not be written to a temp file."
@@ -783,16 +781,19 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean, 
         Dim listOfFiles As pdStringStack, numOfFiles As Long, tmpFilename As String
         If m_Clipboard.GetFileList(listOfFiles, numOfFiles) Then
             
+            'We will report success if at least one file loads successfully
+            ClipboardPaste_ListOfFiles = False
+            
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
                 Do While listOfFiles.PopString(tmpFilename)
-                    If (LenB(tmpFilename) <> 0) Then Layers.LoadImageAsNewLayer False, tmpFilename, , False, False
+                    If (LenB(tmpFilename) <> 0) Then
+                        ClipboardPaste_ListOfFiles = ClipboardPaste_ListOfFiles Or Layers.LoadImageAsNewLayer(False, tmpFilename, , False, False)
+                    End If
                 Loop
             Else
-                Loading.LoadMultipleImageFiles listOfFiles
+                ClipboardPaste_ListOfFiles = Loading.LoadMultipleImageFiles(listOfFiles)
             End If
-            
-            ClipboardPaste_ListOfFiles = True
             
         Else
             PDDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles couldn't retrieve a valid file list from pdClipboard."
@@ -851,13 +852,13 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean, Opt
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If (Not pasteToThisDIBInstead Is Nothing) Then
-                    Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
+                    ClipboardPaste_Metafile = Loading.QuickLoadImageToDIB(tmpClipboardFile, pasteToThisDIBInstead, False, False)
                 Else
                     If srcIsMeantAsLayer Then
                         m_LayerCounter = m_LayerCounter + 1
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
+                        ClipboardPaste_Metafile = Layers.LoadImageAsNewLayer(False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
                     Else
-                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                        ClipboardPaste_Metafile = LoadFileAsNewImage(tmpClipboardFile, sTitle, False)
                     End If
                 End If
                 
@@ -865,8 +866,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean, Opt
                 Files.FileDeleteIfExists tmpClipboardFile
                 
                 'If we made it all the way here, the load was (probably?) successful
-                Message "Clipboard data imported successfully "
-                ClipboardPaste_Metafile = True
+                If ClipboardPaste_Metafile Then Message "Clipboard data imported successfully "
                 
             Else
                 PDDebug.LogAction "WARNING!  Clipboard metafile data could not be written to a temp file."
@@ -903,10 +903,8 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, O
             ' Windows Explorer provides a "Copy as path" context menu option that we should support - however, this option
             ' places double-quotes around the file path, which breaks our file path detector.
             
-            'So look for and remove quotes or double-quotes around the target text, if any.
+            'So look for and remove quotes around the target text, if any.
             clipText = Trim$(clipText)
-            If (Left$(clipText, 1) = "'") Then clipText = Right$(clipText, Len(clipText) - 1)
-            If (Right$(clipText, 1) = "'") Then clipText = Left$(clipText, Len(clipText) - 1)
             If (Left$(clipText, 1) = """") Then clipText = Right$(clipText, Len(clipText) - 1)
             If (Right$(clipText, 1) = """") Then clipText = Left$(clipText, Len(clipText) - 1)
             
@@ -922,17 +920,15 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, O
                 If Files.FileExists(clipText) Then
                     
                     If (Not pasteToThisDIBInstead Is Nothing) Then
-                        Loading.QuickLoadImageToDIB clipText, pasteToThisDIBInstead, False, False
+                        ClipboardPaste_TextSource = Loading.QuickLoadImageToDIB(clipText, pasteToThisDIBInstead, False, False)
                     Else
                         If srcIsMeantAsLayer Then
-                            Layers.LoadImageAsNewLayer False, clipText, , False, False
+                            ClipboardPaste_TextSource = Layers.LoadImageAsNewLayer(False, clipText, , False, False)
                         Else
-                            LoadFileAsNewImage clipText
+                            ClipboardPaste_TextSource = LoadFileAsNewImage(clipText)
                         End If
                     End If
                     
-                    ClipboardPaste_TextSource = True
-                
                 End If
                 
             End If
@@ -1182,31 +1178,20 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean, 
                     
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                     If (Not pasteToThisDIBInstead Is Nothing) Then
-                        Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
+                        ClipboardPaste_BitmapImage = Loading.QuickLoadImageToDIB(tmpClipboardFile, pasteToThisDIBInstead, False, False)
                     Else
                         If PDImages.IsImageActive() And srcIsMeantAsLayer Then
                             m_LayerCounter = m_LayerCounter + 1
-                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
+                            ClipboardPaste_BitmapImage = Layers.LoadImageAsNewLayer(False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
                         Else
-                            Loading.LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                            ClipboardPaste_BitmapImage = Loading.LoadFileAsNewImage(tmpClipboardFile, sTitle, False)
                         End If
                     End If
                     
                     'Once the load is complete, be polite and remove the temporary file
                     cFile.FileDelete tmpClipboardFile
-                    
-                    'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
-                    ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
-                    ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
-                    ' to temporarily use this technique for predicting failure.)
-                    '
-                    'TODO: rewrite PD's central image load functions to return pass/fail status.
-                    If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
-                        If PDImages.GetActiveImage.IsActive Then
-                            If (pasteToThisDIBInstead Is Nothing) Then Message "Clipboard data imported successfully "
-                            ClipboardPaste_BitmapImage = True
-                        End If
-                    End If
+                            
+                    If ClipboardPaste_BitmapImage Then Message "Clipboard data imported successfully "
                     
                 Else
                     PDDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed because the DIB header failed validation.  Paste abandoned."
@@ -1305,7 +1290,7 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     
     'If the drag was successful, and the result is a new layer, switch to the move/size tool
     ' (as the user probably needs to position the new layer)
-    If intendedTargetIsLayer Then toolbar_Toolbox.SelectNewTool NAV_MOVE
+    If (intendedTargetIsLayer And dragWasSuccessful) Then toolbar_Toolbox.SelectNewTool NAV_MOVE
     
     'If any of the supported formats worked, treat the drag/drop operation as successful
     LoadImageFromDragDrop = dragWasSuccessful
@@ -1327,15 +1312,16 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
         'The cFiles string stack now contains all the valid filenames from the dropped list.
         If (cFiles.GetNumOfStrings > 0) Then
             
-            DragDrop_FileList = True
+            'Report success if at least one file loads successfully
+            DragDrop_FileList = False
             
             If PDImages.IsImageActive() And loadAsLayers Then
                 Dim i As Long
                 For i = 0 To cFiles.GetNumOfStrings - 1
-                    Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True, , srcX, srcY
+                    DragDrop_FileList = DragDrop_FileList Or Layers.LoadImageAsNewLayer(False, cFiles.GetString(i), , True, , srcX, srcY)
                 Next i
             Else
-                Loading.LoadMultipleImageFiles cFiles
+                DragDrop_FileList = Loading.LoadMultipleImageFiles(cFiles)
             End If
             
         End If
@@ -1494,12 +1480,13 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
             'The listOfFiles string stack now contains all the valid filenames from the dropped data object.
             If (listOfFiles.GetNumOfStrings > 0) Then
                 
-                DragDrop_ZippedFileList = True
+                'Report success if at least one file loads correctly
+                DragDrop_ZippedFileList = False
                 
                 If PDImages.IsImageActive() And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
                         If Files.FileExists(listOfFiles.GetString(i)) Then
-                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True, , srcX, srcY
+                            DragDrop_ZippedFileList = DragDrop_ZippedFileList Or Layers.LoadImageAsNewLayer(False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True, , srcX, srcY)
                             Files.FileDelete listOfFiles.GetString(i)
                         End If
                     Next i
@@ -1513,7 +1500,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                     Do While listOfFiles.PopString(tmpFilename)
                         If Files.FileExists(tmpFilename) Then
                             sTitle = Files.FileGetName(tmpFilename, True)
-                            LoadFileAsNewImage tmpFilename, sTitle, False
+                            DragDrop_ZippedFileList = DragDrop_ZippedFileList Or LoadFileAsNewImage(tmpFilename, sTitle, False)
                             Files.FileDelete tmpFilename
                         End If
                     Loop
@@ -1569,26 +1556,15 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     
     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
     If PDImages.IsImageActive() And loadAsLayers Then
-        Layers.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True, , srcX, srcY
+        DragDrop_BitmapData = Layers.LoadImageAsNewLayer(False, tmpDragDropFile, sTitle, True, , srcX, srcY)
     Else
-        LoadFileAsNewImage tmpDragDropFile, sTitle, False
+        DragDrop_BitmapData = LoadFileAsNewImage(tmpDragDropFile, sTitle, False)
     End If
     
     'Be polite and remove the temporary file
     Files.FileDeleteIfExists tmpDragDropFile
     
-    'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
-    ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
-    ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
-    ' to temporarily use this technique for predicting failure.)
-    '
-    'TODO: rewrite PD's central image load functions to return pass/fail status.
-    If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
-        If PDImages.GetActiveImage.IsActive Then
-            Message "Image imported successfully "
-            DragDrop_BitmapData = True
-        End If
-    End If
+    If DragDrop_BitmapData Then Message "Image imported successfully "
     
     Exit Function
     
@@ -1617,15 +1593,19 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
         Dim testURL As String
         testURL = Trim$(dragText)
     
-        If Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True) Then
+        If Strings.StringsEqualLeft(testURL, "http", True) Or Strings.StringsEqualLeft(testURL, "ftp", True) Then
             
             Message "Image URL found.  Attempting to download..."
             
-            'The clipboard function isn't actually specific to the clipboard, so we can freely us it here.
+            'The clipboard URL importer isn't actually specific to the clipboard, so we can freely us it here.
             DragDrop_TextData = ClipboardPaste_WellFormedURL(testURL, loadAsLayers, suppressErrorMsgs)
             
         'If this doesn't look like a URL, see if it's a file path instead
         Else
+            
+            'Remove leading/trailing quotation marks, if any.
+            If (Left$(dragText, 1) = """") Then dragText = Right$(dragText, Len(dragText) - 1)
+            If (Right$(dragText, 1) = """") Then dragText = Left$(dragText, Len(dragText) - 1)
             
             Dim targetFile As String
             If Files.FileExists(dragText) Then
@@ -1636,15 +1616,11 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             
             'If the text (or a trimmed version of the text) matches a local file, try to load it.
             If (LenB(targetFile) <> 0) Then
-            
                 If PDImages.IsImageActive() And loadAsLayers Then
-                    Layers.LoadImageAsNewLayer False, targetFile, vbNullString, True, True, srcX, srcY
+                    DragDrop_TextData = Layers.LoadImageAsNewLayer(False, targetFile, vbNullString, True, True, srcX, srcY)
                 Else
-                    LoadFileAsNewImage targetFile
+                    DragDrop_TextData = LoadFileAsNewImage(targetFile)
                 End If
-                
-                DragDrop_TextData = True
-            
             End If
             
         End If
