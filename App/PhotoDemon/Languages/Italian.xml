@@ -310,12 +310,12 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Crea ricerca colore</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Confronta somiglianza</translation>
 </phrase>
 
 <phrase>
@@ -1040,7 +1040,7 @@
 
 <phrase>
 <original>Bump map</original>
-<translation></translation>
+<translation>Mappa a rilievo</translation>
 </phrase>
 
 <phrase>
@@ -3127,7 +3127,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 
 <phrase>
 <original>Saving file</original>
-<translation></translation>
+<translation>Salvataggio del file</translation>
 </phrase>
 
 <phrase>
@@ -3755,7 +3755,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>Costruzione ricerca colore</translation>
 </phrase>
 
 <phrase>
@@ -4443,7 +4443,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation></translation>
+<translation>Questo pulsante aprirà una pagina nel tuo browser web.  Avrai bisogno di un account GitHub per procedere.</translation>
 </phrase>
 
 <phrase>
@@ -4951,7 +4951,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Similarity</original>
-<translation></translation>
+<translation>Somiglianza</translation>
 </phrase>
 
 <phrase>
@@ -7490,12 +7490,12 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>patch test size</original>
-<translation></translation>
+<translation>dimensione del patch test</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>candidati patch casuale</translation>
 </phrase>
 
 <phrase>
@@ -7505,7 +7505,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>soglia di perfezione patch</translation>
 </phrase>
 
 <phrase>
@@ -8679,7 +8679,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>Creazione mappa a rilievo</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10167,22 +10167,22 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>description</original>
-<translation></translation>
+<translation>descrizione</translation>
 </phrase>
 
 <phrase>
 <original>copyright</original>
-<translation></translation>
+<translation>copyright</translation>
 </phrase>
 
 <phrase>
 <original>grid points</original>
-<translation></translation>
+<translation>punti griglia</translation>
 </phrase>
 
 <phrase>
 <original>extreme</original>
-<translation></translation>
+<translation>estremo</translation>
 </phrase>
 
 <!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11100,17 +11100,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
-<translation></translation>
+<translation>Crea tabella di ricerca colore (LUT)</translation>
 </phrase>
 
 <phrase>
 <original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation></translation>
+<translation>aggiungi allo strumento "Regolazioni > Colore > Ricerca colore"</translation>
 </phrase>
 
 <phrase>
 <original>modified image and layer</original>
-<translation></translation>
+<translation>livello e immagine modificata</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12595,7 +12595,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>jitter (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -12712,17 +12712,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation></translation>
+<translation>clicca qui per istruzioni dettagliate (in inglese)</translation>
 </phrase>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>elementi dell'interfaccia</translation>
 </phrase>
 
 <phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
-<translation></translation>
+<translation>sostituisci traduzione con il testo di riferimento (Ctrl+U)</translation>
 </phrase>
 
 <phrase>
@@ -12732,7 +12732,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>gruppi di frasi</translation>
 </phrase>
 
 <phrase>
@@ -12752,62 +12752,62 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>Traduci automaticamente tutte le frasi mancanti</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation></translation>
+<translation>traduzione di riferimento da file .po</translation>
 </phrase>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation></translation>
+<translation>(NOTA: Ctrl+Invio salva automaticamente e passa alla frase successiva.)</translation>
 </phrase>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>tipi di frasi</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>nomi di azioni</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>finestre di messaggio</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>messaggi della barra di stato</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>suggerimenti</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>file in cui è presente questa frase</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>varie</translation>
 </phrase>
 
 <phrase>
 <original>copy system locale</original>
-<translation></translation>
+<translation>copia dal sistema</translation>
 </phrase>
 
 <phrase>
 <original>official ISO language codes at Wikipedia</original>
-<translation></translation>
+<translation>codici di lingua ISO ufficiali (Wikipedia)</translation>
 </phrase>
 
 <phrase>
@@ -12817,12 +12817,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>language status</original>
-<translation></translation>
+<translation>stato della lingua</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation></translation>
+<translation>versione lingua</translation>
 </phrase>
 
 <phrase>
@@ -12832,52 +12832,52 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>language and country ID</original>
-<translation></translation>
+<translation>ID lingua e Paese</translation>
 </phrase>
 
 <phrase>
 <original>optional translation aids</original>
-<translation></translation>
+<translation>aiuti di traduzione opzionali</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation></translation>
+<translation>chiave API DeepL.com gratuita per suggerimenti di traduzioe automatici</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation></translation>
+<translation>file di lingua (.po) di altri software, come riferimento</translation>
 </phrase>
 
 <phrase>
 <original>official ISO country codes at Wikipedia</original>
-<translation></translation>
+<translation>codici di Paese ISO ufficiali (Wikipedia)</translation>
 </phrase>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation></translation>
+<translation>Queste impostazioni facoltative possono accelerare il processo di traduzione.  Non vengono salvate nel file di lingua.</translation>
 </phrase>
 
 <phrase>
 <original>delete selected language file</original>
-<translation></translation>
+<translation>elimina il file di lingua selezionato</translation>
 </phrase>
 
 <phrase>
 <original>start new language</original>
-<translation></translation>
+<translation>inizia nuova lungua</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation></translation>
+<translation>modifica lingua esistente</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations</original>
-<translation></translation>
+<translation>Traduzioni automatiche</translation>
 </phrase>
 
 <phrase>
@@ -12892,7 +12892,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation></translation>
+<translation>Sei sicuro di voler eliminare %1?  (Questa azione non può essere annullata.)</translation>
 </phrase>
 
 <phrase>
@@ -12902,7 +12902,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation>Non hai accesso a questa cartella.  Fai il login come amministratore e riprova.</translation>
+<translation>Non hai accesso a questa cartella.  Per favore esegui come amministratore e riprova.</translation>
 </phrase>
 
 <phrase>
@@ -12924,7 +12924,9 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation></translation>
+<translation>Purtroppo il file di lingua en-US non è stato trovato su questo PC.  Questo file è incluso nelle release ufficiali di PhotoDemon, ma potrebbe non essere incluso nelle build instabili o beta.
+
+Per iniziare una nuova traduzione, per favore scarica una nuova copia di PhotoDemon da photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -12938,12 +12940,12 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Language file could not be loaded</original>
-<translation>Il file della lingua non può essere caricato</translation>
+<translation>Impossibile caricare il file di lingua</translation>
 </phrase>
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation></translation>
+<translation>frasi che non corrispondono al riferimento</translation>
 </phrase>
 
 <phrase>
@@ -12958,7 +12960,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Save and exit</original>
-<translation></translation>
+<translation>Salva ed esci</translation>
 </phrase>
 
 <phrase>
@@ -12968,17 +12970,17 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>select language</original>
-<translation></translation>
+<translation>seleziona lingua</translation>
 </phrase>
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>applica impostazioni di lingua e traduzione</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>localizza frasi</translation>
 </phrase>
 
 <phrase>
@@ -12988,17 +12990,17 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>all phrases</original>
-<translation></translation>
+<translation>tutte le frasi</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation></translation>
+<translation>frasi tradotte</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation></translation>
+<translation>frasi non tradotte</translation>
 </phrase>
 
 <phrase>
@@ -13008,12 +13010,12 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>[translation failed]</original>
-<translation></translation>
+<translation>[traduzione non riuscita]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation></translation>
+<translation>[frase non presente nel file]</translation>
 </phrase>
 
 <phrase>
@@ -13023,17 +13025,17 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>(official translation by %1)</original>
-<translation></translation>
+<translation>(traduzione ufficiale di %1)</translation>
 </phrase>
 
 <phrase>
 <original>by %1</original>
-<translation></translation>
+<translation>di %1</translation>
 </phrase>
 
 <phrase>
 <original>(autosaved on %1)</original>
-<translation></translation>
+<translation>(salvataggio automatico il %1)</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
