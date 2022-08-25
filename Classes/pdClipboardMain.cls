@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 23/April/19
-'Last update: replace FreeImage PNG encoder with pdPNG; this produces much faster PNG copies
+'Last updated: 25/August/22
+'Last update: add support for `Explorer > Copy as Path` context menu (this command places quotes around the target file path)
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here,
 ' but in the separate pdClipboard object, which includes a ton of specialized helper functions.
@@ -899,34 +899,35 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, O
         Dim clipText As String
         If m_Clipboard.GetClipboardText(clipText) Then
             
-            'First, test the text for URL-like indicators
-            Dim testURL As String
-            testURL = Trim$(clipText)
-        
-            If (Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True)) Then
+            'As reported by @manfromarce on GitHub (https://github.com/tannerhelland/PhotoDemon/discussions/421#discussioncomment-3476307)
+            ' Windows Explorer provides a "Copy as path" context menu option that we should support - however, this option
+            ' places double-quotes around the file path, which breaks our file path detector.
+            
+            'So look for and remove quotes or double-quotes around the target text, if any.
+            clipText = Trim$(clipText)
+            If (Left$(clipText, 1) = "'") Then clipText = Right$(clipText, Len(clipText) - 1)
+            If (Right$(clipText, 1) = "'") Then clipText = Left$(clipText, Len(clipText) - 1)
+            If (Left$(clipText, 1) = """") Then clipText = Right$(clipText, Len(clipText) - 1)
+            If (Right$(clipText, 1) = """") Then clipText = Left$(clipText, Len(clipText) - 1)
+            
+            'Now we will test the text for various supportable types, starting with URLs
+            If (Strings.StringsEqualLeft(clipText, "http", True) Or Strings.StringsEqualLeft(clipText, "ftp", True)) Then
                 Message "Image URL found.  Attempting to download..."
-                ClipboardPaste_TextSource = ClipboardPaste_WellFormedURL(testURL, srcIsMeantAsLayer)
+                ClipboardPaste_TextSource = ClipboardPaste_WellFormedURL(clipText, srcIsMeantAsLayer)
                 
             'If this doesn't look like a URL, see if it's a file path instead
             Else
                 
-                Dim targetFile As String
+                'If the text matches a local file path, try to load it.
                 If Files.FileExists(clipText) Then
-                    targetFile = clipText
-                ElseIf Files.FileExists(Trim$(clipText)) Then
-                    targetFile = Trim$(clipText)
-                End If
-                
-                'If the text (or a trimmed version of the text) matches a local file, try to load it.
-                If (LenB(targetFile) <> 0) Then
                     
                     If (Not pasteToThisDIBInstead Is Nothing) Then
-                        Loading.QuickLoadImageToDIB targetFile, pasteToThisDIBInstead, False, False
+                        Loading.QuickLoadImageToDIB clipText, pasteToThisDIBInstead, False, False
                     Else
                         If srcIsMeantAsLayer Then
-                            Layers.LoadImageAsNewLayer False, targetFile, , False, False
+                            Layers.LoadImageAsNewLayer False, clipText, , False, False
                         Else
-                            LoadFileAsNewImage targetFile
+                            LoadFileAsNewImage clipText
                         End If
                     End If
                     
