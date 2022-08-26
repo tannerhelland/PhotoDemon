@@ -118,6 +118,9 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     'Helper functions exist for each main menu.  Once a command is located, we can stop searching.
     Dim cmdFound As Boolean: cmdFound = False
     
+    'Before searching menu items, perform a "quick" search for UI-specific tool actions
+    If (Not cmdFound) Then cmdFound = Launch_ByName_NonMenu(srcMenuName, actionSource)
+    
     'Search each menu group in turn
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuFile(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuEdit(srcMenuName, actionSource)
@@ -130,7 +133,6 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuView(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuWindow(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuHelp(srcMenuName, actionSource)
-    If (Not cmdFound) Then cmdFound = Launch_ByName_NonMenu(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_Misc(srcMenuName, actionSource)
     
     LaunchAction_ByName = cmdFound
@@ -1459,6 +1461,20 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
     
     Select Case srcMenuName
         
+        'Give priority to "quick actions" related to tools - typically UI-specific operations that
+        ' don't involve Undo/Redo.
+        '
+        '(Note also that these settings are fairly involved because they need to work on *any* relevant tool,
+        ' so we typically relay their commands elsewhere.
+        Case "tool_active_hardnessdown"
+            Tools.QuickToolAction_HardnessDown
+        Case "tool_active_hardnessup"
+            Tools.QuickToolAction_HardnessUp
+        Case "tool_active_sizedown"
+            Tools.QuickToolAction_SizeDown
+        Case "tool_active_sizeup"
+            Tools.QuickToolAction_SizeUp
+        
         'Activate various tools
         Case "tool_hand"
             toolbar_Toolbox.SelectNewTool NAV_DRAG, (actionSource = pdas_Search), True
@@ -1987,7 +2003,15 @@ Public Sub BuildActionDatabase()
     AddAction "help_sourcecode", vbNullString
     AddAction "help_website", vbNullString
     AddAction "help_about", vbNullString
-        
+    
+    'Tool and brush actions follow.  These typically do *not* have corresponding processor actions,
+    ' and are not recorded by macros.  (Many are UI-specific actions associated with hotkeys,
+    ' e.g. "increase brush size".)
+    AddAction "tool_active_hardnessdown"
+    AddAction "tool_active_hardnessup"
+    AddAction "tool_active_sizedown"
+    AddAction "tool_active_sizeup"
+    
 End Sub
 
 Private Sub AddAction(ByVal actionName As String, Optional ByRef processName As String = vbNullString, Optional ByVal isRepeatable As Boolean = False, Optional ByVal isFadeable As Boolean = False)

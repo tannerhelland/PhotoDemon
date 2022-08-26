@@ -956,3 +956,185 @@ Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
     End Select
 
 End Function
+
+'Some generic tool-related actions are implemented here.  These are (typically) activated via hotkey,
+' and they are designed to work on *any* relevant tool.  (For example, increasing "brush size" works
+' on any brush-like tool.)
+
+'Hardness changes at 25% increments, like PS.
+Public Sub QuickToolAction_HardnessDown()
+    
+    'Before adjusting anything, ensure a relevant tool is active
+    Dim curValue As Double
+    
+    Select Case g_CurrentTool
+        Case PAINT_SOFTBRUSH
+            curValue = toolpanel_Paintbrush.sltBrushSetting(2).Value
+        Case PAINT_ERASER
+            curValue = toolpanel_Eraser.sltBrushSetting(2).Value
+        Case PAINT_CLONE
+            curValue = toolpanel_Clone.sltBrushSetting(2).Value
+        Case Else
+            Exit Sub
+    End Select
+    
+    'Lock to the nearest multiple of 25
+    curValue = Int((curValue + 24.99) / 25) * 25 - 25
+    
+    'Ensure valid minimum
+    If (curValue < 1) Then curValue = 1
+    
+    'Assign the new value
+    Select Case g_CurrentTool
+        Case PAINT_SOFTBRUSH
+            toolpanel_Paintbrush.sltBrushSetting(2).Value = curValue
+        Case PAINT_ERASER
+            toolpanel_Eraser.sltBrushSetting(2).Value = curValue
+        Case PAINT_CLONE
+            toolpanel_Clone.sltBrushSetting(2).Value = curValue
+    End Select
+    
+End Sub
+
+Public Sub QuickToolAction_HardnessUp()
+
+    'Before adjusting anything, ensure a relevant tool is active
+    Dim curValue As Double
+    
+    Select Case g_CurrentTool
+        Case PAINT_SOFTBRUSH
+            curValue = toolpanel_Paintbrush.sltBrushSetting(2).Value
+        Case PAINT_ERASER
+            curValue = toolpanel_Eraser.sltBrushSetting(2).Value
+        Case PAINT_CLONE
+            curValue = toolpanel_Clone.sltBrushSetting(2).Value
+        Case Else
+            Exit Sub
+    End Select
+    
+    'Lock to the nearest multiple of 25
+    curValue = (Int(curValue / 25) + 1) * 25
+    
+    'Ensure valid maximum
+    If (curValue > 100) Then curValue = 100
+    
+    'Assign the new value
+    Select Case g_CurrentTool
+        Case PAINT_SOFTBRUSH
+            toolpanel_Paintbrush.sltBrushSetting(2).Value = curValue
+        Case PAINT_ERASER
+            toolpanel_Eraser.sltBrushSetting(2).Value = curValue
+        Case PAINT_CLONE
+            toolpanel_Clone.sltBrushSetting(2).Value = curValue
+    End Select
+    
+End Sub
+
+'Size changes are more complex.  How much we increase or decrease size varies based on the current size;
+' increments generally increase proportional to brush size.
+Public Sub QuickToolAction_SizeDown()
+    
+    'Before adjusting anything, ensure a relevant tool is active
+    Dim curValue As Double
+    
+    Select Case g_CurrentTool
+        Case PAINT_PENCIL
+            curValue = toolpanel_Pencil.sltBrushSetting(0).Value
+        Case PAINT_SOFTBRUSH
+            curValue = toolpanel_Paintbrush.sltBrushSetting(0).Value
+        Case PAINT_ERASER
+            curValue = toolpanel_Eraser.sltBrushSetting(0).Value
+        Case PAINT_CLONE
+            curValue = toolpanel_Clone.sltBrushSetting(0).Value
+        Case Else
+            Exit Sub
+    End Select
+    
+    'Size changes vary by range.  This pattern is a direct copy of Photoshop CS2's strategy, for better or worse.
+    If (curValue > 300) Then
+        curValue = Int((curValue + 99.99) / 100) * 100 - 100
+    ElseIf (curValue > 200) Then
+        curValue = Int((curValue + 49.99) / 50) * 50 - 50
+    ElseIf (curValue > 100) Then
+        curValue = Int((curValue + 24.99) / 25) * 25 - 25
+    ElseIf (curValue > 10) Then
+        curValue = Int((curValue + 9.99) / 10) * 10 - 10
+    Else
+        curValue = Int(curValue + 0.99) - 1
+    End If
+    
+    'Ensure valid minimum
+    If (curValue < 1#) Then curValue = 1#
+    
+    'Assign the new value
+    Select Case g_CurrentTool
+        Case PAINT_PENCIL
+            toolpanel_Pencil.sltBrushSetting(0).Value = curValue
+        Case PAINT_SOFTBRUSH
+            toolpanel_Paintbrush.sltBrushSetting(0).Value = curValue
+        Case PAINT_ERASER
+            toolpanel_Eraser.sltBrushSetting(0).Value = curValue
+        Case PAINT_CLONE
+            toolpanel_Clone.sltBrushSetting(0).Value = curValue
+    End Select
+    
+End Sub
+
+Public Sub QuickToolAction_SizeUp()
+
+    'Before adjusting anything, ensure a relevant tool is active
+    Dim curValue As Double
+    
+    Select Case g_CurrentTool
+        Case PAINT_PENCIL
+            curValue = toolpanel_Pencil.sltBrushSetting(0).Value
+        Case PAINT_SOFTBRUSH
+            curValue = toolpanel_Paintbrush.sltBrushSetting(0).Value
+        Case PAINT_ERASER
+            curValue = toolpanel_Eraser.sltBrushSetting(0).Value
+        Case PAINT_CLONE
+            curValue = toolpanel_Clone.sltBrushSetting(0).Value
+        Case Else
+            Exit Sub
+    End Select
+    
+    'Size changes vary by range.  This pattern is a direct copy of Photoshop CS2's strategy, for better or worse.
+    If (curValue >= 300) Then
+        curValue = Int(curValue / 100) * 100 + 100
+    ElseIf (curValue >= 200) Then
+        curValue = Int(curValue / 50) * 50 + 50
+    ElseIf (curValue >= 100) Then
+        curValue = Int(curValue / 25) * 25 + 25
+    ElseIf (curValue >= 10) Then
+        curValue = Int(curValue / 10) * 10 + 10
+    Else
+        curValue = Int(curValue) + 1
+    End If
+    
+    'Ensure valid maximum (may vary by tool)
+    Select Case g_CurrentTool
+        Case PAINT_PENCIL
+            If (curValue > toolpanel_Pencil.sltBrushSetting(0).Max) Then curValue = toolpanel_Pencil.sltBrushSetting(0).Max
+        Case PAINT_SOFTBRUSH
+            If (curValue > toolpanel_Paintbrush.sltBrushSetting(0).Max) Then curValue = toolpanel_Paintbrush.sltBrushSetting(0).Max
+        Case PAINT_ERASER
+            If (curValue > toolpanel_Eraser.sltBrushSetting(0).Max) Then curValue = toolpanel_Eraser.sltBrushSetting(0).Max
+        Case PAINT_CLONE
+            If (curValue > toolpanel_Clone.sltBrushSetting(0).Max) Then curValue = toolpanel_Clone.sltBrushSetting(0).Max
+        Case Else
+            Exit Sub
+    End Select
+    
+    'Assign the new value
+    Select Case g_CurrentTool
+        Case PAINT_PENCIL
+            toolpanel_Pencil.sltBrushSetting(0).Value = curValue
+        Case PAINT_SOFTBRUSH
+            toolpanel_Paintbrush.sltBrushSetting(0).Value = curValue
+        Case PAINT_ERASER
+            toolpanel_Eraser.sltBrushSetting(0).Value = curValue
+        Case PAINT_CLONE
+            toolpanel_Clone.sltBrushSetting(0).Value = curValue
+    End Select
+    
+End Sub

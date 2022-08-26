@@ -80,10 +80,14 @@ Public Const VK_PAGEDOWN As Long = &H22
 Public Const VK_END As Long = &H23
 Public Const VK_HOME As Long = &H24
 
-Public Const VK_OEM_PLUS As Long = 187   'Locale-inspecific + key
-Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
-Public Const VK_OEM_4 As Long = 219      'For the US standard keyboard, the '[{' key.  (Varies internationally.)
-Public Const VK_OEM_6 As Long = 221      'For the US standard keyboard, the ']}' key.  (Varies internationally.)
+Public Const VK_OEM_COMMA As Long = 188    'For any country/region, the ',' key
+Public Const VK_OEM_PERIOD As Long = &HBE   'For any country/region, the '.' key
+Public Const VK_OEM_PLUS As Long = 187      'Locale-inspecific + key
+Public Const VK_OEM_MINUS As Long = 189     'Locale-inspecific - key
+Public Const VK_OEM_1 As Long = &HBA        'For the US standard keyboard, the ';:' key.  (Varies internationally.)
+Public Const VK_OEM_4 As Long = 219         'For the US standard keyboard, the '[{' key.  (Varies internationally.)
+Public Const VK_OEM_6 As Long = 221         'For the US standard keyboard, the ']}' key.  (Varies internationally.)
+Public Const VK_OEM_7 As Long = &HDE        'For the US standard keyboard, the 'single-quote/double-quote' key.  (Varies internationally.)
 
 'Old PDI files were not Unicode friendly.  When loading PDI files, we use this constant to determine whether
 ' ANSI or Unicode string behavior should be used.

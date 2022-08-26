@@ -175,6 +175,12 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKeyF, , "tool_paintbucket"
     Hotkeys.AddHotkey vbKeyG, , "tool_gradient"
     
+    'Tool modifiers; UI setting changes only!
+    Hotkeys.AddHotkey VK_OEM_4, , "tool_active_sizedown"
+    Hotkeys.AddHotkey VK_OEM_6, , "tool_active_sizeup"
+    Hotkeys.AddHotkey VK_OEM_4, vbShiftMask, "tool_active_hardnessdown"
+    Hotkeys.AddHotkey VK_OEM_6, vbShiftMask, "tool_active_hardnessup"
+    
     'File menu
     Hotkeys.AddHotkey vbKeyN, vbCtrlMask, "file_new"
     Hotkeys.AddHotkey vbKeyO, vbCtrlMask, "file_open"
@@ -343,10 +349,10 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
             
             Select Case .hkKeyCode
             
-                Case vbKeyAdd
+                Case vbKeyAdd, VK_OEM_PLUS
                     sChar = "+"
                 
-                Case vbKeySubtract
+                Case vbKeySubtract, VK_OEM_MINUS
                     sChar = "-"
                 
                 Case vbKeyReturn
@@ -364,17 +370,23 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
                 'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
                 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
                 ' At the moment, however, they're implemented as magic numbers.
-                Case 188
+                Case VK_OEM_COMMA
                     sChar = ","
                     
-                Case 190
+                Case VK_OEM_PERIOD
                     sChar = "."
+                
+                Case VK_OEM_1
+                    sChar = ";"
                     
-                Case 219
+                Case VK_OEM_4
                     sChar = "["
                     
-                Case 221
+                Case VK_OEM_6
                     sChar = "]"
+                    
+                Case VK_OEM_7
+                    sChar = "'"
                 
                 'This is a stupid hack; APIs need to be used instead, although their results may be "unpredictable".
                 ' See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
