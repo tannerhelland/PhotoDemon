@@ -71,6 +71,7 @@ Public Const VK_DOWN As Long = &H28
 Public Const VK_BACK As Long = &H8
 Public Const VK_TAB As Long = &H9
 Public Const VK_RETURN As Long = &HD
+Public Const VK_CAPITAL As Long = &H14
 Public Const VK_SPACE As Long = &H20
 Public Const VK_INSERT As Long = &H2D
 Public Const VK_DELETE As Long = &H2E

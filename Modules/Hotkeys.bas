@@ -180,6 +180,7 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey VK_OEM_6, , "tool_active_sizeup"
     Hotkeys.AddHotkey VK_OEM_4, vbShiftMask, "tool_active_hardnessdown"
     Hotkeys.AddHotkey VK_OEM_6, vbShiftMask, "tool_active_hardnessup"
+    Hotkeys.AddHotkey VK_CAPITAL, , "tool_active_togglecursor"
     
     'File menu
     Hotkeys.AddHotkey vbKeyN, vbCtrlMask, "file_new"

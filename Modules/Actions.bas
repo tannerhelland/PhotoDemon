@@ -1474,6 +1474,8 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
             Tools.QuickToolAction_SizeDown
         Case "tool_active_sizeup"
             Tools.QuickToolAction_SizeUp
+        Case "tool_active_togglecursor"
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
         
         'Activate various tools
         Case "tool_hand"
