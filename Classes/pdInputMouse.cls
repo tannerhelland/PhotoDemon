@@ -113,9 +113,6 @@ Private Const TME_LEAVE As Long = &H2&
 
 Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 
-'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 'Virtual key-codes currently supported by pdInput
 Private Const VK_LBUTTON As Long = &H1
 Private Const VK_RBUTTON As Long = &H2
@@ -396,11 +393,6 @@ Private Function RequestMouseTrackingForHwnd() As Boolean
     'TrackMouseEvent returns non-zero values for success
     RequestMouseTrackingForHwnd = (TrackMouseEvent(eventTracker) <> 0)
     
-End Function
-
-'Note that the vKey constant below is a virtual key mapping, not (necessarily) a standard VB key constant - plan accordingly!
-Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant

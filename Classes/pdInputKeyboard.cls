@@ -71,9 +71,6 @@ Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
 
-'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 
@@ -253,11 +250,6 @@ Friend Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
     End If
     
 End Sub
-
-'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
-End Function
 
 Private Function GetLoWord(ByVal lParam As Long) As Integer
     If lParam And &H8000& Then

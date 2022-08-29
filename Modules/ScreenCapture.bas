@@ -48,7 +48,6 @@ End Type
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorInfo Lib "user32" (ByVal ptrToCursorInfo As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
@@ -226,15 +225,8 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL,
             ' doesn't differentiate between these for left-handed mouse users and we don't
             ' want to query additional APIs for that kind of low-level data - so said another
             ' way, *either* button down gets an identical render.
-            Dim mbDown As Boolean
             Const VK_LBUTTON As Long = &H1, VK_RBUTTON As Long = &H2
-            
-            'Also note that GetAsyncKeyState returns a weird short value, e.g. from MSDN:
-            ' "If the most significant bit is set, the key is down..."
-            mbDown = ((GetAsyncKeyState(VK_LBUTTON) And &H8000) <> 0)
-            If (Not mbDown) Then mbDown = ((GetAsyncKeyState(VK_RBUTTON) And &H8000) <> 0)
-            
-            If mbDown Then
+            If (IsVirtualKeyDown(VK_LBUTTON, True) Or IsVirtualKeyDown(VK_RBUTTON, True)) Then
                 
                 'pd2D handles rendering duties
                 Dim cBrush As pd2DBrush

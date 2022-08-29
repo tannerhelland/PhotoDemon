@@ -90,11 +90,6 @@ Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) 
 ' *after* the hook exits.
 Private m_InHookNow As Boolean, m_InFireTimerNow As Boolean
 
-'When PD loses and then gains focus, we need to manually update control key tracking.  This is done
-' by manually checking key state (instead of waiting for a hook event, which we may have missed as
-' PD wasn't active).
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 'To reduce the potential for double-fired keys, we track the last-fired accelerator ID and the time
 ' when we launched the associated action.  The current system keyboard delay must elapse before we
 ' fire that same accelerator a second time.
@@ -323,11 +318,6 @@ Public Sub RecaptureKeyStates()
     m_ShiftDown = IsVirtualKeyDown(VK_SHIFT)
 End Sub
 
-'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
-End Function
-
 'When PD loses focus, call this function to reset all key state tracking
 Public Sub ResetKeyStates()
     m_CtrlDown = False
@@ -525,6 +515,9 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
             ' are (by design) not triggered by hold-to-repeat behavior, we only want to deal with key events
             ' that are full transitions from "Unpressed" to "Pressed" or vice-versa.  (The byte masks here
             ' all come from MSDN - check the link above for details!)
+            '
+            'TODO: some hotkeys (like brush size up/down) would actually benefit from key repeat behavior.
+            ' This line needs to be revisited accordingly!
             If ((lParam >= 0) And ((lParam And &H40000000) = 0)) Or ((lParam < 0) And ((lParam And &H40000000) <> 0)) Then
                 
                 'We now want to check two things simultaneously.  First, we want to update Ctrl/Alt/Shift

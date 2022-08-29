@@ -203,9 +203,6 @@ Private m_CharCache As Long
 Private Const PM_NOREMOVE As Long = &H0
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lpMsg As TagMSG, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 
-'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
 
@@ -417,11 +414,6 @@ Friend Property Let Visible(ByVal newVisibility As Boolean)
         If (m_EditBoxHwnd <> 0) Then ShowWindow m_EditBoxHwnd, SW_HIDE
     End If
 End Property
-
-'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
-End Function
 
 'In order to give our owner some control over when the edit box is actually created, they are required to call the
 ' CreateEditBox function at least once.  (The Show() event is a decent place, for example.)  After the edit box has

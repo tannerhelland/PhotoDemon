@@ -275,6 +275,8 @@ End Type
 
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+Private Declare Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
 Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As OS_SystemInfo)
@@ -683,7 +685,7 @@ Public Function GetSystemTimeAsCurrency() As Currency
 End Function
 
 'Is Aero enabled (requires Vista+ and classic theme must *not* be in use)
-Public Function IsAeroAvailable(ByVal srcHwnd As Long) As Boolean
+Public Function IsAeroAvailable(ByVal srcHWnd As Long) As Boolean
     
     'Only check this once; it does not change per-session
     If (m_ThemingAvailable = pdta_Unknown) Then
@@ -700,7 +702,7 @@ Public Function IsAeroAvailable(ByVal srcHwnd As Long) As Boolean
         Else
             Dim hTheme As Long, sClass As String
             sClass = "Window"
-            hTheme = OpenThemeData(srcHwnd, StrPtr(sClass))
+            hTheme = OpenThemeData(srcHWnd, StrPtr(sClass))
             If (hTheme <> 0) Then
                 m_ThemingAvailable = pdta_True
                 CloseThemeData hTheme
@@ -718,6 +720,38 @@ End Function
 'Is this program instance compiled, or running from the IDE?
 Public Function IsProgramCompiled() As Boolean
     IsProgramCompiled = (App.LogMode = 1)
+End Function
+
+'Check current keystate.  Note that the vKey constant below is a virtual key mapping, not (necessarily) a standard
+' VB key constant - plan accordingly!
+'
+'ANOTHER IMPORTANT NOTE: this function only checks literal key up/down state.  It *will not work* for toggle state
+' on keys like CAPS LOCK or NUM LOCK; for those, you need to use the synchronous call, below.
+'
+'The optional "incStateSinceLastQuery" parameter uses old 16-bit Windows compatibility to see if the requested key
+' *was* pressed since the last check (regardless of whether it is down or not now).  Note that the bit is cleared
+' whenever *any* thread calls GetAsyncKeyState, so it is not reliable under most circumstances.  (PD uses this
+' during screen recording to increase the odds of "catching" mouse clicks, but it's not mission-critical.)
+Public Function IsVirtualKeyDown(ByVal vKey As Long, Optional ByVal incStateSinceLastQuery As Boolean = False) As Boolean
+    If incStateSinceLastQuery Then
+        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8001) <> 0
+    Else
+        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8000) <> 0
+    End If
+End Function
+
+'Return synchronous key state from the current thread.  Note that this function is necessary to detect state
+' of toggle-able keys like CAPS LOCK, thanks to the following info from MSDN:
+' - If the high-order bit is 1, the key is down; otherwise, it is up.
+' - If the low-order bit is 1, the key is toggled. A key, such as the CAPS LOCK key, is toggled if it is turned on.
+'   The key is off and untoggled if the low-order bit is 0. A toggle key's indicator light (if any) on the keyboard
+'   will be on when the key is toggled, and off when the key is untoggled.
+Public Function IsVirtualKeyDown_Synchronous(ByVal vKey As Long, Optional ByVal useToggleState As Boolean = False) As Boolean
+    If useToggleState Then
+        IsVirtualKeyDown_Synchronous = (GetKeyState(vKey) And &H1) <> 0
+    Else
+        IsVirtualKeyDown_Synchronous = (GetKeyState(vKey) And &H8000) <> 0
+    End If
 End Function
 
 'Check for a version >= the specified version.
@@ -958,17 +992,17 @@ Public Sub SetRestartRestoreBehavior(ByVal allowToRestore As Boolean)
 End Sub
 
 'If desired, a custom state can be set for the taskbar.  (Normally this is handled by the SetTaskbarProgressValue function.)
-Public Function SetTaskbarProgressState(ByVal tbpFlags As PD_TaskBarProgress, ByVal srcHwnd As Long) As Long
-    If WIN7_FEATURES_ALLOWED Then SetTaskbarProgressState = CallInterface(m_taskbarObjHandle, SetProgressState_, 2, srcHwnd, tbpFlags)
+Public Function SetTaskbarProgressState(ByVal tbpFlags As PD_TaskBarProgress, ByVal srcHWnd As Long) As Long
+    If WIN7_FEATURES_ALLOWED Then SetTaskbarProgressState = CallInterface(m_taskbarObjHandle, SetProgressState_, 2, srcHWnd, tbpFlags)
 End Function
 
-Public Function SetTaskbarProgressValue(ByVal amtCompleted As Long, ByVal amtTotal As Long, ByVal srcHwnd As Long) As Long
+Public Function SetTaskbarProgressValue(ByVal amtCompleted As Long, ByVal amtTotal As Long, ByVal srcHWnd As Long) As Long
     If WIN7_FEATURES_ALLOWED Then
         If (amtCompleted = 0) Then
-            SetTaskbarProgressState TBP_NoProgress, srcHwnd
+            SetTaskbarProgressState TBP_NoProgress, srcHWnd
         Else
-            SetTaskbarProgressState TBP_Normal, srcHwnd
-            SetTaskbarProgressValue = CallInterface(m_taskbarObjHandle, SetProgressValue_, 5, srcHwnd, amtCompleted, 0, amtTotal, 0)
+            SetTaskbarProgressState TBP_Normal, srcHWnd
+            SetTaskbarProgressValue = CallInterface(m_taskbarObjHandle, SetProgressValue_, 5, srcHWnd, amtCompleted, 0, amtTotal, 0)
         End If
     End If
 End Function
