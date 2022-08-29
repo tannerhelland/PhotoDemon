@@ -387,24 +387,23 @@ Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
         If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             'Loop through the image and force each alpha value to the user's specified value
-            Dim iData() As Byte, tmpSA As SafeArray1D, dibPtr As Long, dibStride As Long
-            Me.WrapArrayAroundScanline iData, tmpSA, 0
-            dibPtr = tmpSA.pvData
-            dibStride = tmpSA.cElements
+            Dim iData() As Byte, tmpSA As SafeArray1D
+            Me.WrapArrayAroundDIB_1D iData, tmpSA
             
-            Dim x As Long, y As Long, finalX As Long
-            finalX = (m_dibWidth - 1) * 4
+            Dim numPixels As Long
+            numPixels = (m_dibWidth * m_dibHeight - 1) * 4
                 
             'Loop through the image, checking alphas as we go
-            For y = 0 To m_dibHeight - 1
-                tmpSA.pvData = dibPtr + dibStride * y
-            For x = 3 To finalX + 3 Step 4
+            Dim x As Long
+            For x = 3 To numPixels + 3 Step 4
                 iData(x) = newAlpha
             Next x
-            Next y
             
             Me.UnwrapArrayFromDIB iData
             ForceNewAlpha = True
+            
+            'If alpha is 255, mark this DIB as premultiplied
+            If (newAlpha = 255) Then Me.SetInitialAlphaPremultiplicationState True
             
         Else
             Debug.Print "WARNING!  The target DIB is empty (DC or Width or Height = 0).  pdDIB.ForceNewAlpha failed."
