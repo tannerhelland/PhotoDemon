@@ -991,6 +991,11 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim brushTooSmall As Boolean
     brushTooSmall = (onScreenSize < 7#)
     
+    'Like Photoshop, the CAPS LOCK key can be used to toggle between brush outlines and "precision" cursor mode.
+    ' In "precision" mode, we only draw a target cursor.
+    Dim renderInPrecisionMode As Boolean
+    renderInPrecisionMode = brushTooSmall Or OS.IsVirtualKeyDown_Synchronous(VK_CAPITAL, True)
+    
     'Borrow a pair of UI pens from the main rendering module
     Dim innerPen As pd2DPen, outerPen As pd2DPen
     Drawing.BorrowCachedUIPens outerPen, innerPen
@@ -998,6 +1003,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     'Create other required pd2D drawing tools (a surface)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
+    cSurface.SetSurfacePixelOffset P2_PO_Normal
     
     'Other misc drawing tools
     Dim canvasMatrix As pd2DTransform
@@ -1005,10 +1011,15 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim cursX As Double, cursY As Double
     Dim oldX As Double, oldY As Double
     Dim lastPoint As PointFloat
-    Dim crossLength As Single, outerCrossBorder As Single
+    Dim crossLength As Single, crossDistanceFromCenter As Single, outerCrossBorder As Single
     Dim copyOfBrushOutline As pd2DPath
-    Dim backupWidth As Single, dashSizes() As Single
+    Dim backupWidth As Single
     Dim okToProceed As Boolean
+    
+    'Dash sizes (for the source point outline)
+    Dim dashSizes(0 To 1) As Single
+    dashSizes(0) = 2.5!
+    dashSizes(1) = 2.5!
     
     'If the user is currently holding down the ctrl key, they're trying to set a source point.
     ' Render a special outline just for this occasion.
@@ -1022,19 +1033,30 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         Drawing.GetTransformFromImageToCanvas canvasMatrix, targetCanvas, PDImages.GetActiveImage(), srcX, srcY
         Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), srcX, srcY, cursX, cursY
         
-        'Paint a target cursor - but *only* if the mouse is not currently down!
-        crossLength = 3#
-        outerCrossBorder = 0.5
-        
-        outerPen.SetPenLineCap P2_LC_Round
-        innerPen.SetPenLineCap P2_LC_Round
-        PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-        PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-        PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-        PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
-    
-        'If size allows, render a transformed brush outline onto the canvas as well
-        If (Not brushTooSmall) Then
+        If renderInPrecisionMode Then
+            
+            outerPen.SetPenLineCap P2_LC_Round
+            innerPen.SetPenLineCap P2_LC_Round
+            
+            'Paint a target cursor
+            crossLength = 3!
+            crossDistanceFromCenter = 4!
+            outerCrossBorder = 0.25!
+            
+            'Four "beneath" shadows
+            PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossDistanceFromCenter + outerCrossBorder, cursX, cursY - crossDistanceFromCenter - crossLength - outerCrossBorder
+            PD2D.DrawLineF cSurface, outerPen, cursX, cursY + crossDistanceFromCenter - outerCrossBorder, cursX, cursY + crossDistanceFromCenter + crossLength + outerCrossBorder
+            PD2D.DrawLineF cSurface, outerPen, cursX - crossDistanceFromCenter + outerCrossBorder, cursY, cursX - crossDistanceFromCenter - crossLength - outerCrossBorder, cursY
+            PD2D.DrawLineF cSurface, outerPen, cursX + crossDistanceFromCenter - outerCrossBorder, cursY, cursX + crossDistanceFromCenter + crossLength + outerCrossBorder, cursY
+            
+            'Four "above" opaque lines
+            PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossDistanceFromCenter, cursX, cursY - crossDistanceFromCenter - crossLength
+            PD2D.DrawLineF cSurface, innerPen, cursX, cursY + crossDistanceFromCenter, cursX, cursY + crossDistanceFromCenter + crossLength
+            PD2D.DrawLineF cSurface, innerPen, cursX - crossDistanceFromCenter, cursY, cursX - crossDistanceFromCenter - crossLength, cursY
+            PD2D.DrawLineF cSurface, innerPen, cursX + crossDistanceFromCenter, cursY, cursX + crossDistanceFromCenter + crossLength, cursY
+            
+        'If size and settings allow, render a transformed brush outline onto the canvas
+        Else
             
             'Get a copy of the current brush outline, transformed into position
             Set copyOfBrushOutline = New pd2DPath
@@ -1046,10 +1068,6 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
             
             innerPen.SetPenStyle P2_DS_Custom
             innerPen.SetPenDashCap P2_DC_Round
-            
-            ReDim dashSizes(0 To 1) As Single
-            dashSizes(0) = 2.5!
-            dashSizes(1) = 2.5!
             innerPen.SetPenDashes_UNSAFE VarPtr(dashSizes(0)), 2
             
             PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
@@ -1065,7 +1083,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Else
         
         'We now want to (potentially) draw *two* sets of brush outlines - one for the brush location,
-        ' and a second one for the source location, if it exists.  We also want the cursor for the
+        ' and a second one for the source location, if it exists.  We also want the cursor for the active
         ' brush position (i = 0) to "overlay" the indicator for the source position (i = 1), which is
         ' why we draw the points in reverse
         Dim i As Long
@@ -1123,23 +1141,46 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                 
             Else
                 
-                'Paint a target cursor - but *only* if the mouse is not currently down!
-                crossLength = 3#
-                outerCrossBorder = 0.5
+                'In precision mode (CAPS LOCK down or zoomed out too far to render a proper brush outline),
+                ' we want to *always* paint a target cursor at the source location, but we only paint a target
+                ' cursor at the current location *if* the mouse is not down.  (This prevents obscuring the
+                ' location being painted.)
+                crossLength = 3!
+                crossDistanceFromCenter = 4!
+                outerCrossBorder = 0.25!
                 
-                If (Not m_Paintbrush.IsMouseDown()) And (i = 0) Then
+                If renderInPrecisionMode Then
+                    
+                    'For the active cursor, only paint a target cross when the mouse is *not* down
+                    If (i = 0) Then
+                        okToProceed = (Not m_Paintbrush.IsMouseDown())
+                    
+                    'For the source cursor, *always* paint a target cross
+                    Else
+                        okToProceed = True
+                    End If
+                    
                     outerPen.SetPenLineCap P2_LC_Round
                     innerPen.SetPenLineCap P2_LC_Round
-                    PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-                    PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-                    PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-                    PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+                    
+                    'Four "beneath" shadows
+                    PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossDistanceFromCenter + outerCrossBorder, cursX, cursY - crossDistanceFromCenter - crossLength - outerCrossBorder
+                    PD2D.DrawLineF cSurface, outerPen, cursX, cursY + crossDistanceFromCenter - outerCrossBorder, cursX, cursY + crossDistanceFromCenter + crossLength + outerCrossBorder
+                    PD2D.DrawLineF cSurface, outerPen, cursX - crossDistanceFromCenter + outerCrossBorder, cursY, cursX - crossDistanceFromCenter - crossLength - outerCrossBorder, cursY
+                    PD2D.DrawLineF cSurface, outerPen, cursX + crossDistanceFromCenter - outerCrossBorder, cursY, cursX + crossDistanceFromCenter + crossLength + outerCrossBorder, cursY
+                    
+                    'Four "above" opaque lines
+                    PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossDistanceFromCenter, cursX, cursY - crossDistanceFromCenter - crossLength
+                    PD2D.DrawLineF cSurface, innerPen, cursX, cursY + crossDistanceFromCenter, cursX, cursY + crossDistanceFromCenter + crossLength
+                    PD2D.DrawLineF cSurface, innerPen, cursX - crossDistanceFromCenter, cursY, cursX - crossDistanceFromCenter - crossLength, cursY
+                    PD2D.DrawLineF cSurface, innerPen, cursX + crossDistanceFromCenter, cursY, cursX + crossDistanceFromCenter + crossLength, cursY
+                    
                 End If
                 
             End If
             
             'If size allows, render a transformed brush outline onto the canvas as well
-            If (Not brushTooSmall) Then
+            If (Not renderInPrecisionMode) Then
                 
                 'Get a copy of the current brush outline, transformed into position
                 Set copyOfBrushOutline = New pd2DPath
@@ -1153,10 +1194,6 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                     
                     innerPen.SetPenStyle P2_DS_Custom
                     innerPen.SetPenDashCap P2_DC_Round
-                    
-                    ReDim dashSizes(0 To 1) As Single
-                    dashSizes(0) = 2.5!
-                    dashSizes(1) = 2.5!
                     innerPen.SetPenDashes_UNSAFE VarPtr(dashSizes(0)), 2
                     
                     PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline

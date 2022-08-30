@@ -887,13 +887,13 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
             outerPen.SetPenLineCap P2_LC_Round
             innerPen.SetPenLineCap P2_LC_Round
             
-            'Four "beneath" lines
+            'Four "beneath" shadows
             PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossDistanceFromCenter + outerCrossBorder, cursX, cursY - crossDistanceFromCenter - crossLength - outerCrossBorder
             PD2D.DrawLineF cSurface, outerPen, cursX, cursY + crossDistanceFromCenter - outerCrossBorder, cursX, cursY + crossDistanceFromCenter + crossLength + outerCrossBorder
             PD2D.DrawLineF cSurface, outerPen, cursX - crossDistanceFromCenter + outerCrossBorder, cursY, cursX - crossDistanceFromCenter - crossLength - outerCrossBorder, cursY
             PD2D.DrawLineF cSurface, outerPen, cursX + crossDistanceFromCenter - outerCrossBorder, cursY, cursX + crossDistanceFromCenter + crossLength + outerCrossBorder, cursY
             
-            'Four "above" lines
+            'Four "above" opaque lines
             PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossDistanceFromCenter, cursX, cursY - crossDistanceFromCenter - crossLength
             PD2D.DrawLineF cSurface, innerPen, cursX, cursY + crossDistanceFromCenter, cursX, cursY + crossDistanceFromCenter + crossLength
             PD2D.DrawLineF cSurface, innerPen, cursX - crossDistanceFromCenter, cursY, cursX - crossDistanceFromCenter - crossLength, cursY
