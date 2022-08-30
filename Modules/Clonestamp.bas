@@ -972,7 +972,9 @@ Public Sub CommitBrushResults()
     
 End Sub
 
-'Render the current brush outline to the canvas, using the stored mouse coordinates as the brush's position
+'Render the current brush outline to the canvas, using the stored mouse coordinates as the brush's position.
+' (As of August 2022, Caps Lock can be used to toggle between precision and outline modes; this mimics Photoshop.
+'  See https://github.com/tannerhelland/PhotoDemon/issues/425 for details.)
 Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     
     'If a brush outline doesn't exist, create one now

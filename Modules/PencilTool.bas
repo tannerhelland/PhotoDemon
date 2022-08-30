@@ -491,6 +491,11 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim brushTooSmall As Boolean
     brushTooSmall = (onScreenSize < 7#)
     
+    'Like Photoshop, the CAPS LOCK key can be used to toggle between brush outlines and "precision" cursor mode.
+    ' In "precision" mode, we only draw a target cursor.
+    Dim renderInPrecisionMode As Boolean
+    renderInPrecisionMode = brushTooSmall Or OS.IsVirtualKeyDown_Synchronous(VK_CAPITAL, True)
+    
     'Borrow a pair of UI pens from the main rendering module
     Dim innerPen As pd2DPen, outerPen As pd2DPen
     Drawing.BorrowCachedUIPens outerPen, innerPen
@@ -498,6 +503,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     'Create other required pd2D drawing tools (a surface)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
+    cSurface.SetSurfacePixelOffset P2_PO_Normal
     
     'If the user is holding down the SHIFT key, paint a line between the end of the previous stroke and the current
     ' mouse position.  This helps communicate that shift+clicking will string together separate strokes.
@@ -514,23 +520,33 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Else
         
         'Paint a target cursor - but *only* if the mouse is not currently down!
-        Dim crossLength As Single, outerCrossBorder As Single
+        Dim crossLength As Single, crossDistanceFromCenter As Single, outerCrossBorder As Single
         crossLength = 3!
-        outerCrossBorder = 0.5!
+        crossDistanceFromCenter = 4!
+        outerCrossBorder = 0.25!
         
-        If (Not m_MouseDown) Then
+        If (Not m_MouseDown) And renderInPrecisionMode Then
+        
             outerPen.SetPenLineCap P2_LC_Round
             innerPen.SetPenLineCap P2_LC_Round
-            PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-            PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-            PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-            PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+            
+            'Four "beneath" lines
+            PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossDistanceFromCenter + outerCrossBorder, cursX, cursY - crossDistanceFromCenter - crossLength - outerCrossBorder
+            PD2D.DrawLineF cSurface, outerPen, cursX, cursY + crossDistanceFromCenter - outerCrossBorder, cursX, cursY + crossDistanceFromCenter + crossLength + outerCrossBorder
+            PD2D.DrawLineF cSurface, outerPen, cursX - crossDistanceFromCenter + outerCrossBorder, cursY, cursX - crossDistanceFromCenter - crossLength - outerCrossBorder, cursY
+            PD2D.DrawLineF cSurface, outerPen, cursX + crossDistanceFromCenter - outerCrossBorder, cursY, cursX + crossDistanceFromCenter + crossLength + outerCrossBorder, cursY
+            
+            'Four "above" lines
+            PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossDistanceFromCenter, cursX, cursY - crossDistanceFromCenter - crossLength
+            PD2D.DrawLineF cSurface, innerPen, cursX, cursY + crossDistanceFromCenter, cursX, cursY + crossDistanceFromCenter + crossLength
+            PD2D.DrawLineF cSurface, innerPen, cursX - crossDistanceFromCenter, cursY, cursX - crossDistanceFromCenter - crossLength, cursY
+            PD2D.DrawLineF cSurface, innerPen, cursX + crossDistanceFromCenter, cursY, cursX + crossDistanceFromCenter + crossLength, cursY
+            
         End If
-        
     End If
     
     'If size allows, render a transformed brush outline onto the canvas as well
-    If (Not brushTooSmall) Then
+    If (Not renderInPrecisionMode) Then
         
         'Get a copy of the current brush outline, transformed into position
         Dim copyOfBrushOutline As pd2DPath
