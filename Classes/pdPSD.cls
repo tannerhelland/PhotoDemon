@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2022 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 30/March/22
-'Last update: layer group masks are now successfully round-tripped to/from PSD files!
+'Last updated: 31/August/22
+'Last update: gracefully skip 0-length image resource blocks to fix crashes on Photopea-exported PSD files
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -1731,8 +1731,9 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                 finalResPosition = m_Stream.GetPosition() + resSize
                 If ((resSize And 1) = 1) Then finalResPosition = finalResPosition + 1
                 
-                'Retrieve the resource
-                m_Stream.ReadBytes m_ImageResources(m_NumImageResources).irDataBytes, resSize, True
+                'Retrieve the resource (if its length is non-zero; some 3rd-party PSD writers, like PhotoPea,
+                ' write 0-length resources for reasons unknown - see https://github.com/PsdPlugin/PsdPlugin/issues/17)
+                If (resSize > 0) Then m_Stream.ReadBytes m_ImageResources(m_NumImageResources).irDataBytes, resSize, True
                 
                 'Realign the pointer to match the previously calculated "end-of-resource" position.
                 m_Stream.SetPosition finalResPosition, FILE_BEGIN
