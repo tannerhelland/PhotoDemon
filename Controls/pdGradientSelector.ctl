@@ -501,13 +501,15 @@ Private Sub RedrawBackBuffer()
         cPen.SetPenColor m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
         
         Dim arrFirstPoint As PointFloat, arrSecondPoint As PointFloat
-        arrFirstPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.2!)
+        arrFirstPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.225!)
         arrSecondPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.8!)
-        arrFirstPoint.y = m_ReverseRect.Top + Int(m_ReverseRect.Height * 0.42!) + 0.5!
+        arrFirstPoint.y = m_ReverseRect.Top + (m_ReverseRect.Height \ 2) - 4! + 0.5!
         arrSecondPoint.y = arrFirstPoint.y
         
         PD2D.DrawLineF_FromPtF cSurface, cPen, arrFirstPoint, arrSecondPoint
-        arrFirstPoint.y = m_ReverseRect.Top + Int(m_ReverseRect.Height * 0.58!) + 0.5!
+        arrFirstPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.2!)
+        arrSecondPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.775!)
+        arrFirstPoint.y = m_ReverseRect.Top + (m_ReverseRect.Height \ 2) + 4! + 1.5!
         arrSecondPoint.y = arrFirstPoint.y
         PD2D.DrawLineF_FromPtF cSurface, cPen, arrSecondPoint, arrFirstPoint
         
