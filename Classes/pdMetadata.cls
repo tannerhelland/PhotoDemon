@@ -508,8 +508,8 @@ Private Function RetrieveModifiedXMLString() As String
         Dim i As Long
         For i = 0 To m_NumOfTags - 1
         
-            If m_Tags(i).TagMarkedForRemoval Or m_Tags(i).TagMarkedForRemoval_Export Then
-            
+            If (m_Tags(i).TagMarkedForRemoval Or m_Tags(i).TagMarkedForRemoval_Export) Then
+                
                 'Find this tag's start position
                 tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName & ">")
                 If (tagStart > 0) Then
@@ -528,7 +528,9 @@ Private Function RetrieveModifiedXMLString() As String
                         newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
                         
                     End If
+                
                 End If
+            
             End If
         
         Next i
@@ -1504,10 +1506,10 @@ Friend Sub Reset()
     m_HasGPSCoordinates = False
 End Sub
 
-'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a reference to the image in question,
-' embed as much or as little metadata as the image's settings specify.
-' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
-'  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
+'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a reference
+' to the image in question, embed as much or as little metadata as the image's settings specify.
+' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool
+' requires an on-disk source for writing.  In PD, this function is generally called only by PhotoDemon_SaveImage().)
 Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As pdImage) As Boolean
     
     'XML writing is handled by PD's central XML engine
@@ -1524,12 +1526,12 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
     Set cParams = New pdSerialize
     cParams.SetParamString metadataParams
     
-    'First, see if metadata export is even allowed
+    'First, see if metadata export is even allowed.
     If cParams.GetBool("MetadataExportAllowed", True) Then
         
         Dim i As Long
         
-        'See if the caller wants their metadata anonymized prior to export
+        'See if the caller wants their metadata anonymized prior to export.
         Dim forciblyAnonymize As Boolean
         forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
         
@@ -1537,8 +1539,8 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
         
             Message "Removing metadata with potential privacy concerns..."
         
-            'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
-            ' privacy-problematic tags must be manually flagged.
+            'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool,
+            ' but any other privacy-problematic tags must be manually flagged.
             For i = 0 To m_NumOfTags - 1
                 If (Not m_Tags(i).TagMarkedForRemoval) Then
                     m_Tags(i).TagMarkedForRemoval_Export = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
@@ -1547,24 +1549,26 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
             
         End If
         
-        'Next, manually remove certain metadata entries that are explicitly noted as "not writable"; these include things like
-        ' format or ExifTool version numbers, which ExifTool will raise warnings about (as those values need to be implicitly
-        ' handled by ExifTool itself, rather than being forcibly set to their previous values).
+        'Next, manually remove certain metadata entries that are explicitly noted as "not writable";
+        ' these include things like format or ExifTool version numbers, which ExifTool will raise
+        ' warnings about (as those values need to be implicitly handled by ExifTool itself,
+        ' rather than being forcibly set to their previous values).
         For i = 0 To m_NumOfTags - 1
-            If (Not m_Tags(i).TagMarkedForRemoval) Then
+            If (Not m_Tags(i).TagMarkedForRemoval) And (Not m_Tags(i).TagMarkedForRemoval_Export) Then
                 m_Tags(i).TagMarkedForRemoval_Export = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
             End If
         Next i
         
-        'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
-        ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
-        '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
+        'Now that all problematic tags have been identified, we need to generate a modified XML string
+        ' *without* those entries.
+        ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool,
+        '  but by preemptively removing said entries, we add an extra layer of protection against parsing
+        '  errors and other glitches.)
         newXMLString = RetrieveModifiedXMLString()
         
+        'Note that at this point, the image may not have any metadata.  That's okay - we just skip the part
+        ' where we copy over metadata from an existing image.
         Message "Embedding metadata..."
-        
-        'Note that at this point, the image may not have any metadata.  That's okay - we just skip the part where
-        ' we copy over metadata from an existing image.
         
         'If, however, the image *does* have metadata, we need to write it out to a temporary XML file.
         If (LenB(newXMLString) <> 0) Then
@@ -1572,7 +1576,8 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
             tmpXMLPath = UserPrefs.GetTempPath()
             
-            'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
+            'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing
+            ' XML files in the folder.
             Dim cHash As pdCrypto: Set cHash = New pdCrypto
             tmpXMLPath = tmpXMLPath & "metadata_" & cHash.QuickHashString(CStr(Timer) & outputPath) & ".xml"
             
@@ -1583,18 +1588,17 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
             tmpXMLPath = vbNullString
         End If
         
-        'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+        'The next part is easy - supply the XML file to ExifTool, and ask it to copy metadata from the XML file
+        ' we just wrote to the image file.
         WriteAllMetadata = ExifTool.WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
         
         If WriteAllMetadata Then
             PDDebug.LogAction "ExifTool initiated: " & tmpXMLPath
+        
+        'On the off chance that something went wrong, kill the temporary XML file we created.
         Else
-            
             PDDebug.LogAction "ExifTool embed request failed; temp file is " & tmpXMLPath
-            
-            'If the temp file still exists, kill it before exiting.
             Files.FileDeleteIfExists tmpXMLPath
-            
         End If
         
     'If metadata export is *not* allowed, we don't have to do a thing!

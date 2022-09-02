@@ -2026,9 +2026,9 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     sCategoryName = UCase$(srcTag.TagGroupFriendly)
     
     Dim groupSkippable As Boolean: groupSkippable = False
-    If Strings.StringsEqual(sCategoryName, "SYSTEM", False) Then groupSkippable = True
-    If Strings.StringsEqual(sCategoryName, "FILE", False) Then groupSkippable = True
-    If Strings.StringsEqual(sCategoryName, "ICC PROFILE", False) Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "SYSTEM", True) Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "FILE", True) Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "ICC PROFILE", True) Then groupSkippable = True
     
     'Technically, we should be able to get away with not checking inferred tags (called "Composite" by ExifTool), per this link:
     ' https://exiftool.org/TagNames/Composite.html
@@ -2060,8 +2060,10 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "documentid", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "gps", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "history", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "host", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "info", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "instanceid", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "lens", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "location", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "make", vbBinaryCompare) > 0)
         potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "model", vbBinaryCompare) > 0)
