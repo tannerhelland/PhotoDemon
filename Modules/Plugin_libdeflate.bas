@@ -331,7 +331,7 @@ End Function
 
 'libdeflate doesn't export a version function, but this class was last tested against the v1.9 release (released Jan 2022).
 Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.11"
+    GetCompressorVersion = "1.12"
 End Function
 
 'Private methods follow
