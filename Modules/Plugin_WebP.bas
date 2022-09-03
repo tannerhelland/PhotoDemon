@@ -67,7 +67,7 @@ Public Function GetVersion() As String
     PutMem4 VarPtr(versionAsInt(0)), tmpLong
     
     'Want to ensure we retrieved the correct values?  Use this:
-    GetVersion = versionAsInt(0) & "." & versionAsInt(1) & "." & versionAsInt(2) & "." & versionAsInt(3)
+    GetVersion = versionAsInt(2) & "." & versionAsInt(1) & "." & versionAsInt(0) & "." & versionAsInt(3)
     
 End Function
 

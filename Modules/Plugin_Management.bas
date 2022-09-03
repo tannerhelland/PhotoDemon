@@ -64,7 +64,7 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.13.1"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.22"
-Private Const EXPECTED_WEBP_VERSION As String = "1.2.1"
+Private Const EXPECTED_WEBP_VERSION As String = "1.2.4"
 Private Const EXPECTED_ZSTD_VERSION As String = "10502"
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
