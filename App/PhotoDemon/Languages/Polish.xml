@@ -6,8 +6,8 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.9.1701</langversion>
-<langstatus>90% complete</langstatus>
+<langversion>9.0.0</langversion>
+<langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
 
@@ -30,7 +30,7 @@
 
 <phrase>
 <original>Scan image</original>
-<translation>Skanowanie obrazu</translation>
+<translation>Skanuj obraz</translation>
 </phrase>
 
 <phrase>
@@ -40,7 +40,7 @@
 
 <phrase>
 <original>Internet import</original>
-<translation>Import z Internetu</translation>
+<translation>Importuj z Internetu</translation>
 </phrase>
 
 <phrase>
@@ -90,12 +90,12 @@
 
 <phrase>
 <original>Export animated WebP</original>
-<translation></translation>
+<translation>Eksportuj animacje WebP</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Eksportuj wyszukiwanie kolorów</translation>
 </phrase>
 
 <phrase>
@@ -200,12 +200,12 @@
 
 <phrase>
 <original>Clear</original>
-<translation>Wyczyszczenie</translation>
+<translation>Wyczyść</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>Wypełnij z uwzględnieniem treści</translation>
 </phrase>
 
 <phrase>
@@ -225,7 +225,7 @@
 
 <phrase>
 <original>Resize image</original>
-<translation>Zmiana rozmiaru obrazu</translation>
+<translation>Zmień rozmiar obrazu</translation>
 </phrase>
 
 <phrase>
@@ -310,12 +310,12 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Utwórz wyszukiwanie kolorów</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Porównaj podobne</translation>
 </phrase>
 
 <phrase>
@@ -380,17 +380,17 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Zastąp warstwę ze schowka</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Zastąp warstwę z pliku</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Zastąp warstwę z widocznych warstw</translation>
 </phrase>
 
 <phrase>
@@ -620,7 +620,7 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>Zmiękczenie zaznaczenia</translation>
+<translation>Zmiękcz zaznaczenia</translation>
 </phrase>
 
 <phrase>
@@ -635,17 +635,17 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Wypełnij zaznaczony obszar</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Napraw zaznaczony obszar</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Wyróżnij zaznaczenie obrysem</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Look Up</translation>
 </phrase>
 
 <phrase>
@@ -845,12 +845,12 @@
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Mapa palet</translation>
 </phrase>
 
 <phrase>
 <original>Color to monochrome</original>
-<translation>Z kolorowego na monochromatyczny</translation>
+<translation>Kolorowy na monochromatyczny</translation>
 </phrase>
 
 <phrase>
@@ -920,12 +920,12 @@
 
 <phrase>
 <original>Box blur</original>
-<translation>Rozmycie w obszarze</translation>
+<translation>Rozmycie liniowe</translation>
 </phrase>
 
 <phrase>
 <original>Gaussian blur</original>
-<translation>Rozmycie Gaussa</translation>
+<translation>Rozmycie Gaussiana</translation>
 </phrase>
 
 <phrase>
@@ -945,7 +945,7 @@
 
 <phrase>
 <original>Zoom blur</original>
-<translation>Rozmycie w powiększeniu</translation>
+<translation>Rozmycie z powiększeniem</translation>
 </phrase>
 
 <phrase>
@@ -960,42 +960,42 @@
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Ślimak</translation>
 </phrase>
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>Zniekształcenie obiektywu</translation>
+<translation>Obiektywowe</translation>
 </phrase>
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>Przycinanie i wirowanie</translation>
+<translation>Wgniot z wirem</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation>Wtykanie</translation>
+<translation>Nacisk</translation>
 </phrase>
 
 <phrase>
 <original>Ripple</original>
-<translation>Marszczenie</translation>
+<translation>Zmarszczki</translation>
 </phrase>
 
 <phrase>
 <original>Squish</original>
-<translation>Zgniatanie</translation>
+<translation>Zgniot</translation>
 </phrase>
 
 <phrase>
 <original>Swirl</original>
-<translation>Wirowanie</translation>
+<translation>Wir</translation>
 </phrase>
 
 <phrase>
 <original>Waves</original>
-<translation>Falowanie</translation>
+<translation>Fale</translation>
 </phrase>
 
 <phrase>
@@ -1005,7 +1005,7 @@
 
 <phrase>
 <original>Emboss</original>
-<translation>Wytłocz</translation>
+<translation>Tłoczenie</translation>
 </phrase>
 
 <phrase>
@@ -1015,12 +1015,12 @@
 
 <phrase>
 <original>Find edges</original>
-<translation>Znajdź krawędzie</translation>
+<translation>Wykrywanie krawędzi</translation>
 </phrase>
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>Przepływ gradientowy</translation>
 </phrase>
 
 <phrase>
@@ -1040,12 +1040,12 @@
 
 <phrase>
 <original>Bump map</original>
-<translation>Mapa wypukłości</translation>
+<translation>Mapa nierówności</translation>
 </phrase>
 
 <phrase>
 <original>Cross-screen</original>
-<translation>Krzyż-ekran</translation>
+<translation>Promienie</translation>
 </phrase>
 
 <phrase>
@@ -1080,7 +1080,7 @@
 
 <phrase>
 <original>Ignite</original>
-<translation>Palenie</translation>
+<translation>Płomienie</translation>
 </phrase>
 
 <phrase>
@@ -1105,12 +1105,12 @@
 
 <phrase>
 <original>Add film grain</original>
-<translation>Dodaj ziarno filmu</translation>
+<translation>Ziarno filmu</translation>
 </phrase>
 
 <phrase>
 <original>Add RGB noise</original>
-<translation>Dodaj szum RGB</translation>
+<translation>Szum RGB</translation>
 </phrase>
 
 <phrase>
@@ -1130,7 +1130,7 @@
 
 <phrase>
 <original>Mean shift</original>
-<translation>Średnia zmiana</translation>
+<translation>Średnia zmienna</translation>
 </phrase>
 
 <phrase>
@@ -1140,7 +1140,7 @@
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation>Symetrycznie najbliższe sąsiedztwo</translation>
+<translation>Symetryczne najbliższe sąsiedztwo</translation>
 </phrase>
 
 <phrase>
@@ -1155,7 +1155,7 @@
 
 <phrase>
 <original>Fragment</original>
-<translation>Fragment</translation>
+<translation>Fragmentacja</translation>
 </phrase>
 
 <phrase>
@@ -1240,7 +1240,7 @@
 
 <phrase>
 <original>Vignetting</original>
-<translation>Winiety</translation>
+<translation>Winieta</translation>
 </phrase>
 
 <phrase>
@@ -1260,12 +1260,12 @@
 
 <phrase>
 <original>Rotate</original>
-<translation>Obracanie</translation>
+<translation>Obrót</translation>
 </phrase>
 
 <phrase>
 <original>Shear</original>
-<translation>Ścinanie</translation>
+<translation>Skos</translation>
 </phrase>
 
 <phrase>
@@ -1275,17 +1275,17 @@
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>Animacja tła</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>Animacja pierwszego planu</translation>
 </phrase>
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>Szybkość animacji</translation>
 </phrase>
 
 <phrase>
@@ -1295,7 +1295,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Wtyczki Photoshop (8bf)</translation>
 </phrase>
 
 <phrase>
@@ -1310,7 +1310,7 @@
 
 <phrase>
 <original>Play macro</original>
-<translation>Odtwarzaj makro</translation>
+<translation>Odtwórz makro</translation>
 </phrase>
 
 <phrase>
@@ -1592,7 +1592,7 @@ Jeśli problem będzie się powtarzał, zgłoś go programistom PhotoDemon za po
 <original>This image contains %1 unique colors (RGB).
 
 This image contains %2 unique color + opacity values (RGBA).</original>
-<translation>Ten obraz zawiera% 1 unikalnych kolorów (RGB).
+<translation>Ten obraz zawiera %1 unikalnych kolorów (RGB).
 
 Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 </phrase>
@@ -1616,27 +1616,27 @@ Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 
 <phrase>
 <original>waves</original>
-<translation>fale</translation>
+<translation>Fale</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>Pikowanie</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>Łańcuch</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>Splot</translation>
 </phrase>
 
 <phrase>
 <original>arc</original>
-<translation>łuk</translation>
+<translation>Łuk</translation>
 </phrase>
 
 <phrase>
@@ -1646,17 +1646,17 @@ Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 
 <phrase>
 <original>maze</original>
-<translation>labirynt</translation>
+<translation>Labirynt</translation>
 </phrase>
 
 <phrase>
 <original>triangle</original>
-<translation>Trójkątny</translation>
+<translation>Trójkąt</translation>
 </phrase>
 
 <phrase>
 <original>octagon</original>
-<translation></translation>
+<translation>Ośmiokąt</translation>
 </phrase>
 
 <phrase>
@@ -1737,7 +1737,7 @@ Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>Załadowano %1 stron z %2</translation>
 </phrase>
 
 <phrase>
@@ -1798,7 +1798,7 @@ Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 
 <phrase>
 <original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
-<translation></translation>
+<translation>Zapis %1 nie powiódł się. Zgłoś ten błąd przez Pomoc -> Prześlij raport o błędach.</translation>
 </phrase>
 
 <phrase>
@@ -1903,7 +1903,7 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 
 <phrase>
 <original>Normal</original>
-<translation>Normalny</translation>
+<translation>Normalne</translation>
 </phrase>
 
 <phrase>
@@ -2033,17 +2033,17 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 
 <phrase>
 <original>Erase</original>
-<translation>Wymaż</translation>
+<translation>Wymazywanie</translation>
 </phrase>
 
 <phrase>
 <original>Inherit</original>
-<translation>Dziedziczony</translation>
+<translation>Dziedziczone</translation>
 </phrase>
 
 <phrase>
 <original>Locked</original>
-<translation>Zablokowany</translation>
+<translation>Zablokowane</translation>
 </phrase>
 
 <phrase>
@@ -2145,12 +2145,12 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 
 <phrase>
 <original>New layer from selection</original>
-<translation></translation>
+<translation>Nowa warstwa z zaznaczenia</translation>
 </phrase>
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation></translation>
+<translation>Warstwa zaktualizowana pomyślnie</translation>
 </phrase>
 
 <phrase>
@@ -2356,7 +2356,7 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 
 <phrase>
 <original>Macro canceled.</original>
-<translation></translation>
+<translation>Makro anulowane</translation>
 </phrase>
 
 <phrase>
@@ -2405,7 +2405,7 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 
 <phrase>
 <original>Loading macro</original>
-<translation></translation>
+<translation>Załaduj makro</translation>
 </phrase>
 
 <phrase>
@@ -2415,19 +2415,19 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation></translation>
+<translation>Znaleziono niezgodne makro. Makro anulowano.</translation>
 </phrase>
 
 <phrase>
 <original>Playing macro</original>
-<translation></translation>
+<translation>Odtwarzanie makro</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
-<translation>Pusty</translation>
+<translation>Pusto</translation>
 </phrase>
 
 <phrase>
@@ -2494,17 +2494,17 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 
 <phrase>
 <original>None</original>
-<translation>Żaden</translation>
+<translation>Bez rozpraszania</translation>
 </phrase>
 
 <phrase>
 <original>Ordered (Bayer 4x4)</original>
-<translation>Zamówione (Bayer 4x4)</translation>
+<translation>Uporządkowane (Bayer 4x4)</translation>
 </phrase>
 
 <phrase>
 <original>Ordered (Bayer 8x8)</original>
-<translation>Zamówione (Bayer 8x8)</translation>
+<translation>Uporządkowane (Bayer 8x8)</translation>
 </phrase>
 
 <phrase>
@@ -2519,71 +2519,74 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 
 <phrase>
 <original>Two-Row Sierra</original>
-<translation>Dwurzędowy Sierra</translation>
+<translation>Dwurzędowe Sierra</translation>
 </phrase>
 
 <phrase>
 <original>Sierra Lite</original>
-<translation>Sierra lekki</translation>
+<translation>Lekkie Sierra</translation>
 </phrase>
 
 <phrase>
 <original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson/Klasyczny Macintosh</translation>
+<translation>Atkinson/Macintosh</translation>
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
 <original>Applying plugin</original>
-<translation></translation>
+<translation>Aplikacja wtyczki</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation></translation>
+<translation>AVIF to nowoczesny format obrazu opracowany przez Alliance for Open Media. PhotoDemon nie obsługuje natywnie obrazów AVIF, ale może pobrać bezpłatną wtyczkę o otwartym kodzie źródłowym, która na stałe włączy obsługę AVIF</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation></translation>
+<translation>Alliance for Open Media zapewnia bezpłatne, 64-bitowe biblioteki koderów i dekoderów AVIF typu open source. Każda z tych bibliotek ma około ~%1 MB (łącznie ~%2 MB). Po pobraniu pozwolą PhotoDemon importować i eksportować pliki AVIF w dowolnym systemie 64-bitowym.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Chcesz, aby PhotoDemon pobierał te biblioteki do Twojego
+folderu wtyczek PhotoDemon?</translation>
 </phrase>
 
 <phrase>
 <original>Download required</original>
-<translation></translation>
+<translation>Wymagane pobranie</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation></translation>
+<translation>PhotoDemon nie pobierze teraz bibliotek AVIF</translation>
 </phrase>
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation></translation>
+<translation>Aby ręcznie włączyć obsługę AVIF, możesz pobrać najnowszą
+kopie darmowych programów "%1" i "%2" i umieścić je w folderze wtyczek PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation></translation>
+<translation>Te bezpłatne biblioteki są zawsze dostępne na stronie Alliance for Open Media</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled</original>
-<translation></translation>
+<translation>Pobieranie anulowane</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>Umieściłeś PhotoDemon w zastrzeżonym folderze systemowym.
+Ponieważ PhotoDemon nie ma dostępu administratora, nie może pobierać plików za Ciebie. Przenieś PhotoDemon do folderu bez ograniczeń i spróbuj ponownie</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -2886,7 +2889,7 @@ Opis: %2
 
 <phrase>
 <original>automatic fit</original>
-<translation></translation>
+<translation>Autodopasowanie</translation>
 </phrase>
 
 <phrase>
@@ -3052,7 +3055,7 @@ Po zakończeniu kliknij przycisk "Prześlij nowe zgłoszenie".</translation>
 
 <phrase>
 <original>automatic</original>
-<translation>Automatyczny</translation>
+<translation>Automatyczne</translation>
 </phrase>
 
 <phrase>
@@ -3062,37 +3065,37 @@ Po zakończeniu kliknij przycisk "Prześlij nowe zgłoszenie".</translation>
 
 <phrase>
 <original>bilinear</original>
-<translation>Dwuliniowy</translation>
+<translation>Dwuliniowe</translation>
 </phrase>
 
 <phrase>
 <original>cosine</original>
-<translation></translation>
+<translation>Cosinus</translation>
 </phrase>
 
 <phrase>
 <original>bell</original>
-<translation>dzwonek</translation>
+<translation>Dzwonek</translation>
 </phrase>
 
 <phrase>
 <original>quadratic</original>
-<translation>kwadratowy</translation>
+<translation>Kwadrat</translation>
 </phrase>
 
 <phrase>
 <original>quadratic b-spline</original>
-<translation></translation>
+<translation>Kwadratowy b-splajn</translation>
 </phrase>
 
 <phrase>
 <original>bicubic</original>
-<translation>dwusześcienna</translation>
+<translation>Dwusześcienne</translation>
 </phrase>
 
 <phrase>
 <original>cubic convolution</original>
-<translation></translation>
+<translation>Sześcienny splot</translation>
 </phrase>
 
 <!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -3117,12 +3120,12 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 
 <phrase>
 <original>Saving %1 image</original>
-<translation>Zapisywanie %1 obrazu</translation>
+<translation>Zapis obrzu %1</translation>
 </phrase>
 
 <phrase>
 <original>Saving file</original>
-<translation></translation>
+<translation>Zapis pliku</translation>
 </phrase>
 
 <phrase>
@@ -3228,7 +3231,7 @@ Spróbuj zapisać obraz w alternatywnym formacie. Możesz również przesłać d
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Wtapianie Zaznaczenia zakończone.</translation>
+<translation>Wtapianie zaznaczenia zakończone.</translation>
 </phrase>
 
 <phrase>
@@ -3322,7 +3325,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>Move selected pixels</original>
-<translation></translation>
+<translation>Przenieś wybrane piksele</translation>
 </phrase>
 
 <phrase>
@@ -3372,7 +3375,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>Target: selected pixels</original>
-<translation></translation>
+<translation>Cel: wybrane piksele</translation>
 </phrase>
 
 <phrase>
@@ -3415,7 +3418,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>px</original>
-<translation>piks</translation>
+<translation>piks.</translation>
 </phrase>
 
 <phrase>
@@ -3534,7 +3537,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>Redo (fast-forward to a later state)</original>
-<translation></translation>
+<translation>Ponów (cofnij do późniejszego stanu)</translation>
 </phrase>
 
 <phrase>
@@ -3549,17 +3552,17 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>Undo (rewind to an earlier state)</original>
-<translation></translation>
+<translation>Cofnij (cofnij do wcześniejszego stanu)</translation>
 </phrase>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation></translation>
+<translation>Przypnij ten panel jako otwarty</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>Panele Toolbox zamykają się automatycznie, ale możesz je przypiąć, aby pozostały otwarte. (Przypięte panele nadal zamykają się podczas zmiany narzędzi lub otwierania nowych paneli.)</translation>
 </phrase>
 
 <phrase>
@@ -3586,7 +3589,7 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation></translation>
+<translation>PhotoDemon nie może połączyć się z Internetem. Sprawdź połączenie i spróbuj ponownie.</translation>
 </phrase>
 
 <phrase>
@@ -3596,27 +3599,27 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation></translation>
+<translation>PhotoDemon nie mógł osiągnąć docelowego adresu URL (%1). Jeśli problem będzie się powtarzał, spróbuj pobrać plik ręcznie za pomocą przeglądarki internetowej.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading</original>
-<translation></translation>
+<translation>Pobieranie</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation></translation>
+<translation>PhotoDemon utracił dostęp do Internetu. Sprawdź połączenie.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation></translation>
+<translation>Pobieranie (%1 z %2 bajtów)</translation>
 </phrase>
 
 <phrase>
 <original>Download complete. Verifying file integrity</original>
-<translation>Pobieranie zakończone. Weryfikacja integralności plików</translation>
+<translation>Pobieranie zakończone. Weryfikacja integralności plików.</translation>
 </phrase>
 
 <phrase>
@@ -3628,7 +3631,9 @@ Wprowadź wartość liczbową.</translation>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation></translation>
+<translation>Niestety, program %1 uniemożliwił PhotoDemonowi bezpośrednie pobranie tego pliku. (Bezpośrednie pobieranie jest czasami mylone jako hotlink przez źle skonfigurowane serwery).
+
+Musisz ręcznie pobrać ten plik za pomocą przeglądarki internetowej.</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3734,7 +3739,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>Odmalowywanie wybranych obszaró</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3748,17 +3753,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>Budowanie color lookup</translation>
 </phrase>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>Wszystkie obsługiwane LUT</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>Wybierz pli LUT</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -3779,7 +3784,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Inferred</original>
-<translation>Implikowana</translation>
+<translation>Implikacja</translation>
 </phrase>
 
 <phrase>
@@ -4106,7 +4111,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Composite image</original>
-<translation></translation>
+<translation>Obraz kompozytowy</translation>
 </phrase>
 
 <!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4130,7 +4135,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>braid</original>
-<translation></translation>
+<translation>splot</translation>
 </phrase>
 
 <phrase>
@@ -4145,7 +4150,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>ragged</original>
-<translation></translation>
+<translation>strzęp</translation>
 </phrase>
 
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -4436,7 +4441,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation></translation>
+<translation>Ten przycisk otworzy stronę nowego wydania w Twojej przeglądarce internetowej. Aby kontynuować, potrzebujesz konta GitHub.</translation>
 </phrase>
 
 <phrase>
@@ -4537,7 +4542,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation>Rama prądowa: %1 z %2</translation>
+<translation>Aktualna ramka: %1 z %2</translation>
 </phrase>
 
 <phrase>
@@ -4640,7 +4645,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>%1, was %2</original>
-<translation></translation>
+<translation>%1, był %2</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4738,7 +4743,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation>Dodpasuj obraz na ekranie</translation>
+<translation>Dopasuj obraz do ekranu</translation>
 </phrase>
 
 <phrase>
@@ -4830,7 +4835,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Animated WebP</original>
-<translation></translation>
+<translation>Animowany WebP</translation>
 </phrase>
 
 <phrase>
@@ -4865,7 +4870,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Special</original>
-<translation>Specjalnie</translation>
+<translation>Specjalne</translation>
 </phrase>
 
 <phrase>
@@ -4945,7 +4950,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Similarity</original>
-<translation></translation>
+<translation>Podobieństwo</translation>
 </phrase>
 
 <phrase>
@@ -5310,12 +5315,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Natural</original>
-<translation>Naturalny</translation>
+<translation>Natura</translation>
 </phrase>
 
 <phrase>
 <original>Underwater</original>
-<translation>Podwodny</translation>
+<translation>Pod wodą</translation>
 </phrase>
 
 <phrase>
@@ -5350,12 +5355,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Foreground</original>
-<translation>Kolor Pierwszoplanowy</translation>
+<translation>Pierwszy plan</translation>
 </phrase>
 
 <phrase>
 <original>Playback speed</original>
-<translation></translation>
+<translation>Szybkość odtwarzania</translation>
 </phrase>
 
 <phrase>
@@ -5385,7 +5390,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Create macro</original>
-<translation>Twórz makro</translation>
+<translation>Makro</translation>
 </phrase>
 
 <phrase>
@@ -5395,7 +5400,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Start recording</original>
-<translation>Rozpocznij nagrywanie</translation>
+<translation>Nagraj nowe makro</translation>
 </phrase>
 
 <phrase>
@@ -5405,12 +5410,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Recent macros</original>
-<translation>Ostatnie makra</translation>
+<translation>Ostatnie makro</translation>
 </phrase>
 
 <phrase>
 <original>Animated screen capture</original>
-<translation></translation>
+<translation>Animowany zrzut ekranu</translation>
 </phrase>
 
 <phrase>
@@ -5455,12 +5460,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Fit image on screen</original>
-<translation>Dopasuj obraz na ekranie</translation>
+<translation>Dopasuj obraz do ekranu</translation>
 </phrase>
 
 <phrase>
 <original>Zoom to value</original>
-<translation>Powiększ do wartości</translation>
+<translation>Ustaw rozmiar na</translation>
 </phrase>
 
 <phrase>
@@ -5505,7 +5510,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Medium buttons</original>
-<translation></translation>
+<translation>Średnie przyciski</translation>
 </phrase>
 
 <phrase>
@@ -5540,7 +5545,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Never show</original>
-<translation>Nigdy nie pokazuj</translation>
+<translation>Nie pokazuj nigdy</translation>
 </phrase>
 
 <phrase>
@@ -5585,7 +5590,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Ask a question</original>
-<translation></translation>
+<translation>Zadaj pytanie</translation>
 </phrase>
 
 <phrase>
@@ -5595,22 +5600,22 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>PhotoDemon forum</original>
-<translation></translation>
+<translation>Forum PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon license and terms of use</original>
-<translation></translation>
+<translation>Licencja i warunki użytkowania PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon source code</original>
-<translation></translation>
+<translation>Kod źródłowy PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon website</original>
-<translation></translation>
+<translation>Witryna PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5978,12 +5983,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>available LUTs</original>
-<translation></translation>
+<translation>Ddostępne LUT</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation></translation>
+<translation>Importuj plik LUT</translation>
 </phrase>
 
 <phrase>
@@ -5993,22 +5998,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying color lookup</original>
-<translation></translation>
+<translation>Aplikowanie color lookup</translation>
 </phrase>
 
 <phrase>
 <original>%1 is not a valid 3D lookup table (LUT).</original>
-<translation></translation>
+<translation>%1 nie jest prawidłową tabelą przeglądową 3D (LUT)</translation>
 </phrase>
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>Twoja kolekcja LUT jest przechowywana w folderze "%1"</translation>
 </phrase>
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation></translation>
+<translation>Kliknij, aby otworzyć ten folder w Eksploratorze Windows</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6333,7 +6338,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>foreground</original>
-<translation>kolor pierwszoplanowy</translation>
+<translation>Kolor pierwszoplanowy</translation>
 </phrase>
 
 <phrase>
@@ -6343,7 +6348,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Removing haze from image</original>
-<translation></translation>
+<translation>Usuwanie zamglenia z obrazu</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6389,17 +6394,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient type</original>
-<translation></translation>
+<translation>Typ gradientu</translation>
 </phrase>
 
 <phrase>
 <original>midpoint</original>
-<translation></translation>
+<translation>Punkt środkowy</translation>
 </phrase>
 
 <phrase>
 <original>Applying gradient map</original>
-<translation></translation>
+<translation>Stosowanie mapy gradientowej</translation>
 </phrase>
 
 <!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6450,12 +6455,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation></translation>
+<translation>Filtr ciepły (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Cooling filter (%1)</original>
-<translation></translation>
+<translation>Filtr zimny (%1)</translation>
 </phrase>
 
 <phrase>
@@ -6505,12 +6510,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Deep blue</original>
-<translation></translation>
+<translation>Głęboki niebieski</translation>
 </phrase>
 
 <phrase>
 <original>Deep emerald</original>
-<translation></translation>
+<translation>Głęboki szmaragd</translation>
 </phrase>
 
 <phrase>
@@ -6613,7 +6618,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Jeśli zamkniesz teraz, te dane autozapisu zostaną utracone na zawsze. Czy na pewno że chcesz zamknąć?</translation>
+<translation>Jeśli zamkniesz teraz, te dane autozapisu zostaną utracone na zawsze. Na pewno chcesz zamknąć?</translation>
 </phrase>
 
 <phrase>
@@ -7135,7 +7140,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation></translation>
+<translation>Oczekiwanie na określenie opcji importu</translation>
 </phrase>
 
 <phrase>
@@ -7224,7 +7229,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Theme and language</original>
-<translation>Temat i język</translation>
+<translation>Motyw i język</translation>
 </phrase>
 
 <phrase>
@@ -7299,12 +7304,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation></translation>
+<translation>Możesz zmienić język i motyw w dowolnym momencie w menu Narzędzia</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customizations are available in the Window menu.</original>
-<translation></translation>
+<translation>Dodatkowe dostosowania interfejsu są dostępne w menu Okno.</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -7466,37 +7471,37 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>above</original>
-<translation></translation>
+<translation>Powyżej</translation>
 </phrase>
 
 <phrase>
 <original>sample from</original>
-<translation></translation>
+<translation>Próbka z</translation>
 </phrase>
 
 <phrase>
 <original>fill order</original>
-<translation></translation>
+<translation>Wypełnij formularz</translation>
 </phrase>
 
 <phrase>
 <original>patch test size</original>
-<translation></translation>
+<translation>Testowy rozmiar poprawki</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>Losowe poprawki</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation></translation>
+<translation>Doprecyzowanie (procent)</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>Próg doskonałości łatki</translation>
 </phrase>
 
 <phrase>
@@ -7506,27 +7511,27 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>left</original>
-<translation>lewo</translation>
+<translation>Lewo</translation>
 </phrase>
 
 <phrase>
 <original>right</original>
-<translation>prawo</translation>
+<translation>Prawo</translation>
 </phrase>
 
 <phrase>
 <original>below</original>
-<translation></translation>
+<translation>Poniżej</translation>
 </phrase>
 
 <phrase>
 <original>outside-in</original>
-<translation></translation>
+<translation>Na zewnątrz</translation>
 </phrase>
 
 <phrase>
 <original>inside-out</original>
-<translation>Na wylot</translation>
+<translation>Wewnątrz</translation>
 </phrase>
 
 <!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -7545,7 +7550,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>brush</original>
-<translation>pędzel</translation>
+<translation>Pędzel</translation>
 </phrase>
 
 <phrase>
@@ -7555,39 +7560,39 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>Applying fill</original>
-<translation></translation>
+<translation>Zastosuj wypełnienie</translation>
 </phrase>
 
 <phrase>
 <original>do not change</original>
-<translation></translation>
+<translation>Nie zmieniaj</translation>
 </phrase>
 
 <phrase>
 <original>use selection size</original>
-<translation></translation>
+<translation>Użyj rozmiaru zaznaczenia</translation>
 </phrase>
 
 <phrase>
 <original>use combined size (union)</original>
-<translation></translation>
+<translation>Użyj kombinowanego rozmiaru</translation>
 </phrase>
 
 <!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
-<translation></translation>
+<translation>Pióro</translation>
 </phrase>
 
 <phrase>
 <original>Stroking outline</original>
-<translation></translation>
+<translation>Wygłądzony zarys</translation>
 </phrase>
 
 <phrase>
 <original>expand to fit stroke (if necessary)</original>
-<translation></translation>
+<translation>Rozwiń, aby dopasować obrys (jeśli konieczne)</translation>
 </phrase>
 
 <!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7616,52 +7621,52 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>scan for new plugins</original>
-<translation></translation>
+<translation>Skanuj w poszukiwaniu nowych wtyczek</translation>
 </phrase>
 
 <phrase>
 <original>about this plugin</original>
-<translation></translation>
+<translation>Informacje o tej wtyczce</translation>
 </phrase>
 
 <phrase>
 <original>available plugins</original>
-<translation></translation>
+<translation>Dostępne wtyczki</translation>
 </phrase>
 
 <phrase>
 <original>add folder</original>
-<translation></translation>
+<translation>Dodaj folder</translation>
 </phrase>
 
 <phrase>
 <original>default plugin folder</original>
-<translation></translation>
+<translation>Domyślny folder wtyczek</translation>
 </phrase>
 
 <phrase>
 <original>additional folders</original>
-<translation></translation>
+<translation>Dodatkowe foldery</translation>
 </phrase>
 
 <phrase>
 <original>remove folder</original>
-<translation></translation>
+<translation>Usuń folder</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for plugin</original>
-<translation></translation>
+<translation>Oczekiwanie na wtyczkę</translation>
 </phrase>
 
 <phrase>
 <original>Plugin canceled.</original>
-<translation></translation>
+<translation>Wtyczka usunięta</translation>
 </phrase>
 
 <phrase>
 <original>plugins</original>
-<translation></translation>
+<translation>Wtyczki</translation>
 </phrase>
 
 <phrase>
@@ -7671,76 +7676,76 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>loading plugin collection</original>
-<translation></translation>
+<translation>Załąduj kolekcję wtyczek</translation>
 </phrase>
 
 <phrase>
 <original>No plugins found.</original>
-<translation></translation>
+<translation>Nie znaleziono wtyczek</translation>
 </phrase>
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
+<translation>Wtyczki Photoshop (8bf) to pliki z rozszerzeniem „8bf”. Te wtyczki zapewniają nowe efekty graficzne. Tysiące wtyczek 8bf są dostępne online.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
+<translation>PhotoDemon nie jest dostarczany z wtyczkami 8bf, ale jeśli znajdziesz wtyczki online, możesz je pobrać i dodać do programu. (PhotoDemon obsługuje większość 32-bitowych wtyczek 8bf. Wtyczki 64-bitowe nie są obsługiwane.)</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
+<translation>Po pobraniu jednego lub więcej plików 8bf użyj przycisku ustawień (powyżej), aby poinformować PhotoDemon, gdzie je znaleźć. PhotoDemon doda je następnie do Twojej kolekcji efektów.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation></translation>
+<translation>Usuń tę warstwę po przetworzeniu</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation></translation>
+<translation>Warstwa tła</translation>
 </phrase>
 
 <phrase>
 <original>first frame for effect</original>
-<translation></translation>
+<translation>Pierwsza klatka dla efektu</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation></translation>
+<translation>Ostatnia klatka dla efektu</translation>
 </phrase>
 
 <phrase>
 <original>Applying background</original>
-<translation></translation>
+<translation>Stosowanie tła</translation>
 </phrase>
 
 <phrase>
 <original>Applying foreground</original>
-<translation></translation>
+<translation>Stosowanie pierwszego planu</translation>
 </phrase>
 
 <phrase>
 <original>waiting</original>
-<translation>czekanie</translation>
+<translation>Oczekiwanie</translation>
 </phrase>
 
 <phrase>
 <original>foreground layer</original>
-<translation></translation>
+<translation>Warstwa pierwszego planu</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>speed modifier</original>
-<translation></translation>
+<translation>Modyfikator szybkości</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -7956,7 +7961,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>detail</original>
-<translation>Szczegół</translation>
+<translation>Szczegóły</translation>
 </phrase>
 
 <phrase>
@@ -8054,7 +8059,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>edge color and opacity</original>
-<translation></translation>
+<translation>Kolor krawędzi i krycia</translation>
 </phrase>
 
 <phrase>
@@ -8162,7 +8167,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>blur symmetrically</original>
-<translation>Rozmycie symetrycznie</translation>
+<translation>Rozmycie symetryczne</translation>
 </phrase>
 
 <phrase>
@@ -8310,22 +8315,22 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>swap order</original>
-<translation></translation>
+<translation>Zmień kształt</translation>
 </phrase>
 
 <phrase>
 <original>inner radius</original>
-<translation>wewnętrzny promień</translation>
+<translation>Promień wewnętrzny</translation>
 </phrase>
 
 <phrase>
 <original>outer radius</original>
-<translation>zewnętrzny promień</translation>
+<translation>Promień zewnętrzny</translation>
 </phrase>
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation></translation>
+<translation>Przywołanie M. C. Eschera</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8384,12 +8389,12 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>whirl angle</original>
-<translation>Kąt wirowania</translation>
+<translation>Kąt wiru</translation>
 </phrase>
 
 <phrase>
 <original>pinch amount</original>
-<translation>Stopien zgniotu</translation>
+<translation>Stopień wgniotu</translation>
 </phrase>
 
 <phrase>
@@ -8408,7 +8413,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>height of ripples (amplitude)</original>
-<translation>wysokość zmarszczek (amplituda)</translation>
+<translation>Wysokość zmarszczek (amplituda)</translation>
 </phrase>
 
 <phrase>
@@ -8577,7 +8582,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>render</original>
-<translation>renderowanie</translation>
+<translation>Renderowanie</translation>
 </phrase>
 
 <phrase>
@@ -8587,37 +8592,37 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>boost</original>
-<translation></translation>
+<translation>Wzmocnienie</translation>
 </phrase>
 
 <phrase>
 <original>foreground color</original>
-<translation>kolor pierwszoplanowy</translation>
+<translation>Kolor pierwszoplanowy</translation>
 </phrase>
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation></translation>
+<translation>Obliczanie przepływu gradientowego</translation>
 </phrase>
 
 <phrase>
 <original>magnitude</original>
-<translation></translation>
+<translation>Magnituda</translation>
 </phrase>
 
 <phrase>
 <original>direction</original>
-<translation>kierunek</translation>
+<translation>Kierunek</translation>
 </phrase>
 
 <phrase>
 <original>dynamic</original>
-<translation>dynamiczne</translation>
+<translation>Dynamika</translation>
 </phrase>
 
 <phrase>
 <original>static</original>
-<translation></translation>
+<translation>Stałe</translation>
 </phrase>
 
 <!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -8665,12 +8670,12 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>ambient light</original>
-<translation></translation>
+<translation>Siła światła</translation>
 </phrase>
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>Generowanie mapy wypukłości</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9058,7 +9063,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>simple</original>
-<translation>Prosty</translation>
+<translation>Proste</translation>
 </phrase>
 
 <!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9082,12 +9087,12 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>Truchet tiles</original>
-<translation></translation>
+<translation>Płytki Trucheta</translation>
 </phrase>
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation></translation>
+<translation>Renderowanie płytek Trucheta</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9189,7 +9194,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>optimal</original>
-<translation>Optymalny</translation>
+<translation>Optymalna</translation>
 </phrase>
 
 <phrase>
@@ -9204,7 +9209,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>neural network</original>
-<translation></translation>
+<translation>Sieć neuronowa</translation>
 </phrase>
 
 <phrase>
@@ -9326,7 +9331,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>coordinates (x, y)</original>
-<translation></translation>
+<translation>Współrzędne (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9388,12 +9393,12 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>Rectangular to polar</original>
-<translation>Prostokątny do biegunowego</translation>
+<translation>Prostokątna do biegunowej</translation>
 </phrase>
 
 <phrase>
 <original>Polar to rectangular</original>
-<translation>Biegunowy do prostokątnego</translation>
+<translation>Biegunowa do prostokątnej</translation>
 </phrase>
 
 <phrase>
@@ -9546,17 +9551,17 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>Previous</original>
-<translation>Poprzedni</translation>
+<translation>Wstecz</translation>
 </phrase>
 
 <phrase>
 <original>Next</original>
-<translation>Następny</translation>
+<translation>Dalej</translation>
 </phrase>
 
 <phrase>
 <original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>Krok 1: wybierz akcje edycji zdjęć, które mają być zastosowane do każdego obrazu</translation>
+<translation>Krok 1: Wybierz akcje edycji zdjęć, które mają być zastosowane do każdego obrazu</translation>
 </phrase>
 
 <phrase>
@@ -9571,7 +9576,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>load list</original>
-<translation>Załduj listę</translation>
+<translation>Załaduj listę</translation>
 </phrase>
 
 <phrase>
@@ -9626,7 +9631,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation></translation>
+<translation>Zachowaj strukturę folderów wejściowych</translation>
 </phrase>
 
 <phrase>
@@ -9691,7 +9696,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation></translation>
+<translation>automatycznie wykrywaj animowane obrazy</translation>
 </phrase>
 
 <phrase>
@@ -9711,7 +9716,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation></translation>
+<translation>Ustaw opcje eksportu animowanych obrazów</translation>
 </phrase>
 
 <phrase>
@@ -9726,7 +9731,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>resize image by</original>
-<translation>Zmiana rozmiaru obrazu przez</translation>
+<translation>Dopasuj rozmiar obrazu</translation>
 </phrase>
 
 <phrase>
@@ -9741,7 +9746,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>resize images</original>
-<translation>Zmień rozmiar obrazu</translation>
+<translation>Zmień rozmiar obrazu ręcznie</translation>
 </phrase>
 
 <phrase>
@@ -9756,7 +9761,7 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>Are you sure you want to cancel the current batch process?</original>
-<translation>Czy na pewno chcesz anulować bieżący proces wsadowy?</translation>
+<translation>Na pewno chcesz anulować bieżący proces wsadowy?</translation>
 </phrase>
 
 <phrase>
@@ -9875,7 +9880,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Step 2: prepare the batch list (the list of images to be processed)</original>
-<translation>Krok 2: przygotowanie listy wsadowej (listy obrazów do przetworzenia)</translation>
+<translation>Krok 2: Przygotuj listę wsadową (listę obrazów do przetworzenia)</translation>
 </phrase>
 
 <phrase>
@@ -9885,7 +9890,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Przez ręczne dodanie jednego lub więcej plików obrazu przy użyciu standardowego okna "Otwórz Obraz".</translation>
+<translation>1) Przez ręczne dodanie jednego lub więcej plików obrazu przy użyciu standardowego okna "Otwórz obraz".</translation>
 </phrase>
 
 <phrase>
@@ -9900,7 +9905,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Step 3: choose a destination image format</original>
-<translation>Krok 3: wybierz docelowy format obrazu</translation>
+<translation>Krok 3: Wybierz docelowy format obrazu</translation>
 </phrase>
 
 <phrase>
@@ -9925,7 +9930,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Step 4: provide a destination folder and any renaming options</original>
-<translation>Krok 4: określ folder docelowy i wszelkie opcje zmiany nazwy</translation>
+<translation>Krok 4: Określ folder docelowy i wszelkie opcje zmiany nazwy</translation>
 </phrase>
 
 <phrase>
@@ -9945,7 +9950,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation>Krok 5: poczekaj na zakończenie przetwarzania wsadowego</translation>
+<translation>Krok 5: Poczekaj na zakończenie przetwarzania wsadowego</translation>
 </phrase>
 
 <phrase>
@@ -9975,7 +9980,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Empty image list</original>
-<translation>Lista obrazów pusta</translation>
+<translation>Pusta lista obrazów</translation>
 </phrase>
 
 <phrase>
@@ -9985,17 +9990,17 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>stretching to fit</original>
-<translation>Rozciąganie w celu dopasowania</translation>
+<translation>Przez rozciągnięcie</translation>
 </phrase>
 
 <phrase>
 <original>fit inclusively</original>
-<translation>Dopasuj włącznie</translation>
+<translation>Do dłuższej krawędzi</translation>
 </phrase>
 
 <phrase>
 <original>fit exclusively</original>
-<translation>Dopasuj wyłącznie</translation>
+<translation>Do krótszej krawędzi</translation>
 </phrase>
 
 <phrase>
@@ -10015,7 +10020,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(konkretnie, JPEG przy 92% jakości zdjęć i bezstratny PNG dla nie będących zdjęciami)</translation>
+<translation>(JPEG przy 92% jakości zdjęć i bezstratny PNG dla obrazów nie będących zdjęciami)</translation>
 </phrase>
 
 <phrase>
@@ -10035,7 +10040,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>Preparing batch processing engine</original>
-<translation>Przygotowanie mechanizm przetwarzania wsadowego</translation>
+<translation>Przygotowywanie przetwarzania wsadowego</translation>
 </phrase>
 
 <phrase>
@@ -10107,7 +10112,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>pull from layer names</original>
-<translation>wyciągnij z nazw warstw</translation>
+<translation>Wyciągnij z nazw warstw</translation>
 </phrase>
 
 <phrase>
@@ -10141,24 +10146,24 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>balanced</original>
-<translation>zrównoważona</translation>
+<translation>Zrównoważona</translation>
 </phrase>
 
 <phrase>
 <original>best</original>
-<translation>najlepsza</translation>
+<translation>Najlepsza</translation>
 </phrase>
 
 <!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>description</original>
-<translation>opis</translation>
+<translation>Opis</translation>
 </phrase>
 
 <phrase>
 <original>copyright</original>
-<translation>prawa autorskie</translation>
+<translation>Prawa autorskie</translation>
 </phrase>
 
 <phrase>
@@ -10168,7 +10173,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>extreme</original>
-<translation></translation>
+<translation>Ekstremalny</translation>
 </phrase>
 
 <!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10268,7 +10273,8 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Thanks!</original>
-<translation></translation>
+<translation>Podczas pobierania obrazów przestrzegaj praw autorskich.
+Dziękujemy!</translation>
 </phrase>
 
 <phrase>
@@ -10280,12 +10286,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation>Aktualnie dostępne programy (wymienione w tytule okna)</translation>
+<translation>Aktualnie dostępne programy (określone w tytule okna)</translation>
 </phrase>
 
 <phrase>
 <original>include window decorations</original>
-<translation>Uwzględnij dekoracje okien</translation>
+<translation>Uwzględnij ramki okien</translation>
 </phrase>
 
 <phrase>
@@ -10325,7 +10331,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Niektóre programy (w tym aplikacja Windows Store), nie pozwalają na bezpośrednie zrzuty ekranu. Jeśli podgląd aplikacji pojawia się jako czarny kwadrat, trzeba będzie przechwycić pełny ekran, a następnie ręcznie przyciąć wybrany region okna.</translation>
+<translation>Niektóre programy (w tym aplikacja Windows Store), nie pozwalają na bezpośrednie zrzuty ekranu. Jeśli podgląd aplikacji pojawia się jako czarny kwadrat, trzeba będzie przechwycić cały ekran, a następnie ręcznie przyciąć do obszaru wybranego okna.</translation>
 </phrase>
 
 <phrase>
@@ -10411,12 +10417,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>preview quality changes</original>
-<translation></translation>
+<translation>Podgląd zmian jakości</translation>
 </phrase>
 
 <phrase>
 <original>image quality</original>
-<translation>jakość obrazu</translation>
+<translation>Jakość obrazu</translation>
 </phrase>
 
 <phrase>
@@ -10431,7 +10437,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation></translation>
+<translation>Kompresja AVIF jest bardzo intensywna obliczeniowo. Na starszych lub wolniejszych komputerach możesz wyłączyć podgląd na żywo.</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10572,7 +10578,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>web - favicon</original>
-<translation>web - favicon</translation>
+<translation>Sieć - favicon</translation>
 </phrase>
 
 <phrase>
@@ -10836,7 +10842,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>target version</original>
-<translation></translation>
+<translation>Wersja docelowa</translation>
 </phrase>
 
 <!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10870,37 +10876,37 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>image type</original>
-<translation>typ obrazu</translation>
+<translation>Typ obrazu</translation>
 </phrase>
 
 <phrase>
 <original>generic</original>
-<translation>ogólne</translation>
+<translation>Ogólne</translation>
 </phrase>
 
 <phrase>
 <original>indoor photo</original>
-<translation></translation>
+<translation>Zdjęcie w pomieszczeniu</translation>
 </phrase>
 
 <phrase>
 <original>outdoor photo</original>
-<translation>zdjęcie wykonane na zewnątrz</translation>
+<translation>Zdjęcie na zewnątrz</translation>
 </phrase>
 
 <phrase>
 <original>chart</original>
-<translation></translation>
+<translation>Wykres</translation>
 </phrase>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation></translation>
+<translation>Rysunek (lub inna grafika)</translation>
 </phrase>
 
 <phrase>
 <original>icon</original>
-<translation>ikona</translation>
+<translation>Ikona</translation>
 </phrase>
 
 <!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -10984,7 +10990,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation>animacja włączona dla tego obrazu</translation>
+<translation>Włączyć animację dla tego obrazu?</translation>
 </phrase>
 
 <!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11092,17 +11098,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
-<translation></translation>
+<translation>Utwórz tabelę wyszukiwania kolorów (LUT)</translation>
 </phrase>
 
 <phrase>
 <original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation></translation>
+<translation>Dodaj do narzędzia „Dostosowanie > Kolor > Wyszukiwanie kolorów”</translation>
 </phrase>
 
 <phrase>
 <original>modified image and layer</original>
-<translation></translation>
+<translation>Zmodyfikowany obraz i warstwa</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11134,12 +11140,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Generate full metadata report (HTML)</original>
-<translation>Generowanie pełnego raportu metadanych (HTML)</translation>
+<translation>Generuj pełny raport metadanych (HTML)</translation>
 </phrase>
 
 <phrase>
 <original>visit the ExifTool homepage</original>
-<translation>odwiedź stronę ExifTool</translation>
+<translation>Odwiedź stronę ExifTool</translation>
 </phrase>
 
 <phrase>
@@ -11154,7 +11160,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>technical</original>
-<translation>Techniczny</translation>
+<translation>Techniczne</translation>
 </phrase>
 
 <phrase>
@@ -11214,7 +11220,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>no tags in this category</original>
-<translation>brak tagów w tej kategorii</translation>
+<translation>Brak tagów w tej kategorii</translation>
 </phrase>
 
 <phrase>
@@ -11331,12 +11337,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>preview changes</original>
-<translation></translation>
+<translation>Podgląd zmian</translation>
 </phrase>
 
 <phrase>
 <original>optimize for speed</original>
-<translation></translation>
+<translation>Optymalizuj dla szybkośći</translation>
 </phrase>
 
 <phrase>
@@ -11346,7 +11352,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>resampling</original>
-<translation></translation>
+<translation>Ponowne próbkowanie (resampling)</translation>
 </phrase>
 
 <phrase>
@@ -11356,17 +11362,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>Dopasowanie włączeń, z przezroczystymi obramowaniami jeśli konieczne</translation>
+<translation>Dopasowanie do dłuższych krawędzi, z przezroczystymi obramowaniami jeśli konieczne</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>wyłącznie pasujące i przycinane w razie potrzeby</translation>
+<translation>Dopasowanie do krótszych krawędzi, z przycięciem w razie potrzeby</translation>
 </phrase>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation></translation>
+<translation>Niektóre filtry resamplingu obrazu obsługują obliczenia przybliżone. Poprawiają one wydajność przy niewielkim pogorszeniu jakości.</translation>
 </phrase>
 
 <phrase>
@@ -11623,57 +11629,57 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Click: show the "New layer" dialog</original>
-<translation></translation>
+<translation>Kliknięcie: pokaż okno dialogowe „Nowa warstwa”</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation></translation>
+<translation>Shift + kliknięcie: dodaj pustą warstwę</translation>
 </phrase>
 
 <phrase>
 <original>Add layer</original>
-<translation>Dodanie warstwy</translation>
+<translation>Dodaj warstwę</translation>
 </phrase>
 
 <phrase>
 <original>Click: delete this layer</original>
-<translation></translation>
+<translation>Kliknięcie: usuń tę warstwę</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation></translation>
+<translation>Kliknięcie: przenieś tę warstwę w górę stosu warstw</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation></translation>
+<translation>Shift + kliknięcie: połącz tę warstwę z warstwą nad nią</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer up</original>
-<translation></translation>
+<translation>Przenieś lub scal warstwę w górę</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer down the layer stack</original>
-<translation></translation>
+<translation>Kliknięcie: przesuń tę warstwę w dół stosu warstw</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation></translation>
+<translation>Shift + kliknięcie: połącz tę warstwę z warstwą pod nią</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer down</original>
-<translation></translation>
+<translation>Przenieś lub scal warstwę w dół</translation>
 </phrase>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation></translation>
+<translation>Klikniecie: dodaj duplikat tej warstwy</translation>
 </phrase>
 
 <phrase>
@@ -11728,7 +11734,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>layout</original>
-<translation>układ</translation>
+<translation>Układ</translation>
 </phrase>
 
 <phrase>
@@ -11753,12 +11759,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>Narzędzia Cofnij/Ponów: cofaj zmiany wprowadzone w obrazie lub warstwie</translation>
 </phrase>
 
 <phrase>
 <original>Layout tools: explore, zoom, move or measure an image or layer</original>
-<translation></translation>
+<translation>Narzędzia układu: eksploracja, powiększanie, przesuwanie lub mierzenie obrazu lub warstwy</translation>
 </phrase>
 
 <phrase>
@@ -11778,12 +11784,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Opcja ta spowoduje utworzenie pustego obrazu. Inne sposoby tworzenia nowych obrazów znajdują się w menu Plik -> Import</translation>
+<translation>Opcja ta spowoduje utworzenie nowego pustego obrazu. Inne sposoby tworzenia nowych obrazów znajdują się w menu Plik -> Importuj</translation>
 </phrase>
 
 <phrase>
 <original>New Image</original>
-<translation>Nowy Obraz</translation>
+<translation>Utwórz nowy obraz</translation>
 </phrase>
 
 <phrase>
@@ -11803,7 +11809,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Close the current image</original>
-<translation>Zamyka bieżący obraz</translation>
+<translation>Zamknij bieżący obraz</translation>
 </phrase>
 
 <phrase>
@@ -11813,7 +11819,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation>UWAGA: Ta opcja nadpisze dotychczasowy plik obrazu. Aby zapisać obraz do innego pliku, użyj przycisku "Zapisz jako"...</translation>
+<translation>UWAGA: Ta opcja nadpisze dotychczasowy plik obrazu. Aby zapisać obraz do innego pliku, użyj przycisku "Zapisz jako".</translation>
 </phrase>
 
 <phrase>
@@ -12013,12 +12019,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation>Narzedzie klonowania</translation>
+<translation>Narzędzie klonowania</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket tool</original>
-<translation>Narzedzie wypełniania</translation>
+<translation>Narzędzie wypełniania</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
@@ -12082,12 +12088,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
+<translation>Po kliknięciu</translation>
 </phrase>
 
 <phrase>
 <original>return to previous tool</original>
-<translation></translation>
+<translation>Wróć do poprzedniego narzędzia</translation>
 </phrase>
 
 <phrase>
@@ -12102,7 +12108,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>n/a</original>
-<translation>niedostępne</translation>
+<translation>Niedostępne</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12116,7 +12122,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>brush style</original>
-<translation>styl pędzla</translation>
+<translation>Styl pędzla</translation>
 </phrase>
 
 <phrase>
@@ -12126,12 +12132,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>compare pixels by</original>
-<translation></translation>
+<translation>Porównaj piksele według</translation>
 </phrase>
 
 <phrase>
 <original>fill area</original>
-<translation></translation>
+<translation>Wypełnij obszar</translation>
 </phrase>
 
 <phrase>
@@ -12178,7 +12184,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>center offset</original>
-<translation></translation>
+<translation>Przesunięcie środka</translation>
 </phrase>
 
 <phrase>
@@ -12245,7 +12251,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>use measurement to</original>
-<translation></translation>
+<translation>Użyj pomiaru, aby</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12257,7 +12263,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>lock aspect ratio</original>
-<translation></translation>
+<translation>Zablokuj proporcje</translation>
 </phrase>
 
 <phrase>
@@ -12267,7 +12273,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>ignore transparent pixels</original>
-<translation></translation>
+<translation>Ignoruj przezroczyste piksele</translation>
 </phrase>
 
 <phrase>
@@ -12292,17 +12298,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>make transforms permanent</original>
-<translation></translation>
+<translation>Uczyń transformacje trwałymi</translation>
 </phrase>
 
 <phrase>
 <original>sample selections from</original>
-<translation></translation>
+<translation>Przykładowe zaznaczenia z</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation></translation>
+<translation>Domyślne zachowania zaznaczenia</translation>
 </phrase>
 
 <phrase>
@@ -12312,12 +12318,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>shear (x, y)</original>
-<translation></translation>
+<translation>Przytnij (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>auto select layer</original>
-<translation></translation>
+<translation>Automatyczny wybór warstwy</translation>
 </phrase>
 
 <phrase>
@@ -12327,12 +12333,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>copy</original>
-<translation>kopia</translation>
+<translation>Kopiuj</translation>
 </phrase>
 
 <phrase>
 <original>cut</original>
-<translation>wycięcie</translation>
+<translation>Wytnij</translation>
 </phrase>
 
 <phrase>
@@ -12348,27 +12354,27 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>animate</original>
-<translation>animacja</translation>
+<translation>Animacja</translation>
 </phrase>
 
 <phrase>
 <original>(no additional options)</original>
-<translation></translation>
+<translation>(brak dodatkowych opcji)</translation>
 </phrase>
 
 <phrase>
 <original>fill interior</original>
-<translation></translation>
+<translation>Wypełnij wewnątrz</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation></translation>
+<translation>Wypełnij na zewnątrz</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation></translation>
+<translation>Otwórz panel automatycznie</translation>
 </phrase>
 
 <phrase>
@@ -12378,22 +12384,22 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>round corners</original>
-<translation>zaokrąglenie krawędzi</translation>
+<translation>Zaokrąglij krawędzie</translation>
 </phrase>
 
 <phrase>
 <original>stroke smoothing</original>
-<translation>Wygładzanie obrysu</translation>
+<translation>Wygładż obrys</translation>
 </phrase>
 
 <phrase>
 <original>combine</original>
-<translation>łączenie</translation>
+<translation>Łączenie</translation>
 </phrase>
 
 <phrase>
 <original>New selection</original>
-<translation></translation>
+<translation>Nowe zaznaczenie</translation>
 </phrase>
 
 <phrase>
@@ -12408,27 +12414,27 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Intersect with selection</original>
-<translation>Przetnij z zaznaczeniem</translation>
+<translation>Wytnij z zaznaczenia</translation>
 </phrase>
 
 <phrase>
 <original>always</original>
-<translation></translation>
+<translation>Zawsze</translation>
 </phrase>
 
 <phrase>
 <original>when combining</original>
-<translation></translation>
+<translation>Podczas łączenia</translation>
 </phrase>
 
 <phrase>
 <original>never</original>
-<translation>nigdy</translation>
+<translation>Nigdy</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation>zmiękczony</translation>
+<translation>Zmiękczenie</translation>
 </phrase>
 
 <phrase>
@@ -12458,7 +12464,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation></translation>
+<translation>Zaznaczenia zwykle wybierają obszar w ich granicach, ale możesz tutaj zmienić to zachowanie. (Aby dostosować zaawansowane obszary zaznaczenia, użyj menu Wybierz.)</translation>
 </phrase>
 
 <phrase>
@@ -12478,7 +12484,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation></translation>
+<translation>Ten panel może otwierać się automatycznie, gdy edytujesz lub tworzysz zaznaczenie. Na mniejszych ekranach może to przeszkadzać, jeśli zasłania zbyt dużą część płótna, więc możesz wyłączyć to zachowanie tutaj.</translation>
 </phrase>
 
 <phrase>
@@ -12493,7 +12499,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
-<translation></translation>
+<translation>Tolerancja określa, jak bardzo piksel musi być podobny do koloru docelowego, zanim zostanie dodany do zaznaczenia magiczną różdżką.</translation>
 </phrase>
 
 <phrase>
@@ -12508,24 +12514,24 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
-<translation></translation>
+<translation>Ta opcja kontroluje kryteria, których używa magiczna różdżka do porównywania pikseli z kolorem docelowym.</translation>
 </phrase>
 
 <!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
-<translation></translation>
+<translation>Kliknij, aby edytować tekst</translation>
 </phrase>
 
 <phrase>
 <original>edit text</original>
-<translation>edycja tekstu</translation>
+<translation>Edytuj tekst</translation>
 </phrase>
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation></translation>
+<translation>Zawsze otwieraj ten panel dla nowych warstw tekstu</translation>
 </phrase>
 
 <phrase>
@@ -12582,12 +12588,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>Drganie (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>inflate</original>
-<translation></translation>
+<translation>Dmuchanie</translation>
 </phrase>
 
 <phrase>
@@ -12597,12 +12603,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>horizontal padding</original>
-<translation></translation>
+<translation>Wyściółka pozioma</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation></translation>
+<translation>Wyściółka pionowa</translation>
 </phrase>
 
 <phrase>
@@ -12617,7 +12623,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>outline background</original>
-<translation></translation>
+<translation>Obrys tła</translation>
 </phrase>
 
 <phrase>
@@ -12627,17 +12633,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>fill and outline</original>
-<translation></translation>
+<translation>Wypełnić i obrysuj</translation>
 </phrase>
 
 <phrase>
 <original>click to edit</original>
-<translation></translation>
+<translation>Kliknij, aby edytować</translation>
 </phrase>
 
 <phrase>
 <original>box</original>
-<translation>pole</translation>
+<translation>Pole</translation>
 </phrase>
 
 <phrase>
@@ -12647,7 +12653,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>hiragana</original>
-<translation>hiragana</translation>
+<translation>Hiragana</translation>
 </phrase>
 
 <phrase>
@@ -12699,17 +12705,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation></translation>
+<translation>Kliknij tutaj, aby uzyskać szczegółowe instrukcje (w języku angielskim)</translation>
 </phrase>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>Elementy interfejsu</translation>
 </phrase>
 
 <phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
-<translation></translation>
+<translation>Zastąp tłumaczenie tekstem referencyjnym (Ctrl+U)</translation>
 </phrase>
 
 <phrase>
@@ -12719,7 +12725,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>Grupy fraz</translation>
 </phrase>
 
 <phrase>
@@ -12739,12 +12745,12 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>Automatyczne tłumaczenie wszystkich brakujących fraz</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation></translation>
+<translation>Tłumaczenie referencyjne z pliku .po</translation>
 </phrase>
 
 <phrase>
@@ -12754,62 +12760,62 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>Typy fraz</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>Nazwy akcji</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>Pola komunikatów</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>Komunikaty na pasku stanu</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>Podpowiedzi</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>Pliki, w których występuje ta fraza</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>Różne</translation>
 </phrase>
 
 <phrase>
 <original>copy system locale</original>
-<translation></translation>
+<translation>Skopiuj ustawienia regionalne systemu</translation>
 </phrase>
 
 <phrase>
 <original>official ISO language codes at Wikipedia</original>
-<translation></translation>
+<translation>Oficjalne kody językowe ISO wg Wikipedii</translation>
 </phrase>
 
 <phrase>
 <original>author name(s)</original>
-<translation>Imię (imiona) autora</translation>
+<translation>Imię (nazwa) autora</translation>
 </phrase>
 
 <phrase>
 <original>language status</original>
-<translation></translation>
+<translation>Status języka</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation></translation>
+<translation>Wersja językowa</translation>
 </phrase>
 
 <phrase>
@@ -12819,32 +12825,32 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>language and country ID</original>
-<translation></translation>
+<translation>ID języka i kraju</translation>
 </phrase>
 
 <phrase>
 <original>optional translation aids</original>
-<translation></translation>
+<translation>Opcjonalne pomoce tłumaczeniowe</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation></translation>
+<translation>Darmowy klucz API DeepL.com do automatycznych sugestii tłumaczeń</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation></translation>
+<translation>Plik językowy (.po) z dowolnego innego oprogramowania, jako odniesienie</translation>
 </phrase>
 
 <phrase>
 <original>official ISO country codes at Wikipedia</original>
-<translation></translation>
+<translation>Oficjalne kody krajów ISO wg Wikipedii</translation>
 </phrase>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation></translation>
+<translation>Te opcjonalne ustawienia mogą przyspieszyć proces tłumaczenia. Nie są zapisywane w pliku językowym.</translation>
 </phrase>
 
 <phrase>
@@ -12854,17 +12860,17 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>start new language</original>
-<translation></translation>
+<translation>Utwórz nowy plik językowy</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation></translation>
+<translation>Edytuj istniejący plik językowy</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations</original>
-<translation></translation>
+<translation>Automatyczne tłumaczenie</translation>
 </phrase>
 
 <phrase>
@@ -12879,7 +12885,7 @@ pliku nie zostaną zmodyfikowane.</translation>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation></translation>
+<translation>N pewno chcesz usunąć %1? (Tej czynności nie można cofnąć).</translation>
 </phrase>
 
 <phrase>
@@ -12930,7 +12936,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation></translation>
+<translation>Fazy, które nie pasują do referencji</translation>
 </phrase>
 
 <phrase>
@@ -12950,22 +12956,22 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Step %1</original>
-<translation>Krok 1</translation>
+<translation>Krok %1</translation>
 </phrase>
 
 <phrase>
 <original>select language</original>
-<translation></translation>
+<translation>Wybierz język</translation>
 </phrase>
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>Zastosuj ustawienia języka i tłumaczenia</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>Lokalizuj frazy</translation>
 </phrase>
 
 <phrase>
@@ -12975,17 +12981,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>all phrases</original>
-<translation>Wszystkie zwroty</translation>
+<translation>Wszystkie</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation>Przetłumaczone zwroty</translation>
+<translation>Przetłumaczone</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation>Zwroty nieprzetłumaczone</translation>
+<translation>Nieprzetłumaczone</translation>
 </phrase>
 
 <phrase>
@@ -13000,7 +13006,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation></translation>
+<translation>[Frazy nie ma w pliku]</translation>
 </phrase>
 
 <phrase>
@@ -13020,7 +13026,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>(autosaved on %1)</original>
-<translation></translation>
+<translation>(automatycznie zapisano %1)</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
@@ -13154,12 +13160,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>session restore</original>
-<translation></translation>
+<translation>Przywracanie sesji</translation>
 </phrase>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation></translation>
+<translation>Automatycznie przywracaj sesje przerwane przez aktualizacje systemu lub restarty</translation>
 </phrase>
 
 <phrase>
@@ -13169,7 +13175,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation></translation>
+<translation>Podczas korzystania z opcji „Zapisz jako” ustaw domyślny format pliku na</translation>
 </phrase>
 
 <phrase>
@@ -13179,17 +13185,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>safe saving</original>
-<translation></translation>
+<translation>Bezpieczny zapis</translation>
 </phrase>
 
 <phrase>
 <original>unsaved changes</original>
-<translation></translation>
+<translation>Niezapisane zmiany</translation>
 </phrase>
 
 <phrase>
 <original>default format</original>
-<translation>domyślny format</translation>
+<translation>Domyślny format</translation>
 </phrase>
 
 <phrase>
@@ -13199,12 +13205,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>default folder</original>
-<translation></translation>
+<translation>Domyślny folder</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation></translation>
+<translation>Podczas korzystania z funkcji „Zapisz jako”, ustaw folder początkowy na</translation>
 </phrase>
 
 <phrase>
@@ -13344,7 +13350,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>automatically check for updates</original>
-<translation>Automatyczne sprawdzanie aktualizacji</translation>
+<translation>Automatycznie sprawdzaj aktualizacje</translation>
 </phrase>
 
 <phrase>
@@ -13503,7 +13509,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation></translation>
+<translation>Jeśli komputer zostanie zrestartowany, podczas gdy PhotoDemon jest uruchomiony, może on automatycznie przywrócić poprzednią sesję.</translation>
 </phrase>
 
 <phrase>
@@ -13513,32 +13519,32 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>the current image's folder</original>
-<translation></translation>
+<translation>Folder bieżącego obrazu</translation>
 </phrase>
 
 <phrase>
 <original>the last-used folder</original>
-<translation></translation>
+<translation>Ostatnio używany folder</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation></translation>
+<translation>Większość edytorów zdjęć domyślnie używa folderu bieżącego obrazu. W przypadku przepływów pracy, które obejmują ładowanie obrazów z jednego folderu, ale zapisywanie w nowym folderze, użyj ostatnio używanego folderu, aby zaoszczędzić czas.</translation>
 </phrase>
 
 <phrase>
 <original>the current image's format</original>
-<translation></translation>
+<translation>Format aktualnego obrazu</translation>
 </phrase>
 
 <phrase>
 <original>the last-used format</original>
-<translation></translation>
+<translation>Ostatnio używany format</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation></translation>
+<translation>Większość edytorów zdjęć domyślnie używa formatu bieżącego obrazu. W przypadku przepływów pracy, które wymagają ładowania obrazów w jednym formacie (np. RAW), ale zapisywania w nowym formacie (np. JPEG), użyj ostatnio używanego formatu, aby zaoszczędzić czas.</translation>
 </phrase>
 
 <phrase>
@@ -13563,7 +13569,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>maximize quality</original>
-<translation>Maksymalną jakość</translation>
+<translation>Maksymalna jakość</translation>
 </phrase>
 
 <phrase>
@@ -13573,7 +13579,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>maximize performance</original>
-<translation>Maksymalną wydajność</translation>
+<translation>Maksymalna wydajność</translation>
 </phrase>
 
 <phrase>
@@ -13628,17 +13634,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Kliknij ten przycisk, aby otworzyć okno dialogowe "Przeglądaj profil kolorów".</translation>
+<translation>Kliknij ten przycisk, aby otworzyć okno dialogowe "Wybierz profil kolorów".</translation>
 </phrase>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Jeśli nie wiesz, czym steruje to ustawienie, ustaw je na „Postrzegane”. Dla większości użytkowników najlepszym wyborem jest metoda renderowania percepcyjnego.</translation>
+<translation>Jeśli nie wiesz, czym steruje to ustawienie, ustaw je na „Percepcję”. Dla większości użytkowników najlepszym wyborem jest metoda renderowania percepcyjnego.</translation>
 </phrase>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC ma znaczenie przede wszystkim w przypadku odwzorowania kolorymetrycznego, gdzie pomaga zachować szczegóły w ciemnych (zacienionych) obszarach obrazów. W większości przypadków BPC powinno być włączone</translation>
+<translation>Czarny pukt kompensacji (ang. BPC) ma znaczenie przede wszystkim w przypadku odwzorowania kolorymetrycznego, gdzie pomaga zachować szczegóły w ciemnych (zacienionych) obszarach obrazów. W większości przypadków BPC powinno być włączone.</translation>
 </phrase>
 
 <phrase>
@@ -13688,7 +13694,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon może powiadomić Cię, gdy będzie gotowa do zastosowania aktualizacja. To pozwala na natychmiastowe użycie zaktualizowanej wersji.</translation>
+<translation>PhotoDemon może powiadomić Cię, gdy aktualizacja będzie gotowa do zastosowania. To ustawienie pozwala na natychmiastowe użycie zaktualizowanej wersji.</translation>
 </phrase>
 
 <phrase>
@@ -13706,7 +13712,7 @@ Are you sure you want to continue?</original>
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
 <translation>Twórcy programu PhotoDemon bardzo poważnie traktują prywatność, więc żadne informacje - statystyczne lub inne - nie zostaną przesłane w trakcie procesu aktualizacji. Aktualizacja pociąga za sobą konieczność pobrania kilku małych plików XML z photodemon.org. Pliki te zawierają numery najnowszych wersji, wtyczek i języków. Jeśli zostaną znalezione aktualizacje i preferencje użytkownika na to pozwalają, pliki aktualizacji są pobierane i zamieniane automatycznie.
 
-Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzić photodemon.org od czasu do czasu, aby sprawdzić, czy są nowe wersje.</translation>
+Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzić witrynę photodemon.org od czasu do czasu, aby sprawdzić, czy są dostępne nowe wersje programu.</translation>
 </phrase>
 
 <phrase>
@@ -13758,12 +13764,12 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>library details</original>
-<translation></translation>
+<translation>Szczegóły</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation></translation>
+<translation>Status biblioteki</translation>
 </phrase>
 
 <phrase>
@@ -13773,7 +13779,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>library folder</original>
-<translation></translation>
+<translation>Folder bibliotek</translation>
 </phrase>
 
 <phrase>
@@ -13843,7 +13849,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>not installed, but available on-demand</original>
-<translation></translation>
+<translation>Nie zainstalowana, ale dostępna na żądanie</translation>
 </phrase>
 
 <phrase>
@@ -13853,17 +13859,17 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>an AVIF image</original>
-<translation></translation>
+<translation>Obraz AVIF</translation>
 </phrase>
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation></translation>
+<translation>Ta biblioteka nie jest dostarczana z PhotoDemon.</translation>
 </phrase>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation></translation>
+<translation>Jeśli wejdziesz w interakcję z %1, PhotoDemon zaproponuje pobranie i skonfigurowanie tej biblioteki.</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -13897,7 +13903,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation></translation>
+<translation>Otwórz w PhotoDemon (do dalszej edycji)</translation>
 </phrase>
 
 <phrase>
@@ -13927,12 +13933,12 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>when recording finishes</original>
-<translation></translation>
+<translation>Po zakończeniu nagrywania</translation>
 </phrase>
 
 <phrase>
 <original>save directly to image file</original>
-<translation></translation>
+<translation>Zapisz bezpośrednio do pliku obrazu</translation>
 </phrase>
 
 <phrase>
