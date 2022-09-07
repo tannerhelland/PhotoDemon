@@ -763,7 +763,7 @@ Friend Sub SquashCompositeToRaster()
     Else
         Selections.RemoveCurrentSelection
     End If
-
+    
 End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
@@ -2157,6 +2157,7 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
         Set m_OldOutline = Nothing
         Set m_CompositeMask = Nothing
         Set m_CompositeOutline = Nothing
+        Set m_SelMask = New pdDIB
     End If
     
 End Sub
