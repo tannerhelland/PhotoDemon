@@ -649,7 +649,7 @@ Public Function StringFromMysteryBytes(ByRef srcBytes() As Byte, ByRef dstString
         ' these cases, I just do a forcible conversion using the current codepage.
         Else
             dstString = StrConv(srcBytes, vbUnicode)
-            Debug.Print "FYI: Strings.StringFromMysteryBytes received a string with unclear encoding.  Current user's codepage was assumed."
+            Debug.Print "FYI: Strings.StringFromMysteryBytes assumed current user's codepage."
         End If
         
     End If
