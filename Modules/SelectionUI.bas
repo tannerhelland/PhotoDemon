@@ -321,21 +321,17 @@ End Function
 'This sub will return a constant correlating to the nearest selection point.  See the relevant enum for details.
 Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As PD_PointOfInterest
     
+    IsCoordSelectionPOI = poi_Undefined
+    
     'If the current selection is...
     ' 1) raster-type, or...
     ' 2) inactive...
     '...disallow POIs entirely.  (These types of selections do not support on-canvas interactions.)
-    If (srcImage.MainSelection.GetSelectionShape = ss_Raster) Or (Not srcImage.IsSelectionActive) Then
-        IsCoordSelectionPOI = poi_Undefined
-        Exit Function
-    End If
+    If (srcImage.MainSelection.GetSelectionShape = ss_Raster) Or (Not srcImage.IsSelectionActive) Then Exit Function
     
     'Similarly, POIs are only enabled if the current selection tool matches the current selection shape.
     ' (If a new selection shape has been selected, the user is definitely not modifying the existing selection.)
-    If (g_CurrentTool <> SelectionUI.GetRelevantToolFromSelectShape()) Then
-        IsCoordSelectionPOI = poi_Undefined
-        Exit Function
-    End If
+    If (g_CurrentTool <> SelectionUI.GetRelevantToolFromSelectShape()) Then IsCoordSelectionPOI = poi_Undefined
     
     'We're now going to compare the passed coordinate against a hard-coded list of "points of interest."  These POIs
     ' differ by selection type, as different selections allow for different levels of interaction.  (For example, a polygon
@@ -402,6 +398,10 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                     IsCoordSelectionPOI = poi_CornerSE
                 ElseIf (closestPoint = 3) Then
                     IsCoordSelectionPOI = poi_CornerSW
+                
+                'Failsafe only
+                Else
+                    IsCoordSelectionPOI = poi_Undefined
                 End If
                 
             Else
@@ -708,11 +708,11 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-        
+    
+    If m_IgnoreUserInput Then Exit Sub
+    
     m_MouseDown = True
     m_HasMouseMoved = False
-        
-    If m_IgnoreUserInput Then Exit Sub
     
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
     ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
@@ -892,7 +892,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
     m_HasMouseMoved = True
     
     'Handling varies based on the current mouse state, obviously.
-    If lmbState Then
+    If m_MouseDown Then
         
         'Basic selection tools
         Select Case g_CurrentTool
