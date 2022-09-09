@@ -15,7 +15,7 @@ End Enum
 'Quality of the current build.  This value automatically dictates a number of behaviors throughout the program,
 ' like reporting time-to-completion for effects and enabling detailed debug reports.  Do not change unless you
 ' fully understand the consequences!
-Public Const PD_BUILD_QUALITY As Long = PD_BETA
+Public Const PD_BUILD_QUALITY As Long = PD_PRODUCTION
 
 'Identifier for various PD-specific file types
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
