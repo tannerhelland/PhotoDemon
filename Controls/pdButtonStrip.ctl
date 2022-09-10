@@ -315,11 +315,9 @@ End Sub
 'When the control loses focus, erase any focus rects it may have active
 Private Sub ucSupport_LostFocusAPI()
     
-    'If a focus rect has been drawn, remove it now
-    If (m_FocusRectActive >= 0) Then
-        m_FocusRectActive = -1
-        RedrawBackBuffer
-    End If
+    'Remove the keyboard focus rect (if any)
+    m_FocusRectActive = -1
+    RedrawBackBuffer
     
     RaiseEvent LostFocusAPI
 
