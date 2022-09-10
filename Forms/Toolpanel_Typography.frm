@@ -589,14 +589,14 @@ Begin VB.Form toolpanel_TextAdvanced
       Left            =   7950
       TabIndex        =   42
       Top             =   345
-      Width           =   1455
-      _ExtentX        =   2566
+      Width           =   1965
+      _ExtentX        =   3466
       _ExtentY        =   767
       ColorScheme     =   1
    End
    Begin PhotoDemon.pdButtonStrip btsVAlignment 
       Height          =   435
-      Left            =   9510
+      Left            =   9960
       TabIndex        =   32
       Top             =   345
       Width           =   1455
@@ -610,8 +610,8 @@ Begin VB.Form toolpanel_TextAdvanced
       Left            =   7920
       TabIndex        =   33
       Top             =   0
-      Width           =   3015
-      _ExtentX        =   5318
+      Width           =   3495
+      _ExtentX        =   6165
       _ExtentY        =   635
       Caption         =   "alignment"
       Value           =   0   'False
@@ -1407,6 +1407,7 @@ Private Sub Form_Load()
         btsHAlignment.AddItem vbNullString, 0
         btsHAlignment.AddItem vbNullString, 1
         btsHAlignment.AddItem vbNullString, 2
+        btsHAlignment.AddItem vbNullString, 3
         
         btsVAlignment.AddItem vbNullString, 0
         btsVAlignment.AddItem vbNullString, 1
@@ -2111,6 +2112,7 @@ Public Sub UpdateAgainstCurrentTheme()
     btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignment.AssignImageToItem 3, "format_alignjustify", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
     btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box

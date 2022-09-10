@@ -773,6 +773,8 @@ Private Function GetAlignmentStringFromUnit(ByVal srcValue As GP_StringAlignment
         GetAlignmentStringFromUnit = "center"
     ElseIf (srcValue = StringAlignmentFar) Then
         GetAlignmentStringFromUnit = "far"
+    ElseIf (srcValue = StringAlignmentJustify) Then
+        GetAlignmentStringFromUnit = "justify"
     Else
         InternalError "GetAlignmentStringFromUnit", "bad value: " & srcValue
         GetAlignmentStringFromUnit = "near"
@@ -786,6 +788,8 @@ Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GP_Stri
         GetAlignmentUnitFromString = StringAlignmentCenter
     ElseIf (srcValue = "far") Then
         GetAlignmentUnitFromString = StringAlignmentFar
+    ElseIf (srcValue = "justify") Then
+        GetAlignmentUnitFromString = StringAlignmentJustify
     Else
         InternalError "GetAlignmentUnitFromString", "bad value: " & srcValue
         GetAlignmentUnitFromString = StringAlignmentNear
@@ -826,6 +830,7 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
         
         Case ptp_HorizontalAlignment
             GetGenericTextProperty = m_HorizontalAlignment
+            If (m_RenderingEngine <> te_PhotoDemon) And (m_HorizontalAlignment >= StringAlignmentJustify) Then GetGenericTextProperty = StringAlignmentNear
         
         Case ptp_VerticalAlignment
             GetGenericTextProperty = m_VerticalAlignment
@@ -988,7 +993,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
             If (m_HorizontalAlignment <> CLng(newValue)) Then
                 m_HorizontalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
-                If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
+                If (m_GDIPlusStringFormat <> 0) And (m_HorizontalAlignment < StringAlignmentJustify) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
             End If
         
         Case ptp_VerticalAlignment
@@ -2090,8 +2095,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     Dim xOffset As Long, yOffset As Long
     
     Select Case m_HorizontalAlignment
-    
-        Case StringAlignmentNear
+        
+        'Justified text does *not* work with this renderer
+        Case StringAlignmentNear, StringAlignmentJustify
             xOffset = 0
         
         Case StringAlignmentCenter
@@ -2153,6 +2159,10 @@ Private Function GetDrawTextAlignmentFlags() As Win32_DrawTextConstants
         
         Case StringAlignmentFar
             GetDrawTextAlignmentFlags = GetDrawTextAlignmentFlags Or DT_RIGHT
+            
+        'PhotoDemon can render justified text, but Win32 cannot.
+        Case Else
+            GetDrawTextAlignmentFlags = GetDrawTextAlignmentFlags Or DT_LEFT
         
     End Select
     

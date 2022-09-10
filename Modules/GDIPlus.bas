@@ -734,10 +734,13 @@ Public Enum GP_StringAlignment
     StringAlignmentNear = 0
     StringAlignmentCenter = 1
     StringAlignmentFar = 2
+    
+    'IMPORTANT NOTE: GDI+ cannot render justified text.  This setting *ONLY* works with PhotoDemon's advanced text renderer.
+    StringAlignmentJustify = 3
 End Enum
 
 #If False Then
-    Private Const StringAlignmentNear = 0, StringAlignmentCenter = 1, StringAlignmentFar = 2
+    Private Const StringAlignmentNear = 0, StringAlignmentCenter = 1, StringAlignmentFar = 2, StringAlignmentJustify = 3
 #End If
 
 Public Enum GP_Unit

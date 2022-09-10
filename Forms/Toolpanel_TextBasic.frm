@@ -142,8 +142,8 @@ Begin VB.Form toolpanel_TextBasic
       Left            =   7950
       TabIndex        =   4
       Top             =   345
-      Width           =   1455
-      _ExtentX        =   2566
+      Width           =   1485
+      _ExtentX        =   2619
       _ExtentY        =   767
       ColorScheme     =   1
    End

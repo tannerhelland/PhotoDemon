@@ -1320,29 +1320,37 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     'Start with horizontal alignment
     If (horizontalAlignment <> StringAlignmentNear) Then
         
-        'Because we kept a running tally of each line's width during the processing stages, it is easy
-        ' to calculate offsets now.
-        For curLine = 0 To numOfLines - 1
+        'Justified text is TODO
+        If (horizontalAlignment = StringAlignmentJustify) Then
         
-            'For each line, replace its calculated line width with the difference between the bounding rect
-            ' and the actual size.
-            lineDiff = boundingRectRight - m_LineWidths(curLine)
+        'Right/center alignment is much easier
+        Else
             
-            If (horizontalAlignment = StringAlignmentCenter) Then
-                hLineOffsets(curLine) = lineDiff * 0.5!
-            Else
-                hLineOffsets(curLine) = lineDiff
-            End If
-        
-        Next curLine
-        
-        'Each line width tracker now contains the offset required to make alignment work.  Apply it to each glyph in turn.
-        For curGlyph = 0 To m_NumOfGlyphs - 1
-            With m_Glyphs(curGlyph)
-                .finalX = .finalX + hLineOffsets(.lineID)
-            End With
-        Next curGlyph
-        
+            'Because we kept a running tally of each line's width during the processing stages, it is easy
+            ' to calculate offsets now.
+            For curLine = 0 To numOfLines - 1
+            
+                'For each line, replace its calculated line width with the difference between the bounding rect
+                ' and the actual size.
+                lineDiff = boundingRectRight - m_LineWidths(curLine)
+                
+                If (horizontalAlignment = StringAlignmentCenter) Then
+                    hLineOffsets(curLine) = lineDiff * 0.5!
+                Else
+                    hLineOffsets(curLine) = lineDiff
+                End If
+            
+            Next curLine
+            
+            'Each line width tracker now contains the offset required to make alignment work.  Apply it to each glyph in turn.
+            For curGlyph = 0 To m_NumOfGlyphs - 1
+                With m_Glyphs(curGlyph)
+                    .finalX = .finalX + hLineOffsets(.lineID)
+                End With
+            Next curGlyph
+            
+        End If
+            
     End If
     
     'Next, vertical alignment
