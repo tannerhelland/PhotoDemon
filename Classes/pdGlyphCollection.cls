@@ -1320,9 +1320,124 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     'Start with horizontal alignment
     If (horizontalAlignment <> StringAlignmentNear) Then
         
-        'Justified text is TODO
+        'Justified text requires a lot of special handling, alas
         If (horizontalAlignment = StringAlignmentJustify) Then
-        
+            
+            'For justified text to work, we need to do a few different things.
+            ' (Note that the current algorithm works on a per-line basis.  A more sophisticated algorithm
+            ' might rework neighboring lines to "push" a word up or down, or hyphenate words in order to
+            ' make the justified text look prettier.)
+            
+            'Start by iterating lines.
+            lastGlyphChecked = 0
+            For curLine = 0 To numOfLines - 1
+                
+                'Skip whitespace-only lines (which were explicitly marked as 0-length in a previous step).
+                '
+                'We also want to skip the last line in a multi-line paragraph.
+                Dim justifyThisLine As Boolean
+                justifyThisLine = (m_LineWidths(curLine) > 0)
+                If (numOfLines > 1) Then justifyThisLine = justifyThisLine And (curLine < numOfLines - 1)
+                
+                If justifyThisLine Then
+                    
+                    'Figure out how much space we need to "insert" into the current line to make it justified.
+                    lineDiff = boundingRectRight - m_LineWidths(curLine)
+                    
+                    'If possible, we want to insert extra space only where whitespace characters already exist.
+                    ' To do that, we need to know how many whitespace characters we have to work with on this line.
+                    Dim numWhiteSpaceChars As Long
+                    numWhiteSpaceChars = 0
+                    
+                    Dim idxFirstChar As Long, idxLastChar As Long
+                    idxFirstChar = -1: idxLastChar = -1
+                    
+                    'Search for glyphs that 1) sit on this line, and 2) are not whitespace
+                    For i = lastGlyphChecked To m_NumOfGlyphs - 1
+                    
+                        'If a non-whitespace char is found on this line, note it and exit immediately
+                        If (m_Glyphs(i).lineID = curLine) Then
+                            
+                            'Note first/last glyph indices for this line, and deliberately omit them from justification
+                            ' (by marking them as zero-width)
+                            If m_Glyphs(i).isFirstGlyphOnLine Then
+                                idxFirstChar = i
+                                If m_Glyphs(i).isWhiteSpace Then m_Glyphs(i).isZeroWidth = True
+                            End If
+                            
+                            If m_Glyphs(i).isLastGlyphOnLine Then
+                                idxLastChar = i
+                                If m_Glyphs(i).isWhiteSpace Then m_Glyphs(i).isZeroWidth = True
+                            End If
+                            
+                            'If this character is a non-zero-width whitespace glyph, note that it's a
+                            ' valid whitespace marker.
+                            If (m_Glyphs(i).isWhiteSpace) And (Not m_Glyphs(i).isZeroWidth) Then
+                                numWhiteSpaceChars = numWhiteSpaceChars + 1
+                            End If
+                            
+                            'If this is the final valid character in this line, increment the glyph pointer
+                            ' until we reach the first glyph on the *next* line.  (This fixes weird behavior
+                            ' on multi-whitespace-chars at the end of a line, like a double-space after a period.)
+                            If (idxLastChar = i) Then
+                                Do While m_Glyphs(i).lineID = curLine
+                                    i = i + 1
+                                    If (i >= m_NumOfGlyphs) Then Exit For
+                                Loop
+                                lastGlyphChecked = i
+                                Exit For
+                            End If
+                        
+                        'Failsafe check only; isLastGlyphOnLine should always terminate correctly, above.
+                        Else
+                            lastGlyphChecked = i
+                            Exit For
+                        End If
+                        
+                    Next i
+                    
+                    'Check a couple weird failure states for odd text arrangements
+                    If (idxFirstChar >= idxLastChar + 1) Then GoTo NextLineJustify  'Single-character lines
+                    If (idxFirstChar < 0) Or (idxLastChar < 0) Then GoTo NextLineJustify    'Bad line parsing failsafe
+                    
+                    'We now need to split based on the number of whitespace chars in the current line.  This works if
+                    ' we have at least *one* whitespace char (that is not leading or trailing), but if we have zero,
+                    ' we instead need to use inter-character spacing.
+                    '
+                    '(An ideal implementation would likely use a mix of whitespace and inter-character spacing to
+                    ' achieve "prettier" results, but I have not tackled this... yet.)
+                    If (numWhiteSpaceChars > 0) Then
+                        
+                        'Iterate through all glyphs, adding spacing as we go.
+                        Dim perCharIncrement As Single
+                        perCharIncrement = lineDiff / numWhiteSpaceChars
+                        
+                        Dim accumulatedSpacing As Single
+                        accumulatedSpacing = 0!
+                        
+                        For j = idxFirstChar To idxLastChar
+                            
+                            'Ignore zero-width chars (including zero-width whitespace)
+                            If (Not m_Glyphs(j).isZeroWidth) Then
+                                If m_Glyphs(j).isWhiteSpace Then accumulatedSpacing = accumulatedSpacing + perCharIncrement
+                                m_Glyphs(j).finalX = m_Glyphs(j).finalX + accumulatedSpacing
+                            End If
+                        Next j
+                        
+                        'Because this line was forcibly set to "full-width", set the display line-width to match.
+                        ' (This allows underline and strikethrough modes to behave correctly.)
+                        m_LineWidths(curLine) = boundingRectRight
+                        
+                    'When no whitespace chars are available, we must use inter-character spacing instead.  Yay?
+                    Else
+                    
+                    End If
+                    
+                End If
+
+NextLineJustify:
+            Next curLine
+            
         'Right/center alignment is much easier
         Else
             
