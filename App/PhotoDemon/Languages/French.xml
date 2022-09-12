@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.592</langversion>
+<langversion>6.7.593</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3031,6 +3031,11 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>last line justify</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Modification de la sélection</translation>
 </phrase>
@@ -3052,7 +3057,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 130 phrases. 69 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -12705,7 +12710,7 @@ Vous pouvez alors si besoin
 <translation>Cliquer ici pour convertir en calque de texte avancé</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13966,10 +13971,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2640</phrasecount>
+<phrasecount>2641</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5515 phrases. -->
-<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
-<!-- These 2640 phrases contain approximately 11421 total words. -->
+<!-- As of this build, PhotoDemon contains 5518 phrases. -->
+<!-- 2877 are duplicates, so only 2641 unique phrases have been written to file. -->
+<!-- These 2641 phrases contain approximately 11424 total words. -->
 
 </pdData>

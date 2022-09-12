@@ -500,8 +500,10 @@ Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As 
             convertedTextAlignment = StringAlignmentCenter
         Case keTextAlignmentRight
             convertedTextAlignment = StringAlignmentFar
+        
+        'Failsafe for future PSP changes; assume justified text, I guess?
         Case Else
-            convertedTextAlignment = StringAlignmentNear
+            convertedTextAlignment = StringAlignmentJustify
     End Select
     
     dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_HorizontalAlignment, convertedTextAlignment

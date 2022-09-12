@@ -276,6 +276,7 @@ Private m_StrikeoutSupported As Boolean
 ' it during rendering stages.
 Private m_HorizontalAlignment As GP_StringAlignment
 Private m_VerticalAlignment As GP_StringAlignment
+Private m_AlignLastLine As GP_StringAlignment
 
 'Even *more* string settings are not stored in the font itself, or in a StringFormat object, but in the target
 ' GDI+ Graphics container.  These must be assigned to the graphics container prior to painting text, so there's not really
@@ -688,6 +689,7 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-character-jitter-y", m_CharJitterY, True, True
         .AddParam "obj-character-inflation", m_CharInflation, True, True
         .AddParam "obj-character-mirror", GetTextMirrorStringFromEnum(m_CharMirror), True, True
+        .AddParam "obj-align-last-line", GetAlignmentStringFromUnit(m_AlignLastLine), True, True
     End With
     
     'Close out the text object
@@ -757,6 +759,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_CharJitterY, .GetDouble("obj-character-jitter-y", 0#)
             SetGenericTextProperty ptp_CharInflation, .GetDouble("obj-character-inflation", 0#)
             SetGenericTextProperty ptp_CharMirror, GetTextMirrorEnumFromString(.GetString("obj-character-mirror", GetTextMirrorStringFromEnum(cm_None), True))
+            SetGenericTextProperty ptp_AlignLastLine, GetAlignmentUnitFromString(.GetString("obj-align-last-line", GetAlignmentStringFromUnit(StringAlignmentNear), True))
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
@@ -912,6 +915,9 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
             
         Case ptp_CharMirror
             GetGenericTextProperty = m_CharMirror
+            
+        Case ptp_AlignLastLine
+            GetGenericTextProperty = m_AlignLastLine
     
     End Select
 
@@ -1176,6 +1182,12 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
         Case ptp_CharMirror
             If (m_CharMirror <> CLng(newValue)) Then
                 m_CharMirror = CLng(newValue)
+                SetGenericTextProperty = True
+            End If
+        
+        Case ptp_AlignLastLine
+            If (m_AlignLastLine <> CLng(newValue)) Then
+                m_AlignLastLine = CLng(newValue)
                 SetGenericTextProperty = True
             End If
         
@@ -1759,7 +1771,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         VBHacks.GetHighResTime startTime
     End If
     
-    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap, m_StretchToFit) Then
+    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap, m_StretchToFit, m_AlignLastLine) Then
         
         If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - assembly: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1841,7 +1853,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         End If
         
     Else
-        PDDebug.LogAction "WARNING!  m_GlyphCollection.assembleCompositePath returned FALSE.  Please investigate."
+        PDDebug.LogAction "WARNING!  m_GlyphCollection.AssembleCompositePath returned FALSE.  Please investigate."
     End If
     
     'Release the temporary GDI+ objects we created.  (Note that GDI+ objects silently created via pd2D objects are released automatically.)
@@ -2330,6 +2342,7 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_CharJitterY, .GetDouble("TextCharJitterY", 0)
         SetGenericTextProperty ptp_CharInflation, .GetDouble("TextCharInflation", 0)
         SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
+        SetGenericTextProperty ptp_AlignLastLine, StringAlignmentNear
     End With
     
     'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.

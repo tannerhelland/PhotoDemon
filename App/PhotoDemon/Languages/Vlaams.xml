@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1701</langversion>
+<langversion>8.9.1702</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3031,6 +3031,11 @@ Beschrijving: %2
 </phrase>
 
 <phrase>
+<original>last line justify</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Selectie wijzigen</translation>
 </phrase>
@@ -3054,7 +3059,7 @@ Als u klaar bent, klikt u op de knop "Nieuw probleem indienen".  Dank U!</transl
 <translation>Bug report instructies</translation>
 </phrase>
 
-<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 130 phrases. 69 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -12701,7 +12706,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Klik hier om deze laag om te zetten in geavanceerde tekst.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13957,10 +13962,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2640</phrasecount>
+<phrasecount>2641</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5515 phrases. -->
-<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
-<!-- These 2640 phrases contain approximately 11421 total words. -->
+<!-- As of this build, PhotoDemon contains 5518 phrases. -->
+<!-- 2877 are duplicates, so only 2641 unique phrases have been written to file. -->
+<!-- These 2641 phrases contain approximately 11424 total words. -->
 
 </pdData>

@@ -590,7 +590,7 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 
 End Function
 
-'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
+'Prior to calling AssembleCompositePath, below, the caller can notify us of custom layout settings via this function
 Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0!, Optional ByVal customCharSpacing As Single = 0!, Optional ByVal customCharOrientation As Single = 0!, Optional ByVal customCharJitterX As Single = 0!, Optional ByVal customCharJitterY As Single = 0!, Optional ByVal customCharInflation As Single = 0!, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None)
     
     m_LineSpacing = customLineSpacing
@@ -609,7 +609,7 @@ End Sub
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path,
 ' with all characters laid out according to the passed rect.
-Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GP_StringAlignment, ByVal verticalAlignment As GP_StringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None) As Boolean
+Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GP_StringAlignment, ByVal verticalAlignment As GP_StringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None, Optional ByVal justifyLastLine As GP_StringAlignment = StringAlignmentNear) As Boolean
     
     'Initialize the destination path as necessary
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
@@ -634,7 +634,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         ' pass blank path objects to CalculateGlyphPositions(), and merge the results with our final path when underline
         ' or strikeout styles are active.
         Dim additionalStylesRect As pd2DPath
-        CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect, stretchToFit
+        CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect, stretchToFit, justifyLastLine
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long
         Dim tmpGlyphOutlineCopy As pd2DPath, tmpMatrix As pd2DTransform, cRandom As pdRandomize
@@ -846,7 +846,7 @@ End Function
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes
 ' from Uniscribe; this function is primarily responsible for line breaks, and any PD-specific positioning changes
 ' (e.g. modified line or character spacing).
-Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GP_StringAlignment, ByVal verticalAlignment As GP_StringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByRef dstStylePath As pd2DPath, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None) As Boolean
+Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GP_StringAlignment, ByVal verticalAlignment As GP_StringAlignment, Optional ByVal lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByRef dstStylePath As pd2DPath, Optional ByVal stretchToFit As PD_TextStretchToFit = stf_None, Optional ByVal justifyLastLine As GP_StringAlignment = StringAlignmentNear) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, glyphCheck As Long
@@ -1118,6 +1118,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             ' string is a linebreak, for example.)
             If m_Glyphs(curGlyph).isHardLineBreak Then
                 m_Glyphs(curGlyph).isLastGlyphOnLine = True
+                m_Glyphs(curGlyph).lineID = currentLine - 1   'while we're here, ensure the line ID is correct
                 
             'If we are not breaking on a hard line break, we mark the *previous* non-whitespace character
             ' as the last one on the line.
@@ -1167,17 +1168,21 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                 Else
                     m_Glyphs(0).isLastGlyphOnLine = True
                 End If
-                
+            
+            '/end finding+marking the last character of the previous line
             End If
             
-            'Next, we need to mark the first glyph of this line.  (This may be required knowledge for subsequent line breaks.)
-            ' We do this by advancing the glyph pointer until we encounter a non-whitespace, non-hard-linebreak glyph.
+            'Next, we need to mark the first glyph of the next line.  This mark is important for subsequent
+            ' line handling, particularly justified line alignment.
+            
+            'We do this by advancing the glyph pointer beyond its current point until we encounter a non-whitespace,
+            ' non-hard-linebreak glyph.  (This ensures that trailing white space behaves correctly.)
             
             'Note that we must pre-check for the glyph pointer being valid; it may point beyond the end of the array
             ' if the last character in a string is a hard line-break.
             If (curGlyph < m_NumOfGlyphs) Then
                 
-                'If the current glyph is a non-whitespace glyph, mark it as the start of this line.
+                'If the current glyph is a non-whitespace glyph, mark it as the start of the next line.
                 If (Not m_Glyphs(curGlyph).isWhiteSpace) Then
                     m_Glyphs(curGlyph).isFirstGlyphOnLine = True
                 
@@ -1193,11 +1198,16 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                     ' 2) a hard line-break
                     Do While incrementGlyphPointer
                         
-                        'Exit on non-whitespace glyphs
+                        'The current character is not whitespace (so it's a valid "first of line" character).
                         If (Not m_Glyphs(curGlyph).isWhiteSpace) Then Exit Do
                         
-                        'Exit on hard linebreaks
-                        If m_Glyphs(curGlyph).isHardLineBreak Then Exit Do
+                        'The current character is a hard linebreak.  Advance the glyph pointer to the next glyph
+                        ' (whatever it is) because it must be the start of the next line.
+                        If m_Glyphs(curGlyph).isHardLineBreak Then
+                            curGlyph = curGlyph + 1
+                            If (curGlyph <= m_NumOfGlyphs - 1) Then m_Glyphs(curGlyph).isFirstGlyphOnLine = True
+                            GoTo SkipToNextGlyph
+                        End If
                         
                         'If we're still here, this is a whitespace glyph.  Make sure the line ID is correct
                         ' (treating this glyph as if it belongs to the *previous* line), then increment curGlyph
@@ -1270,7 +1280,8 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             curGlyph = curGlyph + 1
             
         End If
-        
+
+SkipToNextGlyph:
     Loop While (curGlyph < m_NumOfGlyphs)
     
     'After all glyphs are placed, find the last character in the string, and make sure it's marked as
@@ -1329,28 +1340,31 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     'Start with horizontal alignment
     If (horizontalAlignment <> StringAlignmentNear) Then
         
-        'Justified text requires a lot of special handling, alas
+        'Justified text requires a lot of special handling, alas...
         If (horizontalAlignment = StringAlignmentJustify) Then
             
             'For justified text to work, we need to do a few different things.
             ' (Note that the current algorithm works on a per-line basis.  A more sophisticated algorithm
-            ' might rework neighboring lines to "push" a word up or down, or hyphenate words in order to
-            ' make the justified text look prettier.)
+            ' might rework neighboring lines to "push" a word up or down - a la the classic Knuth-Plass algorithm -
+            ' or we could hyphenate words to make the justified text look prettier.  These more advanced approaches
+            ' are often language-specific which is why I haven't tackled them... yet.)
             
             'Start by iterating lines.
             lastGlyphChecked = 0
             For curLine = 0 To numOfLines - 1
                 
-                'Skip whitespace-only lines (which were explicitly marked as 0-length in a previous step),
-                ' and depending on user settings, also skip the last line in multi-line paragraphs.
+                'Skip whitespace-only lines (which were explicitly marked as 0-length in a previous step).
+                ' Note that we may also skip the last line in multi-line paragraphs, per the user's
+                ' "last line justify" setting, but we still need to iterate all lines here to look for
+                ' last lines of multi-line paragraphs that are *not* also the last line in the layer.
+                ' (This is possible if a single text layer contains multiple paragraphs.)
                 Dim justifyThisLine As Boolean
                 justifyThisLine = (m_LineWidths(curLine) > 0)
-                If (numOfLines > 1) Then justifyThisLine = justifyThisLine And (curLine < numOfLines - 1)
+                
+                Dim lineEndsInHardBreak As Boolean
+                lineEndsInHardBreak = False
                 
                 If justifyThisLine Then
-                    
-                    'Figure out how much space we need to "insert" across the current line to make it justified.
-                    lineDiff = boundingRectRight - m_LineWidths(curLine)
                     
                     'If possible, we want to insert extra space only where whitespace characters already exist.
                     ' To do that, we need to know how many whitespace characters we have to work with on this line.
@@ -1374,6 +1388,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                             End If
                             
                             If m_Glyphs(i).isLastGlyphOnLine Then
+                                lineEndsInHardBreak = m_Glyphs(i).isHardLineBreak
                                 idxLastChar = i
                                 If m_Glyphs(i).isWhiteSpace Then m_Glyphs(i).isZeroWidth = True
                             End If
@@ -1396,28 +1411,38 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                                 Exit For
                             End If
                         
-                        'Failsafe check only; isLastGlyphOnLine should always terminate correctly, above.
+                        'Blank lines in a row (e.g. LF + LF) can trigger this branch.  When this happens,
+                        ' we want to manually advance the glyph pointer to the first glyph of the *next* line.
                         Else
-                            lastGlyphChecked = i
-                            Exit For
+                            
+                            If (m_Glyphs(i).lineID > curLine) Then
+                                PDDebug.LogAction "WARNING: pdGlyphCollection.CalculateGlyphPositions bad parse."
+                            
+                            'curLine must be lower than the expected line
+                            Else
+                                
+                                'Manually advance the glyph pointer to the start of the next line
+                                lastGlyphChecked = i
+                                Do
+                                    lastGlyphChecked = lastGlyphChecked + 1
+                                    If (lastGlyphChecked > m_NumOfGlyphs - 1) Then Exit Do
+                                Loop While (m_Glyphs(lastGlyphChecked).lineID > curLine)
+                                
+                                'i is a loop counter and it will be auto-incremented before touching the next glyph,
+                                ' so retreat it by 1 so the next iteration starts at "lastGlyphChecked".
+                                i = lastGlyphChecked - 1
+                                
+                            End If
+                        
+                        '/end m_Glyphs(i).lineID = curLine
                         End If
                         
                     Next i
                     
-                    'Before proceeding, we want to forcibly strip whitespace glyphs from the front and end
-                    ' of each "line".  (The way PD's linebreak algorithm works, space characters may arbitrarily
-                    ' be pushed to the start or end of a line during breaking - this is especially true for
-                    ' double-spaces, as at the beginning of a sentence.)
-                    Do While (idxFirstChar < idxLastChar)
-                        If m_Glyphs(idxFirstChar).isWhiteSpace Then
-                            m_Glyphs(idxFirstChar).isZeroWidth = True
-                            idxFirstChar = idxFirstChar + 1
-                        Else
-                            Exit Do
-                        End If
-                    Loop
-                    
-                    Do While (idxLastChar > idxFirstChar)
+                    'Before proceeding, we want to forcibly strip whitespace glyphs from the end of each "line".
+                    ' (On a softbreak, whitespace characters are allowed to "drift beyond the margin", but we don't want
+                    ' to consider those whitespace chars as valid targets for inserting justifying space.)
+                    Do While (idxLastChar > idxFirstChar) And (idxLastChar >= 0)
                         If m_Glyphs(idxLastChar).isWhiteSpace Then
                             m_Glyphs(idxLastChar).isZeroWidth = True
                             idxLastChar = idxLastChar - 1
@@ -1426,12 +1451,58 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                         End If
                     Loop
                     
-                    'We have now "trimmed" the first and last character indices to point only at the first/last
-                    ' non-whitespace-chars on this line.
+                    'We have now "trimmed" the last character indices to point only at the last non-whitespace-char
+                    ' on this line.  (Note that preceding whitespace chars are fine - this allows the user to insert
+                    ' e.g. spaces on the first line of a paragraph, and justification will still work correctly.)
                     
                     'Next, check a couple weird failure states for odd text arrangements.
-                    If (idxFirstChar >= idxLastChar + 1) Then GoTo NextLineJustify          'Single-character lines
-                    If (idxFirstChar < 0) Or (idxLastChar < 0) Then GoTo NextLineJustify    'Bad line parsing failsafe
+                    
+                    'Single-character lines cannot be justified
+                    If (idxFirstChar >= idxLastChar + 1) Then GoTo NextLineJustify
+                    
+                    'Failsafe only for bad line parsing (should never trigger)
+                    If (idxFirstChar < 0) Or (idxLastChar < 0) Then GoTo NextLineJustify
+                    
+                    'Figure out how much space we need to "insert" across the current line to make it justified.
+                    lineDiff = boundingRectRight - m_LineWidths(curLine)
+                    
+                    'Next, look for trailing lines in a paragraph.  Trailing lines in a paragraph may need to be
+                    ' dealt with specially, depending on the user's current "last line justify" setting.
+                    Dim isTrailingLine As Boolean
+                    isTrailingLine = False
+                    
+                    'Trailing lines are either the last line in the paragraph (by default) or any inter-paragraph line
+                    ' that terminates in a hard linebreak.  (I'm proud that PD handles that second case correctly -
+                    ' other photo editors, like GIMP, do not!)
+                    If (numOfLines > 1) Then
+                        isTrailingLine = (curLine = numOfLines - 1) Or lineEndsInHardBreak
+                    End If
+                    
+                    'Note that we only need to handle trailing lines specially if the user has *not* specified
+                    ' last-line justification...
+                    If isTrailingLine And (justifyLastLine <> StringAlignmentJustify) Then
+                        
+                        'The user wants the last line of each paragraph justified left/center/right.
+                        
+                        'Left-alignment doesn't actually require any work (it's applied by default).
+                        If (justifyLastLine <> StringAlignmentNear) Then
+                        
+                            'Calculate a new per-glyph offset required for the target alignment.
+                            If (justifyLastLine = StringAlignmentCenter) Then lineDiff = lineDiff * 0.5!
+                            
+                            'Apply the offset to each glyph in this line.
+                            For j = idxFirstChar To idxLastChar
+                                If (Not m_Glyphs(j).isZeroWidth) Then
+                                    m_Glyphs(j).finalX = m_Glyphs(j).finalX + lineDiff
+                                End If
+                            Next j
+                        
+                        End If
+                        
+                        'Continue with the next line (instead of allowing the justify algorithm to continue)
+                        GoTo NextLineJustify
+                        
+                    End If
                     
                     'We now need to split based on the number of whitespace chars in the current line.  This works if
                     ' we have at least *one* whitespace char (that is not leading or trailing), but if we have zero,

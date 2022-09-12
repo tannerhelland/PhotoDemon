@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1701</langversion>
+<langversion>8.9.1702</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3026,6 +3026,11 @@ Error број %
 </phrase>
 
 <phrase>
+<original>last line justify</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation></translation>
 </phrase>
@@ -3047,7 +3052,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 130 phrases. 69 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -12691,7 +12696,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13943,10 +13948,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2640</phrasecount>
+<phrasecount>2641</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5515 phrases. -->
-<!-- 2875 are duplicates, so only 2640 unique phrases have been written to file. -->
-<!-- These 2640 phrases contain approximately 11421 total words. -->
+<!-- As of this build, PhotoDemon contains 5518 phrases. -->
+<!-- 2877 are duplicates, so only 2641 unique phrases have been written to file. -->
+<!-- These 2641 phrases contain approximately 11424 total words. -->
 
 </pdData>
