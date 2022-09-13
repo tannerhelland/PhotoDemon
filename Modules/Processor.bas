@@ -925,7 +925,13 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TextProperty) As 
         
         Case ptp_CharMirror
             GetNameOfTextAction = g_Language.TranslateMessage("mirroring")
-    
+        
+        Case ptp_AlignLastLine
+            GetNameOfTextAction = g_Language.TranslateMessage("last line justify")
+        
+        Case ptp_OutlineAboveFill
+            GetNameOfTextAction = g_Language.TranslateMessage("outline on top")
+        
         Case Else
             GetNameOfTextAction = "WARNING!  Action name not found!"
     

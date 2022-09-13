@@ -301,19 +301,19 @@ Begin VB.Form toolpanel_TextAdvanced
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1815
+      Height          =   2625
       Index           =   3
-      Left            =   8400
-      Top             =   3600
+      Left            =   8640
+      Top             =   4200
       Visible         =   0   'False
-      Width           =   6735
-      _ExtentX        =   11880
-      _ExtentY        =   3201
+      Width           =   6255
+      _ExtentX        =   11033
+      _ExtentY        =   4630
       Begin PhotoDemon.pdSlider sldLineSpacing 
          Height          =   735
          Left            =   120
          TabIndex        =   35
-         Top             =   120
+         Top             =   960
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1296
@@ -325,9 +325,9 @@ Begin VB.Form toolpanel_TextAdvanced
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   3
-         Left            =   6240
+         Left            =   5820
          TabIndex        =   34
-         Top             =   1290
+         Top             =   2160
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -337,7 +337,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   735
          Left            =   120
          TabIndex        =   36
-         Top             =   960
+         Top             =   1800
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1296
@@ -414,22 +414,53 @@ Begin VB.Form toolpanel_TextAdvanced
          Min             =   -1000
          Max             =   1000
       End
+      Begin PhotoDemon.pdButtonStrip btsHAlignJustify 
+         Height          =   435
+         Left            =   150
+         TabIndex        =   45
+         Top             =   450
+         Width           =   1965
+         _ExtentX        =   3466
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   4
+         Left            =   150
+         Top             =   120
+         Width           =   2940
+         _ExtentX        =   5106
+         _ExtentY        =   423
+         Caption         =   "last line justify"
+         ForeColor       =   0
+      End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2655
+      Height          =   3090
       Index           =   2
       Left            =   8400
       Top             =   840
       Visible         =   0   'False
-      Width           =   6855
-      _ExtentX        =   12091
-      _ExtentY        =   4683
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   5450
+      Begin PhotoDemon.pdCheckBox chkFillFirst 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   46
+         Top             =   2640
+         Width           =   5535
+         _ExtentX        =   9763
+         _ExtentY        =   661
+         Caption         =   "outline on top"
+      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
-         Left            =   6360
+         Left            =   5880
          TabIndex        =   22
-         Top             =   2160
+         Top             =   2640
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -589,14 +620,14 @@ Begin VB.Form toolpanel_TextAdvanced
       Left            =   7950
       TabIndex        =   42
       Top             =   345
-      Width           =   1455
-      _ExtentX        =   2566
+      Width           =   1965
+      _ExtentX        =   3466
       _ExtentY        =   767
       ColorScheme     =   1
    End
    Begin PhotoDemon.pdButtonStrip btsVAlignment 
       Height          =   435
-      Left            =   9510
+      Left            =   9990
       TabIndex        =   32
       Top             =   345
       Width           =   1455
@@ -610,8 +641,8 @@ Begin VB.Form toolpanel_TextAdvanced
       Left            =   7920
       TabIndex        =   33
       Top             =   0
-      Width           =   3015
-      _ExtentX        =   5318
+      Width           =   3525
+      _ExtentX        =   6218
       _ExtentY        =   635
       Caption         =   "alignment"
       Value           =   0   'False
@@ -859,6 +890,43 @@ Private Sub btnFontStyles_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
     End If
 End Sub
 
+Private Sub btsHAlignJustify_Click(ByVal buttonIndex As Long)
+
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+        
+    'Update the current layer text alignment
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_AlignLastLine, buttonIndex
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub btsHAlignJustify_GotFocusAPI()
+    UpdateFlyout 3, True
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_AlignLastLine, btsHAlignJustify.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub btsHAlignJustify_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Text ptp_AlignLastLine, btsHAlignJustify.ListIndex
+End Sub
+
+Private Sub btsHAlignJustify_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsVAlignment.hWnd
+    Else
+        newTargetHwnd = Me.sldLineSpacing.hWndSlider
+    End If
+End Sub
+
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -963,7 +1031,7 @@ Private Sub btsVAlignment_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean
     If shiftTabWasPressed Then
         newTargetHwnd = Me.btsHAlignment.hWnd
     Else
-        newTargetHwnd = Me.sldLineSpacing.hWndSlider
+        newTargetHwnd = Me.btsHAlignJustify.hWnd
     End If
 End Sub
 
@@ -1182,7 +1250,7 @@ End Sub
 
 Private Sub chkBackground_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.psText.hWnd
+        newTargetHwnd = Me.chkFillFirst.hWnd
     Else
         newTargetHwnd = Me.bsTextBackground.hWnd
     End If
@@ -1221,6 +1289,43 @@ Private Sub chkBackgroundBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As B
         newTargetHwnd = Me.bsTextBackground.hWnd
     Else
         newTargetHwnd = Me.psTextBackground.hWnd
+    End If
+End Sub
+
+Private Sub chkFillFirst_Click()
+    
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+    
+    'Update the current layer text
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_OutlineAboveFill, chkFillFirst.Value
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub chkFillFirst_GotFocusAPI()
+    UpdateFlyout 2, True
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_OutlineAboveFill, chkFillFirst.Value, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub chkFillFirst_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Text ptp_OutlineAboveFill, chkFillFirst.Value
+End Sub
+
+Private Sub chkFillFirst_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.psText.hWnd
+    Else
+        newTargetHwnd = Me.chkBackground.hWnd
     End If
 End Sub
 
@@ -1399,6 +1504,7 @@ Private Sub Form_Load()
         cboTextRenderingHint.AddItem "none", 0
         cboTextRenderingHint.AddItem "normal", 1
         cboTextRenderingHint.AddItem "crisp", 2
+        cboTextRenderingHint.AddItem "smooth", 3
         cboTextRenderingHint.ListIndex = 1
         cboTextRenderingHint.SetAutomaticRedraws True
         
@@ -1407,10 +1513,16 @@ Private Sub Form_Load()
         btsHAlignment.AddItem vbNullString, 0
         btsHAlignment.AddItem vbNullString, 1
         btsHAlignment.AddItem vbNullString, 2
+        btsHAlignment.AddItem vbNullString, 3
         
         btsVAlignment.AddItem vbNullString, 0
         btsVAlignment.AddItem vbNullString, 1
         btsVAlignment.AddItem vbNullString, 2
+        
+        btsHAlignJustify.AddItem vbNullString, 0
+        btsHAlignJustify.AddItem vbNullString, 1
+        btsHAlignJustify.AddItem vbNullString, 2
+        btsHAlignJustify.AddItem vbNullString, 3
         
         'Fill various character positioning settings
         btsStretch.AddItem "none", 0
@@ -1549,7 +1661,7 @@ Private Sub psText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTa
     If shiftTabWasPressed Then
         newTargetHwnd = Me.chkOutlineText.hWnd
     Else
-        newTargetHwnd = Me.chkBackground.hWnd
+        newTargetHwnd = Me.chkFillFirst.hWnd
     End If
 End Sub
 
@@ -1592,7 +1704,7 @@ End Sub
 
 Private Sub sldLineSpacing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.btsVAlignment.hWnd
+        newTargetHwnd = Me.btsHAlignJustify.hWnd
     Else
         newTargetHwnd = Me.cboWordWrap.hWnd
     End If
@@ -2067,6 +2179,7 @@ Public Sub SyncSettingsToCurrentLayer()
     btnFontStyles(3).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
     btsHAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
     btsVAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
+    btsHAlignJustify.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_AlignLastLine)
     cboWordWrap.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_WordWrap)
     chkFillText.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FillActive)
     bsText.Brush = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FillBrush)
@@ -2088,6 +2201,7 @@ Public Sub SyncSettingsToCurrentLayer()
     sltCharOrientation.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharOrientation)
     cboCharCase.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharRemap)
     sltCharSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
+    chkFillFirst.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_OutlineAboveFill)
 
 End Sub
 
@@ -2111,10 +2225,16 @@ Public Sub UpdateAgainstCurrentTheme()
     btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignment.AssignImageToItem 3, "format_alignjustify", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
-    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
-    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
-    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
+    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    
+    btsHAlignJustify.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignJustify.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignJustify.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsHAlignJustify.AssignImageToItem 3, "format_alignjustify", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
 'Copyright 2015-2022 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 27/May/22
-'Last update: code clean-up
+'Last updated: 13/September/22
+'Last update: add new support for rendering the text outline *beneath* the text fill (see #428 on GitHub)
 '
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
@@ -121,10 +121,11 @@ Public Enum PD_TextAntialiasing
     pdta_None = 0
     pdta_Standard = 1
     pdta_Crisp = 2
+    pdta_Smooth = 3
 End Enum
 
 #If False Then
-    Private Const pdta_None = 0, pdta_Standard = 1, pdta_Crisp = 2
+    Private Const pdta_None = 0, pdta_Standard = 1, pdta_Crisp = 2, pdta_Smooth = 3
 #End If
 
 'Text hinting and AA are merged into a single setting in GDI+
@@ -276,6 +277,7 @@ Private m_StrikeoutSupported As Boolean
 ' it during rendering stages.
 Private m_HorizontalAlignment As GP_StringAlignment
 Private m_VerticalAlignment As GP_StringAlignment
+Private m_AlignLastLine As GP_StringAlignment
 
 'Even *more* string settings are not stored in the font itself, or in a StringFormat object, but in the target
 ' GDI+ Graphics container.  These must be assigned to the graphics container prior to painting text, so there's not really
@@ -297,6 +299,7 @@ Private m_BackgroundActive As Boolean
 Private m_BackgroundBrush As String
 Private m_BackBorderActive As Boolean
 Private m_BackBorderPen As String
+Private m_OutlineAboveFill As Boolean
 
 '...as well as customized spacing and layout options
 Private m_LineSpacing As Single
@@ -447,6 +450,8 @@ Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As PD_TextAnti
         GetFontAntialiasingStringFromEnum = "standard"
     ElseIf (srcValue = pdta_Crisp) Then
         GetFontAntialiasingStringFromEnum = "crisp"
+    ElseIf (srcValue = pdta_Crisp) Then
+        GetFontAntialiasingStringFromEnum = "smooth"
     Else
         InternalError "GetFontAntialiasingStringFromEnum", "bad value: " & srcValue
         GetFontAntialiasingStringFromEnum = "standard"
@@ -460,6 +465,8 @@ Private Function GetFontAntialiasingEnumFromString(ByRef srcValue As String) As 
         GetFontAntialiasingEnumFromString = pdta_Standard
     ElseIf (srcValue = "crisp") Then
         GetFontAntialiasingEnumFromString = pdta_Crisp
+    ElseIf (srcValue = "smooth") Then
+        GetFontAntialiasingEnumFromString = pdta_Smooth
     Else
         InternalError "GetFontAntialiasingEnumFromString", "bad value: " & srcValue
         GetFontAntialiasingEnumFromString = pdta_Standard
@@ -688,6 +695,8 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-character-jitter-y", m_CharJitterY, True, True
         .AddParam "obj-character-inflation", m_CharInflation, True, True
         .AddParam "obj-character-mirror", GetTextMirrorStringFromEnum(m_CharMirror), True, True
+        .AddParam "obj-align-last-line", GetAlignmentStringFromUnit(m_AlignLastLine), True, True
+        .AddParam "obj-outline-above-fill", m_OutlineAboveFill, True, True
     End With
     
     'Close out the text object
@@ -757,6 +766,8 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_CharJitterY, .GetDouble("obj-character-jitter-y", 0#)
             SetGenericTextProperty ptp_CharInflation, .GetDouble("obj-character-inflation", 0#)
             SetGenericTextProperty ptp_CharMirror, GetTextMirrorEnumFromString(.GetString("obj-character-mirror", GetTextMirrorStringFromEnum(cm_None), True))
+            SetGenericTextProperty ptp_AlignLastLine, GetAlignmentUnitFromString(.GetString("obj-align-last-line", GetAlignmentStringFromUnit(StringAlignmentNear), True))
+            SetGenericTextProperty ptp_OutlineAboveFill, .GetBool("obj-outline-above-fill", True, True)
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
@@ -773,6 +784,8 @@ Private Function GetAlignmentStringFromUnit(ByVal srcValue As GP_StringAlignment
         GetAlignmentStringFromUnit = "center"
     ElseIf (srcValue = StringAlignmentFar) Then
         GetAlignmentStringFromUnit = "far"
+    ElseIf (srcValue = StringAlignmentJustify) Then
+        GetAlignmentStringFromUnit = "justify"
     Else
         InternalError "GetAlignmentStringFromUnit", "bad value: " & srcValue
         GetAlignmentStringFromUnit = "near"
@@ -786,6 +799,8 @@ Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GP_Stri
         GetAlignmentUnitFromString = StringAlignmentCenter
     ElseIf (srcValue = "far") Then
         GetAlignmentUnitFromString = StringAlignmentFar
+    ElseIf (srcValue = "justify") Then
+        GetAlignmentUnitFromString = StringAlignmentJustify
     Else
         InternalError "GetAlignmentUnitFromString", "bad value: " & srcValue
         GetAlignmentUnitFromString = StringAlignmentNear
@@ -826,6 +841,7 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
         
         Case ptp_HorizontalAlignment
             GetGenericTextProperty = m_HorizontalAlignment
+            If (m_RenderingEngine <> te_PhotoDemon) And (m_HorizontalAlignment >= StringAlignmentJustify) Then GetGenericTextProperty = StringAlignmentNear
         
         Case ptp_VerticalAlignment
             GetGenericTextProperty = m_VerticalAlignment
@@ -907,6 +923,12 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
             
         Case ptp_CharMirror
             GetGenericTextProperty = m_CharMirror
+            
+        Case ptp_AlignLastLine
+            GetGenericTextProperty = m_AlignLastLine
+            
+        Case ptp_OutlineAboveFill
+            GetGenericTextProperty = m_OutlineAboveFill
     
     End Select
 
@@ -988,7 +1010,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
             If (m_HorizontalAlignment <> CLng(newValue)) Then
                 m_HorizontalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
-                If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
+                If (m_GDIPlusStringFormat <> 0) And (m_HorizontalAlignment < StringAlignmentJustify) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
             End If
         
         Case ptp_VerticalAlignment
@@ -1004,7 +1026,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
                 SetGenericTextProperty = True
                 
                 'If we're using GDI for rendering, changing antialiasing requires us to recreate the font
-                If m_CurrentBackend = fb_GDI Then m_FontCacheClean = False
+                If (m_CurrentBackend = fb_GDI) Then m_FontCacheClean = False
                 
             End If
         
@@ -1171,6 +1193,18 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
         Case ptp_CharMirror
             If (m_CharMirror <> CLng(newValue)) Then
                 m_CharMirror = CLng(newValue)
+                SetGenericTextProperty = True
+            End If
+        
+        Case ptp_AlignLastLine
+            If (m_AlignLastLine <> CLng(newValue)) Then
+                m_AlignLastLine = CLng(newValue)
+                SetGenericTextProperty = True
+            End If
+            
+        Case ptp_OutlineAboveFill
+            If (m_OutlineAboveFill <> CBool(newValue)) Then
+                m_OutlineAboveFill = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
@@ -1637,7 +1671,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_None
         
-        Case pdta_Crisp
+        Case pdta_Crisp, pdta_Smooth
             targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_Half
         
@@ -1754,7 +1788,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         VBHacks.GetHighResTime startTime
     End If
     
-    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap, m_StretchToFit) Then
+    If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap, m_StretchToFit, m_AlignLastLine) Then
         
         If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - assembly: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1803,7 +1837,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         ' (Bad/corrupted font files may not produce usable glyph data.)
         If (boundingRect.Width > 0!) And (boundingRect.Height > 0!) Then
             
-            'If fill mode is active, draw the text now
+            'If fill mode is active, prep a pd2D fill brush
             If (gdipFillBrush <> 0) Then
             
                 'Update the fill brush against the final rect established by the path renderer.
@@ -1812,31 +1846,76 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 boundingRect = finalTextPath.GetPathBoundariesF
                 textFillBrush.SetBoundaryRect boundingRect
                 gdipFillBrush = textFillBrush.GetHandle
+            
+            End If
+            
+            'We now vary rendering order according to the "outline on top" property.  (By default, PD renders a text outline,
+            ' if any, *above* the fill - but the user can toggle this behavior.)
+            'If outline mode is active *and* the user wants the outline on top, stroke the text now
+            If (gdipOutlinePen <> 0) And (Not m_OutlineAboveFill) Then
+                gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
+                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
+            End If
+            
+            'Fill (if any)
+            If (gdipFillBrush <> 0) Then
+                
                 gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
                 
+                'If the user wants "smooth" antialiasing, we can achieve this by performing a fast scaledown+scaleup op on the
+                ' filled surface.  This softens antialiased boundaries slightly, with a minimal penalty to perf.
+                If (m_TextAntialiasing = pdta_Smooth) Then
+                    
+                    Dim tmpDIB As pdDIB
+                    Set tmpDIB = New pdDIB
+                    
+                    Const SMOOTH_SCALE_FACTOR As Single = 0.95!
+                    
+                    Dim tmpWidth As Long, tmpHeight As Long
+                    tmpWidth = Int(dstDIB.GetDIBWidth * SMOOTH_SCALE_FACTOR + 0.5)
+                    If (tmpWidth >= dstDIB.GetDIBWidth) Then tmpWidth = dstDIB.GetDIBWidth - 1
+                    If (tmpWidth <= 0) Then tmpWidth = dstDIB.GetDIBWidth
+                    
+                    tmpHeight = Int(dstDIB.GetDIBHeight * SMOOTH_SCALE_FACTOR + 0.5)
+                    If (tmpHeight >= dstDIB.GetDIBHeight) Then tmpHeight = dstDIB.GetDIBHeight - 1
+                    If (tmpHeight <= 0) Then tmpHeight = dstDIB.GetDIBHeight
+                    
+                    tmpDIB.CreateBlank tmpWidth, tmpHeight, 32, 0, 0
+                    tmpDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, tmpWidth, tmpHeight, dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+                    dstDIB.ResetDIB 0
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpWidth, tmpHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+                    Set tmpDIB = Nothing
+                    
+                End If
+                
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
+                
             End If
             
-            If REPORT_TEXT_RENDER_TIMING Then
-                PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
-                VBHacks.GetHighResTime startTime
-            End If
-    
-            'If outline mode is active, stroke the text now
-            If (gdipOutlinePen <> 0) Then
+            'If outline mode is active *and* the user wants the outline on top, stroke the text *now*
+            If (gdipOutlinePen <> 0) And m_OutlineAboveFill Then
                 gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
             End If
             
-        If REPORT_TEXT_RENDER_TIMING Then
-            PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    
         End If
         
     Else
-        PDDebug.LogAction "WARNING!  m_GlyphCollection.assembleCompositePath returned FALSE.  Please investigate."
+        PDDebug.LogAction "WARNING!  m_GlyphCollection.AssembleCompositePath returned FALSE.  Please investigate."
     End If
     
     'Release the temporary GDI+ objects we created.  (Note that GDI+ objects silently created via pd2D objects are released automatically.)
@@ -2090,8 +2169,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     Dim xOffset As Long, yOffset As Long
     
     Select Case m_HorizontalAlignment
-    
-        Case StringAlignmentNear
+        
+        'Justified text does *not* work with this renderer
+        Case StringAlignmentNear, StringAlignmentJustify
             xOffset = 0
         
         Case StringAlignmentCenter
@@ -2153,6 +2233,10 @@ Private Function GetDrawTextAlignmentFlags() As Win32_DrawTextConstants
         
         Case StringAlignmentFar
             GetDrawTextAlignmentFlags = GetDrawTextAlignmentFlags Or DT_RIGHT
+            
+        'PhotoDemon can render justified text, but Win32 cannot.
+        Case Else
+            GetDrawTextAlignmentFlags = GetDrawTextAlignmentFlags Or DT_LEFT
         
     End Select
     
@@ -2247,6 +2331,8 @@ Private Sub Class_Initialize()
     m_WordWrap = tww_AutoWord
     m_FillActive = True
     m_StretchToFit = stf_None
+    m_OutlineAboveFill = True
+    m_TextHinting = True
     
     'Set default graphics container text settings
     m_TextContrast = 4
@@ -2320,6 +2406,8 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_CharJitterY, .GetDouble("TextCharJitterY", 0)
         SetGenericTextProperty ptp_CharInflation, .GetDouble("TextCharInflation", 0)
         SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
+        SetGenericTextProperty ptp_AlignLastLine, StringAlignmentNear
+        SetGenericTextProperty ptp_OutlineAboveFill, True
     End With
     
     'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.

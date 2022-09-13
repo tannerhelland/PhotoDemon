@@ -142,8 +142,8 @@ Begin VB.Form toolpanel_TextBasic
       Left            =   7950
       TabIndex        =   4
       Top             =   345
-      Width           =   1455
-      _ExtentX        =   2566
+      Width           =   1485
+      _ExtentX        =   2619
       _ExtentY        =   767
       ColorScheme     =   1
    End
@@ -991,9 +991,9 @@ Public Sub UpdateAgainstCurrentTheme()
     btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
-    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
-    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
-    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize, usePDResamplerInstead:=rf_CatmullRom
+    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
+    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize, usePDResamplerInstead:=rf_Box
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
