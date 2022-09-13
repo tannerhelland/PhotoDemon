@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1705</langversion>
+<langversion>9.0</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2603,7 +2603,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 Please make sure the device is turned on and ready for use.</original>
 <translation>Der selektierte Scanner oder die selektierte Digitalkamera reagiert nicht.
 
-Bitte achten Sie darauf, dass das Gerät eingeschaltet und einsatzbereit ist.</translation>
+Bitte vergewissern Sie sich, dass das Gerät eingeschaltet und einsatzbereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -2637,7 +2637,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Bitte achten Sie darauf, dass Ihr Scanner eingeschaltet und einsatzbereit ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Bitte vergewissern Sie sich, dass Ihr Scanner eingeschaltet und einsatzbereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -2647,7 +2647,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Bitte achten Sie darauf, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, rebooten Sie Ihren PC und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte vergewissern Sie sich, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, rebooten Sie Ihren PC und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -9925,7 +9925,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie sich dafür entscheiden, Bilder in einem neuen Format zu speichern, achten Sie bitte darauf, dass das von Ihnen selektierte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie sich dafür entscheiden, Bilder in einem neuen Format zu speichern, vergewissern Sie sich bitte, dass das von Ihnen selektierte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -10267,7 +10267,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
-<translation>Diese URL ist nicht gültig. Bitte achten Sie darauf, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
+<translation>Diese URL ist nicht gültig. Bitte vergewissern Sie sich, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
 </phrase>
 
 <phrase>
@@ -10398,7 +10398,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation>%1 konnte das Bild nicht drucken. Bitte achten Sie darauf, dass der spezifizierte Drucker (%2) eingeschaltet und bereit zum Drucken ist.</translation>
+<translation>%1 konnte das Bild nicht drucken. Bitte stellen Sie sicher, dass der spezifizierte Drucker (%2) eingeschaltet und bereit zum Drucken ist.</translation>
 </phrase>
 
 <phrase>
@@ -10921,7 +10921,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>Der Foto-Editor - schnell, kostenlos, portabel</translation>
+<translation>Der schnelle, kostenlose, portable Foto-Editor</translation>
 </phrase>
 
 <phrase>
