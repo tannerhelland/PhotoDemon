@@ -1504,6 +1504,7 @@ Private Sub Form_Load()
         cboTextRenderingHint.AddItem "none", 0
         cboTextRenderingHint.AddItem "normal", 1
         cboTextRenderingHint.AddItem "crisp", 2
+        cboTextRenderingHint.AddItem "smooth", 3
         cboTextRenderingHint.ListIndex = 1
         cboTextRenderingHint.SetAutomaticRedraws True
         

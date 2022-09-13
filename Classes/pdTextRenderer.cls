@@ -121,10 +121,11 @@ Public Enum PD_TextAntialiasing
     pdta_None = 0
     pdta_Standard = 1
     pdta_Crisp = 2
+    pdta_Smooth = 3
 End Enum
 
 #If False Then
-    Private Const pdta_None = 0, pdta_Standard = 1, pdta_Crisp = 2
+    Private Const pdta_None = 0, pdta_Standard = 1, pdta_Crisp = 2, pdta_Smooth = 3
 #End If
 
 'Text hinting and AA are merged into a single setting in GDI+
@@ -449,6 +450,8 @@ Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As PD_TextAnti
         GetFontAntialiasingStringFromEnum = "standard"
     ElseIf (srcValue = pdta_Crisp) Then
         GetFontAntialiasingStringFromEnum = "crisp"
+    ElseIf (srcValue = pdta_Crisp) Then
+        GetFontAntialiasingStringFromEnum = "smooth"
     Else
         InternalError "GetFontAntialiasingStringFromEnum", "bad value: " & srcValue
         GetFontAntialiasingStringFromEnum = "standard"
@@ -462,6 +465,8 @@ Private Function GetFontAntialiasingEnumFromString(ByRef srcValue As String) As 
         GetFontAntialiasingEnumFromString = pdta_Standard
     ElseIf (srcValue = "crisp") Then
         GetFontAntialiasingEnumFromString = pdta_Crisp
+    ElseIf (srcValue = "smooth") Then
+        GetFontAntialiasingEnumFromString = pdta_Smooth
     Else
         InternalError "GetFontAntialiasingEnumFromString", "bad value: " & srcValue
         GetFontAntialiasingEnumFromString = pdta_Standard
@@ -1021,7 +1026,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
                 SetGenericTextProperty = True
                 
                 'If we're using GDI for rendering, changing antialiasing requires us to recreate the font
-                If m_CurrentBackend = fb_GDI Then m_FontCacheClean = False
+                If (m_CurrentBackend = fb_GDI) Then m_FontCacheClean = False
                 
             End If
         
@@ -1666,7 +1671,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_None
         
-        Case pdta_Crisp
+        Case pdta_Crisp, pdta_Smooth
             targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_Half
         
@@ -1858,12 +1863,43 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             
             'Fill (if any)
             If (gdipFillBrush <> 0) Then
+                
                 gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+                
+                'If the user wants "smooth" antialiasing, we can achieve this by performing a fast scaledown+scaleup op on the
+                ' filled surface.  This softens antialiased boundaries slightly, with a minimal penalty to perf.
+                If (m_TextAntialiasing = pdta_Smooth) Then
+                    
+                    Dim tmpDIB As pdDIB
+                    Set tmpDIB = New pdDIB
+                    
+                    Const SMOOTH_SCALE_FACTOR As Single = 0.95!
+                    
+                    Dim tmpWidth As Long, tmpHeight As Long
+                    tmpWidth = Int(dstDIB.GetDIBWidth * SMOOTH_SCALE_FACTOR + 0.5)
+                    If (tmpWidth >= dstDIB.GetDIBWidth) Then tmpWidth = dstDIB.GetDIBWidth - 1
+                    If (tmpWidth <= 0) Then tmpWidth = dstDIB.GetDIBWidth
+                    
+                    tmpHeight = Int(dstDIB.GetDIBHeight * SMOOTH_SCALE_FACTOR + 0.5)
+                    If (tmpHeight >= dstDIB.GetDIBHeight) Then tmpHeight = dstDIB.GetDIBHeight - 1
+                    If (tmpHeight <= 0) Then tmpHeight = dstDIB.GetDIBHeight
+                    
+                    tmpDIB.CreateBlank tmpWidth, tmpHeight, 32, 0, 0
+                    tmpDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, tmpWidth, tmpHeight, dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+                    dstDIB.ResetDIB 0
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpWidth, tmpHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+                    Set tmpDIB = Nothing
+                    
+                End If
+                
                 If REPORT_TEXT_RENDER_TIMING Then
                     PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
                     VBHacks.GetHighResTime startTime
                 End If
+                
             End If
             
             'If outline mode is active *and* the user wants the outline on top, stroke the text *now*
@@ -2296,6 +2332,7 @@ Private Sub Class_Initialize()
     m_FillActive = True
     m_StretchToFit = stf_None
     m_OutlineAboveFill = True
+    m_TextHinting = True
     
     'Set default graphics container text settings
     m_TextContrast = 4
