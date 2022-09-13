@@ -890,6 +890,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_CharRemap, toolpanel_TextAdvanced.cboCharCase.ListIndex
                     .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.Value
                     .SetTextLayerProperty ptp_AlignLastLine, toolpanel_TextAdvanced.btsHAlignJustify.ListIndex
+                    .SetTextLayerProperty ptp_OutlineAboveFill, toolpanel_TextAdvanced.chkFillFirst.Value
                 End With
                 
                 'Advanced text layers are rendered using a PhotoDemon-specific renderer.

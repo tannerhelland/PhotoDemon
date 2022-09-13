@@ -303,8 +303,8 @@ Begin VB.Form toolpanel_TextAdvanced
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   2625
       Index           =   3
-      Left            =   8520
-      Top             =   3600
+      Left            =   8640
+      Top             =   4200
       Visible         =   0   'False
       Width           =   6255
       _ExtentX        =   11033
@@ -437,20 +437,30 @@ Begin VB.Form toolpanel_TextAdvanced
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2655
+      Height          =   3090
       Index           =   2
       Left            =   8400
       Top             =   840
       Visible         =   0   'False
-      Width           =   6855
-      _ExtentX        =   12091
-      _ExtentY        =   4683
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   5450
+      Begin PhotoDemon.pdCheckBox chkFillFirst 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   46
+         Top             =   2640
+         Width           =   5535
+         _ExtentX        =   9763
+         _ExtentY        =   661
+         Caption         =   "outline on top"
+      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
-         Left            =   6360
+         Left            =   5880
          TabIndex        =   22
-         Top             =   2160
+         Top             =   2640
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -1240,7 +1250,7 @@ End Sub
 
 Private Sub chkBackground_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.psText.hWnd
+        newTargetHwnd = Me.chkFillFirst.hWnd
     Else
         newTargetHwnd = Me.bsTextBackground.hWnd
     End If
@@ -1279,6 +1289,43 @@ Private Sub chkBackgroundBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As B
         newTargetHwnd = Me.bsTextBackground.hWnd
     Else
         newTargetHwnd = Me.psTextBackground.hWnd
+    End If
+End Sub
+
+Private Sub chkFillFirst_Click()
+    
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+    
+    'Update the current layer text
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_OutlineAboveFill, chkFillFirst.Value
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub chkFillFirst_GotFocusAPI()
+    UpdateFlyout 2, True
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_OutlineAboveFill, chkFillFirst.Value, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub chkFillFirst_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Text ptp_OutlineAboveFill, chkFillFirst.Value
+End Sub
+
+Private Sub chkFillFirst_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.psText.hWnd
+    Else
+        newTargetHwnd = Me.chkBackground.hWnd
     End If
 End Sub
 
@@ -1613,7 +1660,7 @@ Private Sub psText_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTa
     If shiftTabWasPressed Then
         newTargetHwnd = Me.chkOutlineText.hWnd
     Else
-        newTargetHwnd = Me.chkBackground.hWnd
+        newTargetHwnd = Me.chkFillFirst.hWnd
     End If
 End Sub
 
@@ -2153,6 +2200,7 @@ Public Sub SyncSettingsToCurrentLayer()
     sltCharOrientation.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharOrientation)
     cboCharCase.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharRemap)
     sltCharSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
+    chkFillFirst.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_OutlineAboveFill)
 
 End Sub
 

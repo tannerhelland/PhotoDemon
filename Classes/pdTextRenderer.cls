@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
 'Copyright 2015-2022 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 27/May/22
-'Last update: code clean-up
+'Last updated: 13/September/22
+'Last update: add new support for rendering the text outline *beneath* the text fill (see #428 on GitHub)
 '
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
@@ -298,6 +298,7 @@ Private m_BackgroundActive As Boolean
 Private m_BackgroundBrush As String
 Private m_BackBorderActive As Boolean
 Private m_BackBorderPen As String
+Private m_OutlineAboveFill As Boolean
 
 '...as well as customized spacing and layout options
 Private m_LineSpacing As Single
@@ -690,6 +691,7 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-character-inflation", m_CharInflation, True, True
         .AddParam "obj-character-mirror", GetTextMirrorStringFromEnum(m_CharMirror), True, True
         .AddParam "obj-align-last-line", GetAlignmentStringFromUnit(m_AlignLastLine), True, True
+        .AddParam "obj-outline-above-fill", m_OutlineAboveFill, True, True
     End With
     
     'Close out the text object
@@ -760,6 +762,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_CharInflation, .GetDouble("obj-character-inflation", 0#)
             SetGenericTextProperty ptp_CharMirror, GetTextMirrorEnumFromString(.GetString("obj-character-mirror", GetTextMirrorStringFromEnum(cm_None), True))
             SetGenericTextProperty ptp_AlignLastLine, GetAlignmentUnitFromString(.GetString("obj-align-last-line", GetAlignmentStringFromUnit(StringAlignmentNear), True))
+            SetGenericTextProperty ptp_OutlineAboveFill, .GetBool("obj-outline-above-fill", True, True)
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
@@ -918,6 +921,9 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
             
         Case ptp_AlignLastLine
             GetGenericTextProperty = m_AlignLastLine
+            
+        Case ptp_OutlineAboveFill
+            GetGenericTextProperty = m_OutlineAboveFill
     
     End Select
 
@@ -1188,6 +1194,12 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
         Case ptp_AlignLastLine
             If (m_AlignLastLine <> CLng(newValue)) Then
                 m_AlignLastLine = CLng(newValue)
+                SetGenericTextProperty = True
+            End If
+            
+        Case ptp_OutlineAboveFill
+            If (m_OutlineAboveFill <> CBool(newValue)) Then
+                m_OutlineAboveFill = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
@@ -1820,7 +1832,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         ' (Bad/corrupted font files may not produce usable glyph data.)
         If (boundingRect.Width > 0!) And (boundingRect.Height > 0!) Then
             
-            'If fill mode is active, draw the text now
+            'If fill mode is active, prep a pd2D fill brush
             If (gdipFillBrush <> 0) Then
             
                 'Update the fill brush against the final rect established by the path renderer.
@@ -1829,27 +1841,41 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 boundingRect = finalTextPath.GetPathBoundariesF
                 textFillBrush.SetBoundaryRect boundingRect
                 gdipFillBrush = textFillBrush.GetHandle
-                gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
-                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
-                
+            
             End If
             
-            If REPORT_TEXT_RENDER_TIMING Then
-                PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
-                VBHacks.GetHighResTime startTime
-            End If
-    
-            'If outline mode is active, stroke the text now
-            If (gdipOutlinePen <> 0) Then
+            'We now vary rendering order according to the "outline on top" property.  (By default, PD renders a text outline,
+            ' if any, *above* the fill - but the user can toggle this behavior.)
+            'If outline mode is active *and* the user wants the outline on top, stroke the text now
+            If (gdipOutlinePen <> 0) And (Not m_OutlineAboveFill) Then
                 gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
             End If
             
-        If REPORT_TEXT_RENDER_TIMING Then
-            PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    
+            'Fill (if any)
+            If (gdipFillBrush <> 0) Then
+                gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
+                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
+            End If
+            
+            'If outline mode is active *and* the user wants the outline on top, stroke the text *now*
+            If (gdipOutlinePen <> 0) And m_OutlineAboveFill Then
+                gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
+                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+                If REPORT_TEXT_RENDER_TIMING Then
+                    PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                    VBHacks.GetHighResTime startTime
+                End If
+            End If
+            
         End If
         
     Else
@@ -2269,6 +2295,7 @@ Private Sub Class_Initialize()
     m_WordWrap = tww_AutoWord
     m_FillActive = True
     m_StretchToFit = stf_None
+    m_OutlineAboveFill = True
     
     'Set default graphics container text settings
     m_TextContrast = 4
@@ -2343,6 +2370,7 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_CharInflation, .GetDouble("TextCharInflation", 0)
         SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
         SetGenericTextProperty ptp_AlignLastLine, StringAlignmentNear
+        SetGenericTextProperty ptp_OutlineAboveFill, True
     End With
     
     'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
