@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1700</langversion>
+<langversion>8.9.1701</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3027,6 +3027,11 @@ Deskripsi: %2
 </phrase>
 
 <phrase>
+<original>outline on top</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation></translation>
 </phrase>
@@ -3048,7 +3053,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Intruksi Laporan Bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 130 phrases. 69 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -12690,7 +12695,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13942,10 +13947,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2641</phrasecount>
+<phrasecount>2642</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5518 phrases. -->
-<!-- 2877 are duplicates, so only 2641 unique phrases have been written to file. -->
-<!-- These 2641 phrases contain approximately 11424 total words. -->
+<!-- As of this build, PhotoDemon contains 5523 phrases. -->
+<!-- 2881 are duplicates, so only 2642 unique phrases have been written to file. -->
+<!-- These 2642 phrases contain approximately 11427 total words. -->
 
 </pdData>

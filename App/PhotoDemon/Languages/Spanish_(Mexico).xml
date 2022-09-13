@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.5</langversion>
+<langversion>9.0.6</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -3036,6 +3036,11 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>outline on top</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Modificar la selección</translation>
 </phrase>
@@ -3059,7 +3064,7 @@ Cuando termine, haga clic en el botón "Submit New Issue".  Gracias.</translatio
 <translation>Instrucciones para informar de fallos</translation>
 </phrase>
 
-<!-- Processor.bas contains 130 phrases. 69 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -12706,7 +12711,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Haga clic aquí para convertir esta capa en texto avanzado.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13962,10 +13967,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2641</phrasecount>
+<phrasecount>2642</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5518 phrases. -->
-<!-- 2877 are duplicates, so only 2641 unique phrases have been written to file. -->
-<!-- These 2641 phrases contain approximately 11424 total words. -->
+<!-- As of this build, PhotoDemon contains 5523 phrases. -->
+<!-- 2881 are duplicates, so only 2642 unique phrases have been written to file. -->
+<!-- These 2642 phrases contain approximately 11427 total words. -->
 
 </pdData>
