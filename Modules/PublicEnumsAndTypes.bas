@@ -292,6 +292,7 @@ Public Enum PD_ImageDecoder
     id_GDIPlus = 0
     id_FreeImage
     id_CBZParser
+    id_HGTParser
     id_ICOParser
     id_MBMParser
     id_ORAParser
@@ -310,8 +311,8 @@ End Enum
 
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
-    Private Const id_CBZParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0, id_PNGParser = 0
-    Private Const id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_XCFParser = 0
+    Private Const id_CBZParser = 0, id_HGTParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0
+    Private Const id_PNGParser = 0, id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_XCFParser = 0
     Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0
 #End If
 
@@ -571,13 +572,14 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
     PDIF_ORA = 114      'OpenRaster support was added in 8.0 nightly builds
     PDIF_HEIF = 115     'Loaded via WIC; requires Win 8.1 or later and possible downloads from the MS store
-    PDIF_MBM = 116      'Symbian MBM support (including .aif and similar variants) was added in 9.0 nightly builds
-    PDIF_PSP = 117      'JASC/Corel PaintShop Pro support was added in 9.0 nightly builds
-    PDIF_CBZ = 118      'Comic book archives (zip format only) were added in 9.0 nightly builds
-    PDIF_AVIF = 119     'Modern high-efficiency images (AV1 frames) were added in 9.0 nightly builds
-    PDIF_JLS = 120      'JPEG-LS was added in 9.0 nightly builds
-    PDIF_QOI = 121      'QOI was added in 9.0 nightly builds
-    PDIF_XCF = 122      'GIMP XCF was added in 9.0 nightly builds
+    PDIF_MBM = 116      'Symbian MBM support (including .aif and similar variants) was added in 9.0
+    PDIF_PSP = 117      'JASC/Corel PaintShop Pro support was added in 9.0
+    PDIF_CBZ = 118      'Comic book archives (zip format only) were added in 9.0
+    PDIF_AVIF = 119     'Modern high-efficiency images (AV1 frames) were added in 9.0
+    PDIF_JLS = 120      'JPEG-LS was added in 9.0
+    PDIF_QOI = 121      'QOI was added in 9.0
+    PDIF_XCF = 122      'GIMP XCF was added in 9.0
+    PDIF_HGT = 123      'Shuttle Radar Topography Mission (SRTM) import was added in 10.0 nightly builds
     
 End Enum
 
@@ -590,7 +592,7 @@ End Enum
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116, PDIF_PSP = 117
-    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121, PDIF_XCF = 122
+    Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121, PDIF_XCF = 122, PDIF_HGT = 123
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

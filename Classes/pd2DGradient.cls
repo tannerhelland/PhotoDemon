@@ -487,11 +487,11 @@ Friend Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As
     m_NumOfPoints = 2
     ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
     
-    m_GradientPoints(0).PointPosition = 0#
+    m_GradientPoints(0).PointPosition = 0!
     m_GradientPoints(0).PointRGB = firstColor
     m_GradientPoints(0).PointOpacity = firstOpacity
     
-    m_GradientPoints(1).PointPosition = 1#
+    m_GradientPoints(1).PointPosition = 1!
     m_GradientPoints(1).PointRGB = secondColor
     m_GradientPoints(1).PointOpacity = secondOpacity
     
@@ -506,7 +506,7 @@ Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor 
     m_NumOfPoints = 3
     ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
     
-    m_GradientPoints(0).PointPosition = 0#
+    m_GradientPoints(0).PointPosition = 0!
     m_GradientPoints(0).PointRGB = firstColor
     m_GradientPoints(0).PointOpacity = firstOpacity
     
@@ -514,11 +514,11 @@ Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor 
     m_GradientPoints(1).PointRGB = secondColor
     m_GradientPoints(1).PointOpacity = secondOpacity
     
-    m_GradientPoints(2).PointPosition = 1#
+    m_GradientPoints(2).PointPosition = 1!
     m_GradientPoints(2).PointRGB = thirdColor
     m_GradientPoints(2).PointOpacity = thirdOpacity
     
-    If (secondColorPosition = 0.5) Then
+    If (secondColorPosition = 0.5!) Then
         m_IsSorted = True
     Else
         m_IsSorted = False

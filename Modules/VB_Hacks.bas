@@ -3,8 +3,8 @@ Attribute VB_Name = "VBHacks"
 'Misc VB6 Hacks
 'Copyright 2016-2022 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 27/May/22
-'Last update: move various incarnations of Get/SetBitFlag functions here, and build a fixed-size flag table for perf reasons
+'Last updated: 13/September/22
+'Last update: new func for wrapping a signed short array around arbitrary pointers (for HGT import)
 '
 'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations
 ' and C-style code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to
@@ -350,9 +350,9 @@ End Function
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
-Public Sub DoEvents_SingleHwnd(ByVal srcHwnd As Long)
+Public Sub DoEvents_SingleHwnd(ByVal srcHWnd As Long)
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1&)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1&)
         TranslateMessage tmpMsg
         DispatchMessageW tmpMsg
     Loop
@@ -397,7 +397,7 @@ Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
     Loop
 End Sub
 
-Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
+Public Sub PurgeInputMessages(ByVal srcHWnd As Long)
     
     Const QS_MOUSEMOVE = &H2
     Const QS_MOUSEBUTTON = &H4
@@ -407,7 +407,7 @@ Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
     Const PM_QS_INPUT = (QS_INPUT * (2& ^ 16&))
     
     Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1& Or PM_QS_INPUT)
+    Do While PeekMessageW(tmpMsg, srcHWnd, 0&, 0&, &H1& Or PM_QS_INPUT)
     Loop
     
 End Sub
@@ -645,6 +645,22 @@ End Sub
 
 Public Sub UnwrapArrayFromPtr_Byte(ByRef dstBytes() As Byte)
     PutMem4 VarPtrArray(dstBytes), 0&
+End Sub
+
+Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
+    With dstSA1D
+        .cbElements = 2
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcLenInBytes \ 2
+        .pvData = srcPtr
+    End With
+    PutMem4 VarPtrArray(dstInts()), VarPtr(dstSA1D)
+End Sub
+
+Public Sub UnwrapArrayFromPtr_Int(ByRef dstInts() As Integer)
+    PutMem4 VarPtrArray(dstInts), 0&
 End Sub
 
 Public Sub WrapArrayAroundPtr_Long(ByRef dstLongs() As Long, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)

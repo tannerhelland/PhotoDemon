@@ -19,10 +19,11 @@ Attribute VB_Name = "ImageImporter"
 Option Explicit
 
 'PhotoDemon now provides many of its own image format parsers.  You can disable individual
-' formats for testing purposes, but note that fallback methods like GDI+ *CANNOT* read most
-' (if any) of these formats.  If you encounter problems with a specific image format,
-' PLEASE FILE AN ISSUE ON GITHUB.
+' formats for testing purposes, but note that fallback methods like internal Windows libraries
+' *CANNOT* read most (if any) of these formats.  If you encounter problems with a specific
+' image format, PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
+Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
@@ -1059,6 +1060,16 @@ LibAVIFDidntWork:
         End If
     End If
     
+    'Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
+    'Shuttle Radar Topography Mission (SRTM) HGT format was added in v10.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_HGT Then
+        CascadeLoadGenericImage = LoadHGT(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_HGTParser
+            dstImage.SetOriginalFileFormat PDIF_HGT
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1213,6 +1224,38 @@ Private Function LoadCBZ(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
+    
+End Function
+
+Private Function LoadHGT(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadHGT = False
+    
+    'pdHGT handles all the dirty work for us
+    Dim cReader As pdHGT
+    Set cReader = New pdHGT
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadHGT = cReader.LoadHGT_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadHGT Then
+        
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_HGT
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        'HGT files are always 24-bpp grayscale (but we may "spruce them up a bit" during loading, for fun)
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale True  'Will need to vary in the future based on user import settings...
+        
+        'HGT files never contain alpha
+        dstImage.SetOriginalAlpha False
+        
+        'HGT files are raw linear files; as such we don't need to color-manage them
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
