@@ -189,9 +189,8 @@ Public Sub GenerateInputFormats()
     'Prepare a list of possible INPUT formats based on the 3rd-party libraries available at run-time.
     
     '(These format lists are automatically trimmed after library status is evaluated.
-    ' The arbitrary upper limit of "50" only needs to be revisited if I greatly expand
-    ' format support in the future!)
-    Const MAX_NUM_INPUT_FORMATS As Long = 50
+    ' The arbitrary upper limit only needs to be revisited if I greatly expand format support in the future!)
+    Const MAX_NUM_INPUT_FORMATS As Long = 60
     ReDim inputExtensions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
     ReDim inputDescriptions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
     ReDim inputPDIFs(0 To MAX_NUM_INPUT_FORMATS - 1) As PD_IMAGE_FORMAT
@@ -256,6 +255,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heic;*.heif", PDIF_HEIF
     End If
     
+    AddInputFormat "HGT - Shuttle Radar Topography Mission (SRTM)", "*.hgt", PDIF_HGT
     AddInputFormat "ICO - Windows Icon", "*.ico", PDIF_ICO
     
     If m_FreeImageEnabled Then AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
@@ -503,6 +503,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "hdr"
         Case PDIF_HEIF
             GetExtensionFromPDIF = "heif"
+        Case PDIF_HGT
+            GetExtensionFromPDIF = "hgt"
         Case PDIF_ICO
             GetExtensionFromPDIF = "ico"
         Case PDIF_IFF
@@ -630,6 +632,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_HDR
         Case "heif"
             GetPDIFFromExtension = PDIF_AVIF
+        Case "hgt"
+            GetPDIFFromExtension = PDIF_HGT
         Case "ico"
             GetPDIFFromExtension = PDIF_ICO
         Case "iff"
