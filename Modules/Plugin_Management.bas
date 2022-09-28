@@ -26,7 +26,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST update this.  PD iterates plugins in order, so if
 ' you do not update this, the plugin at the end of the chain (probably zstd) won't get
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 13
+Private Const CORE_PLUGIN_COUNT As Long = 14
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
@@ -38,6 +38,7 @@ Public Enum CORE_PLUGINS
     CCP_AvifExport
     CCP_AvifImport
     CCP_libdeflate
+    CCP_libjxl
     CCP_libwebp
     CCP_LittleCMS
     CCP_lz4
@@ -48,7 +49,7 @@ End Enum
 
 #If False Then
     Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_resvg = 0, CCP_zstd = 0
+    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_resvg = 0, CCP_zstd = 0, CCP_libjxl = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -60,6 +61,7 @@ Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.44"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.12"
+Private Const EXPECTED_LIBJXL_VERSION As String = "0.7.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.13.1"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
@@ -202,6 +204,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "FreeImage.dll"
         Case CCP_libdeflate
             GetPluginFilename = "libdeflate.dll"
+        Case CCP_libjxl
+            GetPluginFilename = "libjxl.dll"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
@@ -233,6 +237,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "FreeImage"
         Case CCP_libdeflate
             GetPluginName = "libdeflate"
+        Case CCP_libjxl
+            GetPluginName = "libjxl"
         Case CCP_LittleCMS
             GetPluginName = "LittleCMS"
         Case CCP_lz4
@@ -279,6 +285,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         
         Case CCP_libdeflate
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
+        
+        Case CCP_libjxl
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_jxl.GetLibJXLVersion()
         
         Case CCP_LittleCMS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
@@ -340,7 +349,10 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         
         Case CCP_libdeflate
             dstStringStack.AddString "libdeflate-LICENSE.txt"
-            
+        
+        Case CCP_libjxl
+            dstStringStack.AddString "libjxl-LICENSE.txt"
+        
         Case CCP_LittleCMS
             dstStringStack.AddString "lcms2-LICENSE.txt"
             
@@ -397,6 +409,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = ImageFormats.IsFreeImageEnabled()
         Case CCP_libdeflate
             IsPluginCurrentlyEnabled = m_LibDeflateEnabled
+        Case CCP_libjxl
+            IsPluginCurrentlyEnabled = Plugin_jxl.IsLibJXLEnabled()
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
@@ -431,6 +445,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             ImageFormats.SetFreeImageEnabled newEnabledState
         Case CCP_libdeflate
             m_LibDeflateEnabled = newEnabledState
+        Case CCP_libjxl
+            Plugin_jxl.ForciblySetAvailability newEnabledState
         Case CCP_LittleCMS
             m_LCMSEnabled = newEnabledState
         Case CCP_lz4
@@ -471,6 +487,8 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = False
         Case CCP_libdeflate
             IsPluginHighPriority = True
+        Case CCP_libjxl
+            IsPluginHighPriority = False
         Case CCP_LittleCMS
             IsPluginHighPriority = True
         Case CCP_lz4
@@ -504,6 +522,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_FREEIMAGE_VERSION
         Case CCP_libdeflate
             ExpectedPluginVersion = EXPECTED_LIBDEFLATE_VERSION
+        Case CCP_libjxl
+            ExpectedPluginVersion = EXPECTED_LIBJXL_VERSION
         Case CCP_LittleCMS
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
         Case CCP_lz4
@@ -536,6 +556,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "https://sourceforge.net/projects/freeimage/"
         Case CCP_libdeflate
             GetPluginHomepage = "https://github.com/ebiggers/libdeflate"
+        Case CCP_libjxl
+            GetPluginHomepage = "https://github.com/libjxl/libjxl"
         Case CCP_LittleCMS
             GetPluginHomepage = "http://www.littlecms.com"
         Case CCP_lz4
@@ -568,6 +590,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("FreeImage public license")
         Case CCP_libdeflate
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
+        Case CCP_libjxl
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_LittleCMS
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_lz4
@@ -600,6 +624,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://freeimage.sourceforge.net/freeimage-license.txt"
         Case CCP_libdeflate
             GetPluginLicenseURL = "https://github.com/ebiggers/libdeflate/blob/master/COPYING"
+        Case CCP_libjxl
+            GetPluginLicenseURL = "https://github.com/libjxl/libjxl/blob/main/LICENSE"
         Case CCP_LittleCMS
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
         Case CCP_lz4
@@ -674,6 +700,9 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
                 initializationSuccessful = Compression.StartCompressionEngines(PluginManager.GetPluginPath)
                 m_CompressorsInitialized = initializationSuccessful
             End If
+        
+        Case CCP_libjxl
+            initializationSuccessful = Plugin_jxl.InitializeLibJXL(PluginManager.GetPluginPath)
             
         'LittleCMS maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_LittleCMS
@@ -720,6 +749,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_libdeflate
             m_LibDeflateEnabled = pluginState
+        
+        Case CCP_libjxl
+            Plugin_jxl.ForciblySetAvailability pluginState
         
         Case CCP_LittleCMS
             m_LCMSEnabled = pluginState
@@ -865,6 +897,9 @@ Public Sub TerminateAllPlugins()
     
     Plugin_resvg.ReleaseEngine
     PDDebug.LogAction "resvg released"
+    
+    Plugin_jxl.ReleaseLibJXL
+    PDDebug.LogAction "libjxl released"
     
     Plugin_FreeImage.ReleaseFreeImage
     ImageFormats.SetFreeImageEnabled False
