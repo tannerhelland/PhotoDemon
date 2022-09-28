@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.6</langversion>
+<langversion>1.0.7</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1578,6 +1578,13 @@ Sorun devam ederse, photodemon.org/contact adresinden geliştiricilere bilgi ver
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Carving image relief</original>
+<translation></translation>
+</phrase>
+
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
@@ -8011,12 +8018,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<phrase>
-<original>Carving image relief</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>

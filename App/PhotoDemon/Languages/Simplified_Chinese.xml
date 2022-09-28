@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.9</langversion>
+<langversion>9.0b1373.10</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -1576,6 +1576,13 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Carving image relief</original>
+<translation>雕刻图像浮雕</translation>
+</phrase>
+
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
@@ -8035,12 +8042,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<phrase>
-<original>Carving image relief</original>
-<translation>雕刻图像浮雕</translation>
-</phrase>
-
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>

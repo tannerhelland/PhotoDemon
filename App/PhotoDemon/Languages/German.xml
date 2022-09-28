@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.1</langversion>
+<langversion>9.0.16</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1579,6 +1579,13 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
+<original>Carving image relief</original>
+<translation>Bildrelief wird geschnitzt</translation>
+</phrase>
+
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>Zählen der Anzahl eindeutiger Farben in diesem Bild</translation>
 </phrase>
@@ -3032,12 +3039,12 @@ Deskription: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>Letzte Zeile justieren</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>Outline obenauf</translation>
 </phrase>
 
 <phrase>
@@ -8041,12 +8048,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<phrase>
-<original>Carving image relief</original>
-<translation>Bildrelief wird geschnitzt</translation>
-</phrase>
-
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>
@@ -10971,7 +10973,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation>Spenden Sie für das PhotoDemon-Development</translation>
+<translation>Für das Development von PhotoDemon spenden</translation>
 </phrase>
 
 <phrase>

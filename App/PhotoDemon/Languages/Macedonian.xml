@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1703</langversion>
+<langversion>8.9.1704</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1576,6 +1576,13 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<phrase>
+<original>Carving image relief</original>
+<translation>Резба релјефна претстава</translation>
+</phrase>
+
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
@@ -8031,12 +8038,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<phrase>
-<original>Carving image relief</original>
-<translation>Резба релјефна претстава</translation>
-</phrase>
-
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>
