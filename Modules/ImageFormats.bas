@@ -269,6 +269,8 @@ Public Sub GenerateInputFormats()
     
     AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
     
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_libjxl) Then AddInputFormat "JXL - JPEG XL", "*.jxl", PDIF_JXL
+    
     If m_FreeImageEnabled Then
         AddInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", PDIF_JXR
         AddInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", PDIF_KOALA
@@ -519,6 +521,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "jp2"
         Case PDIF_JPEG
             GetExtensionFromPDIF = "jpg"
+        Case PDIF_JXL
+            GetExtensionFromPDIF = "jxl"
         Case PDIF_JXR
             GetExtensionFromPDIF = "jxr"
         Case PDIF_KOALA
@@ -648,6 +652,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_JP2
         Case "jpg", "jpe", "jpeg"
             GetPDIFFromExtension = PDIF_JPEG
+        Case "jxl"
+            GetPDIFFromExtension = PDIF_JXL
         Case "jxr"
             GetPDIFFromExtension = PDIF_JXR
         Case "koa"
@@ -725,6 +731,8 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         Case PDIF_JPEG
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        Case PDIF_JXL
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_JXR
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_MBM
@@ -772,6 +780,8 @@ End Function
 Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
     Select Case outputPDIF
         Case PDIF_JPEG
+            IsExifAllowedForPDIF = True
+        Case PDIF_JXL
             IsExifAllowedForPDIF = True
         Case PDIF_JXR
             IsExifAllowedForPDIF = True

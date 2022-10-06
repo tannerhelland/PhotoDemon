@@ -16,6 +16,20 @@ Attribute VB_Name = "Plugin_jxl"
 
 Option Explicit
 
+'DO NOT enable verbose logging in production builds
+Private Const JXL_DEBUG_VERBOSE As Boolean = True
+
+Private Enum JXL_JxlSignature
+    JXL_SIG_NOT_ENOUGH_BYTES = 0 '/* Not enough bytes were passed to determine if a valid signature was found.
+    JXL_SIG_INVALID = 1          '/* No valid JPEG XL header was found.
+    JXL_SIG_CODESTREAM = 2       '/* A valid JPEG XL codestream signature was found, that is a JPEG XL image without container.
+    JXL_SIG_CONTAINER = 3        '/* A valid container signature was found, that is a JPEG XL image embedded in a box format container.
+End Enum
+
+#If False Then
+    Private Const JXL_SIG_NOT_ENOUGH_BYTES = 0, JXL_SIG_INVALID = 1, JXL_SIG_CODESTREAM = 2, JXL_SIG_CONTAINER = 3
+#End If
+
 'Library handle will be non-zero if libjxl is available; you can also forcibly override the
 ' "availability" state by setting m_LibAvailable to FALSE
 Private m_LibHandle As Long, m_LibAvailable As Boolean
@@ -29,6 +43,7 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 ' This saves us a little time vs calling GetProcAddress on each call.
 Private Enum LibJXL_ProcAddress
     JxlDecoderVersion
+    JxlSignatureCheck
     [last_address]
 End Enum
 
@@ -59,6 +74,7 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
         
         'Pre-load all relevant proc addresses
         m_ProcAddresses(JxlDecoderVersion) = GetProcAddress(m_LibHandle, "JxlDecoderVersion")
+        m_ProcAddresses(JxlSignatureCheck) = GetProcAddress(m_LibHandle, "JxlSignatureCheck")
         
     Else
         PDDebug.LogAction "WARNING!  LoadLibrary failed to load libjxl.  Last DLL error: " & Err.LastDllError
@@ -102,6 +118,83 @@ Public Sub ReleaseLibJXL()
         m_LibHandle = 0
     End If
 End Sub
+
+'Import/Export functions follow
+Public Function IsFileJXL(ByRef srcFile As String) As Boolean
+
+    IsFileJXL = False
+    
+    'Failsafe check
+    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    
+    'libjxl provides a built-in validation function, *but* we need to manually pull the bytes into memory first
+    Dim tmpStream As pdStream
+    Set tmpStream = New pdStream
+    
+    If tmpStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+        
+        'The spec does not suggest how many bytes need to be read before validation can occur.
+        ' This arbitrary number is hopefully enough, and we'll iterate accordingly if we need to.
+        Const NUM_BYTES_TO_TEST As Long = 1024
+        
+        Dim numBytesAvailable As Long
+        numBytesAvailable = NUM_BYTES_TO_TEST
+        
+        'Detect file size as a failsafe against reading past EOF
+        Dim sizeOfWholeFile As Long
+        sizeOfWholeFile = Files.FileLenW(srcFile)
+        If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
+        
+        Dim ptrRawBytes As Long
+        ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
+        
+        Dim retSignature As JXL_JxlSignature
+        retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
+        
+        'Repeat with ever-larger chunks of the file if the decoder requires it
+        If (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) Then
+            Do
+                
+                'Calculate new size
+                numBytesAvailable = numBytesAvailable * 2
+                If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
+                
+                'Reset stream pointer and pull in [numBytesAvailable] for validation
+                tmpStream.SetPosition 0, FILE_BEGIN
+                ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
+                
+                'Continue validating until EOF is reached, if necessary
+                retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
+            Loop While (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) And (numBytesAvailable < sizeOfWholeFile)
+        End If
+        
+        IsFileJXL = (retSignature = JXL_SIG_CONTAINER) Or (retSignature = JXL_SIG_CODESTREAM)
+        
+    End If
+    
+End Function
+
+Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJXL = False
+    
+    'Failsafe check
+    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    
+    'Next, we need to validate the file format as JPEG-XL.
+    If Plugin_jxl.IsFileJXL(srcFile) Then
+        
+        If JXL_DEBUG_VERBOSE Then PDDebug.LogAction "JXL format found.  Proceeding with load..."
+        
+        'Start here
+        
+    Else
+        Exit Function
+    End If
+    
+    If (Not LoadJXL) And JXL_DEBUG_VERBOSE Then PDDebug.LogAction "Plugin_jxl.LoadJXL failed."
+    
+End Function
 
 'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
 ' for a link to his original, unmodified version

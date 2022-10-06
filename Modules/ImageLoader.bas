@@ -932,6 +932,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'JPEG XL support was added in v10.0
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadJXL(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_libjxl
+            dstImage.SetOriginalFileFormat PDIF_JXL
+        End If
+    End If
+    
     'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
     ' copying of the official libavif exe binaries (for example,
     ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
@@ -1313,6 +1322,30 @@ Private Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     'Perform some PD-specific object initialization before exiting
     If LoadJLS Then
         dstImage.SetOriginalFileFormat PDIF_JLS
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
+        dstImage.SetOriginalGrayscale False     'Same here?
+        dstImage.SetOriginalAlpha True          'Same here?
+    End If
+    
+End Function
+
+Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJXL = False
+    
+    'Ensure libjxl is available
+    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    
+    'For now, we perform basic validation against the file extension; this is primarily for performance reasons
+    If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "jxl", True) Then Exit Function
+    
+    'Offload the remainder of the job to the libjxl interface
+    LoadJXL = Plugin_jxl.LoadJXL(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadJXL Then
+        dstImage.SetOriginalFileFormat PDIF_JXL
         dstImage.NotifyImageChanged UNDO_Everything
         dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
         dstImage.SetOriginalGrayscale False     'Same here?
