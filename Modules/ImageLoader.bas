@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 30/March/22
-'Last update: start preliminary work on GIMP XCF support
+'Last updated: 07/October/22
+'Last update: start preliminary work on JPEG XL support
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -1342,16 +1342,43 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     
     'Offload the remainder of the job to the libjxl interface
     LoadJXL = Plugin_jxl.LoadJXL(srcFile, dstImage, dstDIB)
-    
+
     'Perform some PD-specific object initialization before exiting
-    If LoadJXL Then
+    If LoadJXL And (Not dstImage Is Nothing) Then
+        
         dstImage.SetOriginalFileFormat PDIF_JXL
         dstImage.NotifyImageChanged UNDO_Everything
-        dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
-        dstImage.SetOriginalGrayscale False     'Same here?
-        dstImage.SetOriginalAlpha True          'Same here?
-    End If
+        
+        dstImage.SetOriginalColorDepth 32           'TODO: retrieve from source
+        dstImage.SetOriginalGrayscale False         'TODO: retrieve from source
+        dstImage.SetOriginalAlpha False             'TODO: retrieve from source
+        dstImage.SetAnimated False                  'TODO: retrieve from source
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+
+'        'Before exiting, ensure all color management data has been added to PD's central cache
+'        Dim profHash As String
+'        If cPSP.HasICCProfile() Then
+'            profHash = ColorManagement.AddProfileToCache(cPSP.GetICCProfile(), True, False, False)
+'            dstImage.SetColorProfile_Original profHash
+'
+'            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it -
+'            ' will have been hard-converted to sRGB, so we don't want to associate the destination
+'            ' DIB with its source profile. Instead, note that it is currently sRGB to prevent the
+'            ' central color-manager from attempting to correct it on its own.
+'            profHash = ColorManagement.GetSRGBProfileHash()
+'            dstDIB.SetColorProfileHash profHash
+'            dstDIB.SetColorManagementState cms_ProfileConverted
+'
+'        End If
     
+    End If
+
+
 End Function
 
 Private Function LoadMBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
