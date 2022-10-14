@@ -304,9 +304,11 @@ Public Function GetInitialEffectTimestamp() As Currency
 End Function
 
 Public Function GetPspiVersion() As String
-    Dim ptrVersion As Long
-    ptrVersion = pspiGetVersion()
-    If (ptrVersion <> 0) Then GetPspiVersion = Strings.StringFromCharPtr(ptrVersion, False, 3, True) & ".0"
+    If (m_LibHandle <> 0) And m_LibAvailable Then
+        Dim ptrVersion As Long
+        ptrVersion = pspiGetVersion()
+        If (ptrVersion <> 0) Then GetPspiVersion = Strings.StringFromCharPtr(ptrVersion, False, 3, True) & ".0"
+    End If
 End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean

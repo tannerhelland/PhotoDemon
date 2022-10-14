@@ -278,7 +278,7 @@ Attribute VB_Exposed = False
 'Last update: allow libraries to be missing but OK, like libavif (which is downloaded on-demand)
 '
 'I've considered merging this form with the main Tools > Options dialog, but that dialog
-' is already cluttered, and I really prefer that users don't mess around with 3rd-party libraries.
+' is already cluttered and I'd prefer that average users don't interact with this dialog at all.
 ' So this dialog exists as a standalone UI, and it should really be used only if there are problems.
 '
 'As of April '16, this dialog should never need to be updated against new libraries.  All library
@@ -578,15 +578,25 @@ Private Function CheckLibraryStateUI(ByVal pluginID As CORE_PLUGINS, Optional By
             'Version mismatch
             Else
                 dstStateString = g_Language.TranslateMessage("installed, but version is unexpected")
-                dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
-                CheckLibraryStateUI = False
+                dstStateUIColor = m_Colors.RetrieveColor(PDPM_GoodText)
+                CheckLibraryStateUI = True
             End If
             
         'Plugin is disabled
         Else
-            dstStateString = g_Language.TranslateMessage("installed, but disabled by user")
+            
+            'If this is as simple as an XP compatibility issue (more prevalent now that PD supports
+            ' a variety of modern image formats that can't be built in XP-compatible ways),
+            ' let the user know
+            If (Not OS.IsVistaOrLater) And PluginManager.IsPluginUnavailableOnXP(pluginID) Then
+                dstStateString = g_Language.TranslateMessage("incompatible with Windows XP")
+            Else
+                dstStateString = g_Language.TranslateMessage("installed, but disabled by user")
+            End If
+            
             dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
             CheckLibraryStateUI = False
+            
         End If
         
     'Plugin is not present on the machine.  For some libraries, this is problematic (e.g. critical libraries like lcms).
@@ -597,7 +607,7 @@ Private Function CheckLibraryStateUI(ByVal pluginID As CORE_PLUGINS, Optional By
         dstStateString = g_Language.TranslateMessage("not installed")
         
         'If this plugin doesn't ship with PD, leave it marked as OK
-        If IsPluginAvailableOnDemand(pluginID) Then
+        If PluginManager.IsPluginAvailableOnDemand(pluginID) Then
             dstStateUIColor = m_Colors.RetrieveColor(PDPM_GoodText)
             CheckLibraryStateUI = True
         Else
@@ -686,7 +696,7 @@ Private Sub LibraryChanged()
         Else
             
             'On-demand libraries are not a problem if they simply haven't been installed yet
-            If IsPluginAvailableOnDemand(pluginIndex) Then
+            If PluginManager.IsPluginAvailableOnDemand(pluginIndex) Then
                 lblPluginVersion.Caption = g_Language.TranslateMessage("not installed, but available on-demand")
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
             Else
@@ -702,7 +712,7 @@ Private Sub LibraryChanged()
         hypLicense.URL = PluginManager.GetPluginLicenseURL(pluginIndex)
         
         'Some plugins support optional explanation text.
-        If IsPluginAvailableOnDemand(pluginIndex) And (Not PluginManager.IsPluginCurrentlyInstalled(pluginIndex)) Then
+        If PluginManager.IsPluginAvailableOnDemand(pluginIndex) And (Not PluginManager.IsPluginCurrentlyInstalled(pluginIndex)) Then
             
             Dim actionTarget As String
             If (pluginIndex = CCP_AvifExport) Or (pluginIndex = CCP_AvifImport) Then
@@ -730,20 +740,3 @@ Private Sub LibraryChanged()
     End If
     
 End Sub
-
-'Some libraries are available on-demand (like libavif, which is enormous and most users won't need it).
-' It's OK if these libraries are missing on a default install - it just means the user hasn't triggered
-' any actions that prompt their download.
-Private Function IsPluginAvailableOnDemand(ByVal pluginID As CORE_PLUGINS) As Boolean
-
-    Select Case pluginID
-    
-        Case CCP_AvifExport, CCP_AvifImport
-            IsPluginAvailableOnDemand = True
-            
-        Case Else
-            IsPluginAvailableOnDemand = False
-    
-    End Select
-
-End Function

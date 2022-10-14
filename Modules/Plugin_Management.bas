@@ -3,17 +3,21 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2022 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 28/February/22
-'Last update: add resvg
+'Last updated: 13/October/22
+'Last update: add a function for querying XP-compatibility; this will make it easier for the plugin manager UI
+'             to notify a user that non-functional plugins are simple XP-compatibility issues, not technical problems
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
-' A number of third-party libraries are required for correct program operation.
+' Current builds require a number of third-party libraries for full feature availability.  (Some of these
+' libraries are mandatory, some are not; PD will attempt to gracefully degrade feature availability if it
+' can, but if you're acquiring PD from photodemon.org or it's official GitHub page you never need to
+' worry about this.)
 '
-'To simplify the management of these libraries, I've created this "plugin manager".  Its purpose is
+'To simplify the management of external libraries, I've created this small "plugin manager".  It exists
 ' to make third-party library deployment and maintainence easier in a "portable" application context.
 '
 'When adding a new required library, please make sure to read the module-level declarations,
-' particularly the CORE_PLUGINS enum and the CORE_PLUGIN_COUNT constant at the top of this page.
+' particularly the CORE_PLUGINS enum and the CORE_PLUGIN_COUNT constant at the top of this file.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -23,13 +27,13 @@ Attribute VB_Name = "PluginManager"
 Option Explicit
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum),
-' so if you add or remove a plugin, YOU MUST update this.  PD iterates plugins in order, so if
-' you do not update this, the plugin at the end of the chain (probably zstd) won't get
+' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
+' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
 Private Const CORE_PLUGIN_COUNT As Long = 14
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
-' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
+' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
 Public Enum CORE_PLUGINS
     CCP_CharLS
     CCP_ExifTool
@@ -468,40 +472,63 @@ Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) A
     IsPluginCurrentlyInstalled = Files.FileExists(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
-'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.  These include the
-' decompression plugins required to decompress things like the splash screen image.  Much later in the load process,
-' we load the rest of the program's core plugins.  This function determines which wave a plugin is loaded during.
+'Some libraries are available on-demand (like libavif, which is enormous and most users won't need it).
+' It's OK if these libraries are missing on a default install - it just means the user hasn't triggered
+' any actions that prompt their download.
+Public Function IsPluginAvailableOnDemand(ByVal pluginID As CORE_PLUGINS) As Boolean
+    
+    IsPluginAvailableOnDemand = False
+    
+    Select Case pluginID
+        Case CCP_AvifExport, CCP_AvifImport
+            IsPluginAvailableOnDemand = True
+    End Select
+    
+End Function
+
+'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.
+' These include compression plugins required to decompress things like the splash screen image.
+'
+'Much later in the load process, we load other third-party libraries (if necessary - some may yet be loaded
+' on-demand, as user operations require.
+'
+'This function determines if a plugin is forcibly loaded during that initial "high-priority" wave, or later.
 Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+    
+    IsPluginHighPriority = False
+    
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            IsPluginHighPriority = False
-        Case CCP_AvifImport
-            IsPluginHighPriority = False
-        Case CCP_CharLS
-            IsPluginHighPriority = False
-        Case CCP_ExifTool
-            IsPluginHighPriority = False
-        Case CCP_EZTwain
-            IsPluginHighPriority = False
-        Case CCP_FreeImage
-            IsPluginHighPriority = False
         Case CCP_libdeflate
             IsPluginHighPriority = True
-        Case CCP_libjxl
-            IsPluginHighPriority = False
         Case CCP_LittleCMS
             IsPluginHighPriority = True
         Case CCP_lz4
             IsPluginHighPriority = True
-        Case CCP_pspiHost
-            IsPluginHighPriority = False
-        Case CCP_libwebp
-            IsPluginHighPriority = False
-        Case CCP_resvg
-            IsPluginHighPriority = False
         Case CCP_zstd
             IsPluginHighPriority = True
     End Select
+    
+End Function
+
+'As I've attempted to support more modern image formats (e.g. AVIF, HEIF, JPEG XL), I've also had to accept
+' that it's just not feasible to build some of the required 3rd-party libraries in XP-compatible ways.
+' This function can be used to query whether a plugin was disabled simply because it's not XP-compatible.
+' (Ignore the return of this function when running on Vista+, obviously.)
+Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+    
+    IsPluginUnavailableOnXP = False
+    
+    Select Case pluginEnumID
+        Case CCP_AvifExport
+            IsPluginUnavailableOnXP = True
+        Case CCP_AvifImport
+            IsPluginUnavailableOnXP = True
+        Case CCP_libjxl
+            IsPluginUnavailableOnXP = True
+        Case CCP_resvg
+            IsPluginUnavailableOnXP = True
+    End Select
+    
 End Function
 
 'Simplified function to return the expected version number of a plugin.  These numbers change with each PD release, and they can

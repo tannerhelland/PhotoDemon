@@ -234,9 +234,11 @@ Public Sub ForciblySetAvailability(ByVal newState As Boolean)
 End Sub
 
 Public Function GetVersion() As String
-    Dim vMajor As Long, vMinor As Long, vPatch As Long
-    charls_get_version_number vMajor, vMinor, vPatch
-    GetVersion = vMajor & "." & vMinor & "." & vPatch
+    If (m_LibHandle <> 0) And m_LibAvailable Then
+        Dim vMajor As Long, vMinor As Long, vPatch As Long
+        charls_get_version_number vMajor, vMinor, vPatch
+        GetVersion = vMajor & "." & vMinor & "." & vPatch
+    End If
 End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
