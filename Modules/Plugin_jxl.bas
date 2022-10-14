@@ -3,11 +3,21 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 07/October/22
-'Last update: ongoing work on initial build
+'Last updated: 13/October/22
+'Last update: importing static images is working well!  I want to support animations too, but don't have any
+'             good ones to test with - so I think I'm going to move over to export support so I can generate
+'             animations for testing purposes.
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
+'
+'Unfortunately for Windows XP users, libjxl currently requires Windows Vista or later.  PhotoDemon will
+' detect this automatically and gracefully hide JPEG XL support for XP users.  (If anyone knows how to build
+' libjxl in an XP-compatible way, I would happily welcome a pull request...)
+'
+'PhotoDemon tries to support most JPEG XL features, but esoteric ones (like animation) remain a WIP.
+' If you encounter any issues with JPEG XL images, please file an issue on GitHub and attach the image(s)
+' in question so I can investigate further.
 '
 'This wrapper class uses a shorthand wrapper to DispCallFunc originally written by Olaf Schmidt.
 ' Many thanks to Olaf, whose original version can be found here (link good as of Feb 2019):
@@ -684,7 +694,16 @@ Private m_vType() As Integer, m_vPtr() As Long
 
 'Initialize the library.  Do not call this until you have verified its existence (typically via the PluginManager module)
 Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
-
+    
+    InitializeLibJXL = False
+    
+    'I don't currently know how to build libxjl in an XP-compatible way.
+    ' As a result, its support is limited to Win Vista and above.
+    If (Not OS.IsVistaOrLater) Then
+        debugMsg "libjxl does not currently work on Windows XP."
+        Exit Function
+    End If
+    
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim libPath As String
     libPath = pathToDLLFolder & "libjxl.dll"
@@ -752,15 +771,20 @@ End Sub
 
 Public Function GetLibJXLVersion() As String
     
-    Dim ptrVersion As Long
-    ptrVersion = CallCDeclW(JxlDecoderVersion, vbLong)
-    
-    'From the docs (https://libjxl.readthedocs.io/en/latest/api_decoder.html):
-    ' Returns the decoder library version as an integer:
-    ' MAJOR_VERSION * 1000000 + MINOR_VERSION * 1000 + PATCH_VERSION.
-    ' (For example, version 1.2.3 would return 1002003.)
-    GetLibJXLVersion = Trim$(Str$(ptrVersion \ 1000000)) & "." & Trim$(Str$((ptrVersion \ 1000) Mod 1000)) & "." & Trim$(Str$(ptrVersion Mod 1000)) & ".0"
-    
+    'Do not attempt to retrieve version info unless the library was loaded successfully.
+    If (m_LibHandle <> 0) And m_LibAvailable Then
+        
+        Dim ptrVersion As Long
+        ptrVersion = CallCDeclW(JxlDecoderVersion, vbLong)
+        
+        'From the docs (https://libjxl.readthedocs.io/en/latest/api_decoder.html):
+        ' Returns the decoder library version as an integer:
+        ' MAJOR_VERSION * 1000000 + MINOR_VERSION * 1000 + PATCH_VERSION.
+        ' (For example, version 1.2.3 would return 1002003.)
+        GetLibJXLVersion = Trim$(Str$(ptrVersion \ 1000000)) & "." & Trim$(Str$((ptrVersion \ 1000) Mod 1000)) & "." & Trim$(Str$(ptrVersion Mod 1000)) & ".0"
+        
+    End If
+        
 End Function
 
 Public Function IsLibJXLAvailable() As Boolean
@@ -781,62 +805,68 @@ End Sub
 
 'Import/Export functions follow
 Public Function IsFileJXL(ByRef srcFile As String) As Boolean
-
+    
     IsFileJXL = False
     
     'Failsafe check
     If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
     
-    'libjxl provides a built-in validation function, *but* we need to manually pull the bytes into memory first
+    'libjxl provides a built-in validation function, *but* we need to manually pull some bytes into memory first
     Dim tmpStream As pdStream
     Set tmpStream = New pdStream
-    
     If tmpStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
         
         'The spec does not suggest how many bytes need to be read before validation can occur.
-        ' This arbitrary number is hopefully enough, and we'll iterate accordingly if we need to.
+        ' This arbitrary number is hopefully big enough (but if it isn't, we'll iterate accordingly).
         Const NUM_BYTES_TO_TEST As Long = 1024
         
         Dim numBytesAvailable As Long
         numBytesAvailable = NUM_BYTES_TO_TEST
         
-        'Detect file size as a failsafe against reading past EOF
+        'Use file size as an upper limit (simple failsafe against reading past EOF)
         Dim sizeOfWholeFile As Long
         sizeOfWholeFile = Files.FileLenW(srcFile)
         If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
         
+        'Pull [numBytesAvailable] into memory
         Dim ptrRawBytes As Long
         ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
         
+        'Attempt JXL validation
         Dim retSignature As JxlSignature
         retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
         
         'Repeat with ever-larger chunks of the file if the decoder requires it
         If (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) Then
+            
             Do
                 
-                'Calculate new size
+                'Calculate how many new bytes to pull in
                 numBytesAvailable = numBytesAvailable * 2
                 If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
                 
-                'Reset stream pointer and pull in [numBytesAvailable] for validation
+                'Reset stream pointer and pull in the new, larger [numBytesAvailable] for validation
                 tmpStream.SetPosition 0, FILE_BEGIN
                 ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
                 
                 'Continue validating until EOF is reached, if necessary
                 retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
+                
             Loop While (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) And (numBytesAvailable < sizeOfWholeFile)
+            
         End If
         
         IsFileJXL = (retSignature = JXL_SIG_CONTAINER) Or (retSignature = JXL_SIG_CODESTREAM)
         
+        'Release the stream regardless of success/failure; we'll re-create it as necessary in a later step
         tmpStream.StopStream True
         
     End If
     
 End Function
 
-'Load a JPEG XL file from memory
+'Load a JPEG XL file from disk.  srcFile must be a fully qualified path.  In the case of animated images,
+' dstImage will be populated with all embedded frames, one frame per layer.
 Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
     Const FUNC_NAME As String = "LoadJXL"
@@ -879,13 +909,13 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             InternalError FUNC_NAME, "unexpected return: " & jxlReturn
             Exit Function
         Else
-            If JXL_DEBUG_VERBOSE Then debugMsg "Successfully subscribed to events:" & eventsWanted
+            If JXL_DEBUG_VERBOSE Then debugMsg "Successfully subscribed to events: " & eventsWanted
         End If
         
         '(more events are a potential future TODO)
         
         'Open a stream on the underlying JXL file
-        Const JXL_CHUNK_SIZE As Long = 2 ^ 19   '0.5 MB at a time seems reasonable?
+        Const JXL_CHUNK_SIZE As Long = 2 ^ 19   '0.5 MB at a time seems like a reasonable modern default?
         Set m_Stream = New pdStream
         If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile, JXL_CHUNK_SIZE, optimizeAccess:=OptimizeSequentialAccess)) Then
             InternalError FUNC_NAME, "no stream", True
@@ -933,8 +963,14 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         dstImage.Width = m_Header.xsize
         dstImage.Height = m_Header.ysize
         
-        'TODO: DPI?  Animation?
+        'DPI is not encoded in JXL files, but ExifTool will try to pick it up later during processing if
+        ' it encounters it...
         'dstImage.SetDPI 72, 72
+        
+        'Formal animation support remains TODO pending images to test with!
+        Dim imgIsAnimated As Boolean
+        imgIsAnimated = (m_Header.have_animation <> 0)
+        
         'dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(m_AnimationInfo.loop_count))
         Dim idxFrame As Long, numFramesOK As Long
         idxFrame = 0
@@ -951,6 +987,11 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         'We will now continue iterating through the file, one frame at a time, until the full image
         ' is loaded.  (Note that JPEG XL files don't give the number of frames up front, which is a pain -
         ' so we have no choice but to iterate until we hit the frame marked as "last frame".)
+        '
+        'Note that we will also quit if we successfully load the frame marked as "last frame".
+        Dim letsQuitEarly As Boolean
+        letsQuitEarly = False
+        
         nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
         Do While (nextEvent <> JXL_DEC_SUCCESS)
         
@@ -965,18 +1006,28 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             If (nextEvent = JXL_DEC_FRAME) Then
                 
                 'Yes, this text uses "page" instead of "frame" - this is purely to reduce localization burdens
-                Message "Loading page %1...", CStr(idxFrame + 1), "DONOTLOG"
+                If imgIsAnimated Then
+                    Dim unknownText As String
+                    If (LenB(unknownText) = 0) Then unknownText = g_Language.TranslateMessage("unknown")
+                    Message "Loading page %1 of %2...", CStr(idxFrame + 1), unknownText, "DONOTLOG"
+                End If
                 
                 'Retrieve the current frame header
                 jxlReturn = CallCDeclW(JxlDecoderGetFrameHeader, vbLong, m_JxlDecoder, VarPtr(curFrameHeader))
                 If (jxlReturn = JXL_DEC_SUCCESS) Then
                 
                     'Success!  Create a new layer in the destination image, then copy the pixel data and
-                    ' timestamp into it.
+                    ' timestamp (if relevant) into it.
                     Dim newLayerID As Long, newLayerName As String
                     newLayerID = dstImage.CreateBlankLayer()
                     Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                    newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
+                    
+                    If imgIsAnimated Then
+                        newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
+                    Else
+                        newLayerName = Layers.GenerateInitialLayerName(srcFile, vbNullString, False, dstImage, dstDIB)
+                    End If
+                    
                     tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
                     tmpLayer.SetLayerVisibility (idxFrame = 0)
                     
@@ -1009,21 +1060,26 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             
             'Pixel data is ready, but we need to specify a buffer first
             ElseIf (nextEvent = JXL_DEC_NEED_IMAGE_OUT_BUFFER) Then
-            
+                
                 Dim pxFormat As JxlPixelFormat
                 With pxFormat
-                    .align_scanline = 4
+                    .align_scanline = 4     'Windows requires 4-byte alignment, but this is redundant when decoding to RGBA8...
                     .data_type = JXL_TYPE_UINT8
                     .num_channels = 4
-                    
+
                     'Only matters if we support higher bit-depths in the future, obviously
                     .endianness = JXL_LITTLE_ENDIAN
                 End With
-                
+
                 'Ensure our placeholder DIB is valid
                 Dim dibReady As Boolean
                 dibReady = Not (tmpDIB Is Nothing)
                 If dibReady Then dibReady = (tmpDIB.GetDIBWidth = m_Header.xsize) And (tmpDIB.GetDIBHeight = m_Header.ysize)
+                
+                'Test only: see what size is required by the decoder?
+                Dim reqSize As Long
+                jxlReturn = CallCDeclW(JxlDecoderImageOutBufferSize, vbLong, m_JxlDecoder, VarPtr(pxFormat), VarPtr(reqSize))
+                debugMsg "Size allocated for frame: " & Files.GetFormattedFileSize(tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight)
                 
                 'If a valid buffer exists, pass its information to the decoder
                 If dibReady Then
@@ -1036,7 +1092,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     InternalError FUNC_NAME, "bad pixel buffer"
                     GoTo LoadFailed
                 End If
-            
+
             'The current frame has been decoded successfully.
             ElseIf (nextEvent = JXL_DEC_FULL_IMAGE) Then
                 
@@ -1053,6 +1109,11 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 'Increment frame count and reset current frame state.
                 idxFrame = idxFrame + 1
                 numFramesOK = numFramesOK + 1
+                If JXL_DEBUG_VERBOSE Then debugMsg "Successfully finished frame #" & idxFrame
+                
+                'If this frame was marked as the last frame in the image, do not attempt to retrieve
+                ' another frame - instead, just exit after this.
+                If (curFrameHeader.bool_is_last <> 0) Then letsQuitEarly = True
             
             Else
                 InternalError FUNC_NAME, "unexpected event: " & nextEvent
@@ -1062,10 +1123,13 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             'Retrieve the next event.  Note that libjxl will return JXL_DEC_SUCCESS if all requested events
             ' have been returned, *even if EOF has not been reached*.  That's okay for our purposes - but if we
             ' expand coverage in the future, we need to manually request new events accordingly.
-            nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
+            If letsQuitEarly Then
+                Exit Do
+            Else
+                nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
+            End If
         
         Loop
-        
         
         'Report success if at least one frame was retrieved correctly
         LoadJXL = (numFramesOK > 0)
@@ -1155,7 +1219,11 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
     'Validate the number of bytes read, just in case our attempted read extended past the end of the file.
     Dim numBytesRead As Long
     numBytesRead = m_Stream.GetPosition() - origPosition
-    If JXL_DEBUG_VERBOSE Then debugMsg "Read " & numBytesRead & " bytes into memory, handing off to libjxl..."
+    
+    'For extreme details on the read process (so you can see right down to the byte where a file passes/fails),
+    ' you can uncomment these lines...
+    'If JXL_DEBUG_VERBOSE Then debugMsg "Read " & numBytesRead & " bytes into memory, handing off to libjxl..."
+    'If JXL_DEBUG_VERBOSE Then debugMsg "Asking for " & numBytesRead & " bytes from libjxl, file offsets " & origPosition & " to " & (m_Stream.GetPosition - 1) & ", ptr: " & ptrToSource & "..."
     
     'Notify the decoder of new input.  (This step is pass/fail.)
     Dim jxlReturn As JxlDecoderStatus
@@ -1179,13 +1247,13 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
         
         'Before adding new input, we must release the current input.
         numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
-        If JXL_DEBUG_VERBOSE And (numBytesStillRequired <> 0) Then debugMsg "numBytesStillRequired: " & numBytesStillRequired
+        'If JXL_DEBUG_VERBOSE And (numBytesStillRequired <> 0) Then debugMsg "numBytesStillRequired: " & numBytesStillRequired
         
         'The decoder may align bytes in its own way.  It has returned the number of bytes from the
         ' *last* set we passed it that it *still* needs access to.  We can pass as many bytes as we
         ' want on our next call, but we need to make sure the bytes *start* at the place requested
         ' by the release input call.
-        If (numBytesStillRequired > 0) Then m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
+        If (numBytesStillRequired <> 0) Then m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
         
         'Pull more data from file, and once again note the actual number of bytes read.
         origPosition = m_Stream.GetPosition
@@ -1201,6 +1269,10 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
         
         ptrToSource = m_Stream.ReadBytes_PointerOnly(chunkSize)
         numBytesRead = m_Stream.GetPosition() - origPosition
+        
+        'For extreme details on the read process (so you can see right down to the byte where a file passes/fails),
+        ' you can uncomment this line as well...
+        'If JXL_DEBUG_VERBOSE Then debugMsg "(inner) Asking for " & numBytesRead & " bytes from libjxl, file offsets " & origPosition & " to " & (m_Stream.GetPosition - 1) & ", ptr: " & ptrToSource & "..."
         
         'Set the new input (only pass/fail is returned; fail may occur if we didn't release previous input)
         jxlReturn = CallCDeclW(JxlDecoderSetInput, vbLong, m_JxlDecoder, ptrToSource, numBytesRead)
@@ -1220,7 +1292,10 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
     
     'Release any input we have supplied, but be sure to *align the underlying file stream pointer* accordingly
     numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
-    If (numBytesStillRequired > 0) Then m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
+    If (numBytesStillRequired > 0) Then
+        If JXL_DEBUG_VERBOSE Then debugMsg "Release input required modifying file offset by -" & numBytesStillRequired
+        m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
+    End If
 
 End Function
 

@@ -1334,15 +1334,15 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
     LoadJXL = False
     
-    'Ensure libjxl is available
+    'Ensure libjxl is available and functioning correctly (e.g. we are on Vista or later)
     If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
     
-    'For now, we perform basic validation against the file extension; this is primarily for performance reasons
+    'For now, perform basic validation against the file extension; this is primarily for performance reasons
     If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "jxl", True) Then Exit Function
     
     'Offload the remainder of the job to the libjxl interface
     LoadJXL = Plugin_jxl.LoadJXL(srcFile, dstImage, dstDIB)
-
+    
     'Perform some PD-specific object initialization before exiting
     If LoadJXL And (Not dstImage Is Nothing) Then
         

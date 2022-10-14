@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.7</langversion>
+<langversion>9.0.9</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -2692,6 +2692,13 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>unknown</original>
+<translation>desconocido</translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>BSD license</original>
 <translation>licencia BSD</translation>
 </phrase>
@@ -2721,7 +2728,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <translation>Mozilla Public License 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3509,11 +3516,6 @@ Por favor, introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>unknown</original>
-<translation>desconocido</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Iniciando actualizador de software (esta característica se puede desactivar en los menú Herramientas -> Opciones)</translation>
 </phrase>
@@ -3538,7 +3540,7 @@ Por favor, introduzca un valor numérico.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -13852,6 +13854,11 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 </phrase>
 
 <phrase>
+<original>incompatible with Windows XP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>instalado, pero deshabilitado por el usuario</translation>
 </phrase>
@@ -13886,7 +13893,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>Si interactúa con %1, PhotoDemon le ofrecerá descargar y configurar esta biblioteca para usted.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 48 phrases. 24 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -13969,10 +13976,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2642</phrasecount>
+<phrasecount>2643</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5523 phrases. -->
-<!-- 2881 are duplicates, so only 2642 unique phrases have been written to file. -->
-<!-- These 2642 phrases contain approximately 11427 total words. -->
+<!-- As of this build, PhotoDemon contains 5530 phrases. -->
+<!-- 2887 are duplicates, so only 2643 unique phrases have been written to file. -->
+<!-- These 2643 phrases contain approximately 11431 total words. -->
 
 </pdData>
