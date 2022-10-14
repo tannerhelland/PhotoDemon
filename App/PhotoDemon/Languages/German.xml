@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.16</langversion>
+<langversion>9.0.17</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3039,7 +3039,7 @@ Deskription: %2
 
 <phrase>
 <original>last line justify</original>
-<translation>Letzte Zeile justieren</translation>
+<translation>Letzte Zeile Blocksatz</translation>
 </phrase>
 
 <phrase>
