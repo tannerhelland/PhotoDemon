@@ -196,7 +196,7 @@ Public Sub ReleaseZstd()
 End Sub
 
 Public Function GetZstdVersion() As Long
-    GetZstdVersion = CallCDeclW(ZSTD_versionNumber, vbLong)
+    If (m_ZstdHandle <> 0) Then GetZstdVersion = CallCDeclW(ZSTD_versionNumber, vbLong)
 End Function
 
 Public Function IsZstdAvailable() As Boolean

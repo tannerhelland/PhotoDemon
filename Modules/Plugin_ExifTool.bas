@@ -645,6 +645,8 @@ Public Function GetExifToolVersion() As String
             If (InStr(1, outputString, "[", vbBinaryCompare) <> 0) Then outputString = Left$(outputString, InStr(1, outputString, "[", vbBinaryCompare) - 1)
             GetExifToolVersion = Trim$(outputString)
             
+        Else
+            GetExifToolVersion = vbNullString
         End If
         
     End If
@@ -1429,18 +1431,20 @@ End Sub
 ' ALSO NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his
 ' original version is available at the top of this module.
 Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
-
+    
+    dstString = vbNullString
+    
     Dim hPipeRead As Long, hPipeWrite As Long
     Dim hCurProcess As Long
     Dim sa As SECURITY_ATTRIBUTES
-    Dim baOutput() As Byte
+    
     Dim sNewOutput As String
     Dim lBytesRead As Long
     
     'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
     Const BUFFER_SIZE As Long = 1024
-
-    dstString = vbNullString
+    
+    Dim baOutput() As Byte
     ReDim baOutput(0 To BUFFER_SIZE - 1) As Byte
 
     With sa
@@ -1453,7 +1457,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         PDDebug.LogAction "Failed to start plugin service (couldn't create pipe)."
         Exit Function
     End If
-
+    
     hCurProcess = GetCurrentProcess()
 
     'Replace the inheritable read handle with a non-inheritable one. (MSDN suggestion)
@@ -1495,7 +1499,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         Exit Function
     End If
     
-    CloseHandle hPipeRead
+    If (hPipeRead <> 0) Then CloseHandle hPipeRead
     If (hPipeWrite <> 0) Then CloseHandle hPipeWrite
     If (hCurProcess <> 0) Then CloseHandle hCurProcess
     

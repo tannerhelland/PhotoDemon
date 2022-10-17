@@ -125,9 +125,11 @@ Public Sub ReleaseLz4()
 End Sub
 
 Public Function GetLz4Version() As String
-    Dim ptrVersion As Long
-    ptrVersion = CallCDeclW(LZ4_versionNumber, vbLong)
-    GetLz4Version = ptrVersion
+    If (m_Lz4Handle <> 0) Then
+        Dim ptrVersion As Long
+        ptrVersion = CallCDeclW(LZ4_versionNumber, vbLong)
+        GetLz4Version = ptrVersion
+    End If
 End Function
 
 Public Function IsLz4Available() As Boolean

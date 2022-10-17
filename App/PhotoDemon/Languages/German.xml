@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.16</langversion>
+<langversion>9.0.19</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2692,6 +2692,13 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>unknown</original>
+<translation>Unbekannt</translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>BSD license</original>
 <translation>BSD License</translation>
 </phrase>
@@ -2721,7 +2728,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 <translation>Mozilla Public License 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3039,7 +3046,7 @@ Deskription: %2
 
 <phrase>
 <original>last line justify</original>
-<translation>Letzte Zeile justieren</translation>
+<translation>Letzte Zeile Blocksatz</translation>
 </phrase>
 
 <phrase>
@@ -3509,11 +3516,6 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
-<original>unknown</original>
-<translation>Unbekannt</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Software-Updater wird initialisiert (dieses Feature kann über das Menü "Extras > Optionen" deaktiviert werden)</translation>
 </phrase>
@@ -3538,7 +3540,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <translation>Beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -13850,6 +13852,11 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 </phrase>
 
 <phrase>
+<original>incompatible with Windows XP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>Installiert, aber vom Benutzer deaktiviert</translation>
 </phrase>
@@ -13884,7 +13891,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 <translation>Wenn Sie mit %1 interagieren, wird PhotoDemon anbieten, diese Bibliothek für Sie herunterzuladen und zu konfigurieren.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 48 phrases. 24 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -13967,10 +13974,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2642</phrasecount>
+<phrasecount>2643</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5523 phrases. -->
-<!-- 2881 are duplicates, so only 2642 unique phrases have been written to file. -->
-<!-- These 2642 phrases contain approximately 11427 total words. -->
+<!-- As of this build, PhotoDemon contains 5530 phrases. -->
+<!-- 2887 are duplicates, so only 2643 unique phrases have been written to file. -->
+<!-- These 2643 phrases contain approximately 11431 total words. -->
 
 </pdData>

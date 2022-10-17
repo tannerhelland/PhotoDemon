@@ -248,6 +248,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_CBZ)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_JXL)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
@@ -808,7 +809,7 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
         Case id_GDIPlus
             GetDecoderName = "GDI+"
         Case id_FreeImage
-            GetDecoderName = "FreeImage plugin"
+            GetDecoderName = "FreeImage"
         Case id_CBZParser
             GetDecoderName = "Internal CBZ parser"
         Case id_HGTParser
@@ -834,13 +835,15 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
         Case id_WIC
             GetDecoderName = "Windows Imaging Component"
         Case id_CharLS
-            GetDecoderName = "CharLS plugin"
+            GetDecoderName = "CharLS"
         Case id_libavif
-            GetDecoderName = "libavif plugin"
+            GetDecoderName = "libavif"
         Case id_libwebp
-            GetDecoderName = "libwebp plugin"
+            GetDecoderName = "libwebp"
         Case id_resvg
-            GetDecoderName = "resvg plugin"
+            GetDecoderName = "resvg"
+        Case id_libjxl
+            GetDecoderName = "libjxl"
         Case Else
             GetDecoderName = "unknown?!"
     End Select

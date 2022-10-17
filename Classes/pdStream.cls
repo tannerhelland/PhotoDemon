@@ -15,12 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2022 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 10/June/19
-'Last update: add new memory-mapped file backing option; this provides large performance boosts when
-'             reading/writing large chunks of data that must ultimately end up on the HDD, but note that
-'             mm files have certain limitations - for example, when creating a new file, you *must* set
-'             the file size to a "large enough" value in advance, as you can't resize memory-mapped files
-'             "on the fly"
+'Last updated: 15/October/21
+'Last update: improve perf when writing unsigned ints
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,

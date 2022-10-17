@@ -251,6 +251,7 @@ End Function
 Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
     
     GetVersion = vbNullString
+    If (Not OS.IsVistaOrLater) Then Exit Function
     
     Dim okToCheck As Boolean
     If testExportLibrary Then

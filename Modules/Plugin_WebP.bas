@@ -57,7 +57,9 @@ Public Function GetHandle_LibWebPMux() As Long
 End Function
 
 Public Function GetVersion() As String
-    
+        
+    If (m_hLibWebP = 0) Or (Not m_LibAvailable) Then Exit Function
+        
     'Byte version numbers get packed into a long
     Dim versionAsInt(0 To 3) As Byte
     

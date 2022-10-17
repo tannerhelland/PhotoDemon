@@ -1251,8 +1251,8 @@ Private Function GetWebPConfig(ByRef cSettings As pdSerialize, ByRef dstConfig A
     
 End Function
 
-'Parse and import all frames from an animated WebP image.  Do *not* call without verifying that the
-' passed image is, actually, an animated WebP.
+'Parse and import all frames from an animated WebP image.
+' DO NOT CALL without verifying that the passed image is actually an *ANIMATED* WebP image.
 Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, ByVal sizeOfDataInBytes As Long, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
     LoadAnimatedWebP = False
@@ -1323,7 +1323,7 @@ Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, 
         dstImage.SetDPI 72, 72
         
         'We also need to flag the underlying format in advance, since it changes the way layer
-        ' names are assigned (animation layers are called "frames" instead of "pages"
+        ' names are assigned (animation layers are called "frames" instead of "pages")
         dstImage.SetOriginalFileFormat PDIF_WEBP
         
         'We also need to store the animation loop count inside the parent object
@@ -1395,7 +1395,7 @@ Private Function LoadAnimatedWebP(ByRef srcFile As String, ByVal pData As Long, 
         'Report success if at least one frame was retrieved correctly
         LoadAnimatedWebP = (numFramesOK > 0)
         If LoadAnimatedWebP Then dstImage.NotifyImageChanged UNDO_Everything
-           
+        
     '/animation frames <= 1
     Else
         InternalError FUNC_NAME, "only one animation frame found; reverting to static load process"
