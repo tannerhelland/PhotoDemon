@@ -423,6 +423,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
     If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
+    If Plugin_jxl.IsLibJXLEnabled() Then AddOutputFormat "JXL - JPEG XL", "jxl", PDIF_JXL
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
@@ -813,6 +814,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_JPEG
             IsExportDialogSupported = True
+        Case PDIF_JXL
+            IsExportDialogSupported = False 'Will be TRUE soon!
         Case PDIF_JXR
             IsExportDialogSupported = True
         Case PDIF_PNG

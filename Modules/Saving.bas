@@ -436,6 +436,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_JPEG
             ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
         
+        Case PDIF_JXL
+            ExportToSpecificFormat = ImageExporter.ExportJXL(srcImage, dstPath, saveParameters, metadataParameters)
+        
         Case PDIF_JXR
             ExportToSpecificFormat = ImageExporter.ExportJXR(srcImage, dstPath, saveParameters, metadataParameters)
             

@@ -1001,6 +1001,67 @@ ExportJPEGError:
     
 End Function
 
+'Save to JPEG XL format using the official libjxl library
+Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportJXLError
+    
+    ExportJXL = False
+    Dim sFileType As String: sFileType = "JXL"
+    
+    'JXL exporting leans on libjxl
+    If Plugin_jxl.IsLibJXLEnabled() Then
+        
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
+        ' mid-save, the original file is left untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Do
+                tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Loop While Files.FileExists(tmpFilename)
+        Else
+            tmpFilename = dstFile
+        End If
+        
+        'Use libjxl to save the WebP file
+        If Plugin_jxl.SaveJXL_ToFile(srcPDImage, formatParams, tmpFilename) Then
+        
+            If Strings.StringsEqual(dstFile, tmpFilename) Then
+                ExportJXL = True
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            Else
+            
+                ExportJXL = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportJXL) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                End If
+                
+            End If
+        
+        Else
+            ExportJXL = False
+            ExportDebugMsg "WARNING!  ExportJXL() failed for reasons unknown; check the debug log for additional details"
+        End If
+        
+        Exit Function
+    
+    Else
+        PDDebug.LogAction "libjxl missing or broken; JXL export abandoned"
+        ExportJXL = False
+    End If
+    
+    Exit Function
+    
+ExportJXLError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportJXL = False
+    
+End Function
+
 'Save to JXR format using the FreeImage library
 Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     

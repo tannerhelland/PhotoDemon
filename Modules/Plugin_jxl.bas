@@ -1176,6 +1176,22 @@ Public Function LastJXL_IsGrayscale() As Boolean
     LastJXL_IsGrayscale = (m_Header.num_color_channels = 1)
 End Function
 
+'Save an arbitrary DIB to a standalone JPEG XL file.
+Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SaveJXL_ToFile"
+    SaveJXL_ToFile = False
+    
+    'Prepare an export options parser
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    'Start here
+    
+
+End Function
+
 'Create a new JPEG XL decoder (fills m_JxlDecoder with a pointer to an opaque JxlDecoder struct)
 Private Function JXL_CreateDecoder() As Boolean
     
