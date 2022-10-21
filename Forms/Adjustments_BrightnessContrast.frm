@@ -96,9 +96,9 @@ Attribute VB_Exposed = False
 'Brightness and Contrast Handler
 'Copyright 2001-2022 by Tanner Helland
 'Created: 2/6/01
-'Last updated: 09/June/16
-'Last update: total overhaul; the old code was stupid and slow, and an option is now provided for a modern
-'             L*a*b*-based conversion (via LittleCMS, if available)
+'Last updated: 21/October/22
+'Last update: fix potential overflow due to unintended use of \ instead of /
+'             (see https://github.com/tannerhelland/PhotoDemon/issues/452)
 '
 'Basic brightness/contrast handler.  A legacy LUT-based method is provided, but the modern L*a*b* implementation
 ' (via LittleCMS) is preferred.
@@ -248,9 +248,9 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                 Else
                 
                     Dim rTotal As Single, gTotal As Single, bTotal As Single
-                    rTotal = 0#
-                    gTotal = 0#
-                    bTotal = 0#
+                    rTotal = 0!
+                    gTotal = 0!
+                    bTotal = 0!
                     
                     Dim numOfPixels As Long
                     numOfPixels = 0
@@ -265,11 +265,11 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                     Next x
                     Next y
                     
-                    rTotal = rTotal \ numOfPixels
-                    gTotal = gTotal \ numOfPixels
-                    bTotal = bTotal \ numOfPixels
+                    rTotal = rTotal / numOfPixels
+                    gTotal = gTotal / numOfPixels
+                    bTotal = bTotal / numOfPixels
                     
-                    imgMean = (rTotal + gTotal + bTotal) \ 3
+                    imgMean = Int((rTotal + gTotal + bTotal) / 3! + 0.5!)
                     
                     'As mentioned earlier, cache the sample contrast during preview mode
                     If toPreview Then
@@ -291,7 +291,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                 ctCalc = srcBrightness + (((srcBrightness - imgMean) * newContrast) \ 100)
                 If (ctCalc > 255) Then ctCalc = 255
                 If (ctCalc < 0) Then ctCalc = 0
-                newBCTable(x) = CByte(ctCalc)
+                newBCTable(x) = ctCalc
             Next x
         
         End If
