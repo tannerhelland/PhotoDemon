@@ -1294,14 +1294,18 @@ Private Sub FreeInternalIcons()
         m_curFormIcon32 = 0
     End If
 End Sub
-'If the images's size has somehow changed, this can be called to update it.
+
+'When the images's size changes, call this function.
 '
-'The first optional parameter, assumed to be TRUE, makes the image the same size as its base layer.  This is helpful when
-' an image file is first loaded, as the pdImage container should be set to an identical size.
+'The first optional parameter (TRUE by default), makes the image the same size as its base layer.
+' This is used when an image file is first loaded, as the pdImage container should be set to an
+' identical size.
 '
-'If this is another type of resize action, such as a canvas resize, the caller must supply the new width/height values desired.
+'If this is another type of resize action, such as a canvas resize, the caller must supply new
+' width/height values.
 '
-'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
+'Note that this function performs NO VALIDATION on the passed width/height values.
+' Make sure they are correct in advance!
 Friend Sub UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then

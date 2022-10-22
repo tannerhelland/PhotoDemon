@@ -329,7 +329,8 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         'Update the image's size (not technically necessary, but this triggers some other backend notifications that are relevant)
         If (thingToRotate = pdat_Image) Then
             PDImages.GetActiveImage.UpdateSize False, srcWidth, srcHeight
-            DisplaySize PDImages.GetActiveImage()
+            Interface.DisplaySize PDImages.GetActiveImage()
+            Tools.NotifyImageSizeChanged
         End If
         
         'Fit the new image on-screen and redraw its viewport

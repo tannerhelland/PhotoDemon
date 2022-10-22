@@ -223,6 +223,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         'Update the current image size
         PDImages.GetActiveImage.UpdateSize
         Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
         
         Message "Finished. "
         SetProgBarVal 0
@@ -591,6 +592,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         'Notify the image of its new size
         PDImages.GetActiveImage.UpdateSize False, finalImageRect.Width, finalImageRect.Height
         Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
         
         'Reset the viewport to center the newly cropped image on-screen
         CanvasManager.CenterOnScreen True
@@ -792,6 +794,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     If flipAllLayers Then
         PDImages.GetActiveImage.UpdateSize False, imgHeight, imgWidth
         Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
     End If
     
     Message "Finished. "
@@ -929,6 +932,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     If flipAllLayers Then
         PDImages.GetActiveImage.UpdateSize False, imgHeight, imgWidth
         Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
     End If
     
     Message "Finished. "
@@ -1056,6 +1060,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     'Finally, update the parent image's size and DPI values
     PDImages.GetActiveImage.UpdateSize False, curLayerBounds.Width, curLayerBounds.Height
     Interface.DisplaySize PDImages.GetActiveImage()
+    Tools.NotifyImageSizeChanged
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!
@@ -1119,6 +1124,7 @@ Public Sub MenuFitCanvasToAllLayers()
     'Finally, update the parent image's size
     PDImages.GetActiveImage.UpdateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
     Interface.DisplaySize PDImages.GetActiveImage()
+    Tools.NotifyImageSizeChanged
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!
@@ -1302,6 +1308,7 @@ Public Sub TrimImage()
         'Finally, update the parent image's size
         PDImages.GetActiveImage.UpdateSize False, (newRight - newLeft), (newBottom - newTop)
         Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
     
         'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
         ' appearance of any of the layers, we can leave it as-is!

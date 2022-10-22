@@ -290,7 +290,8 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             Dim newWidth As Double, newHeight As Double
             PDMath.FindBoundarySizeOfRotatedRect PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, rotationAngle, newWidth, newHeight, False
             PDImages.GetActiveImage.UpdateSize False, newWidth, newHeight
-            DisplaySize PDImages.GetActiveImage()
+            Interface.DisplaySize PDImages.GetActiveImage()
+            Tools.NotifyImageSizeChanged
         End If
         
         'Fit the new image on-screen and redraw its viewport

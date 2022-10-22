@@ -944,6 +944,13 @@ Public Sub NotifyActiveImageChanged()
     
 End Sub
 
+'When image size changes (via not just resize but rotation, crop, etc) we need to clear the source point,
+' as it may no longer be valid.
+Public Sub NotifyImageSizeChanged()
+    m_SourceExists = False
+    NotifyActiveImageChanged
+End Sub
+
 'Return the area of the image modified by the current stroke.
 ' IMPORTANTLY: the running modified rect is FORCIBLY RESET after a call to this function, by design.
 ' (After PD's compositor retrieves the modification rect, everything inside that rect will get updated -

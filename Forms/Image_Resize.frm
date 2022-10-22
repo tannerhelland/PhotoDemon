@@ -684,7 +684,8 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     If (thingToResize = pdat_Image) Then
         PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
         PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
-        DisplaySize PDImages.GetActiveImage()
+        Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
     End If
         
     'Fit the new image on-screen and redraw its viewport

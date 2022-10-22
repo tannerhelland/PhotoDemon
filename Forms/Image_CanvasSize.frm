@@ -440,7 +440,8 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     'Finally, update the parent image's size and DPI values
     PDImages.GetActiveImage.UpdateSize False, iWidth, iHeight
     PDImages.GetActiveImage.SetDPI iDPI, iDPI
-    DisplaySize PDImages.GetActiveImage()
+    Interface.DisplaySize PDImages.GetActiveImage()
+    Tools.NotifyImageSizeChanged
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!

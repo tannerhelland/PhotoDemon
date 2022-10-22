@@ -661,6 +661,18 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
     
 End Sub
 
+'When image (or layer) size changes, call this function.
+'
+'Some tools (like Measure or the Clone Brush) rely on saved image coordinates.  When image size changes,
+' those coordinates may no longer be valid.
+Public Sub NotifyImageSizeChanged()
+    If (g_CurrentTool = ND_MEASURE) Then
+        Tools_Measure.ResetPoints True
+    ElseIf (g_CurrentTool = PAINT_CLONE) Then
+        Tools_Clone.NotifyImageSizeChanged
+    End If
+End Sub
+
 'When the active layer changes, call this function.  It synchronizes various layer-specific tool panels against the
 ' currently active layer.  (Note that you also need to call this whenever a new tool panel is selected, as the newly
 ' loaded panel will reflect default values otherwise.)
