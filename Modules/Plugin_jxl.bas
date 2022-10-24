@@ -223,6 +223,233 @@ End Enum
     Private Const JXL_DEC_SUCCESS = 0, JXL_DEC_ERROR = 1, JXL_DEC_NEED_MORE_INPUT = 2, JXL_DEC_NEED_PREVIEW_OUT_BUFFER = 3, JXL_DEC_NEED_DC_OUT_BUFFER = 4, JXL_DEC_NEED_IMAGE_OUT_BUFFER = 5, JXL_DEC_JPEG_NEED_MORE_OUTPUT = 6, JXL_DEC_BOX_NEED_MORE_OUTPUT = 7, JXL_DEC_BASIC_INFO = &H40&, JXL_DEC_EXTENSIONS = &H80&, JXL_DEC_COLOR_ENCODING = &H100&, JXL_DEC_PREVIEW_IMAGE = &H200&, JXL_DEC_FRAME = &H400&, JXL_DEC_DC_IMAGE = &H800&, JXL_DEC_FULL_IMAGE = &H1000&, JXL_DEC_JPEG_RECONSTRUCTION = &H2000&, JXL_DEC_BOX = &H4000&, JXL_DEC_FRAME_PROGRESSION = &H8000&
 #End If
 
+'Return value for multiple encoder functions.
+Private Enum JxlEncoderStatus
+    
+    'Function call finished successfully, or encoding is finished and there is nothing more to be done.
+    JXL_ENC_SUCCESS = 0
+    
+    'An error occurred, for example out of memory.
+    JXL_ENC_ERROR = 1
+    
+    'The encoder needs more output buffer to continue encoding.
+    JXL_ENC_NEED_MORE_OUTPUT = 2
+    
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_SUCCESS = 0, JXL_ENC_ERROR = 1, JXL_ENC_NEED_MORE_OUTPUT = 2
+#End If
+
+'Encoder Error conditions:
+' API usage errors have the 0x80 bit set to 1.
+' Other errors have the 0x80 bit set to 0
+Private Enum JxlEncoderError
+
+    'No error
+    JXL_ENC_ERR_OK = 0
+    
+    'Generic encoder error due to unspecified cause
+    JXL_ENC_ERR_GENERIC = 1
+    
+    'Out of memory
+    JXL_ENC_ERR_OOM = 2
+    
+    'JPEG bitstream reconstruction data could not be represented (e.g. too much tail data)
+    JXL_ENC_ERR_JBRD = 3
+    
+    'Input is invalid (e.g. corrupt JPEG file or ICC profile)
+    JXL_ENC_ERR_BAD_INPUT = 4
+    
+    'The encoder doesn't (yet) support this. Either no version of libjxl supports this and the API
+    ' is used incorrectly, or the libjxl version should have been checked before trying to do this.
+    JXL_ENC_ERR_NOT_SUPPORTED = &H80&
+    
+    'The encoder API is used in an incorrect way.  In this case, a debug build of libjxl should output
+    ' a specific error message. (if not, please open an issue about it)
+    JXL_ENC_ERR_API_USAGE = &H81&
+
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_ERR_OK = 0, JXL_ENC_ERR_GENERIC = 1, JXL_ENC_ERR_OOM = 2, JXL_ENC_ERR_JBRD = 3, JXL_ENC_ERR_BAD_INPUT = 4, JXL_ENC_ERR_NOT_SUPPORTED = &H80&, JXL_ENC_ERR_API_USAGE = &H81&
+#End If
+
+'IDs of encoder options for a frame. This includes options such as setting encoding effort/speed
+' or overriding the use of certain coding tools for this frame. This does not include non-frame-related
+' encoder options such as for boxes.
+Private Enum JxlEncoderFrameSettingId
+    
+    'Sets encoder effort/speed level without affecting decoding speed.
+    ' Valid values are, from faster to slower speed:
+    ' 1:lightning 2:thunder 3:falcon 4:cheetah 5:hare 6:wombat 7:squirrel 8:kitten 9:tortoise.
+    ' Default: squirrel (7).
+    JXL_ENC_FRAME_SETTING_EFFORT = 0
+    
+    'Sets the decoding speed tier for the provided options. Minimum is 0 (slowest to decode, best quality/density),
+    ' and maximum is 4 (fastest to decode, at the cost of some quality/density).
+    ' Default is 0.
+    JXL_ENC_FRAME_SETTING_DECODING_SPEED = 1
+    
+    'Sets resampling option. If enabled, the image is downsampled before compression, and upsampled to original size
+    ' in the decoder. Integer option, use -1 for the default behavior (resampling only applied for low quality),
+    ' 1 for no downsampling (1x1), 2 for 2x2 downsampling, 4 for 4x4 downsampling, 8 for 8x8 downsampling.
+    JXL_ENC_FRAME_SETTING_RESAMPLING = 2
+    
+    'Similar to JXL_ENC_FRAME_SETTING_RESAMPLING, but for extra channels. Integer option, use -1 for the default
+    ' behavior (depends on encoder implementation), 1 for no downsampling (1x1), 2 for 2x2 downsampling, 4 for
+    ' 4x4 downsampling, 8 for 8x8 downsampling.
+    JXL_ENC_FRAME_SETTING_EXTRA_CHANNEL_RESAMPLING = 3
+    
+    'Indicates the frame added with JxlEncoderAddImageFrame is already downsampled by the downsampling factor set with
+    ' JXL_ENC_FRAME_SETTING_RESAMPLING. The input frame must then be given in the downsampled resolution, not the full
+    ' image resolution. The downsampled resolution is given by ceil(xsize / resampling), ceil(ysize / resampling)
+    ' with xsize and ysize the dimensions given in the basic info, and resampling the factor set with
+    ' JXL_ENC_FRAME_SETTING_RESAMPLING.
+    ' Use 0 to disable, 1 to enable.
+    ' Default value is 0.
+    JXL_ENC_FRAME_SETTING_ALREADY_DOWNSAMPLED = 4
+    
+    'Adds noise to the image emulating photographic film noise.  The higher the given number, the grainier the image
+    ' will be. As an example, a value of 100 gives low noise whereas a value of 3200 gives a lot of noise.
+    ' The default value is 0.
+    JXL_ENC_FRAME_SETTING_PHOTON_NOISE = 5
+    
+    'Enables adaptive noise generation. This setting is not recommended for use, please use
+    ' JXL_ENC_FRAME_SETTING_PHOTON_NOISE instead.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_NOISE = 6
+    
+    'Enables or disables dots generation.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_DOTS = 7
+    
+    'Enables or disables patches generation.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_PATCHES = 8
+    
+    'Edge preserving filter level, -1 to 3.
+    ' Use -1 for the default (encoder chooses), 0 to 3 to set a strength.
+    JXL_ENC_FRAME_SETTING_EPF = 9
+    
+    'Enables or disables the gaborish filter.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_GABORISH = 10
+    
+    'Enables modular encoding.
+    ' Use -1 for default (encoder chooses), 0 to enforce VarDCT mode (e.g. for photographic images), 1 to
+    ' enforce modular mode (e.g. for lossless images).
+    JXL_ENC_FRAME_SETTING_MODULAR = 11
+    
+    'Enables or disables preserving color of invisible pixels.
+    ' Use -1 for the default (1 if lossless, 0 if lossy), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_KEEP_INVISIBLE = 12
+    
+    'Determines the order in which 256x256 regions are stored in the codestream for progressive rendering.
+    ' Use -1 for the encoder default, 0 for scanline order, 1 for center-first order.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER = 13
+    
+    'Determines the horizontal position of center for the center-first group order.
+    ' Use -1 to automatically use the middle of the image, 0..xsize to specifically set it.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_X = 14
+    
+    'Determines the center for the center-first group order.
+    ' Use -1 to automatically use the middle of the image, 0..ysize to specifically set it.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_Y = 15
+    
+    'Enables or disables progressive encoding for modular mode.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_RESPONSIVE = 16
+    
+    'Set the progressive mode for the AC coefficients of VarDCT, using spectral progression from the DCT coefficients.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_PROGRESSIVE_AC = 17
+    
+    'Set the progressive mode for the AC coefficients of VarDCT, using quantization of the least significant bits.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_QPROGRESSIVE_AC = 18
+    
+    'Set the progressive mode using lower-resolution DC images for VarDCT.
+    ' Use -1 for the encoder default, 0 to disable, 1 to have an extra 64x64 lower resolution pass,
+    ' 2 to have a 512x512 and 64x64 lower resolution pass.
+    JXL_ENC_FRAME_SETTING_PROGRESSIVE_DC = 19
+    
+    'Use Global channel palette if the amount of colors is smaller than this percentage of range.
+    ' Use 0-100 to set an explicit percentage, -1 to use the encoder default. Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GLOBAL_PERCENT = 20
+    
+    'Use Local (per-group) channel palette if the amount of colors is smaller than this percentage of range.
+    ' Use 0-100 to set an explicit percentage, -1 to use the encoder default. Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GROUP_PERCENT = 21
+    
+    'Use color palette if amount of colors is smaller than or equal to this amount, or -1 to use the encoder default.
+    ' Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_PALETTE_COLORS = 22
+    
+    'Enables or disables delta palette.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable. Used in modular mode.
+    JXL_ENC_FRAME_SETTING_LOSSY_PALETTE = 23
+    
+    'Color transform for internal encoding: -1 = default, 0=XYB, 1=none (RGB), 2=YCbCr. The XYB setting performs
+    ' the forward XYB transform. None and YCbCr both perform no transform, but YCbCr is used to indicate that the
+    ' encoded data losslessly represents YCbCr values.
+    JXL_ENC_FRAME_SETTING_COLOR_TRANSFORM = 24
+    
+    'Reversible color transform for modular encoding: -1=default, 0-41=RCT index, e.g. index 0 = none, index 6 = YCoCg.
+    ' If this option is set to a non-default value, the RCT will be globally applied to the whole frame.
+    ' The default behavior is to try several RCTs locally per modular group, depending on the speed and distance setting.
+    JXL_ENC_FRAME_SETTING_MODULAR_COLOR_SPACE = 25
+    
+    'Group size for modular encoding: -1=default, 0=128, 1=256, 2=512, 3=1024.
+    JXL_ENC_FRAME_SETTING_MODULAR_GROUP_SIZE = 26
+    
+    'Predictor for modular encoding.
+    ' -1 = default, 0=zero, 1=left, 2=top, 3=avg0, 4=select, 5=gradient, 6=weighted, 7=topright, 8=topleft,
+    ' 9=leftleft, 10=avg1, 11=avg2, 12=avg3, 13=toptop predictive average 14=mix 5 and 6, 15=mix everything.
+    JXL_ENC_FRAME_SETTING_MODULAR_PREDICTOR = 27
+    
+    'Fraction of pixels used to learn MA trees as a percentage.
+    ' -1 = default, 0 = no MA and fast decode, 50 = default value, 100 = all
+    ' Values above 100 are also permitted. Higher values use more encoder memory.
+    JXL_ENC_FRAME_SETTING_MODULAR_MA_TREE_LEARNING_PERCENT = 28
+    
+    'Number of extra (previous-channel) MA tree properties to use.
+    ' -1 = default, 0-11 = valid values.
+    ' Recommended values are in the range 0 to 3, or 0 to amount of channels minus 1 (including all extra channels,
+    ' and excluding color channels when using VarDCT mode).
+    ' Higher value gives slower encoding and slower decoding.
+    JXL_ENC_FRAME_SETTING_MODULAR_NB_PREV_CHANNELS = 29
+    
+    'Enable or disable CFL (chroma-from-luma) for lossless JPEG recompression.
+    ' -1 = default, 0 = disable CFL, 1 = enable CFL.
+    JXL_ENC_FRAME_SETTING_JPEG_RECON_CFL = 30
+    
+    'Prepare the frame for indexing in the frame index box.
+    ' 0 = ignore this frame (same as not setting a value),
+    ' 1 = index this frame within the Frame Index Box.
+    ' If any frames are indexed, the first frame needs to be indexed, too.
+    ' If the first frame is not indexed, and a later frame is attempted to be indexed, JXL_ENC_ERROR will occur.
+    ' If non-keyframes, i.e., frames with cropping, blending or patches are attempted to be indexed,
+    ' JXL_ENC_ERROR will occur.
+    JXL_ENC_FRAME_INDEX_BOX = 31
+    
+    'Sets brotli encode effort for use in JPEG recompression and compressed metadata boxes (brob).
+    ' Can be -1 (default) or 0 (fastest) to 11 (slowest). Default is based on the general encode effort in case
+    ' of JPEG recompression, and 4 for brob boxes.
+    JXL_ENC_FRAME_SETTING_BROTLI_EFFORT = 32
+    
+    'Enum value not to be used as an option. This value is added to force the C compiler to have the enum
+    ' to take a known size.
+    JXL_ENC_FRAME_SETTING_FILL_ENUM = 65535
+
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_FRAME_SETTING_EFFORT = 0, JXL_ENC_FRAME_SETTING_DECODING_SPEED = 1, JXL_ENC_FRAME_SETTING_RESAMPLING = 2, JXL_ENC_FRAME_SETTING_EXTRA_CHANNEL_RESAMPLING = 3, JXL_ENC_FRAME_SETTING_ALREADY_DOWNSAMPLED = 4, JXL_ENC_FRAME_SETTING_PHOTON_NOISE = 5, JXL_ENC_FRAME_SETTING_NOISE = 6, JXL_ENC_FRAME_SETTING_DOTS = 7, JXL_ENC_FRAME_SETTING_PATCHES = 8, JXL_ENC_FRAME_SETTING_EPF = 9
+    Private Const JXL_ENC_FRAME_SETTING_GABORISH = 10, JXL_ENC_FRAME_SETTING_MODULAR = 11, JXL_ENC_FRAME_SETTING_KEEP_INVISIBLE = 12, JXL_ENC_FRAME_SETTING_GROUP_ORDER = 13, JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_X = 14, JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_Y = 15, JXL_ENC_FRAME_SETTING_RESPONSIVE = 16, JXL_ENC_FRAME_SETTING_PROGRESSIVE_AC = 17, JXL_ENC_FRAME_SETTING_QPROGRESSIVE_AC = 18, JXL_ENC_FRAME_SETTING_PROGRESSIVE_DC = 19
+    Private Const JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GLOBAL_PERCENT = 20, JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GROUP_PERCENT = 21, JXL_ENC_FRAME_SETTING_PALETTE_COLORS = 22, JXL_ENC_FRAME_SETTING_LOSSY_PALETTE = 23, JXL_ENC_FRAME_SETTING_COLOR_TRANSFORM = 24, JXL_ENC_FRAME_SETTING_MODULAR_COLOR_SPACE = 25, JXL_ENC_FRAME_SETTING_MODULAR_GROUP_SIZE = 26, JXL_ENC_FRAME_SETTING_MODULAR_PREDICTOR = 27, JXL_ENC_FRAME_SETTING_MODULAR_MA_TREE_LEARNING_PERCENT = 28, JXL_ENC_FRAME_SETTING_MODULAR_NB_PREV_CHANNELS = 29, JXL_ENC_FRAME_SETTING_JPEG_RECON_CFL = 30, JXL_ENC_FRAME_INDEX_BOX = 31, JXL_ENC_FRAME_SETTING_BROTLI_EFFORT = 32, JXL_ENC_FRAME_SETTING_FILL_ENUM = 65535
+#End If
+
 'Image orientation metadata. Values 1..8 match the EXIF definitions.
 ' The name indicates the operation to perform to transform from the encoder image to the display image.
 Private Enum JxlOrientation
