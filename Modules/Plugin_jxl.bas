@@ -673,8 +673,45 @@ Private Enum LibJXL_ProcAddress
     JxlDecoderSizeHintBasicInfo
     JxlDecoderSubscribeEvents
     JxlDecoderVersion
+    JxlEncoderCreate
+    JxlEncoderDestroy
+    JxlEncoderReset
+    JxlEncoderVersion
+    JxlEncoderGetError
+    JxlEncoderProcessOutput
+    JxlEncoderSetFrameHeader
+    JxlEncoderSetExtraChannelBlendInfo
+    JxlEncoderSetFrameName
+    JxlEncoderSetFrameBitDepth
+    JxlEncoderAddJPEGFrame
+    JxlEncoderAddImageFrame
+    JxlEncoderSetExtraChannelBuffer
+    JxlEncoderAddBox
+    JxlEncoderUseBoxes
+    JxlEncoderCloseBoxes
+    JxlEncoderCloseFrames
+    JxlEncoderCloseInput
+    JxlEncoderSetColorEncoding
+    JxlEncoderSetICCProfile
+    JxlEncoderInitBasicInfo
+    JxlEncoderInitFrameHeader
+    JxlEncoderInitBlendInfo
+    JxlEncoderSetBasicInfo
+    JxlEncoderInitExtraChannelInfo
+    JxlEncoderSetExtraChannelInfo
+    JxlEncoderSetExtraChannelName
+    JxlEncoderFrameSettingsSetOption
+    JxlEncoderFrameSettingsSetFloatOption
+    JxlEncoderUseContainer
+    JxlEncoderStoreJPEGMetadata
+    JxlEncoderSetCodestreamLevel
+    JxlEncoderGetRequiredCodestreamLevel
+    JxlEncoderSetFrameLossless
+    JxlEncoderSetFrameDistance
+    JxlEncoderFrameSettingsCreate
+    JxlColorEncodingSetToSRGB
+    JxlColorEncodingSetToLinearSRGB
     JxlSignatureCheck
-    
     [last_address]
 End Enum
 
@@ -754,7 +791,45 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(JxlDecoderSetPreviewOutBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetPreviewOutBuffer")
         m_ProcAddresses(JxlDecoderSizeHintBasicInfo) = GetProcAddress(m_LibHandle, "JxlDecoderSizeHintBasicInfo")
         m_ProcAddresses(JxlDecoderSubscribeEvents) = GetProcAddress(m_LibHandle, "JxlDecoderSubscribeEvents")
-        
+        m_ProcAddresses(JxlEncoderCreate) = GetProcAddress(m_LibHandle, "JxlEncoderCreate")
+        m_ProcAddresses(JxlEncoderDestroy) = GetProcAddress(m_LibHandle, "JxlEncoderDestroy")
+        m_ProcAddresses(JxlEncoderReset) = GetProcAddress(m_LibHandle, "JxlEncoderReset")
+        m_ProcAddresses(JxlEncoderVersion) = GetProcAddress(m_LibHandle, "JxlEncoderVersion")
+        m_ProcAddresses(JxlEncoderGetError) = GetProcAddress(m_LibHandle, "JxlEncoderGetError")
+        m_ProcAddresses(JxlEncoderProcessOutput) = GetProcAddress(m_LibHandle, "JxlEncoderProcessOutput")
+        m_ProcAddresses(JxlEncoderSetFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameHeader")
+        m_ProcAddresses(JxlEncoderSetExtraChannelBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBlendInfo")
+        m_ProcAddresses(JxlEncoderSetFrameName) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameName")
+        m_ProcAddresses(JxlEncoderSetFrameBitDepth) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameBitDepth")
+        m_ProcAddresses(JxlEncoderAddJPEGFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddJPEGFrame")
+        m_ProcAddresses(JxlEncoderAddImageFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddImageFrame")
+        m_ProcAddresses(JxlEncoderSetExtraChannelBuffer) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBuffer")
+        m_ProcAddresses(JxlEncoderAddBox) = GetProcAddress(m_LibHandle, "JxlEncoderAddBox")
+        m_ProcAddresses(JxlEncoderUseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderUseBoxes")
+        m_ProcAddresses(JxlEncoderCloseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderCloseBoxes")
+        m_ProcAddresses(JxlEncoderCloseFrames) = GetProcAddress(m_LibHandle, "JxlEncoderCloseFrames")
+        m_ProcAddresses(JxlEncoderCloseInput) = GetProcAddress(m_LibHandle, "JxlEncoderCloseInput")
+        m_ProcAddresses(JxlEncoderSetColorEncoding) = GetProcAddress(m_LibHandle, "JxlEncoderSetColorEncoding")
+        m_ProcAddresses(JxlEncoderSetICCProfile) = GetProcAddress(m_LibHandle, "JxlEncoderSetICCProfile")
+        m_ProcAddresses(JxlEncoderInitBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBasicInfo")
+        m_ProcAddresses(JxlEncoderInitFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderInitFrameHeader")
+        m_ProcAddresses(JxlEncoderInitBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBlendInfo")
+        m_ProcAddresses(JxlEncoderSetBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetBasicInfo")
+        m_ProcAddresses(JxlEncoderInitExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitExtraChannelInfo")
+        m_ProcAddresses(JxlEncoderSetExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelInfo")
+        m_ProcAddresses(JxlEncoderSetExtraChannelName) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelName")
+        m_ProcAddresses(JxlEncoderFrameSettingsSetOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetOption")
+        m_ProcAddresses(JxlEncoderFrameSettingsSetFloatOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetFloatOption")
+        m_ProcAddresses(JxlEncoderUseContainer) = GetProcAddress(m_LibHandle, "JxlEncoderUseContainer")
+        m_ProcAddresses(JxlEncoderStoreJPEGMetadata) = GetProcAddress(m_LibHandle, "JxlEncoderStoreJPEGMetadata")
+        m_ProcAddresses(JxlEncoderSetCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderSetCodestreamLevel")
+        m_ProcAddresses(JxlEncoderGetRequiredCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderGetRequiredCodestreamLevel")
+        m_ProcAddresses(JxlEncoderSetFrameLossless) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameLossless")
+        m_ProcAddresses(JxlEncoderSetFrameDistance) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameDistance")
+        m_ProcAddresses(JxlEncoderFrameSettingsCreate) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsCreate")
+        m_ProcAddresses(JxlColorEncodingSetToSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToSRGB")
+        m_ProcAddresses(JxlColorEncodingSetToLinearSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToLinearSRGB")
+    
     Else
         debugMsg "WARNING!  LoadLibrary failed to load libjxl.  Last DLL error: " & Err.LastDllError
         debugMsg "(FYI, the attempted path was: " & libPath & ")"
