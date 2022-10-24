@@ -1099,10 +1099,16 @@ End Function
 
 'When PD closes, make sure to release our open library handle
 Public Sub ReleaseLibJXL()
+    
+    'Destroy any existing decoder(s)
+    JXL_DestroyDecoder
+    
+    'Free the library itself
     If (m_LibHandle <> 0) Then
         VBHacks.FreeLib m_LibHandle
         m_LibHandle = 0
     End If
+    
 End Sub
 
 'Import/Export functions follow
@@ -1440,6 +1446,10 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             If JXL_DEBUG_VERBOSE Then debugMsg "JXL loaded successfully; " & numFramesOK & " frames processed."
         End If
         
+        'Note that we keep the decoder alive here.  This improves performance on subsequent imports,
+        ' and the decoder will be auto-freed when libjxl is released.
+        JXL_ResetDecoder
+        
     Else
         Exit Function
     End If
@@ -1517,7 +1527,7 @@ End Function
 
 'Destroy the current JPEG XL decoder (m_JxlDecoder)
 Private Function JXL_DestroyDecoder() As Boolean
-    If (m_JxlDecoder <> 0) Then
+    If (m_JxlDecoder <> 0) And (m_LibHandle <> 0) Then
         CallCDeclW JxlDecoderDestroy, vbEmpty, m_JxlDecoder
         If JXL_DEBUG_VERBOSE Then debugMsg "Destroyed decoder: " & m_JxlDecoder
         m_JxlDecoder = 0
