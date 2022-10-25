@@ -549,6 +549,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         
         'Create the icon
         tmpDIB.CreateBlank icoSizeEqual, icoSizeEqual, 32, 0, 0
+        tmpDIB.SetInitialAlphaPremultiplicationState True
         
         'Figure out where to position the DIB when we draw it
         Dim newWidth As Long, newHeight As Long
@@ -558,7 +559,28 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         Dim dstX As Long, dstY As Long
         dstX = (icoSizeEqual - newWidth) \ 2
         dstY = (icoSizeEqual - newHeight) \ 2
-        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstX, dstY, newWidth, newHeight, referenceDIB, 0, 0, referenceDIB.GetDIBWidth, referenceDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, dstCopyIsOkay:=True
+        
+        'In the past, we used GDI+ for this step, which only requires the following line of code:
+        'GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstX, dstY, newWidth, newHeight, referenceDIB, 0, 0, referenceDIB.GetDIBWidth, referenceDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, dstCopyIsOkay:=True
+        
+        '...But we can get much higher quality using our internal resampling engine.
+        ' (The downside of this is that I haven't added arbitrary x/y offset support to PD's internal resampler,
+        '  so any offsets need to be handled in a separate step.)
+        Dim tmpHolderDIB As pdDIB
+        Set tmpHolderDIB = New pdDIB
+        tmpHolderDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+        tmpHolderDIB.SetInitialAlphaPremultiplicationState True
+        
+        'Perform the resample
+        If (Not referenceDIB.GetAlphaPremultiplication) Then referenceDIB.SetAlphaPremultiplication False
+        Resampling.ResampleImageI tmpHolderDIB, referenceDIB, newWidth, newHeight, rf_Mitchell, False
+        tmpHolderDIB.SetAlphaPremultiplication True, True
+        
+        'Blt the final result into place
+        GDI.BitBltWrapper tmpDIB.GetDIBDC, dstX, dstY, newWidth, newHeight, tmpHolderDIB.GetDIBDC, 0, 0, vbSrcCopy
+        
+        'Free any temporary DIBs
+        Set tmpHolderDIB = Nothing
         
     End If
     
