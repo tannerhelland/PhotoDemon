@@ -508,8 +508,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
 End Function
 
-Private Sub ExportDebugMsg(ByRef debugMsg As String)
-    PDDebug.LogAction debugMsg
+Private Sub ExportDebugMsg(ByRef srcDebugMsg As String)
+    PDDebug.LogAction srcDebugMsg
 End Sub
 
 'Format-specific export functions follow.  A few notes on how these functions work.
