@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.19</langversion>
+<langversion>9.0.20</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10574,6 +10574,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>icon source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>treat each layer as a unique icon frame</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>app - Windows 10</original>
 <translation>App - Windows 10</translation>
 </phrase>
@@ -10608,7 +10618,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Original-Dateieinstellungen verwenden</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -13974,10 +13984,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2643</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5530 phrases. -->
-<!-- 2887 are duplicates, so only 2643 unique phrases have been written to file. -->
-<!-- These 2643 phrases contain approximately 11431 total words. -->
+<!-- As of this build, PhotoDemon contains 5533 phrases. -->
+<!-- 2888 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 11441 total words. -->
 
 </pdData>

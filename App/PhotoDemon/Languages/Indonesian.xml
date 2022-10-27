@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1704</langversion>
+<langversion>8.9.1705</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -10560,6 +10560,16 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>icon source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>treat each layer as a unique icon frame</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>app - Windows 10</original>
 <translation></translation>
 </phrase>
@@ -10594,7 +10604,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -13956,10 +13966,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2643</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5530 phrases. -->
-<!-- 2887 are duplicates, so only 2643 unique phrases have been written to file. -->
-<!-- These 2643 phrases contain approximately 11431 total words. -->
+<!-- As of this build, PhotoDemon contains 5533 phrases. -->
+<!-- 2888 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 11441 total words. -->
 
 </pdData>

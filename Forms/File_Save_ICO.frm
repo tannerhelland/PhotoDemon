@@ -3,7 +3,7 @@ Begin VB.Form dialog_ExportICO
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   ClientHeight    =   6525
+   ClientHeight    =   7455
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   12630
@@ -21,7 +21,7 @@ Begin VB.Form dialog_ExportICO
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   435
+   ScaleHeight     =   497
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   842
    ShowInTaskbar   =   0   'False
@@ -30,7 +30,7 @@ Begin VB.Form dialog_ExportICO
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5775
+      Top             =   6705
       Width           =   12630
       _ExtentX        =   22278
       _ExtentY        =   1323
@@ -40,26 +40,26 @@ Begin VB.Form dialog_ExportICO
       Height          =   735
       Left            =   6000
       TabIndex        =   64
-      Top             =   120
+      Top             =   1020
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   1296
       Caption         =   "icon purpose"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   5625
+      Height          =   6465
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   11404
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   0
       Left            =   5880
-      Top             =   1065
+      Top             =   1920
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   8281
@@ -999,6 +999,16 @@ Begin VB.Form dialog_ExportICO
          Value           =   0   'False
       End
    End
+   Begin PhotoDemon.pdDropDown ddSource 
+      Height          =   735
+      Left            =   6000
+      TabIndex        =   65
+      Top             =   120
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1296
+      Caption         =   "icon source"
+   End
 End
 Attribute VB_Name = "dialog_ExportICO"
 Attribute VB_GlobalNameSpace = False
@@ -1009,14 +1019,14 @@ Attribute VB_Exposed = False
 'Windows Icon (ICO) Export Dialog
 'Copyright 2020-2022 by Tanner Helland
 'Created: 11/May/20
-'Last updated: 18/May/20
-'Last update: ongoing work on initial build
+'Last updated: 27/October/22
+'Last update: allow the user to switch between "merged image" and "match layers to frames" as sources
 '
 'This dialog works as a simple relay to the pdICO class. Look there for specific encoding details.
 '
 'I have tried to pare down the UI toggles to only the most essential elements.  Compatibility with
-' various OS versions is the big one, especially given that some VB6 users use PD reliably - which
-' may mean they want to produce legacy icons.  (Similarly, some WinForms elements, like toolbars,
+' various OS versions is the big one, especially given that some VB6 users use PD for everything -
+' which may mean they want to produce legacy icons.  (Similarly, some WinForms elements, like toolbars,
 ' still suggest using 24-bpp + 1-bpp alpha, so they have unique requirements.)
 '
 'I am open to suggestions for improving the feature set and layout of this dialog.  It went through
@@ -1176,7 +1186,10 @@ Private Sub cmdBar_OKClick()
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     
-    'This dialog only needs to add one type of thing to its parameter list:
+    'Source as merged image vs match-each-layer-to-an-output-frame
+    cParams.AddParam "use-merged-image", (ddSource.ListIndex = 0), True
+    
+    'Now, this dialog only needs to add one more thing to its parameter list:
     ' a list of all the checked checkboxes.  This is as simple as iterating
     ' through the checkbox collection and writing predictable strings out to
     ' the parameter list.
@@ -1298,6 +1311,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     ddIcon.ListIndex = 0
+    ChooseBestFrameSource
 End Sub
 
 Private Sub ddIcon_Click()
@@ -1445,6 +1459,31 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+'When exporting an ICO file, PD can either use the merged image, or it can attempt to assign each layer to its
+' most appropriate icon frame equivalent.  We attempt to choose a "smart" option based on the original file format
+' (if one exists).
+Private Sub ChooseBestFrameSource()
+    
+    'When preparing for a batch process, the user may be setting export options but *not* actually exporting
+    ' a file right now.  No source image will exist in this case.
+    If (Not m_SrcImage Is Nothing) Then
+        
+        'If the original image was an icon, default to "match each layer to an appropriate output frame"
+        If (m_SrcImage.GetOriginalFileFormat = PDIF_ICO) Then
+            ddSource.ListIndex = 1
+        
+        'Otherwise, use the merged image
+        Else
+            ddSource.ListIndex = 0
+        End If
+    
+    'In batch mode, default to matching layers to "match each layer to an appropriate output frame"
+    Else
+        ddSource.ListIndex = 1
+    End If
+    
+End Sub
+
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
@@ -1459,11 +1498,24 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Message "Waiting for user to specify export options... "
     
     'Populate the UI
+    ddSource.SetAutomaticRedraws False
+    ddSource.Clear
+    ddSource.AddItem "use merged image", 0
+    ddSource.AddItem "treat each layer as a unique icon frame", 1
+    
+    'Choose the best frame-matching method, but note that this may be overridden later if the user saves
+    ' custom preset(s)
+    ChooseBestFrameSource
+    ddSource.SetAutomaticRedraws True, True
+    
+    ddIcon.SetAutomaticRedraws False
+    ddIcon.Clear
     ddIcon.AddItem "app - Windows 10", 0
     ddIcon.AddItem "app - Windows Vista, 7, 8", 1
     ddIcon.AddItem "app - Windows XP", 2
     ddIcon.AddItem "app - Windows 95, 98, ME", 3
     ddIcon.AddItem "web - favicon", 4, True
+    ddIcon.SetAutomaticRedraws True, True
     
     'We now want to see if this image was originally stored in ICO format.  If it was,
     ' we'll give the user a way to save the icon in its current format.

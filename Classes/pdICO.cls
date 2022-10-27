@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon ICO (Icon) Container and Import/Export engine
 'Copyright 2020-2022 by Tanner Helland
 'Created: 07/May/20
-'Last updated: 16/January/21
-'Last update: fix layer name generation on frames with a null bit-depth (we can usually extract
-'             a valid bit-depth from the embedded header, despite the original header being broken)
+'Last updated: 27/October/22
+'Last update: allow the user to request "merged image source" when saving an ico file
+'             (vs assigning each layer as a unique output frame)
 '
 'This class (and its associated pdICO- child classes) handle import and export of
 ' old-school ICO files.  The class was custom-built for PhotoDemon, with an emphasis on
@@ -132,6 +132,10 @@ End Type
 
 Private m_NumIcons As Long
 Private m_Icons() As PD_Icon
+
+'If the user wants us to use the merged image as source, we'll generate it just once, prior to export.
+' (Note that this *will* be empty if the user requests "match each layer to the ideal icon frame" mode.)
+Private m_mergedImage As pdDIB
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -288,6 +292,21 @@ Friend Function SaveICO_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdIm
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
+    'Does the user want to use the merged image as their source, or do they want us to match each layer
+    ' to its most appropriate output frame?
+    Dim useMergedImage As Boolean
+    useMergedImage = cParams.GetBool("use-merged-image", False, True)
+    
+    '(regardless of user settings, use the merged image if this is a single-layer image)
+    If (Not srcPDImage Is Nothing) Then
+        useMergedImage = useMergedImage Or (srcPDImage.GetNumOfLayers <= 1)
+    Else
+        useMergedImage = False
+    End If
+    
+    'Generate a merged image, as appropriate
+    If useMergedImage Then srcPDImage.GetCompositedImage m_mergedImage, True
+    
     'How many frames are we writing?
     Dim outFrames() As PD_Icon, numFrames As Long
     numFrames = cParams.GetLong("icon-count", 0, True)
@@ -325,9 +344,10 @@ Friend Function SaveICO_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdIm
     ' We want to match (as best we can) idealized layer sizes and color-counts against frame requirements.
     ' We also give preferences to layers whose names exactly match requested export settings; that means
     ' the original file was likely an ICO, and we're just re-saving it after edits.
-    
-    '(Note that this is only relevant for multi-layer images, obviously!)
-    If (srcPDImage.GetNumOfLayers > 1) Then
+    '
+    '(The user can override this behavior either explicitly - by requesting that we use the merged image -
+    ' or implicitly, if the source image only has one layer.)
+    If (Not useMergedImage) Then
         
         'To avoid the need for determining layer color-depth multiple times (because PD stores everything
         ' as 32-bpp RGBA internally, and we need to know more detailed color counts), we cache layer data
@@ -426,7 +446,7 @@ NextFrame:
         ' frame's pixel + mask (or PNG data), so we need to calculate all frames in advance.
         Dim tmpDIB As pdDIB
         For i = 0 To numFrames - 1
-            CreateFrameForExport outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), srcPDImage, tmpDIB
+            CreateFrameForExport outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), srcPDImage, tmpDIB, useMergedImage
         Next i
         
         '6-byte header + (numFrames) * 16-byte frame header = initial offset into bitmap data
@@ -505,7 +525,7 @@ End Function
 '
 'NOTE: at present, this function only produces square thumbnails (by design).  Odd sizes may be accomodated
 ' in the future.
-Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef srcPDImage As pdImage, ByRef tmpDIB As pdDIB) As Boolean
+Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef srcPDImage As pdImage, ByRef tmpDIB As pdDIB, ByVal useMergedImage As Boolean) As Boolean
     
     'Before doing anything else, we need to generate a reference 32-bpp image of the source layer
     If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
@@ -525,18 +545,28 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
     ' of the image at the requested size.  The complexity of this task depends on how severely
     ' the source layer has been modified.
     Dim referenceDIB As pdDIB
-    If srcLayer.AffineTransformsActive Then
-    
-        'We need to produce an affine-transformed version of this layer as our reference DIB.
-        ' (Note that layer offsets don't matter; we will use the entire source layer as-is.)
-        Dim irrelevantX As Long, irrelevantY As Long
-        srcLayer.GetAffineTransformedDIB referenceDIB, irrelevantX, irrelevantY, srcPDImage.Width, srcPDImage.Height
-    
-    'The source layer does *not* have any active affine transforms.  This makes it much faster
-    ' (and simpler!) to produce an icon-sized DIB, because all our coordinate math involves
-    ' rectangles.
+    If useMergedImage Then
+        
+        'Make a local copy of the merged image
+        Set referenceDIB = New pdDIB
+        referenceDIB.CreateFromExistingDIB m_mergedImage
+        
     Else
-        Set referenceDIB = srcLayer.GetLayerDIB
+        
+        If srcLayer.AffineTransformsActive Then
+        
+            'We need to produce an affine-transformed version of this layer as our reference DIB.
+            ' (Note that layer offsets don't matter; we will use the entire source layer as-is.)
+            Dim irrelevantX As Long, irrelevantY As Long
+            srcLayer.GetAffineTransformedDIB referenceDIB, irrelevantX, irrelevantY, srcPDImage.Width, srcPDImage.Height
+        
+        'The source layer does *not* have any active affine transforms.  This makes it much faster
+        ' (and simpler!) to produce an icon-sized DIB, because all our coordinate math involves
+        ' rectangles.
+        Else
+            Set referenceDIB = srcLayer.GetLayerDIB
+        End If
+        
     End If
     
     'Perform a quick shortcut check.  If the reference DIB is identical in size to the requested

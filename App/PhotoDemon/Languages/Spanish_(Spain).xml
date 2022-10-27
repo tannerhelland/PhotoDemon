@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.320</langversion>
+<langversion>6.7.321</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -10569,6 +10569,16 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>icon source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>treat each layer as a unique icon frame</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>app - Windows 10</original>
 <translation></translation>
 </phrase>
@@ -10603,7 +10613,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -13969,10 +13979,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2643</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5530 phrases. -->
-<!-- 2887 are duplicates, so only 2643 unique phrases have been written to file. -->
-<!-- These 2643 phrases contain approximately 11431 total words. -->
+<!-- As of this build, PhotoDemon contains 5533 phrases. -->
+<!-- 2888 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 11441 total words. -->
 
 </pdData>
