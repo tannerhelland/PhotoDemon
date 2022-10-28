@@ -3,8 +3,8 @@ Attribute VB_Name = "DIBs"
 'DIB Support Functions
 'Copyright 2012-2022 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
-'Last updated: 01/March/22
-'Last update: new global function for swizzling R/B channels
+'Last updated: 28/October/22
+'Last update: improve behavior of alpha-channel thresholding
 '
 'This module contains support functions for the pdDIB class.  In old versions of PD,
 ' these functions were provided by pdDIB, but there's no sense cluttering up that class
@@ -2895,10 +2895,10 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     If (ditherAmount < 0!) Then ditherAmount = 0!
     If (ditherAmount > 1!) Then ditherAmount = 1!
     
-    'Ensure the target DIB is using *premultiplied* alpha
+    'Ensure the target DIB is *not* using premultiplied alpha
     Dim needToResetAlpha As Boolean
-    needToResetAlpha = (Not srcDIB.GetAlphaPremultiplication())
-    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication True
+    needToResetAlpha = srcDIB.GetAlphaPremultiplication()
+    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication False
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
@@ -2933,18 +2933,12 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     matteG = Colors.ExtractGreen(matteColor)
     matteB = Colors.ExtractBlue(matteColor)
     
-    'Because alpha values are pre-multiplied, we can composite them against the background color
-    ' via fast use of a look-up table.
-    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    'Create a fast lookup table for alpha references
+    Dim aLookup(0 To 255) As Single, refAlpha As Single
     Const ONE_DIV_255 As Double = 1# / 255#
     
-    'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
-    Dim tmpAlpha As Double, refAlpha As Byte
     For x = 0 To 255
-        tmpAlpha = 1# - (x * ONE_DIV_255)
-        rLookup(x) = Int(matteR * tmpAlpha)
-        gLookup(x) = Int(matteG * tmpAlpha)
-        bLookup(x) = Int(matteB * tmpAlpha)
+        aLookup(x) = 1! - (x * ONE_DIV_255)
     Next x
     
     'Process the alpha channel based on the dither method requested
@@ -2963,10 +2957,10 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 
                 'Check the luminance against the threshold, and set new values accordingly
                 If (a >= alphaCutoff) Then
-                    refAlpha = imageData(xStride + 3, y)
-                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
-                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
-                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
+                    refAlpha = aLookup(imageData(xStride + 3, y))
+                    imageData(xStride, y) = Colors.BlendColors(imageData(xStride, y), matteB, refAlpha)
+                    imageData(xStride + 1, y) = Colors.BlendColors(imageData(xStride + 1, y), matteG, refAlpha)
+                    imageData(xStride + 2, y) = Colors.BlendColors(imageData(xStride + 2, y), matteR, refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
                     imageData(xStride, y) = 0
@@ -3002,14 +2996,14 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 a = imageData(xStride + 3, y)
                 
                 'Add the value of the dither table
-                a = a + (CLng(ditherTable(x And 3, y And 3)) - 127) * ditherAmount
+                a = a + (Int(ditherTable(x And 3, y And 3)) - 127) * ditherAmount
                 
                 'Check THAT value against the threshold, and set a new value accordingly
                 If (a >= alphaCutoff) Then
-                    refAlpha = imageData(xStride + 3, y)
-                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
-                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
-                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
+                    refAlpha = aLookup(imageData(xStride + 3, y))
+                    imageData(xStride, y) = Colors.BlendColors(imageData(xStride, y), matteB, refAlpha)
+                    imageData(xStride + 1, y) = Colors.BlendColors(imageData(xStride + 1, y), matteG, refAlpha)
+                    imageData(xStride + 2, y) = Colors.BlendColors(imageData(xStride + 2, y), matteR, refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
                     imageData(xStride, y) = 0
@@ -3044,14 +3038,14 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 a = imageData(xStride + 3, y)
                 
                 'Add the value of the dither table
-                a = a + (CLng(ditherTable(x And 7, y And 7)) - 127) * ditherAmount
+                a = a + (Int(ditherTable(x And 7, y And 7)) - 127) * ditherAmount
                 
                 'Check THAT value against the threshold, and set a new value accordingly
                 If (a >= alphaCutoff) Then
-                    refAlpha = imageData(xStride + 3, y)
-                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
-                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
-                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
+                    refAlpha = aLookup(imageData(xStride + 3, y))
+                    imageData(xStride, y) = Colors.BlendColors(imageData(xStride, y), matteB, refAlpha)
+                    imageData(xStride + 1, y) = Colors.BlendColors(imageData(xStride + 1, y), matteG, refAlpha)
+                    imageData(xStride + 2, y) = Colors.BlendColors(imageData(xStride + 2, y), matteR, refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
                     imageData(xStride, y) = 0
@@ -3145,9 +3139,10 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                     'Check our modified luminance value against the threshold, and set new values accordingly
                     If (newA >= alphaCutoff) Then
                         errorVal = newA - 255
-                        imageData(xStride, y) = imageData(xStride, y) + bLookup(a)
-                        imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(a)
-                        imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(a)
+                        refAlpha = aLookup(a)
+                        imageData(xStride, y) = Colors.BlendColors(imageData(xStride, y), matteB, refAlpha)
+                        imageData(xStride + 1, y) = Colors.BlendColors(imageData(xStride + 1, y), matteG, refAlpha)
+                        imageData(xStride + 2, y) = Colors.BlendColors(imageData(xStride + 2, y), matteR, refAlpha)
                         imageData(xStride + 3, y) = 255
                     Else
                         errorVal = newA
@@ -3208,10 +3203,10 @@ NextDitheredPixel:             Next j
     srcDIB.UnwrapArrayFromDIB imageData
     
     'Importantly, after thresholding alpha in this function, there is no material difference
-    ' between premultiplied and un-premultiplied alpha (because transparent pixels have been
-    ' forced to black, and all other pixels have been forced to full opacity).  As such, we
-    ' can simply reset the premultiplication flag *without* actually looping pixels.
-    If needToResetAlpha Then srcDIB.SetInitialAlphaPremultiplicationState False
+    ' between premultiplied and straight alpha (because transparent pixels have been forced to black,
+    ' and all other pixels have been forced to full opacity).  As such, we can simply reset the
+    ' premultiplication flag *without* actually looping pixels.
+    If needToResetAlpha Then srcDIB.SetInitialAlphaPremultiplicationState True
     
     ThresholdAlphaChannel = (Not g_cancelCurrentAction)
     

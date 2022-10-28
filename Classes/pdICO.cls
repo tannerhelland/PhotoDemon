@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon ICO (Icon) Container and Import/Export engine
 'Copyright 2020-2022 by Tanner Helland
 'Created: 07/May/20
-'Last updated: 27/October/22
-'Last update: allow the user to request "merged image source" when saving an ico file
-'             (vs assigning each layer as a unique output frame)
+'Last updated: 28/October/22
+'Last update: improve alpha thresholding behavior for better color quality when creating tiny icon sizes
 '
 'This class (and its associated pdICO- child classes) handle import and export of
 ' old-school ICO files.  The class was custom-built for PhotoDemon, with an emphasis on
