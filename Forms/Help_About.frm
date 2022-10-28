@@ -409,6 +409,7 @@ Private Sub Form_Load()
     GenerateContributor "Vatterspun", "https://github.com/vatterspun"
     GenerateContributor "Vladimir Vissoultchev", "https://github.com/wqweto"
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
+    GenerateContributor "Yuriy Balyuk", "https://github.com/veksha"
     GenerateContributor "Zhu JinYong", "https://github.com/Planet-Source-Code?q=jinyong&type=&language="
     
     'Add dummy entries to the owner-drawn list boxes

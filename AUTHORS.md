@@ -112,4 +112,5 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Vatterspun](https://github.com/vatterspun)
 * [Vladimir Vissoultchev](https://github.com/wqweto)
 * [Will Stampfer](https://github.com/epmatsw)
+* [Yuriy Balyuk](https://github.com/veksha)
 * [Zhu JinYong](https://github.com/Planet-Source-Code/zhu-jinyong-unicode-browseforfolder__1-73919)
