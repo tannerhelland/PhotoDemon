@@ -591,6 +591,12 @@ End Sub
 
 Private Sub m_DownButtonTimer_Timer()
     
+    'Failsafe check for button state
+    If (Not m_MouseDownDownButton) Then
+        m_DownButtonTimer.StopTimer
+        Exit Sub
+    End If
+    
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
     If (m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
@@ -608,6 +614,12 @@ End Sub
 
 Private Sub m_UpButtonTimer_Timer()
 
+    'Failsafe check for button state
+    If (Not m_MouseDownUpButton) Then
+        m_UpButtonTimer.StopTimer
+        Exit Sub
+    End If
+    
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
     If (m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
