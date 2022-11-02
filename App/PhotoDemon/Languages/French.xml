@@ -3046,12 +3046,12 @@ Description: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>justification de derniere ligne</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>contour au dessus</translation>
 </phrase>
 
 <phrase>
@@ -4461,7 +4461,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation></translation>
+<translation>Ce bouton ouvre dans le navigateur une nouvelle page de signalement .Vous aurez besoin d'avoir un compte GitHub pour la remplir.</translation>
 </phrase>
 
 <phrase>
@@ -12738,326 +12738,330 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation></translation>
+<translation>clquez ici pour des instructions plus détaillées (en Anglais)</translation>
 </phrase>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>elements d'interface</translation>
 </phrase>
 
 <phrase>
 <original>replace translation with reference text (Ctrl+U)</original>
-<translation></translation>
+<translation>remplacer la trduction par un texte de référence (Ctrl+U)</translation>
 </phrase>
 
 <phrase>
 <original>list of phrases (%1 items)</original>
-<translation></translation>
+<translation>liste des phrases (%1 items)</translation>
 </phrase>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>groupes de phrases</translation>
 </phrase>
 
 <phrase>
 <original>Save this translation and proceed to the next phrase</original>
-<translation></translation>
+<translation>Sauvegarder la traduction et proceder à la phrase suivante</translation>
 </phrase>
 
 <phrase>
 <original>translated phrase</original>
-<translation></translation>
+<translation>phrases traduites</translation>
 </phrase>
 
 <phrase>
 <original>original phrase</original>
-<translation></translation>
+<translation>phrase originale</translation>
 </phrase>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>traduction automatique des phrases manquantes</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation></translation>
+<translation>référence de traduction selon  fichier .po</translation>
 </phrase>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation></translation>
+<translation>(NOTE: CTRL+ENTREE sauvegarde automatiquement et va à la phrase suivante)</translation>
 </phrase>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>types de phrases</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>noms d'action</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>boites de message</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>messages de la barre de statut</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>astuces</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>fichiers où cette phrase apparait</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>divers</translation>
 </phrase>
 
 <phrase>
 <original>copy system locale</original>
-<translation></translation>
+<translation>copier la langue du système</translation>
 </phrase>
 
 <phrase>
 <original>official ISO language codes at Wikipedia</original>
-<translation></translation>
+<translation>codes officiels ISO de langues sur Wikipédia</translation>
 </phrase>
 
 <phrase>
 <original>author name(s)</original>
-<translation></translation>
+<translation>nom(s) d'auteur</translation>
 </phrase>
 
 <phrase>
 <original>language status</original>
-<translation></translation>
+<translation>statut de langue</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation></translation>
+<translation>version de langue</translation>
 </phrase>
 
 <phrase>
 <original>language name</original>
-<translation></translation>
+<translation>nom de langue</translation>
 </phrase>
 
 <phrase>
 <original>language and country ID</original>
-<translation></translation>
+<translation>langue et ID de pays</translation>
 </phrase>
 
 <phrase>
 <original>optional translation aids</original>
-<translation></translation>
+<translation>aides optionnelles de traduction</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation></translation>
+<translation>clé API gratuite DeepL.com pour suggestions de traduction automatique</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation></translation>
+<translation>fichier de langue (.po) de n'importe quel autre logiciel, comme référence</translation>
 </phrase>
 
 <phrase>
 <original>official ISO country codes at Wikipedia</original>
-<translation></translation>
+<translation>codes officiels ISO de pays sur Wikipédia</translation>
 </phrase>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation></translation>
+<translation>Ces paramètres optionels peuvent accélerer le processus de traduction. Ils ne sont pas sauvegardés avec le fichier de langue.</translation>
 </phrase>
 
 <phrase>
 <original>delete selected language file</original>
-<translation></translation>
+<translation>supprimer le fichier de langue</translation>
 </phrase>
 
 <phrase>
 <original>start new language</original>
-<translation></translation>
+<translation>demarrer un nouveau fichier de langue</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation></translation>
+<translation>éditer un fichier de langue existant</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations</original>
-<translation></translation>
+<translation>Traductions automatiques</translation>
 </phrase>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation></translation>
+<translation>Procédant à la phrase %1 de %2</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translation complete!</original>
-<translation></translation>
+<translation>Traduction automatique achevée !</translation>
 </phrase>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation></translation>
+<translation>Etes vous sûr de supprimer %1? (cette action ne peut être annulée)</translation>
 </phrase>
 
 <phrase>
 <original>Delete language file</original>
-<translation></translation>
+<translation>Supprimer le fichier de langue</translation>
 </phrase>
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation></translation>
+<translation>Vous n'avez pas accès a ce dossier. SVP loggez vous comme administrater et réessayez.</translation>
 </phrase>
 
 <phrase>
 <original>New Language</original>
-<translation></translation>
+<translation>Nouveau Langage</translation>
 </phrase>
 
 <phrase>
 <original>incomplete</original>
-<translation></translation>
+<translation>incomplet</translation>
 </phrase>
 
 <phrase>
 <original>enter your name here</original>
-<translation></translation>
+<translation>entrez votre nom ici</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation></translation>
+<translation>Malheureusement, le fichier de langue en-US de PhotoDemon ne peut être trouvé sur ce PC. Ce fichier est inclus dans la version officielle de PhotoDemon, mais il peut ne pes être inclus dans les versions betas ou en développement.
+
+Pour demarrer une nouvelle traduction, veuillez télécharger une nouvelle copie de PhotoDemon sur photodemon.org</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation></translation>
+<translation>Malheureusement, ce fichier de langue ne peut être chargé. Il est possible que la version sur ce PC soit obsolète.
+
+Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur photodemon.org.</translation>
 </phrase>
 
 <phrase>
 <original>Language file could not be loaded</original>
-<translation></translation>
+<translation>le fichier de langue ne peut pas être chargé</translation>
 </phrase>
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation></translation>
+<translation>phrases qui ne correspondent pas à la référence</translation>
 </phrase>
 
 <phrase>
 <original>XML file</original>
-<translation></translation>
+<translation>fichier XML</translation>
 </phrase>
 
 <phrase>
 <original>Save current language file</original>
-<translation></translation>
+<translation>Sauvegarder le fichier de langue en cours</translation>
 </phrase>
 
 <phrase>
 <original>Save and exit</original>
-<translation></translation>
+<translation>Sauvegarder et fermer.</translation>
 </phrase>
 
 <phrase>
 <original>Step %1</original>
-<translation></translation>
+<translation>Etape %1</translation>
 </phrase>
 
 <phrase>
 <original>select language</original>
-<translation></translation>
+<translation>sélectionner une langue.</translation>
 </phrase>
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>appliquer les paramètres de traduction et de langue</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>localiser les phrases</translation>
 </phrase>
 
 <phrase>
 <original>(NOT YET SAVED)</original>
-<translation></translation>
+<translation>(N'EST PAS ENCORE SAUVEGARDEE)</translation>
 </phrase>
 
 <phrase>
 <original>all phrases</original>
-<translation></translation>
+<translation>toutes les phrases</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation></translation>
+<translation>phrases déjà traduites</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation></translation>
+<translation>phrases non traduites</translation>
 </phrase>
 
 <phrase>
 <original>(saved)</original>
-<translation></translation>
+<translation>(sauvegardé)</translation>
 </phrase>
 
 <phrase>
 <original>[translation failed]</original>
-<translation></translation>
+<translation>[la traduction a échoué]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation></translation>
+<translation>[la phrase n'est pas dans le fichier]</translation>
 </phrase>
 
 <phrase>
 <original>unknown author</original>
-<translation></translation>
+<translation>auteur inconnu</translation>
 </phrase>
 
 <phrase>
 <original>(official translation by %1)</original>
-<translation></translation>
+<translation>(traduction officielle par %1)</translation>
 </phrase>
 
 <phrase>
 <original>by %1</original>
-<translation></translation>
+<translation>par %1</translation>
 </phrase>
 
 <phrase>
 <original>(autosaved on %1)</original>
-<translation></translation>
+<translation>(sauvegarde automatique sur %1)</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->

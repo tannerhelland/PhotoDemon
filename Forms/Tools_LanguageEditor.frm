@@ -622,8 +622,8 @@ Attribute VB_Exposed = False
 'Interactive Language (i18n) Editor
 'Copyright 2013-2022 by Tanner Helland
 'Created: 28/August/13
-'Last updated: 12/July/22
-'Last update: continue fixing UI annoyances and bugs
+'Last updated: 02/November/22
+'Last update: fix issues with Ctrl+U key combination in non-en-US locales (https://github.com/tannerhelland/PhotoDemon/issues/455)
 '
 'This tool can simplify the PhotoDemon localization process.  The original version (built in 2013) was
 ' heavily influenced by feedback from Frank Donckers.  Many thanks to Frank for his contributions to
@@ -1793,9 +1793,10 @@ End Function
 
 'Handle Ctrl+[key] shortcuts specially
 Private Sub txtTranslation_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
-
-    If (Shift And vbCtrlMask = vbCtrlMask) Then
-         
+    
+    'Ignore shortcuts if shift/alt are pressed
+    If (Shift = vbCtrlMask) Then
+        
         'Save and proceed to next phrase
         If (vKey = vbKeyReturn) Then
             preventFurtherHandling = True
@@ -1803,13 +1804,16 @@ Private Sub txtTranslation_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As 
             PhraseFinished
             txtTranslation.SelStart = Len(txtTranslation.Text)
         
-        'Replace existing translation with translation from 3rd-party reference file
+        'Replace existing translation with translation from 3rd-party reference file, if one exists
         ElseIf (vKey = vbKeyU) Then
-            preventFurtherHandling = True
-            m_inKeyEvent = True
-            UseReferenceText
-            txtTranslation.SelStart = Len(txtTranslation.Text)
             
+            If (Not m_ReferencePO Is Nothing) And (LenB(txtReference.Text) > 0) Then
+                preventFurtherHandling = True
+                m_inKeyEvent = True
+                UseReferenceText
+                txtTranslation.SelStart = Len(txtTranslation.Text)
+            End If
+                
         Else
             m_inKeyEvent = False
         End If
