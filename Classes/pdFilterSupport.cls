@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright 2013-2022 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 25/August/21
-'Last update: tweak non-interpolated output by half-pixel offset to ensure alignment with interpolated results
+'Last updated: 02/November/22
+'Last update: new helper for handling edges on normalized values (range [0, 1]); the Perspective transform now
+'             uses this for fast edge-handling when custom foreshortening is active
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -138,6 +139,97 @@ Friend Sub SetDistortParameters(ByVal edgeMethod As PD_EdgeOperator, ByVal toInt
     m_imgHeight = m_FinalY + 0.99999999
 End Sub
 
+'To use FixDistortEdges externally, call this safe wrapper.  Returns TRUE if pixel needs to be erased; FALSE otherwise.
+' By design, this function always returns coordinates on the range [0, 1] where [1 = img_size_in_x/y_direction].
+Friend Function HandleEdgesOnly_Normalized(ByRef srcX As Double, ByRef srcY As Double, ByRef useOrigCoords As Boolean) As Boolean
+    
+    useOrigCoords = False
+    
+    Select Case m_EdgeMethod
+    
+        Case pdeo_Clamp
+        
+            If (srcX < 0#) Then
+                srcX = 0#
+            Else
+                If (srcX > 1#) Then srcX = 1#
+            End If
+            
+            If (srcY < 0#) Then
+                srcY = 0#
+            Else
+                If (srcY > 1#) Then srcY = 1#
+            End If
+            
+        Case pdeo_Reflect
+        
+            srcX = PDMath.Modulo(srcX, 2#)
+            srcY = PDMath.Modulo(srcY, 2#)
+            If (srcX > 1#) Then srcX = 2# - srcX
+            If (srcY > 1#) Then srcY = 2# - srcY
+            
+        Case pdeo_Wrap
+            
+            srcX = srcX - Int(srcX)
+            srcY = srcY - Int(srcY)
+            
+        Case pdeo_Erase
+        
+            If (srcX < 0#) Then
+                HandleEdgesOnly_Normalized = True
+                Exit Function
+            End If
+            
+            If (srcY < 0#) Then
+                HandleEdgesOnly_Normalized = True
+                Exit Function
+            End If
+            
+            If (srcX > 1#) Then
+                HandleEdgesOnly_Normalized = True
+                Exit Function
+            End If
+            
+            If (srcY > 1#) Then
+                HandleEdgesOnly_Normalized = True
+                Exit Function
+            End If
+            
+        Case pdeo_Original
+            
+            If (srcX < 0#) Or (srcY < 0#) Then
+                useOrigCoords = True
+                Exit Function
+            End If
+            
+            If (srcX > 1#) Or (srcY > 1#) Then
+                useOrigCoords = True
+                Exit Function
+            End If
+            
+    End Select
+    
+End Function
+
+'IMPORTANT NOTE: this function does not handle pixel erasing in ERASE mode.  This function also assumes
+' the source x/y position actually exists in-bounds (because this is how the normal color handler works).
+' To use this shortcut function, as PhotoDemon does in the PerspectiveImage function, you must:
+' 1) Handle pixel erasing manually, as relevant
+' 2) Ensure srcX and srcY are IN-BOUNDS
+Friend Function HandleInterpolationOnly(ByVal srcX As Double, ByVal srcY As Double) As RGBQuad
+
+    'Interpolate a new pixel value
+    If m_Interpolate Then
+        HandleInterpolationOnly = BilinearInterpolate(srcX, srcY)
+        
+    'Clamp to the nearest integer coordinate value, and note that we *cannot* round here
+    ' (because srcX and srcY may be e.g. 99.99 on a 99-px image, and rounding could cause access errors)
+    Else
+        HandleInterpolationOnly = m_Pixels(Int(srcX), Int(srcY))
+    End If
+    
+End Function
+
 'If a pixel lies outside image boundaries, move it in-bounds using one of several methods
 ' If the edge handle method is "Erase", this function will return a boolean indicating whether the supplied pixel
 ' must be erased.  If FALSE is returned, the pixel can be handled normally.
@@ -163,8 +255,8 @@ Private Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As 
         
             srcX = PDMath.Modulo(srcX, m_FinalX * 2)
             srcY = PDMath.Modulo(srcY, m_FinalY * 2)
-            If (srcX > m_FinalX) Then srcX = (m_FinalX - (srcX - m_FinalX))
-            If (srcY > m_FinalY) Then srcY = (m_FinalY - (srcY - m_FinalY))
+            If (srcX > m_FinalX) Then srcX = m_FinalX * 2 - srcX
+            If (srcY > m_FinalY) Then srcY = m_FinalY * 2 - srcY
             
         Case pdeo_Wrap
             

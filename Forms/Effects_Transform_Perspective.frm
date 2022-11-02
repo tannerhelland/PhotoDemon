@@ -26,29 +26,6 @@ Begin VB.Form FormPerspective
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   945
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   0
-      Left            =   240
-      TabIndex        =   5
-      Top             =   6000
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-      ShowResetButton =   0   'False
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Left            =   120
-      Top             =   5520
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
-      Caption         =   "coordinates (x, y)"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdPictureBoxInteractive picDraw 
       Height          =   8475
       Left            =   6000
@@ -60,47 +37,12 @@ Begin VB.Form FormPerspective
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   4305
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5745
       _ExtentX        =   10134
       _ExtentY        =   7594
       DisableZoomPan  =   -1  'True
-   End
-   Begin PhotoDemon.pdSlider sltQuality 
-      Height          =   705
-      Left            =   120
-      TabIndex        =   3
-      Top             =   6960
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1270
-      Caption         =   "quality"
-      Min             =   1
-      Max             =   5
-      Value           =   2
-      NotchPosition   =   2
-      NotchValueCustom=   2
-   End
-   Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   855
-      Left            =   120
-      TabIndex        =   4
-      Top             =   7800
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1508
-      Caption         =   "if pixels lie outside the image..."
-   End
-   Begin PhotoDemon.pdDropDown cboMapping 
-      Height          =   735
-      Left            =   120
-      TabIndex        =   1
-      Top             =   4560
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1296
-      Caption         =   "transformation type"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -112,92 +54,219 @@ Begin VB.Form FormPerspective
       _ExtentX        =   25003
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   1
-      Left            =   1440
-      TabIndex        =   6
-      Top             =   6000
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-   End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   2
-      Left            =   3360
-      TabIndex        =   7
-      Top             =   6000
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-      ShowResetButton =   0   'False
-   End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   3
-      Left            =   4560
-      TabIndex        =   8
-      Top             =   6000
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-   End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   6
-      Left            =   240
-      TabIndex        =   9
-      Top             =   6480
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-      ShowResetButton =   0   'False
-   End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   7
-      Left            =   1440
-      TabIndex        =   10
-      Top             =   6480
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-   End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   4
-      Left            =   3360
+   Begin PhotoDemon.pdButtonStrip btsSettings 
+      Height          =   1095
+      Left            =   120
       TabIndex        =   11
-      Top             =   6480
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
-      ShowResetButton =   0   'False
+      Top             =   4560
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1931
+      Caption         =   "options"
    End
-   Begin PhotoDemon.pdSpinner spnCoords 
-      Height          =   375
-      Index           =   5
-      Left            =   4560
-      TabIndex        =   12
-      Top             =   6480
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   661
-      Min             =   -32000
-      Max             =   32000
+   Begin PhotoDemon.pdContainer pnlSettings 
+      Height          =   2895
+      Index           =   1
+      Left            =   120
+      Top             =   5760
+      Visible         =   0   'False
+      Width           =   5790
+      _ExtentX        =   10213
+      _ExtentY        =   5106
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   372
+         Index           =   1
+         Left            =   0
+         Top             =   120
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   661
+         Caption         =   "custom foreshortening (x, y)"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdSlider sltQuality 
+         Height          =   705
+         Left            =   0
+         TabIndex        =   12
+         Top             =   1200
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1270
+         Caption         =   "quality"
+         Min             =   1
+         Max             =   5
+         Value           =   2
+         NotchPosition   =   2
+         NotchValueCustom=   2
+      End
+      Begin PhotoDemon.pdDropDown cboEdges 
+         Height          =   855
+         Left            =   0
+         TabIndex        =   13
+         Top             =   2040
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1508
+         Caption         =   "if pixels lie outside the image..."
+      End
+      Begin PhotoDemon.pdSlider sldForeshortening 
+         Height          =   495
+         Index           =   1
+         Left            =   3000
+         TabIndex        =   14
+         Top             =   600
+         Width           =   2775
+         _ExtentX        =   4895
+         _ExtentY        =   873
+         Min             =   -3
+         Max             =   3
+         SigDigits       =   2
+         GradientColorRight=   1703935
+      End
+      Begin PhotoDemon.pdSlider sldForeshortening 
+         Height          =   495
+         Index           =   0
+         Left            =   0
+         TabIndex        =   15
+         Top             =   600
+         Width           =   2775
+         _ExtentX        =   4895
+         _ExtentY        =   873
+         Min             =   -3
+         Max             =   3
+         SigDigits       =   2
+         GradientColorRight=   1703935
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlSettings 
+      Height          =   2895
+      Index           =   0
+      Left            =   120
+      Top             =   5760
+      Width           =   5790
+      _ExtentX        =   11456
+      _ExtentY        =   7223
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   2
+         Top             =   1440
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         Top             =   960
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   661
+         Caption         =   "coordinates (x, y)"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdDropDown cboMapping 
+         Height          =   735
+         Left            =   0
+         TabIndex        =   3
+         Top             =   0
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1296
+         Caption         =   "transformation type"
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   1
+         Left            =   1320
+         TabIndex        =   4
+         Top             =   1440
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   2
+         Left            =   3240
+         TabIndex        =   5
+         Top             =   1440
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   3
+         Left            =   4440
+         TabIndex        =   6
+         Top             =   1440
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   6
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1920
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   7
+         Left            =   1320
+         TabIndex        =   8
+         Top             =   1920
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   4
+         Left            =   3240
+         TabIndex        =   9
+         Top             =   1920
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdSpinner spnCoords 
+         Height          =   375
+         Index           =   5
+         Left            =   4440
+         TabIndex        =   10
+         Top             =   1920
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   -32000
+         Max             =   32000
+      End
    End
 End
 Attribute VB_Name = "FormPerspective"
@@ -209,9 +278,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2022 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 16/April/22
-'Last update: significantly improved UI, including preview of the transformed image in the interactive area,
-'             new spin controls for precise point control, and support for moving all quad points in unison
+'Last updated: 02/November/22
+'Last update: new custom foreshortening support (see https://github.com/tannerhelland/PhotoDemon/issues/454)
 '
 'This tool allows the user to remap their image (or layer) to any arbitrary quadrilateral.  The code is
 ' fairly standard linear algebra, as a series of equations must be solved to generate the homography matrix
@@ -388,8 +456,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Store region width and height as floating-point
     Dim imgWidth As Double, imgHeight As Double
-    imgWidth = finalX - initX
-    imgHeight = finalY - initY
+    imgWidth = (finalX - initX) - 1
+    imgHeight = (finalY - initY) - 1
     
     'If this is a preview, we need to adjust the width and height values to match the size of the preview box
     Dim wModifier As Double, hModifier As Double
@@ -402,6 +470,15 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     Dim invWidth As Double, invHeight As Double
     If (imgWidth > 0#) Then invWidth = 1# / imgWidth Else invWidth = 999999#
     If (imgHeight > 0#) Then invHeight = 1# / imgHeight Else invHeight = 999999#
+    
+    'Foreshortening is handled manually, *after* we've mapped pixels to the target domain.
+    '
+    '(For "normal" perspective rendering, you could skip foreshortening entirely.
+    ' It adds a non-trivial amount of processing time to the function.)
+    Dim xForeshortening As Double, yForeshortening As Double, customForeshortening As Boolean, useOrigCoords As Boolean
+    xForeshortening = TranslateForeshorteningUIValue(cParams.GetDouble("x-foreshorten", 0#, True))
+    yForeshortening = TranslateForeshorteningUIValue(cParams.GetDouble("y-foreshorten", 0#, True))
+    customForeshortening = (xForeshortening <> 1#) Or (yForeshortening <> 1#)
     
     'Copy the points given by the user (which are currently strings) into individual floating-point variables
     Dim x0 As Double, x1 As Double, x2 As Double, x3 As Double
@@ -493,15 +570,15 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     '    RECTANGULAR destination area.  (GIMP calls this Corrective/Backward which is again confusing, as "Normal"
     '    mapping is still a perfectly valid way to correct perspective distortion.  Anyway, this additional operation
     '    simply changes the user-drawn quadrilateral to define the boundaries of the source area.)
-    
     If correctiveProjection Then
     
-        'Invert the transformation using the adjoint of the forward mapping.  If you don't know what an adjoint is
-        ' (don't worry, most don't! :), we're basically reversing the plane-to-plane mapping by which we've defined
-        ' this particular projection.  (This means that we want the quadrilateral to define a section of the SOURCE
-        ' image instead of a section of the DESTINATION image.)  For a detailed explanation of this process, please
-        ' read pages 24-25 of Paul Heckbert's thesis on projective transformations, which is IMO a great source for
-        ' understanding projective mappings in general: http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
+        'Invert the transformation using the adjoint of the forward mapping.  Said another way, we're basically
+        ' reversing the plane-to-plane mapping that defines this projection.  (This means we want the quadrilateral
+        ' to define a section of the SOURCE image instead of a section of the DESTINATION image.)
+        '
+        'For a detailed explanation of this process, please read pages 24-25 of Paul Heckbert's thesis on projective
+        ' transformations, which is IMO a great source for understanding projective mappings in general:
+        ' http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
         Dim newA2 As Double, newB2 As Double, newC As Double
         Dim newD As Double, newE As Double, newF As Double
         Dim newG2 As Double, newH As Double, newI As Double
@@ -570,11 +647,58 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
             chkDenom = (hG * newX + hH * newY + hI)
             If (chkDenom <> 0#) Then chkDenom = 1# / chkDenom
             
-            srcX = imgWidth * (hA * newX + hB * newY + hC) * chkDenom
-            srcY = imgHeight * (hD * newX + hE * newY + hF) * chkDenom
+            srcX = (hA * newX + hB * newY + hC) * chkDenom
+            srcY = (hD * newX + hE * newY + hF) * chkDenom
             
-            'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            tmpQuad = fSupport.GetColorsFromSource(srcX, srcY, x, y)
+            'Apply custom foreshortening, if any.
+            If customForeshortening Then
+                
+                'Use the filter support class to correctly handle wrap/reflect/etc
+                If fSupport.HandleEdgesOnly_Normalized(srcX, srcY, useOrigCoords) Then
+                    
+                    'Pixel is being erased; ignore it
+                    tmpQuad.Blue = 0
+                    tmpQuad.Green = 0
+                    tmpQuad.Red = 0
+                    tmpQuad.Alpha = 0
+                
+                'Pixel is in-bounds
+                Else
+                    
+                    'The "use original coordinates" edge-wrap mode must be handled specially
+                    If useOrigCoords Then
+                        srcX = x
+                        srcY = y
+                    Else
+                        
+                        'Apply custom forshortening
+                        If (xForeshortening <> 1#) Then srcX = srcX ^ xForeshortening
+                        If (yForeshortening <> 1#) Then srcY = srcY ^ yForeshortening
+                        
+                        'Scale back to normal image space
+                        srcX = srcX * imgWidth
+                        srcY = srcY * imgHeight
+                        
+                    End If
+                    
+                    'Use the filter support class to interpolate colors (if quality settings allow)
+                    tmpQuad = fSupport.HandleInterpolationOnly(srcX, srcY)
+                    
+                End If
+                
+            'Normal mode is much easier to handle
+            Else
+                
+                'Scale back to the normal image space domain
+                srcX = srcX * imgWidth
+                srcY = srcY * imgHeight
+                
+                'Use the filter support class to interpolate and edge-wrap pixels as necessary
+                tmpQuad = fSupport.GetColorsFromSource(srcX, srcY, x, y)
+                
+            End If
+            
+            'If supersampling is active, we need to individually track r/g/b/a components
             b = tmpQuad.Blue
             g = tmpQuad.Green
             r = tmpQuad.Red
@@ -639,7 +763,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
 End Sub
 
 'Greatly simplified perspective renderer for rendering a high-speed preview image onto the interactive area.
-' Note that some special handling is required for things like the transparency grid (which is
+' Note that some special handling is required for things like the transparency grid (which is properly
+' constrained to image boundaries in the interactive area!)
 Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef listOfPoints() As PointFloat)
     
     'Zero out the destination DIB before doing any actual rendering
@@ -682,14 +807,14 @@ Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     'Store destination and source width and height; we use these for all calculations to ensure correct
     ' scaling between surfaces.
     Dim dstWidth As Double, dstHeight As Double
-    dstWidth = maxX - minX
+    dstWidth = (maxX - minX) - 1
     If (dstWidth < 1#) Then dstWidth = 1#
-    dstHeight = maxY - minY
+    dstHeight = (maxY - minY) - 1
     If (dstHeight < 1#) Then dstHeight = 1#
     
     Dim srcWidth As Double, srcHeight As Double
-    srcWidth = srcDIB.GetDIBWidth
-    srcHeight = srcDIB.GetDIBHeight
+    srcWidth = srcDIB.GetDIBWidth - 1
+    srcHeight = srcDIB.GetDIBHeight - 1
     
     'Calculate translations between source/destination sizes and the unit square
     Dim invDstWidth As Double, invDstHeight As Double, invSrcWidth As Double, invSrcHeight As Double
@@ -765,6 +890,14 @@ Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     Dim srcX As Double, srcY As Double, srcXInt As Long, srcYInt As Long
     Dim newX As Double, newY As Double
     
+    'Foreshortening is handled manually, *after* we've mapped pixels to the target domain.
+    '
+    '(For "normal" perspective rendering, you could skip foreshortening entirely.
+    ' It adds a non-trivial amount of processing time to the function.)
+    Dim xForeshortening As Double, yForeshortening As Double
+    xForeshortening = TranslateForeshorteningUIValue(sldForeshortening(0).Value)
+    yForeshortening = TranslateForeshorteningUIValue(sldForeshortening(1).Value)
+    
     'We're going to manually blank out pixels "outside" the quadrilateral
     Dim zeroQuad As RGBQuad
     zeroQuad.Red = 0
@@ -787,15 +920,20 @@ Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
         chkDenom = (hG * newX + hH * newY + hI)
         If (chkDenom <> 0#) Then chkDenom = 1# / chkDenom
         
-        srcX = (hA * newX + hB * newY + hC) * chkDenom * srcWidth
-        srcY = (hD * newX + hE * newY + hF) * chkDenom * srcHeight
+        srcX = (hA * newX + hB * newY + hC) * chkDenom
+        srcY = (hD * newX + hE * newY + hF) * chkDenom
         
         'Check boundaries and assign pixels accordingly
-        If (srcX >= 0) And (srcY >= 0) Then
-            If (srcX < srcWidth) And (srcY < srcHeight) Then
+        If (srcX >= 0#) And (srcY >= 0#) Then
+            If (srcX < 1#) And (srcY < 1#) Then
                 
-                srcXInt = Int(srcX)
-                srcYInt = Int(srcY)
+                'Apply custom foreshortening, if any.
+                If (xForeshortening <> 1#) Then srcX = srcX ^ xForeshortening
+                If (yForeshortening <> 1#) Then srcY = srcY ^ yForeshortening
+                
+                'Scale back to the normal image space domain
+                srcXInt = Int(srcX * srcWidth)
+                srcYInt = Int(srcY * srcHeight)
                 
                 If (srcImageData(srcXInt, srcYInt).Alpha = 255) Then
                     dstImageData(x) = srcImageData(srcXInt, srcYInt)
@@ -830,6 +968,10 @@ Private Sub RenderImageToArbitraryQuad(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     srcDIB.UnwrapRGBQuadArrayFromDIB srcImageData
     dstDIB.UnwrapRGBQuadArrayFromDIB dstImageData
     
+End Sub
+
+Private Sub btsSettings_Click(ByVal buttonIndex As Long)
+    UpdatePanelVisibility
 End Sub
 
 Private Sub cboEdges_Click()
@@ -932,6 +1074,7 @@ Private Sub Form_Load()
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
+    'Set up surfaces necessary for rendering the live preview
     Set m_Buffer = New pdDIB
     m_Buffer.CreateBlank picDraw.GetWidth, picDraw.GetHeight, 32, 0, 255
     m_Buffer.SetInitialAlphaPremultiplicationState True
@@ -954,6 +1097,11 @@ Private Sub Form_Load()
     
     'Disable all previews while we initialize the dialog
     cmdBar.SetPreviewStatus False
+    
+    'This tool supports two settings panels (basic and advanced, currently)
+    btsSettings.AddItem "basic", 0
+    btsSettings.AddItem "advanced", 1
+    UpdatePanelVisibility
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -1017,9 +1165,17 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+'Swap between "basic" and "advanced" settings panels
+Private Sub UpdatePanelVisibility()
+    Dim i As Long
+    For i = pnlSettings.lBound To pnlSettings.UBound
+        pnlSettings(i).Visible = (btsSettings.ListIndex = i)
+    Next i
+End Sub
+
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then PerspectiveImage GetPerspectiveParamString, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then PerspectiveImage GetPerspectiveParamString(), True, pdFxPreview
 End Sub
 
 Private Sub RedrawEditor()
@@ -1371,6 +1527,10 @@ Private Function GetPerspectiveParamString() As String
     'Next, note the type of mapping (quadrilateral to square, or square to quadrilateral)
     cParams.AddParam "mapping", cboMapping.ListIndex
     
+    'Custom foreshortening was added in 9.2
+    cParams.AddParam "x-foreshorten", sldForeshortening(0).Value, True
+    cParams.AddParam "y-foreshorten", sldForeshortening(1).Value, True
+    
     'Finally, quality and supersampling settings
     cParams.AddParam "edges", cboEdges.ListIndex
     cParams.AddParam "quality", sltQuality.Value
@@ -1492,6 +1652,11 @@ Private Sub picDraw_Resize(ByVal newWidth As Long, ByVal newHeight As Long)
     End If
 End Sub
 
+Private Sub sldForeshortening_Change(Index As Integer)
+    RedrawEditor
+    UpdatePreview
+End Sub
+
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
@@ -1582,3 +1747,11 @@ Private Sub ReflectNewTextChanges(ByVal Index As Long)
     RedrawEditor
     
 End Sub
+
+Private Function TranslateForeshorteningUIValue(ByVal srcValue As Double) As Double
+    If (srcValue >= 0#) Then
+        TranslateForeshorteningUIValue = srcValue + 1#
+    Else
+        TranslateForeshorteningUIValue = (srcValue + (sldForeshortening(0).Max + 1#)) / (sldForeshortening(0).Max + 1#)
+    End If
+End Function
