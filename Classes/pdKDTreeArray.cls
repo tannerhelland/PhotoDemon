@@ -60,8 +60,10 @@ Private m_bestDistance As Long, m_testDistance As Long
 Private m_testColor As RGBQuad, m_srcColor As RGBQuad, m_bestColor As RGBQuad
 Private m_Depth As Long
 
-Private m_curR As Long, m_curG As Long, m_curB As Long, m_curA As Long
-Private m_testR As Long, m_testG As Long, m_testB As Long, m_testA As Long
+'This class only matches RGB values at present; RGBA could easily be added, but I do not have a use for it
+' at present (the regular pdKDTree implementation handles this instead)
+Private m_curR As Long, m_curG As Long, m_curB As Long
+Private m_testR As Long, m_testG As Long, m_testB As Long
 
 Private m_numComparisons As Long
 
@@ -162,7 +164,8 @@ Friend Function BuildTreeBalanced(ByRef srcPalette() As RGBQuad, ByVal lowBound 
     
 End Function
 
-'Given some source color, return the best color match from the tree
+'Given some source color, return the best color match (RGB) from the tree.
+' RGBA matching is not currently implemented, by design, but easily could be in the future.
 Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
     
     'Failsafe only; build the damn tree before trying to retrieve colors from it!

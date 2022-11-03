@@ -19,7 +19,7 @@ Option Explicit
 '
 'To use as a standard PD effect, do *not* pass srcDIB.  (If srcDIB is empty, PD will auto-retrieve the
 ' current working DIB.)
-Public Function Filter_Edge_Relief(ByVal effectParams As String, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub Filter_Edge_Relief(ByVal effectParams As String, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Carving image relief..."
     
@@ -152,4 +152,4 @@ Public Function Filter_Edge_Relief(ByVal effectParams As String, Optional ByRef 
         Set workingDIB = Nothing
     End If
  
-End Function
+End Sub

@@ -182,8 +182,9 @@ Option Explicit
 
 'Because we don't use a traditional command bar on this dialog, last-used settings must be
 ' manually handled.  (We need to do this manually anyway because the image- and layer- dropdowns
-' are session-specific.)
-Private WithEvents lastUsedSettings As pdLastUsedSettings
+' are session-specific.)  Note that this *can* be declared WithEvents, but we do not need custom
+' save/load setting support in this tool.
+Private lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
 Private m_OpenImageIDs As pdStack

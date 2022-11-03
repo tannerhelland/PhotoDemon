@@ -65,7 +65,6 @@ Friend Function IsFileHGT(ByRef srcFilename As String, Optional ByVal requireVal
     If potentialMatch Then
         
         'Infer dimensions from filesize, then use integer rounding to ensure square dimensions
-        Dim numTiles1D As Long
         m_Width = Int(Sqr(Files.FileLenW(srcFilename) \ 2))
         m_Height = m_Width
         potentialMatch = (Files.FileLenW(srcFilename) = (m_Width * m_Height * 2))
@@ -180,8 +179,7 @@ Friend Function LoadHGT_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 Dim dstPixels() As Long, tmpSA As SafeArray2D
                 dstDIB.WrapLongArrayAroundDIB dstPixels, tmpSA
                 
-                Dim grayEquiv As Long, tmpIntensity As Long
-                Dim curColor As Long
+                Dim tmpIntensity As Long, curColor As Long
                 
                 '-32768 means "invalid data"; if encountered, we'll try to reuse the previous value, if any.
                 Const HGT_DATA_VOID As Long = -32768

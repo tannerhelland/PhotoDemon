@@ -1943,7 +1943,6 @@ Private Sub LoadReferencePO()
     If (InStr(1, srcText, MSG_STR, vbBinaryCompare) = 0) Then Exit Sub
     
     Const QUOTE_CHAR As String = """"
-    Const SPACE_CHAR As String = " "
     Const DOUBLE_LINEBREAK As String = vbCrLf & vbCrLf
     Const UNDERSCORE_CHAR As String = "_"
     Const ELLIPSIS As String = "..."
