@@ -1723,9 +1723,9 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then
-            picPreview.CopyDIB tmpDIB
+            picPreview.CopyDIB tmpDIB, True, True
         Else
-            picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 10!, False
+            picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 10!, False, True
         End If
         
         'Remember the name of the current preview; this saves us having to reload the preview any more than
