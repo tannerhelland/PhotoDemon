@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Shuttle Radar Topography Mission (SRTM)" (HGT) Decoder
 'Copyright 2022-2022 by Tanner Helland
 'Created: 13/September/22
-'Last updated: 15/September/22
-'Last update: wrap up initial build
+'Last updated: 15/November/22
+'Last update: harden against malicious file input
 '
 'The HGT file format contains a raw dump of satellite topography data.  GIMP added support for this
 ' format back in 2017 (https://girinstud.io/news/2017/12/new-format-in-gimp-hgt/) and I thought it
@@ -68,6 +68,7 @@ Friend Function IsFileHGT(ByRef srcFilename As String, Optional ByVal requireVal
         m_Width = Int(Sqr(Files.FileLenW(srcFilename) \ 2))
         m_Height = m_Width
         potentialMatch = (Files.FileLenW(srcFilename) = (m_Width * m_Height * 2))
+        If potentialMatch Then potentialMatch = (m_Width = 1201) Or (m_Width = 3601)
         
     End If
     
