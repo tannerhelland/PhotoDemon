@@ -3,8 +3,8 @@ Attribute VB_Name = "Dialogs"
 'Custom Dialog Interface
 'Copyright 2012-2022 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 12/February/17
-'Last update: add wrapper for "first-run" dialog
+'Last updated: 08/November/22
+'Last update: small wrapper for JPEG XL export
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -133,7 +133,20 @@ Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
 End Function
 
-'Present a dialog box to ask the user for various JPEG XR export settings
+Public Function PromptJXLSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportJXL
+    dialog_ExportJXL.ShowDialog srcImage
+    
+    PromptJXLSettings = dialog_ExportJXL.GetDialogResult
+    dstFormatParams = dialog_ExportJXL.GetFormatParams
+    dstMetadataParams = dialog_ExportJXL.GetMetadataParams
+    
+    Unload dialog_ExportJXL
+    Set dialog_ExportJXL = Nothing
+    
+End Function
+
 Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJXR

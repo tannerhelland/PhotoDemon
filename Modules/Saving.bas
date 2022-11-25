@@ -359,7 +359,10 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 
             Case PDIF_JPEG
                 GetExportParamsFromDialog = (Dialogs.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-                
+            
+            Case PDIF_JXL
+                GetExportParamsFromDialog = (Dialogs.PromptJXLSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_JXR
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
         

@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 30/March/22
-'Last update: start work on preliminary support for GIMP XCF images
+'Last updated: 08/November/22
+'Last update: continued work on JPEG XL support
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -815,7 +815,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         Case PDIF_JPEG
             IsExportDialogSupported = True
         Case PDIF_JXL
-            IsExportDialogSupported = False 'Will be TRUE soon!
+            IsExportDialogSupported = True
         Case PDIF_JXR
             IsExportDialogSupported = True
         Case PDIF_PNG

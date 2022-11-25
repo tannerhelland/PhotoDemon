@@ -3,10 +3,8 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 13/October/22
-'Last update: importing static images is working well!  I want to support animations too, but don't have any
-'             good ones to test with - so I think I'm going to move over to export support so I can generate
-'             animations for testing purposes.
+'Last updated: 25/November/22
+'Last update: get variable-quality export working (finally)
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
@@ -852,6 +850,145 @@ Private Type JxlPixelFormat
     
 End Type
 
+'/** Color space of the image data. */
+Private Enum JxlColorSpace
+    '/** Tristimulus RGB */
+    JXL_COLOR_SPACE_RGB
+    '/** Luminance based, the primaries in JxlColorEncoding must be ignored. This
+    '* value implies that num_color_channels in JxlBasicInfo is 1, any other value
+    '* implies num_color_channels is 3. */
+    JXL_COLOR_SPACE_GRAY
+    '/** XYB (opsin) color space */
+    JXL_COLOR_SPACE_XYB
+    '/** None of the other table entries describe the color space appropriately */
+    JXL_COLOR_SPACE_UNKNOWN
+End Enum
+
+'/** Built-in whitepoints for color encoding. When decoding, the numerical xy
+' * whitepoint value can be read from the JxlColorEncoding white_point field
+' * regardless of the enum value. When encoding, enum values except
+' * JXL_WHITE_POINT_CUSTOM override the numerical fields. Some enum values match
+' * a subset of CICP (Rec. ITU-T H.273 | ISO/IEC 23091-2:2019(E)), however the
+' * white point and RGB primaries are separate enums here.
+' */
+Private Enum JxlWhitePoint
+    '/** CIE Standard Illuminant D65: 0.3127, 0.3290 */
+    JXL_WHITE_POINT_D65 = 1
+    '/** White point must be read from the JxlColorEncoding white_point field, or
+    ' * as ICC profile. This enum value is not an exact match of the corresponding
+    ' * CICP value. */
+    JXL_WHITE_POINT_CUSTOM = 2
+    '/** CIE Standard Illuminant E (equal-energy): 1/3, 1/3 */
+    JXL_WHITE_POINT_E = 10
+    '/** DCI-P3 from SMPTE RP 431-2: 0.314, 0.351 */
+    JXL_WHITE_POINT_DCI = 11
+End Enum
+
+'/** Built-in primaries for color encoding. When decoding, the primaries can be
+' * read from the JxlColorEncoding primaries_red_xy, primaries_green_xy and
+' * primaries_blue_xy fields regardless of the enum value. When encoding, the
+' * enum values except JXL_PRIMARIES_CUSTOM override the numerical fields. Some
+' * enum values match a subset of CICP (Rec. ITU-T H.273 | ISO/IEC
+' * 23091-2:2019(E)), however the white point and RGB primaries are separate
+' * enums here.
+' */
+Private Enum JxlPrimaries
+    '/** The CIE xy values of the red, green and blue primaries are: 0.639998686,
+    '   0.330010138; 0.300003784, 0.600003357; 0.150002046, 0.059997204 */
+    JXL_PRIMARIES_SRGB = 1
+    '/** Primaries must be read from the JxlColorEncoding primaries_red_xy,
+    ' * primaries_green_xy and primaries_blue_xy fields, or as ICC profile. This
+    ' * enum value is not an exact match of the corresponding CICP value. */
+    JXL_PRIMARIES_CUSTOM = 2
+    '/** As specified in Rec. ITU-R BT.2100-1 */
+    JXL_PRIMARIES_2100 = 9
+    '/** As specified in SMPTE RP 431-2 */
+    JXL_PRIMARIES_P3 = 11
+End Enum
+
+'/** Built-in transfer functions for color encoding. Enum values match a subset
+' * of CICP (Rec. ITU-T H.273 | ISO/IEC 23091-2:2019(E)) unless specified
+' * otherwise. */
+Private Enum JxlTransferFunction
+    '/** As specified in SMPTE RP 431-2 */
+    JXL_TRANSFER_FUNCTION_709 = 1
+    '/** None of the other table entries describe the transfer function. */
+    JXL_TRANSFER_FUNCTION_UNKNOWN = 2
+    '/** The gamma exponent is 1 */
+    JXL_TRANSFER_FUNCTION_LINEAR = 8
+    '/** As specified in IEC 61966-2-1 sRGB */
+    JXL_TRANSFER_FUNCTION_SRGB = 13
+    '/** As specified in SMPTE ST 2084 */
+    JXL_TRANSFER_FUNCTION_PQ = 16
+    '/** As specified in SMPTE ST 428-1 */
+    JXL_TRANSFER_FUNCTION_DCI = 17
+    '/** As specified in Rec. ITU-R BT.2100-1 (HLG) */
+    JXL_TRANSFER_FUNCTION_HLG = 18
+    '/** Transfer function follows power law given by the gamma value in
+    ' JxlColorEncoding. Not a CICP value. */
+    JXL_TRANSFER_FUNCTION_GAMMA = 65535
+End Enum
+
+'/** Rendering intent for color encoding, as specified in ISO 15076-1:2010 */
+Private Enum JxlRenderingIntent
+    '/** vendor-specific */
+    JXL_RENDERING_INTENT_PERCEPTUAL = 0
+    '/** media-relative */
+    JXL_RENDERING_INTENT_RELATIVE
+    '/** vendor-specific */
+    JXL_RENDERING_INTENT_SATURATION
+    '/** ICC-absolute */
+    JXL_RENDERING_INTENT_ABSOLUTE
+End Enum
+
+'/** Color encoding of the image as structured information.
+' */
+Private Type JxlColorEncoding
+  
+    '/** Color space of the image data.
+    ' */
+    color_space As JxlColorSpace
+    
+    '/** Built-in white point. If this value is JXL_WHITE_POINT_CUSTOM, must
+    '* use the numerical whitepoint values from white_point_xy.
+    '*/
+    white_point As JxlWhitePoint
+    
+    '/** Numerical whitepoint values in CIE xy space. */
+    white_point_x As Double
+    white_point_y As Double
+    
+    '/** Built-in RGB primaries. If this value is JXL_PRIMARIES_CUSTOM, must
+    '* use the numerical primaries values below. This field and the custom values
+    '* below are unused and must be ignored if the color space is
+    '* JXL_COLOR_SPACE_GRAY or JXL_COLOR_SPACE_XYB.
+    '*/
+    primaries As JxlPrimaries
+    
+    '/** Numerical red primary values in CIE xy space. */
+    primaries_red_x As Double
+    primaries_red_y As Double
+    
+    '/** Numerical green primary values in CIE xy space. */
+    primaries_green_x As Double
+    primaries_green_y As Double
+    
+    '/** Numerical blue primary values in CIE xy space. */
+    primaries_blue_x As Double
+    primaries_blue_y As Double
+    
+    '/** Transfer function if have_gamma is 0 */
+    transfer_function As JxlTransferFunction
+    
+    '/** Gamma value used when transfer_function is JXL_TRANSFER_FUNCTION_GAMMA
+    '*/
+    gamma_custom As Double
+
+    '/** Rendering intent defined for the color profile. */
+    rendering_intent As JxlRenderingIntent
+    
+End Type
+
 'Current full-image header, if any
 Private m_Header As JxlBasicInfo
 
@@ -1499,6 +1636,16 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     Set cSettings = New pdSerialize
     cSettings.SetParamString srcOptions
     
+    'Start by retrieving quality from the passed param string.  Note that PhotoDemon passes this on the scale
+    ' [1, 100], but JXL quality actually behaves on the inverse scale [0, 15] where [0] = lossless, and (confusingly)
+    ' [1] = visually lossless.  Recommended range from the spec is [0.5, 3.0] but users are free to choose from the
+    ' full range of allowed values.
+    '
+    'We will keep this value on the range [1, 100!] for now (because we need to set some special values in
+    ' lossless mode), and convert it to the correct range immediately before calling the relevant quality API.
+    Dim jxlQuality As Single
+    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    
     'Prep an encoder object.  (Unlike decoders, we do not reuse this encoder between images.)
     Dim jxlEncoder As Long
     jxlEncoder = CallCDeclW(JxlEncoderCreate, vbLong, 0&)
@@ -1535,8 +1682,19 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
         .xsize = srcImage.Width
         .ysize = srcImage.Height
         
-        'More extensive color profile support remains TODO
-        .uses_original_profile = 0
+        'More extensive color profile support remains TODO, but for lossless mode we must explicitly
+        ' request use of the original color profile or the API will return errors.
+        If (jxlQuality = 100!) Then
+            
+            'NOTE: as of November 2022, setting this parameter to TRUE causes inexplicable crashes when attempting
+            ' to read out the encoded JXL data (via JxlEncoderProcessOutput) *IF* the data is saved using a built-in
+            ' JxlColorEncoding profile.  I do not know why.  Switching to raw ICC profile calls (instead of built-in
+            ' JxlColorEncoding ones) solves the problem for now for whatever reason.
+            .uses_original_profile = 1
+            
+        Else
+            .uses_original_profile = 0
+        End If
         
     End With
     
@@ -1549,6 +1707,38 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
         If JXL_DEBUG_VERBOSE Then DebugMsg "Basic info set OK"
     End If
     
+    'At present, PhotoDemon always stores images in the sRGB working space.  Specify that color space now.
+    
+    'Create an sRGB profile in JXL color encoding format.  Note that the last parameter is a JXL_BOOL for isGrayscale.
+    ' NOTE: as of v0.7.0, this function can and will crash libjxl when JXL data is later retrieved
+    ' (via JxlEncoderProcessOutput).
+    ' I don't know why this function is buggy, so I've switched to just passing the pure ICC profile instead.
+    'Dim tmpColorEncoding As JxlColorEncoding
+    'CallCDeclW JxlColorEncodingSetToSRGB, vbEmpty, VarPtr(tmpColorEncoding), 0&
+    
+    'Apply the color encoding (again, can't do this in v0.7.0 because the encoder will crash later)
+    'jxlResult = CallCDeclW(JxlEncoderSetColorEncoding, vbLong, jxlEncoder, VarPtr(tmpColorEncoding))
+    'If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "couldn't apply sRGB space"
+    
+    'Retrieve the generic sRGB profile PD uses as an internal working space
+    Dim tmpIccProfile As pdLCMSProfile
+    Set tmpIccProfile = New pdLCMSProfile
+    tmpIccProfile.CreateSRGBProfile
+    
+    Dim numProfileBytes As Long, iccProfileBytes() As Byte
+    numProfileBytes = tmpIccProfile.GetRawProfileBytes(iccProfileBytes)
+    
+    'Apply the ICC profile to the encoder
+    If (numProfileBytes > 0) Then
+        jxlResult = CallCDeclW(JxlEncoderSetICCProfile, vbLong, jxlEncoder, VarPtr(iccProfileBytes(0)), numProfileBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderSetICCProfile error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "ICC profile set OK"
+        End If
+    End If
+    
     'For animated export, we also need to create a base frame header object (TODO)
     'JXL_EXPORT void JxlEncoderInitFrameHeader(JxlFrameHeader *frame_header)
     'JXL_EXPORT void JxlEncoderInitBlendInfo(JxlBlendInfo *blend_info)
@@ -1559,9 +1749,39 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     jxlFrameSettings = CallCDeclW(JxlEncoderFrameSettingsCreate, vbLong, jxlEncoder, 0&)
     If JXL_DEBUG_VERBOSE Then DebugMsg "Default frame settings retrieved: " & jxlFrameSettings
     
-    'Modify frame settings here
+    'We can now request any frame settings we want.  Note that this can be done several ways:
+    ' 1) Bulk settings request, by calling e.g. JxlEncoderSetFrameLossless for lossless behavior or
+    '    JxlEncoderSetFrameDistance for lossy quality
+    ' 2) Individual esoteric settings by ID and int value, via JxlEncoderFrameSettingsSetOption
+    '    (Importantly, note that this takes an int64 value - cumbersome in VB6 due to no native 64-bit int!)
+    ' 3) Individual esoteric settings by ID and float value, via JxlEncoderFrameSettingsSetFloatOption
+    '    (Takes a 32-bit float, or "single" in VB6 terminology.)
     
-    'Before adding a frame, we need to set a targert pixel format
+    'For lossless quality, call the special "lossless" function (which sets a bunch of underlying settings
+    ' to compatible lossless values).
+    If (jxlQuality = 100!) Then
+        
+        jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, 0!)
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad lossy quality in lossless path: " & GetEncoderErrorText(jxlEncoder)
+        jxlResult = CallCDeclW(JxlEncoderSetFrameLossless, vbLong, jxlFrameSettings, 1&)
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad lossless quality in lossless path: " & GetEncoderErrorText(jxlEncoder)
+        
+    'For lossy values, we must first convert to the necessary [1, 15] scale.  Note that at present, we do not expose
+    ' settings below 1 which would mean "visually lossless with increasing numerical losslessness when approaching 0".
+    Else
+        
+        Dim jxlDistance As Single
+        jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
+        jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+        jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Saving image with frame distance " & jxlDistance
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
+        
+    End If
+    
+    'For an animated file, you can modify individual frame settings here
+    
+    'Before adding frame pixel data, we need to notify the engine of the pixel format we're using
     Dim pxFormat As JxlPixelFormat
     With pxFormat
         .align_scanline = 4
