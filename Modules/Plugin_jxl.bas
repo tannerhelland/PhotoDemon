@@ -1625,6 +1625,388 @@ Public Function LastJXL_IsGrayscale() As Boolean
     LastJXL_IsGrayscale = (m_Header.num_color_channels = 1)
 End Function
 
+'Given an arbitrary source DIB and a string of JPEG-XL parameters, perform a rapid in-memory save to JPEG-XL format,
+' then immediately decode the data back into a pdDIB object.
+Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcOptions As String) As Boolean
+    
+    Const FUNC_NAME As String = "PreviewJXL"
+    PreviewJXL = False
+    
+    On Error GoTo FatalPreviewError
+    
+    'Timing is always tracked, but only logged when the module-level verbose output bool is TRUE
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Start with fundamental sanity checks
+    If (srcDIB Is Nothing) Then Exit Function
+    If (srcDIB.GetDIBWidth = 0) Or (srcDIB.GetDIBHeight = 0) Then Exit Function
+    If (srcDIB.GetDIBColorDepth < 32) Then srcDIB.ConvertTo32bpp
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0, 0
+    
+    'We now have a guaranteed valid source and destination image with matching dimensions and 32-bpp RGBA format.
+    
+    'Proceed with a minimalist JPEG-XL export
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    'Look for lossless quality.  We don't need to generate a preview for lossless export (because it's lossless!).
+    Dim jxlQuality As Single
+    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    If (jxlQuality >= 100!) Then
+        PreviewJXL = dstDIB.CreateFromExistingDIB(srcDIB)
+        DIBs.SwizzleBR dstDIB
+        dstDIB.SetAlphaPremultiplication True
+        Exit Function
+    End If
+    
+    'We are now guaranteed to be using lossy quality.  (This is important because it limits the
+    ' pathways we need to take, below.)
+    
+    'Prep a temporary encoder
+    Dim jxlEncoder As Long
+    jxlEncoder = CallCDeclW(JxlEncoderCreate, vbLong, 0&)
+    If (jxlEncoder = 0) Then
+        InternalError FUNC_NAME, "couldn't create encoder"
+        Exit Function
+    End If
+    
+    'Generate a basic image information struct and populate key components manually
+    Dim imgBasicInfo As JxlBasicInfo
+    CallCDeclW JxlEncoderInitBasicInfo, vbEmpty, VarPtr(imgBasicInfo)
+    
+    With imgBasicInfo
+    
+        .have_animation = 0
+        .num_color_channels = 3     '1 for grayscale, 3 for RGB are only supported options at present
+        .bits_per_sample = 8        'Could be higher for HDR; floating-point has its own values elsewhere
+        
+        .num_extra_channels = 1
+        .alpha_bits = 8
+        .alpha_premultiplied = 0
+        
+        .xsize = srcDIB.GetDIBWidth
+        .ysize = srcDIB.GetDIBHeight
+        
+        'Preview in sRGB format for improved perf
+        .uses_original_profile = 0
+        
+    End With
+    
+    'Assign image properties to the encoder
+    Dim jxlResult As JxlEncoderStatus
+    jxlResult = CallCDeclW(JxlEncoderSetBasicInfo, vbLong, jxlEncoder, VarPtr(imgBasicInfo))
+    If (jxlResult = JXL_ENC_ERROR) Then
+        InternalError FUNC_NAME, "JxlEncoderSetBasicInfo error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+        GoTo FatalPreviewError
+    End If
+    
+    'Create a generic frame settings object
+    Dim jxlFrameSettings As Long
+    jxlFrameSettings = CallCDeclW(JxlEncoderFrameSettingsCreate, vbLong, jxlEncoder, 0&)
+    
+    'Apply any special frame settings, including quality (distance)
+    Dim jxlDistance As Single
+    jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
+    jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+    jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
+    
+    'Encoding effort ([1, 9] 1 is fastest, default is 7)
+    Const DEFAULT_ENCODE_EFFORT As Long = 7
+    Dim jxlEffort As Currency
+    jxlEffort = cSettings.GetLong("jxl-effort", DEFAULT_ENCODE_EFFORT, True)
+    If (jxlEffort < 1) Then jxlEffort = 1
+    If (jxlEffort > 9) Then jxlEffort = 9
+    jxlEffort = jxlEffort / 10000@
+    jxlResult = CallCDeclW(JxlEncoderFrameSettingsSetOption, vbLong, jxlFrameSettings, JXL_ENC_FRAME_SETTING_EFFORT, jxlEffort)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame setting (effort): " & GetEncoderErrorText(jxlEncoder)
+    
+    'Before adding frame pixel data, we need to notify the encoder of source pixel format details
+    Dim pxFormat As JxlPixelFormat
+    With pxFormat
+        .align_scanline = 4
+        .data_type = JXL_TYPE_UINT8
+        .endianness = JXL_NATIVE_ENDIAN
+        .num_channels = 4
+    End With
+    
+    'Normally you would need to swizzle R/B channels here prior to handing the pixel data off to libjxl,
+    ' but in PhotoDemon the export dialog manages this for us (it's faster to only do it once, when the
+    ' preview source is first generated).
+    
+    'Add this as the only frame to the JXL encoder
+    jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), srcDIB.GetDIBPointer, srcDIB.GetDIBStride * srcDIB.GetDIBHeight)
+    If (jxlResult = JXL_ENC_ERROR) Then
+        InternalError FUNC_NAME, "JxlEncoderAddImageFrame error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+        GoTo FatalPreviewError
+    End If
+    
+    'Explicitly terminate further input.
+    ' (JxlEncoderCloseInput is the equivalent of calling both CloseFrames and CloseBoxes.)
+    CallCDeclW JxlEncoderCloseInput, vbEmpty, jxlEncoder
+    
+    'We can now ask the encoder for final JXL output.  For preview purposes, we're gonna use a standard VB array
+    ' to capture the output data; we'll then turnaround and immediately decode that data for previewing.
+    
+    'libjxl does not know the size of the finished JXL output in advance.  Instead, we must repeatedly request
+    ' more output from it, and it simply lets us know when it's done.  We can then trim our final output file
+    ' to a precise size as desired.
+    Dim numBytesAvailable As Long
+    
+    'Start with a megabyte; we'll increment further as necessary
+    Const FILE_INCREMENT_AMOUNT As Long = 2 ^ 20
+    numBytesAvailable = FILE_INCREMENT_AMOUNT
+    
+    'Because we're using dynamic memory, the initial pointer may change over time (if/when we must allocate more).
+    ' So we need to track how many bytes we've already written, so we can trim appropriately when we're done.
+    Dim numBytesPreviouslyWritten As Long
+    numBytesPreviouslyWritten = 0
+    
+    'Open an in-memory stream
+    Dim dstStream As pdStream
+    Set dstStream = New pdStream
+    If dstStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, vbNullString, numBytesAvailable) Then
+        
+        'Failsafe only; the pdStream engine ensures this is available when the stream starts
+        dstStream.EnsureBufferSpaceAvailable numBytesAvailable
+        
+        'Perform first-write
+        Dim initPtr As Long, dstPtr As Long, numBytesWrittenThisPass As Long
+        dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+        initPtr = dstPtr
+        jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+        
+        'Note how many bytes were written during this pass
+        numBytesWrittenThisPass = (dstPtr - initPtr)
+        
+        'If more output is required, keep outputting as necessary
+        Do While (jxlResult = JXL_ENC_NEED_MORE_OUTPUT)
+            
+            'Increment the "total bytes written" counter
+            numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+            
+            'Commit the bytes we've written, then ask for a larger file map
+            numBytesAvailable = FILE_INCREMENT_AMOUNT
+            dstStream.EnsureBufferSpaceAvailable numBytesPreviouslyWritten + numBytesAvailable
+            
+            'Because the stream doesn't know that we've written data to it, we must manually increment
+            ' the underlying stream pointer.
+            dstStream.SetPosition numBytesPreviouslyWritten, FILE_BEGIN
+            
+            'Ask the encoder to continue working
+            dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+            initPtr = dstPtr
+            jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+            
+            'Note how many bytes were written during this pass
+            numBytesWrittenThisPass = (dstPtr - initPtr)
+            
+        Loop
+        
+        'Calculate a final "bytes written" tally
+        numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+        
+        'Set the final stream size but DO NOT CLOSE the stream - instead, reset its internal pointer to 0.
+        dstStream.SetSizeExternally numBytesPreviouslyWritten
+        dstStream.SetPosition 0, FILE_BEGIN
+        
+        'Ensure the final process output call succeeded.
+        Dim okToDecode As Boolean
+        okToDecode = (jxlResult = JXL_ENC_SUCCESS)
+        If (Not okToDecode) Then
+            '/process output failed at some point
+            InternalError FUNC_NAME, "bad process output: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
+        'We no longer need the libjxl encoder; free it
+        If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+        
+        'Time to decode!
+        
+        'Note that we are going to shortcut many normal decoding steps (like validating the source data)
+        ' to improve performance.  We can only do this because we know the input data is good.
+        
+        'Reset the same generic decoder we use for regular JPEG-XL decoding.
+        JXL_CreateDecoder
+        If (m_JxlDecoder = 0) Then
+            InternalError FUNC_NAME, "can't continue without a JxlDecoder instance; abandoning import"
+            Exit Function
+        End If
+        
+        'We can now start feeding data into the decoder.  libjxl uses an interesting design where the caller
+        ' can "subscribe" to "events".  These events are just special return codes for the "feed more data into
+        ' the decoder" function, but they are convenient for parsing because we can simply wait for key "events"
+        ' to occur before doing hefty tasks like allocating buffers for pixels, etc.
+        Dim eventsWanted As JxlDecoderStatus
+        eventsWanted = JXL_DEC_BASIC_INFO Or JXL_DEC_FRAME Or JXL_DEC_FULL_IMAGE
+        
+        Dim jxlReturn As JxlDecoderStatus
+        jxlReturn = CallCDeclW(JxlDecoderSubscribeEvents, vbLong, m_JxlDecoder, eventsWanted)
+        If (jxlReturn <> JXL_DEC_SUCCESS) Then
+            InternalError FUNC_NAME, "couldn't subscribe events"
+            Exit Function
+        End If
+        
+        'Data will be passed from our JXL stream to the decoder in chunks; 0.5 MB at a time seems like a
+        ' reasonable modern default.  (The library provides no guidance on this.)
+        Const JXL_CHUNK_SIZE As Long = 2 ^ 19
+        Set m_Stream = dstStream
+        
+        'Start feeding data into libjxl.  We can dump data blindly until we receive the event(s) we've subscribed to.
+        Dim nextEvent As JxlDecoderStatus
+        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+        If (nextEvent = JXL_DEC_ERROR) Then GoTo FatalPreviewError
+        
+        'The first event we expect is "basic image header" retrieval.
+        If (nextEvent = JXL_DEC_BASIC_INFO) Then
+            
+            jxlReturn = CallCDeclW(JxlDecoderGetBasicInfo, vbLong, m_JxlDecoder, VarPtr(m_Header))
+            If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                InternalError FUNC_NAME, "couldn't get basic info"
+                GoTo FatalPreviewError
+            End If
+            
+        Else
+            InternalError FUNC_NAME, "unexpected event instead of basic info"
+        End If
+        
+        'If we're still here, basic image info retrieval was successful.  We don't actually need that data
+        ' (we know image size and format already!) but this provides a good place for failsafe checks.
+        If (dstDIB.GetDIBWidth <> m_Header.xsize) Or (dstDIB.GetDIBHeight <> m_Header.ysize) Then
+            InternalError FUNC_NAME, "bad image size"
+            GoTo FatalPreviewError
+        End If
+        
+        'We could retrieve multiple frames in the future, but for now we just want to validate the retrieval
+        ' of at least *one* valid frame.
+        Dim idxFrame As Long, numFramesOK As Long
+        idxFrame = 0
+        numFramesOK = 0
+        
+        Dim curFrameHeader As JxlFrameHeader
+        
+        'We will now continue iterating through the file until we successfully load a frame.
+        Dim letsQuitEarly As Boolean
+        letsQuitEarly = False
+        
+        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+        Do While (nextEvent <> JXL_DEC_SUCCESS)
+        
+            'For now, halt on all errors.  (They are assumed to be unrecoverable at this point,
+            ' since libjxl's API provides no mechanism for retrieving *what* the error was -
+            ' that's a TODO item per their docs.)
+            If (nextEvent = JXL_DEC_ERROR) Then GoTo FatalPreviewError
+            
+            'Handle events according to type.
+            
+            'A new frame header has been encountered.  Normally we would prep a pdLayer object here,
+            ' but we can simply treat these as notification-only events during a preview.
+            If (nextEvent = JXL_DEC_FRAME) Then
+                
+                'Retrieve the frame header as part of handling the event
+                jxlReturn = CallCDeclW(JxlDecoderGetFrameHeader, vbLong, m_JxlDecoder, VarPtr(curFrameHeader))
+                If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                    InternalError FUNC_NAME, "bad frame header"
+                    GoTo FatalPreviewError
+                End If
+            
+            'Pixel data is ready, but we need to specify an output buffer first
+            ElseIf (nextEvent = JXL_DEC_NEED_IMAGE_OUT_BUFFER) Then
+                
+                'Reuse our same pxFormat object used during the encode stage
+                With pxFormat
+                    .align_scanline = 4     'Windows requires 4-byte alignment, but this is redundant when decoding to RGBA8...
+                    .data_type = JXL_TYPE_UINT8
+                    .num_channels = 4
+                    
+                    'Only matters if we support higher bit-depths in the future, obviously
+                    .endianness = JXL_LITTLE_ENDIAN
+                End With
+
+                'Ensure our destination DIB is valid
+                Dim dibReady As Boolean
+                dibReady = (dstDIB.GetDIBWidth = m_Header.xsize) And (dstDIB.GetDIBHeight = m_Header.ysize)
+                
+                'Allow libjxl to decode the pixel data into our destination DIB
+                If dibReady Then
+                    jxlReturn = CallCDeclW(JxlDecoderSetImageOutBuffer, vbLong, m_JxlDecoder, VarPtr(pxFormat), dstDIB.GetDIBPointer, dstDIB.GetDIBStride * dstDIB.GetDIBHeight)
+                    If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                        InternalError FUNC_NAME, "bad SetImageOutBuffer"
+                        GoTo FatalPreviewError
+                    End If
+                Else
+                    InternalError FUNC_NAME, "bad pixel buffer"
+                    GoTo FatalPreviewError
+                End If
+
+            'The current frame has been decoded successfully.  We only need one frame for a preview,
+            ' so do not proceed further.
+            ElseIf (nextEvent = JXL_DEC_FULL_IMAGE) Then
+                
+                'Premultiply the DIB (TODO: see if the decoder can do this for us? might be faster)
+                dstDIB.SetAlphaPremultiplication True
+                
+                'Swizzle R/B channels
+                DIBs.SwizzleBR dstDIB
+                
+                'Increment frame count and reset current frame state.
+                idxFrame = idxFrame + 1
+                numFramesOK = numFramesOK + 1
+                
+                'If this frame was marked as the last frame in the image, do not attempt to retrieve
+                ' another frame - instead, just exit after this.
+                letsQuitEarly = True
+            
+            Else
+                InternalError FUNC_NAME, "unexpected event: " & nextEvent
+                Exit Do
+            End If
+            
+            'Retrieve the next event.  Note that libjxl will return JXL_DEC_SUCCESS if all requested events
+            ' have been returned, *even if EOF has not been reached*.  That's okay for our purposes - but if we
+            ' expand coverage in the future, we need to manually request new events accordingly.
+            If letsQuitEarly Then
+                Exit Do
+            Else
+                nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+            End If
+        
+        Loop
+        
+        'Report success if at least one frame was retrieved correctly
+        PreviewJXL = (numFramesOK > 0)
+        
+        'Note that we keep the decoder alive here.  This improves performance on subsequent imports,
+        ' and the decoder will be auto-freed when libjxl is released.
+        JXL_ResetDecoder
+        
+        'We also want to free the module-level reference to our temp stream
+        Set m_Stream = Nothing
+        
+        '/end JXL decoding
+        
+    'Failed to start stream; should be impossible unless memory is extremely constrained
+    End If
+    
+    'To see timing reports for this function, uncomment the following line:
+    'If JXL_DEBUG_VERBOSE Then DebugMsg "JXL preview took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    Exit Function
+    
+FatalPreviewError:
+    
+    'Free the encoder, if any.  (Note that this also destroys any associated FrameSettings object(s) too.)
+    If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+    JXL_ResetDecoder
+    
+    PreviewJXL = False
+    
+End Function
+
 'Save an arbitrary DIB to a standalone JPEG XL file.
 Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
 
@@ -1778,6 +2160,18 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
         If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
         
     End If
+    
+    'Encoding effort ([1, 9] 1 is fastest, default is 7)
+    Const DEFAULT_ENCODE_EFFORT As Long = 7
+    Dim jxlEffort As Currency
+    jxlEffort = cSettings.GetLong("jxl-effort", DEFAULT_ENCODE_EFFORT, True)
+    
+    If (jxlEffort < 1) Then jxlEffort = 1
+    If (jxlEffort > 9) Then jxlEffort = 9
+    jxlEffort = jxlEffort / 10000@
+    
+    jxlResult = CallCDeclW(JxlEncoderFrameSettingsSetOption, vbLong, jxlFrameSettings, JXL_ENC_FRAME_SETTING_EFFORT, jxlEffort)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame setting (effort): " & GetEncoderErrorText(jxlEncoder)
     
     'For an animated file, you can modify individual frame settings here
     
@@ -1971,9 +2365,9 @@ End Function
 'Continue loading data into the active decoder until an event state is returned.  This function automatically
 ' tracks underlying file position to ensure correct read behavior.  File is read in [chunkSize] chunks using
 ' memory mapping.
-Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) As JxlDecoderStatus
-        
-    If JXL_DEBUG_VERBOSE Then DebugMsg "Starting ProcessUntilEvent..."
+Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024, Optional ByVal suppressDebugMsgs As Boolean = False) As JxlDecoderStatus
+    
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "Starting ProcessUntilEvent..."
         
     Const FUNC_NAME As String = "JXL_ProcessUntilEvent"
     
@@ -2012,17 +2406,17 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
         Exit Function
     End If
     
-    If JXL_DEBUG_VERBOSE Then DebugMsg "libjxl SetInput successful."
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl SetInput successful."
     
     'Ask the decoder to process the input we've sent.
     jxlReturn = CallCDeclW(JxlDecoderProcessInput, vbLong, m_JxlDecoder)
-    If JXL_DEBUG_VERBOSE Then DebugMsg "libjxl ProcessInput returned: " & jxlReturn
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl ProcessInput returned: " & jxlReturn
     
     'If the decoder requires more input before raising a requested event, pass it more input
     Dim numBytesStillRequired As Long
     Do While (jxlReturn = JXL_DEC_NEED_MORE_INPUT)
         
-        If JXL_DEBUG_VERBOSE Then DebugMsg "libjxl ProcessInput needs more output.  Loading another chunk..."
+        If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl ProcessInput needs more output.  Loading another chunk..."
         
         'Before adding new input, we must release the current input.
         numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
@@ -2067,12 +2461,12 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
     
     'We are now guaranteed to have raised *some* kind of event (or error).
     JXL_ProcessUntilEvent = jxlReturn
-    If JXL_DEBUG_VERBOSE Then DebugMsg "libjxl Event ready: " & jxlReturn
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl Event ready: " & jxlReturn
     
     'Release any input we have supplied, but be sure to *align the underlying file stream pointer* accordingly
     numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
     If (numBytesStillRequired > 0) Then
-        If JXL_DEBUG_VERBOSE Then DebugMsg "Release input required modifying file offset by -" & numBytesStillRequired
+        If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "Release input required modifying file offset by -" & numBytesStillRequired
         m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
     End If
 
@@ -2084,7 +2478,7 @@ Private Function JXL_ResetDecoder() As Boolean
     
     If (m_JxlDecoder <> 0) Then
         CallCDeclW JxlDecoderReset, vbEmpty, m_JxlDecoder
-        If JXL_DEBUG_VERBOSE Then DebugMsg "Reset decoder: " & m_JxlDecoder
+        'If JXL_DEBUG_VERBOSE Then DebugMsg "Reset decoder: " & m_JxlDecoder
     
     'Failsafe only; just call JXL_CreateDecoder if you need a new instance
     Else

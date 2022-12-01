@@ -215,6 +215,9 @@ Private m_SrcImage As pdImage
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
 
+'Current original preview DIB, cropped and zoomed as necessary (but otherwise unmodified).
+Private m_previewDIB As pdDIB
+
 'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
 ' variable controls access to the toggle code.
 Private m_DisableUIUpdates As Boolean
@@ -263,7 +266,7 @@ End Sub
 
 Private Sub cboSaveQuality_Click()
     
-    If Not m_DisableUIUpdates Then
+    If (Not m_DisableUIUpdates) Then
         Select Case cboSaveQuality.ListIndex
             Case 0
                 sltQuality.Value = 100
@@ -287,9 +290,25 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     
-    'If (Not sltQuality.IsValid) Then Exit Sub
-    
     'Store all parameters inside an XML string
+    m_FormatParamString = GetParamString_JXL()
+    
+    'The metadata panel manages its own XML string
+    m_MetadataParamString = mtdManager.GetMetadataSettings
+    
+    'Free resources that are no longer required
+    Set m_CompositedImage = Nothing
+    Set m_SrcImage = Nothing
+    Set m_previewDIB = Nothing
+    
+    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
+    m_UserDialogAnswer = vbOK
+    Me.Visible = False
+    
+End Sub
+
+Private Function GetParamString_JXL() As String
+    
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.AddParam "jxl-quality", sltQuality.Value
@@ -305,20 +324,9 @@ Private Sub cmdBar_OKClick()
             cParams.AddParam "jxl-color-depth", "8"
     End Select
     
-    m_FormatParamString = cParams.GetParamString
+    GetParamString_JXL = cParams.GetParamString
     
-    'The metadata panel manages its own XML string
-    m_MetadataParamString = mtdManager.GetMetadataSettings
-    
-    'Free resources that are no longer required
-    Set m_CompositedImage = Nothing
-    Set m_SrcImage = Nothing
-    
-    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
-    m_UserDialogAnswer = vbOK
-    Me.Visible = False
-    
-End Sub
+End Function
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
@@ -463,7 +471,14 @@ Private Sub UpdatePreviewSource()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SafeArray2D
-        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
+        
+        'The public workingDIB object now contains the preview area image.  Clone it locally.
+        If (m_previewDIB Is Nothing) Then Set m_previewDIB = New pdDIB
+        m_previewDIB.CreateFromExistingDIB workingDIB
+        
+        'Perform a one-time swizzle here (from BGRA to RGBA order)
+        DIBs.SwizzleBR m_previewDIB
         
         'TODO: forcible color-depth changes here?
         
@@ -473,15 +488,14 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing)) Then
+    If (cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing) And (Not m_previewDIB Is Nothing) Then
         
-        'Retrieve a JPEG-saved version of the current preview image
-        workingDIB.ResetDIB
-        'If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_JPEG, fi_Flags) Then
-        '    FinalizeNonstandardPreview pdFxPreview, True
-        'Else
-        '    Debug.Print "WARNING: JPEG EXPORT PREVIEW IS HORRIBLY BROKEN!"
-        'End If
+        'Retrieve a JPEG-XL version of the current preview image.
+        If Plugin_jxl.PreviewJXL(m_previewDIB, workingDIB, GetParamString_JXL()) Then
+            FinalizeNonstandardPreview pdFxPreview, True
+        Else
+            PDDebug.LogAction "WARNING: JPEG-XL EXPORT PREVIEW PROBLEM!"
+        End If
         
     End If
     
