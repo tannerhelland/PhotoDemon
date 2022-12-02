@@ -216,7 +216,7 @@ Private m_SrcImage As pdImage
 Private m_CompositedImage As pdDIB
 
 'Current original preview DIB, cropped and zoomed as necessary (but otherwise unmodified).
-Private m_previewDIB As pdDIB
+Private m_PreviewDIB As pdDIB
 
 'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
 ' variable controls access to the toggle code.
@@ -299,7 +299,7 @@ Private Sub cmdBar_OKClick()
     'Free resources that are no longer required
     Set m_CompositedImage = Nothing
     Set m_SrcImage = Nothing
-    Set m_previewDIB = Nothing
+    Set m_PreviewDIB = Nothing
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
@@ -317,11 +317,11 @@ Private Function GetParamString_JXL() As String
     
     Select Case btsDepth.ListIndex
         Case 0
-            cParams.AddParam "jxl-color-depth", "auto"
+            cParams.AddParam "jxl-color-format", "auto"
         Case 1
-            cParams.AddParam "jxl-color-depth", "24"
+            cParams.AddParam "jxl-color-format", "color"
         Case 2
-            cParams.AddParam "jxl-color-depth", "8"
+            cParams.AddParam "jxl-color-format", "gray"
     End Select
     
     GetParamString_JXL = cParams.GetParamString
@@ -474,11 +474,11 @@ Private Sub UpdatePreviewSource()
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
         'The public workingDIB object now contains the preview area image.  Clone it locally.
-        If (m_previewDIB Is Nothing) Then Set m_previewDIB = New pdDIB
-        m_previewDIB.CreateFromExistingDIB workingDIB
+        If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+        m_PreviewDIB.CreateFromExistingDIB workingDIB
         
         'Perform a one-time swizzle here (from BGRA to RGBA order)
-        DIBs.SwizzleBR m_previewDIB
+        DIBs.SwizzleBR m_PreviewDIB
         
         'TODO: forcible color-depth changes here?
         
@@ -488,10 +488,10 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If (cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing) And (Not m_previewDIB Is Nothing) Then
+    If (cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing) And (Not m_PreviewDIB Is Nothing) Then
         
         'Retrieve a JPEG-XL version of the current preview image.
-        If Plugin_jxl.PreviewJXL(m_previewDIB, workingDIB, GetParamString_JXL()) Then
+        If Plugin_jxl.PreviewJXL(m_PreviewDIB, workingDIB, GetParamString_JXL()) Then
             FinalizeNonstandardPreview pdFxPreview, True
         Else
             PDDebug.LogAction "WARNING: JPEG-XL EXPORT PREVIEW PROBLEM!"

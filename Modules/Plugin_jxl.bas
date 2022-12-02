@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 25/November/22
-'Last update: get variable-quality export working (finally)
+'Last updated: 02/December/22
+'Last update: wrap up work on live previews and grayscale export support
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
@@ -1643,7 +1643,7 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     If (srcDIB.GetDIBWidth = 0) Or (srcDIB.GetDIBHeight = 0) Then Exit Function
     If (srcDIB.GetDIBColorDepth < 32) Then srcDIB.ConvertTo32bpp
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0, 0
+    dstDIB.CreateFromExistingDIB srcDIB
     
     'We now have a guaranteed valid source and destination image with matching dimensions and 32-bpp RGBA format.
     
@@ -1652,13 +1652,37 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     Set cSettings = New pdSerialize
     cSettings.SetParamString srcOptions
     
+    'Check color mode; for preview purposes, we'll simply apply a grayscale filter
+    Dim origParamValue As String
+    origParamValue = cSettings.GetString("jxl-color-format", "auto", True)
+    
+    Dim saveAsGrayscale As Boolean
+    Select Case origParamValue
+        Case "auto"
+            saveAsGrayscale = DIBs.IsDIBGrayscale(srcDIB)
+        Case "color"
+            saveAsGrayscale = False
+        Case "gray"
+            saveAsGrayscale = True
+        Case Else
+            saveAsGrayscale = DIBs.IsDIBGrayscale(srcDIB)
+    End Select
+    
+    'Alpha is currently always saved using "automatic" mode - meaning we save it if present, ignore it otherwise.
+    ' (In the future, manual overrides could be added, like we do with PNG.)
+    '
+    'For preview purposes, let's simplify things by always saving alpha
+    Dim saveAlpha As Boolean
+    saveAlpha = True
+    
     'Look for lossless quality.  We don't need to generate a preview for lossless export (because it's lossless!).
     Dim jxlQuality As Single
     jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
     If (jxlQuality >= 100!) Then
-        PreviewJXL = dstDIB.CreateFromExistingDIB(srcDIB)
         DIBs.SwizzleBR dstDIB
+        If saveAsGrayscale Then DIBs.MakeDIBGrayscale dstDIB, 256, False
         dstDIB.SetAlphaPremultiplication True
+        PreviewJXL = True
         Exit Function
     End If
     
@@ -1680,15 +1704,32 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     With imgBasicInfo
     
         .have_animation = 0
-        .num_color_channels = 3     '1 for grayscale, 3 for RGB are only supported options at present
         .bits_per_sample = 8        'Could be higher for HDR; floating-point has its own values elsewhere
+        .exponent_bits_per_sample = 0
+        .orientation_image = JXL_ORIENT_IDENTITY
         
-        .num_extra_channels = 1
-        .alpha_bits = 8
-        .alpha_premultiplied = 0
+        '1 for grayscale, 3 for RGB are only supported channel options at present (CMYK might be added in the future)
+        If saveAsGrayscale Then
+            .num_color_channels = 1
+        Else
+            .num_color_channels = 3
+        End If
+        
+        'If alpha is present, set it now;  (0 for alpha_bits means "no alpha channel")
+        .alpha_exponent_bits = 0
+        .alpha_premultiplied = 0    'Premultiplication is broken in libjxl 0.7.0; see https://github.com/libjxl/libjxl/issues/1869
+        If saveAlpha Then
+            .num_extra_channels = 1
+            .alpha_bits = 8
+        Else
+            .num_extra_channels = 0
+            .alpha_bits = 0
+        End If
         
         .xsize = srcDIB.GetDIBWidth
         .ysize = srcDIB.GetDIBHeight
+        .intrinsic_xsize = .xsize
+        .intrinsic_ysize = .ysize
         
         'Preview in sRGB format for improved perf
         .uses_original_profile = 0
@@ -1701,6 +1742,28 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     If (jxlResult = JXL_ENC_ERROR) Then
         InternalError FUNC_NAME, "JxlEncoderSetBasicInfo error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
         GoTo FatalPreviewError
+    End If
+    
+    'Depending on gray or color export, retrieve either a linear gray or an sRGB color profile
+    Dim tmpIccProfile As pdLCMSProfile
+    Set tmpIccProfile = New pdLCMSProfile
+    
+    If saveAsGrayscale Then
+        tmpIccProfile.CreateGenericGrayscaleProfile
+    Else
+        tmpIccProfile.CreateSRGBProfile
+    End If
+    
+    Dim numProfileBytes As Long, iccProfileBytes() As Byte
+    numProfileBytes = tmpIccProfile.GetRawProfileBytes(iccProfileBytes)
+    
+    'Apply the ICC profile to the encoder
+    If (numProfileBytes > 0) Then
+        jxlResult = CallCDeclW(JxlEncoderSetICCProfile, vbLong, jxlEncoder, VarPtr(iccProfileBytes(0)), numProfileBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderSetICCProfile error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
     End If
     
     'Create a generic frame settings object
@@ -1726,22 +1789,63 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     
     'Before adding frame pixel data, we need to notify the encoder of source pixel format details
     Dim pxFormat As JxlPixelFormat
-    With pxFormat
-        .align_scanline = 4
-        .data_type = JXL_TYPE_UINT8
-        .endianness = JXL_NATIVE_ENDIAN
-        .num_channels = 4
-    End With
     
-    'Normally you would need to swizzle R/B channels here prior to handing the pixel data off to libjxl,
-    ' but in PhotoDemon the export dialog manages this for us (it's faster to only do it once, when the
-    ' preview source is first generated).
+    'Values universal across all types
+    pxFormat.data_type = JXL_TYPE_UINT8
+    pxFormat.endianness = JXL_NATIVE_ENDIAN
     
-    'Add this as the only frame to the JXL encoder
-    jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), srcDIB.GetDIBPointer, srcDIB.GetDIBStride * srcDIB.GetDIBHeight)
-    If (jxlResult = JXL_ENC_ERROR) Then
-        InternalError FUNC_NAME, "JxlEncoderAddImageFrame error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
-        GoTo FatalPreviewError
+    'Values specific to certain color/gray/alpha modes
+    
+    'Grayscale images
+    If saveAsGrayscale Then
+        
+        Dim srcBytes() As Byte, numSrcBytes As Long
+        
+        If saveAlpha Then
+            DIBs.GetDIBGrayscaleAndAlphaMap srcDIB, srcBytes
+            numSrcBytes = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight * 2
+        Else
+            DIBs.GetDIBGrayscaleMap srcDIB, srcBytes, False
+            numSrcBytes = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
+        End If
+        
+        'Scanlines are no longer aligned a specific way
+        pxFormat.align_scanline = 1
+        If saveAlpha Then
+            pxFormat.num_channels = 2
+        Else
+            pxFormat.num_channels = 1
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), VarPtr(srcBytes(0, 0)), numSrcBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on gray frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
+    'Color images
+    Else
+        
+        'Normally we would eliminate alpha here, but for preview purposes it's easier to simply operate in RGBA mode.
+        ' (Thus saveAlpha has been forced to TRUE earlier in this function.)
+        'If (Not saveAlpha) Then dstDIB.ConvertTo24bpp
+        
+        '4-byte alignment is used either way
+        pxFormat.align_scanline = 4
+        If saveAlpha Then
+            pxFormat.num_channels = 4
+        Else
+            pxFormat.num_channels = 3
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), dstDIB.GetDIBPointer, dstDIB.GetDIBStride * dstDIB.GetDIBHeight)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on color frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
     End If
     
     'Explicitly terminate further input.
@@ -2013,6 +2117,10 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     Const FUNC_NAME As String = "SaveJXL_ToFile"
     SaveJXL_ToFile = False
     
+    'Retrieve the composited pdImage object.
+    Dim finalDIB As pdDIB
+    srcImage.GetCompositedImage finalDIB, False
+    
     'Prepare an export options parser
     Dim cSettings As pdSerialize
     Set cSettings = New pdSerialize
@@ -2027,6 +2135,27 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     ' lossless mode), and convert it to the correct range immediately before calling the relevant quality API.
     Dim jxlQuality As Single
     jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    
+    'Apply any preliminary color model adjustments to the source DIB as necessary
+    Dim origParamValue As String
+    origParamValue = cSettings.GetString("jxl-color-format", "auto", True)
+    
+    Dim saveAsGrayscale As Boolean
+    Select Case origParamValue
+        Case "auto"
+            saveAsGrayscale = DIBs.IsDIBGrayscale(finalDIB)
+        Case "color"
+            saveAsGrayscale = False
+        Case "gray"
+            saveAsGrayscale = True
+        Case Else
+            saveAsGrayscale = DIBs.IsDIBGrayscale(finalDIB)
+    End Select
+    
+    'Alpha is currently always saved using "automatic" mode - meaning we save it if present, ignore it otherwise.
+    ' (In the future, manual overrides could be added, like we do with PNG.)
+    Dim saveAlpha As Boolean
+    saveAlpha = DIBs.IsDIBTransparent(finalDIB)
     
     'Prep an encoder object.  (Unlike decoders, we do not reuse this encoder between images.)
     Dim jxlEncoder As Long
@@ -2053,16 +2182,32 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     With imgBasicInfo
     
         .have_animation = 0
-        .num_color_channels = 3     '1 for grayscale, 3 for RGB are only supported options at present
         .bits_per_sample = 8        'Could be higher for HDR; floating-point has its own values elsewhere
+        .exponent_bits_per_sample = 0
+        .orientation_image = JXL_ORIENT_IDENTITY
+        
+        '1 for grayscale, 3 for RGB are only supported channel options at present (CMYK might be added in the future)
+        If saveAsGrayscale Then
+            .num_color_channels = 1
+        Else
+            .num_color_channels = 3
+        End If
         
         'If alpha is present, set it now;  (0 for alpha_bits means "no alpha channel")
-        .num_extra_channels = 1
-        .alpha_bits = 8
-        .alpha_premultiplied = 0
+        .alpha_exponent_bits = 0
+        .alpha_premultiplied = 0    'Premultiplication is broken in libjxl 0.7.0; see https://github.com/libjxl/libjxl/issues/1869
+        If saveAlpha Then
+            .num_extra_channels = 1
+            .alpha_bits = 8
+        Else
+            .num_extra_channels = 0
+            .alpha_bits = 0
+        End If
         
         .xsize = srcImage.Width
         .ysize = srcImage.Height
+        .intrinsic_xsize = .xsize
+        .intrinsic_ysize = .ysize
         
         'More extensive color profile support remains TODO, but for lossless mode we must explicitly
         ' request use of the original color profile or the API will return errors.
@@ -2072,6 +2217,8 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
             ' to read out the encoded JXL data (via JxlEncoderProcessOutput) *IF* the data is saved using a built-in
             ' JxlColorEncoding profile.  I do not know why.  Switching to raw ICC profile calls (instead of built-in
             ' JxlColorEncoding ones) solves the problem for now for whatever reason.
+            '
+            '(The same is true in GIMP - see https://github.com/libjxl/libjxl/issues/1931)
             .uses_original_profile = 1
             
         Else
@@ -2102,10 +2249,17 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     'jxlResult = CallCDeclW(JxlEncoderSetColorEncoding, vbLong, jxlEncoder, VarPtr(tmpColorEncoding))
     'If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "couldn't apply sRGB space"
     
-    'Retrieve the generic sRGB profile PD uses as an internal working space
+    'Depending on gray or color export, retrieve either a linear gray or an sRGB color profile
     Dim tmpIccProfile As pdLCMSProfile
     Set tmpIccProfile = New pdLCMSProfile
-    tmpIccProfile.CreateSRGBProfile
+    
+    If saveAsGrayscale Then
+        tmpIccProfile.CreateGenericGrayscaleProfile
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Creating gray color profile..."
+    Else
+        tmpIccProfile.CreateSRGBProfile
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Creating sRGB color profile..."
+    End If
     
     Dim numProfileBytes As Long, iccProfileBytes() As Byte
     numProfileBytes = tmpIccProfile.GetRawProfileBytes(iccProfileBytes)
@@ -2175,28 +2329,80 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     
     'For an animated file, you can modify individual frame settings here
     
-    'Before adding frame pixel data, we need to notify the engine of the pixel format we're using
+    'Before adding frame pixel data, we need to notify the engine of the pixel format we're using.
+    ' This varies according to the current color format, obviously.
     Dim pxFormat As JxlPixelFormat
-    With pxFormat
-        .align_scanline = 4
-        .data_type = JXL_TYPE_UINT8
-        .endianness = JXL_NATIVE_ENDIAN
-        .num_channels = 4
-    End With
     
-    'Retrieve the composited pdImage object
-    Dim finalDIB As pdDIB
-    srcImage.GetCompositedImage finalDIB, False
-    DIBs.SwizzleBR finalDIB
+    'Values universal across all types
+    pxFormat.data_type = JXL_TYPE_UINT8
+    pxFormat.endianness = JXL_NATIVE_ENDIAN
     
-    'Using the specified frame settings, add each image frame to the JXL object
-    jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), finalDIB.GetDIBPointer, finalDIB.GetDIBStride * finalDIB.GetDIBHeight)
-    If (jxlResult = JXL_ENC_ERROR) Then
-        InternalError FUNC_NAME, "JxlEncoderAddImageFrame error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
-        GoTo FatalEncoderError
+    'Values specific to certain color/gray/alpha modes
+    Dim srcBytes() As Byte, numSrcBytes As Long
+    
+    'Grayscale images
+    If saveAsGrayscale Then
+        
+        If saveAlpha Then
+            DIBs.GetDIBGrayscaleAndAlphaMap finalDIB, srcBytes
+            numSrcBytes = finalDIB.GetDIBWidth * finalDIB.GetDIBHeight * 2
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is GrayA"
+        Else
+            DIBs.GetDIBGrayscaleMap finalDIB, srcBytes, False
+            numSrcBytes = finalDIB.GetDIBWidth * finalDIB.GetDIBHeight
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is Gray"
+        End If
+        
+        'In gray images, scanlines are not aligned a specific way
+        pxFormat.align_scanline = 1
+        If saveAlpha Then
+            pxFormat.num_channels = 2
+        Else
+            pxFormat.num_channels = 1
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), VarPtr(srcBytes(0, 0)), numSrcBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on gray frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Gray frame added OK"
+        End If
+        
+    'Color images
     Else
-        If JXL_DEBUG_VERBOSE Then DebugMsg "Image frame added OK"
+        
+        'Swizzle B/R channels (for RGB order)
+        DIBs.SwizzleBR finalDIB
+        
+        'Eliminate alpha as necessary
+        If (Not saveAlpha) Then finalDIB.ConvertTo24bpp
+        
+        '4-byte alignment is used either way
+        pxFormat.align_scanline = 4
+        If saveAlpha Then
+            pxFormat.num_channels = 4
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is RGBA"
+        Else
+            pxFormat.num_channels = 3
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is RGB"
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), finalDIB.GetDIBPointer, finalDIB.GetDIBStride * finalDIB.GetDIBHeight)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on color frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Color frame added OK"
+        End If
+        
     End If
+    
+    'After adding frame data, we can free any local image data copies
+    Set finalDIB = Nothing
+    Erase srcBytes
     
     'When all frames have been added, we must explicitly terminate further input.
     ' (JxlEncoderCloseInput is the equivalent of calling both CloseFrames and CloseBoxes)
