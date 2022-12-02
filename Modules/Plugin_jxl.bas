@@ -2451,6 +2451,9 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
             'Increment the "total bytes written" counter
             numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
             
+            'Notify the stream that data has been written to it from an outside source
+            dstStream.SetSizeExternally numBytesPreviouslyWritten
+            
             'Commit the bytes we've written, then ask for a larger file map
             numBytesAvailable = FILE_INCREMENT_AMOUNT
             dstStream.EnsureBufferSpaceAvailable numBytesPreviouslyWritten + numBytesAvailable

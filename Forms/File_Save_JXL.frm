@@ -57,6 +57,43 @@ Begin VB.Form dialog_ExportJXL
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
+      Index           =   1
+      Left            =   5880
+      Top             =   1080
+      Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsDepth 
+         Height          =   1095
+         Left            =   120
+         TabIndex        =   6
+         Top             =   120
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "depth"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4695
+      Index           =   2
+      Left            =   5880
+      Top             =   1080
+      Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdMetadataExport mtdManager 
+         Height          =   4215
+         Left            =   240
+         TabIndex        =   5
+         Top             =   120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   7435
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4695
       Index           =   0
       Left            =   5880
       Top             =   1080
@@ -66,7 +103,7 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdSlider sldEffort 
          Height          =   975
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1320
          Width           =   6975
          _ExtentX        =   12303
@@ -92,7 +129,7 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
          Left            =   240
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   600
          Width           =   2610
          _ExtentX        =   4604
@@ -136,53 +173,6 @@ Begin VB.Form dialog_ExportJXL
          Caption         =   "slow, smaller file"
          FontItalic      =   -1  'True
          FontSize        =   9
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      Top             =   1080
-      Width           =   7215
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStrip btsSubsampling 
-         Height          =   1095
-         Left            =   120
-         TabIndex        =   4
-         Top             =   120
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   1931
-         Caption         =   "chroma subsampling"
-      End
-      Begin PhotoDemon.pdButtonStrip btsDepth 
-         Height          =   1095
-         Left            =   120
-         TabIndex        =   7
-         Top             =   1440
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   1931
-         Caption         =   "depth"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4695
-      Index           =   2
-      Left            =   5880
-      Top             =   1080
-      Width           =   7215
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdMetadataExport mtdManager 
-         Height          =   4215
-         Left            =   240
-         TabIndex        =   6
-         Top             =   120
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   7435
       End
    End
 End
@@ -260,10 +250,6 @@ Private Sub btsDepth_Click(ByVal buttonIndex As Long)
     UpdatePreview
 End Sub
 
-Private Sub btsSubsampling_Click(ByVal buttonIndex As Long)
-    UpdatePreview
-End Sub
-
 Private Sub cboSaveQuality_Click()
     
     If (Not m_DisableUIUpdates) Then
@@ -313,7 +299,6 @@ Private Function GetParamString_JXL() As String
     Set cParams = New pdSerialize
     cParams.AddParam "jxl-quality", sltQuality.Value
     cParams.AddParam "jxl-effort", sldEffort.Value
-    cParams.AddParam "jxl-subsampling", btsSubsampling.ListIndex
     
     Select Case btsDepth.ListIndex
         Case 0
@@ -338,11 +323,7 @@ Private Sub cmdBar_ResetClick()
     cboSaveQuality.ListIndex = 1
     sldEffort.Value = 7     'Default per libjxl
     
-    'Default to 4:2:2 subsampling.  (Photoshop sets this automatically, depending on the selected quality, but it's
-    ' too fiddly and prone to large jumps between otherwise small quality measurements.)
-    btsSubsampling.ListIndex = 1
-    
-    'Auto color detection
+    'Auto color model detection
     btsDepth.ListIndex = 0
     
     mtdManager.Reset
@@ -403,15 +384,9 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     cboSaveQuality.SetAutomaticRedraws True, True
     
     'Populate the "advanced" options panel
-    btsSubsampling.AddItem "none", 0
-    btsSubsampling.AddItem "low (default)", 1
-    btsSubsampling.AddItem "medium", 2
-    btsSubsampling.AddItem "high", 3
-    btsSubsampling.ListIndex = 1
-    
     btsDepth.AddItem "auto", 0
-    btsDepth.AddItem "color (24-bpp)", 1
-    btsDepth.AddItem "black and white (8-bpp)", 2
+    btsDepth.AddItem "color", 1
+    btsDepth.AddItem "grayscale", 2
     btsDepth.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel

@@ -219,7 +219,7 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
         End If
         
     Else
-        InternalStreamError "SetPosition failed; bad position: " & newPosition & " vs " & m_BufferSize
+        InternalStreamError "SetPosition failed; bad position: " & newPosition & " requested vs " & m_BufferSize & " total buffer len"
         SetPosition = False
     End If
     

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1708</langversion>
+<langversion>8.9.1709</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13989,12 +13989,24 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>compression effort</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless (100)</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_JXL.frm contains 22 phrases. 20 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2646</phrasecount>
+<phrasecount>2648</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5538 phrases. -->
-<!-- 2892 are duplicates, so only 2646 unique phrases have been written to file. -->
-<!-- These 2646 phrases contain approximately 11443 total words. -->
+<!-- As of this build, PhotoDemon contains 5560 phrases. -->
+<!-- 2912 are duplicates, so only 2648 unique phrases have been written to file. -->
+<!-- These 2648 phrases contain approximately 11446 total words. -->
 
 </pdData>
