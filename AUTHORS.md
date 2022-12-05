@@ -90,6 +90,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Manfredi Marceca
 * [Manuel Augusto Santos](https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303)
 * Mariozo
+* [martin19](https://github.com/martin19)
 * [Ming](http://ufoym.com/)
 * Mohammad Reza Karimi
 * [Nguyen Van Hùng](https://github.com/vhreal1302)

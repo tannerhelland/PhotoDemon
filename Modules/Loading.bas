@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 01/March/22
-'Last update: add support for importing new layers from SVG/Z files
+'Last updated: 15/November/22
+'Last update: ensure SVG's that are "quick-loaded" do not display a size prompt UI
 '
 'This module provides high-level "load" functionality for getting image files into PD.
 ' There are a number of different ways to do this; for example, loading a user-facing image
@@ -518,7 +518,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Restore the screen cursor if necessary, then set focus to the canvas
     If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages > 1)
-    FormMain.MainCanvas(0).SetFocusToCanvasView
+    If (Macros.GetMacroStatus <> MacroBATCH) Then FormMain.MainCanvas(0).SetFocusToCanvasView
     
     'Report success/failure back to the user
     LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
@@ -614,6 +614,11 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cCBZ.IsFileCBZ(imagePath) Then loadSuccessful = cCBZ.LoadCBZ(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
+        Case "HGT"
+            Dim cHGT As pdHGT
+            Set cHGT = New pdHGT
+            If cHGT.IsFileHGT(imagePath) Then loadSuccessful = cHGT.LoadHGT_FromFile(imagePath, tmpPDImage, targetDIB)
+            
         Case "JLS"
             loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
         
@@ -655,7 +660,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         
         Case "SVG", "SVGZ"
             If Plugin_resvg.IsResvgEnabled() Then
-                If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB)
+                If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB, True)
             End If
         
         Case "XCF"

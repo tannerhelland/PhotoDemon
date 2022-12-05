@@ -385,6 +385,7 @@ Private Sub Form_Load()
     GenerateContributor "Manfredi Marceca"
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"
     GenerateContributor "Mariozo"
+    GenerateContributor "martin19", "https://github.com/martin19"
     GenerateContributor "Ming", "http://ufoym.com/"
     GenerateContributor "Mohammad Reza Karimi"
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"

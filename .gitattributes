@@ -5,7 +5,7 @@
 *.frx    -diff
 *.res    -diff
 *.RES    -diff
-*.bas    eol=crlf
+*.bas    eol=crlf linguist-language=Visual-Basic-6.0
 *.cls    eol=crlf
 *.ctl    eol=crlf
 *.frm    eol=crlf

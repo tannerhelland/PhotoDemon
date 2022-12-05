@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_resvg"
 'resvg Library Interface (SVG import)
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/February/22
-'Last updated: 03/March/22
-'Last update: on non-batch-process loads, display a UI so the user can specify custom rasterization dimensions
+'Last updated: 15/October/22
+'Last update: fix load behavior during batch processing
 '
 'Per its documentation (available at https://github.com/RazrFalcon/resvg), resvg is...
 '
@@ -245,8 +245,9 @@ Public Function IsResvgEnabled() As Boolean
     IsResvgEnabled = m_LibAvailable
 End Function
 
-'Given a source SVG file, attempt to load it into a target pdImage/pdDIB
-Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+'Given a source SVG file, attempt to load it into a target pdImage/pdDIB.  For preview-only mode (i.e. non-interactive),
+' pass TRUE for the nonInteractiveMode parameter.
+Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal nonInteractiveMode As Boolean = False) As Boolean
     
     LoadSVG_FromFile = False
     
@@ -305,14 +306,21 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 svgTopTagPos = InStr(1, svgText, "<svg ", vbTextCompare)
                 
                 'Find the trailing position
-                If (svgTopTagPos > 0) Then svgTopTagPosEnd = InStr(svgTopTagPos, svgText, ">", vbBinaryCompare)
+                If (svgTopTagPos > 0) Then
                 
-                'Search between the two positions for an xml namespace
-                Dim xmlnsPos As Long
-                xmlnsPos = InStr(svgTopTagPos, svgText, "xmlns", vbTextCompare)
-                
-                'No namespace found!  Silently insert one, then try loading the file again
-                If (xmlnsPos = 0) Then svgText = Left$(svgText, svgTopTagPos + 4) & " xmlns=""http://www.w3.org/2000/svg"" " & Right$(svgText, Len(svgText) - (svgTopTagPos + 4))
+                    svgTopTagPosEnd = InStr(svgTopTagPos, svgText, ">", vbBinaryCompare)
+                    
+                    'Search between the two positions for an xml namespace
+                    Dim xmlnsPos As Long
+                    xmlnsPos = InStr(svgTopTagPos, svgText, "xmlns", vbTextCompare)
+                    
+                    'No namespace found!  Silently insert one, then try loading the file again
+                    If (xmlnsPos = 0) Then svgText = Left$(svgText, svgTopTagPos + 4) & " xmlns=""http://www.w3.org/2000/svg"" " & Right$(svgText, Len(svgText) - (svgTopTagPos + 4))
+                    
+                'If there's no SVG tag... idk, let resvg attempt to salvage it
+                Else
+                    PDDebug.LogAction "WARNING: no opening SVG tag in file: " & srcFile
+                End If
                 
                 Strings.UTF8FromString svgText, utf8path, utf8Len
                 svgResult = resvg_parse_tree_from_data(VarPtr(utf8path(0)), utf8Len, m_Options, svgTree)
@@ -348,11 +356,24 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     If (intWidth < 1) Then intWidth = 1
     If (intHeight < 1) Then intHeight = 1
     
+    'Check for non-interactive mode.  The user can specify this manually, *or* we can auto-infer it
+    ' from PD's global batch state tracker.
+    If (Not nonInteractiveMode) Then
+        nonInteractiveMode = (Macros.GetMacroStatus() = MacroBATCH) Or (Macros.GetMacroStatus() = MacroPLAYBACK)
+    End If
+    
     'We now know the size the SVG is *supposed* to be, but the most useful thing about vector graphics
-    ' is the ability to losslessly (ish) resize them to arbitrary sizes.  If we are not in the midst
-    ' of a batch conversion, let's ask the user what size they want for this image.
+    ' is the ability to losslessly (ish) resize them to arbitrary sizes.  If the user allows, raise a prompt
+    ' to ask the user what size they want us to use for this image.
     Dim userWidth As Long, userHeight As Long
-    If (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK) Then
+    
+    'In non-interactive mode, rely on the embedded SVG size parameter
+    If nonInteractiveMode Then
+        userWidth = intWidth
+        userHeight = intHeight
+    
+    'UI prompt allowed
+    Else
         
         Dim userInput As VbMsgBoxResult, userDPI As Long
         userInput = Dialogs.PromptImportSVG(svgTree, intWidth, intHeight, userWidth, userHeight, userDPI)
@@ -370,7 +391,7 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             LoadSVG_FromFile = False
             GoTo SafeCleanup
         End If
-        
+    
     End If
     
     'Prep the target DIB
