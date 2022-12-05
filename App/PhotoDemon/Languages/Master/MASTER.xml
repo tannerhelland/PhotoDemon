@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>9.0.49</langversion>
+		<langversion>9.1.67</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -13920,12 +13920,24 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>compression effort</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless (100)</original>
+<translation></translation>
+</phrase>
+
+		<!-- File_Save_JXL.frm contains 22 phrases. 20 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2646</phrasecount>
+		<phrasecount>2648</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5538 phrases. -->
-	<!-- 2892 are duplicates, so only 2646 unique phrases have been written to file. -->
-	<!-- These 2646 phrases contain approximately 11443 total words. -->
+	<!-- As of this build, PhotoDemon contains 5560 phrases. -->
+	<!-- 2912 are duplicates, so only 2648 unique phrases have been written to file. -->
+	<!-- These 2648 phrases contain approximately 11446 total words. -->
 
 	</pdData>

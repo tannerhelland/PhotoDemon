@@ -3025,6 +3025,6 @@ Public Sub ReleaseFreeImageObject(ByVal srcFIHandle As Long)
     FreeImage_Unload srcFIHandle
 End Sub
 
-Private Sub FI_DebugMsg(ByVal debugMsg As String, Optional ByVal suppressDebugData As Boolean = False)
-    If (Not suppressDebugData) Then PDDebug.LogAction debugMsg, PDM_External_Lib
+Private Sub FI_DebugMsg(ByVal srcDebugMsg As String, Optional ByVal suppressDebugData As Boolean = False)
+    If (Not suppressDebugData) Then PDDebug.LogAction srcDebugMsg, PDM_External_Lib
 End Sub

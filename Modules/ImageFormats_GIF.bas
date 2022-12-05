@@ -183,6 +183,6 @@ ExportGIFError:
     
 End Function
 
-Private Sub ExportDebugMsg(ByRef debugMsg As String)
-    PDDebug.LogAction debugMsg
+Private Sub ExportDebugMsg(ByRef srcDebugMsg As String)
+    PDDebug.LogAction srcDebugMsg
 End Sub

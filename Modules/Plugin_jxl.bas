@@ -3,10 +3,8 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2022 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 13/October/22
-'Last update: importing static images is working well!  I want to support animations too, but don't have any
-'             good ones to test with - so I think I'm going to move over to export support so I can generate
-'             animations for testing purposes.
+'Last updated: 02/December/22
+'Last update: wrap up work on live previews and grayscale export support
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
@@ -221,6 +219,233 @@ End Enum
 
 #If False Then
     Private Const JXL_DEC_SUCCESS = 0, JXL_DEC_ERROR = 1, JXL_DEC_NEED_MORE_INPUT = 2, JXL_DEC_NEED_PREVIEW_OUT_BUFFER = 3, JXL_DEC_NEED_DC_OUT_BUFFER = 4, JXL_DEC_NEED_IMAGE_OUT_BUFFER = 5, JXL_DEC_JPEG_NEED_MORE_OUTPUT = 6, JXL_DEC_BOX_NEED_MORE_OUTPUT = 7, JXL_DEC_BASIC_INFO = &H40&, JXL_DEC_EXTENSIONS = &H80&, JXL_DEC_COLOR_ENCODING = &H100&, JXL_DEC_PREVIEW_IMAGE = &H200&, JXL_DEC_FRAME = &H400&, JXL_DEC_DC_IMAGE = &H800&, JXL_DEC_FULL_IMAGE = &H1000&, JXL_DEC_JPEG_RECONSTRUCTION = &H2000&, JXL_DEC_BOX = &H4000&, JXL_DEC_FRAME_PROGRESSION = &H8000&
+#End If
+
+'Return value for multiple encoder functions.
+Private Enum JxlEncoderStatus
+    
+    'Function call finished successfully, or encoding is finished and there is nothing more to be done.
+    JXL_ENC_SUCCESS = 0
+    
+    'An error occurred, for example out of memory.
+    JXL_ENC_ERROR = 1
+    
+    'The encoder needs more output buffer to continue encoding.
+    JXL_ENC_NEED_MORE_OUTPUT = 2
+    
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_SUCCESS = 0, JXL_ENC_ERROR = 1, JXL_ENC_NEED_MORE_OUTPUT = 2
+#End If
+
+'Encoder Error conditions:
+' API usage errors have the 0x80 bit set to 1.
+' Other errors have the 0x80 bit set to 0
+Private Enum JxlEncoderError
+
+    'No error
+    JXL_ENC_ERR_OK = 0
+    
+    'Generic encoder error due to unspecified cause
+    JXL_ENC_ERR_GENERIC = 1
+    
+    'Out of memory
+    JXL_ENC_ERR_OOM = 2
+    
+    'JPEG bitstream reconstruction data could not be represented (e.g. too much tail data)
+    JXL_ENC_ERR_JBRD = 3
+    
+    'Input is invalid (e.g. corrupt JPEG file or ICC profile)
+    JXL_ENC_ERR_BAD_INPUT = 4
+    
+    'The encoder doesn't (yet) support this. Either no version of libjxl supports this and the API
+    ' is used incorrectly, or the libjxl version should have been checked before trying to do this.
+    JXL_ENC_ERR_NOT_SUPPORTED = &H80&
+    
+    'The encoder API is used in an incorrect way.  In this case, a debug build of libjxl should output
+    ' a specific error message. (if not, please open an issue about it)
+    JXL_ENC_ERR_API_USAGE = &H81&
+
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_ERR_OK = 0, JXL_ENC_ERR_GENERIC = 1, JXL_ENC_ERR_OOM = 2, JXL_ENC_ERR_JBRD = 3, JXL_ENC_ERR_BAD_INPUT = 4, JXL_ENC_ERR_NOT_SUPPORTED = &H80&, JXL_ENC_ERR_API_USAGE = &H81&
+#End If
+
+'IDs of encoder options for a frame. This includes options such as setting encoding effort/speed
+' or overriding the use of certain coding tools for this frame. This does not include non-frame-related
+' encoder options such as for boxes.
+Private Enum JxlEncoderFrameSettingId
+    
+    'Sets encoder effort/speed level without affecting decoding speed.
+    ' Valid values are, from faster to slower speed:
+    ' 1:lightning 2:thunder 3:falcon 4:cheetah 5:hare 6:wombat 7:squirrel 8:kitten 9:tortoise.
+    ' Default: squirrel (7).
+    JXL_ENC_FRAME_SETTING_EFFORT = 0
+    
+    'Sets the decoding speed tier for the provided options. Minimum is 0 (slowest to decode, best quality/density),
+    ' and maximum is 4 (fastest to decode, at the cost of some quality/density).
+    ' Default is 0.
+    JXL_ENC_FRAME_SETTING_DECODING_SPEED = 1
+    
+    'Sets resampling option. If enabled, the image is downsampled before compression, and upsampled to original size
+    ' in the decoder. Integer option, use -1 for the default behavior (resampling only applied for low quality),
+    ' 1 for no downsampling (1x1), 2 for 2x2 downsampling, 4 for 4x4 downsampling, 8 for 8x8 downsampling.
+    JXL_ENC_FRAME_SETTING_RESAMPLING = 2
+    
+    'Similar to JXL_ENC_FRAME_SETTING_RESAMPLING, but for extra channels. Integer option, use -1 for the default
+    ' behavior (depends on encoder implementation), 1 for no downsampling (1x1), 2 for 2x2 downsampling, 4 for
+    ' 4x4 downsampling, 8 for 8x8 downsampling.
+    JXL_ENC_FRAME_SETTING_EXTRA_CHANNEL_RESAMPLING = 3
+    
+    'Indicates the frame added with JxlEncoderAddImageFrame is already downsampled by the downsampling factor set with
+    ' JXL_ENC_FRAME_SETTING_RESAMPLING. The input frame must then be given in the downsampled resolution, not the full
+    ' image resolution. The downsampled resolution is given by ceil(xsize / resampling), ceil(ysize / resampling)
+    ' with xsize and ysize the dimensions given in the basic info, and resampling the factor set with
+    ' JXL_ENC_FRAME_SETTING_RESAMPLING.
+    ' Use 0 to disable, 1 to enable.
+    ' Default value is 0.
+    JXL_ENC_FRAME_SETTING_ALREADY_DOWNSAMPLED = 4
+    
+    'Adds noise to the image emulating photographic film noise.  The higher the given number, the grainier the image
+    ' will be. As an example, a value of 100 gives low noise whereas a value of 3200 gives a lot of noise.
+    ' The default value is 0.
+    JXL_ENC_FRAME_SETTING_PHOTON_NOISE = 5
+    
+    'Enables adaptive noise generation. This setting is not recommended for use, please use
+    ' JXL_ENC_FRAME_SETTING_PHOTON_NOISE instead.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_NOISE = 6
+    
+    'Enables or disables dots generation.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_DOTS = 7
+    
+    'Enables or disables patches generation.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_PATCHES = 8
+    
+    'Edge preserving filter level, -1 to 3.
+    ' Use -1 for the default (encoder chooses), 0 to 3 to set a strength.
+    JXL_ENC_FRAME_SETTING_EPF = 9
+    
+    'Enables or disables the gaborish filter.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_GABORISH = 10
+    
+    'Enables modular encoding.
+    ' Use -1 for default (encoder chooses), 0 to enforce VarDCT mode (e.g. for photographic images), 1 to
+    ' enforce modular mode (e.g. for lossless images).
+    JXL_ENC_FRAME_SETTING_MODULAR = 11
+    
+    'Enables or disables preserving color of invisible pixels.
+    ' Use -1 for the default (1 if lossless, 0 if lossy), 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_KEEP_INVISIBLE = 12
+    
+    'Determines the order in which 256x256 regions are stored in the codestream for progressive rendering.
+    ' Use -1 for the encoder default, 0 for scanline order, 1 for center-first order.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER = 13
+    
+    'Determines the horizontal position of center for the center-first group order.
+    ' Use -1 to automatically use the middle of the image, 0..xsize to specifically set it.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_X = 14
+    
+    'Determines the center for the center-first group order.
+    ' Use -1 to automatically use the middle of the image, 0..ysize to specifically set it.
+    JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_Y = 15
+    
+    'Enables or disables progressive encoding for modular mode.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_RESPONSIVE = 16
+    
+    'Set the progressive mode for the AC coefficients of VarDCT, using spectral progression from the DCT coefficients.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_PROGRESSIVE_AC = 17
+    
+    'Set the progressive mode for the AC coefficients of VarDCT, using quantization of the least significant bits.
+    ' Use -1 for the encoder default, 0 to disable, 1 to enable.
+    JXL_ENC_FRAME_SETTING_QPROGRESSIVE_AC = 18
+    
+    'Set the progressive mode using lower-resolution DC images for VarDCT.
+    ' Use -1 for the encoder default, 0 to disable, 1 to have an extra 64x64 lower resolution pass,
+    ' 2 to have a 512x512 and 64x64 lower resolution pass.
+    JXL_ENC_FRAME_SETTING_PROGRESSIVE_DC = 19
+    
+    'Use Global channel palette if the amount of colors is smaller than this percentage of range.
+    ' Use 0-100 to set an explicit percentage, -1 to use the encoder default. Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GLOBAL_PERCENT = 20
+    
+    'Use Local (per-group) channel palette if the amount of colors is smaller than this percentage of range.
+    ' Use 0-100 to set an explicit percentage, -1 to use the encoder default. Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GROUP_PERCENT = 21
+    
+    'Use color palette if amount of colors is smaller than or equal to this amount, or -1 to use the encoder default.
+    ' Used for modular encoding.
+    JXL_ENC_FRAME_SETTING_PALETTE_COLORS = 22
+    
+    'Enables or disables delta palette.
+    ' Use -1 for the default (encoder chooses), 0 to disable, 1 to enable. Used in modular mode.
+    JXL_ENC_FRAME_SETTING_LOSSY_PALETTE = 23
+    
+    'Color transform for internal encoding: -1 = default, 0=XYB, 1=none (RGB), 2=YCbCr. The XYB setting performs
+    ' the forward XYB transform. None and YCbCr both perform no transform, but YCbCr is used to indicate that the
+    ' encoded data losslessly represents YCbCr values.
+    JXL_ENC_FRAME_SETTING_COLOR_TRANSFORM = 24
+    
+    'Reversible color transform for modular encoding: -1=default, 0-41=RCT index, e.g. index 0 = none, index 6 = YCoCg.
+    ' If this option is set to a non-default value, the RCT will be globally applied to the whole frame.
+    ' The default behavior is to try several RCTs locally per modular group, depending on the speed and distance setting.
+    JXL_ENC_FRAME_SETTING_MODULAR_COLOR_SPACE = 25
+    
+    'Group size for modular encoding: -1=default, 0=128, 1=256, 2=512, 3=1024.
+    JXL_ENC_FRAME_SETTING_MODULAR_GROUP_SIZE = 26
+    
+    'Predictor for modular encoding.
+    ' -1 = default, 0=zero, 1=left, 2=top, 3=avg0, 4=select, 5=gradient, 6=weighted, 7=topright, 8=topleft,
+    ' 9=leftleft, 10=avg1, 11=avg2, 12=avg3, 13=toptop predictive average 14=mix 5 and 6, 15=mix everything.
+    JXL_ENC_FRAME_SETTING_MODULAR_PREDICTOR = 27
+    
+    'Fraction of pixels used to learn MA trees as a percentage.
+    ' -1 = default, 0 = no MA and fast decode, 50 = default value, 100 = all
+    ' Values above 100 are also permitted. Higher values use more encoder memory.
+    JXL_ENC_FRAME_SETTING_MODULAR_MA_TREE_LEARNING_PERCENT = 28
+    
+    'Number of extra (previous-channel) MA tree properties to use.
+    ' -1 = default, 0-11 = valid values.
+    ' Recommended values are in the range 0 to 3, or 0 to amount of channels minus 1 (including all extra channels,
+    ' and excluding color channels when using VarDCT mode).
+    ' Higher value gives slower encoding and slower decoding.
+    JXL_ENC_FRAME_SETTING_MODULAR_NB_PREV_CHANNELS = 29
+    
+    'Enable or disable CFL (chroma-from-luma) for lossless JPEG recompression.
+    ' -1 = default, 0 = disable CFL, 1 = enable CFL.
+    JXL_ENC_FRAME_SETTING_JPEG_RECON_CFL = 30
+    
+    'Prepare the frame for indexing in the frame index box.
+    ' 0 = ignore this frame (same as not setting a value),
+    ' 1 = index this frame within the Frame Index Box.
+    ' If any frames are indexed, the first frame needs to be indexed, too.
+    ' If the first frame is not indexed, and a later frame is attempted to be indexed, JXL_ENC_ERROR will occur.
+    ' If non-keyframes, i.e., frames with cropping, blending or patches are attempted to be indexed,
+    ' JXL_ENC_ERROR will occur.
+    JXL_ENC_FRAME_INDEX_BOX = 31
+    
+    'Sets brotli encode effort for use in JPEG recompression and compressed metadata boxes (brob).
+    ' Can be -1 (default) or 0 (fastest) to 11 (slowest). Default is based on the general encode effort in case
+    ' of JPEG recompression, and 4 for brob boxes.
+    JXL_ENC_FRAME_SETTING_BROTLI_EFFORT = 32
+    
+    'Enum value not to be used as an option. This value is added to force the C compiler to have the enum
+    ' to take a known size.
+    JXL_ENC_FRAME_SETTING_FILL_ENUM = 65535
+
+End Enum
+
+#If False Then
+    Private Const JXL_ENC_FRAME_SETTING_EFFORT = 0, JXL_ENC_FRAME_SETTING_DECODING_SPEED = 1, JXL_ENC_FRAME_SETTING_RESAMPLING = 2, JXL_ENC_FRAME_SETTING_EXTRA_CHANNEL_RESAMPLING = 3, JXL_ENC_FRAME_SETTING_ALREADY_DOWNSAMPLED = 4, JXL_ENC_FRAME_SETTING_PHOTON_NOISE = 5, JXL_ENC_FRAME_SETTING_NOISE = 6, JXL_ENC_FRAME_SETTING_DOTS = 7, JXL_ENC_FRAME_SETTING_PATCHES = 8, JXL_ENC_FRAME_SETTING_EPF = 9
+    Private Const JXL_ENC_FRAME_SETTING_GABORISH = 10, JXL_ENC_FRAME_SETTING_MODULAR = 11, JXL_ENC_FRAME_SETTING_KEEP_INVISIBLE = 12, JXL_ENC_FRAME_SETTING_GROUP_ORDER = 13, JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_X = 14, JXL_ENC_FRAME_SETTING_GROUP_ORDER_CENTER_Y = 15, JXL_ENC_FRAME_SETTING_RESPONSIVE = 16, JXL_ENC_FRAME_SETTING_PROGRESSIVE_AC = 17, JXL_ENC_FRAME_SETTING_QPROGRESSIVE_AC = 18, JXL_ENC_FRAME_SETTING_PROGRESSIVE_DC = 19
+    Private Const JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GLOBAL_PERCENT = 20, JXL_ENC_FRAME_SETTING_CHANNEL_COLORS_GROUP_PERCENT = 21, JXL_ENC_FRAME_SETTING_PALETTE_COLORS = 22, JXL_ENC_FRAME_SETTING_LOSSY_PALETTE = 23, JXL_ENC_FRAME_SETTING_COLOR_TRANSFORM = 24, JXL_ENC_FRAME_SETTING_MODULAR_COLOR_SPACE = 25, JXL_ENC_FRAME_SETTING_MODULAR_GROUP_SIZE = 26, JXL_ENC_FRAME_SETTING_MODULAR_PREDICTOR = 27, JXL_ENC_FRAME_SETTING_MODULAR_MA_TREE_LEARNING_PERCENT = 28, JXL_ENC_FRAME_SETTING_MODULAR_NB_PREV_CHANNELS = 29, JXL_ENC_FRAME_SETTING_JPEG_RECON_CFL = 30, JXL_ENC_FRAME_INDEX_BOX = 31, JXL_ENC_FRAME_SETTING_BROTLI_EFFORT = 32, JXL_ENC_FRAME_SETTING_FILL_ENUM = 65535
 #End If
 
 'Image orientation metadata. Values 1..8 match the EXIF definitions.
@@ -625,6 +850,145 @@ Private Type JxlPixelFormat
     
 End Type
 
+'/** Color space of the image data. */
+Private Enum JxlColorSpace
+    '/** Tristimulus RGB */
+    JXL_COLOR_SPACE_RGB
+    '/** Luminance based, the primaries in JxlColorEncoding must be ignored. This
+    '* value implies that num_color_channels in JxlBasicInfo is 1, any other value
+    '* implies num_color_channels is 3. */
+    JXL_COLOR_SPACE_GRAY
+    '/** XYB (opsin) color space */
+    JXL_COLOR_SPACE_XYB
+    '/** None of the other table entries describe the color space appropriately */
+    JXL_COLOR_SPACE_UNKNOWN
+End Enum
+
+'/** Built-in whitepoints for color encoding. When decoding, the numerical xy
+' * whitepoint value can be read from the JxlColorEncoding white_point field
+' * regardless of the enum value. When encoding, enum values except
+' * JXL_WHITE_POINT_CUSTOM override the numerical fields. Some enum values match
+' * a subset of CICP (Rec. ITU-T H.273 | ISO/IEC 23091-2:2019(E)), however the
+' * white point and RGB primaries are separate enums here.
+' */
+Private Enum JxlWhitePoint
+    '/** CIE Standard Illuminant D65: 0.3127, 0.3290 */
+    JXL_WHITE_POINT_D65 = 1
+    '/** White point must be read from the JxlColorEncoding white_point field, or
+    ' * as ICC profile. This enum value is not an exact match of the corresponding
+    ' * CICP value. */
+    JXL_WHITE_POINT_CUSTOM = 2
+    '/** CIE Standard Illuminant E (equal-energy): 1/3, 1/3 */
+    JXL_WHITE_POINT_E = 10
+    '/** DCI-P3 from SMPTE RP 431-2: 0.314, 0.351 */
+    JXL_WHITE_POINT_DCI = 11
+End Enum
+
+'/** Built-in primaries for color encoding. When decoding, the primaries can be
+' * read from the JxlColorEncoding primaries_red_xy, primaries_green_xy and
+' * primaries_blue_xy fields regardless of the enum value. When encoding, the
+' * enum values except JXL_PRIMARIES_CUSTOM override the numerical fields. Some
+' * enum values match a subset of CICP (Rec. ITU-T H.273 | ISO/IEC
+' * 23091-2:2019(E)), however the white point and RGB primaries are separate
+' * enums here.
+' */
+Private Enum JxlPrimaries
+    '/** The CIE xy values of the red, green and blue primaries are: 0.639998686,
+    '   0.330010138; 0.300003784, 0.600003357; 0.150002046, 0.059997204 */
+    JXL_PRIMARIES_SRGB = 1
+    '/** Primaries must be read from the JxlColorEncoding primaries_red_xy,
+    ' * primaries_green_xy and primaries_blue_xy fields, or as ICC profile. This
+    ' * enum value is not an exact match of the corresponding CICP value. */
+    JXL_PRIMARIES_CUSTOM = 2
+    '/** As specified in Rec. ITU-R BT.2100-1 */
+    JXL_PRIMARIES_2100 = 9
+    '/** As specified in SMPTE RP 431-2 */
+    JXL_PRIMARIES_P3 = 11
+End Enum
+
+'/** Built-in transfer functions for color encoding. Enum values match a subset
+' * of CICP (Rec. ITU-T H.273 | ISO/IEC 23091-2:2019(E)) unless specified
+' * otherwise. */
+Private Enum JxlTransferFunction
+    '/** As specified in SMPTE RP 431-2 */
+    JXL_TRANSFER_FUNCTION_709 = 1
+    '/** None of the other table entries describe the transfer function. */
+    JXL_TRANSFER_FUNCTION_UNKNOWN = 2
+    '/** The gamma exponent is 1 */
+    JXL_TRANSFER_FUNCTION_LINEAR = 8
+    '/** As specified in IEC 61966-2-1 sRGB */
+    JXL_TRANSFER_FUNCTION_SRGB = 13
+    '/** As specified in SMPTE ST 2084 */
+    JXL_TRANSFER_FUNCTION_PQ = 16
+    '/** As specified in SMPTE ST 428-1 */
+    JXL_TRANSFER_FUNCTION_DCI = 17
+    '/** As specified in Rec. ITU-R BT.2100-1 (HLG) */
+    JXL_TRANSFER_FUNCTION_HLG = 18
+    '/** Transfer function follows power law given by the gamma value in
+    ' JxlColorEncoding. Not a CICP value. */
+    JXL_TRANSFER_FUNCTION_GAMMA = 65535
+End Enum
+
+'/** Rendering intent for color encoding, as specified in ISO 15076-1:2010 */
+Private Enum JxlRenderingIntent
+    '/** vendor-specific */
+    JXL_RENDERING_INTENT_PERCEPTUAL = 0
+    '/** media-relative */
+    JXL_RENDERING_INTENT_RELATIVE
+    '/** vendor-specific */
+    JXL_RENDERING_INTENT_SATURATION
+    '/** ICC-absolute */
+    JXL_RENDERING_INTENT_ABSOLUTE
+End Enum
+
+'/** Color encoding of the image as structured information.
+' */
+Private Type JxlColorEncoding
+  
+    '/** Color space of the image data.
+    ' */
+    color_space As JxlColorSpace
+    
+    '/** Built-in white point. If this value is JXL_WHITE_POINT_CUSTOM, must
+    '* use the numerical whitepoint values from white_point_xy.
+    '*/
+    white_point As JxlWhitePoint
+    
+    '/** Numerical whitepoint values in CIE xy space. */
+    white_point_x As Double
+    white_point_y As Double
+    
+    '/** Built-in RGB primaries. If this value is JXL_PRIMARIES_CUSTOM, must
+    '* use the numerical primaries values below. This field and the custom values
+    '* below are unused and must be ignored if the color space is
+    '* JXL_COLOR_SPACE_GRAY or JXL_COLOR_SPACE_XYB.
+    '*/
+    primaries As JxlPrimaries
+    
+    '/** Numerical red primary values in CIE xy space. */
+    primaries_red_x As Double
+    primaries_red_y As Double
+    
+    '/** Numerical green primary values in CIE xy space. */
+    primaries_green_x As Double
+    primaries_green_y As Double
+    
+    '/** Numerical blue primary values in CIE xy space. */
+    primaries_blue_x As Double
+    primaries_blue_y As Double
+    
+    '/** Transfer function if have_gamma is 0 */
+    transfer_function As JxlTransferFunction
+    
+    '/** Gamma value used when transfer_function is JXL_TRANSFER_FUNCTION_GAMMA
+    '*/
+    gamma_custom As Double
+
+    '/** Rendering intent defined for the color profile. */
+    rendering_intent As JxlRenderingIntent
+    
+End Type
+
 'Current full-image header, if any
 Private m_Header As JxlBasicInfo
 
@@ -673,8 +1037,45 @@ Private Enum LibJXL_ProcAddress
     JxlDecoderSizeHintBasicInfo
     JxlDecoderSubscribeEvents
     JxlDecoderVersion
+    JxlEncoderCreate
+    JxlEncoderDestroy
+    JxlEncoderReset
+    JxlEncoderVersion
+    JxlEncoderGetError
+    JxlEncoderProcessOutput
+    JxlEncoderSetFrameHeader
+    JxlEncoderSetExtraChannelBlendInfo
+    JxlEncoderSetFrameName
+    JxlEncoderSetFrameBitDepth
+    JxlEncoderAddJPEGFrame
+    JxlEncoderAddImageFrame
+    JxlEncoderSetExtraChannelBuffer
+    JxlEncoderAddBox
+    JxlEncoderUseBoxes
+    JxlEncoderCloseBoxes
+    JxlEncoderCloseFrames
+    JxlEncoderCloseInput
+    JxlEncoderSetColorEncoding
+    JxlEncoderSetICCProfile
+    JxlEncoderInitBasicInfo
+    JxlEncoderInitFrameHeader
+    JxlEncoderInitBlendInfo
+    JxlEncoderSetBasicInfo
+    JxlEncoderInitExtraChannelInfo
+    JxlEncoderSetExtraChannelInfo
+    JxlEncoderSetExtraChannelName
+    JxlEncoderFrameSettingsSetOption
+    JxlEncoderFrameSettingsSetFloatOption
+    JxlEncoderUseContainer
+    JxlEncoderStoreJPEGMetadata
+    JxlEncoderSetCodestreamLevel
+    JxlEncoderGetRequiredCodestreamLevel
+    JxlEncoderSetFrameLossless
+    JxlEncoderSetFrameDistance
+    JxlEncoderFrameSettingsCreate
+    JxlColorEncodingSetToSRGB
+    JxlColorEncodingSetToLinearSRGB
     JxlSignatureCheck
-    
     [last_address]
 End Enum
 
@@ -700,7 +1101,7 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
     'I don't currently know how to build libxjl in an XP-compatible way.
     ' As a result, its support is limited to Win Vista and above.
     If (Not OS.IsVistaOrLater) Then
-        debugMsg "libjxl does not currently work on Windows XP."
+        DebugMsg "libjxl does not currently work on Windows XP."
         Exit Function
     End If
     
@@ -754,10 +1155,48 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(JxlDecoderSetPreviewOutBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetPreviewOutBuffer")
         m_ProcAddresses(JxlDecoderSizeHintBasicInfo) = GetProcAddress(m_LibHandle, "JxlDecoderSizeHintBasicInfo")
         m_ProcAddresses(JxlDecoderSubscribeEvents) = GetProcAddress(m_LibHandle, "JxlDecoderSubscribeEvents")
-        
+        m_ProcAddresses(JxlEncoderCreate) = GetProcAddress(m_LibHandle, "JxlEncoderCreate")
+        m_ProcAddresses(JxlEncoderDestroy) = GetProcAddress(m_LibHandle, "JxlEncoderDestroy")
+        m_ProcAddresses(JxlEncoderReset) = GetProcAddress(m_LibHandle, "JxlEncoderReset")
+        m_ProcAddresses(JxlEncoderVersion) = GetProcAddress(m_LibHandle, "JxlEncoderVersion")
+        m_ProcAddresses(JxlEncoderGetError) = GetProcAddress(m_LibHandle, "JxlEncoderGetError")
+        m_ProcAddresses(JxlEncoderProcessOutput) = GetProcAddress(m_LibHandle, "JxlEncoderProcessOutput")
+        m_ProcAddresses(JxlEncoderSetFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameHeader")
+        m_ProcAddresses(JxlEncoderSetExtraChannelBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBlendInfo")
+        m_ProcAddresses(JxlEncoderSetFrameName) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameName")
+        m_ProcAddresses(JxlEncoderSetFrameBitDepth) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameBitDepth")
+        m_ProcAddresses(JxlEncoderAddJPEGFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddJPEGFrame")
+        m_ProcAddresses(JxlEncoderAddImageFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddImageFrame")
+        m_ProcAddresses(JxlEncoderSetExtraChannelBuffer) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBuffer")
+        m_ProcAddresses(JxlEncoderAddBox) = GetProcAddress(m_LibHandle, "JxlEncoderAddBox")
+        m_ProcAddresses(JxlEncoderUseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderUseBoxes")
+        m_ProcAddresses(JxlEncoderCloseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderCloseBoxes")
+        m_ProcAddresses(JxlEncoderCloseFrames) = GetProcAddress(m_LibHandle, "JxlEncoderCloseFrames")
+        m_ProcAddresses(JxlEncoderCloseInput) = GetProcAddress(m_LibHandle, "JxlEncoderCloseInput")
+        m_ProcAddresses(JxlEncoderSetColorEncoding) = GetProcAddress(m_LibHandle, "JxlEncoderSetColorEncoding")
+        m_ProcAddresses(JxlEncoderSetICCProfile) = GetProcAddress(m_LibHandle, "JxlEncoderSetICCProfile")
+        m_ProcAddresses(JxlEncoderInitBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBasicInfo")
+        m_ProcAddresses(JxlEncoderInitFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderInitFrameHeader")
+        m_ProcAddresses(JxlEncoderInitBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBlendInfo")
+        m_ProcAddresses(JxlEncoderSetBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetBasicInfo")
+        m_ProcAddresses(JxlEncoderInitExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitExtraChannelInfo")
+        m_ProcAddresses(JxlEncoderSetExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelInfo")
+        m_ProcAddresses(JxlEncoderSetExtraChannelName) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelName")
+        m_ProcAddresses(JxlEncoderFrameSettingsSetOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetOption")
+        m_ProcAddresses(JxlEncoderFrameSettingsSetFloatOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetFloatOption")
+        m_ProcAddresses(JxlEncoderUseContainer) = GetProcAddress(m_LibHandle, "JxlEncoderUseContainer")
+        m_ProcAddresses(JxlEncoderStoreJPEGMetadata) = GetProcAddress(m_LibHandle, "JxlEncoderStoreJPEGMetadata")
+        m_ProcAddresses(JxlEncoderSetCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderSetCodestreamLevel")
+        m_ProcAddresses(JxlEncoderGetRequiredCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderGetRequiredCodestreamLevel")
+        m_ProcAddresses(JxlEncoderSetFrameLossless) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameLossless")
+        m_ProcAddresses(JxlEncoderSetFrameDistance) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameDistance")
+        m_ProcAddresses(JxlEncoderFrameSettingsCreate) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsCreate")
+        m_ProcAddresses(JxlColorEncodingSetToSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToSRGB")
+        m_ProcAddresses(JxlColorEncodingSetToLinearSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToLinearSRGB")
+    
     Else
-        debugMsg "WARNING!  LoadLibrary failed to load libjxl.  Last DLL error: " & Err.LastDllError
-        debugMsg "(FYI, the attempted path was: " & libPath & ")"
+        DebugMsg "WARNING!  LoadLibrary failed to load libjxl.  Last DLL error: " & Err.LastDllError
+        DebugMsg "(FYI, the attempted path was: " & libPath & ")"
     End If
     
 End Function
@@ -797,10 +1236,16 @@ End Function
 
 'When PD closes, make sure to release our open library handle
 Public Sub ReleaseLibJXL()
+    
+    'Destroy any existing decoder(s)
+    JXL_DestroyDecoder
+    
+    'Free the library itself
     If (m_LibHandle <> 0) Then
         VBHacks.FreeLib m_LibHandle
         m_LibHandle = 0
     End If
+    
 End Sub
 
 'Import/Export functions follow
@@ -878,7 +1323,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Next, we need to validate the file format as JPEG-XL.
     If Plugin_jxl.IsFileJXL(srcFile) Then
         
-        If JXL_DEBUG_VERBOSE Then debugMsg "JXL format found.  Proceeding with load..."
+        If JXL_DEBUG_VERBOSE Then DebugMsg "JXL format found.  Proceeding with load..."
         If (dstImage Is Nothing) Then Set dstImage = New pdImage
         
         'Create a generic JXL decoder.  This (opaque struct) must be kept alive for the duration
@@ -909,7 +1354,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             InternalError FUNC_NAME, "unexpected return: " & jxlReturn
             Exit Function
         Else
-            If JXL_DEBUG_VERBOSE Then debugMsg "Successfully subscribed to events: " & eventsWanted
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Successfully subscribed to events: " & eventsWanted
         End If
         
         '(more events are a potential future TODO)
@@ -922,7 +1367,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             Exit Function
         End If
         
-        If JXL_DEBUG_VERBOSE Then debugMsg "Started generic file stream on " & srcFile
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Started generic file stream on " & srcFile
         
         'Start feeding data into libjxl.  For now, we're just gonna dump as much of the file into libjxl as we can
         ' until we receive the event(s) we've subscribed to.
@@ -945,11 +1390,11 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         
         'If we're still here, basic image info retrieval was successful.
         If JXL_DEBUG_VERBOSE Then
-            debugMsg "Image dimensions: " & m_Header.xsize & "x" & m_Header.ysize
-            debugMsg "Image channel bit-depth: " & m_Header.bits_per_sample
-            debugMsg "Image num color channels: " & m_Header.num_color_channels
-            debugMsg "Image num extra channels: " & m_Header.num_extra_channels
-            debugMsg "Image is animated: " & (m_Header.have_animation <> 0)
+            DebugMsg "Image dimensions: " & m_Header.xsize & "x" & m_Header.ysize
+            DebugMsg "Image channel bit-depth: " & m_Header.bits_per_sample
+            DebugMsg "Image num color channels: " & m_Header.num_color_channels
+            DebugMsg "Image num extra channels: " & m_Header.num_extra_channels
+            DebugMsg "Image is animated: " & (m_Header.have_animation <> 0)
         End If
         
         'Validate the image header before continuing.
@@ -1079,7 +1524,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 'Test only: see what size is required by the decoder?
                 Dim reqSize As Long
                 jxlReturn = CallCDeclW(JxlDecoderImageOutBufferSize, vbLong, m_JxlDecoder, VarPtr(pxFormat), VarPtr(reqSize))
-                debugMsg "Size allocated for frame: " & Files.GetFormattedFileSize(tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight)
+                DebugMsg "Size allocated for frame: " & Files.GetFormattedFileSize(tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight)
                 
                 'If a valid buffer exists, pass its information to the decoder
                 If dibReady Then
@@ -1109,7 +1554,7 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 'Increment frame count and reset current frame state.
                 idxFrame = idxFrame + 1
                 numFramesOK = numFramesOK + 1
-                If JXL_DEBUG_VERBOSE Then debugMsg "Successfully finished frame #" & idxFrame
+                If JXL_DEBUG_VERBOSE Then DebugMsg "Successfully finished frame #" & idxFrame
                 
                 'If this frame was marked as the last frame in the image, do not attempt to retrieve
                 ' another frame - instead, just exit after this.
@@ -1135,14 +1580,18 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         LoadJXL = (numFramesOK > 0)
         If LoadJXL Then
             dstImage.NotifyImageChanged UNDO_Everything
-            If JXL_DEBUG_VERBOSE Then debugMsg "JXL loaded successfully; " & numFramesOK & " frames processed."
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL loaded successfully; " & numFramesOK & " frames processed."
         End If
+        
+        'Note that we keep the decoder alive here.  This improves performance on subsequent imports,
+        ' and the decoder will be auto-freed when libjxl is released.
+        JXL_ResetDecoder
         
     Else
         Exit Function
     End If
     
-    If (Not LoadJXL) And JXL_DEBUG_VERBOSE Then debugMsg "Plugin_jxl.LoadJXL failed."
+    If (Not LoadJXL) And JXL_DEBUG_VERBOSE Then DebugMsg "Plugin_jxl.LoadJXL failed."
     Exit Function
     
 LoadFailed:
@@ -1158,6 +1607,912 @@ LoadFailed:
     
 End Function
 
+'After LoadJXL(), above, is called, basic attributes for the last-loaded image can be retrieved via these simple
+' GET-prefixed functions.
+Public Function LastJXL_OriginalColorDepth() As Long
+    LastJXL_OriginalColorDepth = (m_Header.num_color_channels + m_Header.num_extra_channels) * m_Header.bits_per_sample
+End Function
+
+Public Function LastJXL_HasAlpha() As Boolean
+    LastJXL_HasAlpha = (m_Header.num_extra_channels > 0)
+End Function
+
+Public Function LastJXL_IsAnimated() As Boolean
+    LastJXL_IsAnimated = (m_Header.have_animation <> 0)
+End Function
+
+Public Function LastJXL_IsGrayscale() As Boolean
+    LastJXL_IsGrayscale = (m_Header.num_color_channels = 1)
+End Function
+
+'Given an arbitrary source DIB and a string of JPEG-XL parameters, perform a rapid in-memory save to JPEG-XL format,
+' then immediately decode the data back into a pdDIB object.
+Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcOptions As String) As Boolean
+    
+    Const FUNC_NAME As String = "PreviewJXL"
+    PreviewJXL = False
+    
+    On Error GoTo FatalPreviewError
+    
+    'Timing is always tracked, but only logged when the module-level verbose output bool is TRUE
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Start with fundamental sanity checks
+    If (srcDIB Is Nothing) Then Exit Function
+    If (srcDIB.GetDIBWidth = 0) Or (srcDIB.GetDIBHeight = 0) Then Exit Function
+    If (srcDIB.GetDIBColorDepth < 32) Then srcDIB.ConvertTo32bpp
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateFromExistingDIB srcDIB
+    
+    'We now have a guaranteed valid source and destination image with matching dimensions and 32-bpp RGBA format.
+    
+    'Proceed with a minimalist JPEG-XL export
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    'Check color mode; for preview purposes, we'll simply apply a grayscale filter
+    Dim origParamValue As String
+    origParamValue = cSettings.GetString("jxl-color-format", "auto", True)
+    
+    Dim saveAsGrayscale As Boolean
+    Select Case origParamValue
+        Case "auto"
+            saveAsGrayscale = DIBs.IsDIBGrayscale(srcDIB)
+        Case "color"
+            saveAsGrayscale = False
+        Case "gray"
+            saveAsGrayscale = True
+        Case Else
+            saveAsGrayscale = DIBs.IsDIBGrayscale(srcDIB)
+    End Select
+    
+    'Alpha is currently always saved using "automatic" mode - meaning we save it if present, ignore it otherwise.
+    ' (In the future, manual overrides could be added, like we do with PNG.)
+    '
+    'For preview purposes, let's simplify things by always saving alpha
+    Dim saveAlpha As Boolean
+    saveAlpha = True
+    
+    'Look for lossless quality.  We don't need to generate a preview for lossless export (because it's lossless!).
+    Dim jxlQuality As Single
+    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    If (jxlQuality >= 100!) Then
+        DIBs.SwizzleBR dstDIB
+        If saveAsGrayscale Then DIBs.MakeDIBGrayscale dstDIB, 256, False
+        dstDIB.SetAlphaPremultiplication True
+        PreviewJXL = True
+        Exit Function
+    End If
+    
+    'We are now guaranteed to be using lossy quality.  (This is important because it limits the
+    ' pathways we need to take, below.)
+    
+    'Prep a temporary encoder
+    Dim jxlEncoder As Long
+    jxlEncoder = CallCDeclW(JxlEncoderCreate, vbLong, 0&)
+    If (jxlEncoder = 0) Then
+        InternalError FUNC_NAME, "couldn't create encoder"
+        Exit Function
+    End If
+    
+    'Generate a basic image information struct and populate key components manually
+    Dim imgBasicInfo As JxlBasicInfo
+    CallCDeclW JxlEncoderInitBasicInfo, vbEmpty, VarPtr(imgBasicInfo)
+    
+    With imgBasicInfo
+    
+        .have_animation = 0
+        .bits_per_sample = 8        'Could be higher for HDR; floating-point has its own values elsewhere
+        .exponent_bits_per_sample = 0
+        .orientation_image = JXL_ORIENT_IDENTITY
+        
+        '1 for grayscale, 3 for RGB are only supported channel options at present (CMYK might be added in the future)
+        If saveAsGrayscale Then
+            .num_color_channels = 1
+        Else
+            .num_color_channels = 3
+        End If
+        
+        'If alpha is present, set it now;  (0 for alpha_bits means "no alpha channel")
+        .alpha_exponent_bits = 0
+        .alpha_premultiplied = 0    'Premultiplication is broken in libjxl 0.7.0; see https://github.com/libjxl/libjxl/issues/1869
+        If saveAlpha Then
+            .num_extra_channels = 1
+            .alpha_bits = 8
+        Else
+            .num_extra_channels = 0
+            .alpha_bits = 0
+        End If
+        
+        .xsize = srcDIB.GetDIBWidth
+        .ysize = srcDIB.GetDIBHeight
+        .intrinsic_xsize = .xsize
+        .intrinsic_ysize = .ysize
+        
+        'Preview in sRGB format for improved perf
+        .uses_original_profile = 0
+        
+    End With
+    
+    'Assign image properties to the encoder
+    Dim jxlResult As JxlEncoderStatus
+    jxlResult = CallCDeclW(JxlEncoderSetBasicInfo, vbLong, jxlEncoder, VarPtr(imgBasicInfo))
+    If (jxlResult = JXL_ENC_ERROR) Then
+        InternalError FUNC_NAME, "JxlEncoderSetBasicInfo error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+        GoTo FatalPreviewError
+    End If
+    
+    'Depending on gray or color export, retrieve either a linear gray or an sRGB color profile
+    Dim tmpIccProfile As pdLCMSProfile
+    Set tmpIccProfile = New pdLCMSProfile
+    
+    If saveAsGrayscale Then
+        tmpIccProfile.CreateGenericGrayscaleProfile
+    Else
+        tmpIccProfile.CreateSRGBProfile
+    End If
+    
+    Dim numProfileBytes As Long, iccProfileBytes() As Byte
+    numProfileBytes = tmpIccProfile.GetRawProfileBytes(iccProfileBytes)
+    
+    'Apply the ICC profile to the encoder
+    If (numProfileBytes > 0) Then
+        jxlResult = CallCDeclW(JxlEncoderSetICCProfile, vbLong, jxlEncoder, VarPtr(iccProfileBytes(0)), numProfileBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderSetICCProfile error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+    End If
+    
+    'Create a generic frame settings object
+    Dim jxlFrameSettings As Long
+    jxlFrameSettings = CallCDeclW(JxlEncoderFrameSettingsCreate, vbLong, jxlEncoder, 0&)
+    
+    'Apply any special frame settings, including quality (distance)
+    Dim jxlDistance As Single
+    jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
+    jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+    jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
+    
+    'Encoding effort ([1, 9] 1 is fastest, default is 7)
+    Const DEFAULT_ENCODE_EFFORT As Long = 7
+    Dim jxlEffort As Currency
+    jxlEffort = cSettings.GetLong("jxl-effort", DEFAULT_ENCODE_EFFORT, True)
+    If (jxlEffort < 1) Then jxlEffort = 1
+    If (jxlEffort > 9) Then jxlEffort = 9
+    jxlEffort = jxlEffort / 10000@
+    jxlResult = CallCDeclW(JxlEncoderFrameSettingsSetOption, vbLong, jxlFrameSettings, JXL_ENC_FRAME_SETTING_EFFORT, jxlEffort)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame setting (effort): " & GetEncoderErrorText(jxlEncoder)
+    
+    'Before adding frame pixel data, we need to notify the encoder of source pixel format details
+    Dim pxFormat As JxlPixelFormat
+    
+    'Values universal across all types
+    pxFormat.data_type = JXL_TYPE_UINT8
+    pxFormat.endianness = JXL_NATIVE_ENDIAN
+    
+    'Values specific to certain color/gray/alpha modes
+    
+    'Grayscale images
+    If saveAsGrayscale Then
+        
+        Dim srcBytes() As Byte, numSrcBytes As Long
+        
+        If saveAlpha Then
+            DIBs.GetDIBGrayscaleAndAlphaMap srcDIB, srcBytes
+            numSrcBytes = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight * 2
+        Else
+            DIBs.GetDIBGrayscaleMap srcDIB, srcBytes, False
+            numSrcBytes = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
+        End If
+        
+        'Scanlines are no longer aligned a specific way
+        pxFormat.align_scanline = 1
+        If saveAlpha Then
+            pxFormat.num_channels = 2
+        Else
+            pxFormat.num_channels = 1
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), VarPtr(srcBytes(0, 0)), numSrcBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on gray frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
+    'Color images
+    Else
+        
+        'Normally we would eliminate alpha here, but for preview purposes it's easier to simply operate in RGBA mode.
+        ' (Thus saveAlpha has been forced to TRUE earlier in this function.)
+        'If (Not saveAlpha) Then dstDIB.ConvertTo24bpp
+        
+        '4-byte alignment is used either way
+        pxFormat.align_scanline = 4
+        If saveAlpha Then
+            pxFormat.num_channels = 4
+        Else
+            pxFormat.num_channels = 3
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), dstDIB.GetDIBPointer, dstDIB.GetDIBStride * dstDIB.GetDIBHeight)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on color frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
+    End If
+    
+    'Explicitly terminate further input.
+    ' (JxlEncoderCloseInput is the equivalent of calling both CloseFrames and CloseBoxes.)
+    CallCDeclW JxlEncoderCloseInput, vbEmpty, jxlEncoder
+    
+    'We can now ask the encoder for final JXL output.  For preview purposes, we're gonna use a standard VB array
+    ' to capture the output data; we'll then turnaround and immediately decode that data for previewing.
+    
+    'libjxl does not know the size of the finished JXL output in advance.  Instead, we must repeatedly request
+    ' more output from it, and it simply lets us know when it's done.  We can then trim our final output file
+    ' to a precise size as desired.
+    Dim numBytesAvailable As Long
+    
+    'Start with a megabyte; we'll increment further as necessary
+    Const FILE_INCREMENT_AMOUNT As Long = 2 ^ 20
+    numBytesAvailable = FILE_INCREMENT_AMOUNT
+    
+    'Because we're using dynamic memory, the initial pointer may change over time (if/when we must allocate more).
+    ' So we need to track how many bytes we've already written, so we can trim appropriately when we're done.
+    Dim numBytesPreviouslyWritten As Long
+    numBytesPreviouslyWritten = 0
+    
+    'Open an in-memory stream
+    Dim dstStream As pdStream
+    Set dstStream = New pdStream
+    If dstStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, vbNullString, numBytesAvailable) Then
+        
+        'Failsafe only; the pdStream engine ensures this is available when the stream starts
+        dstStream.EnsureBufferSpaceAvailable numBytesAvailable
+        
+        'Perform first-write
+        Dim initPtr As Long, dstPtr As Long, numBytesWrittenThisPass As Long
+        dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+        initPtr = dstPtr
+        jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+        
+        'Note how many bytes were written during this pass
+        numBytesWrittenThisPass = (dstPtr - initPtr)
+        
+        'If more output is required, keep outputting as necessary
+        Do While (jxlResult = JXL_ENC_NEED_MORE_OUTPUT)
+            
+            'Increment the "total bytes written" counter
+            numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+            
+            'Commit the bytes we've written, then ask for a larger file map
+            numBytesAvailable = FILE_INCREMENT_AMOUNT
+            dstStream.EnsureBufferSpaceAvailable numBytesPreviouslyWritten + numBytesAvailable
+            
+            'Because the stream doesn't know that we've written data to it, we must manually increment
+            ' the underlying stream pointer.
+            dstStream.SetPosition numBytesPreviouslyWritten, FILE_BEGIN
+            
+            'Ask the encoder to continue working
+            dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+            initPtr = dstPtr
+            jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+            
+            'Note how many bytes were written during this pass
+            numBytesWrittenThisPass = (dstPtr - initPtr)
+            
+        Loop
+        
+        'Calculate a final "bytes written" tally
+        numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+        
+        'Set the final stream size but DO NOT CLOSE the stream - instead, reset its internal pointer to 0.
+        dstStream.SetSizeExternally numBytesPreviouslyWritten
+        dstStream.SetPosition 0, FILE_BEGIN
+        
+        'Ensure the final process output call succeeded.
+        Dim okToDecode As Boolean
+        okToDecode = (jxlResult = JXL_ENC_SUCCESS)
+        If (Not okToDecode) Then
+            '/process output failed at some point
+            InternalError FUNC_NAME, "bad process output: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalPreviewError
+        End If
+        
+        'We no longer need the libjxl encoder; free it
+        If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+        
+        'Time to decode!
+        
+        'Note that we are going to shortcut many normal decoding steps (like validating the source data)
+        ' to improve performance.  We can only do this because we know the input data is good.
+        
+        'Reset the same generic decoder we use for regular JPEG-XL decoding.
+        JXL_CreateDecoder
+        If (m_JxlDecoder = 0) Then
+            InternalError FUNC_NAME, "can't continue without a JxlDecoder instance; abandoning import"
+            Exit Function
+        End If
+        
+        'We can now start feeding data into the decoder.  libjxl uses an interesting design where the caller
+        ' can "subscribe" to "events".  These events are just special return codes for the "feed more data into
+        ' the decoder" function, but they are convenient for parsing because we can simply wait for key "events"
+        ' to occur before doing hefty tasks like allocating buffers for pixels, etc.
+        Dim eventsWanted As JxlDecoderStatus
+        eventsWanted = JXL_DEC_BASIC_INFO Or JXL_DEC_FRAME Or JXL_DEC_FULL_IMAGE
+        
+        Dim jxlReturn As JxlDecoderStatus
+        jxlReturn = CallCDeclW(JxlDecoderSubscribeEvents, vbLong, m_JxlDecoder, eventsWanted)
+        If (jxlReturn <> JXL_DEC_SUCCESS) Then
+            InternalError FUNC_NAME, "couldn't subscribe events"
+            Exit Function
+        End If
+        
+        'Data will be passed from our JXL stream to the decoder in chunks; 0.5 MB at a time seems like a
+        ' reasonable modern default.  (The library provides no guidance on this.)
+        Const JXL_CHUNK_SIZE As Long = 2 ^ 19
+        Set m_Stream = dstStream
+        
+        'Start feeding data into libjxl.  We can dump data blindly until we receive the event(s) we've subscribed to.
+        Dim nextEvent As JxlDecoderStatus
+        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+        If (nextEvent = JXL_DEC_ERROR) Then GoTo FatalPreviewError
+        
+        'The first event we expect is "basic image header" retrieval.
+        If (nextEvent = JXL_DEC_BASIC_INFO) Then
+            
+            jxlReturn = CallCDeclW(JxlDecoderGetBasicInfo, vbLong, m_JxlDecoder, VarPtr(m_Header))
+            If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                InternalError FUNC_NAME, "couldn't get basic info"
+                GoTo FatalPreviewError
+            End If
+            
+        Else
+            InternalError FUNC_NAME, "unexpected event instead of basic info"
+        End If
+        
+        'If we're still here, basic image info retrieval was successful.  We don't actually need that data
+        ' (we know image size and format already!) but this provides a good place for failsafe checks.
+        If (dstDIB.GetDIBWidth <> m_Header.xsize) Or (dstDIB.GetDIBHeight <> m_Header.ysize) Then
+            InternalError FUNC_NAME, "bad image size"
+            GoTo FatalPreviewError
+        End If
+        
+        'We could retrieve multiple frames in the future, but for now we just want to validate the retrieval
+        ' of at least *one* valid frame.
+        Dim idxFrame As Long, numFramesOK As Long
+        idxFrame = 0
+        numFramesOK = 0
+        
+        Dim curFrameHeader As JxlFrameHeader
+        
+        'We will now continue iterating through the file until we successfully load a frame.
+        Dim letsQuitEarly As Boolean
+        letsQuitEarly = False
+        
+        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+        Do While (nextEvent <> JXL_DEC_SUCCESS)
+        
+            'For now, halt on all errors.  (They are assumed to be unrecoverable at this point,
+            ' since libjxl's API provides no mechanism for retrieving *what* the error was -
+            ' that's a TODO item per their docs.)
+            If (nextEvent = JXL_DEC_ERROR) Then GoTo FatalPreviewError
+            
+            'Handle events according to type.
+            
+            'A new frame header has been encountered.  Normally we would prep a pdLayer object here,
+            ' but we can simply treat these as notification-only events during a preview.
+            If (nextEvent = JXL_DEC_FRAME) Then
+                
+                'Retrieve the frame header as part of handling the event
+                jxlReturn = CallCDeclW(JxlDecoderGetFrameHeader, vbLong, m_JxlDecoder, VarPtr(curFrameHeader))
+                If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                    InternalError FUNC_NAME, "bad frame header"
+                    GoTo FatalPreviewError
+                End If
+            
+            'Pixel data is ready, but we need to specify an output buffer first
+            ElseIf (nextEvent = JXL_DEC_NEED_IMAGE_OUT_BUFFER) Then
+                
+                'Reuse our same pxFormat object used during the encode stage
+                With pxFormat
+                    .align_scanline = 4     'Windows requires 4-byte alignment, but this is redundant when decoding to RGBA8...
+                    .data_type = JXL_TYPE_UINT8
+                    .num_channels = 4
+                    
+                    'Only matters if we support higher bit-depths in the future, obviously
+                    .endianness = JXL_LITTLE_ENDIAN
+                End With
+
+                'Ensure our destination DIB is valid
+                Dim dibReady As Boolean
+                dibReady = (dstDIB.GetDIBWidth = m_Header.xsize) And (dstDIB.GetDIBHeight = m_Header.ysize)
+                
+                'Allow libjxl to decode the pixel data into our destination DIB
+                If dibReady Then
+                    jxlReturn = CallCDeclW(JxlDecoderSetImageOutBuffer, vbLong, m_JxlDecoder, VarPtr(pxFormat), dstDIB.GetDIBPointer, dstDIB.GetDIBStride * dstDIB.GetDIBHeight)
+                    If (jxlReturn <> JXL_DEC_SUCCESS) Then
+                        InternalError FUNC_NAME, "bad SetImageOutBuffer"
+                        GoTo FatalPreviewError
+                    End If
+                Else
+                    InternalError FUNC_NAME, "bad pixel buffer"
+                    GoTo FatalPreviewError
+                End If
+
+            'The current frame has been decoded successfully.  We only need one frame for a preview,
+            ' so do not proceed further.
+            ElseIf (nextEvent = JXL_DEC_FULL_IMAGE) Then
+                
+                'Premultiply the DIB (TODO: see if the decoder can do this for us? might be faster)
+                dstDIB.SetAlphaPremultiplication True
+                
+                'Swizzle R/B channels
+                DIBs.SwizzleBR dstDIB
+                
+                'Increment frame count and reset current frame state.
+                idxFrame = idxFrame + 1
+                numFramesOK = numFramesOK + 1
+                
+                'If this frame was marked as the last frame in the image, do not attempt to retrieve
+                ' another frame - instead, just exit after this.
+                letsQuitEarly = True
+            
+            Else
+                InternalError FUNC_NAME, "unexpected event: " & nextEvent
+                Exit Do
+            End If
+            
+            'Retrieve the next event.  Note that libjxl will return JXL_DEC_SUCCESS if all requested events
+            ' have been returned, *even if EOF has not been reached*.  That's okay for our purposes - but if we
+            ' expand coverage in the future, we need to manually request new events accordingly.
+            If letsQuitEarly Then
+                Exit Do
+            Else
+                nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE, True)
+            End If
+        
+        Loop
+        
+        'Report success if at least one frame was retrieved correctly
+        PreviewJXL = (numFramesOK > 0)
+        
+        'Note that we keep the decoder alive here.  This improves performance on subsequent imports,
+        ' and the decoder will be auto-freed when libjxl is released.
+        JXL_ResetDecoder
+        
+        'We also want to free the module-level reference to our temp stream
+        Set m_Stream = Nothing
+        
+        '/end JXL decoding
+        
+    'Failed to start stream; should be impossible unless memory is extremely constrained
+    End If
+    
+    'To see timing reports for this function, uncomment the following line:
+    'If JXL_DEBUG_VERBOSE Then DebugMsg "JXL preview took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+    Exit Function
+    
+FatalPreviewError:
+    
+    'Free the encoder, if any.  (Note that this also destroys any associated FrameSettings object(s) too.)
+    If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+    JXL_ResetDecoder
+    
+    PreviewJXL = False
+    
+End Function
+
+'Save an arbitrary DIB to a standalone JPEG XL file.
+Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SaveJXL_ToFile"
+    SaveJXL_ToFile = False
+    
+    'Retrieve the composited pdImage object.
+    Dim finalDIB As pdDIB
+    srcImage.GetCompositedImage finalDIB, False
+    
+    'Prepare an export options parser
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString srcOptions
+    
+    'Start by retrieving quality from the passed param string.  Note that PhotoDemon passes this on the scale
+    ' [1, 100], but JXL quality actually behaves on the inverse scale [0, 15] where [0] = lossless, and (confusingly)
+    ' [1] = visually lossless.  Recommended range from the spec is [0.5, 3.0] but users are free to choose from the
+    ' full range of allowed values.
+    '
+    'We will keep this value on the range [1, 100!] for now (because we need to set some special values in
+    ' lossless mode), and convert it to the correct range immediately before calling the relevant quality API.
+    Dim jxlQuality As Single
+    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    
+    'Apply any preliminary color model adjustments to the source DIB as necessary
+    Dim origParamValue As String
+    origParamValue = cSettings.GetString("jxl-color-format", "auto", True)
+    
+    Dim saveAsGrayscale As Boolean
+    Select Case origParamValue
+        Case "auto"
+            saveAsGrayscale = DIBs.IsDIBGrayscale(finalDIB)
+        Case "color"
+            saveAsGrayscale = False
+        Case "gray"
+            saveAsGrayscale = True
+        Case Else
+            saveAsGrayscale = DIBs.IsDIBGrayscale(finalDIB)
+    End Select
+    
+    'Alpha is currently always saved using "automatic" mode - meaning we save it if present, ignore it otherwise.
+    ' (In the future, manual overrides could be added, like we do with PNG.)
+    Dim saveAlpha As Boolean
+    saveAlpha = DIBs.IsDIBTransparent(finalDIB)
+    
+    'Prep an encoder object.  (Unlike decoders, we do not reuse this encoder between images.)
+    Dim jxlEncoder As Long
+    jxlEncoder = CallCDeclW(JxlEncoderCreate, vbLong, 0&)
+    
+    If (jxlEncoder = 0) Then
+        InternalError FUNC_NAME, "couldn't create encoder"
+        Exit Function
+    Else
+        If JXL_DEBUG_VERBOSE Then DebugMsg "JXL encoder created, library version is " & CallCDeclW(JxlEncoderVersion, vbLong)
+    End If
+    
+    'Subsequent encoder results will be returned as library-specific status enums.  Error states can be
+    ' expanded on by calling a library-specific "GetLastError" equivalent.
+    Dim jxlResult As JxlEncoderStatus
+    
+    'A basic information struct (same as import-time) is used to store image settings.  The struct must be
+    ' initialized using the encoding engine; we can then tweak values as desired.
+    Dim imgBasicInfo As JxlBasicInfo
+    CallCDeclW JxlEncoderInitBasicInfo, vbEmpty, VarPtr(imgBasicInfo)
+    If JXL_DEBUG_VERBOSE Then DebugMsg "Basic info struct created OK"
+    
+    'Basic information includes image type, animation state, etc
+    With imgBasicInfo
+    
+        .have_animation = 0
+        .bits_per_sample = 8        'Could be higher for HDR; floating-point has its own values elsewhere
+        .exponent_bits_per_sample = 0
+        .orientation_image = JXL_ORIENT_IDENTITY
+        
+        '1 for grayscale, 3 for RGB are only supported channel options at present (CMYK might be added in the future)
+        If saveAsGrayscale Then
+            .num_color_channels = 1
+        Else
+            .num_color_channels = 3
+        End If
+        
+        'If alpha is present, set it now;  (0 for alpha_bits means "no alpha channel")
+        .alpha_exponent_bits = 0
+        .alpha_premultiplied = 0    'Premultiplication is broken in libjxl 0.7.0; see https://github.com/libjxl/libjxl/issues/1869
+        If saveAlpha Then
+            .num_extra_channels = 1
+            .alpha_bits = 8
+        Else
+            .num_extra_channels = 0
+            .alpha_bits = 0
+        End If
+        
+        .xsize = srcImage.Width
+        .ysize = srcImage.Height
+        .intrinsic_xsize = .xsize
+        .intrinsic_ysize = .ysize
+        
+        'More extensive color profile support remains TODO, but for lossless mode we must explicitly
+        ' request use of the original color profile or the API will return errors.
+        If (jxlQuality = 100!) Then
+            
+            'NOTE: as of November 2022, setting this parameter to TRUE causes inexplicable crashes when attempting
+            ' to read out the encoded JXL data (via JxlEncoderProcessOutput) *IF* the data is saved using a built-in
+            ' JxlColorEncoding profile.  I do not know why.  Switching to raw ICC profile calls (instead of built-in
+            ' JxlColorEncoding ones) solves the problem for now for whatever reason.
+            '
+            '(The same is true in GIMP - see https://github.com/libjxl/libjxl/issues/1931)
+            .uses_original_profile = 1
+            
+        Else
+            .uses_original_profile = 0
+        End If
+        
+    End With
+    
+    'With all "global metadata" set, we can now assign it to this encoder instance
+    jxlResult = CallCDeclW(JxlEncoderSetBasicInfo, vbLong, jxlEncoder, VarPtr(imgBasicInfo))
+    If (jxlResult = JXL_ENC_ERROR) Then
+        InternalError FUNC_NAME, "JxlEncoderSetBasicInfo error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+        GoTo FatalEncoderError
+    Else
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Basic info set OK"
+    End If
+    
+    'At present, PhotoDemon always stores images in the sRGB working space.  Specify that color space now.
+    
+    'Create an sRGB profile in JXL color encoding format.  Note that the last parameter is a JXL_BOOL for isGrayscale.
+    ' NOTE: as of v0.7.0, this function can and will crash libjxl when JXL data is later retrieved
+    ' (via JxlEncoderProcessOutput).
+    ' I don't know why this function is buggy, so I've switched to just passing the pure ICC profile instead.
+    'Dim tmpColorEncoding As JxlColorEncoding
+    'CallCDeclW JxlColorEncodingSetToSRGB, vbEmpty, VarPtr(tmpColorEncoding), 0&
+    
+    'Apply the color encoding (again, can't do this in v0.7.0 because the encoder will crash later)
+    'jxlResult = CallCDeclW(JxlEncoderSetColorEncoding, vbLong, jxlEncoder, VarPtr(tmpColorEncoding))
+    'If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "couldn't apply sRGB space"
+    
+    'Depending on gray or color export, retrieve either a linear gray or an sRGB color profile
+    Dim tmpIccProfile As pdLCMSProfile
+    Set tmpIccProfile = New pdLCMSProfile
+    
+    If saveAsGrayscale Then
+        tmpIccProfile.CreateGenericGrayscaleProfile
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Creating gray color profile..."
+    Else
+        tmpIccProfile.CreateSRGBProfile
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Creating sRGB color profile..."
+    End If
+    
+    Dim numProfileBytes As Long, iccProfileBytes() As Byte
+    numProfileBytes = tmpIccProfile.GetRawProfileBytes(iccProfileBytes)
+    
+    'Apply the ICC profile to the encoder
+    If (numProfileBytes > 0) Then
+        jxlResult = CallCDeclW(JxlEncoderSetICCProfile, vbLong, jxlEncoder, VarPtr(iccProfileBytes(0)), numProfileBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderSetICCProfile error: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "ICC profile set OK"
+        End If
+    End If
+    
+    'For animated export, we also need to create a base frame header object (TODO)
+    'JXL_EXPORT void JxlEncoderInitFrameHeader(JxlFrameHeader *frame_header)
+    'JXL_EXPORT void JxlEncoderInitBlendInfo(JxlBlendInfo *blend_info)
+    
+    'Encoder settings are stored in an opaque settings struct.  Settings can be applied (or queried) as
+    ' integer or float values using dedicated APIs.
+    Dim jxlFrameSettings As Long
+    jxlFrameSettings = CallCDeclW(JxlEncoderFrameSettingsCreate, vbLong, jxlEncoder, 0&)
+    If JXL_DEBUG_VERBOSE Then DebugMsg "Default frame settings retrieved: " & jxlFrameSettings
+    
+    'We can now request any frame settings we want.  Note that this can be done several ways:
+    ' 1) Bulk settings request, by calling e.g. JxlEncoderSetFrameLossless for lossless behavior or
+    '    JxlEncoderSetFrameDistance for lossy quality
+    ' 2) Individual esoteric settings by ID and int value, via JxlEncoderFrameSettingsSetOption
+    '    (Importantly, note that this takes an int64 value - cumbersome in VB6 due to no native 64-bit int!)
+    ' 3) Individual esoteric settings by ID and float value, via JxlEncoderFrameSettingsSetFloatOption
+    '    (Takes a 32-bit float, or "single" in VB6 terminology.)
+    
+    'For lossless quality, call the special "lossless" function (which sets a bunch of underlying settings
+    ' to compatible lossless values).
+    If (jxlQuality = 100!) Then
+        
+        jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, 0!)
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad lossy quality in lossless path: " & GetEncoderErrorText(jxlEncoder)
+        jxlResult = CallCDeclW(JxlEncoderSetFrameLossless, vbLong, jxlFrameSettings, 1&)
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad lossless quality in lossless path: " & GetEncoderErrorText(jxlEncoder)
+        
+    'For lossy values, we must first convert to the necessary [1, 15] scale.  Note that at present, we do not expose
+    ' settings below 1 which would mean "visually lossless with increasing numerical losslessness when approaching 0".
+    Else
+        
+        Dim jxlDistance As Single
+        jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
+        jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+        jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Saving image with frame distance " & jxlDistance
+        If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
+        
+    End If
+    
+    'Encoding effort ([1, 9] 1 is fastest, default is 7)
+    Const DEFAULT_ENCODE_EFFORT As Long = 7
+    Dim jxlEffort As Currency
+    jxlEffort = cSettings.GetLong("jxl-effort", DEFAULT_ENCODE_EFFORT, True)
+    
+    If (jxlEffort < 1) Then jxlEffort = 1
+    If (jxlEffort > 9) Then jxlEffort = 9
+    jxlEffort = jxlEffort / 10000@
+    
+    jxlResult = CallCDeclW(JxlEncoderFrameSettingsSetOption, vbLong, jxlFrameSettings, JXL_ENC_FRAME_SETTING_EFFORT, jxlEffort)
+    If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame setting (effort): " & GetEncoderErrorText(jxlEncoder)
+    
+    'For an animated file, you can modify individual frame settings here
+    
+    'Before adding frame pixel data, we need to notify the engine of the pixel format we're using.
+    ' This varies according to the current color format, obviously.
+    Dim pxFormat As JxlPixelFormat
+    
+    'Values universal across all types
+    pxFormat.data_type = JXL_TYPE_UINT8
+    pxFormat.endianness = JXL_NATIVE_ENDIAN
+    
+    'Values specific to certain color/gray/alpha modes
+    Dim srcBytes() As Byte, numSrcBytes As Long
+    
+    'Grayscale images
+    If saveAsGrayscale Then
+        
+        If saveAlpha Then
+            DIBs.GetDIBGrayscaleAndAlphaMap finalDIB, srcBytes
+            numSrcBytes = finalDIB.GetDIBWidth * finalDIB.GetDIBHeight * 2
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is GrayA"
+        Else
+            DIBs.GetDIBGrayscaleMap finalDIB, srcBytes, False
+            numSrcBytes = finalDIB.GetDIBWidth * finalDIB.GetDIBHeight
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is Gray"
+        End If
+        
+        'In gray images, scanlines are not aligned a specific way
+        pxFormat.align_scanline = 1
+        If saveAlpha Then
+            pxFormat.num_channels = 2
+        Else
+            pxFormat.num_channels = 1
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), VarPtr(srcBytes(0, 0)), numSrcBytes)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on gray frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Gray frame added OK"
+        End If
+        
+    'Color images
+    Else
+        
+        'Swizzle B/R channels (for RGB order)
+        DIBs.SwizzleBR finalDIB
+        
+        'Eliminate alpha as necessary
+        If (Not saveAlpha) Then finalDIB.ConvertTo24bpp
+        
+        '4-byte alignment is used either way
+        pxFormat.align_scanline = 4
+        If saveAlpha Then
+            pxFormat.num_channels = 4
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is RGBA"
+        Else
+            pxFormat.num_channels = 3
+            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL color mode is RGB"
+        End If
+        
+        'Using the specified frame settings, add this image frame to the JXL object
+        jxlResult = CallCDeclW(JxlEncoderAddImageFrame, vbLong, jxlFrameSettings, VarPtr(pxFormat), finalDIB.GetDIBPointer, finalDIB.GetDIBStride * finalDIB.GetDIBHeight)
+        If (jxlResult = JXL_ENC_ERROR) Then
+            InternalError FUNC_NAME, "JxlEncoderAddImageFrame error on color frame: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        Else
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Color frame added OK"
+        End If
+        
+    End If
+    
+    'After adding frame data, we can free any local image data copies
+    Set finalDIB = Nothing
+    Erase srcBytes
+    
+    'When all frames have been added, we must explicitly terminate further input.
+    ' (JxlEncoderCloseInput is the equivalent of calling both CloseFrames and CloseBoxes)
+    CallCDeclW JxlEncoderCloseInput, vbEmpty, jxlEncoder
+    If JXL_DEBUG_VERBOSE Then DebugMsg "Closed encoder input; ready to create JXL data"
+    
+    'We can now ask the encoder for final JXL output.
+    
+    'libjxl does not know the size of the finished JXL output in advance.  Instead, we must repeatedly request
+    ' more output from it, and it simply lets us know when it's done.  We can then trim our final output file
+    ' to a precise size.
+    Dim numBytesAvailable As Long
+    
+    'Start with a megabyte; we'll increment further as necessary
+    Const FILE_INCREMENT_AMOUNT As Long = 2 ^ 20
+    numBytesAvailable = FILE_INCREMENT_AMOUNT
+    
+    'Because we're using memory-mapped files, the initial pointer may change over time (if we must re-map).
+    ' So we need to track how many bytes we've already written, so we can trim appropriately when we're done.
+    Dim numBytesPreviouslyWritten As Long
+    numBytesPreviouslyWritten = 0
+    
+    'Open a stream on the destination file
+    Dim dstStream As pdStream
+    Set dstStream = New pdStream
+    If dstStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, numBytesAvailable, optimizeAccess:=OptimizeSequentialAccess) Then
+        
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Stream started on " & dstFile
+        
+        'Failsafe only; the memory-map engine will ensure this is available during the stream start process
+        dstStream.EnsureBufferSpaceAvailable numBytesAvailable
+        
+        'Perform first-write
+        Dim initPtr As Long, dstPtr As Long, numBytesWrittenThisPass As Long
+        dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+        initPtr = dstPtr
+        jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Result of first output process: " & jxlResult & ", " & initPtr & ", " & dstPtr & ", " & numBytesAvailable
+        
+        'Note how many bytes were written during this pass
+        numBytesWrittenThisPass = (dstPtr - initPtr)
+        
+        'If more output is required, keep outputting as necessary
+        Do While (jxlResult = JXL_ENC_NEED_MORE_OUTPUT)
+            
+            'Increment the "total bytes written" counter
+            numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+            
+            'Notify the stream that data has been written to it from an outside source
+            dstStream.SetSizeExternally numBytesPreviouslyWritten
+            
+            'Commit the bytes we've written, then ask for a larger file map
+            numBytesAvailable = FILE_INCREMENT_AMOUNT
+            dstStream.EnsureBufferSpaceAvailable numBytesPreviouslyWritten + numBytesAvailable
+            
+            'Because the stream doesn't know that we've written data to it, we must manually increment
+            ' the underlying stream pointer.
+            dstStream.SetPosition numBytesPreviouslyWritten, FILE_BEGIN
+            
+            'Ask the encoder to continue working
+            dstPtr = dstStream.Peek_PointerOnly(peekLength:=numBytesAvailable)
+            initPtr = dstPtr
+            jxlResult = CallCDeclW(JxlEncoderProcessOutput, vbLong, jxlEncoder, VarPtr(dstPtr), VarPtr(numBytesAvailable))
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Result of next output process: " & jxlResult & ", " & initPtr & ", " & dstPtr & ", " & numBytesAvailable
+            
+            'Note how many bytes were written during this pass
+            numBytesWrittenThisPass = (dstPtr - initPtr)
+            
+        Loop
+        
+        'Calculate a final "bytes written" tally
+        numBytesPreviouslyWritten = numBytesPreviouslyWritten + numBytesWrittenThisPass
+        
+        'Set the final stream size and close the stream
+        dstStream.SetSizeExternally numBytesPreviouslyWritten
+        dstStream.StopStream True
+        
+        'Ensure the final process output call succeeded
+        If (jxlResult = JXL_ENC_SUCCESS) Then
+            
+            SaveJXL_ToFile = True
+            
+        '/process output failed
+        Else
+            InternalError FUNC_NAME, "bad process output: " & GetEncoderErrorText(CallCDeclW(JxlEncoderGetError, vbLong, jxlEncoder))
+            GoTo FatalEncoderError
+        End If
+        
+    'Failed to start stream
+    Else
+        InternalError FUNC_NAME, "no stream"
+        GoTo FatalEncoderError
+    End If
+    
+    'Start here
+    
+    'Free the encoder before exiting
+    If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+    
+    Exit Function
+    
+FatalEncoderError:
+    
+    'Free the encoder, if any.  (Note that this also destroys any associated FrameSettings object(s) too.)
+    If (jxlEncoder <> 0) Then CallCDeclW JxlEncoderDestroy, vbLong, jxlEncoder
+    
+    SaveJXL_ToFile = False
+
+End Function
+
 'Create a new JPEG XL decoder (fills m_JxlDecoder with a pointer to an opaque JxlDecoder struct)
 Private Function JXL_CreateDecoder() As Boolean
     
@@ -1169,7 +2524,7 @@ Private Function JXL_CreateDecoder() As Boolean
             InternalError FUNC_NAME, "couldn't create decoder"
             Exit Function
         Else
-            If JXL_DEBUG_VERBOSE Then debugMsg "Created decoder: " & m_JxlDecoder
+            If JXL_DEBUG_VERBOSE Then DebugMsg "Created decoder: " & m_JxlDecoder
         End If
     Else
         JXL_CreateDecoder = JXL_ResetDecoder()
@@ -1181,20 +2536,47 @@ End Function
 
 'Destroy the current JPEG XL decoder (m_JxlDecoder)
 Private Function JXL_DestroyDecoder() As Boolean
-    If (m_JxlDecoder <> 0) Then
+    If (m_JxlDecoder <> 0) And (m_LibHandle <> 0) Then
         CallCDeclW JxlDecoderDestroy, vbEmpty, m_JxlDecoder
-        If JXL_DEBUG_VERBOSE Then debugMsg "Destroyed decoder: " & m_JxlDecoder
+        If JXL_DEBUG_VERBOSE Then DebugMsg "Destroyed decoder: " & m_JxlDecoder
         m_JxlDecoder = 0
     End If
     JXL_DestroyDecoder = (m_JxlDecoder = 0)
 End Function
 
+'If an error occurs during encoding, you can call this function to return a human-readable error description.
+Private Function GetEncoderErrorText(ByVal srcEncoder As Long) As String
+    
+    Dim errNo As JxlEncoderError
+    errNo = CallCDeclW(JxlEncoderGetError, vbLong, srcEncoder)
+    
+    Select Case errNo
+        Case JXL_ENC_ERR_OK
+            GetEncoderErrorText = "no error"
+        Case JXL_ENC_ERR_GENERIC
+            GetEncoderErrorText = "generic error"
+        Case JXL_ENC_ERR_OOM
+            GetEncoderErrorText = "out of memory"
+        Case JXL_ENC_ERR_JBRD
+            GetEncoderErrorText = "JPEG bitstream fail"
+        Case JXL_ENC_ERR_BAD_INPUT
+            GetEncoderErrorText = "bad input"
+        Case JXL_ENC_ERR_NOT_SUPPORTED
+            GetEncoderErrorText = "unsupported feature"
+        Case JXL_ENC_ERR_API_USAGE
+            GetEncoderErrorText = "incorrect API usage"
+        Case Else
+            GetEncoderErrorText = "???"
+    End Select
+
+End Function
+
 'Continue loading data into the active decoder until an event state is returned.  This function automatically
 ' tracks underlying file position to ensure correct read behavior.  File is read in [chunkSize] chunks using
 ' memory mapping.
-Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) As JxlDecoderStatus
-        
-    If JXL_DEBUG_VERBOSE Then debugMsg "Starting ProcessUntilEvent..."
+Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024, Optional ByVal suppressDebugMsgs As Boolean = False) As JxlDecoderStatus
+    
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "Starting ProcessUntilEvent..."
         
     Const FUNC_NAME As String = "JXL_ProcessUntilEvent"
     
@@ -1233,17 +2615,17 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
         Exit Function
     End If
     
-    If JXL_DEBUG_VERBOSE Then debugMsg "libjxl SetInput successful."
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl SetInput successful."
     
     'Ask the decoder to process the input we've sent.
     jxlReturn = CallCDeclW(JxlDecoderProcessInput, vbLong, m_JxlDecoder)
-    If JXL_DEBUG_VERBOSE Then debugMsg "libjxl ProcessInput returned: " & jxlReturn
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl ProcessInput returned: " & jxlReturn
     
     'If the decoder requires more input before raising a requested event, pass it more input
     Dim numBytesStillRequired As Long
     Do While (jxlReturn = JXL_DEC_NEED_MORE_INPUT)
         
-        If JXL_DEBUG_VERBOSE Then debugMsg "libjxl ProcessInput needs more output.  Loading another chunk..."
+        If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl ProcessInput needs more output.  Loading another chunk..."
         
         'Before adding new input, we must release the current input.
         numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
@@ -1288,12 +2670,12 @@ Private Function JXL_ProcessUntilEvent(Optional ByVal chunkSize As Long = 1024) 
     
     'We are now guaranteed to have raised *some* kind of event (or error).
     JXL_ProcessUntilEvent = jxlReturn
-    If JXL_DEBUG_VERBOSE Then debugMsg "libjxl Event ready: " & jxlReturn
+    If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "libjxl Event ready: " & jxlReturn
     
     'Release any input we have supplied, but be sure to *align the underlying file stream pointer* accordingly
     numBytesStillRequired = CallCDeclW(JxlDecoderReleaseInput, vbLong, m_JxlDecoder)
     If (numBytesStillRequired > 0) Then
-        If JXL_DEBUG_VERBOSE Then debugMsg "Release input required modifying file offset by -" & numBytesStillRequired
+        If JXL_DEBUG_VERBOSE And (Not suppressDebugMsgs) Then DebugMsg "Release input required modifying file offset by -" & numBytesStillRequired
         m_Stream.SetPosition numBytesStillRequired * -1, FILE_CURRENT
     End If
 
@@ -1305,7 +2687,7 @@ Private Function JXL_ResetDecoder() As Boolean
     
     If (m_JxlDecoder <> 0) Then
         CallCDeclW JxlDecoderReset, vbEmpty, m_JxlDecoder
-        If JXL_DEBUG_VERBOSE Then debugMsg "Reset decoder: " & m_JxlDecoder
+        'If JXL_DEBUG_VERBOSE Then DebugMsg "Reset decoder: " & m_JxlDecoder
     
     'Failsafe only; just call JXL_CreateDecoder if you need a new instance
     Else
@@ -1345,13 +2727,13 @@ End Function
 ' (only when JXL_DEBUG_VERBOSE = True).
 '
 ' To use these functions outside PhotoDemon, substitute PDDebug.LogAction with your own logger.
-Private Sub debugMsg(ByRef msgText As String)
+Private Sub DebugMsg(ByRef msgText As String)
     PDDebug.LogAction msgText, PDM_External_Lib, True
 End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
-        If writeDebugLog Then debugMsg "Plugin_jxl." & funcName & "() reported an error: " & errDescription
+        If writeDebugLog Then DebugMsg "Plugin_jxl." & funcName & "() reported an error: " & errDescription
     Else
         Debug.Print "Plugin_jxl." & funcName & "() reported an error: " & errDescription
     End If

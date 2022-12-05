@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 07/October/22
-'Last update: start preliminary work on JPEG XL support
+'Last updated: 17/October/22
+'Last update: finish up proper storage of JPEG XL original image settings
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -1349,10 +1349,11 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalFileFormat PDIF_JXL
         dstImage.NotifyImageChanged UNDO_Everything
         
-        dstImage.SetOriginalColorDepth 32           'TODO: retrieve from source
-        dstImage.SetOriginalGrayscale False         'TODO: retrieve from source
-        dstImage.SetOriginalAlpha False             'TODO: retrieve from source
-        dstImage.SetAnimated False                  'TODO: retrieve from source
+        'Set "original image settings" so the user can use the convenient "repeat original settings" command when exporting
+        dstImage.SetOriginalColorDepth Plugin_jxl.LastJXL_OriginalColorDepth()
+        dstImage.SetOriginalGrayscale Plugin_jxl.LastJXL_IsGrayscale()
+        dstImage.SetOriginalAlpha Plugin_jxl.LastJXL_HasAlpha()
+        dstImage.SetAnimated Plugin_jxl.LastJXL_IsAnimated()
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.

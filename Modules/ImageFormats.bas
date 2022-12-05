@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2022 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 30/March/22
-'Last update: start work on preliminary support for GIMP XCF images
+'Last updated: 08/November/22
+'Last update: continued work on JPEG XL support
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -423,6 +423,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
     If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
+    If Plugin_jxl.IsLibJXLEnabled() Then AddOutputFormat "JXL - JPEG XL", "jxl", PDIF_JXL
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
@@ -812,6 +813,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         Case PDIF_JP2
             IsExportDialogSupported = True
         Case PDIF_JPEG
+            IsExportDialogSupported = True
+        Case PDIF_JXL
             IsExportDialogSupported = True
         Case PDIF_JXR
             IsExportDialogSupported = True

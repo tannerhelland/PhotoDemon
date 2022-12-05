@@ -219,7 +219,7 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
         End If
         
     Else
-        InternalStreamError "SetPosition failed; bad position: " & newPosition & " vs " & m_BufferSize
+        InternalStreamError "SetPosition failed; bad position: " & newPosition & " requested vs " & m_BufferSize & " total buffer len"
         SetPosition = False
     End If
     
@@ -241,7 +241,7 @@ End Function
 'PD sometimes writes buffer bytes using 3rd-party libraries and naked pointers (e.g. during compression/decompression).
 ' Because of this, the buffer's size may change without us accessing any internal stream functions.  (We still ensure a
 ' given stream size using EnsureBufferSpaceAvailable(), but then we write data to the stream without using any of this
-' class's helper functions.)  To ensure that the buffer's reported size remains correct, we call this function afterward.
+' class's helper functions.)  To ensure that the buffer's reported size remains correct, call this function afterward.
 Friend Sub SetSizeExternally(ByVal newSize As Long)
     m_BufferSize = newSize
 End Sub
@@ -1317,7 +1317,8 @@ End Function
 'NOTE: for memory-mapped file streams, you *must* supply a length alongside the peek position.
 '      A length is required to page the backing data into memory.
 '
-'NOTE: for file-backed streams, this function *cannot currently be used*.
+'NOTE: for file-backed streams, this function *cannot be used* because there is no underlying pointer for
+'      the destination.
 '
 'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream
 '         is file-backed.
