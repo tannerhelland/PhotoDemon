@@ -59,9 +59,26 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-PhotoDemon 9.0 just released, so there's not much new in nightly builds.
+[Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2022/09/08/photodemon-9-0.html).
 
-Check back in a few weeks!
+### File formats
+
+- Comprehensive import and export support for [JPEG XL images](https://en.wikipedia.org/wiki/JPEG_XL), including full support for all color models in both lossy and lossless modes.
+- Import support for [satellite topography (HGT) images](https://www2.jpl.nasa.gov/srtm/faq.html#data)
+- Icon (ICO) export now provides [much higher-quality downsampling](https://github.com/tannerhelland/PhotoDemon/commit/6c3dc5ae7b33791d3cb2c7611409679f3a4c3e40) and a new `use merged image` option allows you to automatically generate icon frames from a merged multi-layer image.
+
+### Image and Layer tools
+
+- [The Advanced Text Tool supports new features](https://github.com/tannerhelland/PhotoDemon/pull/431), including justified text alignment, custom fill + stroke order, and new antialiasing settings.
+- The `[Effects > Transform > Perspective]` tool now supports [custom forshortening values in both x- and y-directions](https://github.com/tannerhelland/PhotoDemon/commit/27f6d12242fad25e14b0226831d88fdd4ee7dc31).
+
+### User interface 
+
+- [Improved Windows XP support](https://github.com/tannerhelland/PhotoDemon/commit/8b339413e4604a568c829df9f42e52aacd786d51), including better coverage of 3rd-party libraries that have XP-specific limitations.
+
+### Batch processing
+
+- Batch conversion of [SVG images to raster formats](https://github.com/tannerhelland/PhotoDemon/commit/13c466f1aaef58afe623a56f47da6b3975541329) is now supported.
 
 ### Other
 
