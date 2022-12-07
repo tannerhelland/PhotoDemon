@@ -1676,9 +1676,12 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     saveAlpha = True
     
     'Look for lossless quality.  We don't need to generate a preview for lossless export (because it's lossless!).
-    Dim jxlQuality As Single
-    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
-    If (jxlQuality >= 100!) Then
+    Dim jxlLossless As Boolean
+    jxlLossless = cSettings.GetBool("jxl-lossless", False, True)
+    
+    Dim jxlLossyQuality As Single
+    jxlLossyQuality = cSettings.GetSingle("jxl-lossy-quality", 1!, True)
+    If jxlLossless Then
         DIBs.SwizzleBR dstDIB
         If saveAsGrayscale Then DIBs.MakeDIBGrayscale dstDIB, 256, False
         dstDIB.SetAlphaPremultiplication True
@@ -1772,8 +1775,11 @@ Public Function PreviewJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef s
     
     'Apply any special frame settings, including quality (distance)
     Dim jxlDistance As Single
-    jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
-    jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+    jxlDistance = jxlLossyQuality
+    
+    'Validate lossy quality values
+    If (jxlDistance < 1!) Then jxlDistance = 1!
+    If (jxlDistance > 15!) Then jxlDistance = 15!
     jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
     If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)
     
@@ -2126,15 +2132,12 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     Set cSettings = New pdSerialize
     cSettings.SetParamString srcOptions
     
-    'Start by retrieving quality from the passed param string.  Note that PhotoDemon passes this on the scale
-    ' [1, 100], but JXL quality actually behaves on the inverse scale [0, 15] where [0] = lossless, and (confusingly)
-    ' [1] = visually lossless.  Recommended range from the spec is [0.5, 3.0] but users are free to choose from the
-    ' full range of allowed values.
-    '
-    'We will keep this value on the range [1, 100!] for now (because we need to set some special values in
-    ' lossless mode), and convert it to the correct range immediately before calling the relevant quality API.
-    Dim jxlQuality As Single
-    jxlQuality = cSettings.GetSingle("jxl-quality", 100!, True)
+    'Start by retrieving lossless mode and lossy quality from the passed param string.
+    Dim jxlLossless As Boolean
+    jxlLossless = cSettings.GetBool("jxl-lossless", False, True)
+    
+    Dim jxlLossyQuality As Single
+    jxlLossyQuality = cSettings.GetSingle("jxl-lossy-quality", 1!, True)
     
     'Apply any preliminary color model adjustments to the source DIB as necessary
     Dim origParamValue As String
@@ -2211,7 +2214,7 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
         
         'More extensive color profile support remains TODO, but for lossless mode we must explicitly
         ' request use of the original color profile or the API will return errors.
-        If (jxlQuality = 100!) Then
+        If jxlLossless Then
             
             'NOTE: as of November 2022, setting this parameter to TRUE causes inexplicable crashes when attempting
             ' to read out the encoded JXL data (via JxlEncoderProcessOutput) *IF* the data is saved using a built-in
@@ -2295,7 +2298,7 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     
     'For lossless quality, call the special "lossless" function (which sets a bunch of underlying settings
     ' to compatible lossless values).
-    If (jxlQuality = 100!) Then
+    If jxlLossless Then
         
         jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, 0!)
         If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad lossy quality in lossless path: " & GetEncoderErrorText(jxlEncoder)
@@ -2307,8 +2310,11 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     Else
         
         Dim jxlDistance As Single
-        jxlDistance = (100! - jxlQuality) / 100!    'scale to [0, 1] where 0 = highest quality
-        jxlDistance = (jxlDistance * 14!) + 1!      'scale to [1, 15]
+        jxlDistance = jxlLossyQuality
+        
+        'Validate to range from the spec [1, 15]
+        If (jxlDistance < 1!) Then jxlDistance = 1!
+        If (jxlDistance > 15!) Then jxlDistance = 15!
         jxlResult = CallCDeclW(JxlEncoderSetFrameDistance, vbLong, jxlFrameSettings, jxlDistance)
         If JXL_DEBUG_VERBOSE Then DebugMsg "Saving image with frame distance " & jxlDistance
         If (jxlResult <> JXL_ENC_SUCCESS) Then InternalError FUNC_NAME, "Bad frame distance: " & GetEncoderErrorText(jxlEncoder)

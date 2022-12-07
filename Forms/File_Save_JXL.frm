@@ -57,6 +57,109 @@ Begin VB.Form dialog_ExportJXL
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
+      Index           =   0
+      Left            =   5880
+      Top             =   1080
+      Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsQuality 
+         Height          =   1095
+         Left            =   120
+         TabIndex        =   7
+         Top             =   120
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "quality"
+      End
+      Begin PhotoDemon.pdSlider sldEffort 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   6
+         Top             =   2280
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   1720
+         Caption         =   "compression effort"
+         Min             =   1
+         Max             =   9
+         Value           =   7
+         NotchPosition   =   2
+         NotchValueCustom=   7
+      End
+      Begin PhotoDemon.pdSlider sldQuality 
+         Height          =   405
+         Left            =   120
+         TabIndex        =   3
+         Top             =   1320
+         Width           =   6975
+         _ExtentX        =   7223
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   15
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   1
+         DefaultValue    =   1
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   0
+         Left            =   480
+         Top             =   3240
+         Width           =   2340
+         _ExtentX        =   4128
+         _ExtentY        =   450
+         Caption         =   "fast, larger file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   1
+         Left            =   2880
+         Top             =   3240
+         Width           =   2580
+         _ExtentX        =   4551
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "slow, smaller file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   3
+         Left            =   2880
+         Top             =   1800
+         Width           =   2580
+         _ExtentX        =   4551
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "low quality, small file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   2
+         Left            =   480
+         Top             =   1800
+         Width           =   2340
+         _ExtentX        =   4128
+         _ExtentY        =   450
+         Caption         =   "high quality, large file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4695
       Index           =   1
       Left            =   5880
       Top             =   1080
@@ -66,7 +169,7 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdButtonStrip btsDepth 
          Height          =   1095
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -85,94 +188,11 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdMetadataExport mtdManager 
          Height          =   4215
          Left            =   240
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   120
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   7435
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4695
-      Index           =   0
-      Left            =   5880
-      Top             =   1080
-      Width           =   7215
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sldEffort 
-         Height          =   975
-         Left            =   120
-         TabIndex        =   7
-         Top             =   1320
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   1720
-         Caption         =   "compression effort"
-         Min             =   1
-         Max             =   9
-         Value           =   7
-         NotchPosition   =   2
-         NotchValueCustom=   7
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         Top             =   120
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   450
-         Caption         =   "quality"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdDropDown cboSaveQuality 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   4
-         Top             =   600
-         Width           =   2610
-         _ExtentX        =   4604
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdSlider sltQuality 
-         Height          =   405
-         Left            =   2880
-         TabIndex        =   3
-         Top             =   600
-         Width           =   4335
-         _ExtentX        =   7223
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   100
-         Value           =   90
-         NotchPosition   =   1
-         DefaultValue    =   90
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   0
-         Left            =   480
-         Top             =   2280
-         Width           =   2340
-         _ExtentX        =   4128
-         _ExtentY        =   450
-         Caption         =   "fast, larger file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   1
-         Left            =   2880
-         Top             =   2280
-         Width           =   2580
-         _ExtentX        =   4551
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "slow, smaller file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
       End
    End
 End
@@ -207,10 +227,6 @@ Private m_CompositedImage As pdDIB
 
 'Current original preview DIB, cropped and zoomed as necessary (but otherwise unmodified).
 Private m_PreviewDIB As pdDIB
-
-'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
-' variable controls access to the toggle code.
-Private m_DisableUIUpdates As Boolean
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -250,23 +266,9 @@ Private Sub btsDepth_Click(ByVal buttonIndex As Long)
     UpdatePreview
 End Sub
 
-Private Sub cboSaveQuality_Click()
-    
-    If (Not m_DisableUIUpdates) Then
-        Select Case cboSaveQuality.ListIndex
-            Case 0
-                sltQuality.Value = 100
-            Case 1
-                sltQuality.Value = 92
-            Case 2
-                sltQuality = 80
-            Case 3
-                sltQuality = 65
-            Case 4
-                sltQuality = 40
-        End Select
-    End If
-    
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    UpdateQualityVisibility
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_CancelClick()
@@ -297,7 +299,8 @@ Private Function GetParamString_JXL() As String
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    cParams.AddParam "jxl-quality", sltQuality.Value
+    cParams.AddParam "jxl-lossless", (btsQuality.ListIndex = 0)
+    cParams.AddParam "jxl-lossy-quality", sldQuality.Value
     cParams.AddParam "jxl-effort", sldEffort.Value
     
     Select Case btsDepth.ListIndex
@@ -320,7 +323,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Default save quality is "Excellent"
-    cboSaveQuality.ListIndex = 1
+    sldQuality.Value = 1    'Visually lossless, but underlying RGB may change due to color space conversion(s)
     sldEffort.Value = 7     'Default per libjxl
     
     'Auto color model detection
@@ -332,28 +335,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-'Used to keep the "image quality" text box, scroll bar, and combo box in sync
-Private Sub UpdateDropDown()
-    
-    Select Case sltQuality.Value
-        Case 40
-            If (cboSaveQuality.ListIndex <> 4) Then cboSaveQuality.ListIndex = 4
-        Case 65
-            If (cboSaveQuality.ListIndex <> 3) Then cboSaveQuality.ListIndex = 3
-        Case 80
-            If (cboSaveQuality.ListIndex <> 2) Then cboSaveQuality.ListIndex = 2
-        Case 92
-            If (cboSaveQuality.ListIndex <> 1) Then cboSaveQuality.ListIndex = 1
-        Case 100
-            If (cboSaveQuality.ListIndex <> 0) Then cboSaveQuality.ListIndex = 0
-        Case Else
-            If (cboSaveQuality.ListIndex <> 5) Then cboSaveQuality.ListIndex = 5
-    End Select
-    
-    If (Not m_DisableUIUpdates) Then UpdatePreview
-    
 End Sub
 
 'The ShowDialog routine presents the user with this form.
@@ -372,16 +353,10 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsCategory.AddItem "metadata", 2
     
     'Populate the "basic" options panel
-    cboSaveQuality.SetAutomaticRedraws False
-    cboSaveQuality.Clear
-    cboSaveQuality.AddItem "lossless (100)", 0
-    cboSaveQuality.AddItem "excellent (92)", 1
-    cboSaveQuality.AddItem "good (80)", 2
-    cboSaveQuality.AddItem "average (65)", 3
-    cboSaveQuality.AddItem "low (40)", 4
-    cboSaveQuality.AddItem "custom quality", 5
-    cboSaveQuality.ListIndex = 1
-    cboSaveQuality.SetAutomaticRedraws True, True
+    btsQuality.AddItem "lossless", 0
+    btsQuality.AddItem "lossy", 1
+    btsQuality.ListIndex = 0
+    UpdateQualityVisibility
     
     'Populate the "advanced" options panel
     btsDepth.AddItem "auto", 0
@@ -400,10 +375,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
     If (Not m_SrcImage Is Nothing) Then
-        
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
-        
     End If
     
     'In batch process mode, we won't have a sample image to preview
@@ -432,8 +405,21 @@ Private Sub sldEffort_Change()
     UpdatePreview
 End Sub
 
-Private Sub sltQuality_Change()
-    If (Not m_DisableUIUpdates) Then UpdateDropDown
+Private Sub sldQuality_Change()
+    UpdatePreview
+End Sub
+
+'The dialog differentiates between lossless and lossy using a hard toggle; lossy settings are hidden
+' when lossless mode is requested.
+Private Sub UpdateQualityVisibility()
+    
+    Dim showLossySettings As Boolean
+    showLossySettings = (btsQuality.ListIndex > 0)
+    
+    sldQuality.Visible = showLossySettings
+    lblHint(2).Visible = showLossySettings
+    lblHint(3).Visible = showLossySettings
+    
 End Sub
 
 'When a parameter changes that requires a new base image for the preview (e.g. changing the background composite color),

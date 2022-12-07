@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1615</langversion>
+<langversion>8.9.1617</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -10739,6 +10739,33 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
+<original>compression effort</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>file veloce e più grande</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>file lento e più piccolo</translation>
+</phrase>
+
+<phrase>
+<original>lossless</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>use progressive encoding</original>
 <translation>usa la codifica progressiva</translation>
 </phrase>
@@ -10813,18 +10840,8 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>file veloce e più grande</translation>
-</phrase>
-
-<phrase>
 <original>embed background color (bKGD chunk)</original>
 <translation>incorporare il colore di sfondo (pezzo bKGD)</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>file lento e più piccolo</translation>
 </phrase>
 
 <phrase>
@@ -10867,7 +10884,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>I file PNG supportano diverse strategie di compressione (chiamate "filtri").  La selezione intelligente dei filtri produce una migliore compressione.  Utilizza l'impostazione automatica per far testare a PhotoDemon più strategie e selezionare automaticamente quella che produce la migliore compressione.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13996,24 +14013,12 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>compression effort</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless (100)</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 22 phrases. 20 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2648</phrasecount>
+<phrasecount>2649</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5560 phrases. -->
-<!-- 2912 are duplicates, so only 2648 unique phrases have been written to file. -->
-<!-- These 2648 phrases contain approximately 11446 total words. -->
+<!-- As of this build, PhotoDemon contains 5558 phrases. -->
+<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
+<!-- These 2649 phrases contain approximately 11447 total words. -->
 
 </pdData>

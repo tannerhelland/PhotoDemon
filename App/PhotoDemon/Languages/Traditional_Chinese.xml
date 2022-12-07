@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.283</langversion>
+<langversion>7.0.285</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -10689,6 +10689,33 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
+<original>compression effort</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>快速，檔案較大</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>緩慢，檔案較小</translation>
+</phrase>
+
+<phrase>
+<original>lossless</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>use progressive encoding</original>
 <translation></translation>
 </phrase>
@@ -10763,18 +10790,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>快速，檔案較大</translation>
-</phrase>
-
-<phrase>
 <original>embed background color (bKGD chunk)</original>
 <translation>嵌入背景色彩 (bKGD chunk)</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>緩慢，檔案較小</translation>
 </phrase>
 
 <phrase>
@@ -10817,7 +10834,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -13933,24 +13950,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>compression effort</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless (100)</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 22 phrases. 20 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2648</phrasecount>
+<phrasecount>2649</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5560 phrases. -->
-<!-- 2912 are duplicates, so only 2648 unique phrases have been written to file. -->
-<!-- These 2648 phrases contain approximately 11446 total words. -->
+<!-- As of this build, PhotoDemon contains 5558 phrases. -->
+<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
+<!-- These 2649 phrases contain approximately 11447 total words. -->
 
 </pdData>
