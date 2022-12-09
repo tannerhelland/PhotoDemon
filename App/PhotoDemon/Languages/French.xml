@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.602</langversion>
+<langversion>6.7.603</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -9589,6 +9589,76 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation>auto-détection des images animées</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation>définir les paramètres d'exportation pour ce format</translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>garder les images dans leur format initial</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>convertir toutes les images dans un nouveau format</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation>paramétrer l'exportation pour les images animées</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>appliquer les actions de retouche photo</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>si vous ne souhaitez que renommer des images ou changer le format des images, utilisez cette option</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>redimensionner l'image par</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Sélectionner une macro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>appliquer d'autres actions à partir d'un fichier de macro enregistrée</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>redimensionner les images</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>corriger l'exposition et les problèmes d'éclairage</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>liste de lots actuelle</translation>
 </phrase>
@@ -9716,66 +9786,6 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 <phrase>
 <original>output images to this folder</original>
 <translation>enregistrer les images dans ce dossier</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation>auto-détection des images animées</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>définir les paramètres d'exportation pour ce format</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>garder les images dans leur format initial</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>convertir toutes les images dans un nouveau format</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>paramétrer l'exportation pour les images animées</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>appliquer les actions de retouche photo</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>si vous ne souhaitez que renommer des images ou changer le format des images, utilisez cette option</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>redimensionner l'image par</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Sélectionner une macro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>appliquer d'autres actions à partir d'un fichier de macro enregistrée</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>redimensionner les images</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>corriger l'exposition et les problèmes d'éclairage</translation>
 </phrase>
 
 <phrase>
@@ -10028,6 +10038,16 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>Noms des fichiers originaux</translation>
 </phrase>
@@ -10092,7 +10112,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>Estimation du temps restant</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14021,10 +14041,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.17</langversion>
+<langversion>9.0b1373.18</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -9584,6 +9584,76 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation>自动检测动画图像</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation>设置此格式的导出设置</translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>保持图像的原始格式</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>所有的图像转换为新的格式</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation>设置动画图像的导出参数</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>应用照片编辑操作</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>如果你只是想重命名或改变图像格式，请使用此选项。</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>通过调整图像</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>选择宏</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>从保存的宏文件中应用其他操作</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>调整图像</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>修正曝光和照明的问题</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>当前批处理列表</translation>
 </phrase>
@@ -9711,66 +9781,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>output images to this folder</original>
 <translation>输出图像到这个文件夹</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation>自动检测动画图像</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>设置此格式的导出设置</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>保持图像的原始格式</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>所有的图像转换为新的格式</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>设置动画图像的导出参数</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>应用照片编辑操作</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>如果你只是想重命名或改变图像格式，请使用此选项。</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>通过调整图像</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>选择宏</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>从保存的宏文件中应用其他操作</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>调整图像</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>修正曝光和照明的问题</translation>
 </phrase>
 
 <phrase>
@@ -10022,6 +10032,16 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>原始文件名</translation>
 </phrase>
@@ -10086,7 +10106,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14000,10 +14020,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

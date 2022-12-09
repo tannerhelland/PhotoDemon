@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.285</langversion>
+<langversion>7.0.286</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -9545,6 +9545,76 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>轉換所有影像為新的格式</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>套用相片編輯操作</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>選擇巨集</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>調整影像大小</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>修正曝光與亮度問題</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>目前批次列表</translation>
 </phrase>
@@ -9672,66 +9742,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>output images to this folder</original>
 <translation>輸出影像至此資料夾</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>轉換所有影像為新的格式</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>套用相片編輯操作</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>選擇巨集</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>調整影像大小</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>修正曝光與亮度問題</translation>
 </phrase>
 
 <phrase>
@@ -9982,6 +9992,16 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>原始檔案名稱</translation>
 </phrase>
@@ -10046,7 +10066,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>預估剩餘時間</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13952,10 +13972,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

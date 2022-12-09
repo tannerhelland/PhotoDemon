@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.24</langversion>
+<langversion>9.0.25</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9589,6 +9589,76 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation>Automatische Erkennung von animierten Bildern</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation>Exporteinstellungen für dieses Format festlegen</translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>Bilder in deren Original-Format behalten</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>Alle Bilder in ein neues Format konvertieren</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation>Exporteinstellungen für animierte Bilder festlegen</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>Fotobearbeitungsaktionen anwenden</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>Wenn Sie nur Bilder umbenennen oder Bildformate ändern wollen, verwenden Sie diese Option.</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>Bild in der Größe anpassen nach</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Makro auswählen</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>Andere Aktionen aus einer gespeicherten Makrodatei anwenden</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>Bilder in der Größe anpassen</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>Belichtungs- und Beleuchtungsprobleme beheben</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>Aktuelle Batchliste</translation>
 </phrase>
@@ -9716,66 +9786,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>output images to this folder</original>
 <translation>Bilder in diesen Ordner ausgeben</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation>Automatische Erkennung von animierten Bildern</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>Exporteinstellungen für dieses Format festlegen</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>Bilder in deren Original-Format behalten</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>Alle Bilder in ein neues Format konvertieren</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>Exporteinstellungen für animierte Bilder festlegen</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>Fotobearbeitungsaktionen anwenden</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>Wenn Sie nur Bilder umbenennen oder Bildformate ändern wollen, verwenden Sie diese Option.</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>Bild in der Größe anpassen nach</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Makro auswählen</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>Andere Aktionen aus einer gespeicherten Makrodatei anwenden</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>Bilder in der Größe anpassen</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>Belichtungs- und Beleuchtungsprobleme beheben</translation>
 </phrase>
 
 <phrase>
@@ -10028,6 +10038,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>Original-Dateinamen</translation>
 </phrase>
@@ -10092,7 +10112,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Verbleibende Zeit wird geschätzt</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14006,10 +14026,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

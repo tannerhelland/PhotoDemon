@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.14</langversion>
+<langversion>9.0.15</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -9591,6 +9591,76 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation>detección automática de imágenes animadas</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation>establecer la configuración de la exportación para este formato</translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>mantener las imágenes en su formato original</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>convertir todas las imágenes a un formato nuevo</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation>establecer la configuración de exportación de las imágenes animadas</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>aplicar acciones de edición de fotos</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>si sólo desea cambiar el nombre de las imágenes o cambiar los formatos de imagen, utilice esta opción</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>cambiar el tamaño de imagen</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Seleccione una macro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>aplicar otras acciones de un archivo de macro guardado</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>cambiar el tamaño de las imágenes</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>fijar la exposición y de iluminación problemas</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>lista actual de lotes</translation>
 </phrase>
@@ -9718,66 +9788,6 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 <phrase>
 <original>output images to this folder</original>
 <translation>imágenes de salida a esta carpeta</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation>detección automática de imágenes animadas</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>establecer la configuración de la exportación para este formato</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>mantener las imágenes en su formato original</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>convertir todas las imágenes a un formato nuevo</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>establecer la configuración de exportación de las imágenes animadas</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>aplicar acciones de edición de fotos</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>si sólo desea cambiar el nombre de las imágenes o cambiar los formatos de imagen, utilice esta opción</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>cambiar el tamaño de imagen</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Seleccione una macro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>aplicar otras acciones de un archivo de macro guardado</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>cambiar el tamaño de las imágenes</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>fijar la exposición y de iluminación problemas</translation>
 </phrase>
 
 <phrase>
@@ -10030,6 +10040,16 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>los nombres de archivo originales</translation>
 </phrase>
@@ -10094,7 +10114,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14008,10 +14028,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

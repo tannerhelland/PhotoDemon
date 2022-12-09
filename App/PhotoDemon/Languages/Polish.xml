@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.10</langversion>
+<langversion>9.0.11</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -9584,6 +9584,76 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation>automatycznie wykrywaj animowane obrazy</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation>Zastosuj ustawienia eksportu dla tego formatu</translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>Zachowaj obrazy w ich oryginalnym formacie</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>Konwertuj wszystkie obrazy do nowego formatu</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation>Ustaw opcje eksportu animowanych obrazów</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation>Zastosuj akcje do edycji zdjęć</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>Jeśli chcesz tylko zmienić nazwę obrazu lub format obrazu, użyj tej opcji</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>Dopasuj rozmiar obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Wybierz makro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>Zastosuj inne akcje z zapisanego pliku makro</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>Zmień rozmiar obrazu ręcznie</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>Napraw problemy ekspozycji i naświetlenia</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation>Aktualna lista wsadowa</translation>
 </phrase>
@@ -9711,66 +9781,6 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 <phrase>
 <original>output images to this folder</original>
 <translation>Wyślij obrazy do tego folderu</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation>automatycznie wykrywaj animowane obrazy</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>Zastosuj ustawienia eksportu dla tego formatu</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>Zachowaj obrazy w ich oryginalnym formacie</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>Konwertuj wszystkie obrazy do nowego formatu</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>Ustaw opcje eksportu animowanych obrazów</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>Zastosuj akcje do edycji zdjęć</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>Jeśli chcesz tylko zmienić nazwę obrazu lub format obrazu, użyj tej opcji</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>Dopasuj rozmiar obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Wybierz makro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>Zastosuj inne akcje z zapisanego pliku makro</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>Zmień rozmiar obrazu ręcznie</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>Napraw problemy ekspozycji i naświetlenia</translation>
 </phrase>
 
 <phrase>
@@ -10023,6 +10033,16 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>Oryginalne nazwy plików</translation>
 </phrase>
@@ -10087,7 +10107,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>Szacowany pozostały czas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14006,10 +14026,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

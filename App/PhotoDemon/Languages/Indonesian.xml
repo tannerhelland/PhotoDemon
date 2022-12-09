@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1709</langversion>
+<langversion>8.9.1710</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -9575,6 +9575,76 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>when importing vector images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(optional) advanced import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto-detect animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>set export settings for this format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>menyimpan imej dalam format asal mereka</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>menukarkan semua imej kepada format baru</translation>
+</phrase>
+
+<phrase>
+<original>set export settings for animated images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>jika anda hanya mahu menamakan semula imej atau menukar format imej, gunakan pilihan ini</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>mengubah saiz imej dengan</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Pilih makro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation>tindakan adat dari fail makro disimpan</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>mengubah saiz imej</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>menetapkan pendedahan dan pencahayaan masalah</translation>
+</phrase>
+
+<phrase>
 <original>current batch list</original>
 <translation></translation>
 </phrase>
@@ -9702,66 +9772,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>output images to this folder</original>
 <translation>output imej ke folder ini</translation>
-</phrase>
-
-<phrase>
-<original>auto-detect animated images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>menyimpan imej dalam format asal mereka</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>menukarkan semua imej kepada format baru</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>jika anda hanya mahu menamakan semula imej atau menukar format imej, gunakan pilihan ini</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>mengubah saiz imej dengan</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Pilih makro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>tindakan adat dari fail makro disimpan</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>mengubah saiz imej</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>menetapkan pendedahan dan pencahayaan masalah</translation>
 </phrase>
 
 <phrase>
@@ -10014,6 +10024,16 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>use embedded size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Original filenames</original>
 <translation>nama fail asal</translation>
 </phrase>
@@ -10078,7 +10098,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Menganggarkan masa yang tinggal</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13988,10 +14008,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2649</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5558 phrases. -->
-<!-- 2909 are duplicates, so only 2649 unique phrases have been written to file. -->
-<!-- These 2649 phrases contain approximately 11447 total words. -->
+<!-- As of this build, PhotoDemon contains 5563 phrases. -->
+<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>
