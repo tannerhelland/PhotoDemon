@@ -246,8 +246,9 @@ Public Function IsResvgEnabled() As Boolean
 End Function
 
 'Given a source SVG file, attempt to load it into a target pdImage/pdDIB.  For preview-only mode (i.e. non-interactive),
-' pass TRUE for the nonInteractiveMode parameter.
-Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal nonInteractiveMode As Boolean = False) As Boolean
+' pass TRUE for the nonInteractiveMode parameter.  Additional overrides can be supplied via the optional overrideParameters
+' pdSerialize string; see the code for details on what is/isn't supported this way.
+Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString) As Boolean
     
     LoadSVG_FromFile = False
     
@@ -367,11 +368,27 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     ' to ask the user what size they want us to use for this image.
     Dim userWidth As Long, userHeight As Long
     
-    'In non-interactive mode, rely on the embedded SVG size parameter
+    'In non-interactive mode, rely on the embedded SVG size parameter, *or* any optional overrides supplied via
+    ' optional param string.
     If nonInteractiveMode Then
+        
+        'Default to embedded size
         userWidth = intWidth
         userHeight = intHeight
-    
+        
+        'Look for user overrides
+        Dim cOverrideParams As pdSerialize
+        Set cOverrideParams = New pdSerialize
+        cOverrideParams.SetParamString overrideParameters
+        
+        'Override default size with user-supplied values
+        If Not cOverrideParams.GetBool("vector-size-use-default", True, True) Then
+            userWidth = cOverrideParams.GetLong("vector-size-x", 0, True)
+            If (userWidth <= 0) Or (userWidth > 32000) Then userWidth = intWidth
+            userHeight = cOverrideParams.GetLong("vector-size-y", 0, True)
+            If (userHeight <= 0) Or (userHeight > 32000) Then userHeight = intHeight
+        End If
+        
     'UI prompt allowed
     Else
         

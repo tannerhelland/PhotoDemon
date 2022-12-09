@@ -83,6 +83,287 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6780
+      Index           =   2
+      Left            =   3300
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdSpinner spnVectorImport 
+         Height          =   375
+         Index           =   0
+         Left            =   960
+         TabIndex        =   45
+         Top             =   6180
+         Width           =   2055
+         _ExtentX        =   5741
+         _ExtentY        =   661
+         DefaultValue    =   1920
+         Min             =   1
+         Max             =   32000
+         Value           =   1920
+      End
+      Begin PhotoDemon.pdButtonStrip btsVectorImport 
+         Height          =   975
+         Left            =   720
+         TabIndex        =   44
+         Top             =   4800
+         Width           =   8895
+         _ExtentX        =   15690
+         _ExtentY        =   1720
+         Caption         =   "when importing vector images"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         Top             =   4320
+         Width           =   9615
+         _ExtentX        =   16960
+         _ExtentY        =   661
+         Caption         =   "(optional) advanced import settings"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdCheckBox chkExportAnimation 
+         Height          =   375
+         Left            =   720
+         TabIndex        =   42
+         Top             =   3000
+         Width           =   9015
+         _ExtentX        =   15901
+         _ExtentY        =   661
+         Caption         =   "auto-detect animated images"
+      End
+      Begin PhotoDemon.pdButton cmdExportSettings 
+         Height          =   735
+         Left            =   720
+         TabIndex        =   24
+         Top             =   2160
+         Width           =   8895
+         _ExtentX        =   15690
+         _ExtentY        =   1296
+         Caption         =   "set export settings for this format..."
+      End
+      Begin PhotoDemon.pdDropDown cmbOutputFormat 
+         Height          =   375
+         Left            =   720
+         TabIndex        =   32
+         Top             =   1680
+         Width           =   8895
+         _ExtentX        =   15690
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdRadioButton optFormat 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   9
+         Top             =   0
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   661
+         Caption         =   "keep images in their original format"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optFormat 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   10
+         Top             =   1200
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   661
+         Caption         =   "convert all images to a new format"
+      End
+      Begin PhotoDemon.pdLabel lblExplanationFormat 
+         Height          =   600
+         Left            =   720
+         Top             =   420
+         Width           =   8880
+         _ExtentX        =   15663
+         _ExtentY        =   1058
+         Caption         =   ""
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdButton cmdExportSettingsAnimated 
+         Height          =   735
+         Left            =   720
+         TabIndex        =   41
+         Top             =   3420
+         Width           =   8895
+         _ExtentX        =   15690
+         _ExtentY        =   1296
+         Caption         =   "set export settings for animated images..."
+      End
+      Begin PhotoDemon.pdLabel lblVectorImport 
+         Height          =   300
+         Index           =   0
+         Left            =   840
+         Top             =   5880
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "width"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdSpinner spnVectorImport 
+         Height          =   375
+         Index           =   1
+         Left            =   3360
+         TabIndex        =   46
+         Top             =   6180
+         Width           =   2055
+         _ExtentX        =   5741
+         _ExtentY        =   661
+         DefaultValue    =   1080
+         Min             =   1
+         Max             =   32000
+         Value           =   1080
+      End
+      Begin PhotoDemon.pdLabel lblVectorImport 
+         Height          =   300
+         Index           =   1
+         Left            =   3240
+         Top             =   5880
+         Width           =   2295
+         _ExtentX        =   4048
+         _ExtentY        =   529
+         Caption         =   "height"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
+      Index           =   0
+      Left            =   3300
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdButtonStrip btsPhotoOps 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   31
+         Top             =   0
+         Width           =   9615
+         _ExtentX        =   16960
+         _ExtentY        =   1720
+         Caption         =   "apply photo editing actions"
+      End
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   720
+         Index           =   1
+         Left            =   240
+         Top             =   1200
+         Width           =   9360
+         _ExtentX        =   16510
+         _ExtentY        =   1270
+         Caption         =   "if you only want to rename images or change image formats, use this option "
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdContainer picPhotoEdits 
+         Height          =   5400
+         Left            =   120
+         Top             =   1200
+         Width           =   9735
+         _ExtentX        =   17171
+         _ExtentY        =   9525
+         Begin PhotoDemon.pdPictureBox picResizeDemo 
+            Height          =   750
+            Left            =   6720
+            Top             =   2880
+            Width           =   2865
+            _ExtentX        =   0
+            _ExtentY        =   0
+         End
+         Begin PhotoDemon.pdDropDown cmbResizeFit 
+            Height          =   615
+            Left            =   720
+            TabIndex        =   33
+            Top             =   2850
+            Width           =   5895
+            _ExtentX        =   10398
+            _ExtentY        =   1085
+            Caption         =   "resize image by"
+            FontSizeCaption =   10
+         End
+         Begin PhotoDemon.pdButton cmdSelectMacro 
+            Height          =   615
+            Left            =   6960
+            TabIndex        =   34
+            Top             =   4170
+            Width           =   2775
+            _ExtentX        =   4895
+            _ExtentY        =   1085
+            Caption         =   "Select macro..."
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdTextBox txtMacro 
+            Height          =   315
+            Left            =   600
+            TabIndex        =   35
+            Top             =   4320
+            Width           =   6255
+            _ExtentX        =   11033
+            _ExtentY        =   556
+            Text            =   "no macro selected"
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   2
+            Left            =   120
+            TabIndex        =   37
+            Top             =   3840
+            Width           =   9540
+            _ExtentX        =   16828
+            _ExtentY        =   529
+            Caption         =   "apply other actions from a saved macro file"
+            Value           =   0   'False
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   1
+            Left            =   120
+            TabIndex        =   38
+            Top             =   480
+            Width           =   10020
+            _ExtentX        =   17674
+            _ExtentY        =   582
+            Caption         =   "resize images"
+            Value           =   0   'False
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   0
+            Left            =   120
+            TabIndex        =   39
+            Top             =   0
+            Width           =   10020
+            _ExtentX        =   17674
+            _ExtentY        =   582
+            Caption         =   "fix exposure and lighting problems"
+            Value           =   0   'False
+         End
+         Begin PhotoDemon.pdResize ucResize 
+            Height          =   1650
+            Left            =   360
+            TabIndex        =   40
+            Top             =   960
+            Width           =   9255
+            _ExtentX        =   16325
+            _ExtentY        =   2910
+            UnknownSizeMode =   -1  'True
+         End
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
       Index           =   1
       Left            =   3300
       Top             =   660
@@ -493,213 +774,6 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   4210752
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6780
-      Index           =   2
-      Left            =   3300
-      Top             =   660
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   11959
-      Begin PhotoDemon.pdCheckBox chkExportAnimation 
-         Height          =   375
-         Left            =   720
-         TabIndex        =   42
-         Top             =   3240
-         Width           =   9015
-         _ExtentX        =   15901
-         _ExtentY        =   661
-         Caption         =   "auto-detect animated images"
-      End
-      Begin PhotoDemon.pdButton cmdExportSettings 
-         Height          =   735
-         Left            =   720
-         TabIndex        =   24
-         Top             =   2400
-         Width           =   8895
-         _ExtentX        =   15690
-         _ExtentY        =   1296
-         Caption         =   "set export settings for this format..."
-      End
-      Begin PhotoDemon.pdDropDown cmbOutputFormat 
-         Height          =   375
-         Left            =   720
-         TabIndex        =   32
-         Top             =   1800
-         Width           =   8895
-         _ExtentX        =   15690
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdRadioButton optFormat 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   0
-         Width           =   9600
-         _ExtentX        =   16933
-         _ExtentY        =   661
-         Caption         =   "keep images in their original format"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optFormat 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   10
-         Top             =   1200
-         Width           =   9600
-         _ExtentX        =   16933
-         _ExtentY        =   661
-         Caption         =   "convert all images to a new format"
-      End
-      Begin PhotoDemon.pdLabel lblExplanationFormat 
-         Height          =   600
-         Left            =   720
-         Top             =   420
-         Width           =   8880
-         _ExtentX        =   15663
-         _ExtentY        =   1058
-         Caption         =   ""
-         ForeColor       =   4210752
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdButton cmdExportSettingsAnimated 
-         Height          =   735
-         Left            =   720
-         TabIndex        =   41
-         Top             =   3720
-         Width           =   8895
-         _ExtentX        =   15690
-         _ExtentY        =   1296
-         Caption         =   "set export settings for animated images..."
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6780
-      Index           =   0
-      Left            =   3300
-      Top             =   660
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   11959
-      Begin PhotoDemon.pdButtonStrip btsPhotoOps 
-         Height          =   975
-         Left            =   120
-         TabIndex        =   31
-         Top             =   0
-         Width           =   9615
-         _ExtentX        =   16960
-         _ExtentY        =   1720
-         Caption         =   "apply photo editing actions"
-      End
-      Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   720
-         Index           =   1
-         Left            =   240
-         Top             =   1200
-         Width           =   9360
-         _ExtentX        =   16510
-         _ExtentY        =   1270
-         Caption         =   "if you only want to rename images or change image formats, use this option "
-         ForeColor       =   4210752
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdContainer picPhotoEdits 
-         Height          =   5400
-         Left            =   120
-         Top             =   1200
-         Width           =   9735
-         _ExtentX        =   17171
-         _ExtentY        =   9525
-         Begin PhotoDemon.pdPictureBox picResizeDemo 
-            Height          =   750
-            Left            =   6720
-            Top             =   2880
-            Width           =   2865
-            _ExtentX        =   0
-            _ExtentY        =   0
-         End
-         Begin PhotoDemon.pdDropDown cmbResizeFit 
-            Height          =   615
-            Left            =   720
-            TabIndex        =   33
-            Top             =   2850
-            Width           =   5895
-            _ExtentX        =   10398
-            _ExtentY        =   1085
-            Caption         =   "resize image by"
-            FontSizeCaption =   10
-         End
-         Begin PhotoDemon.pdButton cmdSelectMacro 
-            Height          =   615
-            Left            =   6960
-            TabIndex        =   34
-            Top             =   4170
-            Width           =   2775
-            _ExtentX        =   4895
-            _ExtentY        =   1085
-            Caption         =   "Select macro..."
-            FontSize        =   9
-         End
-         Begin PhotoDemon.pdTextBox txtMacro 
-            Height          =   315
-            Left            =   600
-            TabIndex        =   35
-            Top             =   4320
-            Width           =   6255
-            _ExtentX        =   11033
-            _ExtentY        =   556
-            Text            =   "no macro selected"
-         End
-         Begin PhotoDemon.pdCheckBox chkActions 
-            Height          =   300
-            Index           =   2
-            Left            =   120
-            TabIndex        =   37
-            Top             =   3840
-            Width           =   9540
-            _ExtentX        =   16828
-            _ExtentY        =   529
-            Caption         =   "apply other actions from a saved macro file"
-            Value           =   0   'False
-         End
-         Begin PhotoDemon.pdCheckBox chkActions 
-            Height          =   300
-            Index           =   1
-            Left            =   120
-            TabIndex        =   38
-            Top             =   480
-            Width           =   10020
-            _ExtentX        =   17674
-            _ExtentY        =   582
-            Caption         =   "resize images"
-            Value           =   0   'False
-         End
-         Begin PhotoDemon.pdCheckBox chkActions 
-            Height          =   300
-            Index           =   0
-            Left            =   120
-            TabIndex        =   39
-            Top             =   0
-            Width           =   10020
-            _ExtentX        =   17674
-            _ExtentY        =   582
-            Caption         =   "fix exposure and lighting problems"
-            Value           =   0   'False
-         End
-         Begin PhotoDemon.pdResize ucResize 
-            Height          =   1650
-            Left            =   360
-            TabIndex        =   40
-            Top             =   960
-            Width           =   9255
-            _ExtentX        =   16325
-            _ExtentY        =   2910
-            UnknownSizeMode =   -1  'True
-         End
-      End
-   End
 End
 Attribute VB_Name = "FormBatchWizard"
 Attribute VB_GlobalNameSpace = False
@@ -710,8 +784,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright 2007-2022 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 28/October/21
-'Last update: add support for auto-detecting (and exporting correctly) animated images
+'Last updated: 09/December/22
+'Last update: add overrides for vector image import size (see https://github.com/tannerhelland/PhotoDemon/issues/456)
 '
 'PhotoDemon's batch process wizard is one of its most unique features.  It integrates tightly with PD's
 ' macro recorder, which allows any combination of actions to be applied to any set of images.  Neat stuff!
@@ -777,6 +851,10 @@ Private m_FSO As pdFSO
 
 Private Sub btsPhotoOps_Click(ByVal buttonIndex As Long)
     UpdatePhotoOpVisibility
+End Sub
+
+Private Sub btsVectorImport_Click(ByVal buttonIndex As Long)
+    UpdateVectorImportVisibility
 End Sub
 
 'Enable/disable previewing the currently selected image.  (This is helpful for camera folders full of names like "DSC1234".)
@@ -1587,7 +1665,13 @@ Private Sub Form_Load()
                 Exit For
             End If
         Next i
-    
+        
+        'Advanced import options are now available for vector formats (e.g. SVG)
+        btsVectorImport.AddItem "use embedded size", 0
+        btsVectorImport.AddItem "use custom size", 1
+        btsVectorImport.ListIndex = 0
+        UpdateVectorImportVisibility
+        
     'Build default paths from preference file values
     Dim tempPathString As String
     tempPathString = UserPrefs.GetPref_String("Batch Process", "Output Folder", vbNullString)
@@ -1760,15 +1844,15 @@ Private Sub PrepareForBatchConversion()
 
     BatchConvertMessage g_Language.TranslateMessage("Preparing batch processing engine...")
     
-    'Display the progress panel
     Dim i As Long
     
+    'Display the progress panel
     picContainer(picContainer.Count - 1).Visible = True
     For i = 0 To picContainer.Count - 2
         picContainer(i).Visible = False
     Next i
     
-    'Hide the back/forward buttons
+    'Hide back/forward buttons
     cmdPrevious.Visible = False
     cmdNext.Visible = False
     
@@ -1808,18 +1892,26 @@ Private Sub PrepareForBatchConversion()
     ' 1) all input files
     ' 2) all output files
     '
-    'Note that (2) won't include *all* the correct filename information yet (because the user can
-    ' set a ton of optional output filename settings in the final wizard panel) - but it will include
-    ' each image's final path, including all subfolders, with the original filename tacked on (with its
-    ' original file extension).
+    'Note that (2) won't include *all* the correct filename information yet (because the final wizard page allows for
+    ' all kinds of custom filename settings) - but it will include each image's final *path*, including all subfolders,
+    ' with the original filename tacked on (with its original file extension).
     '
-    'A later function will handle applying all the optional output filename settings from the final
-    ' wizard page, but we need the correct folder structure established beforehand, so we can create
-    ' any intermediary subfolders.
+    'A later function handles all optional output filename settings, but we need the correct folder structure established
+    ' beforehand so we can create intermediary subfolders.
     Dim srcListFiles As pdStringStack, dstListFiles As pdStringStack
     Set srcListFiles = New pdStringStack
     
-    'Dim i As Long
+    'Some normal import behaviors (e.g. displaying rasterize size prompts for vector images) must be overridden
+    ' during a batch conversion.  Build a param string with all override settings, which we can then blindly forward
+    ' to the image importer, and individual import components can strip out whichever override settings may be
+    'relevant to them.
+    Dim overrideParams As pdSerialize
+    Set overrideParams = New pdSerialize
+    
+    overrideParams.AddParam "vector-size-use-default", (btsVectorImport.ListIndex = 0)
+    overrideParams.AddParam "vector-size-x", spnVectorImport(0).Value
+    overrideParams.AddParam "vector-size-y", spnVectorImport(1).Value
+    
     For i = 0 To lstFiles.ListCount - 1
         srcListFiles.AddString lstFiles.List(i)
     Next i
@@ -1855,7 +1947,7 @@ Private Sub PrepareForBatchConversion()
         If Files.FileExists(srcFilename) Then
             
             'Load the target image
-            If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, True, False) Then
+            If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, True, False, overrideParams.GetParamString()) Then
                 
                 'Manually activate the just-loaded image
                 Dim tmpStack As pdStack
@@ -2138,4 +2230,17 @@ End Sub
 
 Private Sub picResizeDemo_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     UpdateResizeSample
+End Sub
+
+Private Sub UpdateVectorImportVisibility()
+    
+    Dim vecSettingsVisible As Boolean
+    vecSettingsVisible = (btsVectorImport.ListIndex = 1)
+    
+    Dim i As Long
+    For i = lblVectorImport.lBound To lblVectorImport.UBound
+        lblVectorImport(i).Visible = vecSettingsVisible
+        spnVectorImport(i).Visible = vecSettingsVisible
+    Next i
+    
 End Sub

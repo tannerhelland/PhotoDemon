@@ -30,18 +30,29 @@ Option Explicit
 ' this function and various plugins is complex; I recommend studying the separate ImageImporter module for details.)
 '
 'INPUTS:
-' 1) srcFile: fully qualified, absolute path to the source image.  Unicode is fully supported.
-' 2) [optional] suggestedFilename: if loading an image from a temp file (e.g. clipboard, scanner), this value will be used in two places:
-'                                  as the image's window caption, prior to first-save, and as the suggested filename at first-save.  As such,
-'                                  make it user-friendly, e.g. "Clipboard image".
-'                                  If this parameter is *not* supplied, the image's current filename will automatically be used.
-' 3) [optional] addToRecentFiles: when a file loads successfully, we typically add it to the File > Recent Files list.  Some load operations,
-'                                 like "Add new layer from file", or restoring a file from Autosave, don't easily fit into this paradigm.
-'                                 This value tells the load engine to skip the "add to recent files" step.
-' 4) [optional] suspendWarnings: at times, the caller may not want to have UI warnings raised for malformed or invalid files.  Batch processing
-'                                and multi-image load are two examples.  If suspendWarnings = TRUE, any user-facing messages related to
-'                                bad files will be suppressed.  (Note that the warnings can still be retrieved from debug logs, however.)
-Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByVal suspendWarnings As Boolean = False, Optional ByVal handleUIDisabling As Boolean = True) As Boolean
+' 1) srcFile
+'    Fully qualified, absolute path to the source image.  Unicode is supported.
+' 2) [optional] suggestedFilename
+'    If loading an image from a temp file (e.g. clipboard, scanner), this value will be used in two places:as the window caption
+'    (prior to first-save) and as the suggested filename at first-save. As such, make it user-friendly, e.g. "Clipboard image".
+'    If this parameter is *not* supplied, the image's current filename will automatically be used.
+' 3) [optional] addToRecentFiles
+'    When a file loads successfully, we typically add it to the File > Recent Files list.  Some load operations, like
+'    "Add new layer from file" (or restoring a file from Autosave) don't easily fit into this paradigm. This value tells the
+'    load engine to skip the "add to recent files" step.
+' 4) [optional] suspendWarnings
+'    At times, the caller may not want to have UI warnings raised for malformed or invalid files.  Batch processing and
+'    multi-image load are two examples.  When suspendWarnings = TRUE, any user-facing messages related to bad files will be
+'    suppressed.  (Note that the warnings can still be retrieved from debug logs, however.)
+' 5) [optional] handleUIDisabling
+'    By default, this function takes control of PhotoDemon's UI and disables anything interactable while the load process occurs.
+'    Some specialized load functions (like batch processing) already assume specialized control, and will not want the load
+'    process to re-enable everything when the load completes.
+' 6) [optional] overrideParameters
+'    During a batch process, normal image import processes (like displaying optional prompts) may be suspended.  This param
+'    string can contain custom parameters that can be blindly forwarded to subsequent import operations.  (Basically, it's a
+'    catch-all for future improvements and modifications.)
+Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByVal suspendWarnings As Boolean = False, Optional ByVal handleUIDisabling As Boolean = True, Optional ByVal overrideParameters As String = vbNullString) As Boolean
     
     '*** AND NOW, AN IMPORTANT MESSAGE ABOUT DOEVENTS ***
     
@@ -189,7 +200,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
         'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
         ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
-        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
         
         '*************************************************************************************************************************************
         ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
@@ -521,11 +532,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If (Macros.GetMacroStatus <> MacroBATCH) Then FormMain.MainCanvas(0).SetFocusToCanvasView
     
     'Report success/failure back to the user
-    LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
+    LoadFileAsNewImage = loadSuccessful And (Not targetImage Is Nothing)
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
-        If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", , , True
+        If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", newImageJustLoaded:=True
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
@@ -876,7 +887,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             ' exists before forwarding it to the loader.
             If Files.FileExists(tmpFilename) Then
                 
-                If LoadFileAsNewImage(tmpFilename, , updateRecentFileList, True, False) Then
+                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, True, False) Then
                     numSuccesses = numSuccesses + 1
                 Else
                     If (LenB(tmpFilename) <> 0) Then

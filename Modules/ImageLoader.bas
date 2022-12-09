@@ -684,14 +684,14 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
 End Function
 
 'SVG support is primarily handled by the 3rd-party resvg library
-Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal overrideParameters As String = vbNullString) As Boolean
     
     On Error GoTo LoadSVGFail
     
     'For now, we rely on proper file extensions before handing data off to resvg
     If Plugin_resvg.IsResvgEnabled() Then
         
-        LoadSVG = Plugin_resvg.LoadSVG_FromFile(imagePath, dstImage, dstDIB)
+        LoadSVG = Plugin_resvg.LoadSVG_FromFile(imagePath, dstImage, dstDIB, False, overrideParameters)
         
         'If successful, set format-specific flags in the parent pdImage object
         If LoadSVG Then
@@ -887,7 +887,7 @@ End Function
 
 'Test an incoming image file against every supported decoder engine.  This ensures the greatest likelihood of loading
 ' a problematic file.
-Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString) As Boolean
     
     CascadeLoadGenericImage = False
     
@@ -1053,7 +1053,7 @@ LibAVIFDidntWork:
         
     'SVG/Z support was added in v9.0
     If (Not CascadeLoadGenericImage) And Plugin_resvg.IsFileSVGCandidate(srcFile) Then
-        CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage)
+        CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage, overrideParameters)
         If CascadeLoadGenericImage Then
             decoderUsed = id_resvg
             dstImage.SetOriginalFileFormat PDIF_SVG
