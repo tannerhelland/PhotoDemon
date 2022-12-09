@@ -205,8 +205,8 @@ Attribute VB_Exposed = False
 'JPEG XL Export Dialog
 'Copyright 2022-2022 by Tanner Helland
 'Created: 08/November/22
-'Last updated: 08/November/22
-'Last update: initial build
+'Last updated: 07/December/22
+'Last update: split lossy/lossless modes using a hard toggle
 '
 'Dialog for presenting the user various options related to JPEG XL exporting.  All export options rely on
 ' libjxl for their actual implementation.

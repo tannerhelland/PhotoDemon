@@ -10,8 +10,7 @@ Attribute VB_Name = "Plugin_jxl"
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
 '
 'Unfortunately for Windows XP users, libjxl currently requires Windows Vista or later.  PhotoDemon will
-' detect this automatically and gracefully hide JPEG XL support for XP users.  (If anyone knows how to build
-' libjxl in an XP-compatible way, I would happily welcome a pull request...)
+' detect this automatically and gracefully hide JPEG XL support for XP users.
 '
 'PhotoDemon tries to support most JPEG XL features, but esoteric ones (like animation) remain a WIP.
 ' If you encounter any issues with JPEG XL images, please file an issue on GitHub and attach the image(s)
