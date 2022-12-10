@@ -66,6 +66,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Comprehensive import and export support for [JPEG XL images](https://en.wikipedia.org/wiki/JPEG_XL), including full support for all color models in both lossy and lossless modes.
 - Import support for [satellite topography (HGT) images](https://www2.jpl.nasa.gov/srtm/faq.html#data)
 - Icon (ICO) export now provides [much higher-quality downsampling](https://github.com/tannerhelland/PhotoDemon/commit/6c3dc5ae7b33791d3cb2c7611409679f3a4c3e40) and a new `use merged image` option allows you to automatically generate icon frames from a merged multi-layer image.
+- Windows metafiles (EMF, WMF) now provide an import dialog where you can choose custom rasterization dimensions.
 
 ### Image and Layer tools
 
@@ -79,6 +80,8 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Batch processing
 
 - Batch conversion of [SVG images to raster formats](https://github.com/tannerhelland/PhotoDemon/commit/13c466f1aaef58afe623a56f47da6b3975541329) is now supported.
+- Batch conversion of [Windows metafiles (EMF, WMF)](https://github.com/tannerhelland/PhotoDemon/commit/18812e6ef7d552b3da6ce430cbb0613316e8e63e) is now supported.
+- A new "import size override" allows you to specify custom dimensions for vector images (SVG, EMF, WMF) involved in a batch process
 
 ### Other
 
