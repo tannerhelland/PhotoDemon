@@ -633,6 +633,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case "JLS"
             loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
         
+        Case "JXL"
+            If Plugin_jxl.IsLibJXLAvailable() Then
+                loadSuccessful = Plugin_jxl.LoadJXL(imagePath, tmpPDImage, targetDIB)
+                If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+            End If
+        
         Case "MBM", "MBW", "MCL", "AIF", "ABW", "ACL"
             Dim cMBM As pdMBM
             Set cMBM = New pdMBM
@@ -672,6 +678,16 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case "SVG", "SVGZ"
             If Plugin_resvg.IsResvgEnabled() Then
                 If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB, True)
+            End If
+        
+        Case "WEBP"
+            If Plugin_WebP.IsWebPEnabled() Then
+                If Plugin_WebP.IsWebP(imagePath) Then
+                    Dim cWebP As pdWebP
+                    Set cWebP = New pdWebP
+                    loadSuccessful = cWebP.QuickLoadWebP_FromFile(imagePath, tmpPDImage, targetDIB)
+                    If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+                End If
             End If
         
         Case "XCF"

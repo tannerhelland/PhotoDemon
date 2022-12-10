@@ -1462,7 +1462,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As GP_Result
-      
+    
     'Use GDI+ to load the image
     Dim hImage As Long
     GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)

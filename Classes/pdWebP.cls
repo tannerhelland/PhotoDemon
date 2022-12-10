@@ -615,6 +615,18 @@ Friend Function LoadWebP_FromMemory(ByRef srcFile As String, ByVal pData As Long
     
 End Function
 
+'Thin wrapper to LoadWebP_FromMemory
+Friend Function QuickLoadWebP_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+    
+    QuickLoadWebP_FromFile = False
+    
+    If Plugin_WebP.IsWebP(srcFile) Then
+        Dim fullFile() As Byte
+        If Files.FileLoadAsByteArray(srcFile, fullFile) Then QuickLoadWebP_FromFile = LoadWebP_FromMemory(srcFile, VarPtr(fullFile(0)), UBound(fullFile) + 1, dstImage, dstDIB)
+    End If
+    
+End Function
+
 'Save a pdImage (with animation data) to an animated WebP file
 Friend Function SaveAnimatedWebP_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
     

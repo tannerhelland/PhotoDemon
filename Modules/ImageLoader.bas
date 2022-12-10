@@ -1069,7 +1069,6 @@ LibAVIFDidntWork:
         End If
     End If
     
-    'Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
     'Shuttle Radar Topography Mission (SRTM) HGT format was added in v10.0
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_HGT Then
         CascadeLoadGenericImage = LoadHGT(srcFile, dstImage, dstDIB)
