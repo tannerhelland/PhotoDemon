@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.326</langversion>
+<langversion>6.7.327</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -7166,7 +7166,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation></translation>
 </phrase>
 
-<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -14023,8 +14023,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5563 phrases. -->
-<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5565 phrases. -->
+<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

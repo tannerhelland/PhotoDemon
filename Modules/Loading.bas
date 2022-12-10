@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2022 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 15/November/22
-'Last update: ensure SVG's that are "quick-loaded" do not display a size prompt UI
+'Last updated: 09/December/22
+'Last update: ensure EMF/WMF images that are "quick-loaded" do not display a size prompt UI
 '
 'This module provides high-level "load" functionality for getting image files into PD.
 ' There are a number of different ways to do this; for example, loading a user-facing image
@@ -724,7 +724,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             tryGDIPlusFirst = tryGDIPlusFirst Or (fileExtension = "GIF")
             
             'If GDI+ is preferable, attempt it now
-            If tryGDIPlusFirst Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+            If tryGDIPlusFirst Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage, nonInteractiveMode:=True)
             
             'If GDI+ failed, proceed with FreeImage
             If (Not loadSuccessful) And ImageFormats.IsFreeImageEnabled() Then
@@ -735,7 +735,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 loadSuccessful = (freeImageReturn = PD_SUCCESS)
                 
                 'If FreeImage failed and we haven't tried GDI+ yet, try it now
-                If (Not loadSuccessful) And (Not tryGDIPlusFirst) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+                If (Not loadSuccessful) And (Not tryGDIPlusFirst) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage, nonInteractiveMode:=True)
                 
             End If
             

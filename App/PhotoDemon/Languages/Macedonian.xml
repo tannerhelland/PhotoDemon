@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1712</langversion>
+<langversion>8.9.1713</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7163,7 +7163,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -14016,8 +14016,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5563 phrases. -->
-<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5565 phrases. -->
+<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

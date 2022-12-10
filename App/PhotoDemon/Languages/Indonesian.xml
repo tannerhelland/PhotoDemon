@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1710</langversion>
+<langversion>8.9.1711</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -7159,7 +7159,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation></translation>
 </phrase>
 
-<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -14010,8 +14010,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5563 phrases. -->
-<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5565 phrases. -->
+<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>

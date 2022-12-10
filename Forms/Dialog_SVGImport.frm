@@ -60,14 +60,14 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'SVG Import Dialog
+'SVG Import Dialog (also works on Windows metafiles, e.g. EMF/WMF)
 'Copyright 2022-2022 by Tanner Helland
 'Created: 02/March/22
-'Last updated: 03/March/22
-'Last update: wrap up initial build
+'Last updated: 09/December/22
+'Last update: expand the dialog to work with Windows metafiles too (EMF/WMF)
 '
-'PhotoDemon will offer to losslessly resize SVG images at load-time.  This dialog handles the
-' UI for this behavior.
+'PhotoDemon offers to losslessly resize vector images at load-time.  This dialog provides the UI
+' for this feature.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -79,8 +79,11 @@ Option Explicit
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
 
-'Handle to a resvg tree (for rendering a preview)
+'Handle to a resvg tree (for rendering SVG previews).  When non-zero, please set m_hGdipImage to 0.
 Private m_hResvgTree As Long
+
+'Handle to a GDI+ image handle (for rendering EMF/WMF previews).  When non-zero, please set m_hResvgTree to 0.
+Private m_hGdipImage As Long
 
 'SVG default width/height
 Private m_DefaultWidth As Long, m_DefaultHeight As Long
@@ -138,7 +141,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog(ByVal hResvgTree As Long, ByVal srcWidth As Long, ByVal srcHeight As Long)
+Public Sub ShowDialog(ByVal hResvgTree As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal hGdipImage As Long = 0&)
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_UserDialogAnswer = vbCancel
@@ -153,10 +156,15 @@ Public Sub ShowDialog(ByVal hResvgTree As Long, ByVal srcWidth As Long, ByVal sr
     rszUI.AspectRatioLock = True
     
     m_hResvgTree = hResvgTree
+    m_hGdipImage = hGdipImage
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "SVG")
+    If (m_hResvgTree <> 0) Then
+        Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "SVG")
+    ElseIf (m_hGdipImage <> 0) Then
+        Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "EMF")
+    End If
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -178,8 +186,8 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
     PD2D.FillRectangleI cSurface, cBrush, 0, 0, ctlWidth, ctlHeight
     
-    'Prep an SVGpreview (if any)
-    If (m_hResvgTree <> 0) Then
+    'Prep either an SVG preview or an EMF/WMF preview
+    If (m_hResvgTree <> 0) Or (m_hGdipImage <> 0) Then
         
         'Prep a temporary DIB the size of the preview picture box, *but with aspect ratio preserved*
         ' against the source DIB's dimensions.
@@ -191,8 +199,12 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
         previewDIB.CreateBlank newWidth, newHeight, 32, 0, 0
         previewDIB.SetInitialAlphaPremultiplicationState True
         
-        'Ask resvg for a preview
-        Plugin_resvg.RenderToArbitraryDIB m_hResvgTree, previewDIB
+        'Ask the appropriate renderer for a preview
+        If (m_hResvgTree <> 0) Then
+            Plugin_resvg.RenderToArbitraryDIB m_hResvgTree, previewDIB
+        ElseIf (m_hGdipImage <> 0) Then
+            GDI_Plus.PaintMetafileToArbitraryDIB previewDIB, m_hGdipImage
+        End If
         
         'We now need to figure out positioning of the SVG in the target window (and we'll need a checkerboard
         ' background behind it, too)
@@ -204,7 +216,7 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
         ' then free the GDI+ surface
         PD2D.FillRectangleI cSurface, g_CheckerboardBrush, dstX, dstY, previewDIB.GetDIBWidth, previewDIB.GetDIBHeight
         previewDIB.AlphaBlendToDC targetDC, 255, dstX, dstY
-        
+    
     Else
         picPreview.PaintText "preview not available", 12, False, True
     End If

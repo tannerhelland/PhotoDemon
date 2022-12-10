@@ -673,11 +673,11 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByRef numOfPages As Long = 1) As Boolean
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByRef numOfPages As Long = 1, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString) As Boolean
     
     LoadGDIPlusImage = False
     
-    If GDI_Plus.GDIPlusLoadPicture(imagePath, dstDIB, dstImage, numOfPages) Then
+    If GDI_Plus.GDIPlusLoadPicture(imagePath, dstDIB, dstImage, numOfPages, nonInteractiveMode, overrideParameters) Then
         If (Not dstDIB Is Nothing) Then LoadGDIPlusImage = ((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
     End If
     
@@ -1104,7 +1104,7 @@ LibAVIFDidntWork:
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
         
         If tryGDIPlusFirst Then
-            CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
             freeImage_Return = PD_FAILURE_GENERIC
             If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             
@@ -1112,7 +1112,7 @@ LibAVIFDidntWork:
         Else
             freeImage_Return = PD_FAILURE_GENERIC
             If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
-            If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
         End If
         
     End If
@@ -1141,10 +1141,10 @@ Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As
         
 End Function
 
-Private Function AttemptGDIPlusLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+Private Function AttemptGDIPlusLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString) As Boolean
 
     PDDebug.LogAction "Attempting to load via GDI+..."
-    AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
+    AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages, False, overrideParameters)
     
     If AttemptGDIPlusLoad Then
         decoderUsed = id_GDIPlus

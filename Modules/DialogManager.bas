@@ -738,10 +738,26 @@ Public Function PromptExportLUT(ByRef srcImage As pdImage, ByRef dstFormatParams
     
 End Function
 
+'Note: this function also works with WMF files
+Public Function PromptImportEMF(ByVal hGdipImage As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
+    
+    Load dialog_SVGImport
+    dialog_SVGImport.ShowDialog 0&, origWidth, origHeight, hGdipImage
+    
+    PromptImportEMF = dialog_SVGImport.GetDialogResult
+    dstWidth = dialog_SVGImport.GetUserWidth
+    dstHeight = dialog_SVGImport.GetUserHeight
+    dstDPI = dialog_SVGImport.GetUserDPI
+    
+    Unload dialog_SVGImport
+    Set dialog_SVGImport = Nothing
+    
+End Function
+
 Public Function PromptImportSVG(ByVal hResvgTree As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
     
     Load dialog_SVGImport
-    dialog_SVGImport.ShowDialog hResvgTree, origWidth, origHeight
+    dialog_SVGImport.ShowDialog hResvgTree, origWidth, origHeight, 0&
     
     PromptImportSVG = dialog_SVGImport.GetDialogResult
     dstWidth = dialog_SVGImport.GetUserWidth

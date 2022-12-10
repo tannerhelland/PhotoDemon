@@ -1458,7 +1458,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing, Optional ByRef numOfPages As Long = 1) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing, Optional ByRef numOfPages As Long = 1, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As GP_Result
@@ -1668,12 +1668,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 'Attempt to convert the EMF to EMF+ format
                 Dim mfHandleDst As Long, convSuccess As Long
                 
-                'For reference: if we ever want to write our improved EMF+ data to file, we can use code like the following:
-                'Dim newEmfPlusFilename As String
-                'newEmfPlusFilename = srcFilename
-                'StripOffExtension newEmfPlusFilename
-                'newEmfPlusFilename = newEmfPlusFilename & " (EMFPlus).emf"
-                'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFilename), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
+                'For reference: two write EMF+ data to file, use code like the following:
+                'Dim newEmfPlusFileAndPath As String
+                'newEmfPlusFileAndPath = Files.FileGetPath(srcFilename) & Files.FileGetName(srcFilename, True) & " (EMFPlus).emf"
+                'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFileAndPath), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
+                '
+                'In PD, however, we want to perform the whole thing in-memory so we can immediately rasterize
+                ' the result.
                 Dim emfConvertResult As GP_Result
                 emfConvertResult = GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, GP_MT_EmfPlus, 0&, mfHandleDst)
                 If (emfConvertResult = GP_OK) Then
@@ -1723,29 +1724,19 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, cTransform As pdLCMSTransform
     Dim hGraphics As Long, copyBitmapData As GP_BitmapData, tmpRect As RectL
     
-    'We now want to split handling for metafiles vs bitmaps.  Metafiles can be directly "painted" onto the target surface, which allows us
-    ' to bypass unnecessary allocations.
+    'We now want to split handling for metafiles vs bitmaps.
     If isMetafile Then
         
-        'Metafiles can be rendered to transparent surfaces, but they're not always predictable.  GDI commands in particular can sometimes
-        ' result in portions of the metafile being transparent for no obvious reason.  (I've got a number of problematic examples in
-        ' the "images from testers/metafiles" folder.)
-        '
-        'In the future, a dialog could be presented, but right now, we use very simple heuristics to determine how to proceed.
-        ' 1) If we converted the metafile to EMF+ ourselves, the image is 99+% guaranteed to be okay with transparency.
-        '    Paint it to a 32-bpp surface.
-        ' 2) If the EMF+ data came from somewhere else, there's a good chance the data contain unpredictable transparency behavior.
-        '    Paint to a 24-bpp base just to be safe.
-        If metafileWasUpsampled Then
-            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
-        Else
-            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24, vbWhite
-        End If
+        'NOTE: this call *may* result in new imgWidth/imgHeight values!
+        ' (The user can override embedded values via an import-time prompt.)
+        GDIPlusLoadPicture = RasterizeMetafile(dstDIB, dstImage, imgWidth, imgHeight, metafileWasUpsampled, hImage, nonInteractiveMode, overrideParameters)
         
-        'Render the GDI+ image directly onto the newly created DIB
-        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
-        GdipDrawImageRect hGraphics, hImage, 0#, 0#, imgWidth, imgHeight
-        GdipDeleteGraphics hGraphics
+        'The user may have received a prompt to provide custom width/height values.  They are free to cancel
+        ' this prompt.  When this happens, we need to provide safe cleanup.
+        If (Not GDIPlusLoadPicture) Then
+            GdipDisposeImage hImage
+            Exit Function
+        End If
         
     'This is a raster-type image
     Else
@@ -1891,7 +1882,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         m_hMultiPageImage = hImage
         numOfPages = imgPageCount
     Else
-        GdipDisposeImage hImage
+        If (hImage <> 0) Then GdipDisposeImage hImage
+        hImage = 0
     End If
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
@@ -1939,6 +1931,113 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'Return success!
     GDIPlusLoadPicture = True
     
+End Function
+
+'Used for rendering previews in the "import metafile and optionally choose custom dimensions" dialog
+Public Function PaintMetafileToArbitraryDIB(ByRef dstDIB As pdDIB, ByVal hGdipImage As Long, Optional ByVal dstX As Single = 0!, Optional ByVal dstY As Single = 0!)
+    
+    PaintMetafileToArbitraryDIB = False
+    Dim hGraphics As Long
+    
+    If (Not dstDIB Is Nothing) And (hGdipImage <> 0) Then
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+        GdipDrawImageRect hGraphics, hGdipImage, dstX, dstY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
+        GdipDeleteGraphics hGraphics
+    End If
+    
+End Function
+
+'Rasterize a passed metadata handle, with optional support for prompting the user for custom dimensions
+Private Function RasterizeMetafile(ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, ByRef intWidth As Long, ByRef intHeight As Long, ByVal metafileIsEmfPlus As Boolean, ByVal hImage As Long, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString) As Boolean
+    
+    RasterizeMetafile = False
+    
+    'Check for non-interactive mode.  The user can specify this manually, *or* we can auto-infer it
+    ' from PD's global batch state tracker.
+    If (Not nonInteractiveMode) Then
+        nonInteractiveMode = (Macros.GetMacroStatus() = MacroBATCH) Or (Macros.GetMacroStatus() = MacroPLAYBACK)
+    End If
+    
+    'We now know the size the metafile is *supposed* to be, but the most useful thing about vector graphics
+    ' is the ability to losslessly (ish) resize them to arbitrary sizes.  If the user allows, raise a prompt
+    ' to ask the user what size they want us to use for this image.
+    Dim userWidth As Long, userHeight As Long
+    
+    'In non-interactive mode, rely on the embedded SVG size parameter, *or* any optional overrides supplied via
+    ' optional param string.
+    If nonInteractiveMode Then
+        
+        'Default to embedded size
+        userWidth = intWidth
+        userHeight = intHeight
+        
+        'Look for user overrides
+        Dim cOverrideParams As pdSerialize
+        Set cOverrideParams = New pdSerialize
+        cOverrideParams.SetParamString overrideParameters
+        
+        'Override default size with user-supplied values
+        If Not cOverrideParams.GetBool("vector-size-use-default", True, True) Then
+            userWidth = cOverrideParams.GetLong("vector-size-x", 0, True)
+            If (userWidth <= 0) Or (userWidth > 32000) Then userWidth = intWidth
+            userHeight = cOverrideParams.GetLong("vector-size-y", 0, True)
+            If (userHeight <= 0) Or (userHeight > 32000) Then userHeight = intHeight
+        End If
+        
+        RasterizeMetafile = True
+        
+    'UI prompt allowed
+    Else
+        
+        Dim userInput As VbMsgBoxResult, userDPI As Long
+        userInput = Dialogs.PromptImportEMF(hImage, intWidth, intHeight, userWidth, userHeight, userDPI)
+        
+        If (userInput = vbOK) Then
+            
+            'Validate user width/height
+            If (userWidth < 1) Then userWidth = intWidth
+            If (userHeight < 1) Then userHeight = intHeight
+            
+            'Cache DPI inside the parent pdImage object
+            If (Not dstImage Is Nothing) Then dstImage.SetDPI userDPI, userDPI
+            
+            RasterizeMetafile = True
+            
+        Else
+            'Do nothing; case is handled by default
+        End If
+    
+    End If
+    
+    If RasterizeMetafile Then
+        
+        'Replace incoming width/height with the user's overrides (if any)
+        intWidth = userWidth
+        intHeight = userHeight
+        
+        'Metafiles can be rendered to transparent surfaces, but they're not always predictable.  GDI commands in particular
+        ' can sometimes result in portions of the metafile being transparent for no obvious reason.  (I've got a number of
+        ' problematic examples in the "images from testers/metafiles" folder.)
+        '
+        'In the future, a dialog could be presented, but right now, we use very simple heuristics to determine how to proceed.
+        ' 1) If we converted the metafile to EMF+ ourselves, the image is 99+% guaranteed to be okay with transparency.
+        '    Paint it to a 32-bpp surface.
+        ' 2) If the EMF+ data came from somewhere else, the data may handle transparency unpredictably.
+        '    Paint to a 24-bpp base just to be safe.
+        If metafileIsEmfPlus Then
+            dstDIB.CreateBlank intWidth, intHeight, 32, 0, 0
+        Else
+            dstDIB.CreateBlank intWidth, intHeight, 24, vbWhite
+        End If
+        
+        'Render the GDI+ image directly onto the newly created DIB
+        Dim hGraphics As Long
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+        GdipDrawImageRect hGraphics, hImage, 0!, 0!, intWidth, intHeight
+        GdipDeleteGraphics hGraphics
+        
+    End If
+        
 End Function
 
 'Returns TRUE if the source image...
@@ -3194,11 +3293,11 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
         
         'Next, create a default identity matrix for image attributes.
         ReDim m_AttributesMatrix(0 To 4, 0 To 4) As Single
-        m_AttributesMatrix(0, 0) = 1#
-        m_AttributesMatrix(1, 1) = 1#
-        m_AttributesMatrix(2, 2) = 1#
-        m_AttributesMatrix(3, 3) = 1#
-        m_AttributesMatrix(4, 4) = 1#
+        m_AttributesMatrix(0, 0) = 1!
+        m_AttributesMatrix(1, 1) = 1!
+        m_AttributesMatrix(2, 2) = 1!
+        m_AttributesMatrix(3, 3) = 1!
+        m_AttributesMatrix(4, 4) = 1!
         
         'Want to list all available decoders?  Do so here.
         'DEBUG_ListGdipDecoders
@@ -3368,7 +3467,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQuad
     CopyMemoryStrict VarPtr(srcQuad), VarPtr(pARGB), 4&
-    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * (100! / 255!)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format.
@@ -3388,7 +3487,7 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long, Optional ByVal removePrem
             Const ONE_DIV_255 As Single = 1! / 255!
             tmpSingle = CSng(srcQuad.Alpha) * ONE_DIV_255
             
-            If (tmpSingle > 0#) Then
+            If (tmpSingle > 0!) Then
                 Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
                 tmpRed = CSng(srcQuad.Red) / tmpSingle
                 tmpGreen = CSng(srcQuad.Green) / tmpSingle
@@ -3626,7 +3725,7 @@ Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcI
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
     'As necessary, release our image attributes object, and reset the alpha value of the (reusable) identity matrix
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = 1!
     End If

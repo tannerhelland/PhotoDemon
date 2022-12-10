@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.25</langversion>
+<langversion>9.0.26</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7173,7 +7173,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>%1-Optionen</translation>
 </phrase>
 
-<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -14028,8 +14028,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5563 phrases. -->
-<!-- 2910 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5565 phrases. -->
+<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 11461 total words. -->
 
 </pdData>
