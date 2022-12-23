@@ -981,7 +981,11 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
-                    
+            
+            'Pan/zoom
+            Case NAV_DRAG
+                Tools_Move.NotifyKeyDown_HandTool Shift, vkCode, markEventHandled
+                
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyKeyDown Shift, vkCode, markEventHandled
@@ -1035,7 +1039,7 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
-            
+                
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 SelectionUI.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
@@ -1058,6 +1062,10 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
         End Select
+        
+        'Perform a special check for arrow keys.  VB may attempt to use these to control on-form navigation,
+        ' which we do not want.
+        If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then markEventHandled = True
         
     End If
     
@@ -2527,7 +2535,7 @@ Public Sub SetCursorToCanvasPosition(ByVal newCanvasX As Double, ByVal newCanvas
 End Sub
 
 Public Sub SetFocusToCanvasView()
-    If CanvasView.Visible Then CanvasView.SetFocus
+    If CanvasView.Visible And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI CanvasView.hWnd
 End Sub
 
 Private Sub BuildPopupMenu()

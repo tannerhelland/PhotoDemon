@@ -3,8 +3,9 @@ Attribute VB_Name = "Tools_Move"
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2022 by Tanner Helland
 'Created: 24/May/14
-'Last updated: 09/April/18
-'Last update: migrate move tool bits out of pdCanvas and into a dedicated module
+'Last updated: 22/December/22
+'Last update: add some trivial key-handling bits for the Hand tool (which is a different tool, but it has
+'             so few features that it's easier to just condense things here)
 '
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
@@ -105,6 +106,32 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         
         'Control can be used to "jump" the layer to the current mouse position
         If (vkCode = VK_CONTROL) Then Message "Ctrl+click to move the active layer here"
+        
+    End If
+    
+End Sub
+
+'We also cover hand tool key behavior in this module, despite it being a separate tool.
+' (There is not currently a separate hand-tool module.)
+Public Sub NotifyKeyDown_HandTool(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+        
+    'Handle arrow keys as standard scroll events.
+    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
+    
+        'Set focus to the canvas (if it isn't already)
+        FormMain.MainCanvas(0).SetFocusToCanvasView
+        
+        If (vkCode = VK_UP) Then
+            FormMain.MainCanvas(0).CanvasView_MouseWheelVertical 0&, 0&, FormMain.MainCanvas(0).GetLastMouseX, FormMain.MainCanvas(0).GetLastMouseY, 1#
+        ElseIf (vkCode = VK_DOWN) Then
+            FormMain.MainCanvas(0).CanvasView_MouseWheelVertical 0&, 0&, FormMain.MainCanvas(0).GetLastMouseX, FormMain.MainCanvas(0).GetLastMouseY, -1#
+        ElseIf (vkCode = VK_LEFT) Then
+            FormMain.MainCanvas(0).CanvasView_MouseWheelHorizontal 0&, 0&, FormMain.MainCanvas(0).GetLastMouseX, FormMain.MainCanvas(0).GetLastMouseY, -1#
+        ElseIf (vkCode = VK_RIGHT) Then
+            FormMain.MainCanvas(0).CanvasView_MouseWheelHorizontal 0&, 0&, FormMain.MainCanvas(0).GetLastMouseX, FormMain.MainCanvas(0).GetLastMouseY, 1#
+        End If
+        
+        markEventHandled = True
         
     End If
     
