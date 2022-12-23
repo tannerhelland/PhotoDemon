@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1711</langversion>
+<langversion>8.9.1712</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -6684,6 +6684,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>enter a name for this preset</original>
+<translation>masukkan nama untuk pratetap ini</translation>
+</phrase>
+
+<phrase>
 <original>delete preset</original>
 <translation></translation>
 </phrase>
@@ -6691,11 +6696,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <phrase>
 <original>saved presets for this tool</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>enter a name for this preset</original>
-<translation>masukkan nama untuk pratetap ini</translation>
 </phrase>
 
 <phrase>
@@ -13266,6 +13266,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>when "Save as" is used</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compress undo/redo data at the following level</original>
 <translation>kompreskan batal/buat semula data pada tahap yang berikut</translation>
 </phrase>
@@ -13613,6 +13618,21 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
 <translation></translation>
 </phrase>
@@ -13803,7 +13823,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14008,10 +14028,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5565 phrases. -->
-<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 11461 total words. -->
+<!-- As of this build, PhotoDemon contains 5569 phrases. -->
+<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 11509 total words. -->
 
 </pdData>

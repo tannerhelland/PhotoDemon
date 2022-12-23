@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1713</langversion>
+<langversion>8.9.1714</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6698,6 +6698,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
+<original>enter a name for this preset</original>
+<translation>voer een naam voor deze preset</translation>
+</phrase>
+
+<phrase>
 <original>delete preset</original>
 <translation></translation>
 </phrase>
@@ -6705,11 +6710,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <phrase>
 <original>saved presets for this tool</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>enter a name for this preset</original>
-<translation>voer een naam voor deze preset</translation>
 </phrase>
 
 <phrase>
@@ -13282,6 +13282,11 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>when "Save as" is used</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compress undo/redo data at the following level</original>
 <translation>comprimeren ongedaan maken/herhalen gegevens op het volgende niveau</translation>
 </phrase>
@@ -13631,6 +13636,21 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
 <translation>De EXIF-specificatie vraagt programma's om zichzelf correct te identificeren als de software van herkomst bij het exporteren van beeldbestanden.  Voor meer privacy kunt u dit gedrag opschorten.</translation>
 </phrase>
@@ -13823,7 +13843,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14028,10 +14048,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5565 phrases. -->
-<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 11461 total words. -->
+<!-- As of this build, PhotoDemon contains 5569 phrases. -->
+<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 11509 total words. -->
 
 </pdData>

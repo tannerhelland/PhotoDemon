@@ -257,8 +257,15 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     ' folder to see if any files already match this name and extension.  If they do, we're going to append a number to the end of
     ' the filename, e.g. "New Image (2)", and we're going to auto-increment that number until we find a number that isn't in use.
     ' (If auto-incrementing isn't necessary, this function will return the filename we pass it, as-is.)
+    '
+    'Note that this behavior can be toggled via Tools > Options, to enable "normal" Save As behavior (defaulting to
+    ' the current filename, if any).
     Dim sFile As String
-    sFile = initialSaveFolder & IncrementFilename(initialSaveFolder, suggestedFilename, suggestedFileExtension)
+    If UserPrefs.GetPref_Boolean("Saving", "save-as-autoincrement", True) Then
+        sFile = initialSaveFolder & IncrementFilename(initialSaveFolder, suggestedFilename, suggestedFileExtension)
+    Else
+        sFile = initialSaveFolder & suggestedFilename
+    End If
     
     'With all our inputs complete, we can finally raise the damn common dialog
     If saveFileDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, cdFormatIndex, initialSaveFolder, g_Language.TranslateMessage("Save an image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then

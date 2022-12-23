@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1619</langversion>
+<langversion>8.9.1620</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -6696,6 +6696,11 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
+<original>enter a name for this preset</original>
+<translation>inserisci un nome per questo preset</translation>
+</phrase>
+
+<phrase>
 <original>delete preset</original>
 <translation>cancella preset</translation>
 </phrase>
@@ -6703,11 +6708,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <phrase>
 <original>saved presets for this tool</original>
 <translation>preset salvati per questo strumento</translation>
-</phrase>
-
-<phrase>
-<original>enter a name for this preset</original>
-<translation>inserisci un nome per questo preset</translation>
 </phrase>
 
 <phrase>
@@ -13289,6 +13289,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>when "Save as" is used</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compress undo/redo data at the following level</original>
 <translation>comprimi i dati di annulla/ripeti al seguente livello</translation>
 </phrase>
@@ -13638,6 +13643,21 @@ Sei sicuro di voler continuare?</translation>
 </phrase>
 
 <phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
 <translation>La specifica EXIF chiede ai programmi di identificarsi correttamente come il software di origine quando si esportano file di immagini.  Per una maggiore privacy, è possibile sospendere questo comportamento.</translation>
 </phrase>
@@ -13830,7 +13850,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 <translation>La nuova posizione temporanea della cartella non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14035,10 +14055,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5565 phrases. -->
-<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 11461 total words. -->
+<!-- As of this build, PhotoDemon contains 5569 phrases. -->
+<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 11509 total words. -->
 
 </pdData>

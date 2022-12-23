@@ -763,6 +763,7 @@ Private Sub CreateNewPreferencesFile()
             .WriteTag "HasSavedAFile", "False"
             .WriteTag "MetadataListPD", "True"
             .WriteTag "OverwriteOrCopy", "0"
+            .WriteTag "save-as-autoincrement", "False"
             .WriteTag "SuggestedFormat", "0"
             .WriteTag "UseLastFolder", "False"
         .CloseTag "Saving"

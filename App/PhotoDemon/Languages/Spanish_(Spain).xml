@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.327</langversion>
+<langversion>6.7.328</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -6691,6 +6691,11 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
+<original>enter a name for this preset</original>
+<translation>Escriba un nombre para este preajuste</translation>
+</phrase>
+
+<phrase>
 <original>delete preset</original>
 <translation></translation>
 </phrase>
@@ -6698,11 +6703,6 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <phrase>
 <original>saved presets for this tool</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>enter a name for this preset</original>
-<translation>Escriba un nombre para este preajuste</translation>
 </phrase>
 
 <phrase>
@@ -13275,6 +13275,11 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 </phrase>
 
 <phrase>
+<original>when "Save as" is used</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compress undo/redo data at the following level</original>
 <translation>Comprimir los datos de deshacer / rehacer en el siguiente nivel</translation>
 </phrase>
@@ -13624,6 +13629,21 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
 <translation></translation>
 </phrase>
@@ -13816,7 +13836,7 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation>Esta nueva ubicación de la carpeta temporal no surtirá efecto hasta que reinicie el programa.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14021,10 +14041,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5565 phrases. -->
-<!-- 2912 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 11461 total words. -->
+<!-- As of this build, PhotoDemon contains 5569 phrases. -->
+<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 11509 total words. -->
 
 </pdData>

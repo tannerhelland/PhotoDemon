@@ -370,7 +370,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   12
-         Top             =   5400
+         Top             =   5940
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -391,7 +391,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   180
          TabIndex        =   14
-         Top             =   3990
+         Top             =   3840
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
@@ -414,7 +414,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   6
          Left            =   0
-         Top             =   3645
+         Top             =   3480
          Width           =   8175
          _ExtentX        =   14420
          _ExtentY        =   503
@@ -426,7 +426,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   7
          Left            =   0
-         Top             =   5040
+         Top             =   5580
          Width           =   8145
          _ExtentX        =   14367
          _ExtentY        =   503
@@ -477,6 +477,17 @@ Begin VB.Form FormOptions
          _ExtentX        =   14076
          _ExtentY        =   582
          Caption         =   "when using ""Save As"", set the initial folder to:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboSaveAsBehavior 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   43
+         Top             =   4680
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when ""Save as"" is used:"
          FontSizeCaption =   10
       End
    End
@@ -1208,6 +1219,7 @@ Private Sub cmdBarMini_OKClick()
     
     UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
     UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
+    UserPrefs.SetPref_Long "Saving", "save-as-autoincrement", (cboSaveAsBehavior.ListIndex = 1)
     UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
     UserPrefs.SetPref_Boolean "Saving", "Use Last Folder", (cboDefaultSaveFolder.ListIndex = 1)
     
@@ -1419,6 +1431,7 @@ Private Sub LoadAllPreferences()
     cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
     If UserPrefs.GetPref_Boolean("Saving", "Use Last Folder", False) Then cboDefaultSaveFolder.ListIndex = 1 Else cboDefaultSaveFolder.ListIndex = 0
     cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
+    If UserPrefs.GetPref_Boolean("Saving", "save-as-autoincrement", True) Then cboSaveAsBehavior.ListIndex = 1 Else cboSaveAsBehavior.ListIndex = 0
     chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
     
     'Performance preferences
@@ -1569,6 +1582,11 @@ Private Sub Form_Load()
     cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0
     cboSaveBehavior.AddItem "save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
     cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
+    
+    cboSaveAsBehavior.Clear
+    cboSaveAsBehavior.AddItem "suggest the current filename (standard behavior)", 0
+    cboSaveAsBehavior.AddItem "suggest a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
+    cboSaveAsBehavior.AssignTooltip "In most photo editors, the ""Save as"" command defaults to the current filename.  PhotoDemon also provides a ""safer"" option, where Save As will automatically increment filenames for you."
     
     chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
         
