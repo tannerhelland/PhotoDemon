@@ -91,11 +91,11 @@ End Function
 ' to force an immedate GotFocus event.  (Windows will process hooks prior to focus messages, so some of PD's controls may raise
 ' input events prior to receiving focus events; this function gives us a way to work around that.)
 Friend Sub SetFocusManually()
-    If (Not m_HasFocus) Then g_WindowManager.SetFocusAPI m_hWnd
+    If (Not m_HasFocus) And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI m_hWnd
 End Sub
 
 Friend Sub ActivateManually()
-    g_WindowManager.ActivateWindowAPI m_hWnd
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.ActivateWindowAPI m_hWnd
 End Sub
 
 Private Function GetLoWord(ByVal lParam As Long) As Integer

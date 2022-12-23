@@ -1608,7 +1608,7 @@ End Sub
 
 Private Sub hypEditText_Click()
     UpdateFlyout 0, True
-    Me.txtTextTool.SetFocus
+    Me.txtTextTool.SetFocusToEditBox False
     Me.txtTextTool.SelStart = Len(Me.txtTextTool.Text)
 End Sub
 

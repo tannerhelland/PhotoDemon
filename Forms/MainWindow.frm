@@ -2101,7 +2101,11 @@ Private Sub Form_Load()
         m_FocusDetector.StartFocusTracking FormMain.hWnd
         
         'Finally, return focus to the main form.  The app is ready for interaction!
-        g_WindowManager.SetFocusAPI FormMain.hWnd
+        If (PDImages.GetNumOpenImages > 0) Then
+            FormMain.MainCanvas(0).SetFocusToCanvasView
+        Else
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.hWnd
+        End If
         
         Exit Sub
         
@@ -2384,7 +2388,7 @@ Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
     End With
     
     'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
-    If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
+    If Toolboxes.AreAllToolboxesHidden And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.hWnd
     
 End Sub
 

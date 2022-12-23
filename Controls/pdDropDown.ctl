@@ -359,7 +359,7 @@ Private Sub lbPrimary_Click()
     HideListBox
     
     'Restore the focus to the base combo box
-    g_WindowManager.SetFocusAPI Me.hWnd
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
     
 End Sub
 
@@ -460,6 +460,8 @@ End Sub
 'Unlike a regular listview, where the mousewheel results in pixel-level content scrolling, a closed dropdown scrolls actual
 ' list values one-at-a-time on each wheel motion.
 Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    
+    If (scrollAmount = 0#) Then Exit Sub
     
     'If the control doesn't current have focus, set it now.
     ' (This simplifies handling of Windows 7+ behavior where dropdowns can be scrolled

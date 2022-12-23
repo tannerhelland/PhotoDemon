@@ -421,7 +421,7 @@ Private Sub lbPrimary_Click()
     HideListBox
     
     'Restore the focus to the base combo box
-    g_WindowManager.SetFocusAPI Me.hWnd
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
     
 End Sub
 

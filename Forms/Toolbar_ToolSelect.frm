@@ -918,7 +918,7 @@ Private Sub NewToolSelected()
     
     'With all tool settings initialized, set focus to the canvas.  (Because the previous
     ' tool panel was unloaded, focus can be unpredictable if left up to the system.)
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.MainCanvas(0).GetCanvasViewHWnd()
+    If (Not g_WindowManager Is Nothing) Then FormMain.MainCanvas(0).SetFocusToCanvasView
         
 End Sub
 
@@ -1064,7 +1064,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         toolbar_Options.NotifyChildPanelHWnd m_Panels(m_ActiveToolPanel).PanelHWnd
         m_Panels(m_ActiveToolPanel).PanelWasLoaded = True
     End If
-        
+    
     'If a selection tool is active, we also need activate a specific subpanel.  (All selection tools share the same
     ' parent window, but they only activate subportions of it based on tool features.)
     Dim activeSelectionSubpanel As Long

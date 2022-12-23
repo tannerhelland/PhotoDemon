@@ -376,7 +376,7 @@ Friend Sub NotifyTabKey(ByVal srcHWnd As Long, ByVal shiftTabPressed As Boolean)
     'Finally, apply the focus change!  (If the previous step succeeded, the caller must set
     ' useSpecialFocusEvent to a non-zero value - this means they handled the focus event
     ' internally, so we don't need to handle it for them.)
-    If (useSpecialFocusEvent = 0) Then g_WindowManager.SetFocusAPI newTargetHwnd
+    If (useSpecialFocusEvent = 0) And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI newTargetHwnd
     
 End Sub
 

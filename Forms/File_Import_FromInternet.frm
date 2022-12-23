@@ -164,8 +164,7 @@ End Sub
 
 'When the form is activated, automatically select the text box for the user.  This makes a quick Ctrl+V possible.
 Private Sub Form_Activate()
-    txtURL.SelectAll
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI txtURL.hWnd
+    txtURL.SetFocusToEditBox True
 End Sub
 
 'LOAD form

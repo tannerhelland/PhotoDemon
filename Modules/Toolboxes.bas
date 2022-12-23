@@ -243,6 +243,9 @@ End Sub
 ' CalculateNewToolboxRects(), above, prior to invoking this function.
 Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long, ByVal parentHwnd As Long)
     
+    'Failsafe only
+    If (g_WindowManager Is Nothing) Then Exit Sub
+    
     SetParent toolboxHWnd, parentHwnd
     
     'Cache default VB6 window bits (only the first time!), then set new window bits matching the

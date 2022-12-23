@@ -952,9 +952,9 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         If markProcessingState Then m_Processing = True
         
         'Make a note of the window that has keyboard focus, then forcibly remove it
-        If maintainFocus Then
+        If maintainFocus And (Not g_WindowManager Is Nothing) Then
             m_FocusHWnd = g_WindowManager.GetFocusAPI()
-            If (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI 0&
+            If (m_FocusHWnd <> 0&) Then g_WindowManager.SetFocusAPI 0&
         End If
         
         'Change the cursor to a busy state (but ONLY if explicitly requested - this is important)
@@ -990,7 +990,7 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         FormMain.ChangeSessionListenerState True
         
         'Restore keyboard focus to whichever control had it previously
-        If maintainFocus And (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd
+        If maintainFocus And (m_FocusHWnd <> 0&) And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI m_FocusHWnd
         
     End If
 
@@ -1284,7 +1284,7 @@ Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog 
     
     'Manually handle focus restoration
     If (m_NestedProcessingCount = 0) And (m_FocusHWnd <> 0) Then
-        g_WindowManager.SetFocusAPI m_FocusHWnd
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI m_FocusHWnd
         m_FocusHWnd = 0
     End If
     

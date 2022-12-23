@@ -30,7 +30,7 @@ Begin VB.Form dialog_AddPreset
    Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   735
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   6495
       _ExtentX        =   11456
@@ -41,12 +41,41 @@ Begin VB.Form dialog_AddPreset
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   3690
       Width           =   6735
       _ExtentX        =   11880
       _ExtentY        =   1323
       DontAutoUnloadParent=   -1  'True
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   2535
+      Index           =   0
+      Left            =   120
+      Top             =   1080
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   4471
+      Begin PhotoDemon.pdTextBox txtName 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   0
+         Top             =   405
+         Width           =   6135
+         _ExtentX        =   10821
+         _ExtentY        =   661
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdLabel lblName 
+         Height          =   375
+         Left            =   135
+         Top             =   15
+         Width           =   6345
+         _ExtentX        =   11192
+         _ExtentY        =   661
+         Caption         =   "enter a name for this preset"
+         FontSize        =   11
+      End
    End
    Begin PhotoDemon.pdContainer pnlOptions 
       Height          =   2535
@@ -60,7 +89,7 @@ Begin VB.Form dialog_AddPreset
          Height          =   615
          Index           =   0
          Left            =   240
-         TabIndex        =   2
+         TabIndex        =   3
          Top             =   1800
          Width           =   945
          _ExtentX        =   1667
@@ -98,35 +127,6 @@ Begin VB.Form dialog_AddPreset
          _ExtentY        =   1085
       End
    End
-   Begin PhotoDemon.pdContainer pnlOptions 
-      Height          =   2535
-      Index           =   0
-      Left            =   120
-      Top             =   1080
-      Width           =   6495
-      _ExtentX        =   11456
-      _ExtentY        =   4471
-      Begin PhotoDemon.pdTextBox txtName 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   3
-         Top             =   405
-         Width           =   6135
-         _ExtentX        =   10821
-         _ExtentY        =   661
-         FontSize        =   11
-      End
-      Begin PhotoDemon.pdLabel lblName 
-         Height          =   375
-         Left            =   135
-         Top             =   15
-         Width           =   6345
-         _ExtentX        =   11192
-         _ExtentY        =   661
-         Caption         =   "enter a name for this preset"
-         FontSize        =   11
-      End
-   End
 End
 Attribute VB_Name = "dialog_AddPreset"
 Attribute VB_GlobalNameSpace = False
@@ -158,6 +158,9 @@ Option Explicit
 
 'The user button click from the dialog (OK/Cancel)
 Private m_userAnswer As VbMsgBoxResult
+
+'Used to detect initial activation
+Private m_IsNotFirstActivation As Boolean
 
 'Because this form needs to interact with both the command bar that raises this dialog, and its preset manager,
 ' we must maintain references to both.  These references are initially supplied via the showDialog function.
@@ -191,10 +194,6 @@ Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBa
     
     'Theme the dialog
     ApplyThemeAndTranslations Me
-    
-    'Set focus to the text entry box
-    txtName.Text = vbNullString
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI txtName.hWnd
     
     'Display the dialog
     Me.Show vbModal, parentForm
@@ -266,8 +265,7 @@ Private Sub cmdBarMini_OKClick()
                     'If the user selects NO, let them enter a new name
                     Case vbNo
                         txtName.Text = g_Language.TranslateMessage("(enter name here)")
-                        txtName.SetFocus
-                        txtName.SelectAll
+                        txtName.SetFocusToEditBox True
                         cmdBarMini.DoNotUnloadForm
                         Exit Sub
     
@@ -291,8 +289,7 @@ Private Sub cmdBarMini_OKClick()
             PDMsgBox "Please enter a name for this preset.", vbInformation Or vbOKOnly, "Preset name required"
             
             txtName.Text = g_Language.TranslateMessage("(enter name here)")
-            txtName.SetFocus
-            txtName.SelectAll
+            txtName.SetFocusToEditBox True
             
             cmdBarMini.DoNotUnloadForm
             Exit Sub
@@ -336,6 +333,22 @@ Private Sub cmdMove_Click(Index As Integer)
         
         'Movement may result in the up and/or down buttons being deactivated
         UpdateEditButtons
+        
+    End If
+    
+End Sub
+
+Private Sub Form_Activate()
+    
+    'On initial activation, clear the potentially auto-saved preset name box, then set focus to said box
+    If (Not m_IsNotFirstActivation) Then
+        
+        'Set focus to the text entry box
+        txtName.Text = vbNullString
+        txtName.SetFocusToEditBox
+        
+        'Do not display on subsequent activations
+        m_IsNotFirstActivation = True
         
     End If
     

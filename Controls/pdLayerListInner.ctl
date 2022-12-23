@@ -360,14 +360,14 @@ Private Sub txtLayerName_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As L
         txtLayerName.Text = vbNullString
         
         'Transfer focus back to the layer box itself (instead of letting Windows forward it somewhere random)
-        g_WindowManager.SetFocusAPI Me.hWnd
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
         
     ElseIf (vKey = VK_ESCAPE) Then
         preventFurtherHandling = True
         
         If txtLayerName.Visible Then txtLayerName.Visible = False
         txtLayerName.Text = vbNullString
-        g_WindowManager.SetFocusAPI Me.hWnd
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
         m_LayerNameEditMode = False
         
     Else
@@ -429,7 +429,7 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
         'Set an Undo/Redo marker for the existing layer name
         Processor.FlagInitialNDFXState_Generic pgp_Name, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
         
-        txtLayerName.SetFocus
+        txtLayerName.SetFocusToEditBox
         txtLayerName.SelectAll
     
     'Hide the text box if it isn't already
@@ -617,7 +617,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         'Insert: raise Add New Layer dialog
         If (vkCode = VK_INSERT) Then
             Process "Add new layer", True
-            g_WindowManager.SetFocusAPI Me.hWnd
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
         End If
         
         'Tab and Shift+Tab: move through layer stack
@@ -646,7 +646,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
-                g_WindowManager.SetFocusAPI Me.hWnd
+                If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
             
             Else
                 markEventHandled = False

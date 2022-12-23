@@ -158,14 +158,14 @@ Public Sub Twain32Scan()
                 Dim sTitle As String
                 sTitle = g_Language.TranslateMessage("Scanned Image")
                 sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                LoadFileAsNewImage scannerCaptureFile, sTitle, False
+                Loading.LoadFileAsNewImage scannerCaptureFile, sTitle, False
                 
                 'Be polite and remove the temporary file acquired from the scanner
                 Files.FileDeleteIfExists scannerCaptureFile
-                
                 Message "Image acquired successfully "
                 
-                If FormMain.Enabled Then g_WindowManager.SetFocusAPI FormMain.hWnd
+                If FormMain.Enabled Then FormMain.MainCanvas(0).SetFocusToCanvasView
+                
             Else
                 'If the scan was unsuccessful, let the user know what happened
                 GoTo ScanError

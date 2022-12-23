@@ -760,7 +760,7 @@ Public Sub FitMessageArea()
         lblMessages.Visible = False
     Else
         If (lblMessages.GetWidth <> newMessageArea) Then lblMessages.SetWidth newMessageArea
-        lblMessages.Visible = True
+        If (Not lblMessages.Visible) Then lblMessages.Visible = True
     End If
     
     RedrawBackBuffer

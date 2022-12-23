@@ -396,7 +396,7 @@ NextControlCheck2:
         
         'Ignore the second case completely, as tab should have no effect
         If (newIndex <> myIndex) Then
-            targetControl.SetFocus
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI targetControl.hWnd
         
 NoFocusRecipient:
         

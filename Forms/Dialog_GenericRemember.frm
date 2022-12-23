@@ -273,18 +273,16 @@ End Sub
 Private Sub Form_Activate()
     
     'Set focus to the default answer specified by the caller
-    Select Case userAnswer
-    
-        Case vbYes
-            cmdAnswer(0).SetFocus
-        
-        Case vbNo
-            cmdAnswer(1).SetFocus
-        
-        Case vbCancel
-            cmdAnswer(2).SetFocus
-    
-    End Select
+    If (Not g_WindowManager Is Nothing) Then
+        Select Case userAnswer
+            Case vbYes
+                g_WindowManager.SetFocusAPI cmdAnswer(0).hWnd
+            Case vbNo
+                g_WindowManager.SetFocusAPI cmdAnswer(1).hWnd
+            Case vbCancel
+                g_WindowManager.SetFocusAPI cmdAnswer(2).hWnd
+        End Select
+    End If
     
     'With the proper button set, we must reset the "userAnswer" variable to vbCancel, in case the user closes the dialog by
     ' some mechanism other than clicking a button (e.g. the corner x).
