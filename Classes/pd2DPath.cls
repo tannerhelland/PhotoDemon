@@ -107,7 +107,9 @@ Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Lo
 ' You can see a visualization of what this means at this MSDN page:
 ' https://msdn.microsoft.com/en-us/library/windows/desktop/dd368110(v=vs.85).aspx
 ' If you want the old behavior, you can change it here.
-Private Const DEFAULT_FILL_RULE As Long = P2_FR_Winding
+' (Note: this is treated as a constant, set manually at Class_Initialize because VB doesn't let you declare constants
+' of custom types publicly declared elsewhere.)
+Private DEFAULT_FILL_RULE As PD_2D_FillRule
 
 'Allowable error (in pixels) when flattening a path.  This value is poorly explained on MSDN,
 ' but lower values equal a more precise approximation.
@@ -995,7 +997,12 @@ Private Sub ResetInternalTransform()
 End Sub
 
 Private Sub Class_Initialize()
+    
+    'Set your preferred default fill rule here
+    DEFAULT_FILL_RULE = P2_FR_Winding
+    
     Me.ResetPath
+    
 End Sub
 
 Private Sub Class_Terminate()

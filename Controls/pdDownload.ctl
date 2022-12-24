@@ -440,7 +440,7 @@ Public Sub FreeResourcesForItem(ByVal itemKey As String)
 End Sub
 
 'Use this sub to reset everything to its virgin state.
-Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
+Public Sub ResetDownloader(Optional ByVal setFailsafeTimer As Boolean = True)
     
     On Error GoTo ResetError
     
@@ -485,13 +485,13 @@ ResetError:
 End Sub
 
 Private Sub UserControl_Initialize()
-    Reset False
+    ResetDownloader False
 End Sub
 
 'At termination, all downloads are forcibly stopped and any existing data is deleted.
 ' This all happens automatically, so we don't need to do our own clean-up.
 Private Sub UserControl_Terminate()
-    Reset False
+    ResetDownloader False
 End Sub
 
 'Add a file to the queue.  Note that this DOES NOT start the download, unless setDownloadState has been passed TRUE at some

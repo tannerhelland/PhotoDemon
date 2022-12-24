@@ -1934,7 +1934,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
 End Function
 
 'Used for rendering previews in the "import metafile and optionally choose custom dimensions" dialog
-Public Function PaintMetafileToArbitraryDIB(ByRef dstDIB As pdDIB, ByVal hGdipImage As Long, Optional ByVal dstX As Single = 0!, Optional ByVal dstY As Single = 0!)
+Public Function PaintMetafileToArbitraryDIB(ByRef dstDIB As pdDIB, ByVal hGdipImage As Long, Optional ByVal dstX As Single = 0!, Optional ByVal dstY As Single = 0!) As Boolean
     
     PaintMetafileToArbitraryDIB = False
     Dim hGraphics As Long
@@ -1943,6 +1943,7 @@ Public Function PaintMetafileToArbitraryDIB(ByRef dstDIB As pdDIB, ByVal hGdipIm
         GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
         GdipDrawImageRect hGraphics, hGdipImage, dstX, dstY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
         GdipDeleteGraphics hGraphics
+        PaintMetafileToArbitraryDIB = True
     End If
     
 End Function

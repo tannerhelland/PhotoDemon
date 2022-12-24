@@ -823,7 +823,7 @@ Friend Function FileGetVersion(ByVal srcFile As String, ByRef verMajor As Long, 
                 FileGetVersion = True
                 
             Else
-                FSOError "FileGetVersion", "Could not retrieve version information for (" & srcFile & ") due to VerQueryValue error.", Err.Last
+                FSOError "FileGetVersion", "Could not retrieve version information for (" & srcFile & ") due to VerQueryValue error.", Err.LastDllError
             End If
             
         Else

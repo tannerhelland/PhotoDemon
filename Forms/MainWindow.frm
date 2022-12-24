@@ -2212,7 +2212,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Cancel any pending downloads
     PDDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
-    Me.AsyncDownloader.Reset
+    Me.AsyncDownloader.ResetDownloader
     
     'Allow any objects on this form to save preferences and other user data
     PDDebug.LogAction "Asking all FormMain components to write out final user preference values..."
