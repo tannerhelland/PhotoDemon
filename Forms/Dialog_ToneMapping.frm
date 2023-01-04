@@ -597,7 +597,7 @@ Private Function GetToneMapParamString() As String
 End Function
 
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
-    If (Not m_tmpDIB Is Nothing) Then picPreview.CopyDIB m_tmpDIB, , True, , True
+    If (Not m_tmpDIB Is Nothing) Then picPreview.CopyDIB m_tmpDIB, True, True, False, True
 End Sub
 
 Private Sub sltAdaptation_Change()
@@ -628,4 +628,3 @@ Private Sub picWarning_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
     If (Not m_warningDIB Is Nothing) Then m_warningDIB.AlphaBlendToDC targetDC, , (ctlWidth - m_warningDIB.GetDIBWidth) \ 2, (ctlHeight - m_warningDIB.GetDIBHeight) \ 2
 End Sub
-

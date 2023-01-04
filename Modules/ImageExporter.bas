@@ -2147,7 +2147,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         'Start by creating a blank multipage object
         Dim fi_MultipageHandle As Long
-        fi_MultipageHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, tmpFilename, True, False, False)
+        fi_MultipageHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, tmpFilename, True)
         
         'If all pages are monochrome, we can encode the final TIFF object using monochrome compression settings, but if even
         ' one page is color, it complicates that.

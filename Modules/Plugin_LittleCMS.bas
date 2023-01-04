@@ -502,7 +502,7 @@ Public Function InitializeLCMS() As Boolean
         
         'NOTE: error callbacks are not reliable, so do not enable this in production code.  It can be
         ' useful, however, for tracking down esoteric errors in debug builds.
-        cmsSetLogErrorHandler AddressOf LCMS_ErrorCallback
+        If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then cmsSetLogErrorHandler AddressOf LCMS_ErrorCallback
         
     End If
     

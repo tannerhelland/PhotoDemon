@@ -1102,6 +1102,10 @@ LibAVIFDidntWork:
         ' on XP is a rare use-case.
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
         
+        'To disable these various heuristics and force either GDI+ import (TRUE) or FreeImage import (FALSE),
+        ' use this override:
+        'tryGDIPlusFirst = False
+        
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
             freeImage_Return = PD_FAILURE_GENERIC
