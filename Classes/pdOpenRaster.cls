@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon OpenRaster Container and Parser
 'Copyright 2019-2023 by Tanner Helland
 'Created: 08/January/19
-'Last updated: 04/February/19
-'Last update: reduce memory consumption at import-time if source PNGs are stored without compression
+'Last updated: 05/January/23
+'Last update: update to latest cZipArchive; minor changes to match
 '
 'OpenRaster is currently the "best" mechanism for sharing multi-layer images between PhotoDemon
 ' and other open-source photo editors (GIMP, Krita, MyPaint, etc).
@@ -102,7 +102,7 @@ Friend Function IsFileORA(ByRef srcFilename As String, Optional ByVal requireVal
             'The file appears to be a valid zip archive.  Retrieve a list of included filenames;
             ' we're looking for "mimetype" as the first entry.
             Const IDX_FILENAME As Long = 0
-            potentiallyORA = Strings.StringsEqual(CStr(m_ZipArchive.FileInfo(0)(IDX_FILENAME)), "mimetype", False)
+            potentiallyORA = Strings.StringsEqual(CStr(m_ZipArchive.FileInfo(0, zipIdxFileName)), "mimetype", False)
             
             'If the mimetype file is present, extract it and ensure the contents are, per the spec:
             ' "...the string "image/openraster", with no whitespace or trailing newline."
@@ -452,10 +452,16 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     'Reset the archiver
     Set m_ZipArchive = New cZipArchive
     
+    'Setting codepage here is not strictly necessary as the final .CompressArchive call accepts a UTF-8 parameter,
+    ' but the OpenRaster spec is explicit on this point (see https://www.openraster.org/baseline/file-layout-spec.html)
+    ' so I've added this as a reminder to myself.
+    Const CP_UTF8 As Long = 65001
+    m_ZipArchive.CodePage = CP_UTF8
+    
     'The first entry in the archive must always be a file named "mimetype", stored without compression,
     ' with string content "image/openraster"
     Dim utf8Bytes() As Byte, lenInBytes As Long
-    Strings.UTF8FromString "image/openraster", utf8Bytes, lenInBytes, , True
+    Strings.UTF8FromString "image/openraster", utf8Bytes, lenInBytes, 0, True
     If Not m_ZipArchive.AddFile(File:=utf8Bytes, Name:="mimetype", Level:=0&) Then InternalError "SaveORA", "could not write mimetype"
     
     'Next comes a file called "stack.xml".  This XML file contains all layer attribute data.
@@ -558,7 +564,7 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     AddImageToZipAsPNG tmpDIB, "mergedimage.png"
     
     'And we're done!  Write the finished archive out to disk.
-    SaveORA = m_ZipArchive.CompressArchive(ArchiveFile:=dstFile, useUTF8:=vbTrue)
+    SaveORA = m_ZipArchive.CompressArchive(ArchiveFile:=dstFile, useUTF8:=vbTrue, UseZip64:=vbFalse)
     Set m_ZipArchive = Nothing
     
     Exit Function
@@ -582,7 +588,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
     ' fallback, so it should never trigger!)
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
-    If (cPNG.SavePNG_ToMemory(pngBytes, srcDIB, Nothing, , , 9, , png_FilterAuto) <> 0) Then
+    If (cPNG.SavePNG_ToMemory(pngBytes, srcDIB, Nothing, png_AutoColorType, 0, 9, vbNullString, png_FilterAuto) <> 0) Then
 
         'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
         ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
@@ -591,27 +597,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
         If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
         
     Else
-        
-        Dim hGdipImage As Long
-        If GDI_Plus.GetGdipBitmapHandleFromDIB(hGdipImage, srcDIB) Then
-            If GDI_Plus.GDIPlus_ImageSaveToArray(hGdipImage, pngBytes, P2_FFE_PNG) Then
-            
-                'Free the temporary GDI+ handle
-                GDI_Plus.ReleaseGDIPlusImage hGdipImage
-                
-                'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
-                ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
-                ' additional compression atop that gains little, but eats up a ton of time.
-                AddImageToZipAsPNG = m_ZipArchive.AddFile(pngBytes, pathInsideZip, , , , 0)
-                If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
-                
-            Else
-                InternalError "AddImageToZipAsPNG", "Couldn't generate PNG for """ & pathInsideZip & """"
-            End If
-        Else
-            InternalError "AddImageToZipAsPNG", "Couldn't acquire GDI+ handle for """ & pathInsideZip & """"
-        End If
-        
+        InternalError "AddImageToZipAsPNG", "Couldn't generate PNG for """ & pathInsideZip & """"
     End If
 
 End Function
@@ -776,4 +762,3 @@ Private Sub InternalWarning(ByRef funcName As String, ByRef warnText As String, 
         Debug.Print "pdOpenRaster." & funcName & "() warned: " & warnText
     End If
 End Sub
-
