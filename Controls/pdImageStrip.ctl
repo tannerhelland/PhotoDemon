@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Strip control (e.g. a scrollable line of image thumbnails)
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 15/October/13
 'Last updated: 05/January/17
 'Last update: delay resource loading until absolutely required

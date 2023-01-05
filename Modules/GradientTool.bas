@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Gradient"
 '***************************************************************************
 'PhotoDemon On-Canvas Gradient Tool Manager
-'Copyright 2018-2022 by Tanner Helland
+'Copyright 2018-2023 by Tanner Helland
 'Created: 31/December/18
 'Last updated: 26/February/19
 'Last update: add progress bar updates for long-running gradient renders

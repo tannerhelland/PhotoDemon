@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'ThunderMain listener
-'Copyright 2021-2022 by Tanner Helland
+'Copyright 2021-2023 by Tanner Helland
 'Created: 18/October/21
 'Last updated: 18/October/21
 'Last update: initial build

@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI"
 '***************************************************************************
 'GDI interop manager
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 03/April/2001
 'Last updated: 28/June/16
 'Last update: continued clean-up of PD-specific code

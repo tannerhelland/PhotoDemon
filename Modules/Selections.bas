@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selections"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 13/February/22
 'Last update: lots of changes to enable multiple selection support!

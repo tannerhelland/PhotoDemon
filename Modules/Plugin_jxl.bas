@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_jxl"
 '***************************************************************************
 'JPEG-XL Reference Library (libjxl) Interface
-'Copyright 2022-2022 by Tanner Helland
+'Copyright 2022-2023 by Tanner Helland
 'Created: 28/September/22
 'Last updated: 02/December/22
 'Last update: wrap up work on live previews and grayscale export support

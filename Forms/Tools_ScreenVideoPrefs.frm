@@ -203,7 +203,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated screen capture dialog
-'Copyright 2020-2022 by Tanner Helland
+'Copyright 2020-2023 by Tanner Helland
 'Created: 01/July/20
 'Last updated: 01/October/21
 'Last update: new option for exporting to WebP (in addition to existing APNG support)

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pixel Iterator class
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 04/December/14
 'Last updated: 05/April/20
 'Last update: code clean-up and stability improvements

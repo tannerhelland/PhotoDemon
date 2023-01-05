@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'IMRUList : Interface for Recent File (MRU) lists
-'Copyright 2005-2022 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2023 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/February/15
 'Last updated by: Raj

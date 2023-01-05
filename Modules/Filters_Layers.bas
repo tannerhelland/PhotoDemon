@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Layers"
 '***************************************************************************
 'DIB Filters Module
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 15/February/13
 'Last updated: 15/November/19
 'Last update: rewrite separable bilateral filter for large perf improvements

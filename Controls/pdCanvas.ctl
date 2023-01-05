@@ -240,7 +240,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
-'Copyright 2002-2022 by Tanner Helland
+'Copyright 2002-2023 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 08/April/22
 'Last update: fix tab order of start screen (vertical columns are not handled correctly by PD's auto-tab-key algorithm)

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'WebP Image Interface
-'Copyright 2021-2022 by Tanner Helland
+'Copyright 2021-2023 by Tanner Helland
 'Created: 22/September/21
 'Last updated: 01/October/21
 'Last update: add a streaming interface for writing animated WebP files on-the-fly (used by PD's screen recorder)

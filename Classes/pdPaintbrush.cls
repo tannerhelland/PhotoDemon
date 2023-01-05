@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Paintbrush tool interface
-'Copyright 2016-2022 by Tanner Helland
+'Copyright 2016-2023 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 12/September/19
 'Last update: split into its own class, so that tools other than the plain paintbrush can use it!

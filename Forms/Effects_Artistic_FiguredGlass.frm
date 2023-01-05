@@ -114,7 +114,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Figured Glass" Distortion
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 08/January/13
 'Last updated: 20/February/20
 'Last update: large performance optimizations

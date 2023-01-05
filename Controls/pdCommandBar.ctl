@@ -134,7 +134,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tool Dialog Command Bar custom control
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 18/October/21
 'Last update: unify settings strategy with pdLastUsedSettings

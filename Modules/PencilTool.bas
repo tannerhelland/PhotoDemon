@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Pencil"
 '***************************************************************************
 'Pencil tool interface
-'Copyright 2016-2022 by Tanner Helland
+'Copyright 2016-2023 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 13/September/19
 'Last update: split pencil tool into its own handler, as paint tools are about to get more complicated

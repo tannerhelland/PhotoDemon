@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box support class
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 02/August/22
 'Last update: fix PgDn keypress increment calculation

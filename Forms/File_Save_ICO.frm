@@ -1017,7 +1017,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Windows Icon (ICO) Export Dialog
-'Copyright 2020-2022 by Tanner Helland
+'Copyright 2020-2023 by Tanner Helland
 'Created: 11/May/20
 'Last updated: 27/October/22
 'Last update: allow the user to switch between "merged image" and "match layers to frames" as sources

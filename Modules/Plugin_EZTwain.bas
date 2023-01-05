@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_EZTwain"
 '***************************************************************************
 'Scanner Interface
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 1/10/01
 'Last updated: 12/May/16
 'Last update: clean up the interface a bit

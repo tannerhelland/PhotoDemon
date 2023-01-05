@@ -186,7 +186,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Droste" Transform (or distortion? who knows lol)
-'Copyright 2021-2022 by Tanner Helland
+'Copyright 2021-2023 by Tanner Helland
 'Created: 24/August/21
 'Last updated: 25/August/21
 'Last update: wrap up initial build

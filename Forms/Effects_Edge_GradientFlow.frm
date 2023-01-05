@@ -142,7 +142,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient flow tool
-'Copyright 2020-2022 by Tanner Helland
+'Copyright 2020-2023 by Tanner Helland
 'Created: 26/September/20
 'Last updated: 28/September/20
 'Last update: wrap up initial build

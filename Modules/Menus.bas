@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2022 by Tanner Helland
+'Copyright 2017-2023 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 04/September/20
 'Last update: cool new algorithm for automatically determining (localized!) mnemonics at run-time

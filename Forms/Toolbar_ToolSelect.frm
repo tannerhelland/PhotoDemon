@@ -385,7 +385,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Primary Toolbox
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 06/March/22
 'Last update: rename "non-destructive" tool group to "layout tools"

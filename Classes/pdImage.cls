@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright 2006-2022 by Tanner Helland
+'Copyright 2006-2023 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 16/May/22
 'Last update: ensure changes to the active layer ID reset our internal "last-change" event time

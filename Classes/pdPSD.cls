@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
-'Copyright 2019-2022 by Tanner Helland
+'Copyright 2019-2023 by Tanner Helland
 'Created: 13/January/19
 'Last updated: 31/August/22
 'Last update: gracefully skip 0-length image resource blocks to fix crashes on Photopea-exported PSD files

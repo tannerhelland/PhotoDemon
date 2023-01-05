@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 05/December/21
 'Last update: new ConvertImageCoordsToScreenCoords() function, to simplify UI interactions between a canvas object

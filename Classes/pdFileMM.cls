@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Memory-Mapped File Interface
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 04/February/15
 'Last updated: 06/June/19
 'Last update: spin off from pdFSO

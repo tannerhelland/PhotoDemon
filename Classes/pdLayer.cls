@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 24/March/22
 'Last update: start work on layer masks as a persistent layer data element

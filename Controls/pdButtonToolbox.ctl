@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Toolbox Button control
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 12/December/21
 'Last update: allow caller to specify resampling method when assigning button images

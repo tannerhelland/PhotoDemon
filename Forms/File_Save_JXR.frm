@@ -162,7 +162,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG XR Export Dialog
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 07/May/16
 'Last update: convert dialog to new export engine

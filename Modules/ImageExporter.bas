@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 22/June/22
 'Last update: convert esoteric format exporters to safe-overwrite strategy

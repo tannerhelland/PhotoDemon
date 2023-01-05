@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 13/October/22
 'Last update: add a function for querying XP-compatibility; this will make it easier for the plugin manager UI

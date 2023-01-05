@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Hyperlink (clickable label) control
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 18/April/16
 'Last update: fix double-painting issue on MouseLeave events

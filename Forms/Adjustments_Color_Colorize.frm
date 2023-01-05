@@ -116,7 +116,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright 2006-2022 by Tanner Helland
+'Copyright 2006-2023 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 19/April/20
 'Last update: perf improvements; allow user to control saturation and luminance (if not preserving)

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Outline ("Pen" in GDI/GDI+ parlance) Class
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 04/July/15 (but assembled from many bits written earlier)
 'Last updated: 25/November/20
 'Last update: finish inlining GDI+ calls

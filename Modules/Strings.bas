@@ -1,7 +1,7 @@
 Attribute VB_Name = "Strings"
 '***************************************************************************
 'Additional string support functions
-'Copyright 2017-2022 by Tanner Helland
+'Copyright 2017-2023 by Tanner Helland
 'Created: 13/June/17
 'Last updated: 23/October/20
 'Last update: fix a bug in Boyer-Moore string matcher if ANSI compare is requested on a string that contains non-ANSI chars

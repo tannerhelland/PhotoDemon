@@ -89,7 +89,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 05/October/12
 'Last updated: 23/April/20
 'Last update: perf improvements; switch to higher-quality HSL transform

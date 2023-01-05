@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Squish Distortion (formerly Fixed Perspective)
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 04/April/13
 'Last updated: 21/February/19
 'Last update: large performance improvements

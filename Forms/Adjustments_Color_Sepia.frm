@@ -67,7 +67,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sepia Dialog
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 03/July/14
 'Last updated: 27/April/20
 'Last update: add dialog so the user can adjust "strength" (instead of being locked at 100%)

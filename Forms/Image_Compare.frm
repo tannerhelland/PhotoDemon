@@ -133,7 +133,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Compare Images Dialog
-'Copyright 2019-2022 by Tanner Helland
+'Copyright 2019-2023 by Tanner Helland
 'Created: 19/November/19
 'Last updated: 21/November/19
 'Last update: wrap up initial build

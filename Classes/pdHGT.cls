@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Shuttle Radar Topography Mission (SRTM)" (HGT) Decoder
-'Copyright 2022-2022 by Tanner Helland
+'Copyright 2022-2023 by Tanner Helland
 'Created: 13/September/22
 'Last updated: 15/November/22
 'Last update: harden against malicious file input

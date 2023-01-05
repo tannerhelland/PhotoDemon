@@ -1,7 +1,7 @@
 Attribute VB_Name = "Layers"
 '***************************************************************************
 'Layer Interface
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 20/January/22
 'Last update: new AddLayerViaSelection() function, for conveniently creating a layer from a selection region

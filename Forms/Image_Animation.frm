@@ -145,7 +145,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animation settings dialog
-'Copyright 2019-2022 by Tanner Helland
+'Copyright 2019-2023 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 06/April/22
 'Last update: add localized tooltips to the playback scrubber

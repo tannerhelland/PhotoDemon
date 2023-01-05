@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Selector custom control
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 04/December/20
 'Last update: migrate renderer to pd2D

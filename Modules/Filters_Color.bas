@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Adjustments"
 '***************************************************************************
 'Filter (Color Effects) Interface
-'Copyright 2000-2022 by Tanner Helland
+'Copyright 2000-2023 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 06/September/12
 'Last update: new formulas for all AutoEnhance functions.  Now they are much faster AND they offer much better results.

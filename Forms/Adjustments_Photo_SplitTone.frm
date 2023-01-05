@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 07/May/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params

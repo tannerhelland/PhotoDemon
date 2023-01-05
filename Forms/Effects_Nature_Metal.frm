@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Metal" or "Chrome" Image effect
-'Copyright 2002-2022 by Tanner Helland
+'Copyright 2002-2023 by Tanner Helland
 'Created: sometime 2002
 'Last updated: 16/October/17
 'Last update: migrate the actual function code elsewhere; it's helpful in other filter scenarios

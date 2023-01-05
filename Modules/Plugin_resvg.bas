@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_resvg"
 '***************************************************************************
 'resvg Library Interface (SVG import)
-'Copyright 2022-2022 by Tanner Helland
+'Copyright 2022-2023 by Tanner Helland
 'Created: 28/February/22
 'Last updated: 15/October/22
 'Last update: fix load behavior during batch processing

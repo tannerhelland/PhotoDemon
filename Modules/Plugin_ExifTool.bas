@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExifTool"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 30/May/18
 'Last update: rewrite ExifTool interop using pdString (instead of huge string append (&) blocks)

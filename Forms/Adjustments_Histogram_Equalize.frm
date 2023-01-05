@@ -96,7 +96,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 19/September/12
 'Last updated: 16/December/15
 'Last update: overhaul from the ground up so we can support local histogram operations, multiple luminance types,

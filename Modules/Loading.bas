@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'General-purpose image and data import interface
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 09/December/22
 'Last update: ensure EMF/WMF images that are "quick-loaded" do not display a size prompt UI

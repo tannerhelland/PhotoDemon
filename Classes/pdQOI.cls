@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Quite OK Image" (QOI) Decoder/Encoder
-'Copyright 2022-2022 by Tanner Helland
+'Copyright 2022-2023 by Tanner Helland
 'Created: 24/February/22
 'Last updated: 25/February/22
 'Last update: wrap up initial build

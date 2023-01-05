@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 22/April/15
 'Last updated: 13/September/22
 'Last update: add new support for rendering the text outline *beneath* the text fill (see #428 on GitHub)

@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer List control
-'Copyright 2016-2022 by Tanner Helland
+'Copyright 2016-2023 by Tanner Helland
 'Created: 18/September/15
 'Last updated: 16/August/20
 'Last update: set scroll bar SmallChange property based on 1/2 height of items in the layer list box;

@@ -133,7 +133,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright 2000-2022 by Tanner Helland
+'Copyright 2000-2023 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 09/September/21
 'Last update: subtle improvements to rounding when converting from float-to-int

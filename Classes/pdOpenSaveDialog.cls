@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PD System Open/Save Dialog Interface
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 05/August/15
 'Last updated: 29/May/22
 'Last update: add convenience helper for multi-select, returning the results as a pdStringStack object

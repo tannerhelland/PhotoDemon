@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Create macro from session history tool
-'Copyright 2018-2022 by Tanner Helland
+'Copyright 2018-2023 by Tanner Helland
 'Created: 18/June/18
 'Last updated: 21/June/18
 'Last update: wrap up initial build

@@ -276,7 +276,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 02/November/22
 'Last update: new custom foreshortening support (see https://github.com/tannerhelland/PhotoDemon/issues/454)

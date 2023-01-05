@@ -112,7 +112,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color panel settings dialog
-'Copyright 2018-2022 by Tanner Helland
+'Copyright 2018-2023 by Tanner Helland
 'Created: 13/February/18
 'Last updated: 13/February/18
 'Last update: initial build

@@ -153,7 +153,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 22/August/13
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params

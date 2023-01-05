@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Box Blur Tool
-'Copyright 2000-2022 by Tanner Helland
+'Copyright 2000-2023 by Tanner Helland
 'Created: some time 2000
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params

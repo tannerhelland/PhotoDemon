@@ -91,7 +91,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Relief Artistic Effect Dialog
-'Copyright 2003-2022 by Tanner Helland
+'Copyright 2003-2023 by Tanner Helland
 'Created: sometime 2003
 'Last updated: 21/February/21
 'Last update: large performance improvements

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fast unique color counting class
-'Copyright 2019-2022 by Tanner Helland
+'Copyright 2019-2023 by Tanner Helland
 'Created: 26/March/19
 'Last updated: 01/April/19
 'Last update: optimize memory usage by treating alpha = 255 as a special case; this avoids allocating

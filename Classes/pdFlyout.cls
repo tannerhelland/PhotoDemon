@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flyout Panel controller
-'Copyright 2021-2022 by Tanner Helland
+'Copyright 2021-2023 by Tanner Helland
 'Created: 01/November/21
 'Last updated: 05/December/21
 'Last update: new support function to retrieve the flyout screen rectangle; selection tools use

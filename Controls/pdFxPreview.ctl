@@ -59,7 +59,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Effect Preview custom control
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 13/October/20
 'Last update: rework resize code to allow for efficient run-time resizing of previews

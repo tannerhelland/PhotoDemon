@@ -1,14 +1,14 @@
 Attribute VB_Name = "Hotkeys"
 '***************************************************************************
 'PhotoDemon Custom Hotkey handler
-'Copyright 2015-2022 by Tanner Helland and contributors
+'Copyright 2015-2023 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
 'Last updated: 04/October/21
 'Last update: create this new module to host actual hotkey management; the old pdAccelerator control
 '             on FormMain is still used to for actual key-hooking and raising hotkey events, but it
 '             is no longer responsible for *any* element of actual hotkey storage and management.
 '
-'In 2022 (hopefully), PhotoDemon *finally* (dramatic breath) provides a way for users to specify custom hotkeys.
+'In 2023 (hopefully), PhotoDemon *finally* (dramatic breath) provides a way for users to specify custom hotkeys.
 ' This module is responsible for managing those custom-hotkey assignments, and it also manages default
 ' hotkey behavior (which is what 99.9% of users will presumably be using).
 '

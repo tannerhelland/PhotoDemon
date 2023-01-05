@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
-'Copyright 2019-2022 by Tanner Helland
+'Copyright 2019-2023 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 09/April/22
 'Last update: fix off-by-one problem in masks that extend to the right/bottom corner of a layer

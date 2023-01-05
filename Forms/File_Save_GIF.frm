@@ -182,7 +182,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'GIF export dialog
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 20/October/21
 'Last update: remove all FreeImage dependencies; everything here is 100% homebrew, baby!

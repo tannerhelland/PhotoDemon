@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
-'Copyright 2012-2022 by Frank Donckers and Tanner Helland
+'Copyright 2012-2023 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
 'Last updated: 22/March/22
 'Last update: start integrating fast hash table for translation retrieval

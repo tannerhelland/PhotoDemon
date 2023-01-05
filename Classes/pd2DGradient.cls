@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Manager
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 14/January/21
 'Last update: allow the user to set a custom center point for radial gradients (necessary for rendering
@@ -1426,16 +1426,16 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                 centerX = dstRect.Left + halfWidth
                 centerY = dstRect.Top + halfHeight
                 
-                Dim squareRect As RectF, maxSize As Double, radiusRect As Double, radiusSquare As Double
-                If (dstRect.Width > dstRect.Height) Then maxSize = halfWidth Else maxSize = halfHeight
+                Dim squareRect As RectF, MaxSize As Double, radiusRect As Double, radiusSquare As Double
+                If (dstRect.Width > dstRect.Height) Then MaxSize = halfWidth Else MaxSize = halfHeight
                 radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
-                radiusSquare = Sqr(maxSize * maxSize + maxSize * maxSize) + 0.5
+                radiusSquare = Sqr(MaxSize * MaxSize + MaxSize * MaxSize) + 0.5
                                 
                 With squareRect
-                    .Left = centerX - maxSize
-                    .Top = centerY - maxSize
-                    .Width = maxSize * 2
-                    .Height = maxSize * 2
+                    .Left = centerX - MaxSize
+                    .Top = centerY - MaxSize
+                    .Width = MaxSize * 2
+                    .Height = MaxSize * 2
                 End With
                 
                 'Construct a reference path, using the 1) target rect, and 2) gradient shape to determine path behavior

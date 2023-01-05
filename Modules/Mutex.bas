@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mutex"
 '***************************************************************************
 'Simplified pdMutex wrapper
-'Copyright 2020-2022 by Tanner Helland
+'Copyright 2020-2023 by Tanner Helland
 'Created: 14/September/20
 'Last updated: 14/September/20
 'Last update: initial build

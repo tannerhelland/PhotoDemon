@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Comprehensive User Control Support class
-'Copyright 2015-2022 by Tanner Helland
+'Copyright 2015-2023 by Tanner Helland
 'Created: 25/October/15  (but built from many parts existing earlier)
 'Last updated: 24/November/20
 'Last update: improve aggressiveness of freeing resources when able

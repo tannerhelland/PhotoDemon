@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
-'Copyright 2018-2022 by Tanner Helland
+'Copyright 2018-2023 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 19/August/19
 'Last update: add full support for importing animated PNGs

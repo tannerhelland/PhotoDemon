@@ -205,7 +205,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon About Dialog
-'Copyright 2001-2022 by Tanner Helland
+'Copyright 2001-2023 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 14/June/17
 'Last update: update contributor list

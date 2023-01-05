@@ -178,7 +178,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 02/August/17
 'Last update: revert changes from an outside contributor that may have carried licensing issues

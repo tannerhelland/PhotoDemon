@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Render"
 '***************************************************************************
 'Render Filter Collection
-'Copyright 2017-2022 by Tanner Helland
+'Copyright 2017-2023 by Tanner Helland
 'Created: 14/October/17
 'Last updated: 15/August/21
 'Last update: wrap up work on Truchet tile rendering

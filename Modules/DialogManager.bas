@@ -1,7 +1,7 @@
 Attribute VB_Name = "Dialogs"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 08/November/22
 'Last update: small wrapper for JPEG XL export

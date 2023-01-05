@@ -49,7 +49,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Random Number UI control
-'Copyright 2018-2022 by Tanner Helland
+'Copyright 2018-2023 by Tanner Helland
 'Created: 02/April/18
 'Last updated: 16/August/21
 'Last update: improve UI behavior at smaller widths; new "MaxLength" property (see comments for details)

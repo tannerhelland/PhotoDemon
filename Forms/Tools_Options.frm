@@ -968,7 +968,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright 2002-2022 by Tanner Helland
+'Copyright 2002-2023 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 30/September/20
 'Last update: new options for default folder during Save As

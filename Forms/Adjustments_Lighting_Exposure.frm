@@ -114,7 +114,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright 2013-2022 by Tanner Helland
+'Copyright 2013-2023 by Tanner Helland
 'Created: 13/July/13
 'Last updated: 28/April/20
 'Last update: overhaul live chart display to use pd2D; minor perf improvements

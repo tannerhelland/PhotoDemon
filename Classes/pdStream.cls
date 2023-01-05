@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Stream-like I/O Interface
-'Copyright 2016-2022 by Tanner Helland
+'Copyright 2016-2023 by Tanner Helland
 'Created: 05/December/16
 'Last updated: 15/October/21
 'Last update: improve perf when writing unsigned ints

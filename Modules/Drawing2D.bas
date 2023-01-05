@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing2D"
 '***************************************************************************
 'High-Performance 2D Rendering Interface
-'Copyright 2012-2022 by Tanner Helland
+'Copyright 2012-2023 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 26/February/20
 'Last update: new helper functions for safer XML serialization of enums

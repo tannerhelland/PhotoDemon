@@ -131,7 +131,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Cross-Screen (Star) Tool
-'Copyright 2014-2022 by Tanner Helland
+'Copyright 2014-2023 by Tanner Helland
 'Created: 20/January/15
 'Last updated: 30/July/17
 'Last update: performance improvements, migrate to XML params
