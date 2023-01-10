@@ -130,7 +130,7 @@ Private m_SuspendFormat As PD_CompressionFormat
 'Get/set alpha premultiplication.
 ' IMPORTANT NOTE!  To make it explicitly clear that modifying this property DOES NOT ACTUALLY MODIFY THE IMAGE, the Set instruction is
 ' labeled differently.  It is only meant to be used by DIB creation functions, where the premultiplication state is explicitly known prior
-' to writing DIB bits.  The counterpart setAlphaPremultiplication function (which is found further down in this file) will actually
+' to writing DIB bits.  The counterpart SetAlphaPremultiplication function (which is found further down in this file) will actually
 ' modify image bits as necessary to create the desired premultiplication state.
 Friend Function GetAlphaPremultiplication() As Boolean
     GetAlphaPremultiplication = m_IsAlphaPremultiplied
@@ -1831,10 +1831,8 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
     
 End Sub
 
-'DIBs created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
-' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
-'
-'Optionally, you can also supply a pointer to a valid RectF struct; if present, only this region will be updated.
+'This routine can be used to either apply or remove premultiplied alpha values.
+' Optionally, you can also supply a pointer to a valid RectF struct; if present, only this region will be updated.
 Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False, Optional ByVal ptrToRectF As Long = 0)
 
     'This function doesn't matter if the image isn't 32bpp
