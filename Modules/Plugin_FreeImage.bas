@@ -1441,16 +1441,18 @@ Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long
     
 End Function
 
-'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
-' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
-' (This silent behavior can also be enforced by setting the noUIMode parameter to TRUE.)
+'Prior to applying tone-mapping settings, query the user for their preferred behavior.
+' If the user doesn't want this dialog raised, this function will silently retrieve the last-used settings
+' from the preference file, and proceed with tone-mapping automatically.
+' (The silent behavior can also be enforced by setting the noUIMode parameter to TRUE.)
 '
 'Returns: fills dst_fiHandle with a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
-'         The function itself will return a PD_OPERATION_OUTCOME value; this is important for determining if the user canceled the dialog.
+'         The function itself will return a PD_OPERATION_OUTCOME value; this is important for determining if the
+'         user canceled the dialog.
 '
-'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate on anything larger than 32bpp,
-' so if tone-mapping fails, we must abandon loading completely.  (A failure state can also be triggered by the user canceling the
-' tone-mapping dialog.)
+'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate
+' internally on anything larger than 32bpp, so if tone-mapping fails, we must abandon loading.
+' (A failure state can also be triggered by the user canceling the tone-mapping dialog.)
 Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle As Long, Optional ByVal noUIMode As Boolean = False) As PD_OPERATION_OUTCOME
 
     'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
@@ -1467,8 +1469,8 @@ Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle 
     'Check for a cancellation state; if encountered, abandon ship now.
     If (howToProceed = vbOK) Then
         
-        'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
-        ' central tone-mapping handler and use its success/fail state for this function as well.
+        'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.
+        ' Forward it to the central tone-mapping handler and use its success/fail state for this function as well.
         FI_DebugMsg "Tone-map dialog appears to have been successful; result = " & howToProceed
         If (Not noUIMode) Then Message "Applying tone-mapping..."
         dst_fiHandle = ApplyToneMapping(fi_Handle, ToneMapSettings)

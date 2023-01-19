@@ -3925,38 +3925,48 @@ Private Sub MnuTest_Click()
     VBHacks.GetHighResTime startTime
     lastTime = startTime
     
-    'Test code goes here
-    PDDebug.LogAction "Convert to HDR..."
-    Dim tmpSurface As pdSurfaceF
-    Set tmpSurface = New pdSurfaceF
-    PDDebug.LogAction tmpSurface.CreateFromPDDib(PDImages.GetActiveImage.GetActiveDIB)
-    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
-    VBHacks.GetHighResTime lastTime
-    
-    PDDebug.LogAction "Un-premultiply alpha..."
-    PDDebug.LogAction tmpSurface.SetAlphaPremultiplication(False, True)
-    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
-    VBHacks.GetHighResTime lastTime
-    
-    PDDebug.LogAction "Re-premultiply alpha..."
-    PDDebug.LogAction tmpSurface.SetAlphaPremultiplication(True, False)
-    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
-    VBHacks.GetHighResTime lastTime
-    
-    PDDebug.LogAction "Convert back to SDR..."
-    Dim tmpDIB As pdDIB
-    PDDebug.LogAction tmpSurface.ConvertToPDDib(tmpDIB)
-    PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.CreateFromExistingDIB tmpDIB
-    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
-    VBHacks.GetHighResTime lastTime
-    
-    PDDebug.LogAction "Done."
-    Set tmpSurface = Nothing
-    
-    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB,
-    ' then uncomment these two lines:
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
+'    'Test code goes here
+'    PDDebug.LogAction "Convert to HDR..."
+'    Dim tmpSurface As pdSurfaceF
+'    Set tmpSurface = New pdSurfaceF
+'    PDDebug.LogAction tmpSurface.CreateFromPDDib(PDImages.GetActiveImage.GetActiveDIB)
+'    PDDebug.LogAction "Alpha status: " & tmpSurface.GetAlphaPremultiplication
+'    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
+'    VBHacks.GetHighResTime lastTime
+'
+'    PDDebug.LogAction "Downsample..."
+'    Dim rsSurface As pdSurfaceF
+'    Set rsSurface = New pdSurfaceF
+'    tmpSurface.SetAlphaPremultiplication False
+'    PDDebug.LogAction Resampling.ResampleImageF(rsSurface, tmpSurface, tmpSurface.GetWidth / 10, tmpSurface.GetHeight / 10, rf_Box, True)
+'    PDDebug.LogAction "Alpha status: " & tmpSurface.GetAlphaPremultiplication
+'    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
+'    VBHacks.GetHighResTime lastTime
+'
+'    PDDebug.LogAction "Upsample..."
+'    tmpSurface.Reset
+'    PDDebug.LogAction Resampling.ResampleImageF(tmpSurface, rsSurface, tmpSurface.GetWidth, tmpSurface.GetHeight, rf_Lanczos, True)
+'    tmpSurface.SetAlphaPremultiplication True
+'    ProgressBars.ReleaseProgressBar
+'    PDDebug.LogAction "Alpha status: " & tmpSurface.GetAlphaPremultiplication
+'    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
+'    VBHacks.GetHighResTime lastTime
+'
+'    PDDebug.LogAction "Convert back to SDR..."
+'    Dim tmpDIB As pdDIB
+'    PDDebug.LogAction tmpSurface.ConvertToPDDib(tmpDIB)
+'    PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.CreateFromExistingDIB tmpDIB
+'    PDDebug.LogAction "Alpha status: " & PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.GetAlphaPremultiplication
+'    PDDebug.LogAction VBHacks.GetTimeDiffNowAsString(lastTime)
+'    VBHacks.GetHighResTime lastTime
+'
+'    PDDebug.LogAction "Done."
+'    Set tmpSurface = Nothing
+'
+'    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB,
+'    ' then uncomment these two lines:
+'    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+'    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest

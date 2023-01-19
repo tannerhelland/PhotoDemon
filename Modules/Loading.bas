@@ -608,7 +608,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'TMP files are internal PD temp files generated from a wide variety of use-cases (Clipboard is one example).  These are
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
-            If ImageFormats.IsFreeImageEnabled() Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
+            If ImageFormats.IsFreeImageEnabled() Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, 0, False, Nothing, suppressDebugData) = PD_SUCCESS)
             If (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
@@ -747,7 +747,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 
                 Dim freeImageReturn As PD_OPERATION_OUTCOME
                 freeImageReturn = PD_FAILURE_GENERIC
-                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, , suppressDebugData)
+                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, Nothing, suppressDebugData)
                 loadSuccessful = (freeImageReturn = PD_SUCCESS)
                 
                 'If FreeImage failed and we haven't tried GDI+ yet, try it now

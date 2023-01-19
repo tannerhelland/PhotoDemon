@@ -386,7 +386,7 @@ Public Sub ShowDialog()
     ' (Also, we should check the case of the FreeImage handle being 0, as that will cause uncatchable crashes.)
     Dim newWidth As Long, newHeight As Long
     If (src_FIHandle <> 0) Then
-        ConvertAspectRatio FreeImage_GetWidth(src_FIHandle), FreeImage_GetHeight(src_FIHandle), picPreview.GetWidth * 2, picPreview.GetHeight * 2, newWidth, newHeight
+        PDMath.ConvertAspectRatio FreeImage_GetWidth(src_FIHandle), FreeImage_GetHeight(src_FIHandle), picPreview.GetWidth * 2, picPreview.GetHeight * 2, newWidth, newHeight
         If (FreeImage_GetWidth(src_FIHandle) < newWidth) Or (FreeImage_GetHeight(src_FIHandle) < newHeight) Then
             newWidth = FreeImage_GetWidth(src_FIHandle)
             newHeight = FreeImage_GetHeight(src_FIHandle)

@@ -47,6 +47,25 @@ Private m_Pixels() As Single
 'I will likely rework this in the future, but for now, let's declare a single class-level type for temporary usage.
 Private m_tmpData() As Byte
 
+'Ensure color and alpha values are locked to the [0, 1] range.
+Friend Sub ClampGamut()
+    
+    'Basic validation
+    If (m_Width = 0) Or (m_Height = 0) Or (m_NumChannels = 0) Then Exit Sub
+    
+    Dim x As Long, y As Long, xMax As Long, yMax As Long
+    xMax = m_Stride - 1 'Note the use of stride, not width
+    yMax = m_Height - 1
+    
+    For y = 0 To yMax
+    For x = 0 To xMax
+        If (m_Pixels(x, y) < 0!) Then m_Pixels(x, y) = 0!
+        If (m_Pixels(x, y) > 1!) Then m_Pixels(x, y) = 1!
+    Next x
+    Next y
+    
+End Sub
+
 'Quickly convert this surface to a 24/32-bit destination pdDIB.  Linear gamma (1.0) is assumed; I'll likely expand
 ' gamma handling in the future, as relevant.
 Friend Function ConvertToPDDib(ByRef dstDIB As pdDIB) As Boolean
@@ -114,7 +133,7 @@ Friend Function ConvertToPDDib(ByRef dstDIB As pdDIB) As Boolean
 'The only expected error in this function would be an out-of-memory error; nothing we can do if that occurs
 CouldNotConvertSurface:
     
-    Me.Reset
+    Me.EraseSurface
     ConvertToPDDib = False
     
 End Function
@@ -181,7 +200,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
 'The only expected error in this function would be an out-of-memory error; nothing we can do if that occurs
 CouldNotCreateSurface:
     
-    Me.Reset
+    Me.EraseSurface
     CreateBlank = False
     
 End Function
@@ -200,7 +219,7 @@ Friend Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
     'Initialize a new float surface of matching size and depth
     CreateFromPDDib = Me.CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth \ 8)
     If (Not CreateFromPDDib) Then
-        Me.Reset
+        Me.EraseSurface
         Exit Function
     End If
     
@@ -245,7 +264,7 @@ Friend Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
 'The only expected error in this function would be an out-of-memory error; nothing we can do if that occurs
 CouldNotCreateSurface:
     
-    Me.Reset
+    Me.EraseSurface
     CreateFromPDDib = False
     
 End Function
@@ -275,6 +294,15 @@ Friend Function CreateFromPtr(ByVal imgWidth As Long, ByVal imgHeight As Long, B
     m_IsAlphaPremultiplied = isAlphaPremultiplied
     
 End Function
+
+Friend Sub EraseSurface()
+    Erase m_Pixels
+    Erase m_tmpData
+    m_Width = 0
+    m_Height = 0
+    m_Stride = 0
+    m_NumChannels = 0
+End Sub
 
 'Get/set alpha premultiplication.
 ' IMPORTANT NOTE!  To make it explicitly clear that modifying this property DOES NOT ACTUALLY MODIFY PIXEL DATA,
@@ -315,12 +343,7 @@ Friend Function GetWidth() As Long
 End Function
 
 Friend Sub Reset()
-    Erase m_Pixels
-    Erase m_tmpData
-    m_Width = 0
-    m_Height = 0
-    m_Stride = 0
-    m_NumChannels = 0
+    If (Me.GetPixelPtr <> 0) Then VBHacks.ZeroMemory Me.GetPixelPtr, m_Stride * m_Height * 4
 End Sub
 
 'This routine can be used to either apply or remove premultiplied alpha values.
@@ -384,3 +407,56 @@ Friend Function SetAlphaPremultiplication(Optional ByVal applyPremultiplication 
     End If
     
 End Function
+
+'Convenience functions for wrapping an array around this DIB's bits.
+' You *must* call the Unwrap function prior to the array falling out of scope, or VB will crash.
+Friend Sub WrapArrayAroundSurface(ByRef srcArray() As Single, ByRef srcSafeArray As SafeArray2D)
+    PrepInternalSafeArray srcSafeArray
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
+End Sub
+
+Friend Sub WrapArrayAroundSurface_1D(ByRef srcArray() As Single, ByRef srcSafeArray As SafeArray1D)
+    PrepInternalSafeArray_Scanline srcSafeArray, 0
+    srcSafeArray.cElements = m_Stride * m_Height
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
+End Sub
+
+Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Single, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
+    PrepInternalSafeArray_Scanline srcSafeArray, dstScanLine
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
+End Sub
+
+Friend Sub UnwrapArrayFromSurface(ByRef srcArray() As Single)
+    PutMem4 VarPtrArray(srcArray), 0&
+End Sub
+
+'These functions allow for unsafe direct access to the underlying pixel data.
+' Note that this function *will* produce crashes if the underlying surface is *not* initialized,
+' but we do not check that case here for performance reasons.  (The caller must validate this manually.)
+Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SafeArray2D)
+    
+    With dstSafeArray
+        .cbElements = 4
+        .cDims = 2
+        .cLocks = 1
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = m_Stride
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = m_Height
+        .pvData = VarPtr(m_Pixels(0, 0))
+    End With
+    
+End Sub
+
+Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, ByVal dstLine As Long)
+    
+    With dstSafeArray
+        .cbElements = 4
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = m_Stride
+        .pvData = VarPtr(m_Pixels(0, 0)) + (dstLine * m_Stride * 4)
+    End With
+    
+End Sub
