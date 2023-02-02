@@ -125,7 +125,6 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
@@ -136,7 +135,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = mRadius * curDIBValues.previewModifier
-        If mRadius < 1 Then mRadius = 1
+        If (mRadius < 1) Then mRadius = 1
     End If
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -170,12 +169,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     numOfPixels = 0
     
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
-    Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
-    ReDim rValues(0 To 255) As Long
-    ReDim gValues(0 To 255) As Long
-    ReDim bValues(0 To 255) As Long
-    ReDim aValues(0 To 255) As Long
-    
+    Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long, aValues(0 To 255) As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim lColor As Long, hColor As Long, cCount As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
@@ -200,8 +194,9 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Set cPixelIterator = New pdPixelIterator
     
     If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, kernelShape) Then
-    
+        
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
+        workingDIB.WrapArrayAroundDIB dstImageData, dstSA
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step 4
@@ -302,7 +297,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        PutMem4 VarPtrArray(dstImageData), 0&
+        workingDIB.UnwrapArrayFromDIB dstImageData
         
         'Erase our temporary DIB
         srcDIB.EraseDIB

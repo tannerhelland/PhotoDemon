@@ -442,7 +442,7 @@ Public Sub PadByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVa
     
     ReDim dstArray(0 To newWidth - 1, 0 To newHeight - 1) As Byte
     
-    'Start with vertical stripes, as we can use CopyMemory to move the existing bytes into place
+    'Start with vertical stripes, as we can use memcpy to move the existing bytes into place
     ' (and pad the vertical stripes while we're at it).
     Dim yBound As Long
     yBound = arrayHeight - 1

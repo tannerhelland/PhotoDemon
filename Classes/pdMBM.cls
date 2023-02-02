@@ -571,7 +571,7 @@ StartOfFrame:
                             ' directly into the target buffer.
                             srcLong = 256 - srcLong
                             
-                            'All pixel widths can be handled identically, since it's just a CopyMemory size
+                            'All pixel widths can be handled identically, since it's just a memcpy size
                             ' that needs to be modified.
                             If (curOffset + srcLong * copyPxSize > numSafeBytes) Then
                                 InternalError "LoadMBM_FromFile", "bad RLE chunk: " & CStr(curOffset + srcLong * copyPxSize) & " vs " & CStr(numSafeBytes) & ", " & CStr(trailerOffset - m_Stream.GetPosition()) & " bytes remaining in stream"

@@ -141,8 +141,7 @@ Private m_GlyphZeroWidthCache() As Boolean
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
 'Because VB doesn't allow a class to expose public UDTs (without a typelib, anyway), all custom structs use get/set functions.
-' CopyMemory is used for a performance boost, but note that this doesn't work for variable-sized structs.
-' (Those must be handled specially.)
+' memcpy is used for a performance boost, but note that this doesn't work for variable-sized structs.
 Friend Sub GetScriptItem(ByRef dstScriptItem As SCRIPT_ITEM)
     CopyMemoryStrict VarPtr(dstScriptItem), VarPtr(m_ScriptItem), Len(m_ScriptItem)
 End Sub

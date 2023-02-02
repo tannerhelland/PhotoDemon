@@ -93,11 +93,8 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     weight = cParams.GetDouble("intensity", 2#)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -110,6 +107,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and grayscale variables
@@ -123,14 +121,15 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX
+        
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        xStride = x * 4
+        b = imageData(xStride)
+        g = imageData(xStride + 1)
+        r = imageData(xStride + 2)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -145,18 +144,18 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
         If (b > 255) Then b = 255
         
         'Assign that gray value to each color channel.  (Yes, channel order is reversed - that's deliberate!)
-        imageData(xStride, y) = r
-        imageData(xStride + 1, y) = g
-        imageData(xStride + 2, y) = b
+        imageData(xStride) = r
+        imageData(xStride + 1) = g
+        imageData(xStride + 2) = b
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

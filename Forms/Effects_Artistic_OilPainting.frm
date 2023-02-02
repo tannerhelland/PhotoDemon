@@ -118,7 +118,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Dim dstImageData() As Byte
     Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
@@ -129,8 +129,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'Create a second local array.  This will contain the a copy of the current image,
     ' and we will use it as our source reference.
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -456,8 +455,8 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Next x
         
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     Set srcDIB = Nothing
     

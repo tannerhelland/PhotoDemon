@@ -91,10 +91,9 @@ Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview 
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
@@ -103,9 +102,7 @@ Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview 
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
-    
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -175,8 +172,8 @@ Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview 
     Next x
     
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    workingDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic, True

@@ -259,7 +259,7 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
         m_OutlineBoundsY = yBound
     
     'Normally, we would wipe the outline array prior to working with it, but because we're just gonna
-    ' fill the bytes with a manual CopyMemory loop, we can safely ignore a prior fill command.
+    ' fill the bytes with a manual memcpy loop, we can safely ignore a prior fill command.
     ' (The outer borders will always be left blank, by design.)
     'Else
         'FillMemory VarPtr(m_OutlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0

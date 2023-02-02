@@ -369,7 +369,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                     '    Dim tmpString As String
                     '    Dim tmpTag As pdOpenTypeTag
                     '    For i = 0 To numTagsReceived - 1
-                    '        CopyMemory tmpTag, m_ScriptTags(i), 4
+                    '        CopyMemoryStrict VarPtr(tmpTag), VarPtr(m_ScriptTags(i)), 4
                     '        With tmpTag
                     '            tmpString = ChrW$(.byte1) & ChrW$(.byte2) & ChrW$(.byte3) & ChrW$(.byte4)
                     '        End With

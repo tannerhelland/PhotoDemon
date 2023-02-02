@@ -108,10 +108,9 @@ Option Explicit
 Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Create a local array and point it at the destination pixel data
-    Dim dstImageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim dstImageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB dstImageData, tmpSA
     
     'Parse out the parameter list
     Dim cParams As pdSerialize
@@ -127,9 +126,9 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         If (snnRadius < 1) Then snnRadius = 1
     End If
     
-    Dim snnStrength As Double
-    snnStrength = cParams.GetDouble("strength", 100#)
-    snnStrength = snnStrength / 100#
+    Dim snnStrength As Single
+    snnStrength = cParams.GetSingle("strength", 100!)
+    snnStrength = snnStrength / 100!
     
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
@@ -138,8 +137,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     srcDIB.CreateFromExistingDIB workingDIB
     
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     'At present, we ignore edge pixels to simplify the filter's implementation; this may be dealt with in the future.
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -173,10 +171,44 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Dim numOfPixels As Long
     Dim pxDivisor As Double
     
+    'Precalculate all x-offsets so we don't have to calculate them in the inner loop
+    Dim xOffsetsPrecalc() As PointLong
+    ReDim xOffsetsPrecalc(initX To finalX) As PointLong
+    
+    For x = initX To finalX
+        
+        xInnerStart = x - snnRadius
+        xInnerFinal = x + snnRadius
+        
+        If (xInnerStart < 0) Then
+            xInnerFinal = xInnerFinal + xInnerStart
+            xInnerStart = 0
+        ElseIf (xInnerFinal > finalX) Then
+            xInnerStart = xInnerStart + (xInnerFinal - finalX)
+            xInnerFinal = finalX
+        End If
+        
+        xOffsetsPrecalc(x).x = xInnerStart
+        xOffsetsPrecalc(x).y = xInnerFinal
+        
+    Next x
+    
     If (Not toPreview) Then Message "Generating symmetric pixel pairs..."
         
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
+        
+        'Calculate inner loop bounds
+        yInnerStart = y - snnRadius
+        yInnerFinal = y + snnRadius
+        If (yInnerStart < 0) Then
+            yInnerFinal = yInnerFinal + yInnerStart
+            yInnerStart = 0
+        ElseIf (yInnerFinal > finalY) Then
+            yInnerStart = yInnerStart + (yInnerFinal - finalY)
+            yInnerFinal = finalY
+        End If
+        
     For x = initX To finalX
         
         xOffset = x * 4
@@ -194,26 +226,9 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         aSum = 0
         numOfPixels = 0
         
-        'Calculate inner loop bounds
-        xInnerStart = x - snnRadius
-        xInnerFinal = x + snnRadius
-        If (xInnerStart < 0) Then
-            xInnerFinal = xInnerFinal + xInnerStart
-            xInnerStart = 0
-        ElseIf (xInnerFinal > finalX) Then
-            xInnerStart = xInnerStart + (xInnerFinal - finalX)
-            xInnerFinal = finalX
-        End If
-        
-        yInnerStart = y - snnRadius
-        yInnerFinal = y + snnRadius
-        If (yInnerStart < 0) Then
-            yInnerFinal = yInnerFinal + yInnerStart
-            yInnerStart = 0
-        ElseIf (yInnerFinal > finalY) Then
-            yInnerStart = yInnerStart + (yInnerFinal - finalY)
-            yInnerFinal = finalY
-        End If
+        'Pull inner loop bounds from our precalculated table
+        xInnerStart = xOffsetsPrecalc(x).x
+        xInnerFinal = xOffsetsPrecalc(x).y
         
         'SNN can technically be computed in a few different ways; for example, pixels can be analyzed as pairs
         ' (that sit 180 degrees apart), or they can be analyzed as quads (90 degrees part).  For now,
@@ -258,21 +273,20 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         'With the x-axis on the same line as the source pixel handled successfully, we can now move to a general-purpose
         ' inner loop that compares symmetrical pixels in both the X and Y direction.
         For yInner = yInnerStart To yInnerFinal
+            yInnerSym = y - (yInner - y)
         For xInner = xInnerStart To xInnerFinal
         
             'Calculate symmetry positions
             xInnerSym = x - (xInner - x)
-            yInnerSym = y - (yInner - y)
-            
-            xOffsetInner1 = xInner * 4
-            xOffsetInner2 = xInnerSym * 4
             
             'Grab RGBA values
+            xOffsetInner1 = xInner * 4
             bSrc1 = srcImageData(xOffsetInner1, yInner)
             gSrc1 = srcImageData(xOffsetInner1 + 1, yInner)
             rSrc1 = srcImageData(xOffsetInner1 + 2, yInner)
             aSrc1 = srcImageData(xOffsetInner1 + 3, yInner)
             
+            xOffsetInner2 = xInnerSym * 4
             bSrc2 = srcImageData(xOffsetInner2, yInnerSym)
             gSrc2 = srcImageData(xOffsetInner2 + 1, yInnerSym)
             rSrc2 = srcImageData(xOffsetInner2 + 2, yInnerSym)
@@ -308,7 +322,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         aNew = aSum * pxDivisor
         
         'Blend pixels accordingly
-        If (snnStrength < 1#) Then
+        If (snnStrength < 1!) Then
             rNew = BlendLongs(rDst, rNew, snnStrength)
             gNew = BlendLongs(gDst, gNew, snnStrength)
             bNew = BlendLongs(bDst, bNew, snnStrength)
@@ -331,9 +345,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Next y
     
     'With our work complete, point all arrays away from their respective DIBs and deallocate any temp copies
-    PutMem4 VarPtrArray(dstImageData), 0&
-    PutMem4 VarPtrArray(srcImageData), 0&
-    
+    workingDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
     srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
@@ -342,8 +355,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
 End Sub
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Private Function BlendLongs(ByVal baseColor As Long, ByVal newColor As Long, ByRef mixRatio As Double) As Long
-    BlendLongs = ((1# - mixRatio) * CDbl(baseColor)) + (mixRatio * CDbl(newColor))
+Private Function BlendLongs(ByVal baseColor As Long, ByVal newColor As Long, ByVal mixRatio As Single) As Long
+    BlendLongs = Int((1! - mixRatio) * baseColor + (mixRatio * newColor) + 0.5!)
 End Function
 
 Private Sub cmdBar_OKClick()

@@ -1682,24 +1682,21 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     If (bDist <> 0#) Then bDist = 1# / bDist Else bDist = 0#
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
-    Dim srcImageData() As Single
-    Dim srcSA As SafeArray1D
+    Dim srcImageData() As Single, srcSA As SafeArray1D
     
     'Create a 24bpp or 32bpp DIB at the same size as the image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    If fi_DataType = FIT_RGBF Then
+    If (fi_DataType = FIT_RGBF) Then
         tmpDIB.CreateBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
     Else
         tmpDIB.CreateBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 32
     End If
     
     'Point a byte array at the temporary DIB
-    Dim dstImageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, tmpDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    Dim dstImageData() As Byte, tmpSA As SafeArray2D
+    tmpDIB.WrapArrayAroundDIB dstImageData, tmpSA
         
     'Iterate through each scanline in the source image, copying it to destination as we go.
     Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
@@ -1727,22 +1724,13 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Dim x As Long, y As Long, xStride As Long
     
     'Point a 1D VB array at the first scanline
-    With srcSA
-        .cbElements = 4
-        .cDims = 1
-        .lBound = 0
-        .cElements = iScanWidth
-        .pvData = FreeImage_GetScanline(fi_Handle, 0)
-    End With
-    CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
-        
     For y = 0 To iHeight
     
         'FreeImage DIBs are stored bottom-up; we invert them during processing
         iHeightInv = iHeight - y
         
         'Update the current scanline pointer
-        srcSA.pvData = FreeImage_GetScanline(fi_Handle, y)
+        VBHacks.WrapArrayAroundPtr_Float srcImageData, srcSA, FreeImage_GetScanline(fi_Handle, y), iScanWidth * 4
         
         'Iterate through this line, converting values as we go
         For x = 0 To iWidth
@@ -1831,10 +1819,10 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Next y
     
     'Free our 1D array reference
-    PutMem4 VarPtrArray(srcImageData), 0&
-        
+    VBHacks.UnwrapArrayFromPtr_Float srcImageData
+    
     'Point dstImageData() away from the DIB and deallocate it
-    PutMem4 VarPtrArray(dstImageData), 0&
+    tmpDIB.UnwrapArrayFromDIB dstImageData
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
@@ -1877,17 +1865,15 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    If fi_DataType = FIT_RGBF Then
+    If (fi_DataType = FIT_RGBF) Then
         tmpDIB.CreateBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
     Else
         tmpDIB.CreateBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 32
     End If
     
     'Point a byte array at the temporary DIB
-    Dim dstImageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, tmpDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    Dim dstImageData() As Byte, tmpSA As SafeArray2D
+    tmpDIB.WrapArrayAroundDIB dstImageData, tmpSA
         
     'Iterate through each scanline in the source image, copying it to destination as we go.
     Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
@@ -1931,23 +1917,13 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     Dim x As Long, y As Long, xStride As Long
     
-    'Point a 1D VB array at the first scanline
-    With srcSA
-        .cbElements = 4
-        .cDims = 1
-        .lBound = 0
-        .cElements = iScanWidth
-        .pvData = FreeImage_GetScanline(fi_Handle, 0)
-    End With
-    CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
-    
     For y = 0 To iHeight
     
         'FreeImage DIBs are stored bottom-up; we invert them during processing
         iHeightInv = iHeight - y
     
         'Update our scanline pointer
-        srcSA.pvData = FreeImage_GetScanline(fi_Handle, y)
+        VBHacks.WrapArrayAroundPtr_Float srcImageData, srcSA, FreeImage_GetScanline(fi_Handle, y), iScanWidth * 4
         
         'Iterate through this line, converting values as we go
         For x = 0 To iWidth
@@ -1966,33 +1942,33 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
                                     
             'Apply gamma now (if any).  Unfortunately, lookup tables aren't an option because we're dealing with floating-point input,
             ' so this step is a little slow due to the exponent operator.
-            If (newGamma <> 1#) Then
-                If (rDstF > 0#) Then rDstF = rDstF ^ gammaCorrection
-                If (gDstF > 0#) Then gDstF = gDstF ^ gammaCorrection
-                If (bDstF > 0#) Then bDstF = bDstF ^ gammaCorrection
+            If (newGamma <> 1!) Then
+                If (rDstF > 0!) Then rDstF = rDstF ^ gammaCorrection
+                If (gDstF > 0!) Then gDstF = gDstF ^ gammaCorrection
+                If (bDstF > 0!) Then bDstF = bDstF ^ gammaCorrection
             End If
             
             'Apply failsafe range checks
-            If (rDstF < 0#) Then rDstF = 0#
-            If (rDstF > 1#) Then rDstF = 1#
+            If (rDstF < 0!) Then rDstF = 0!
+            If (rDstF > 1!) Then rDstF = 1!
                 
-            If (gDstF < 0#) Then gDstF = 0#
-            If (gDstF > 1#) Then gDstF = 1#
+            If (gDstF < 0!) Then gDstF = 0!
+            If (gDstF > 1!) Then gDstF = 1!
                 
-            If (bDstF < 0#) Then bDstF = 0#
-            If (bDstF > 1#) Then bDstF = 1#
+            If (bDstF < 0!) Then bDstF = 0!
+            If (bDstF > 1!) Then bDstF = 1!
             
             'Handle alpha, if necessary
             If (pxSize = 4) Then
-                If (aDstF > 1#) Then aDstF = 1#
-                If (aDstF < 0#) Then aDstF = 0#
+                If (aDstF > 1!) Then aDstF = 1!
+                If (aDstF < 0!) Then aDstF = 0!
                 aDstL = aDstF * 255
             End If
             
             'Calculate corresponding integer values on the range [0, 255]
-            rDstL = Int(rDstF * 255#)
-            gDstL = Int(gDstF * 255#)
-            bDstL = Int(bDstF * 255#)
+            rDstL = Int(rDstF * 255! + 0.5)
+            gDstL = Int(gDstF * 255! + 0.5)
+            bDstL = Int(bDstF * 255! + 0.5)
                         
             'Copy the final, safe values into the destination
             dstImageData(xStride, iHeightInv) = bDstL
@@ -2005,10 +1981,10 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     Next y
     
     'Free our 1D array reference
-    PutMem4 VarPtrArray(srcImageData), 0&
+    VBHacks.UnwrapArrayFromPtr_Float srcImageData
         
     'Point dstImageData() away from the DIB and deallocate it
-    PutMem4 VarPtrArray(dstImageData), 0&
+    tmpDIB.UnwrapArrayFromDIB dstImageData
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
@@ -2023,16 +1999,16 @@ End Function
 Private Function fFilmicTonemap(ByVal x As Single) As Single
     
     'In advance, calculate the filmic function for the white point
-    Dim numFunction As Double, denFunction As Double
+    Dim numFunction As Single, denFunction As Single
     
     numFunction = x * (m_shoulderStrength * x + m_linearStrength * m_linearAngle) + m_toeStrength * m_toeNumerator
     denFunction = x * (m_shoulderStrength * x + m_linearStrength) + m_toeStrength * m_toeDenominator
     
     'Failsafe check for DBZ errors
-    If (denFunction > 0#) Then
+    If (denFunction > 0!) Then
         fFilmicTonemap = (numFunction / denFunction) - m_toeAngle
     Else
-        fFilmicTonemap = 1#
+        fFilmicTonemap = 1!
     End If
     
 End Function
@@ -2054,8 +2030,7 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     maxR = 0: maxG = 0: maxB = 0
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
-    Dim srcImageData() As Single
-    Dim srcSA As SafeArray1D
+    Dim srcImageData() As Single, srcSA As SafeArray1D
     
     'Iterate through each scanline in the source image, checking normalize parameters as we go.
     Dim iWidth As Long, iHeight As Long, iScanWidth As Long
@@ -2069,20 +2044,10 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     Dim srcR As Single, srcG As Single, srcB As Single
     Dim x As Long, y As Long, xStride As Long
     
-    'Point a 1D VB array at this scanline
-    With srcSA
-        .cbElements = 4
-        .cDims = 1
-        .lBound = 0
-        .cElements = iScanWidth
-        .pvData = FreeImage_GetScanline(fi_Handle, 0)
-    End With
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
     For y = 0 To iHeight
         
         'Update the scanline pointer
-        srcSA.pvData = FreeImage_GetScanline(fi_Handle, y)
+        VBHacks.WrapArrayAroundPtr_Float srcImageData, srcSA, FreeImage_GetScanline(fi_Handle, y), iScanWidth * 4
         
         'Iterate through this line, checking values as we go
         For x = 0 To iWidth
@@ -2108,7 +2073,7 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     Next y
     
     'Free our 1D array reference
-    PutMem4 VarPtrArray(srcImageData()), 0&
+    VBHacks.UnwrapArrayFromPtr_Float srcImageData
     
     'Fill min/max RGB values regardless of normalization
     dstMinR = minR
@@ -2571,11 +2536,9 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                     '(FYI: < 32-bpp + alpha is the ugliest conversion we handle)
                     If (outputColorDepth < 32) Then
                         
-                        Dim paletteCheck() As Byte
-                        ReDim paletteCheck(0 To 255) As Byte
+                        Dim paletteCheck(0 To 255) As Byte
                         
-                        Dim fiPixels() As Byte
-                        Dim srcSA As SafeArray1D
+                        Dim fiPixels() As Byte, srcSA As SafeArray1D
                         
                         Dim iWidth As Long, iHeight As Long, iScanWidth As Long
                         Dim x As Long, y As Long, transparentIndex As Long
@@ -2642,28 +2605,20 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             iHeight = FreeImage_GetHeight(fi_DIB) - 1
                             iScanWidth = FreeImage_GetPitch(fi_DIB)
                             
-                            With srcSA
-                                .cbElements = 1
-                                .cDims = 1
-                                .lBound = 0
-                                .cElements = iScanWidth
-                            End With
-                            
                             For y = 0 To iHeight
                                 
                                 'Point a 1D VB array at this scanline
-                                srcSA.pvData = FreeImage_GetScanline(fi_DIB, y)
-                                CopyMemory ByVal VarPtrArray(fiPixels()), VarPtr(srcSA), 4
+                                VBHacks.WrapArrayAroundPtr_Byte fiPixels, srcSA, FreeImage_GetScanline(fi_DIB, y), iScanWidth
                                 
                                 'Iterate through this line, copying over new transparency indices as we go
                                 For x = 0 To iWidth
                                     fiPixels(x * 4 + 3) = tmpTransparencyTable(x, iHeight - y)
                                 Next x
                                 
-                                'Free our 1D array reference
-                                PutMem4 VarPtrArray(fiPixels()), 0&
-                                
                             Next y
+                            
+                            'Free our 1D array reference
+                            VBHacks.UnwrapArrayFromPtr_Byte fiPixels
                             
                             'We now have a 32-bpp image with quantized RGB values, but intact A values.
                             If resetAlphaPremultiplication Then FreeImage_PreMultiplyWithAlpha fi_DIB
@@ -2704,28 +2659,20 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             iHeight = FreeImage_GetHeight(fi_DIB) - 1
                             iScanWidth = FreeImage_GetPitch(fi_DIB)
                             
-                            With srcSA
-                                .cbElements = 1
-                                .cDims = 1
-                                .lBound = 0
-                                .cElements = iScanWidth
-                            End With
-                            
                             For y = 0 To iHeight
                                 
                                 'Point a 1D VB array at this scanline
-                                srcSA.pvData = FreeImage_GetScanline(fi_DIB, y)
-                                CopyMemory ByVal VarPtrArray(fiPixels()), VarPtr(srcSA), 4
+                                VBHacks.WrapArrayAroundPtr_Byte fiPixels, srcSA, FreeImage_GetScanline(fi_DIB, y), iScanWidth
                                 
                                 'Iterate through this line, checking values as we go
                                 For x = 0 To iWidth
                                     paletteCheck(fiPixels(x)) = 1
                                 Next x
                                 
-                                'Free our 1D array reference
-                                PutMem4 VarPtrArray(fiPixels()), 0&
-                                
                             Next y
+                            
+                            'Free our 1D array reference
+                            VBHacks.UnwrapArrayFromPtr_Byte fiPixels
                             
                             'Scan through the palette array, looking for the first 0 entry (which means that value was not
                             ' found in the source image).
@@ -2739,7 +2686,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             
                             'It shouldn't be possible for a 256-entry palette to exist, but if it does, we have no choice
                             ' but to "steal" a palette index for transparency.
-                            If transparentIndex = -1 Then
+                            If (transparentIndex = -1) Then
                                 FI_DebugMsg "WARNING!  FreeImage returned a full palette, so transparency will have to steal an existing entry!"
                                 transparentIndex = 255
                             End If
@@ -2752,19 +2699,17 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             For y = 0 To iHeight
                                 
                                 'Point a 1D VB array at this scanline
-                                srcSA.pvData = FreeImage_GetScanline(fi_DIB, y)
-                                CopyMemory ByVal VarPtrArray(fiPixels()), VarPtr(srcSA), 4
+                                VBHacks.WrapArrayAroundPtr_Byte fiPixels, srcSA, FreeImage_GetScanline(fi_DIB, y), iScanWidth
                                 
                                 'The FreeImage DIB will be upside-down at this point
                                 For x = 0 To iWidth
                                     If tmpTransparencyTable(x, iHeight - y) = 0 Then fiPixels(x) = transparentIndex
                                 Next x
                                 
-                                'Free our 1D array reference
-                                PutMem4 VarPtrArray(fiPixels()), 0&
-                                
                             Next y
-                        
+                            
+                            VBHacks.UnwrapArrayFromPtr_Byte fiPixels
+                            
                             'We now have an < 8-bpp image with a transparent index correctly marked.  Whew!
                             
                         End If

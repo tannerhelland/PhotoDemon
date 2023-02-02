@@ -1968,10 +1968,8 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
         
         'X and Y now represent the passed coordinate, but translated into the specified layer's coordinate space.
         ' Retrieve the color (and alpha, if relevant) at that point.
-        Dim tmpData() As Byte
-        Dim tSA As SafeArray2D
-        PrepSafeArray tSA, tmpLayerRef.GetLayerDIB
-        CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
+        Dim tmpData() As Byte, tSA As SafeArray2D
+        tmpLayerRef.GetLayerDIB.WrapArrayAroundDIB tmpData, tSA
         
         Dim xStride As Long
         xStride = layerX * (tmpLayerRef.GetLayerDIB.GetDIBColorDepth \ 8)
@@ -1988,8 +1986,8 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
             
         End If
         
-        PutMem4 VarPtrArray(tmpData), 0&
-    
+        tmpLayerRef.GetLayerDIB.UnwrapArrayFromDIB tmpData
+        
     'This coordinate does not lie inside the layer.
     Else
         GetRGBAPixelFromLayer = False

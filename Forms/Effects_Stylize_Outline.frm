@@ -146,15 +146,12 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     
     'For now, transparency is the only way to define an image edge.  Use the passed threshold to generate
     ' a 1bpp array that we can pass to the edge detector.
-    Dim srcImageData() As Byte
-    Dim tmpSA As SafeArray2D
-    
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , (edgeType = 0)
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4
+    Dim srcImageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=(edgeType = 0)
     
     If (Not toPreview) Then
-        SetProgBarMax 2
-        SetProgBarVal 0
+        ProgressBars.SetProgBarMax 2
+        ProgressBars.SetProgBarVal 0
     End If
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -181,8 +178,9 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     If (edgeType = 0) Then
         
         For y = initY To finalY
+            workingDIB.WrapArrayAroundScanline srcImageData, tmpSA1D, y
         For x = initX To finalX
-            If (srcImageData(x * 4 + 3, y) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
+            If (srcImageData(x * 4 + 3) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
         Next x
         Next y
     
@@ -200,11 +198,12 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
         
         Dim xStride As Long
         For y = initY To finalY
+            workingDIB.WrapArrayAroundScanline srcImageData, tmpSA1D, y
         For x = initX To finalX
             xStride = x * 4
-            b = srcImageData(xStride, y)
-            g = srcImageData(xStride + 1, y)
-            r = srcImageData(xStride + 2, y)
+            b = srcImageData(xStride)
+            g = srcImageData(xStride + 1)
+            r = srcImageData(xStride + 2)
             
             'Perform a very "quick and dirty" color comparison
             rgbDistance = Abs(r - targetR) + Abs(g - targetG) + Abs(b - targetB)
@@ -216,8 +215,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     End If
     
     'We no longer need direct access to pixel bits
-    PutMem4 VarPtrArray(srcImageData), 0&
-    
+    workingDIB.UnwrapArrayFromDIB srcImageData
     If (Not toPreview) Then SetProgBarVal 1
     
     'With an edge array successfully assembled, prepare an edge detector
@@ -236,7 +234,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     If (Not toPreview) Then SetProgBarVal 2
     
     'If we generated edges using color comparisons, premultiply alpha now
-    If (edgeType <> 0) Then workingDIB.SetAlphaPremultiplication True
+    If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
     
     'Use pd2D to render the outline onto the image
     Dim cSurface As pd2DSurface, cPen As pd2DPen

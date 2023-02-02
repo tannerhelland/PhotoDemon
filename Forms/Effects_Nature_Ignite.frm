@@ -150,7 +150,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     Dim progMax As Long
     If (Not toPreview) Then
-        progMax = curDIBValues.Width * 2 + curDIBValues.Height
+        progMax = curDIBValues.Width + curDIBValues.Height * 2
         SetProgBarMax progMax
     End If
     
@@ -161,8 +161,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     'Next, we're going to do two things: blurring the flame upward, while also applying some decay
     ' to the flame.
-    PrepSafeArray tmpSA, m_edgeDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    m_edgeDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -198,11 +197,11 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     Dim fadeVal As Double
     
     'Loop through each pixel in the image, applying flame decay as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+    For x = initX To finalX
+        
         'Get the source pixel color values
+        xStride = x * 4
         b = imageData(xStride, y)
         g = imageData(xStride + 1, y)
         r = imageData(xStride + 2, y)
@@ -240,14 +239,14 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
         
         End If
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal finalX + x
+                SetProgBarVal finalX + y
             End If
         End If
-    Next x
+    Next y
     
     'Loop through the contour map one final time, recolor pixels to flame-like warm colors
     initX = initX * 4
@@ -280,13 +279,13 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal finalX * 2 + y
+                SetProgBarVal finalX + finalY + y
             End If
         End If
     Next y
     
     'Safely deallocate imageData()
-    workingDIB.UnwrapArrayFromDIB imageData
+    m_edgeDIB.UnwrapArrayFromDIB imageData
     
     'Apply premultiplication prior to compositing
     m_edgeDIB.SetAlphaPremultiplication True

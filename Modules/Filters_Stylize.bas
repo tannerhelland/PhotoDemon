@@ -30,16 +30,12 @@ Private m_tmpDIB As pdDIB
 Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle As Double, ByVal magentaAngle As Double, ByVal yellowAngle As Double, ByVal dotDensity As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Create a local array and point it at the pixel data of the destination image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Do the same for the source iamge
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -53,7 +49,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
+        If (modifyProgBarMax = -1) Then
             SetProgBarMax finalX * 3
         Else
             SetProgBarMax modifyProgBarMax
@@ -93,10 +89,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     ' blocks to determine proper overlap colors.  To simplify calculations in the performance-sensitive inner loop, we cache
     ' all neighboring grid offsets in advance.  (Note that additional heuristics are used inside the loop, so these tables
     ' are not needed for all pixels.)
-    Dim xCheck() As Double, yCheck() As Double
-    ReDim xCheck(0 To 3) As Double
-    ReDim yCheck(0 To 3) As Double
-    
+    Dim xCheck(0 To 3) As Double, yCheck(0 To 3) As Double
     xCheck(0) = -1 * pxRadius
     yCheck(0) = 0
     xCheck(1) = 0
@@ -108,8 +101,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     
     'We can also pre-calculate a lookup table between pixel values and density, since density is hard-coded according to
     ' luminance and dot size.  This spares additional calculations on the inner loop.
-    Dim densityLookup() As Single
-    ReDim densityLookup(0 To 255) As Single
+    Dim densityLookup(0 To 255) As Single
     
     For x = 0 To 255
         
@@ -183,18 +175,12 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Clamp the grid-aligned pixel to image boundaries.  (For performance reasons, this is locked to integer values.)
             clampX = dstX
-            If (clampX < 0) Then
-                clampX = 0
-            ElseIf (clampX > finalX) Then
-                clampX = finalX
-            End If
+            If (clampX < 0) Then clampX = 0
+            If (clampX > finalX) Then clampX = finalX
             
             clampY = dstY
-            If (clampY < 0) Then
-                clampY = 0
-            ElseIf (clampY > finalY) Then
-                clampY = finalY
-            End If
+            If (clampY < 0) Then clampY = 0
+            If (clampY > finalY) Then clampY = finalY
             
             'Retrieve the relevant channel color at this position
             target = srcImageData(clampX * 4 + curChannel, clampY)
@@ -230,18 +216,12 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     dstY = srcXInner * sinTheta + srcYInner * cosTheta
                     
                     clampX = dstX
-                    If (clampX < 0) Then
-                        clampX = 0
-                    ElseIf (clampX > finalX) Then
-                        clampX = finalX
-                    End If
+                    If (clampX < 0) Then clampX = 0
+                    If (clampX > finalX) Then clampX = finalX
                     
                     clampY = dstY
-                    If (clampY < 0) Then
-                        clampY = 0
-                    ElseIf (clampY > finalY) Then
-                        clampY = finalY
-                    End If
+                    If (clampY < 0) Then clampY = 0
+                    If (clampY > finalY) Then clampY = finalY
                     
                     'Calculate an intensity and radius for this overlapped point
                     newTarget = srcImageData(clampX * 4 + curChannel, clampY)
@@ -277,8 +257,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Next curChannel
     
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    dstDIB.UnwrapArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then CreateColorHalftoneDIB = 0 Else CreateColorHalftoneDIB = 1
 

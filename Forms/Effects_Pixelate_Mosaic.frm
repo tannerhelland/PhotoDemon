@@ -169,15 +169,12 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
     ' extra BitBlt after the operation is complete.
     
     If (blockAngle = 0) Then
-        PrepSafeArray dstSA, workingDIB
-        PrepSafeArray srcSA, srcDIB
+        workingDIB.WrapArrayAroundDIB dstImageData, dstSA
+        srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     Else
-        PrepSafeArray dstSA, srcDIB
-        PrepSafeArray srcSA, workingDIB
+        srcDIB.WrapArrayAroundDIB dstImageData, dstSA
+        workingDIB.WrapArrayAroundDIB srcImageData, srcSA
     End If
-    
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -301,8 +298,8 @@ NextPixelatePixel3:
     Next x
     
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'If rotation was applied, restore the image to its original orientation.
     If (blockAngle <> 0) Then

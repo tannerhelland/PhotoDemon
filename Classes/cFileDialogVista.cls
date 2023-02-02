@@ -76,7 +76,7 @@ Option Explicit
 '    FileDialog Customization - http://msdn.microsoft.com/en-us/library/windows/desktop/bb775910%28v=vs.85%29.aspx
 '    Customization Events - http://msdn.microsoft.com/en-us/library/windows/desktop/bb775936%28v=vs.85%29.aspx
 
-
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDst As Any, ByRef lpSrc As Any, ByVal byteLength As Long)
 Private Declare Function DispCallFunc Lib "oleaut32.dll" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Sub SetLastError Lib "kernel32.dll" (ByVal dwErrCode As Long)
 Private Declare Function CoCreateInstance Lib "ole32.dll" (ByVal rClsID As Long, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByVal rIID As Long, ByRef ppv As Long) As Long

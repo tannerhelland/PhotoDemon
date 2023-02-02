@@ -95,9 +95,8 @@ Public Sub SolarizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -122,12 +121,13 @@ Public Sub SolarizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     finalX = finalX * 4
     
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
         
-        'Perform the solarize in a single line, thanks to our pre-built look-up table
-        imageData(x, y) = sLookup(imageData(x, y))
-        imageData(x + 1, y) = sLookup(imageData(x + 1, y))
-        imageData(x + 2, y) = sLookup(imageData(x + 2, y))
+        'Perform the solarize in a single per-channel assignment, thanks to our pre-built look-up table
+        imageData(x) = sLookup(imageData(x))
+        imageData(x + 1) = sLookup(imageData(x + 1))
+        imageData(x + 2) = sLookup(imageData(x + 2))
         
     Next x
         If (Not toPreview) Then

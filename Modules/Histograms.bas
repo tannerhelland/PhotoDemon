@@ -323,9 +323,8 @@ Public Sub StretchHistogram()
     Message "Analyzing image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    EffectPrep.PrepImageData tmpSA, False
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -338,6 +337,7 @@ Public Sub StretchHistogram()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
@@ -351,24 +351,26 @@ Public Sub StretchHistogram()
     bMin = 255
         
     'Loop through each pixel in the image, checking max/min values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX
+        
         'Get the source pixel color values
-        r = imageData(xStride + 2, y)
-        g = imageData(xStride + 1, y)
-        b = imageData(xStride, y)
+        xStride = x * 4
+        b = imageData(xStride)
+        g = imageData(xStride + 1)
+        r = imageData(xStride + 2)
         
-        If r < rMin Then rMin = r
-        If r > rMax Then rMax = r
-        If g < gMin Then gMin = g
-        If g > gMax Then gMax = g
-        If b < bMin Then bMin = b
-        If b > bMax Then bMax = b
+        'Find max/min values in the image
+        If (r < rMin) Then rMin = r
+        If (r > rMax) Then rMax = r
+        If (g < gMin) Then gMin = g
+        If (g > gMax) Then gMax = g
+        If (b < bMin) Then bMin = b
+        If (b > bMax) Then bMax = b
         
-    Next y
     Next x
+    Next y
     
     Message "Stretching histogram..."
     Dim rDif As Long, gDif As Long, bDif As Long
@@ -381,49 +383,54 @@ Public Sub StretchHistogram()
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     For x = 0 To 255
-        If rDif <> 0 Then
+        
+        If (rDif <> 0) Then
             r = 255 * ((x - rMin) / rDif)
-            If r < 0 Then r = 0
-            If r > 255 Then r = 255
+            If (r < 0) Then r = 0
+            If (r > 255) Then r = 255
             rLookup(x) = r
         Else
             rLookup(x) = x
         End If
-        If gDif <> 0 Then
+        
+        If (gDif <> 0) Then
             g = 255 * ((x - gMin) / gDif)
-            If g < 0 Then g = 0
-            If g > 255 Then g = 255
+            If (g < 0) Then g = 0
+            If (g > 255) Then g = 255
             gLookup(x) = g
         Else
             gLookup(x) = x
         End If
-        If bDif <> 0 Then
+        
+        If (bDif <> 0) Then
             b = 255 * ((x - bMin) / bDif)
-            If b < 0 Then b = 0
-            If b > 255 Then b = 255
+            If (b < 0) Then b = 0
+            If (b > 255) Then b = 255
             bLookup(x) = b
         Else
             bLookup(x) = x
         End If
+        
     Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
-        'Get the source pixel color values
-        r = imageData(xStride + 2, y)
-        g = imageData(xStride + 1, y)
-        b = imageData(xStride, y)
-                
-        imageData(xStride + 2, y) = rLookup(r)
-        imageData(xStride + 1, y) = gLookup(g)
-        imageData(xStride, y) = bLookup(b)
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        'Get the source pixel color values
+        xStride = x * 4
+        b = imageData(xStride)
+        g = imageData(xStride + 1)
+        r = imageData(xStride + 2)
+        
+        imageData(xStride) = bLookup(b)
+        imageData(xStride + 1) = gLookup(g)
+        imageData(xStride + 2) = rLookup(r)
+        
     Next x
+        If (y And progBarCheck) = 0 Then ProgressBars.SetProgBarVal y
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData
@@ -432,4 +439,3 @@ Public Sub StretchHistogram()
     EffectPrep.FinalizeImageData
         
 End Sub
-

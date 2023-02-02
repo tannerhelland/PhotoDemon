@@ -2748,7 +2748,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
             .EP_ValuePtr = VarPtr(gdipColorDepth)
         End With
         
-        CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
+        CopyMemoryStrict VarPtr(aEncParams(1)), VarPtr(uEncParams), Len(uEncParams)
         
         'Check to see if a file already exists at this location
         Files.FileDeleteIfExists dstFilename

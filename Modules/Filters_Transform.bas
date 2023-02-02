@@ -42,12 +42,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Make a copy of the current image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    'tmpDIB.createFromExistingDIB PDImages.GetActiveImage.mainDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, tmpDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    tmpDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     finalX = PDImages.GetActiveImage.Width - 1
@@ -100,10 +99,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Check for case (1) and warn the user if it occurred
     If (Not colorFails) Then
-        
-        PutMem4 VarPtrArray(srcImageData), 0&
-        SetProgBarVal 0
-        ReleaseProgressBar
+    
+        tmpDIB.UnwrapArrayFromDIB srcImageData
+        ProgressBars.SetProgBarVal 0
+        ProgressBars.ReleaseProgressBar
         Message "Image is all one color.  Autocrop unnecessary."
         
         Exit Sub
@@ -197,7 +196,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     newBottom = y
     
     'Safely deallocate imageData()
-    PutMem4 VarPtrArray(srcImageData), 0&
+    tmpDIB.UnwrapArrayFromDIB srcImageData
     
     'We now know where to crop the image.  Apply the crop.
     
@@ -1149,10 +1148,8 @@ Public Sub TrimImage()
     PDImages.GetActiveImage.GetCompositedImage tmpDIB
     
     'Point an array at the DIB data
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, tmpDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    tmpDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     finalX = PDImages.GetActiveImage.Width - 1
@@ -1163,7 +1160,7 @@ Public Sub TrimImage()
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    SetProgBarMax 4
+    ProgressBars.SetProgBarMax 4
     
     'The new edges of the image will mark these values for us
     Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
@@ -1193,10 +1190,10 @@ Public Sub TrimImage()
     
     'Check for case (1) and warn the user if it occurred
     If (Not colorFails) Then
-    
-        PutMem4 VarPtrArray(srcImageData), 0&
-        SetProgBarVal 0
-        ReleaseProgressBar
+        
+        tmpDIB.UnwrapArrayFromDIB srcImageData
+        ProgressBars.SetProgBarVal 0
+        ProgressBars.ReleaseProgressBar
         Message "Image is fully transparent.  Trim abandoned."
         
         Exit Sub
@@ -1276,7 +1273,7 @@ Public Sub TrimImage()
     newBottom = y
     
     'Safely deallocate imageData()
-    PutMem4 VarPtrArray(srcImageData), 0&
+    tmpDIB.UnwrapArrayFromDIB srcImageData
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing

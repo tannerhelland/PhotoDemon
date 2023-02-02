@@ -140,9 +140,8 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
     saturationBoost = saturationBoost / 100#
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -155,6 +154,7 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Calculate the center of the image
@@ -204,14 +204,15 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
     Const ONE_DIV_255 As Double = 1# / 255#
     
     'Apply the filter
-    For x = initX To finalX
-        xOffset = x * 4
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX
         
         'Get red, green, and blue values from the array
-        b = imageData(xOffset, y)
-        g = imageData(xOffset + 1, y)
-        r = imageData(xOffset + 2, y)
+        xOffset = x * 4
+        b = imageData(xOffset)
+        g = imageData(xOffset + 1)
+        r = imageData(xOffset + 2)
         
         'Convert the RGB values the HSV space
         Colors.fRGBtoHSV r * ONE_DIV_255, g * ONE_DIV_255, b * ONE_DIV_255, h, s, l
@@ -240,18 +241,18 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
         b = BlendColors(b, bFloat * 255#, rainbowStrength)
         
         'Assign the new RGB values back into the array
-        imageData(xOffset, y) = b
-        imageData(xOffset + 1, y) = g
-        imageData(xOffset + 2, y) = r
+        imageData(xOffset) = b
+        imageData(xOffset + 1) = g
+        imageData(xOffset + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
         
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

@@ -499,7 +499,7 @@ Private Sub ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, By
     Dim yCheck As Long
     Dim topLeft As Long, topMiddle As Long, topRight As Long
     
-    'As part of shrinking the image, we will need to shift pixels right-to-left.  CopyMemory performance
+    'As part of shrinking the image, we will need to shift pixels right-to-left.  RtlMoveMemory performance
     ' falls off a cliff when performing overlapping writes, so even though it's counterintuitive,
     ' we actually get a nice boost by copying memory to a dedicated temp buffer, then copying it from
     ' there into its overlapped position.

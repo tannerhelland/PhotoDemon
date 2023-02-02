@@ -1009,7 +1009,7 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     
     'Very large DIBs (like the main canvas backbuffer) are expensive to compress/decompress on-the-fly,
     ' even with a very fast engine like lz4.  (It doesn't help that we have to reallocate the memory at
-    ' decompression time, or that we have to use CopyMemory to move it between buffers.)
+    ' decompression time, or that we have to drop into APIs to move the data between buffers.)
     
     'As such, PD's various resource minimizers are set to automatically ignore suspend requests for
     ' DIBs larger than some arbitrary size (currently 500kb).  This prevents noticeable UI lags.

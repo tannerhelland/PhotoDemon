@@ -144,27 +144,14 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     cRandom.SetSeed_String fxSeed
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     If toPreview Then fxScale = fxScale * curDIBValues.previewModifier
     
     Dim minDimension As Single
     If (curDIBValues.Width < curDIBValues.Height) Then minDimension = curDIBValues.Width Else minDimension = curDIBValues.Height
     fxTurbulence = fxTurbulence * (minDimension * 0.025)
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-    
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -174,11 +161,21 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     
     'If the source image is tiny, abandon ship to prevent OOB errors
     If (finalX < 1) Or (finalY < 1) Then
-        PutMem4 VarPtrArray(srcImageData), 0&
-        PutMem4 VarPtrArray(dstImageData), 0&
         EffectPrep.FinalizeImageData toPreview, dstPic
         Exit Sub
     End If
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.CreateFromExistingDIB workingDIB
+    
+    'Allow direct access to pixels
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
             
     'Because interpolation may be used, it's necessary to keep pixel values within special ranges.
     ' (This spares us needing to check for OOB on the inner pixel loop.)
@@ -295,8 +292,8 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     Next y
     
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

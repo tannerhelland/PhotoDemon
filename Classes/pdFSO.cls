@@ -285,7 +285,7 @@ End Function
 
 'Given a file handle successfully created by FileCreateHandle, above, create a memory-mapped view of the file and return
 ' a pointer to the start of the map.  This is effectively a "shortcut" function that maps the entire file view at once,
-' enabling the caller to CopyMemory whatever they want directly into the file itself, which the system can then flush
+' enabling the caller to memcpy whatever they want directly into the file itself, which the system can then flush
 ' at its leisure (enabling a sort of poor man's asynchronicity).
 '
 'IMPORTANT: read/write access is required by this function, so you *must* specify both read+write attributes on the

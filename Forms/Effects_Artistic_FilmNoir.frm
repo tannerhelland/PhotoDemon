@@ -170,7 +170,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     artificialGrain = artificialGrain - 50
     
     Dim cRandomize As pdRandomize
-    If artificialGrain > 0 Then
+    If (artificialGrain > 0) Then
         Set cRandomize = New pdRandomize
         cRandomize.SetSeed_AutomaticAndRandom
     End If
@@ -178,7 +178,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -224,14 +224,14 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         grayVal = grayVal + (((grayVal - luminancePoint) * contrastStrength) / 100)
         
         'We now have a contrast-corrected gray value.  If the user wants noise applied, do so now.
-        If artificialGrain > 0 Then
+        If (artificialGrain > 0) Then
             grayVal = grayVal + (artificialGrain * cRandomize.GetRandomFloat_VB)
         End If
         
         'Copy it to an integer and clamp.
         grayByte = grayVal
-        If grayByte < 0 Then grayByte = 0
-        If grayByte > 255 Then grayByte = 255
+        If (grayByte < 0) Then grayByte = 0
+        If (grayByte > 255) Then grayByte = 255
         
         'Assign that gray value to each color channel
         imageData(xStride, y) = grayByte

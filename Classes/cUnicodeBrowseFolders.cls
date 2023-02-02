@@ -41,6 +41,7 @@ Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function IsWindowUnicode Lib "user32" (ByVal hWnd As Long) As Long
 
 '//// Required: API declarations needed for creating callback thunk as needed (see pvInitStructure)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDst As Any, ByRef lpSrc As Any, ByVal byteLength As Long)
 Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long

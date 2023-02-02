@@ -128,7 +128,7 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain the a copy of the current image,
     ' and we will use it as our source reference.
@@ -137,9 +137,7 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
-    
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -383,8 +381,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     Next x
         
     'Safely deallocate all image arrays
-    PutMem4 VarPtrArray(srcImageData), 0&
-    PutMem4 VarPtrArray(dstImageData), 0&
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

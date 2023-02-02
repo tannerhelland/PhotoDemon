@@ -238,18 +238,14 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         PDDebug.LogAction "Analyzing color count of 24-bpp image..."
         
         Dim srcPixels() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
+        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 3
         
-        Dim uniqueColors() As Long
-        ReDim uniqueColors(0 To 255) As Long
-        
-        Dim i As Long
+        Dim i As Long, uniqueColors(0 To 255) As Long
         For i = 0 To 255
             uniqueColors(i) = -1
         Next i
@@ -295,7 +291,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             If (numUniqueColors > 256) Then Exit For
         Next y
         
-        PutMem4 VarPtrArray(srcPixels), 0&
+        srcDIB.UnwrapArrayFromDIB srcPixels
         
         'By default, we assume that an image is neither monochrome nor grayscale
         isGrayscale = False
@@ -1226,14 +1222,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 For y = 0 To iHeight
                     
                     'Point a 1D VB array at this scanline
-                    With srcSA
-                        .cbElements = 4
-                        .cDims = 1
-                        .lBound = 0
-                        .cElements = iScanWidth
-                        .pvData = FreeImage_GetScanline(fi_FloatDIB, y)
-                    End With
-                    CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
+                    VBHacks.WrapArrayAroundPtr_Float srcImageData, srcSA, FreeImage_GetScanline(fi_FloatDIB, y), iScanWidth * 4
                     
                     'Iterate through this line, converting values as we go
                     For x = 0 To iLoopWidth
@@ -1246,7 +1235,8 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                         
                     Next x
                     
-                    PutMem4 VarPtrArray(srcImageData), 0&
+                    'Safely unalias the VB array object
+                    VBHacks.UnwrapArrayFromPtr_Float srcImageData
                     
                 Next y
                 
