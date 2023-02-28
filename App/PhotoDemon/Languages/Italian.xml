@@ -30,7 +30,7 @@
 
 <phrase>
 <original>Scan image</original>
-<translation>Scansione immagine</translation>
+<translation>Scansiona immagine</translation>
 </phrase>
 
 <phrase>
@@ -1349,7 +1349,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Il salvataggio automatico non può essere completamente ricostruito.  Tentata ricostruzione parziale.</translation>
+<translation>Il salvataggio automatico non può essere ricostruito completamente.  Tentata ricostruzione parziale.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -3045,12 +3045,12 @@ Descrizione: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>giustifica ultima riga</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>contorno in alto</translation>
 </phrase>
 
 <phrase>
@@ -4249,7 +4249,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>compositing color</original>
-<translation>comporre il colore</translation>
+<translation>colore di composizione</translation>
 </phrase>
 
 <phrase>
@@ -4368,7 +4368,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation>Ruotare la tinta in senso orario</translation>
+<translation>Ruota tonalità in senso orario</translation>
 </phrase>
 
 <phrase>
@@ -4378,52 +4378,52 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Increase luminance</original>
-<translation>Aumentare la luminanza</translation>
+<translation>Aumenta la luminanza</translation>
 </phrase>
 
 <phrase>
 <original>Increase red</original>
-<translation>Aumentare il rosso</translation>
+<translation>Aumenta il rosso</translation>
 </phrase>
 
 <phrase>
 <original>Increase green</original>
-<translation>Aumentare il verde</translation>
+<translation>Aumenta il verde</translation>
 </phrase>
 
 <phrase>
 <original>Increase blue</original>
-<translation>Aumentare il blu</translation>
+<translation>Aumenta il blu</translation>
 </phrase>
 
 <phrase>
 <original>Decrease luminance</original>
-<translation>Diminuire la luminanza</translation>
+<translation>Diminuisci la luminanza</translation>
 </phrase>
 
 <phrase>
 <original>Decrease saturation</original>
-<translation>Diminuire la saturazione</translation>
+<translation>Diminuisci la saturazione</translation>
 </phrase>
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation>Ruotare la tinta in senso antiorario</translation>
+<translation>Ruota tonalità in senso antiorario</translation>
 </phrase>
 
 <phrase>
 <original>Decrease blue</original>
-<translation>Diminuire il blu</translation>
+<translation>Diminuisci il blu</translation>
 </phrase>
 
 <phrase>
 <original>Decrease green</original>
-<translation>Diminuire verde</translation>
+<translation>Diminuisci il verde</translation>
 </phrase>
 
 <phrase>
 <original>Decrease red</original>
-<translation>Diminuire rosso</translation>
+<translation>Diminuisci il rosso</translation>
 </phrase>
 
 <!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -4500,7 +4500,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Una volta che questa immagine è stata salvata su disco, il suo nome del file apparirà qui.</translation>
+<translation>Una volta che questa immagine sarà salvata su disco, il suo nome del file apparirà qui.</translation>
 </phrase>
 
 <phrase>
@@ -4611,7 +4611,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>aspect ratio</original>
-<translation>rapporto dell'aspetto</translation>
+<translation>proporzioni</translation>
 </phrase>
 
 <phrase>
@@ -4626,22 +4626,22 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Conservare il rapporto d'aspetto (a volte chiamato proporzioni di costrizione).  Utilizzare questa opzione per ridimensionare un'immagine mantenendo la larghezza e l'altezza in sincronia.</translation>
+<translation>Mantieni le proporzioni.  Utilizza questa opzione per ridimensionare un'immagine mantenendo larghezza e altezza sincronizzate.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation>Conservare il rapporto d'aspetto</translation>
+<translation>Mantieni proporzioni</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Cambiare l'unità di misura utilizzata per ridimensionare l'immagine.</translation>
+<translation>Cambia l'unità di misura utilizzata per ridimensionare l'immagine.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Cambiare l'unità di misura utilizzata per la risoluzione dell'immagine (densità dei pixel).</translation>
+<translation>Cambia l'unità di misura utilizzata per la risoluzione dell'immagine (densità dei pixel).</translation>
 </phrase>
 
 <phrase>
@@ -4656,12 +4656,12 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>exact aspect ratio will vary by image</original>
-<translation>l'esatto rapporto di aspetto varierà tramite l'immagine</translation>
+<translation>le proporzioni esatte varieranno in base all'immagine</translation>
 </phrase>
 
 <phrase>
 <original>exact size will vary by image</original>
-<translation>l'esatta dimensione varierà tramite l'immagine</translation>
+<translation>le dimensioni esatte varieranno in base l'immagine</translation>
 </phrase>
 
 <phrase>
@@ -4673,7 +4673,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Scroll here</original>
-<translation>Scorrere qui</translation>
+<translation>Scorri qui</translation>
 </phrase>
 
 <phrase>
@@ -4718,12 +4718,12 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Scroll left</original>
-<translation>Scorrere a sinistra</translation>
+<translation>Scorri a sinistra</translation>
 </phrase>
 
 <phrase>
 <original>Scroll right</original>
-<translation>Scorrere a destra</translation>
+<translation>Scorri a destra</translation>
 </phrase>
 
 <phrase>
@@ -4746,7 +4746,8 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation>"%1" produce un risultato fuori campo (%2).VBCRLIl valore finale deve essere compreso tra %3 e %4.</translation>
+<translation>"%1" produce un risultato fuori dall'intervallo previsto (%2).
+Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
@@ -4763,7 +4764,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation>Adatta l'immagine sullo schermo</translation>
+<translation>Adatta l'immagine allo schermo</translation>
 </phrase>
 
 <phrase>
@@ -4778,7 +4779,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation>Cambia lo zoom sulla visualizzazione</translation>
+<translation>Cambia zoom della vista</translation>
 </phrase>
 
 <phrase>
@@ -4855,7 +4856,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated WebP</original>
-<translation>webP animata</translation>
+<translation>WebP animata</translation>
 </phrase>
 
 <phrase>
@@ -5050,27 +5051,27 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Move layer to top</original>
-<translation>Sposta livello in alto</translation>
+<translation>Sposta livello in cima</translation>
 </phrase>
 
 <phrase>
 <original>Move layer up</original>
-<translation>Sposta livello sopra</translation>
+<translation>Sposta livello verso l'alto</translation>
 </phrase>
 
 <phrase>
 <original>Move layer down</original>
-<translation>Sposta livello in basso</translation>
+<translation>Sposta livello verso il basso</translation>
 </phrase>
 
 <phrase>
 <original>Move layer to bottom</original>
-<translation>Sposta livello verso fondo</translation>
+<translation>Sposta livello in fondo</translation>
 </phrase>
 
 <phrase>
 <original>Reverse</original>
-<translation>Invertire</translation>
+<translation>Inverti</translation>
 </phrase>
 
 <phrase>
@@ -5090,12 +5091,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Orientation</original>
-<translation>Orientazione</translation>
+<translation>Orientamento</translation>
 </phrase>
 
 <phrase>
 <original>Size</original>
-<translation>Dimensione</translation>
+<translation>Dimensioni</translation>
 </phrase>
 
 <phrase>
@@ -5240,7 +5241,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Display</original>
-<translation>Visualizzare</translation>
+<translation>Schermo</translation>
 </phrase>
 
 <phrase>
@@ -5435,7 +5436,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated screen capture</original>
-<translation>Cattura schermo animato</translation>
+<translation>Cattura animata dello schermo</translation>
 </phrase>
 
 <phrase>
@@ -5460,12 +5461,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Build theme package</original>
-<translation>Costruisci pacchetto tema</translation>
+<translation>Crea pacchetto tema</translation>
 </phrase>
 
 <phrase>
 <original>Build standalone package</original>
-<translation>Costruire pacchetto standalone</translation>
+<translation>Crea pacchetto standalone</translation>
 </phrase>
 
 <phrase>
@@ -5490,7 +5491,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>1:1 (actual size, 100%)</original>
-<translation>1:1 (dimensione attuale, 100%)</translation>
+<translation>1:1 (dimensioni reali, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5510,17 +5511,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Toolbox</original>
-<translation>Cassetta degli strumenti</translation>
+<translation>Casella degli strumenti</translation>
 </phrase>
 
 <phrase>
 <original>Display toolbox</original>
-<translation>Visualizza la casella delle utilità</translation>
+<translation>Visualizza la casella degli strumenti</translation>
 </phrase>
 
 <phrase>
 <original>Display tool category titles</original>
-<translation>Strumento di visualizzazione titoli per categoria</translation>
+<translation>Mostra titoli per le categorie di strumenti</translation>
 </phrase>
 
 <phrase>
@@ -5580,7 +5581,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Reset all toolboxes</original>
-<translation>Reimposta tutte le cassette degli strumenti</translation>
+<translation>Reimposta tutte le caselle degli strumenti</translation>
 </phrase>
 
 <phrase>
@@ -5673,7 +5674,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 (Current version: %1.%2.%3)</original>
 <translation>Questa copia di PhotoDemon è la versione più recente disponibile.
 
-(Versione corrente:.. %1 %2 %3)</translation>
+(Versione corrente:.. %1.%2.%3)</translation>
 </phrase>
 
 <phrase>
@@ -5683,12 +5684,12 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>Importing metadata</original>
-<translation>Importazione di metadati</translation>
+<translation>Importazione dei metadati</translation>
 </phrase>
 
 <phrase>
 <original>Please wait while the new language is applied</original>
-<translation>Per favore, attendi che venga applicato il nuovo linguaggio</translation>
+<translation>Per favore, attendi che venga applicato la nuova lingua</translation>
 </phrase>
 
 <phrase>
@@ -5703,7 +5704,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>Language changed successfully.</original>
-<translation>Linguaggio modificato con successo.</translation>
+<translation>Lingua modificata con successo.</translation>
 </phrase>
 
 <!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
@@ -5755,7 +5756,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>Converting image to two colors</original>
-<translation>Conversione dell'immagine a due colori</translation>
+<translation>Conversione dell'immagine in due colori</translation>
 </phrase>
 
 <!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
@@ -5767,7 +5768,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>immagine campione per il contrasto reale (lento ma molto preciso)</translation>
+<translation>immagine campione per il contrasto reale (lento ma più preciso)</translation>
 </phrase>
 
 <phrase>
@@ -7775,7 +7776,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>tip radius</original>
-<translation>punto del raggio</translation>
+<translation>raggio della punta</translation>
 </phrase>
 
 <phrase>
@@ -7807,7 +7808,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>brush smoothing</original>
-<translation>lisciatura a pennello</translation>
+<translation>levigatura del pennello</translation>
 </phrase>
 
 <phrase>
@@ -7827,7 +7828,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Animating image</original>
-<translation>Immagine animata</translation>
+<translation>Animazione dell'immagine</translation>
 </phrase>
 
 <phrase>
@@ -7886,22 +7887,22 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>highlight cut-off</original>
-<translation>taglio dei punti evidenziare</translation>
+<translation>taglio dei punti luce</translation>
 </phrase>
 
 <phrase>
 <original>contrast midpoint</original>
-<translation>contrasto a metà punto</translation>
+<translation>contrasto dei mezzipunti</translation>
 </phrase>
 
 <phrase>
 <original>film grain</original>
-<translation>grana della pellicola</translation>
+<translation>grana da pellicola</translation>
 </phrase>
 
 <phrase>
 <original>Asking Sam Spade for help</original>
-<translation>Chiedere aiuto a Sam Spade</translation>
+<translation>Chiedendo aiuto a Sam Spade</translation>
 </phrase>
 
 <!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -7935,7 +7936,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>center position (x, y)</original>
-<translation>posizione centrale (x, y)</translation>
+<translation>posizione centro (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -7950,12 +7951,12 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>render emphasis</original>
-<translation>resa dell'enfasi</translation>
+<translation>enfasi di render</translation>
 </phrase>
 
 <phrase>
 <original>Peering at image through imaginary kaleidoscope</original>
-<translation>Scrutazione dell'immagine attraverso un caleidoscopio immaginario</translation>
+<translation>Scrutando l'immagine attraverso un caleidoscopio immaginario</translation>
 </phrase>
 
 <phrase>
@@ -8016,7 +8017,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation>Immagine avvolgente in plastica</translation>
+<translation>Avvolgimento dell'immagine in plastica</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8082,7 +8083,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Carving image from stained glass</original>
-<translation>Intagliando l'immagine nel vetro colorato</translation>
+<translation>Intagliando l'immagine in un vetro colorato</translation>
 </phrase>
 
 <phrase>
@@ -8119,7 +8120,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>mantieni entrambe le dimensioni sincronizzate</translation>
+<translation>mantieni le dimensioni sincronizzate</translation>
 </phrase>
 
 <phrase>
@@ -8250,7 +8251,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>convolution matrix</original>
-<translation>convoluzione della matrice</translation>
+<translation>matrice di convoluzione</translation>
 </phrase>
 
 <!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8279,7 +8280,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>(c) whole image</original>
-<translation>(c) l'immagine intera</translation>
+<translation>(c) intera immagine</translation>
 </phrase>
 
 <phrase>
@@ -8326,7 +8327,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Deep-frying image</original>
-<translation>Immagine di frittura</translation>
+<translation>Frittura dell'immagine</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9349,7 +9350,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>scorcio personalizzato (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9594,12 +9595,12 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>quando si importano immagini vettoriali</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>(facoltativo) impostazioni importazione avanzate</translation>
 </phrase>
 
 <phrase>
@@ -10043,12 +10044,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>usa dimensioni incorporate</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>usa dimensioni personalizzate</translation>
 </phrase>
 
 <phrase>
@@ -10604,12 +10605,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>origine icona</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>tratta ogni livello come un fotogramma icona unico</translation>
 </phrase>
 
 <phrase>
@@ -10760,27 +10761,27 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>sforzo di compressione</translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation>file veloce e più grande</translation>
+<translation>veloce, file più grande</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation>file lento e più piccolo</translation>
+<translation>lento, file più piccolo</translation>
 </phrase>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>senza perdite</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>con perdite</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10792,7 +10793,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Lossless (100)</original>
-<translation>Senza perdita (100)</translation>
+<translation>Senza perdite (100)</translation>
 </phrase>
 
 <phrase>
@@ -13290,7 +13291,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>quando si usa "Salva con nome"</translation>
 </phrase>
 
 <phrase>
@@ -13644,17 +13645,17 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>suggerisci il nome del file attuale (comportamento standard)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>suggerisci una nuova copia, ad es. "nome file (2).jpg" (comportamento sicuro)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>In molti editor di foto, il comando "Salva con nome" ha per impostazione predefinita il nome file attuale.  PhotoDemon ha anche un'opzione "più sicura", in cui Salva con nome incrementa automaticamente i nomi dei file.</translation>
 </phrase>
 
 <phrase>
@@ -13779,12 +13780,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation>versioni stabile e beta e sviluppatore</translation>
+<translation>versioni stabile, beta e sviluppatore</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Uno dei modi migliori per supportare PhotoDemon è quello di aiutare a testare le nuove uscite.  Per impostazione predefinita, PhotoDemon suggerirà sia le versioni stabili che quelle beta, ma i veri avventurosi possono anche provare le versioni per sviluppatori.  (Le release per sviluppatori danno accesso immediato agli ultimi miglioramenti del programma, ma si potrebbero incontrare alcuni bug).</translation>
+<translation>Uno dei modi migliori per supportare PhotoDemon è quello di aiutare a testare le nuove versioni.  Per impostazione predefinita, PhotoDemon suggerirà sia le versioni stabili che quelle beta, ma i veri avventurosi possono anche provare le versioni per sviluppatori.  (Le release per sviluppatori danno accesso immediato agli ultimi miglioramenti del programma, ma si potrebbero incontrare alcuni bug).</translation>
 </phrase>
 
 <phrase>
@@ -13812,22 +13813,22 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>Nelle build di sviluppo, i dati di debug vengono automaticamente registrati nella cartella \Data \Debug del programma.  Se si riscontrano bug in una release stabile, si prega di attivare manualmente questa impostazione.  Questo aiuterà gli sviluppatori a risolvere il vostro problema.</translation>
+<translation>Nelle build di sviluppo, i dati di debug vengono automaticamente registrati nella cartella \Data\Debug del programma.  Se si riscontrano bug in una release stabile, si prega di attivare manualmente questa impostazione.  Questo aiuterà gli sviluppatori a risolvere il problema.</translation>
 </phrase>
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Quando si utilizza Remote Desktop o una VM (Virtual Machine), l'input del mouse ad alta risoluzione potrebbe non funzionare correttamente.  Si tratta di un bug di Windows di vecchia data.  In queste situazioni, è possibile utilizzare questa impostazione per ripristinare il corretto comportamento del mouse.</translation>
+<translation>Quando si utilizza Remote Desktop o una macchina virtuale, l'input del mouse ad alta risoluzione potrebbe non funzionare correttamente.  Si tratta di un bug di Windows di vecchia data.  In queste situazioni è possibile utilizzare questa impostazione per ripristinare il corretto comportamento del mouse.</translation>
 </phrase>
 
 <phrase>
 <original>current PhotoDemon memory usage</original>
-<translation>memoria corrente utilizzata da PhotoDemon</translation>
+<translation>memoria attualmente utilizzata da PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>massimo utilizzo di memoria da parte di PhotoDemon per questa sessione</translation>
+<translation>massimo utilizzo di memoria di questa sessione di PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -13837,17 +13838,17 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Questo pulsante ripristina tutte le impostazioni di PhotoDemon.  Se il programma si comporta in modo inaspettato, questo può risolvere il problema.</translation>
+<translation>Questo pulsante ripristina tutte le impostazioni di PhotoDemon.  Se il programma si comporta in modo imprevisto, questo può risolvere il problema.</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>ATTENZIONE: questa cartella non è valida (accesso vietato).  Si prega di fornire una cartella valida.  Se non viene fornita una nuova cartella, PhotoDemon utilizzerà la cartella temporanea di sistema.</translation>
+<translation>ATTENZIONE: questa cartella non è valida (accesso negato).  Si prega di fornire una cartella valida.  Se non viene fornita una nuova cartella, PhotoDemon utilizzerà la cartella temporanea di sistema.</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>La nuova posizione temporanea della cartella non avrà effetto finché non si riavvia il programma.</translation>
+<translation>La nuova posizione della cartella temporanea non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
@@ -13934,7 +13935,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>incompatibile con Windows XP</translation>
 </phrase>
 
 <phrase>
@@ -14003,7 +14004,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation>apri in PhotoDemon (per modifiche ulteriori)</translation>
+<translation>apri in PhotoDemon (per modificare ulteriormente)</translation>
 </phrase>
 
 <phrase>
