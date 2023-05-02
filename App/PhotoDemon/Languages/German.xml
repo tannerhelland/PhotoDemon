@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.0.27</langversion>
+<langversion>9.2.113</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9351,7 +9351,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>Benutzerdefiniertes Foreshortening (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9590,12 +9590,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>Beim Import von Vektorbildern</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>(Optional) erweiterte Importeinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -10039,12 +10039,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>Eingebettete Größe verwenden</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>Benutzerdefinierte Größe verwenden</translation>
 </phrase>
 
 <phrase>
@@ -10600,12 +10600,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>Icon-Quelle</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>Jeden Layer als eindeutiges Icon-Frame behandeln</translation>
 </phrase>
 
 <phrase>
@@ -10756,7 +10756,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>Kompressionsaufwand</translation>
 </phrase>
 
 <phrase>
@@ -10771,12 +10771,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>Verlustfrei</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>Verlustbehaftet</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10987,7 +10987,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>Der schnelle, kostenlose, portable Foto-Editor</translation>
+<translation>Der schnelle, kostenlose (free), portable Foto-Editor</translation>
 </phrase>
 
 <phrase>
@@ -11544,7 +11544,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>flatten behavior</original>
-<translation>Verhalten: Auf Hintergrund-Layer reduzieren</translation>
+<translation>Auf Hintergrund-Layer reduzieren-Verhalten</translation>
 </phrase>
 
 <phrase>
@@ -12372,7 +12372,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>default selection behavior</original>
-<translation>Default-Auswahlverhalten</translation>
+<translation>Default-Auswahl-Verhalten</translation>
 </phrase>
 
 <phrase>
@@ -13281,7 +13281,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>Wenn "Speichern unter" verwendet wird</translation>
 </phrase>
 
 <phrase>
@@ -13630,22 +13630,22 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>In den meisten Foto-Editoren überschreibt der Befehl "Speichern" das Bild in seiner Original-Version, die Kopie wird für immer gelöscht. PhotoDemon bietet eine "sicherere" Option, wo jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
+<translation>In den meisten Foto-Editoren wird bei dem Befehl "Speichern" das Bild über seiner Original-Version gespeichert, wobei diese Kopie für immer gelöscht wird. PhotoDemon bietet eine "sicherere" Option, bei der jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
 </phrase>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>Den aktuellen Dateiname vorschlagen (Standardverhalten)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>Eine neue Kopie vorschlagen, z. B. "Dateiname (2).jpg" (sicheres Verhalten)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>In den meisten Foto-Editoren wird bei dem Befehl "Speichern unter" standardmäßig der aktuelle Dateiname verwendet. PhotoDemon bietet auch eine "sicherere" Option, bei der "Speichern unter" automatisch die Dateinamen für Sie erhöht.</translation>
 </phrase>
 
 <phrase>
@@ -13808,7 +13808,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann möglicherweise die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
+<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann möglicherweise die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Maus-Verhalten wiederherzustellen.</translation>
 </phrase>
 
 <phrase>
@@ -13925,7 +13925,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>Inkompatibel mit Windows XP</translation>
 </phrase>
 
 <phrase>
