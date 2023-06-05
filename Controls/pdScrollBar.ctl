@@ -777,6 +777,22 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
     
 End Sub
 
+'Mousewheel zoom (Ctrl+scroll) isn't a relevant scroll bar command.  If we receive a zoom event, assume the user wants it
+' relayed to the currently active canvas (with appropriate checks for viewport unavailability - e.g. an active modal dialog).
+' This change addresses https://github.com/tannerhelland/PhotoDemon/issues/476
+Private Sub ucSupport_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+    
+    'If a modal dialog is active, disregard
+    If (FormMain.MainCanvas(0).IsCanvasInteractionAllowed() And FormMain.MainCanvas(0).IsZoomEnabled And PDImages.IsImageActive()) Then
+        
+        'Forward the zoom command to the central zoom handler, using the current center point of the canvas
+        ' as the zoom focal point.
+        If (zoomAmount <> 0) Then Tools_Zoom.RelayCanvasZoom FormMain.MainCanvas(0), PDImages.GetActiveImage(), FormMain.MainCanvas(0).GetCanvasWidth / 2, FormMain.MainCanvas(0).GetCanvasHeight / 2, (zoomAmount > 0)
+        
+    End If
+    
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
