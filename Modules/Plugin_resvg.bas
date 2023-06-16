@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_resvg"
 'resvg Library Interface (SVG import)
 'Copyright 2022-2023 by Tanner Helland
 'Created: 28/February/22
-'Last updated: 15/October/22
-'Last update: fix load behavior during batch processing
+'Last updated: 16/June/23
+'Last update: rewrite against latest resvg (0.34.1)
 '
 'Per its documentation (available at https://github.com/RazrFalcon/resvg), resvg is...
 '
@@ -30,7 +30,7 @@ Attribute VB_Name = "Plugin_resvg"
 Option Explicit
 
 'Information on individual resvg calls can be saved to the debug log via this constant;
-' please DISABLE in production builds
+' please DISABLE in production builds (as reporting is quite noisy!)
 Private Const SVG_DEBUG_VERBOSE As Boolean = False
 
 Private Enum resvg_result
@@ -54,23 +54,6 @@ End Enum
 
 #If False Then
     Private Const RESVG_OK = 0, RESVG_ERROR_NOT_AN_UTF8_STR = 1, RESVG_ERROR_FILE_OPEN_FAILED = 2, RESVG_ERROR_MALFORMED_GZIP = 3, RESVG_ERROR_ELEMENTS_LIMIT_REACHED = 4, RESVG_ERROR_INVALID_SIZE = 5, RESVG_ERROR_PARSING_FAILED = 6
-#End If
-
-'A "fit to" type.
-' (All types produce proportional scaling.)
-Private Enum resvg_fit_to_type
-    'Use an original image size.
-    RESVG_FIT_TO_TYPE_ORIGINAL
-    'Fit an image to a specified width.
-    RESVG_FIT_TO_TYPE_WIDTH
-    'Fit an image to a specified height.
-    RESVG_FIT_TO_TYPE_HEIGHT
-    'Zoom an image using scaling factor.
-    RESVG_FIT_TO_TYPE_ZOOM
-End Enum
-
-#If False Then
-    Private Const RESVG_FIT_TO_TYPE_ORIGINAL = 0, RESVG_FIT_TO_TYPE_WIDTH = 0, RESVG_FIT_TO_TYPE_HEIGHT = 0, RESVG_FIT_TO_TYPE_ZOOM = 0
 #End If
 
 'An image rendering method.
@@ -107,48 +90,28 @@ End Enum
 
 'A 2D transform representation.
 Private Type resvg_transform
-    a As Double
-    b As Double
-    c As Double
-    d As Double
-    e As Double
-    f As Double
+    a As Single
+    b As Single
+    c As Single
+    d As Single
+    e As Single
+    f As Single
 End Type
 
 'A size representation.
 ' (Width and height are guaranteed to be > 0.)
 Private Type resvg_size
-    svg_width As Double
-    svg_height As Double
+    svg_width As Single
+    svg_height As Single
 End Type
 
 'A rectangle representation.
 ' (Width *and* height are guarantee to be > 0.)
 Private Type resvg_rect
-    x As Double
-    y As Double
-    Width As Double
-    Height As Double
-End Type
-
-'A path bbox representation.
-' (Width *or* height are guarantee to be > 0.)
-Private Type resvg_path_bbox
-    x As Double
-    y As Double
-    Width As Double
-    Height As Double
-End Type
-
-'A "fit to" property.
-Private Type resvg_fit_to
-    'A fit type.
-    fit_type As resvg_fit_to_type
-    'Fit to value
-    '* Not used by RESVG_FIT_TO_ORIGINAL.
-    '* Must be >= 1 for RESVG_FIT_TO_WIDTH and RESVG_FIT_TO_HEIGHT.
-    '* Must be > 0 for RESVG_FIT_TO_ZOOM.
-    fit_value As Single
+    x As Single
+    y As Single
+    Width As Single
+    Height As Single
 End Type
 
 Private Declare Function resvg_transform_identity Lib "resvg" () As resvg_transform
@@ -177,15 +140,15 @@ Private Declare Function resvg_parse_tree_from_data Lib "resvg" (ByVal ptrToData
 Private Declare Function resvg_is_image_empty Lib "resvg" (ByVal resvg_render_tree As Long) As Long
 Private Declare Function resvg_get_image_size Lib "resvg" (ByVal resvg_render_tree As Long) As resvg_size
 Private Declare Function resvg_get_image_viewbox Lib "resvg" (ByVal resvg_render_tree As Long) As resvg_rect
-Private Declare Function resvg_get_imgae_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByRef dst_resvg_rect As resvg_rect) As Long
+Private Declare Function resvg_get_image_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByRef dst_resvg_rect As resvg_rect) As Long
 Private Declare Function resvg_node_exists Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long) As Long
 Private Declare Function resvg_get_node_transform Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_transform As resvg_transform) As Long
-Private Declare Function resvg_get_node_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_path_bbox As resvg_path_bbox) As Long
+Private Declare Function resvg_get_node_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_path_bbox As resvg_rect) As Long
 Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As Long)
-Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef fit_to As resvg_fit_to, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
 'Note: node rendering needs custom resvg modifications to change the way fit_to is passed
-'Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal fit_to As resvg_fit_to, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+'Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
 'A single persistent SVG options handle is maintained for the life of a session.
 ' (Initializing this object is expensive because it needs to scan system fonts.)
@@ -208,7 +171,7 @@ Public Function GetVersion() As String
     'resvg does not provide an externally accessible version string by default.
     ' I do not expect users to custom-build it, so we return a hard-coded version
     ' against the copy supplied with a default PD install.
-    GetVersion = "0.28.0"
+    GetVersion = "0.34.1"
     
 End Function
 
@@ -420,11 +383,6 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         'SVG renders will always be premultiplied
         dstDIB.SetInitialAlphaPremultiplicationState True
         
-        'Specify fitting behavior (we always use original fit - you'll see why in a moment)
-        Dim fitBehavior As resvg_fit_to
-        fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ORIGINAL
-        fitBehavior.fit_value = 1!
-        
         'If custom destination width/height is specified, we want to use the final transform matrix
         ' to apply the resize.
         Dim idMatrix As resvg_transform
@@ -439,10 +397,10 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             Set cMatrix = New pd2DTransform
             cMatrix.ApplyScaling userWidth / intWidth, userHeight / intHeight
             
+            'Pull the class into a bare list of floats, then relay those floats to a resvg matrix struct
             Dim tmpFloats() As Single
             If cMatrix.GetMatrixPoints(tmpFloats) Then
                 
-                'resvg uses doubles, not floats
                 With idMatrix
                     .a = tmpFloats(0)
                     .b = tmpFloats(1)
@@ -451,14 +409,15 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     .e = tmpFloats(4)
                     .f = tmpFloats(5)
                 End With
-            
-            'no Else required, since we've already initialized the matrix to its identity form
+                
+            Else
+                InternalError "Bad matrix retrieval in LoadSVG_FromFile"
             End If
             
         End If
         
         'Render!
-        resvg_render svgTree, fitBehavior, idMatrix, userWidth, userHeight, dstDIB.GetDIBPointer()
+        resvg_render svgTree, idMatrix, userWidth, userHeight, dstDIB.GetDIBPointer()
         PDDebug.LogAction "Finished render"
         
         'Finally, we need to swizzle RGBA order to BGRA order
@@ -498,21 +457,29 @@ End Sub
 
 'Do not call this function.  It is only designed to be used for previews on the SVG import screen.
 Public Function RenderToArbitraryDIB(ByVal hResvgTree As Long, ByRef dstDIB As pdDIB) As Boolean
-
-    'Specify fitting behavior
-    Dim fitBehavior As resvg_fit_to
-    fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ORIGINAL
-    fitBehavior.fit_value = 1!
-    
+        
+    If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to render tree #" & CStr(hResvgTree) & " to DIB..."
+        
     'If custom destination width/height is specified, we want to use the final transform matrix
     ' to apply the resize.
     Dim idMatrix As resvg_transform
     idMatrix = resvg_transform_identity()
     
+    If SVG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Retrieved identity matrix OK"
+        With idMatrix
+            PDDebug.LogAction .a & ", " & .b & ", " & .c
+            PDDebug.LogAction .d & ", " & .e & ", " & .f
+        End With
+    End If
+    
     'Scale to fit the destination DIB (if its size doesn't match the original width/height)
     Dim imgSize As resvg_size
     imgSize = resvg_get_image_size(hResvgTree)
     
+    If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "Retrieved size is " & CStr(imgSize.svg_width) & " x " & CStr(imgSize.svg_height)
+    
+    'Calculate integer dimensions prior to positioning
     Dim intWidth As Long, intHeight As Long
     intWidth = Int(imgSize.svg_width)
     intHeight = Int(imgSize.svg_height)
@@ -523,12 +490,43 @@ Public Function RenderToArbitraryDIB(ByVal hResvgTree As Long, ByRef dstDIB As p
     ' for previews on the import screen - so its guaranteed that the passed DIB will always
     ' be the same aspect ratio as the source SVG.
     If (dstDIB.GetDIBWidth <> intWidth) Or (dstDIB.GetDIBHeight <> intHeight) Then
-        fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ZOOM
-        fitBehavior.fit_value = dstDIB.GetDIBWidth / intWidth
+        
+        'Here's a nice twist - let's make our code more readable by using a pd2D class to
+        ' produce the scale transform for us!  (Ideally, we could also use this to apply
+        ' skew and rotate in the future.)
+        Dim cMatrix As pd2DTransform
+        Set cMatrix = New pd2DTransform
+        cMatrix.ApplyScaling dstDIB.GetDIBWidth / intWidth, dstDIB.GetDIBHeight / intHeight
+        
+        Dim tmpFloats() As Single
+        If cMatrix.GetMatrixPoints(tmpFloats) Then
+            With idMatrix
+                .a = tmpFloats(0)
+                .b = tmpFloats(1)
+                .c = tmpFloats(2)
+                .d = tmpFloats(3)
+                .e = tmpFloats(4)
+                .f = tmpFloats(5)
+            End With
+        Else
+            InternalError "Bad matrix retrieval in RenderToArbitraryDIB"
+        End If
+        
+        If SVG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Scaling matrix will be applied: "
+            With idMatrix
+                PDDebug.LogAction .a & ", " & .b & ", " & .c
+                PDDebug.LogAction .d & ", " & .e & ", " & .f
+            End With
+        End If
+        
     End If
     
     'Render and swizzle
-    resvg_render hResvgTree, fitBehavior, idMatrix, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBPointer()
+    If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting render to DIB with size " & dstDIB.GetDIBWidth & " x " & dstDIB.GetDIBHeight
+    resvg_render hResvgTree, idMatrix, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBPointer()
+    
+    If SVG_DEBUG_VERBOSE Then PDDebug.LogAction "Render successful.  Swizzling channels before exiting..."
     DIBs.SwizzleBR dstDIB
     
 End Function
