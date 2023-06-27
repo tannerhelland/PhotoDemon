@@ -71,7 +71,7 @@ Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.35.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.2.4"
-Private Const EXPECTED_ZSTD_VERSION As String = "10502"
+Private Const EXPECTED_ZSTD_VERSION As String = "10505"
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
