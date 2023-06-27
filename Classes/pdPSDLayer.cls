@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2023 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 09/April/22
-'Last update: fix off-by-one problem in masks that extend to the right/bottom corner of a layer
+'Last updated: 27/June/23
+'Last update: add additional failsafe checks for vector mask intersection with attached layer
+'             (vector masks can overlap layers in unpredictable ways, with clean intersections not always guaranteed)
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -1731,50 +1732,54 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
                 If ((m_RealLayerMaskData.lmFlags And &H2&) <> 0) Then maskDisabled = True
             End If
             
-            If maskDisabled Then GoTo SkipChannel
+        End With
             
-            'We now enter a branch that is a temporary fix due to PhotoDemon's lack of full mask support.
-            '
-            'In the future, we will want to extract layer masks to their own special mask structure.
-            ' As a preliminary test, PhotoDemon *will* do this for layer groups right now (but *not* for
-            ' normal layers).  The mask will then be stored with the layer group and exported back out
-            ' to PSD as desired.
-            '
-            'But because PD's viewport renderer (and many other parts of the program) do not have full
-            ' support for masks yet, "normal" layers instead have their mask(s) merged into the layer's
-            ' alpha channel.  This guarantees "correct" appearances in PD, but note that this layer will
-            ' be permanently modified by this change.
-            
-            'If this is a *layer group*, we have not created a layer DIB yet (because no layer image data exists).
-            ' As such, this is our chance to finally create one at the size specified by the mask.  Note that we
-            ' only do this if the caller specified "load layer group masks as pixels" (which is very helpful for
-            ' analyzing mask contents, but not at all helpful for correct image display).
-            If (specialLayerGroupMaskCase And loadGroupMasksAsPixels) Then
-                If (Not m_LayerDIB Is Nothing) Then InternalError FUNC_NAME, "layer image exists for group?"
-                Set m_LayerDIB = New pdDIB
-                m_LayerDIB.CreateBlank maskWidth, maskHeight, 32, vbWhite, 255
-                scanStart = m_LayerDIB.GetDIBPointer()
-                scanWidth = m_LayerDIB.GetDIBStride()
-            End If
-            
-            'Populate mask rect, and note that it's always clipped to this layer's size.
-            ' (Group masks are a little weird this way - TODO!)
-            With m_MaskRect
-                .Left = maskLeft
-                .Top = maskTop
-                .Width = maskWidth
-                .Height = maskHeight
-            End With
-            
-            'There are a lot of different ways to go about applying the mask to the image.  AFAIK, no guarantees
-            ' are made about things like rect intersections between the mask and layer, although common sense
-            ' suggests the layer is typically inclusive of the mask... but this is a PSD, so expect the worst.
-            
-            'To simplify handling (especially for the case where a mask obscures a large portion of the layer
-            ' via the "default color" mask byte), let's prep a full buffer at the size of the layer, fill it with
-            ' the default value, then simply overwrite the relevant rect with the mask's actual data.
-            Dim tmpBuffer() As Byte
-            
+        If maskDisabled Then GoTo SkipChannel
+        
+        'We now enter a branch that is a temporary fix due to PhotoDemon's lack of full mask support.
+        '
+        'In the future, we will want to extract layer masks to their own special mask structure.
+        ' As a preliminary test, PhotoDemon *will* do this for layer groups right now (but *not* for
+        ' normal layers).  The mask will then be stored with the layer group and exported back out
+        ' to PSD as desired.
+        '
+        'But because PD's viewport renderer (and many other parts of the program) do not have full
+        ' support for masks yet, "normal" layers instead have their mask(s) merged into the layer's
+        ' alpha channel.  This guarantees "correct" appearances in PD, but note that this layer will
+        ' be permanently modified by this change.
+        
+        'If this is a *layer group*, we have not created a layer DIB yet (because no layer image data exists).
+        ' As such, this is our chance to finally create one at the size specified by the mask.  Note that we
+        ' only do this if the caller specified "load layer group masks as pixels" (which is very helpful for
+        ' analyzing mask contents, but not at all helpful for correct image display).
+        If (specialLayerGroupMaskCase And loadGroupMasksAsPixels) Then
+            If (Not m_LayerDIB Is Nothing) Then InternalError FUNC_NAME, "layer image exists for group?"
+            Set m_LayerDIB = New pdDIB
+            m_LayerDIB.CreateBlank maskWidth, maskHeight, 32, vbWhite, 255
+            scanStart = m_LayerDIB.GetDIBPointer()
+            scanWidth = m_LayerDIB.GetDIBStride()
+        End If
+        
+        'Populate mask rect, and note that it's always clipped to this layer's size.
+        ' (Group masks are a little weird this way - TODO!)
+        With m_MaskRect
+            .Left = maskLeft
+            .Top = maskTop
+            .Width = maskWidth
+            .Height = maskHeight
+        End With
+        
+        'There are a lot of different ways to go about applying the mask to the image.  AFAIK, no guarantees
+        ' are made about things like rect intersections between the mask and layer, although common sense
+        ' suggests the layer is typically inclusive of the mask... but this is a PSD, so expect the worst.
+        
+        'To simplify handling (especially for the case where a mask obscures a large portion of the layer
+        ' via the "default color" mask byte), let's prep a full buffer at the size of the layer, fill it with
+        ' the default value, then simply overwrite the relevant rect with the mask's actual data.
+        Dim tmpBuffer() As Byte
+        
+        With m_Channels(chIndex)
+        
             'Normal layers can use the underlying DIB dimensions for their reference; layer groups may not have
             ' such a DIB, so we need to prep them differently
             If (specialLayerGroupMaskCase And (Not loadGroupMasksAsPixels)) Then
@@ -1806,37 +1811,52 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
             srcMaskRect.Right = srcMaskRect.Right - m_Rect.Left
             srcMaskRect.Top = srcMaskRect.Top - m_Rect.Top
             srcMaskRect.Bottom = srcMaskRect.Bottom - m_Rect.Top
+        
+        End With
+        
+        'On a normal layer, ensure the layer and mask overlap (and also, *where* they overlap).
+        ' (On a layer group mask, this step is technically irrelevant, because the layer DIB will have
+        ' been created according to the mask's dimensions.)
+        Dim intersectOK As Boolean
+        If specialLayerGroupMaskCase Then
             
-            'On a normal layer, ensure the layer and mask overlap (and also, *where* they overlap).
-            ' (On a layer group mask, this step is technically irrelevant, because the layer DIB will have
-            ' been created according to the mask's dimensions.)
-            Dim intersectOK As Boolean
+            intersectOK = True
+            With rIntersect
+                .Left = 0
+                .Top = 0
+                .Right = maskWidth - 1
+                .Bottom = maskHeight - 1
+            End With
+            
+        Else
+            
+            intersectOK = PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect)
+            
+            'Validate the final rect, just in case.  (In the next step we need to use it to index into an array,
+            ' and overwrites there are catastrophic.)
+            '
+            '(This change was added in June 2023 to fix crashes on the test-case image "vector-mask2.psd" from the psd-tools repo.)
+            If ((rIntersect.Right - rIntersect.Left) >= maskWidth) Then rIntersect.Right = rIntersect.Left + (maskWidth - 1)
+            If ((rIntersect.Bottom - rIntersect.Top) >= maskHeight) Then rIntersect.Bottom = rIntersect.Top + (maskHeight - 1)
+            
+        End If
+        
+        If intersectOK Then
+        
+            'We now need to merge the mask data with the "default color" array.  Handling varies by
+            ' parent layer color depth, but at the end of this we'll have an 8-bit copy the correctly
+            ' represents the mask (regardless of invert status).
+            Dim mOffsetLeft As Long, mOffsetTop As Long
             If specialLayerGroupMaskCase Then
-                intersectOK = True
-                With rIntersect
-                    .Left = 0
-                    .Top = 0
-                    .Right = maskWidth
-                    .Bottom = maskHeight
-                End With
+                mOffsetLeft = 0
+                mOffsetTop = 0
             Else
-                intersectOK = PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect)
+                mOffsetLeft = srcMaskRect.Left
+                mOffsetTop = srcMaskRect.Top
             End If
             
-            If intersectOK Then
+            With m_Channels(chIndex)
             
-                'We now need to merge the mask data with the "default color" array.  Handling varies by
-                ' parent layer color depth, but at the end of this we'll have an 8-bit copy the correctly
-                ' represents the mask (regardless of invert status).
-                Dim mOffsetLeft As Long, mOffsetTop As Long
-                If specialLayerGroupMaskCase Then
-                    mOffsetLeft = 0
-                    mOffsetTop = 0
-                Else
-                    mOffsetLeft = srcMaskRect.Left
-                    mOffsetTop = srcMaskRect.Top
-                End If
-                
                 '8-bit channel
                 If (bytesPerChannel = 1) Then
                     
@@ -1875,55 +1895,55 @@ Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal 
                     
                 End If
             
-            'Rects do not overlap; only the "default color" of the mask will be used
-            Else
-                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Mask found, but does not overlap the layer!"
-            End If
+            End With
+        
+        'Rects do not overlap; only the "default color" of the mask will be used
+        Else
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Mask found, but does not overlap the layer!"
+        End If
+        
+        'Immediately free the source channel data to relieve memory pressure
+        Erase m_Channels(chIndex).ciDataDecoded
+        
+        'On layer masks, we now want to populate the dedicated layer mask array; on image layers,
+        ' we'll instead apply the mask directly to the target layer.
+        If (specialLayerGroupMaskCase And (Not loadGroupMasksAsPixels)) Then
             
-            'Immediately free the source channel data to relieve memory pressure
-            Erase .ciDataDecoded
+            'Just copy the temporary array to a dedicated, module-level mask array
+            m_sizeOfLayerMask = maskWidth * maskHeight
+            ReDim m_LayerMaskBytes(0 To m_sizeOfLayerMask - 1) As Byte
+            VBHacks.CopyMemoryStrict VarPtr(m_LayerMaskBytes(0)), VarPtr(tmpBuffer(0, 0)), m_sizeOfLayerMask
             
-            'On layer masks, we now want to populate the dedicated layer mask array; on image layers,
-            ' we'll instead apply the mask directly to the target layer.
-            If (specialLayerGroupMaskCase And (Not loadGroupMasksAsPixels)) Then
-                
-                'Just copy the temporary array to a dedicated, module-level mask array
-                m_sizeOfLayerMask = maskWidth * maskHeight
-                ReDim m_LayerMaskBytes(0 To m_sizeOfLayerMask - 1) As Byte
-                VBHacks.CopyMemoryStrict VarPtr(m_LayerMaskBytes(0)), VarPtr(tmpBuffer(0, 0)), m_sizeOfLayerMask
-                
-                m_MaskWasMergedIntoDIB = False
-                
-            'On image layers, actually applying the mask is very simple.  We simply want to multiply any
-            ' existing alpha values by the values found in the mask.
-            Else
-                
-                Dim layerWidth As Long, layerHeight As Long
-                layerWidth = m_LayerDIB.GetDIBWidth
-                layerHeight = m_LayerDIB.GetDIBHeight
-                
-                m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                xLoopEnd = layerWidth - 1
-                
-                Const ONE_DIV_255 As Single = 1! / 255!
-                
-                For y = 0 To layerHeight - 1
-                    tmpSA.pvData = scanStart + (scanWidth * y)
-                    ySrcOffset = y * layerWidth
-                For x = 0 To xLoopEnd
-                    tmpSingle = CSng(tmpBuffer(x, y)) * ONE_DIV_255
-                    tmpBytes(x * 4 + 3) = Int(CSng(tmpBytes(x * 4 + 3)) * tmpSingle)
-                Next x
-                Next y
-                
-                m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                
-                m_MaskWasMergedIntoDIB = True
-                
-            End If
+            m_MaskWasMergedIntoDIB = False
             
-        End With
-
+        'On image layers, actually applying the mask is very simple.  We simply want to multiply any
+        ' existing alpha values by the values found in the mask.
+        Else
+            
+            Dim layerWidth As Long, layerHeight As Long
+            layerWidth = m_LayerDIB.GetDIBWidth
+            layerHeight = m_LayerDIB.GetDIBHeight
+            
+            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+            xLoopEnd = layerWidth - 1
+            
+            Const ONE_DIV_255 As Single = 1! / 255!
+            
+            For y = 0 To layerHeight - 1
+                tmpSA.pvData = scanStart + (scanWidth * y)
+                ySrcOffset = y * layerWidth
+            For x = 0 To xLoopEnd
+                tmpSingle = CSng(tmpBuffer(x, y)) * ONE_DIV_255
+                tmpBytes(x * 4 + 3) = Int(CSng(tmpBytes(x * 4 + 3)) * tmpSingle)
+            Next x
+            Next y
+            
+            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+            
+            m_MaskWasMergedIntoDIB = True
+            
+        End If
+        
 SkipChannel:
     Next chIndex
     
