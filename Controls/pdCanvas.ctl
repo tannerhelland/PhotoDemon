@@ -789,6 +789,13 @@ Private Sub cmdStart_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
     
 End Sub
 
+Private Sub hScroll_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Allow the ESC key to restore focus to the canvas itself
+    If (Not markEventHandled) And (whichSysKey = pdnk_Escape) Then FormMain.MainCanvas(0).SetFocusToCanvasView
+    
+End Sub
+
 Private Sub hypRecentFiles_Click()
     If (Not g_RecentFiles Is Nothing) Then g_RecentFiles.ClearList
     LayoutNoImages
@@ -2071,6 +2078,13 @@ End Sub
 
 Private Sub UserControl_Resize()
     If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+End Sub
+
+Private Sub vScroll_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Allow the ESC key to restore focus to the canvas itself
+    If (Not markEventHandled) And (whichSysKey = pdnk_Escape) Then FormMain.MainCanvas(0).SetFocusToCanvasView
+    
 End Sub
 
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)

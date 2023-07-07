@@ -75,6 +75,11 @@ Public Event Scroll(ByVal eventIsCritical As Boolean)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'To enable specialized behavior of the ESC key on the primary canvas scrollbars, we also raise a special
+' "system" key event IFF the scrollbar is not sited on a modal dialog.
+' (For additional details, see https://github.com/tannerhelland/PhotoDemon/issues/476 )
+Public Event KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, ByRef markEventHandled As Boolean)
+
 'If the mouse is currently INSIDE the control, this will be set to TRUE; this affects control rendering
 Private m_MouseInsideUC As Boolean
 
@@ -486,6 +491,10 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
     ' accepted the keypress, meaning we should forward the event down the line.)
     markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
+    
+    'If the event was *NOT* handled (meaning this scroll bar is *NOT* sited on a modal dialog), allow the owner
+    ' to respond to the event in some custom way.
+    If (Not markEventHandled) Then RaiseEvent KeyDownSystem(Shift, whichSysKey, markEventHandled)
     
 End Sub
 
