@@ -357,7 +357,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         Dim paintStrokesInside As Boolean: paintStrokesInside = False
         
         If ((ptrToPaintbrushRectF <> 0) And (Not bottomLayer.AffineTransformsActive(True))) Then
-            If (topRect.Left >= bottomRect.Left) And (topRect.Top >= bottomRect.Left) Then
+            If (topRect.Left >= bottomRect.Left) And (topRect.Top >= bottomRect.Top) Then
                 If (topRect.Left + topRect.Width) <= (bottomRect.Left + bottomRect.Width) Then
                     If (topRect.Top + topRect.Height) <= (bottomRect.Top + bottomRect.Height) Then
                         paintStrokesInside = True
