@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2023 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 17/May/22
-'Last update: fix magic wand behavior in "Sampling from Layer" mode
+'Last updated: 24/July/23
+'Last update: enforce integer coordinates on incoming mouse events
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso,
 ' and "magic wand" selections are currently implemented.  (A selection brush is on my TODO list.)
@@ -1016,6 +1016,10 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
     m_IsLocked = False
     m_TransformModeActive = True
     
+    'Lock incoming coordinates to their nearest integer equivalent
+    x = Int(x + 0.5)
+    y = Int(y + 0.5)
+    
     'Different selection types handle transformation differently.  For example, rectangular selections can be resized
     ' in multiple directions, but a line selection will only move its endpoints.  So we must sort input twice:
     ' 1) by selection type
@@ -1174,6 +1178,10 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
     'If we're setting new initial coordinates, the mask is not (by definition) ready
     m_IsMaskReady = False
     
+    'Lock incoming coordinates to their nearest integer equivalent
+    x = Int(x + 0.5)
+    y = Int(y + 0.5)
+    
     With m_CornersUnlocked
         .Left = x
         .Top = y
@@ -1258,6 +1266,10 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     
     Dim newMaskRequired As Boolean
     newMaskRequired = True
+    
+    'Lock incoming coordinates to their nearest integer equivalent
+    x = Int(x + 0.5)
+    y = Int(y + 0.5)
     
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)

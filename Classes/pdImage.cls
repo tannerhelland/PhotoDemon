@@ -1498,7 +1498,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim dstQuickX As Long, srcQuickX As Long, srcQuickY As Long, selQuickX As Long
+    Dim dstQuickX As Long, srcQuickX As Long, srcQuickY As Long
     Const BYTE_TO_FLOAT As Single = 1! / 255!
     
     For y = 0 To dstDIB.GetDIBHeight - 1
@@ -1512,8 +1512,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
         
         dstQuickX = x * 4
         srcQuickX = (leftOffset + x) * 4
-        selQuickX = (leftOffset + x) * 4
-        thisAlpha = selData(selQuickX)
+        thisAlpha = selData(srcQuickX)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
         If (thisAlpha > 0) Then
