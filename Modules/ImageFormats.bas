@@ -133,7 +133,7 @@ Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfOutputFormats
-        If outputPDIFs(i) = srcFIF Then
+        If (outputPDIFs(i) = srcFIF) Then
             GetIndexOfOutputPDIF = i
             Exit For
         End If
@@ -601,18 +601,29 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 End Function
 
 'Given a file extension, return the corresponding best-guess PDIF (PhotoDemon image format constant).
-Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_FORMAT
+'
+'By default, this function will *NOT* return PDIF_UNKNOWN for extensions without a corresponding format.
+' Instead, it will return PDIF_PDI (PD's default image format).  This is by design so that images with unknown
+' or missing extensions correctly default to PD's standard file format at save-time.
+'
+'If you *want* this function to return PDIF_UNKNOWN when an unclear extension is encountered, set the
+' "allowUnknownAsReturn" paramter to TRUE.
+Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVal allowUnknownAsReturn As Boolean = False) As PD_IMAGE_FORMAT
     
     'Shortcut check for non-existent extensions
     If (LenB(srcExtension) = 0) Then
-        GetPDIFFromExtension = PDIF_PDI
+        If allowUnknownAsReturn Then
+            GetPDIFFromExtension = PDIF_UNKNOWN
+        Else
+            GetPDIFFromExtension = PDIF_PDI
+        End If
         Exit Function
     End If
     
     srcExtension = LCase$(srcExtension)
     
-    'Note that not all extensions are covered, by design.  Only ones used internally by PD
-    ' are checked and returned.
+    'Note that not all possible image format extensions are covered, by design.  Only extensions known to PD
+    ' (and available as supported export formats) are checked and returned.
     Select Case srcExtension
         
         Case "avif"
@@ -679,7 +690,7 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_PNG
         Case "pbm", "pfm", "pgm", "pnm", "ppm"
             GetPDIFFromExtension = PDIF_PNM
-        Case "psd"
+        Case "psd", "psb"
             GetPDIFFromExtension = PDIF_PSD
         Case "psp", "pspimage"
             GetPDIFFromExtension = PDIF_PSP
@@ -707,8 +718,12 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_XPM
         
         Case Else
-            GetPDIFFromExtension = PDIF_PDI
-    
+            If allowUnknownAsReturn Then
+                GetPDIFFromExtension = PDIF_UNKNOWN
+            Else
+                GetPDIFFromExtension = PDIF_PDI
+            End If
+            
     End Select
 
 End Function

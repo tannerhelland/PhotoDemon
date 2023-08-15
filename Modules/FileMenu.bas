@@ -3,8 +3,10 @@ Attribute VB_Name = "FileMenu"
 'File Menu Handler
 'Copyright 2001-2023 by Tanner Helland
 'Created: 15/Apr/01
-'Last updated: 16/June/22
-'Last update: remove an unused variable
+'Last updated: 15/August/23
+'Last update: after a "Save As" dialog is raised, look for manually edited file extensions and use valid target
+'             image formats if found.  (Note that this only works, by design, if the file format dropdown was *not*
+'             modified from its initial value - if it *was* modified, we defer to it as the "authoritative" intent.)
 '
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
@@ -156,7 +158,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
 
 End Function
 
-'Subroutine for displaying a "save" common dialog, then saving an image to the specified file
+'Subroutine for displaying a "save" common dialog, then saving a pdImage object to a common-dialog derived filename.
 Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     If (srcImage Is Nothing) Then Exit Function
@@ -164,34 +166,32 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     Dim saveFileDialog As pdOpenSaveDialog
     Set saveFileDialog = New pdOpenSaveDialog
     
-    'Prior to showing the "save image" dialog, we need to determine three things:
-    ' 1) An initial folder
-    ' 2) What file format to suggest
+    'Prior to showing the "save image" dialog, we need to determine several things:
+    ' 1) What initial folder to sugest
+    ' 2) What destination image format to suggest
     ' 3) What filename to suggest (*without* a file extension)
-    ' 4) What filename + extension to suggest, based on the results of 2 and 3
+    ' 4) What filename + extension to suggest, based on (2) and (3)
     
-    'Each of these will be handled in turn
-    
-    '1) Determine an initial folder.  If the user has saved a file before, we'll use their export
-    '   preference to determine what folder we suggest (either the current image's folder, or their
-    '   last-used path.)
+    '1) Determine an initial folder.  If the user has saved a file in a previous session, we'll use their
+    '   export preference to determine a target folder (either the current image's folder, or the last-used
+    '   Save As path.)
     '
-    '   If, however, the user has *not* saved a file before, we will always use the current image
-    '   path (if one exists), or the default preferences engine path if this is e.g. a clipboard
-    '   image with no saved path (the preferences engine defaults to the user's Pictures folder.)
+    '   If, however, the user has *not* saved a file before, we should always use the current image path
+    '   if one exists (e.g. an image loaded from disk), or a smart default folder if this is an image that
+    '   was not loaded from path (e.g. a clipboard paste).  In the second case, we rely on PD's preferences
+    '   engine to supply that path for us (currently the active user's "Pictures" folder.)
     
-    'Before doing anything, figure out if the current image even has a useable path; if it doesn't,
-    ' we need to adjust behavior
+    'Start by seeing if the current image already exists on-disk.
     Dim testPath As String, pathIsUsable As Boolean
     testPath = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     
-    'Test the path's existence (important when running PD from a removeable drive)
+    'Test the path's existence (important when running PD from a portable drive)
     pathIsUsable = (LenB(testPath) <> 0)
     If pathIsUsable Then
         testPath = Files.FileGetPath(testPath)
         pathIsUsable = Files.PathExists(testPath, False)
     End If
-        
+    
     Dim initialSaveFolder As String
     If UserPrefs.GetPref_Boolean("Saving", "Has Saved A File", True) Then
         
@@ -221,22 +221,24 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     End If
     
     '2) What file format to suggest.  There is a user preference for persistently defaulting *not* to the
-    ' current image's format, but to the last format used in the Save screen.  (This is useful when
-    ' mass-converting RAW files to JPEG, for example.)
+    '   current image's format, but to the last format used in the Save screen.  (This is useful when
+    '   mass-converting RAW files to JPEG, for example.)
     '
-    ' If that preference is selected, it takes precedence UNLESS the user has not yet saved any images,
-    ' in which case we default to the standard method (of using heuristics on the current image,
-    ' and suggesting the most appropriate format accordingly).
+    '   If that preference is selected, it takes precedence UNLESS the user has not yet saved any images,
+    '   in which case we default to the standard method (of using heuristics on the current image,
+    '   and suggesting the most appropriate format accordingly).
     Dim cdFormatIndex As Long
     Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
     
+    'TODO: replace these magic numbers with meaningful constants
     If (UserPrefs.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
         cdFormatIndex = g_LastSaveFilter
         suggestedSaveFormat = ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         suggestedFileExtension = ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)
         
-    'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest a Save As format based
-    ' on the current image contents.  This is a fairly complex process, so we offload it to a separate function.
+    'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest
+    ' a format based on the current image's contents.  This is a fairly complex process (involving flat vs layers,
+    ' color-depth, etc), so we offload it to a separate function.
     Else
         suggestedSaveFormat = GetSuggestedSaveFormatAndExtension(srcImage, suggestedFileExtension)
         
@@ -245,18 +247,20 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         cdFormatIndex = ImageFormats.GetIndexOfOutputPDIF(suggestedSaveFormat) + 1
     End If
     
-    '3) What filename to suggest.  This value is pulled from the image storage object; if this file came from a non-file location
-    '   (like the clipboard), that function will have supplied a meaningful name at load-time.  Note that we have to supply a non-null
-    '   string to the common dialog function for it to work, so some kind of name needs to be suggested.
+    '3) What filename to suggest?  This value is pulled from the pdImage object itself.  If this pdImage came from
+    '   a non-file location (like the clipboard), the import function may have supplied a potential name at load-time.
+    '   (Note also that we have to supply a non-null string to the common dialog function for it to work at all,
+    '   so some kind of name *must* be suggested - don't leave it null!)
     Dim suggestedFilename As String
     suggestedFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If (LenB(suggestedFilename) = 0) Then suggestedFilename = g_Language.TranslateMessage("New image")
     
-    '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together the
-    ' calculated filename + extension, but I like PD to be a bit smarter.  What we're going to do next is scan the default output
-    ' folder to see if any files already match this name and extension.  If they do, we're going to append a number to the end of
-    ' the filename, e.g. "New Image (2)", and we're going to auto-increment that number until we find a number that isn't in use.
-    ' (If auto-incrementing isn't necessary, this function will return the filename we pass it, as-is.)
+    '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together
+    '   the calculated filename + extension, but I like PD to be a bit smarter.  So let's scan the output folder to see
+    '   if any files already match this name and extension.  If they do, the user has an option to auto-append a number
+    '   to the end of the filename (e.g. "New Image (2)"), and that number can be auto-incremented until it arrives at
+    '   a filename + number combination that isn't already in use.  (And if auto-incrementing isn't necessary,
+    '   this function will simply return the filename it is passed.)
     '
     'Note that this behavior can be toggled via Tools > Options, to enable "normal" Save As behavior (defaulting to
     ' the current filename, if any).
@@ -267,15 +271,57 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         sFile = initialSaveFolder & suggestedFilename
     End If
     
+    'Make a note of both the filename we've constructed *and* the file format index we're going to suggest.
+    ' Together, these could be used to detect user-typed file extension changes that are made *without*
+    ' involving the format dropdown.
+    Dim initSuggestedExtension As String, initSuggestedFormat As PD_IMAGE_FORMAT
+    initSuggestedExtension = suggestedFileExtension
+    initSuggestedFormat = suggestedSaveFormat
+    
     'With all our inputs complete, we can finally raise the damn common dialog
     If saveFileDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, cdFormatIndex, initialSaveFolder, g_Language.TranslateMessage("Save an image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
         
+        'Convert the returned format index from common-dialog notion (1-based) to PD's internal 0-based list
+        Dim dstImageFormat As PD_IMAGE_FORMAT
+        dstImageFormat = ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        
+        'See if the user changed to a different file format than the one we auto-suggested.
+        If (dstImageFormat = initSuggestedFormat) Then
+            
+            'The user did *not* change the suggested format.
+            
+            'As a courtesy, see if they manually typed in a different *file extension* than the one we suggested.
+            ' (If they did, let's try and honor any known format associated with their typed extension.)
+            If (Files.FileGetExtension(sFile) <> initSuggestedExtension) Then
+                
+                'Yikes!  The user did NOT change the file type dropdown, but they DID manually type out a new
+                ' file extension.
+                
+                'See if we can guess what file format they're attempting to save to.
+                Dim dstFormatByExtension As PD_IMAGE_FORMAT
+                dstFormatByExtension = ImageFormats.GetPDIFFromExtension(Files.FileGetExtension(sFile), True)
+                
+                'If the typed format corresponds to a known format (that differs from the one we originally suggested),
+                ' silently redirect the save function to use *the format they typed out* instead.
+                '
+                '(If, however, their extension doesn't correspond to any known format, or if it corresponds to
+                ' a known format that PD cannot currently export to - e.g. "SVG" which is import-only - rely on
+                ' the value of the common-dialog format dropdown like a normal Save-As operation would.)
+                If (dstFormatByExtension <> PDIF_UNKNOWN) And (dstFormatByExtension <> dstImageFormat) And (ImageFormats.GetIndexOfOutputPDIF(dstFormatByExtension) >= 0) Then
+                    dstImageFormat = dstFormatByExtension
+                    cdFormatIndex = ImageFormats.GetIndexOfOutputPDIF(dstFormatByExtension) + 1
+                End If
+                
+            End If
+            
+        End If
+        
         'The common dialog results affect two different objects:
-        ' 1) the current image (which needs to store things like the format the user chose)
-        ' 2) the global user preferences manager (which needs to remember things like the output folder, so we can remember it)
+        ' 1) the passed pdImage object (which needs to remember which format the user chose)
+        ' 2) the global user preferences manager (which needs to remember the output folder for future saves)
         
         'Store all image-level attributes
-        srcImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        srcImage.SetCurrentFileFormat dstImageFormat
         
         'Store all global-preference attributes
         g_LastSaveFilter = cdFormatIndex
