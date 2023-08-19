@@ -90,5 +90,8 @@ PhotoDemon.exe
 /Resources/Assets/*.xml
 /Resources/Assets/GoRC.exe
 /Resources/Assets/PD_Icons.RES
+
+# Some "plugins" (i.e. third-party libraries) are only downloaded on-demand now
 App/PhotoDemon/Plugins/avifdec.exe
 App/PhotoDemon/Plugins/avifenc.exe
+App/PhotoDemon/Plugins/avif-LICENSE.txt
