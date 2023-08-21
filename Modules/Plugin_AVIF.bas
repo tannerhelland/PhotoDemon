@@ -36,11 +36,18 @@ Option Explicit
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).
 Private m_avifImportAvailable As Boolean, m_avifExportAvailable As Boolean
 
-Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef outputPDIF As PD_IMAGE_FORMAT = PDIF_PNG) As Boolean
+'Version numbers are only retrieved once, then cached.  (We need to check version numbers before
+' communicating with libavif, because some optional settings only work on specific library versions.)
+Private m_inputVersion As String, m_outputVersion As String
+
+'Convert an AVIF file to some other image format.  Currently, PD converts AVIF files to uncompressed PNGs,
+' then imports those PNGs directly.  Theoretically, you could use other intermediary formats, such as JPEG,
+' if that's better for your usage scenario...
+Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String) As Boolean
     
     Const funcName As String = "ConvertAVIFtoStandardImage"
     
-    'Safety checks on plugin
+    'Safety checks on plugin existence
     If (Not m_avifImportAvailable) Then
         InternalError funcName, "libavif broken or missing"
         Exit Function
@@ -62,11 +69,13 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     'If the destination file isn't specified, generate a random temp file name
     If (Not Files.FileExists(dstFile)) Then dstFile = OS.UniqueTempFilename()
     
-    'Ensure destination file has an appropriate extension (this is how the decoder
-    ' figures out which format to use)
+    'Ensure destination file has an appropriate extension (this is how the decoder knows which format to use)
+    Dim outputPDIF As PD_IMAGE_FORMAT
+    outputPDIF = PDIF_PNG
+    
     Dim reqExtension As String
     reqExtension = "png"
-    outputPDIF = PDIF_PNG
+    
     If Strings.StringsNotEqual(Files.FileGetExtension(dstFile), reqExtension, True) Then dstFile = dstFile & "." & reqExtension
     
     'Shell plugin and wait for return
@@ -199,7 +208,8 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
         
     End If
     
-    'PD uses premultiplied alpha internally, so signal that to the encoder as well
+    'PD uses premultiplied alpha internally, so signal that to the encoder as well.
+    ' (NOTE: libavif hasn't always handled premultiplication correctly, so suspend this for now and revisit in future builds.)
     'shellCmd.Append "--premultiply "
     
     'Append properly delimited source image
@@ -207,15 +217,29 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append srcFile
     shellCmd.Append """ "
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
     'Append properly delimited destination image
     shellCmd.Append """"
-    shellCmd.Append dstFile
+    shellCmd.Append tmpFilename
     shellCmd.Append """"
     
-    'Final step - if destination file exists, kill it.
-    ' (TODO: convert to safe save approach?)
-    Files.FileDeleteIfExists dstFile
+    'Want to confirm the shelled command?  See it here:
     'PDDebug.LogAction shellCmd.ToString()
+    
+    'We are guaranteed that the destination file does not exist, but in case the user somehow (miraculously?)
+    ' created a file with that name in the past 0.01 ms, guarantee non-existence.
+    Files.FileDeleteIfExists tmpFilename
     
     'Shell plugin and capture output for analysis
     Dim outputString As String
@@ -225,13 +249,13 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
         targetStringSrc = "Successfully loaded: " & srcFile
-        targetStringDst = "Wrote AVIF: " & dstFile
+        targetStringDst = "Wrote AVIF: " & tmpFilename
         
         ConvertStandardImageToAVIF = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
         ConvertStandardImageToAVIF = ConvertStandardImageToAVIF And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
         
         'Want to review the output string manually?  Print it here:
-        PDDebug.LogAction outputString
+        'PDDebug.LogAction outputString
         
         'Record full details of failures
         If ConvertStandardImageToAVIF Then
@@ -245,12 +269,36 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
         InternalError FUNC_NAME, "shell failed"
     End If
     
+    'If the original file already existed, attempt to replace it now
+    If ConvertStandardImageToAVIF And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        ConvertStandardImageToAVIF = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not ConvertStandardImageToAVIF) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
+    End If
+    
 End Function
 
 Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
     
+    'These libraries are limited to Vista+ and 64-bit OSes only
     GetVersion = vbNullString
     If (Not OS.IsVistaOrLater) Then Exit Function
+    
+    'The version-checker may have already been called this session;
+    ' use cached values from a previous run, if available.
+    If testExportLibrary Then
+        If (LenB(m_outputVersion) > 0) Then
+            GetVersion = m_outputVersion
+            Exit Function
+        End If
+    Else
+        If (LenB(m_inputVersion) > 0) Then
+            GetVersion = m_inputVersion
+            Exit Function
+        End If
+    End If
     
     Dim okToCheck As Boolean
     If testExportLibrary Then
@@ -304,7 +352,14 @@ Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
                 
 BadVersion:
                 GetVersion = verString
-            
+                
+                'Cache version number between calls
+                If testExportLibrary Then
+                    m_outputVersion = GetVersion
+                Else
+                    m_inputVersion = GetVersion
+                End If
+                
             'Failure to return version number is a bad sign, but this isn't the place to handle it.
             Else
                 PDDebug.LogAction "WARNING: couldn't retrieve version number of libavif."

@@ -957,18 +957,12 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If Plugin_AVIF.IsAVIFImportAvailable() Then
         
             'It's an ugly workaround, but necessary; convert the AVIF into a temporary image file
-            ' in a supported format.
-            Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
-            CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, intermediaryPDIF)
+            ' in a supported format (currently PNG).
+            Dim tmpFile As String
+            CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
             
-            'If that worked, load the intermediary image using the relevant decoder
-            If CascadeLoadGenericImage Then
-                If (intermediaryPDIF = PDIF_PNG) Then
-                    CascadeLoadGenericImage = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
-                Else
-                    CascadeLoadGenericImage = AttemptGDIPlusLoad(tmpFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
-                End If
-            End If
+            'If that worked, load the intermediary image (PNG format) using the relevant decoder
+            If CascadeLoadGenericImage Then CascadeLoadGenericImage = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
             
             'Regardless of outcome, kill the temp file
             Files.FileDeleteIfExists tmpFile
