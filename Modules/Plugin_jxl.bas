@@ -3,11 +3,19 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2023 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 02/December/22
-'Last update: wrap up work on live previews and grayscale export support
+'Last updated: 22/August/23
+'Last update: after many months (!!!) of waiting for the libjxl library to stabilize, I am giving up
+'             working directly with the library as a library, and am instead resorting to shelling the
+'             various libjxl utilities as separate apps.  This is in no way portable, but it drastically
+'             improves reliability and while an ugly project today, should eventually save me a *ton* of work.
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
+'
+'I initially tried to work directly with libjxl as a library, but ongoing stability issues and a very complex
+' build process eventually led me to switch to interfacing with libjxl via separate apps (cjxl/djxl.exe).
+' This module is pointless without those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.
+' (PD will automatically download these for you if you attempt to interact with JPEG XL files.)
 '
 'Unfortunately for Windows XP users, libjxl currently requires Windows Vista or later.  PhotoDemon will
 ' detect this automatically and gracefully hide JPEG XL support for XP users.
@@ -15,10 +23,6 @@ Attribute VB_Name = "Plugin_jxl"
 'PhotoDemon tries to support most JPEG XL features, but esoteric ones (like animation) remain a WIP.
 ' If you encounter any issues with JPEG XL images, please file an issue on GitHub and attach the image(s)
 ' in question so I can investigate further.
-'
-'This wrapper class uses a shorthand wrapper to DispCallFunc originally written by Olaf Schmidt.
-' Many thanks to Olaf, whose original version can be found here (link good as of Feb 2019):
-' http://www.vbforums.com/showthread.php?781595-VB6-Call-Functions-By-Pointer-(Universall-DLL-Calls)&p=4795471&viewfull=1#post4795471
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -29,6 +33,17 @@ Option Explicit
 
 'DO NOT enable verbose logging in production builds
 Private Const JXL_DEBUG_VERBOSE As Boolean = True
+
+'Because libjxl is nearly impossible to build as a portable 32-bit library, we interface with its .exe builds.
+' This means that decoding and encoding support exist separately (i.e. just because the import library exists
+' at run-time, doesn't mean the export library also exists; users may only install one or none).
+Private m_jxlImportAvailable As Boolean, m_jxlExportAvailable As Boolean
+
+'Version numbers are only retrieved once, then cached.  (We need to check version numbers before
+' communicating with libjxl, because some optional settings only work on specific library versions.)
+Private m_inputVersion As String, m_outputVersion As String
+
+'Old code follows:
 
 'Return values when attempting to assess "is this data in JXL format?"
 Private Enum JxlSignature
@@ -1097,105 +1112,36 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
     
     InitializeLibJXL = False
     
-    'I don't currently know how to build libxjl in an XP-compatible way.
+    'libjxl cannot currently be built in an XP-compatible way.
     ' As a result, its support is limited to Win Vista and above.
     If (Not OS.IsVistaOrLater) Then
         DebugMsg "libjxl does not currently work on Windows XP."
         Exit Function
     End If
     
-    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
-    Dim libPath As String
-    libPath = pathToDLLFolder & "libjxl.dll"
-    m_LibHandle = VBHacks.LoadLib(libPath)
-    InitializeLibJXL = (m_LibHandle <> 0)
-    m_LibAvailable = InitializeLibJXL
+    'Test import and export support separately
+    Dim importPath As String, exportPath As String
+    importPath = pathToDLLFolder & "djxl.exe"
+    exportPath = pathToDLLFolder & "cjxl.exe"
     
-    'Initialize all module-level arrays
-    ReDim m_ProcAddresses(0 To [last_address] - 1) As Long
-    ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
-    ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
+    m_jxlExportAvailable = Files.FileExists(exportPath)
+    m_jxlImportAvailable = Files.FileExists(importPath)
     
-    'If we initialized the library successfully, cache some library-specific data
-    If InitializeLibJXL Then
-        
-        'Pre-load all relevant proc addresses
-        m_ProcAddresses(JxlDecoderVersion) = GetProcAddress(m_LibHandle, "JxlDecoderVersion")
-        m_ProcAddresses(JxlSignatureCheck) = GetProcAddress(m_LibHandle, "JxlSignatureCheck")
-        m_ProcAddresses(JxlDecoderCreate) = GetProcAddress(m_LibHandle, "JxlDecoderCreate")
-        m_ProcAddresses(JxlDecoderDestroy) = GetProcAddress(m_LibHandle, "JxlDecoderDestroy")
-        m_ProcAddresses(JxlDecoderReset) = GetProcAddress(m_LibHandle, "JxlDecoderReset")
-        m_ProcAddresses(JxlDecoderCloseInput) = GetProcAddress(m_LibHandle, "JxlDecoderCloseInput")
-        m_ProcAddresses(JxlDecoderDCOutBufferSize) = GetProcAddress(m_LibHandle, "JxlDecoderDCOutBufferSize")
-        m_ProcAddresses(JxlDecoderExtraChannelBufferSize) = GetProcAddress(m_LibHandle, "JxlDecoderExtraChannelBufferSize")
-        m_ProcAddresses(JxlDecoderFlushImage) = GetProcAddress(m_LibHandle, "JxlDecoderFlushImage")
-        m_ProcAddresses(JxlDecoderGetBasicInfo) = GetProcAddress(m_LibHandle, "JxlDecoderGetBasicInfo")
-        m_ProcAddresses(JxlDecoderGetBoxSizeRaw) = GetProcAddress(m_LibHandle, "JxlDecoderGetBoxSizeRaw")
-        m_ProcAddresses(JxlDecoderGetBoxType) = GetProcAddress(m_LibHandle, "JxlDecoderGetBoxType")
-        m_ProcAddresses(JxlDecoderGetColorAsICCProfile) = GetProcAddress(m_LibHandle, "JxlDecoderGetColorAsICCProfile")
-        m_ProcAddresses(JxlDecoderGetExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlDecoderGetExtraChannelInfo")
-        m_ProcAddresses(JxlDecoderGetExtraChannelName) = GetProcAddress(m_LibHandle, "JxlDecoderGetExtraChannelName")
-        m_ProcAddresses(JxlDecoderGetFrameHeader) = GetProcAddress(m_LibHandle, "JxlDecoderGetFrameHeader")
-        m_ProcAddresses(JxlDecoderGetFrameName) = GetProcAddress(m_LibHandle, "JxlDecoderGetFrameName")
-        m_ProcAddresses(JxlDecoderGetICCProfileSize) = GetProcAddress(m_LibHandle, "JxlDecoderGetICCProfileSize")
-        m_ProcAddresses(JxlDecoderImageOutBufferSize) = GetProcAddress(m_LibHandle, "JxlDecoderImageOutBufferSize")
-        m_ProcAddresses(JxlDecoderPreviewOutBufferSize) = GetProcAddress(m_LibHandle, "JxlDecoderPreviewOutBufferSize")
-        m_ProcAddresses(JxlDecoderProcessInput) = GetProcAddress(m_LibHandle, "JxlDecoderProcessInput")
-        m_ProcAddresses(JxlDecoderReleaseBoxBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderReleaseBoxBuffer")
-        m_ProcAddresses(JxlDecoderReleaseInput) = GetProcAddress(m_LibHandle, "JxlDecoderReleaseInput")
-        m_ProcAddresses(JxlDecoderReleaseJPEGBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderReleaseJPEGBuffer")
-        m_ProcAddresses(JxlDecoderSetBoxBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetBoxBuffer")
-        m_ProcAddresses(JxlDecoderSetDCOutBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetDCOutBuffer")
-        m_ProcAddresses(JxlDecoderSetDecompressBoxes) = GetProcAddress(m_LibHandle, "JxlDecoderSetDecompressBoxes")
-        m_ProcAddresses(JxlDecoderSetExtraChannelBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetExtraChannelBuffer")
-        m_ProcAddresses(JxlDecoderSetImageOutBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetImageOutBuffer")
-        m_ProcAddresses(JxlDecoderSetInput) = GetProcAddress(m_LibHandle, "JxlDecoderSetInput")
-        m_ProcAddresses(JxlDecoderSetJPEGBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetJPEGBuffer")
-        m_ProcAddresses(JxlDecoderSetPreviewOutBuffer) = GetProcAddress(m_LibHandle, "JxlDecoderSetPreviewOutBuffer")
-        m_ProcAddresses(JxlDecoderSizeHintBasicInfo) = GetProcAddress(m_LibHandle, "JxlDecoderSizeHintBasicInfo")
-        m_ProcAddresses(JxlDecoderSubscribeEvents) = GetProcAddress(m_LibHandle, "JxlDecoderSubscribeEvents")
-        m_ProcAddresses(JxlEncoderCreate) = GetProcAddress(m_LibHandle, "JxlEncoderCreate")
-        m_ProcAddresses(JxlEncoderDestroy) = GetProcAddress(m_LibHandle, "JxlEncoderDestroy")
-        m_ProcAddresses(JxlEncoderReset) = GetProcAddress(m_LibHandle, "JxlEncoderReset")
-        m_ProcAddresses(JxlEncoderVersion) = GetProcAddress(m_LibHandle, "JxlEncoderVersion")
-        m_ProcAddresses(JxlEncoderGetError) = GetProcAddress(m_LibHandle, "JxlEncoderGetError")
-        m_ProcAddresses(JxlEncoderProcessOutput) = GetProcAddress(m_LibHandle, "JxlEncoderProcessOutput")
-        m_ProcAddresses(JxlEncoderSetFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameHeader")
-        m_ProcAddresses(JxlEncoderSetExtraChannelBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBlendInfo")
-        m_ProcAddresses(JxlEncoderSetFrameName) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameName")
-        m_ProcAddresses(JxlEncoderSetFrameBitDepth) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameBitDepth")
-        m_ProcAddresses(JxlEncoderAddJPEGFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddJPEGFrame")
-        m_ProcAddresses(JxlEncoderAddImageFrame) = GetProcAddress(m_LibHandle, "JxlEncoderAddImageFrame")
-        m_ProcAddresses(JxlEncoderSetExtraChannelBuffer) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelBuffer")
-        m_ProcAddresses(JxlEncoderAddBox) = GetProcAddress(m_LibHandle, "JxlEncoderAddBox")
-        m_ProcAddresses(JxlEncoderUseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderUseBoxes")
-        m_ProcAddresses(JxlEncoderCloseBoxes) = GetProcAddress(m_LibHandle, "JxlEncoderCloseBoxes")
-        m_ProcAddresses(JxlEncoderCloseFrames) = GetProcAddress(m_LibHandle, "JxlEncoderCloseFrames")
-        m_ProcAddresses(JxlEncoderCloseInput) = GetProcAddress(m_LibHandle, "JxlEncoderCloseInput")
-        m_ProcAddresses(JxlEncoderSetColorEncoding) = GetProcAddress(m_LibHandle, "JxlEncoderSetColorEncoding")
-        m_ProcAddresses(JxlEncoderSetICCProfile) = GetProcAddress(m_LibHandle, "JxlEncoderSetICCProfile")
-        m_ProcAddresses(JxlEncoderInitBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBasicInfo")
-        m_ProcAddresses(JxlEncoderInitFrameHeader) = GetProcAddress(m_LibHandle, "JxlEncoderInitFrameHeader")
-        m_ProcAddresses(JxlEncoderInitBlendInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitBlendInfo")
-        m_ProcAddresses(JxlEncoderSetBasicInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetBasicInfo")
-        m_ProcAddresses(JxlEncoderInitExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderInitExtraChannelInfo")
-        m_ProcAddresses(JxlEncoderSetExtraChannelInfo) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelInfo")
-        m_ProcAddresses(JxlEncoderSetExtraChannelName) = GetProcAddress(m_LibHandle, "JxlEncoderSetExtraChannelName")
-        m_ProcAddresses(JxlEncoderFrameSettingsSetOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetOption")
-        m_ProcAddresses(JxlEncoderFrameSettingsSetFloatOption) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsSetFloatOption")
-        m_ProcAddresses(JxlEncoderUseContainer) = GetProcAddress(m_LibHandle, "JxlEncoderUseContainer")
-        m_ProcAddresses(JxlEncoderStoreJPEGMetadata) = GetProcAddress(m_LibHandle, "JxlEncoderStoreJPEGMetadata")
-        m_ProcAddresses(JxlEncoderSetCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderSetCodestreamLevel")
-        m_ProcAddresses(JxlEncoderGetRequiredCodestreamLevel) = GetProcAddress(m_LibHandle, "JxlEncoderGetRequiredCodestreamLevel")
-        m_ProcAddresses(JxlEncoderSetFrameLossless) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameLossless")
-        m_ProcAddresses(JxlEncoderSetFrameDistance) = GetProcAddress(m_LibHandle, "JxlEncoderSetFrameDistance")
-        m_ProcAddresses(JxlEncoderFrameSettingsCreate) = GetProcAddress(m_LibHandle, "JxlEncoderFrameSettingsCreate")
-        m_ProcAddresses(JxlColorEncodingSetToSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToSRGB")
-        m_ProcAddresses(JxlColorEncodingSetToLinearSRGB) = GetProcAddress(m_LibHandle, "JxlColorEncodingSetToLinearSRGB")
+    'Both cjxl and djxl require a host of support files.
+    Dim supportFilesOK As Boolean
+    supportFilesOK = Files.FileExists(pathToDLLFolder & "jxl.dll")
+    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "jxl_threads.dll")
+    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlicommon.dll")
+    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlidec.dll")
+    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlienc.dll")
     
-    Else
-        DebugMsg "WARNING!  LoadLibrary failed to load libjxl.  Last DLL error: " & Err.LastDllError
-        DebugMsg "(FYI, the attempted path was: " & libPath & ")"
+    m_jxlExportAvailable = m_jxlExportAvailable And supportFilesOK
+    m_jxlImportAvailable = m_jxlImportAvailable And supportFilesOK
+    
+    InitializeLibJXL = m_jxlImportAvailable Or m_jxlExportAvailable
+    
+    If (Not InitializeLibJXL) Then
+        PDDebug.LogAction "WARNING! JPEG XL support not available; plugins missing"
     End If
     
 End Function
@@ -1225,12 +1171,12 @@ Public Function GetLibJXLVersion() As String
         
 End Function
 
-Public Function IsLibJXLAvailable() As Boolean
-    IsLibJXLAvailable = (m_LibHandle <> 0)
+Public Function IsJXLExportAvailable() As Boolean
+    IsJXLExportAvailable = m_jxlExportAvailable
 End Function
 
-Public Function IsLibJXLEnabled() As Boolean
-    IsLibJXLEnabled = m_LibAvailable
+Public Function IsJXLImportAvailable() As Boolean
+    IsJXLImportAvailable = m_jxlImportAvailable
 End Function
 
 'When PD closes, make sure to release our open library handle
@@ -1253,58 +1199,39 @@ Public Function IsFileJXL(ByRef srcFile As String) As Boolean
     IsFileJXL = False
     
     'Failsafe check
-    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
     
-    'libjxl provides a built-in validation function, *but* we need to manually pull some bytes into memory first
-    Dim tmpStream As pdStream
-    Set tmpStream = New pdStream
-    If tmpStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+    'Second failsafe check for the separate JXL info executable
+    Dim pluginExeAndPath As String
+    pluginExeAndPath = PluginManager.GetPluginPath() & "jxlinfo.exe"
+    If (Not Files.FileExists(pluginExeAndPath)) Then Exit Function
+    
+    'Start constructing a command-line string
+    Dim shellCmd As pdString
+    Set shellCmd = New pdString
+    shellCmd.Append "jxlinfo.exe "
+    
+    'For basic format detection, all we need to append is the target filename.
+    ' (Note the use of quotes to ensure safety with space-containing paths.)
+    shellCmd.Append """"
+    shellCmd.Append srcFile
+    shellCmd.Append """"
+    
+    'Shell plugin and capture output for analysis
+    Dim outputString As String
+    If ShellExecuteCapture(pluginExeAndPath, shellCmd.ToString(), outputString) Then
         
-        'The spec does not suggest how many bytes need to be read before validation can occur.
-        ' This arbitrary number is hopefully big enough (but if it isn't, we'll iterate accordingly).
-        Const NUM_BYTES_TO_TEST As Long = 1024
+        'Look for potential decoder errors; if none are found, assume the file is worth investigating as JXL
+        Const JXL_DECODER_ERROR_TEXT As String = "Decoder error"
+        Const JXL_DECODER_ERROR_TEXT_ALT As String = "Error reading file"
         
-        Dim numBytesAvailable As Long
-        numBytesAvailable = NUM_BYTES_TO_TEST
+        IsFileJXL = (Strings.StrStrBM(outputString, JXL_DECODER_ERROR_TEXT, 1, False) = 0)
+        IsFileJXL = IsFileJXL And (Strings.StrStrBM(outputString, JXL_DECODER_ERROR_TEXT_ALT, 1, False) = 0)
         
-        'Use file size as an upper limit (simple failsafe against reading past EOF)
-        Dim sizeOfWholeFile As Long
-        sizeOfWholeFile = Files.FileLenW(srcFile)
-        If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
-        
-        'Pull [numBytesAvailable] into memory
-        Dim ptrRawBytes As Long
-        ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
-        
-        'Attempt JXL validation
-        Dim retSignature As JxlSignature
-        retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
-        
-        'Repeat with ever-larger chunks of the file if the decoder requires it
-        If (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) Then
-            
-            Do
-                
-                'Calculate how many new bytes to pull in
-                numBytesAvailable = numBytesAvailable * 2
-                If (numBytesAvailable > sizeOfWholeFile) Then numBytesAvailable = sizeOfWholeFile
-                
-                'Reset stream pointer and pull in the new, larger [numBytesAvailable] for validation
-                tmpStream.SetPosition 0, FILE_BEGIN
-                ptrRawBytes = tmpStream.ReadBytes_PointerOnly(numBytesAvailable)
-                
-                'Continue validating until EOF is reached, if necessary
-                retSignature = CallCDeclW(JxlSignatureCheck, vbLong, ptrRawBytes, numBytesAvailable)
-                
-            Loop While (retSignature = JXL_SIG_NOT_ENOUGH_BYTES) And (numBytesAvailable < sizeOfWholeFile)
-            
-        End If
-        
-        IsFileJXL = (retSignature = JXL_SIG_CONTAINER) Or (retSignature = JXL_SIG_CODESTREAM)
-        
-        'Release the stream regardless of success/failure; we'll re-create it as necessary in a later step
-        tmpStream.StopStream True
-        
+    End If
+    
+    If JXL_DEBUG_VERBOSE Then
+        PDDebug.LogAction "IsFileJXL returned " & UCase$(CStr(IsFileJXL)) & " for " & srcFile
     End If
     
 End Function
@@ -1317,7 +1244,12 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     LoadJXL = False
     
     'Failsafe check
-    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
+    
+    'Second failsafe check
+    Dim pluginExeAndPath As String
+    pluginExeAndPath = PluginManager.GetPluginPath() & "djxl.exe"
+    If (Not Files.FileExists(pluginExeAndPath)) Then Exit Function
     
     'Next, we need to validate the file format as JPEG-XL.
     If Plugin_jxl.IsFileJXL(srcFile) Then
@@ -1325,267 +1257,126 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         If JXL_DEBUG_VERBOSE Then DebugMsg "JXL format found.  Proceeding with load..."
         If (dstImage Is Nothing) Then Set dstImage = New pdImage
         
-        'Create a generic JXL decoder.  This (opaque struct) must be kept alive for the duration
-        ' of the load process.
-        '
-        'Note that to improve performance, we will simply reset an existing decoder if one exists
-        ' (rather than create a new one).  This approach obviously makes this implementation non-thread-safe
-        ' - but we could obviously delegate this to individual classes for a thread-safe solution in the future.
-        JXL_CreateDecoder
-        If (m_JxlDecoder = 0) Then
-            InternalError FUNC_NAME, "can't continue without a JxlDecoder instance; abandoning import"
-            Exit Function
-        End If
+        'Ask the decoder to convert the image to a temporary a/png file.
+        ' (This intermediary format allows us to support animated JXL files too.)
+        Dim tmpFilePNG As String
+        tmpFilePNG = OS.UniqueTempFilename() & ".png"
+        Files.FileDeleteIfExists tmpFilePNG     'Failsafe only
         
-        'We can now start feeding data into the decoder.  libjxl uses an interesting design where the caller
-        ' can "subscribe" to "events".  These events are just special return codes for the "feed more data into
-        ' the decoder" function, but they are convenient for parsing because we can simply wait for the "events"
-        ' to occur before doing hefty tasks like allocating buffers for pixels, etc.
-        Dim eventsWanted As JxlDecoderStatus
-        eventsWanted = JXL_DEC_BASIC_INFO Or JXL_DEC_FRAME Or JXL_DEC_FULL_IMAGE
+        'Start by constructing a command-line string
+        Dim shellCmd As pdString
+        Set shellCmd = New pdString
+        shellCmd.Append "djxl.exe "
         
-        Dim jxlReturn As JxlDecoderStatus
-        jxlReturn = CallCDeclW(JxlDecoderSubscribeEvents, vbLong, m_JxlDecoder, eventsWanted)
-        If (jxlReturn = JXL_DEC_ERROR) Then
-            InternalError FUNC_NAME, "couldn't subscribe events"
-            Exit Function
-        ElseIf (jxlReturn <> JXL_DEC_SUCCESS) Then
-            InternalError FUNC_NAME, "unexpected return: " & jxlReturn
-            Exit Function
-        Else
-            If JXL_DEBUG_VERBOSE Then DebugMsg "Successfully subscribed to events: " & eventsWanted
-        End If
+        'Input first (note the use of quotes to ensure safety with space-containing paths.)
+        shellCmd.Append """"
+        shellCmd.Append srcFile
+        shellCmd.Append """ "
         
-        '(more events are a potential future TODO)
+        'Output next
+        shellCmd.Append """"
+        shellCmd.Append tmpFilePNG
+        shellCmd.Append """"
         
-        'Open a stream on the underlying JXL file
-        Const JXL_CHUNK_SIZE As Long = 2 ^ 19   '0.5 MB at a time seems like a reasonable modern default?
-        Set m_Stream = New pdStream
-        If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile, JXL_CHUNK_SIZE, optimizeAccess:=OptimizeSequentialAccess)) Then
-            InternalError FUNC_NAME, "no stream", True
-            Exit Function
-        End If
+        If JXL_DEBUG_VERBOSE Then PDDebug.LogAction "Shelling libjxl..."
+        PDDebug.LogAction shellCmd.ToString()
         
-        If JXL_DEBUG_VERBOSE Then DebugMsg "Started generic file stream on " & srcFile
+        'Shell plugin and capture output for analysis
+        Dim outputString As String
         
-        'Start feeding data into libjxl.  For now, we're just gonna dump as much of the file into libjxl as we can
-        ' until we receive the event(s) we've subscribed to.
-        Dim nextEvent As JxlDecoderStatus
-        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
-        If (nextEvent = JXL_DEC_ERROR) Then GoTo LoadFailed
+        Dim cShell As pdPipeSync
+        Set cShell = New pdPipeSync
         
-        'The first event we expect is "basic image header" retrieval.
-        If (nextEvent = JXL_DEC_BASIC_INFO) Then
+        If cShell.RunAndCaptureOutput(pluginExeAndPath, shellCmd.ToString(), False) Then
             
-            jxlReturn = CallCDeclW(JxlDecoderGetBasicInfo, vbLong, m_JxlDecoder, VarPtr(m_Header))
-            If (jxlReturn <> JXL_DEC_SUCCESS) Then
-                InternalError FUNC_NAME, "couldn't get basic info"
-                GoTo LoadFailed
+            'For reasons I do not fathom, libjxl writes all state data to stderr only
+            ' (including normal success reporting *facepalm*)
+            outputString = cShell.GetStdErrDataAsString()
+            
+            If JXL_DEBUG_VERBOSE Then
+                PDDebug.LogAction "libjxl returned.  Analyzing output..."
+                PDDebug.LogAction "(Output follows)" & vbCrLf & outputString
             End If
             
-        Else
-            InternalError FUNC_NAME, "unexpected event instead of basic info"
-        End If
-        
-        'If we're still here, basic image info retrieval was successful.
-        If JXL_DEBUG_VERBOSE Then
-            DebugMsg "Image dimensions: " & m_Header.xsize & "x" & m_Header.ysize
-            DebugMsg "Image channel bit-depth: " & m_Header.bits_per_sample
-            DebugMsg "Image num color channels: " & m_Header.num_color_channels
-            DebugMsg "Image num extra channels: " & m_Header.num_extra_channels
-            DebugMsg "Image is animated: " & (m_Header.have_animation <> 0)
-        End If
-        
-        'Validate the image header before continuing.
-        If (m_Header.xsize <= 0) Or (m_Header.ysize <= 0) Then
-            InternalError FUNC_NAME, "bad image size"
-            GoTo LoadFailed
-        End If
-        
-        'We now have enough to initialize a basic pdImage object.
-        If (dstImage Is Nothing) Then Set dstImage = New pdImage
-        dstImage.Width = m_Header.xsize
-        dstImage.Height = m_Header.ysize
-        
-        'DPI is not encoded in JXL files, but ExifTool will try to pick it up later during processing if
-        ' it encounters it...
-        'dstImage.SetDPI 72, 72
-        
-        'Formal animation support remains TODO pending images to test with!
-        Dim imgIsAnimated As Boolean
-        imgIsAnimated = (m_Header.have_animation <> 0)
-        
-        'dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(m_AnimationInfo.loop_count))
-        Dim idxFrame As Long, numFramesOK As Long
-        idxFrame = 0
-        numFramesOK = 0
-        
-        'We also need to flag the underlying format in advance, since it changes the way layer
-        ' names are assigned (animation layers are called "frames" instead of "pages")
-        dstImage.SetOriginalFileFormat PDIF_JXL
-        
-        'Animated images will be auto-loaded as separate layers
-        Dim tmpLayer As pdLayer, tmpDIB As pdDIB
-        Dim curFrameHeader As JxlFrameHeader
-        
-        'We will now continue iterating through the file, one frame at a time, until the full image
-        ' is loaded.  (Note that JPEG XL files don't give the number of frames up front, which is a pain -
-        ' so we have no choice but to iterate until we hit the frame marked as "last frame".)
-        '
-        'Note that we will also quit if we successfully load the frame marked as "last frame".
-        Dim letsQuitEarly As Boolean
-        letsQuitEarly = False
-        
-        nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
-        Do While (nextEvent <> JXL_DEC_SUCCESS)
-        
-            'For now, halt on all errors.  (They are assumed to be unrecoverable at this point,
-            ' since libjxl's API provides no mechanism for retrieving *what* the error was -
-            ' that's a TODO item per their docs.)
-            If (nextEvent = JXL_DEC_ERROR) Then GoTo LoadFailed
+            'Look for success
+            Const JXL_DECODER_SUCCESS_TEXT As String = "Decoded to pixels."
+            LoadJXL = (Strings.StrStrBM(outputString, JXL_DECODER_SUCCESS_TEXT, 1, False) > 0)
             
-            'Handle events according to type.
-            
-            'A new frame header has been encountered.  Prep a pdLayer object to receive it.
-            If (nextEvent = JXL_DEC_FRAME) Then
+            If LoadJXL Then
                 
-                'Yes, this text uses "page" instead of "frame" - this is purely to reduce localization burdens
-                If imgIsAnimated Then
-                    Dim unknownText As String
-                    If (LenB(unknownText) = 0) Then unknownText = g_Language.TranslateMessage("unknown")
-                    Message "Loading page %1 of %2...", CStr(idxFrame + 1), unknownText, "DONOTLOG"
-                End If
+                If JXL_DEBUG_VERBOSE Then PDDebug.LogAction "libjxl returned success!  Loading converted PNG..."
                 
-                'Retrieve the current frame header
-                jxlReturn = CallCDeclW(JxlDecoderGetFrameHeader, vbLong, m_JxlDecoder, VarPtr(curFrameHeader))
-                If (jxlReturn = JXL_DEC_SUCCESS) Then
+                'The image now exists as a standalong a/png file.  We can use our internal parser
+                ' to rapidly(ish) decompress the image to internal PDI format.
+                Dim cPNG As pdPNG
+                Set cPNG = New pdPNG
+                LoadJXL = (cPNG.LoadPNG_Simple(tmpFilePNG, dstImage, dstDIB, False) <= png_Warning)
                 
-                    'Success!  Create a new layer in the destination image, then copy the pixel data and
-                    ' timestamp (if relevant) into it.
-                    Dim newLayerID As Long, newLayerName As String
-                    newLayerID = dstImage.CreateBlankLayer()
-                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                If LoadJXL Then
+                
+                    'If we've experienced one or more warnings during the load process, dump them out to the debug file.
+                    If (cPNG.Warnings_GetCount() > 0) Then cPNG.Warnings_DumpToDebugger
                     
-                    If imgIsAnimated Then
-                        newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, dstDIB, idxFrame)
+                    'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
+                    dstDIB.SetAlphaPremultiplication True
+                    
+                    'Migrate the filled DIB into the destination image object, and initialize it as the base layer
+                    Dim newLayerName As String
+                    newLayerName = Layers.GenerateInitialLayerName(srcFile, vbNullString, False, dstImage, dstDIB)
+                    
+                    'Create the new layer in the target image, and pass our created name to it
+                    Dim newLayerID As Long
+                    newLayerID = dstImage.CreateBlankLayer
+                    dstImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, dstDIB, False
+                    dstImage.UpdateSize
+                    
+                    'If the JXL converter wrote an animated PNG, import remaining frames now
+                    If cPNG.IsAnimated() Then
+                        
+                        LoadJXL = (cPNG.ImportStage7_LoadRemainingFrames(dstImage) < png_Failure)
+                        
+                        'Hide all frames except the first
+                        Dim pageTracker As Long
+                        For pageTracker = 1 To dstImage.GetNumOfLayers - 1
+                            dstImage.GetLayerByIndex(pageTracker).SetLayerVisibility False
+                        Next pageTracker
+                        
+                        dstImage.SetActiveLayerByIndex 0
+                        
+                        'Also tag the image as being animated; we use this to activate some contextual UI bits
+                        dstImage.SetAnimated True
+                        
                     Else
-                        newLayerName = Layers.GenerateInitialLayerName(srcFile, vbNullString, False, dstImage, dstDIB)
+                        dstImage.SetAnimated False
                     End If
                     
-                    tmpLayer.InitializeNewLayer PDL_Image, newLayerName, Nothing, True
-                    tmpLayer.SetLayerVisibility (idxFrame = 0)
+                    'Only *now* do we relay any useful state information to the destination image object.
+                    ' (Note that these settings are PNG-specific, not JXL-specific, so e.g. a 12-bit JXL file
+                    ' will use a 16-bit intermediary PNG - that's okay for our purposes!)
+                    dstImage.SetOriginalFileFormat PDIF_JXL
+                    dstImage.SetOriginalColorDepth cPNG.GetBitsPerPixel()
+                    dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
+                    dstImage.SetOriginalAlpha cPNG.HasAlpha()
                     
-                    'Optional layer name from embedded frame name?
-                    If (curFrameHeader.name_length <> 0) Then
-                        'TODO
-                    End If
+                    'We are now finished with the PNG interface; free it as it may be quite large
+                    Set cPNG = Nothing
                     
-                    'TODO: pull animation timing info if relevant
-                    
-'                    'As part of storing frametime, update the layer's name with ([time] ms) at the end
-'                    frameTimeInMS = frameTimestamp - lastFrameTimestamp
-'                    tmpLayer.SetLayerFrameTimeInMS frameTimeInMS
-'                    tmpLayer.SetLayerName tmpLayer.GetLayerName & " (" & CStr(frameTimeInMS) & "ms)"
-'                    lastFrameTimestamp = frameTimestamp
-'                    tmpLayer.NotifyOfDestructiveChanges
-                    
-                    'Prep a (reusable) buffer to receive this frame's pixel data
-                    If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-                    If (tmpDIB.GetDIBWidth <> m_Header.xsize) Or (tmpDIB.GetDIBHeight <> m_Header.ysize) Then
-                        tmpDIB.CreateBlank m_Header.xsize, m_Header.ysize, 32, 0, 0
-                    Else
-                        tmpDIB.ResetDIB 0
-                    End If
-                    
-                Else
-                    InternalError FUNC_NAME, "bad frame header"
-                    GoTo LoadFailed
                 End If
-            
-            'Pixel data is ready, but we need to specify a buffer first
-            ElseIf (nextEvent = JXL_DEC_NEED_IMAGE_OUT_BUFFER) Then
                 
-                Dim pxFormat As JxlPixelFormat
-                With pxFormat
-                    .align_scanline = 4     'Windows requires 4-byte alignment, but this is redundant when decoding to RGBA8...
-                    .data_type = JXL_TYPE_UINT8
-                    .num_channels = 4
-
-                    'Only matters if we support higher bit-depths in the future, obviously
-                    .endianness = JXL_LITTLE_ENDIAN
-                End With
-
-                'Ensure our placeholder DIB is valid
-                Dim dibReady As Boolean
-                dibReady = Not (tmpDIB Is Nothing)
-                If dibReady Then dibReady = (tmpDIB.GetDIBWidth = m_Header.xsize) And (tmpDIB.GetDIBHeight = m_Header.ysize)
+                'Regardless of success or failure, kill the temporary PNG file (if it exists)
+                Files.FileDeleteIfExists tmpFilePNG
                 
-                'Test only: see what size is required by the decoder?
-                Dim reqSize As Long
-                jxlReturn = CallCDeclW(JxlDecoderImageOutBufferSize, vbLong, m_JxlDecoder, VarPtr(pxFormat), VarPtr(reqSize))
-                DebugMsg "Size allocated for frame: " & Files.GetFormattedFileSize(tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight)
-                
-                'If a valid buffer exists, pass its information to the decoder
-                If dibReady Then
-                    jxlReturn = CallCDeclW(JxlDecoderSetImageOutBuffer, vbLong, m_JxlDecoder, VarPtr(pxFormat), tmpDIB.GetDIBPointer, tmpDIB.GetDIBStride * tmpDIB.GetDIBHeight)
-                    If (jxlReturn <> JXL_DEC_SUCCESS) Then
-                        InternalError FUNC_NAME, "bad SetImageOutBuffer"
-                        GoTo LoadFailed
-                    End If
-                Else
-                    InternalError FUNC_NAME, "bad pixel buffer"
-                    GoTo LoadFailed
-                End If
-
-            'The current frame has been decoded successfully.
-            ElseIf (nextEvent = JXL_DEC_FULL_IMAGE) Then
-                
-                'Premultiply the DIB (TODO: see if the decoder can do this for us? might be faster)
-                tmpDIB.SetAlphaPremultiplication True
-                
-                'Swizzle R/B channels
-                DIBs.SwizzleBR tmpDIB
-                
-                'Store the finished DIB inside the temporary layer, then assign that layer to the parent image
-                tmpLayer.SetLayerDIB tmpDIB
-                Set tmpDIB = New pdDIB
-                
-                'Increment frame count and reset current frame state.
-                idxFrame = idxFrame + 1
-                numFramesOK = numFramesOK + 1
-                If JXL_DEBUG_VERBOSE Then DebugMsg "Successfully finished frame #" & idxFrame
-                
-                'If this frame was marked as the last frame in the image, do not attempt to retrieve
-                ' another frame - instead, just exit after this.
-                If (curFrameHeader.bool_is_last <> 0) Then letsQuitEarly = True
-            
             Else
-                InternalError FUNC_NAME, "unexpected event: " & nextEvent
-                Exit Do
+                InternalError FUNC_NAME, "couldn't find success in output string?"
             End If
             
-            'Retrieve the next event.  Note that libjxl will return JXL_DEC_SUCCESS if all requested events
-            ' have been returned, *even if EOF has not been reached*.  That's okay for our purposes - but if we
-            ' expand coverage in the future, we need to manually request new events accordingly.
-            If letsQuitEarly Then
-                Exit Do
-            Else
-                nextEvent = JXL_ProcessUntilEvent(JXL_CHUNK_SIZE)
-            End If
-        
-        Loop
-        
-        'Report success if at least one frame was retrieved correctly
-        LoadJXL = (numFramesOK > 0)
-        If LoadJXL Then
-            dstImage.NotifyImageChanged UNDO_Everything
-            If JXL_DEBUG_VERBOSE Then DebugMsg "JXL loaded successfully; " & numFramesOK & " frames processed."
+        'Plugin error
+        Else
+            InternalError FUNC_NAME, "failed to shell decoder (djxl.exe)"
+            LoadJXL = False
         End If
         
-        'Note that we keep the decoder alive here.  This improves performance on subsequent imports,
-        ' and the decoder will be auto-freed when libjxl is released.
-        JXL_ResetDecoder
-        
+    '/File is not JXL format
     Else
         Exit Function
     End If
@@ -1594,15 +1385,8 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Exit Function
     
 LoadFailed:
-    
     LoadJXL = False
     InternalError FUNC_NAME, "terminating due to error"
-    
-    'Free the decoder, if any
-    JXL_DestroyDecoder
-    
-    'Free our file importer too
-    Set m_Stream = Nothing
     
 End Function
 
@@ -2726,6 +2510,165 @@ Private Function CallCDeclW(ByVal lProc As LibJXL_ProcAddress, ByVal fRetType As
     Const CC_CDECL As Long = 1
     hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
     
+End Function
+
+'Notify the user that PD can automatically download and configure JPEG XL support for them.
+'
+'Returns TRUE if PD successfully downloaded (and initialized) all required plugins.
+Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+    
+    Const FUNC_NAME As String = "PromptForLibraryDownload_JXL"
+    
+    On Error GoTo BadDownload
+    
+    'Like most modern libraries, libjxl requires at least Win 7
+    If OS.IsWin7OrLater() Then
+    
+        'Ask the user for permission to (attempt) download
+        Dim uiMsg As pdString
+        Set uiMsg = New pdString
+        uiMsg.AppendLine g_Language.TranslateMessage("JPEG XL (JXL) is a potential next-generation replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that permanently enables JPEG XL support.")
+        uiMsg.AppendLineBreak
+        uiMsg.AppendLine g_Language.TranslateMessage("The libjxl library provides free, open-source JPEG XL encoders and decoders.  Portable copies of these tools require roughly ~%1 mb of disk space.  Once downloaded, they will allow PhotoDemon to import and export JPEG XL files.", 5)
+        uiMsg.AppendLineBreak
+        uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?")
+        
+        Dim msgReturn As VbMsgBoxResult
+        msgReturn = PDMsgBox(uiMsg.ToString, vbInformation Or vbYesNoCancel, "Download required")
+        If (msgReturn <> vbYes) Then
+            
+            'On a NO response, provide additional feedback.
+            If (msgReturn = vbNo) Then
+                uiMsg.Reset
+                uiMsg.AppendLine g_Language.TranslateMessage("PhotoDemon will not download the JPEG XL libraries at this time.")
+                uiMsg.AppendLineBreak
+                uiMsg.AppendLine g_Language.TranslateMessage("To manually enable JPEG XL support, you can download the latest copies of the free ""%1"" and ""%2"" programs and place them into your PhotoDemon plugin folder:", "cjxl.exe", "djxl.exe")
+                uiMsg.AppendLine PluginManager.GetPluginPath()
+                uiMsg.AppendLineBreak
+                uiMsg.AppendLine g_Language.TranslateMessage("These free libraries are typically available at the libjxl release page:")
+                uiMsg.Append "https://github.com/libjxl/libjxl/releases"
+                PDMsgBox uiMsg.ToString, vbInformation Or vbOKOnly, "Download canceled"
+            End If
+            
+            PromptForLibraryDownload_JXL = False
+            Exit Function
+            
+        End If
+        
+        'The user said YES!  Attempt to download the latest libavif release now.
+        Dim srcURL As String, dstFileTemp As String
+        
+        'Before downloading anything, ensure we have write access on the plugin folder.
+        dstFileTemp = PluginManager.GetPluginPath()
+        If Not Files.PathExists(dstFileTemp, True) Then
+            PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
+            PromptForLibraryDownload_JXL = False
+            Exit Function
+        End If
+        
+        'Grab the .pdz file.  This path is hard-coded according to my most recently tested version of libjxl.
+        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libjxl-plugins-0.8.1/libjxl-0.8.1.pdz"
+        dstFileTemp = PluginManager.GetPluginPath() & "libavif.tmp"
+        
+        'If the destination file does exist, kill it (maybe it's broken or bad)
+        Files.FileDeleteIfExists dstFileTemp
+        
+        'Download
+        Dim tmpFile As String
+        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
+        
+        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileTemp
+        Files.FileDeleteIfExists tmpFile
+        
+        'With the pdPackage file successfully downloaded, extract avifdec and avifenc and place them in the plugins folder.
+        PDDebug.LogAction "Extracting latest libjxl..."
+        Dim cPackage As pdPackageChunky
+        Set cPackage = New pdPackageChunky
+        
+        Dim dstFilename As String
+        Dim tmpBytes() As Byte, tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
+        
+        Dim numSuccessfulFiles As Long, numBytesExtracted As Long
+        numSuccessfulFiles = 0
+        numBytesExtracted = 0
+        
+        'Load the file into a temporary package manager
+        If cPackage.OpenPackage_File(dstFileTemp) Then
+            
+            'I use a custom-built tool to assemble pdPackage files; individual files are stored as simple name-value pairs
+            Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+                
+                'Ensure the chunk name is actually a "NAME" chunk
+                If (tmpChunkName = "NAME") Then
+                    
+                    'Convert the filename to a full path into the user's plugin folder
+                    dstFilename = PluginManager.GetPluginPath() & tmpStream.ReadString_UTF8(tmpChunkSize)
+                    
+                    'Next, extract the chunk's data
+                    If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                        
+                        'Ensure the chunk data is a "DATA" chunk
+                        If (tmpChunkName = "DATA") Then
+                            
+                            'Write the chunk's contents to file
+                            If Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True) Then
+                                numSuccessfulFiles = numSuccessfulFiles + 1
+                                numBytesExtracted = numBytesExtracted + tmpChunkSize
+                            Else
+                                InternalError FUNC_NAME, "failed to create target file " & dstFilename
+                            End If
+                        
+                        '/Validate DATA chunk
+                        End If
+                            
+                    '/Unexpected chunk
+                    Else
+                        InternalError FUNC_NAME, "bad data chunk: " & tmpChunkName
+                    End If
+                
+                '/Unexpected chunk
+                Else
+                    InternalError FUNC_NAME, "bad name chunk: " & tmpChunkName
+                End If
+            
+            'Iterate all remaining package items
+            Loop
+            
+        Else
+            InternalError FUNC_NAME, "download failed!  libjxl is *not* currently available to this PhotoDemon instance."
+        End If
+        
+        'Free the underlying package object
+        Set cPackage = Nothing
+        
+        'Double-check expected number of files and total size of extracted bytes.
+        ' Currently we expect a number of files in the package, including license files (this may vary by libjxl release).
+        If (numSuccessfulFiles <> 18) Then InternalError FUNC_NAME, "unexpected extraction file count: " & numSuccessfulFiles
+        
+        'Current libjxl build is 0.8.1, downloaded from https://github.com/libjxl/libjxl/releases/tag/v0.8.1
+        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 4592488
+        If (numBytesExtracted = EXPECTED_TOTAL_EXTRACT_SIZE) Then
+            PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
+        Else
+            InternalError FUNC_NAME, "unexpected extraction size: " & numBytesExtracted & " vs " & EXPECTED_TOTAL_EXTRACT_SIZE
+        End If
+        
+        'Delete the temporary package file
+        Files.FileDeleteIfExists dstFileTemp
+        
+        'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
+        ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
+        PluginManager.LoadPluginGroup False
+        PromptForLibraryDownload_JXL = PluginManager.IsPluginCurrentlyEnabled(CCP_libjxl)
+        
+    End If
+    
+    Exit Function
+    
+BadDownload:
+    PromptForLibraryDownload_JXL = False
+    Exit Function
+
 End Function
 
 'The following two functions are for logging errors (always active) and/or informational processing messages

@@ -951,7 +951,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
         If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
-            If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo LibAVIFDidntWork
+            If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo LibAVIFDidntWork
         End If
         
         If Plugin_AVIF.IsAVIFImportAvailable() Then
@@ -1332,7 +1332,13 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     LoadJXL = False
     
     'Ensure libjxl is available and functioning correctly (e.g. we are on Vista or later)
-    If (Not Plugin_jxl.IsLibJXLEnabled()) Then Exit Function
+    If (Not Plugin_jxl.IsJXLImportAvailable()) Then
+        
+        'Prompt for download (if allowed) and attempt to continue
+        If (Not Plugin_jxl.PromptForLibraryDownload_JXL(True)) Then Exit Function
+        If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
+
+    End If
     
     'For now, perform basic validation against the file extension; this is primarily for performance reasons
     If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "jxl", True) Then Exit Function
@@ -1343,40 +1349,15 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     'Perform some PD-specific object initialization before exiting
     If LoadJXL And (Not dstImage Is Nothing) Then
         
+        'Note the correct image format and undo state (some of this is also handled by the upstream function,
+        ' but I add it here for clarity because JPEG-XL files currently use PNG as an interop format).
         dstImage.SetOriginalFileFormat PDIF_JXL
         dstImage.NotifyImageChanged UNDO_Everything
         
-        'Set "original image settings" so the user can use the convenient "repeat original settings" command when exporting
-        dstImage.SetOriginalColorDepth Plugin_jxl.LastJXL_OriginalColorDepth()
-        dstImage.SetOriginalGrayscale Plugin_jxl.LastJXL_IsGrayscale()
-        dstImage.SetOriginalAlpha Plugin_jxl.LastJXL_HasAlpha()
-        dstImage.SetAnimated Plugin_jxl.LastJXL_IsAnimated()
+        'Note that other load-time checks - like color-management - have already been handled by the LoadJXL function.
         
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        Set dstDIB = New pdDIB
-        dstDIB.CreateBlank 16, 16, 32, 0
-        dstDIB.SetColorManagementState cms_ProfileConverted
-
-'        'Before exiting, ensure all color management data has been added to PD's central cache
-'        Dim profHash As String
-'        If cPSP.HasICCProfile() Then
-'            profHash = ColorManagement.AddProfileToCache(cPSP.GetICCProfile(), True, False, False)
-'            dstImage.SetColorProfile_Original profHash
-'
-'            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it -
-'            ' will have been hard-converted to sRGB, so we don't want to associate the destination
-'            ' DIB with its source profile. Instead, note that it is currently sRGB to prevent the
-'            ' central color-manager from attempting to correct it on its own.
-'            profHash = ColorManagement.GetSRGBProfileHash()
-'            dstDIB.SetColorProfileHash profHash
-'            dstDIB.SetColorManagementState cms_ProfileConverted
-'
-'        End If
-    
     End If
-
-
+    
 End Function
 
 Private Function LoadMBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
