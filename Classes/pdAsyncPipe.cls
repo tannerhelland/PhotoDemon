@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdAsyncPipe"
+Attribute VB_Name = "pdPipeAsync"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Async ExifTool Interface
 'Copyright 2017-2023 by Tanner Helland
 'Created: 24/October/17
-'Last updated: 25/October/17
-'Last update: migrate code from hacked-up UserControl to dedicated class; large-scale code clean-up and
-'             heavy-duty performance optimizations
+'Last updated: 08/September/23
+'Last update: finally write code for non-UTF-8 mode(s)
 '
 'This class manages PD's async connection to the 3rd-party ExifTool library.  Communication is handled over
 ' stdin/out/err pipes, and special modifications are in place to support a number of ExifTool-specific quirks.
@@ -109,7 +108,7 @@ Private m_PipeErrRead As Long, m_PipeErrWrite As Long
 Private m_ChildProcessActive As Boolean
 
 'pdStream is integral to this class; it grants a ton of performance advantages, especially when doing unsafe reading/writing
-' from poitners returned by APIs.
+' from pointers returned by APIs.
 Private m_BufferIn As pdStream
 Private m_BufferOut As pdStream
 Private m_BufferErr As pdStream
@@ -197,12 +196,14 @@ Friend Function GetDataAsString() As String
         'Translate the requested amount of data from our internal buffer into a usable string.
         If m_AssumeUTF8Input Then
             GetDataAsString = Strings.StringFromUTF8Ptr(m_BufferIn.Peek_PointerOnly(0), m_BufferIn.GetStreamSize())
-            m_BufferIn.DeleteFromStart m_BufferIn.GetStreamSize()
             
-        'I should probably implement this fallback at some point...
+        'Same, but without UTF-8 translation
         Else
-        
+            GetDataAsString = Strings.StringFromCharPtr(m_BufferIn.Peek_PointerOnly(0), False, m_BufferIn.GetStreamSize(), True)
         End If
+        
+        'Remove the processed bytes from the stream
+        m_BufferIn.DeleteFromStart m_BufferIn.GetStreamSize()
         
     End If
     
@@ -213,10 +214,10 @@ Friend Function ErrGetDataAsString() As String
     If (m_BufferErr.GetStreamSize > 0) Then
         If m_AssumeUTF8Input Then
             ErrGetDataAsString = Strings.StringFromUTF8Ptr(m_BufferErr.Peek_PointerOnly(0), m_BufferErr.GetStreamSize())
-            m_BufferErr.DeleteFromStart m_BufferErr.GetStreamSize()
         Else
-            'TODO
+            ErrGetDataAsString = Strings.StringFromCharPtr(m_BufferErr.Peek_PointerOnly(0), False, m_BufferErr.GetStreamSize(), True)
         End If
+        m_BufferErr.DeleteFromStart m_BufferErr.GetStreamSize()
     End If
 End Function
 
@@ -282,7 +283,7 @@ Friend Function Run(ByVal childCmdLine As String, Optional ByVal childCmdLinePar
     'Make sure all pipe handles are valid
     If (m_PipeOutRead = 0) Or (m_PipeOutWrite = 0) Or (m_PipeErrRead = 0) Or (m_PipeErrWrite = 0) Or (m_PipeInRead = 0) Or (m_PipeInWrite = 0) Then
         
-        InternalError "Because one more handle creation(s) failed, pdAsyncPipe will not attempt to start the child process."
+        InternalError "Because one more handle creation(s) failed, pdPipeAsync will not attempt to start the child process."
         Run = False
         
         CloseHandleSafely m_PipeOutRead
@@ -504,9 +505,9 @@ Private Sub InternalError(ByVal errMessage As String, Optional ByVal errNumber A
     ' To avoid overloading debug logs with reports, we simply report error-number-based messages
     ' to the debug window.
     If (errNumber <> 0) Then
-        Debug.Print "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
+        Debug.Print "WARNING!  pdPipeAsync error # " & errNumber & ": " & errMessage
     Else
-        PDDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
+        PDDebug.LogAction "WARNING!  Unspecified pdPipeAsync error: " & errMessage
     End If
 End Sub
 
@@ -523,7 +524,7 @@ Private Sub InternalDataArrival()
 End Sub
 
 Private Sub InternalErrDataArrival()
-    PDDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
+    PDDebug.LogAction "FYI: pdPipeAsync's source returned the following data on stderr: "
     PDDebug.LogAction Me.ErrGetDataAsString()
 End Sub
 
