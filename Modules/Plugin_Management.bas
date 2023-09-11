@@ -62,7 +62,7 @@ Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
 Private Const EXPECTED_LIBAVIF_VERSION As String = "0.11.1"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.18"
-Private Const EXPECTED_LIBJXL_VERSION As String = "0.7.0"
+Private Const EXPECTED_LIBJXL_VERSION As String = "0.8.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.13.1"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
@@ -129,7 +129,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
     End If
     
     Dim startTime As Currency
-        
+    
     'Plugin loading is handled in a loop.  This loop will call several helper functions, passing each sequential plugin
     ' index as defined by the CORE_PLUGINS enum (and matching CORE_PLUGIN_COUNT const).  Some initialization steps are
     ' shared among all plugins (e.g. checking for the plugin's existence), while some require custom initializations.

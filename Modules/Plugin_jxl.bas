@@ -1155,17 +1155,56 @@ End Sub
 
 Public Function GetLibJXLVersion() As String
     
-    'Do not attempt to retrieve version info unless the library was loaded successfully.
-    If (m_LibHandle <> 0) And m_LibAvailable Then
+    Const FUNC_NAME As String = "GetLibJXLVersion"
+    
+    'Do not attempt to retrieve version info unless the library actually exists
+    If Files.FileExists(PluginManager.GetPluginPath & "djxl.exe") Then
         
-        Dim ptrVersion As Long
-        ptrVersion = CallCDeclW(JxlDecoderVersion, vbLong)
+        Dim pluginExeAndPath As String
+        pluginExeAndPath = PluginManager.GetPluginPath() & "djxl.exe"
+        If (Not Files.FileExists(pluginExeAndPath)) Then Exit Function
         
-        'From the docs (https://libjxl.readthedocs.io/en/latest/api_decoder.html):
-        ' Returns the decoder library version as an integer:
-        ' MAJOR_VERSION * 1000000 + MINOR_VERSION * 1000 + PATCH_VERSION.
-        ' (For example, version 1.2.3 would return 1002003.)
-        GetLibJXLVersion = Trim$(Str$(ptrVersion \ 1000000)) & "." & Trim$(Str$((ptrVersion \ 1000) Mod 1000)) & "." & Trim$(Str$(ptrVersion Mod 1000)) & ".0"
+        'Start constructing a command-line string
+        Dim shellCmd As pdString
+        Set shellCmd = New pdString
+        shellCmd.Append "djxl.exe --version"
+        
+        'Shell the JPEG XL decompressor and simply request its version info
+        Dim cShell As pdPipeSync
+        Set cShell = New pdPipeSync
+        
+        If cShell.RunAndCaptureOutput(pluginExeAndPath, shellCmd.ToString(), False) Then
+            
+            'libjxl writes to stderr for reasons unknown
+            Dim outputString As String
+            outputString = cShell.GetStdOutDataAsString()
+            
+            'Look for the library name first; version typically follows, as in:
+            ' "djxl v0.8.1 c27d499 [SSE4,SSSE3,Unknown]"
+            Dim libNamePos As Long
+            libNamePos = InStr(1, outputString, "djxl", vbBinaryCompare)
+            
+            If (libNamePos > 0) Then
+                
+                'Advance pointer past the space that follows "djxl" (e.g. to the first char past "djxl v")
+                libNamePos = libNamePos + 6
+                
+                Dim libNameEndPos As Long
+                libNameEndPos = InStr(libNamePos, outputString, " ", vbBinaryCompare)
+                
+                If (libNameEndPos > libNamePos) Then
+                    GetLibJXLVersion = Mid$(outputString, libNamePos, libNameEndPos - libNamePos)
+                Else
+                    InternalError FUNC_NAME, "bad version parse"
+                End If
+            
+            Else
+                InternalError FUNC_NAME, "bad lib name"
+            End If
+                
+        Else
+            InternalError FUNC_NAME, "failed to shell djxl with --version"
+        End If
         
     End If
         
