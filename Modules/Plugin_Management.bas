@@ -3,9 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2023 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 13/October/22
-'Last update: add a function for querying XP-compatibility; this will make it easier for the plugin manager UI
-'             to notify a user that non-functional plugins are simple XP-compatibility issues, not technical problems
+'Last updated: 05/September/23
+'Last update: switch JPEG-XL support to on-demand (instead of trying to ship it with PD)
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' Current builds require a number of third-party libraries for full feature availability.  (Some of these
@@ -30,7 +29,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 14
+Private Const CORE_PLUGIN_COUNT As Long = 13
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
@@ -39,8 +38,7 @@ Public Enum CORE_PLUGINS
     CCP_ExifTool
     CCP_EZTwain
     CCP_FreeImage
-    CCP_AvifExport
-    CCP_AvifImport
+    CCP_libavif
     CCP_libdeflate
     CCP_libjxl
     CCP_libwebp
@@ -52,18 +50,17 @@ Public Enum CORE_PLUGINS
 End Enum
 
 #If False Then
-    Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
+    Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
     Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_resvg = 0, CCP_zstd = 0, CCP_libjxl = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_AVIFE_VERSION As String = "0.11.1"
-Private Const EXPECTED_AVIFI_VERSION As String = "0.11.1"
 Private Const EXPECTED_CHARLS_VERSION As String = "2.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.44"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
+Private Const EXPECTED_LIBAVIF_VERSION As String = "0.11.1"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.18"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.7.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.13.1"
@@ -190,14 +187,10 @@ Public Sub ReportPluginLoadSuccess()
     
 End Sub
 
-'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include helper files,
-' like README or LICENSE files - just the core DLL or EXE for the plugin.
+'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include
+' helper files, like README or LICENSE files - just the core DLL or EXE for the plugin.
 Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            GetPluginFilename = "avifenc.exe"
-        Case CCP_AvifImport
-            GetPluginFilename = "avifdec.exe"
         Case CCP_CharLS
             GetPluginFilename = "charls-2-x86.dll"
         Case CCP_ExifTool
@@ -206,10 +199,12 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "eztw32.dll"
         Case CCP_FreeImage
             GetPluginFilename = "FreeImage.dll"
+        Case CCP_libavif
+            GetPluginFilename = "avifdec.exe"
         Case CCP_libdeflate
             GetPluginFilename = "libdeflate.dll"
         Case CCP_libjxl
-            GetPluginFilename = "libjxl.dll"
+            GetPluginFilename = "jxl.dll"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
@@ -227,10 +222,6 @@ End Function
 
 Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            GetPluginName = "libavif export"
-        Case CCP_AvifImport
-            GetPluginName = "libavif import"
         Case CCP_CharLS
             GetPluginName = "CharLS"
         Case CCP_ExifTool
@@ -239,6 +230,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "EZTwain"
         Case CCP_FreeImage
             GetPluginName = "FreeImage"
+        Case CCP_libavif
+            GetPluginName = "libavif"
         Case CCP_libdeflate
             GetPluginName = "libdeflate"
         Case CCP_libjxl
@@ -271,13 +264,6 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     
     Select Case pluginEnumID
         
-        'libavif import/export can write its version number to stdout, but it's a bit complicated to retrieve...
-        Case CCP_AvifExport
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(True)
-        
-        Case CCP_AvifImport
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(False)
-        
         Case CCP_CharLS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_CharLS.GetVersion()
         
@@ -287,6 +273,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_EZTwain
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_EZTwain.GetEZTwainVersion()
         
+        Case CCP_libavif
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(False)
+            
         Case CCP_libdeflate
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
         
@@ -321,23 +310,17 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     
 End Function
 
-'Given a plugin enum value, return a string stack of any non-essential files associated with the plugin.  This includes things like
-' README or LICENSE files, and it can be EMPTY if no helper files exist.
+'Given a plugin enum value, return a string stack of any non-essential files associated with the plugin.
+' This includes things like README or LICENSE files, and it can be EMPTY if no helper files exist.
 '
-'Returns TRUE if one or more helper files exist; FALSE if none exist.  This should make it easier for the caller to know if the
-' string stack needs to be processed further.
+'Returns TRUE if one or more helper files exist; FALSE if none exist.  This should make it easier for the caller
+' to know if the string stack needs to be processed further.
 Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, ByRef dstStringStack As pdStringStack) As Boolean
     
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
     dstStringStack.ResetStack
     
     Select Case pluginEnumID
-        
-        Case CCP_AvifExport
-            dstStringStack.AddString "avif-LICENSE.txt"
-        
-        Case CCP_AvifImport
-            dstStringStack.AddString "avif-LICENSE.txt"
         
         Case CCP_CharLS
             dstStringStack.AddString "charls-2-x86.LICENSE.md"
@@ -351,10 +334,21 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_FreeImage
             dstStringStack.AddString "freeimage-LICENSE.txt"
         
+        Case CCP_libavif
+            dstStringStack.AddString "avifenc.txt"
+            dstStringStack.AddString "avif-LICENSE.txt"
+        
         Case CCP_libdeflate
             dstStringStack.AddString "libdeflate-LICENSE.txt"
         
         Case CCP_libjxl
+            dstStringStack.AddString "brotlicommon.dll"
+            dstStringStack.AddString "brotlidec.dll"
+            dstStringStack.AddString "brotlienc.dll"
+            dstStringStack.AddString "cjxl.exe"
+            dstStringStack.AddString "djxl.exe"
+            dstStringStack.AddString "jxl_threads.dll"
+            dstStringStack.AddString "jxlinfo.exe"
             dstStringStack.AddString "libjxl-LICENSE.txt"
         
         Case CCP_LittleCMS
@@ -399,10 +393,6 @@ End Sub
 ' including forcible disablement by the user, bugs, missing files, etc; this catch-all function returns a binary "enabled" state.)
 Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            IsPluginCurrentlyEnabled = m_avifExportEnabled
-        Case CCP_AvifImport
-            IsPluginCurrentlyEnabled = m_avifImportEnabled
         Case CCP_CharLS
             IsPluginCurrentlyEnabled = Plugin_CharLS.IsCharLSEnabled()
         Case CCP_ExifTool
@@ -411,10 +401,12 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = Plugin_EZTwain.IsScannerAvailable
         Case CCP_FreeImage
             IsPluginCurrentlyEnabled = ImageFormats.IsFreeImageEnabled()
+        Case CCP_libavif
+            IsPluginCurrentlyEnabled = m_avifExportEnabled Or m_avifImportEnabled
         Case CCP_libdeflate
             IsPluginCurrentlyEnabled = m_LibDeflateEnabled
         Case CCP_libjxl
-            IsPluginCurrentlyEnabled = Plugin_jxl.IsLibJXLEnabled()
+            IsPluginCurrentlyEnabled = Plugin_jxl.IsJXLImportAvailable()
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
@@ -435,10 +427,6 @@ End Function
 ' Plugin Manager dialog or the plugin initialization functions.
 Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            m_avifExportEnabled = newEnabledState
-        Case CCP_AvifImport
-            m_avifImportEnabled = newEnabledState
         Case CCP_CharLS
             Plugin_CharLS.ForciblySetAvailability newEnabledState
         Case CCP_ExifTool
@@ -447,6 +435,9 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             Plugin_EZTwain.ForciblySetScannerAvailability newEnabledState
         Case CCP_FreeImage
             ImageFormats.SetFreeImageEnabled newEnabledState
+        Case CCP_libavif
+            m_avifExportEnabled = newEnabledState
+            m_avifImportEnabled = newEnabledState
         Case CCP_libdeflate
             m_LibDeflateEnabled = newEnabledState
         Case CCP_libjxl
@@ -480,7 +471,9 @@ Public Function IsPluginAvailableOnDemand(ByVal pluginID As CORE_PLUGINS) As Boo
     IsPluginAvailableOnDemand = False
     
     Select Case pluginID
-        Case CCP_AvifExport, CCP_AvifImport
+        Case CCP_libavif
+            IsPluginAvailableOnDemand = True
+        Case CCP_libjxl
             IsPluginAvailableOnDemand = True
     End Select
     
@@ -519,9 +512,7 @@ Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As CORE_PLUGINS) As B
     IsPluginUnavailableOnXP = False
     
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            IsPluginUnavailableOnXP = True
-        Case CCP_AvifImport
+        Case CCP_libavif
             IsPluginUnavailableOnXP = True
         Case CCP_libjxl
             IsPluginUnavailableOnXP = True
@@ -535,10 +526,6 @@ End Function
 ' be helpful for seeing if a user has manually updated a plugin file to some new version (which is generally okay!)
 Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            ExpectedPluginVersion = EXPECTED_AVIFE_VERSION
-        Case CCP_AvifImport
-            ExpectedPluginVersion = EXPECTED_AVIFI_VERSION
         Case CCP_CharLS
             ExpectedPluginVersion = EXPECTED_CHARLS_VERSION
         Case CCP_ExifTool
@@ -547,6 +534,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_EZTWAIN_VERSION
         Case CCP_FreeImage
             ExpectedPluginVersion = EXPECTED_FREEIMAGE_VERSION
+        Case CCP_libavif
+            ExpectedPluginVersion = EXPECTED_LIBAVIF_VERSION
         Case CCP_libdeflate
             ExpectedPluginVersion = EXPECTED_LIBDEFLATE_VERSION
         Case CCP_libjxl
@@ -569,10 +558,6 @@ End Function
 'Simplified function for retrieving the homepage URL for a given plugin
 Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
-        Case CCP_AvifImport
-            GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
         Case CCP_CharLS
             GetPluginHomepage = "https://github.com/team-charls/charls"
         Case CCP_ExifTool
@@ -581,6 +566,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "http://eztwain.com/eztwain1.htm"
         Case CCP_FreeImage
             GetPluginHomepage = "https://sourceforge.net/projects/freeimage/"
+        Case CCP_libavif
+            GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
         Case CCP_libdeflate
             GetPluginHomepage = "https://github.com/ebiggers/libdeflate"
         Case CCP_libjxl
@@ -603,10 +590,6 @@ End Function
 'Simplified function for retrieving the license name for a given plugin
 Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
-        Case CCP_AvifImport
-            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_CharLS
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_ExifTool
@@ -615,6 +598,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("public domain")
         Case CCP_FreeImage
             GetPluginLicenseName = g_Language.TranslateMessage("FreeImage public license")
+        Case CCP_libavif
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_libdeflate
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_libjxl
@@ -637,10 +622,6 @@ End Function
 'Simplified function for retrieving the license URL for a given plugin
 Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-        Case CCP_AvifExport
-            GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
-        Case CCP_AvifImport
-            GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
         Case CCP_CharLS
             GetPluginLicenseURL = "https://github.com/team-charls/charls/blob/master/LICENSE.md"
         Case CCP_ExifTool
@@ -649,6 +630,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://eztwain.com/ezt1faq.htm"
         Case CCP_FreeImage
             GetPluginLicenseURL = "http://freeimage.sourceforge.net/freeimage-license.txt"
+        Case CCP_libavif
+            GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
         Case CCP_libdeflate
             GetPluginLicenseURL = "https://github.com/ebiggers/libdeflate/blob/master/COPYING"
         Case CCP_libjxl
@@ -685,13 +668,6 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     Select Case pluginEnumID
         
-        'AVIF plugins are loaded on-demand, as they may not be used in every session
-        Case CCP_AvifExport
-            If Plugin_AVIF.InitializeEngines(PluginManager.GetPluginPath()) Then initializationSuccessful = Plugin_AVIF.IsAVIFExportAvailable()
-        
-        Case CCP_AvifImport
-            If Plugin_AVIF.InitializeEngines(PluginManager.GetPluginPath()) Then initializationSuccessful = Plugin_AVIF.IsAVIFImportAvailable()
-        
         Case CCP_CharLS
             initializationSuccessful = Plugin_CharLS.InitializeEngine(PluginManager.GetPluginPath())
         
@@ -718,6 +694,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         ' once a FreeImage function is actually called, we'll load the full library.
         Case CCP_FreeImage
             initializationSuccessful = Plugin_FreeImage.InitializeFreeImage(False)
+        
+        'AVIF plugins are loaded on-demand, as they may not be used in every session
+        Case CCP_libavif
+            If Plugin_AVIF.InitializeEngines(PluginManager.GetPluginPath()) Then initializationSuccessful = Plugin_AVIF.IsAVIFExportAvailable() Or Plugin_AVIF.IsAVIFImportAvailable()
         
         'libdeflate maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_libdeflate, CCP_lz4, CCP_zstd
@@ -756,12 +736,6 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
     
     Select Case pluginEnumID
         
-        Case CCP_AvifExport
-            m_avifExportEnabled = pluginState
-            
-        Case CCP_AvifImport
-            m_avifImportEnabled = pluginState
-        
         Case CCP_CharLS
             Plugin_CharLS.ForciblySetAvailability pluginState
         
@@ -773,6 +747,10 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_FreeImage
             ImageFormats.SetFreeImageEnabled pluginState
+        
+        Case CCP_libavif
+            m_avifExportEnabled = pluginState
+            m_avifImportEnabled = pluginState
         
         Case CCP_libdeflate
             m_LibDeflateEnabled = pluginState

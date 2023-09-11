@@ -274,8 +274,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright 2012-2023 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 30/October/21
-'Last update: allow libraries to be missing but OK, like libavif (which is downloaded on-demand)
+'Last updated: 22/August/23
+'Last update: minor tweaks as more libraries are moved to a "download on-demand" implementation
 '
 'I've considered merging this form with the main Tools > Options dialog, but that dialog
 ' is already cluttered and I'd prefer that average users don't interact with this dialog at all.
@@ -542,7 +542,7 @@ Private Sub CollectAllVersionNumbers()
     'Remove trailing build numbers from certain version strings.
     Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_AvifExport) And (i <> CCP_AvifImport) And (i <> CCP_resvg) Then
+        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_libavif) And (i <> CCP_resvg) Then
             If (LenB(m_LibraryVersion(i)) <> 0) Then
                 dotPos = InStrRev(m_LibraryVersion(i), ".", -1, vbBinaryCompare)
                 If (dotPos <> 0) Then m_LibraryVersion(i) = Left$(m_LibraryVersion(i), dotPos - 1)
@@ -715,8 +715,10 @@ Private Sub LibraryChanged()
         If PluginManager.IsPluginAvailableOnDemand(pluginIndex) And (Not PluginManager.IsPluginCurrentlyInstalled(pluginIndex)) Then
             
             Dim actionTarget As String
-            If (pluginIndex = CCP_AvifExport) Or (pluginIndex = CCP_AvifImport) Then
+            If (pluginIndex = CCP_libavif) Then
                 actionTarget = g_Language.TranslateMessage("an AVIF image")
+            ElseIf (pluginIndex = CCP_libjxl) Then
+                actionTarget = g_Language.TranslateMessage("a JPEG XL image")
             End If
             
             Dim additionalInfo As pdString

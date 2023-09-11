@@ -258,10 +258,10 @@ Private Const MD_integerstring = 0, MD_floatstring = 0, MD_rationalstring = 0, M
 'pdFSO is used for Unicode file interop
 Private m_FSO As pdFSO
 
-'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the pdAsyncPipe
+'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the pdPipeAsync
 ' class declared below is active and connected to ExifTool, and can be used to send/receive input and output.
 Private m_IsExifToolRunning As Boolean
-Private m_Async As pdAsyncPipe
+Private m_Async As pdPipeAsync
 
 'Because ExifTool parses metadata asynchronously, we will gather its output as it comes.  This string will hold whatever
 ' XML data ExifTool has returned so far.
@@ -1340,7 +1340,7 @@ Private Function DoesTagValueRequireEscaping(ByRef srcMetadata As PDMetadataItem
     
 End Function
 
-'Start ExifTool.  We now use m_Async (a pdAsyncPipe instance) to pass data to/from ExifTool.  This greatly
+'Start ExifTool.  We now use m_Async (a pdPipeAsync instance) to pass data to/from ExifTool.  This greatly
 ' reduces the overhead involved in repeatedly starting new ExifTool instances.  It also means that we can
 ' asynchronously start ExifTool early in the image load process, rather than waiting for the image to finish
 ' loading via FreeImage or GDI+.
@@ -1374,7 +1374,7 @@ Public Function StartExifTool() As Boolean
     cmdParams = cmdParams & "exiftool.exe -stay_open true -@ -"
     
     'Attempt to open ExifTool
-    Set m_Async = New pdAsyncPipe
+    Set m_Async = New pdPipeAsync
     If m_Async.Run(appLocation, cmdParams) Then
         PDDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
         m_IsExifToolRunning = True
@@ -1430,7 +1430,7 @@ End Sub
 ' plugin version numbers, a task performed on-demand only when the Plugin Manager dialog is loaded.
 ' ALSO NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his
 ' original version is available at the top of this module.
-Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
+Public Function ShellExecuteCapture(ByVal sApplicationPath As String, ByRef sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
     
     dstString = vbNullString
     
@@ -1441,7 +1441,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     Dim sNewOutput As String
     Dim lBytesRead As Long
     
-    'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
+    'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1k
     Const BUFFER_SIZE As Long = 1024
     
     Dim baOutput() As Byte
@@ -1489,9 +1489,9 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
             sNewOutput = StrConv(baOutput, vbUnicode)
             dstString = dstString & Left$(sNewOutput, lBytesRead)
         Loop
-
-        CloseHandle procInfo.hProcess
-        CloseHandle hCurProcess
+        
+        If (CloseHandle(procInfo.hProcess) <> 0) Then procInfo.hProcess = 0
+        If (CloseHandle(hCurProcess) <> 0) Then hCurProcess = 0
         
     Else
         ShellExecuteCapture = False

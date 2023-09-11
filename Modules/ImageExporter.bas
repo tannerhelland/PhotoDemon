@@ -538,9 +538,9 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim sFileType As String: sFileType = "AVIF"
     
     'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
-    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFExportAvailable()) Then
         
-        If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo ExportAVIFError
+        If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo ExportAVIFError
         
         'Downloading the AVIF plugins will raise new messages in the status bar; restore the original
         ' "saving %1 image" text
@@ -549,7 +549,7 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     End If
     
     'Failsafe check before proceeding
-    If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then GoTo ExportAVIFError
+    If (Not Plugin_AVIF.IsAVIFExportAvailable()) Then GoTo ExportAVIFError
     
     'Generate a composited image copy, with alpha automatically un-premultiplied
     Dim tmpImageCopy As pdDIB
@@ -1005,8 +1005,23 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportJXL = False
     Dim sFileType As String: sFileType = "JXL"
     
+    'If this system is post-XP but libjxl doesn't exist, ask if we can download a copy
+    If OS.IsVistaOrLater And (Not Plugin_jxl.IsJXLExportAvailable()) Then
+        
+        'TODO:
+        If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        
+        'Downloading the AVIF plugins will raise new messages in the status bar; restore the original
+        ' "saving %1 image" text
+        Message "Saving %1 file...", sFileType
+        
+    End If
+    
+    'Failsafe check before proceeding
+    If (Not Plugin_AVIF.IsAVIFExportAvailable()) Then GoTo ExportJXLError
+    
     'JXL exporting leans on libjxl
-    If Plugin_jxl.IsLibJXLEnabled() Then
+    If Plugin_jxl.IsJXLExportAvailable() Then
         
         'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
         ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs

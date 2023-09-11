@@ -300,28 +300,23 @@ Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
         End If
     End If
     
-    Dim okToCheck As Boolean
+    Dim targetAvifAppName As String
     If testExportLibrary Then
-        okToCheck = PluginManager.IsPluginCurrentlyInstalled(CCP_AvifExport)
+        targetAvifAppName = "avifenc.exe"
     Else
-        okToCheck = PluginManager.IsPluginCurrentlyInstalled(CCP_AvifImport)
+        targetAvifAppName = "avifdec.exe"
     End If
+    
+    Dim pluginPath As String
+    pluginPath = PluginManager.GetPluginPath & targetAvifAppName
+    
+    Dim okToCheck As Boolean
+    okToCheck = Files.FileExists(PluginManager.GetPluginPath & targetAvifAppName)
     
     If okToCheck Then
         
-        Dim pluginPath As String
-        If testExportLibrary Then
-            pluginPath = PluginManager.GetPluginPath & "avifenc.exe"
-        Else
-            pluginPath = PluginManager.GetPluginPath & "avifdec.exe"
-        End If
-        
         Dim outputString As String, shellOK As Boolean
-        If testExportLibrary Then
-            shellOK = ShellExecuteCapture(pluginPath, "avifenc.exe -v", outputString)
-        Else
-            shellOK = ShellExecuteCapture(pluginPath, "avifdec.exe -v", outputString)
-        End If
+        shellOK = ShellExecuteCapture(pluginPath, targetAvifAppName & " -v", outputString)
         
         If shellOK Then
         
@@ -410,9 +405,9 @@ End Function
 'Notify the user that PD can automatically download and configure AVIF support for them.
 '
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins
-Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
     
-    Const FUNC_NAME As String = "PromptForLibraryDownload"
+    Const FUNC_NAME As String = "PromptForLibraryDownload_AVIF"
     
     On Error GoTo BadDownload
     
@@ -445,7 +440,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
                 PDMsgBox uiMsg.ToString, vbInformation Or vbOKOnly, "Download canceled"
             End If
             
-            PromptForLibraryDownload = False
+            PromptForLibraryDownload_AVIF = False
             Exit Function
             
         End If
@@ -457,7 +452,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         dstFileTemp = PluginManager.GetPluginPath()
         If Not Files.PathExists(dstFileTemp, True) Then
             PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
-            PromptForLibraryDownload = False
+            PromptForLibraryDownload_AVIF = False
             Exit Function
         End If
         
@@ -557,21 +552,17 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         'Delete the temporary package file
         Files.FileDeleteIfExists dstFileTemp
         
-        'Attempt to initialize both the import and export plugins
+        'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
+        ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
         PluginManager.LoadPluginGroup False
-        
-        If targetIsImportLib Then
-            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport)
-        Else
-            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifExport)
-        End If
+        PromptForLibraryDownload_AVIF = PluginManager.IsPluginCurrentlyEnabled(CCP_libavif)
         
     End If
     
     Exit Function
     
 BadDownload:
-    PromptForLibraryDownload = False
+    PromptForLibraryDownload_AVIF = False
     Exit Function
 
 End Function
