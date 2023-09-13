@@ -299,7 +299,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             tmpFilenameBase = OS.UniqueTempFilename()
             tmpFilenameIntermediary = tmpFilenameBase & ".png"
             tmpFilenameAVIF = tmpFilenameBase & ".avif"
-        
+            
             'Shell libavif, and request it to convert the preview PNG to AVIF
             If Plugin_AVIF.ConvertStandardImageToAVIF(m_PreviewImagePath, tmpFilenameAVIF, 63 - sldQuality.Value, 10) Then
             

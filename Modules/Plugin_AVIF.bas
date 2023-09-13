@@ -472,7 +472,7 @@ Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib A
         ' and extract them post-download.  (This cuts download size by ~80%.)
         
         'Grab the .pdz file.  This path is hard-coded according to my most recently tested version of avifdec/enc.
-        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.3768/libavif-1.0.3768.pdz"
+        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.1/libavif-1.0.1.pdz"
         dstFileTemp = PluginManager.GetPluginPath() & "libavif.tmp"
         
         'If the destination file does exist, kill it (maybe it's broken or bad)
@@ -554,7 +554,7 @@ Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib A
         If (numSuccessfulFiles <> 3) Then InternalError FUNC_NAME, "unexpected extraction file count: " & numSuccessfulFiles
         
         'Current libavif build is 1.0.3768, downloaded from https://ci.appveyor.com/project/louquillio/libavif/builds/47660062/artifacts
-        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 24150224
+        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 24154944
         If (numBytesExtracted = EXPECTED_TOTAL_EXTRACT_SIZE) Then
             PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
         Else
