@@ -3,9 +3,8 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2023 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 17/August/23
-'Last update: instead of downloading each .exe individually, I'm now packaging both into a single pdPackage file.
-'             This cuts download size dramatically and allows me to impose some extra safeguards on the downloaded files.
+'Last updated: 13/September/23
+'Last update: use the new pdPipeSync class for shell and output capture
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
@@ -102,9 +101,14 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append """"
     
     'Shell plugin and capture output for analysis
-    Dim outputString As String
-    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
     
+    If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
+        
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
@@ -242,8 +246,13 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
     Files.FileDeleteIfExists tmpFilename
     
     'Shell plugin and capture output for analysis
-    Dim outputString As String
-    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
+    
+    If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
     
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
@@ -315,11 +324,14 @@ Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
     
     If okToCheck Then
         
-        Dim outputString As String, shellOK As Boolean
-        shellOK = ShellExecuteCapture(pluginPath, targetAvifAppName & " -v", outputString)
+        Dim cShell As pdPipeSync
+        Set cShell = New pdPipeSync
         
-        If shellOK Then
-        
+        If cShell.RunAndCaptureOutput(pluginPath, targetAvifAppName & " -v", False) Then
+            
+            Dim outputString As String
+            outputString = cShell.GetStdOutDataAsString()
+            
             'The output string is potentially quite large, and not stable between releases.
             ' For now, just blindly search for the text "Version: "
             Dim vPos As Long, targetString As String
