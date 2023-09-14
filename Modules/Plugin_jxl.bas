@@ -1257,8 +1257,13 @@ Public Function IsFileJXL(ByRef srcFile As String) As Boolean
     shellCmd.Append """"
     
     'Shell plugin and capture output for analysis
-    Dim outputString As String
-    If ShellExecuteCapture(pluginExeAndPath, shellCmd.ToString(), outputString) Then
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
+    
+    If cShell.RunAndCaptureOutput(pluginExeAndPath, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
         
         'Look for potential decoder errors; if none are found, assume the file is worth investigating as JXL
         Const JXL_DECODER_ERROR_TEXT As String = "Decoder error"
@@ -1269,7 +1274,7 @@ Public Function IsFileJXL(ByRef srcFile As String) As Boolean
         
     End If
     
-    If JXL_DEBUG_VERBOSE Then
+    If JXL_DEBUG_VERBOSE And IsFileJXL Then
         PDDebug.LogAction "IsFileJXL returned " & UCase$(CStr(IsFileJXL)) & " for " & srcFile
     End If
     
@@ -2625,7 +2630,7 @@ Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As
         Set cPackage = New pdPackageChunky
         
         Dim dstFilename As String
-        Dim tmpBytes() As Byte, tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
+        Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
         
         Dim numSuccessfulFiles As Long, numBytesExtracted As Long
         numSuccessfulFiles = 0

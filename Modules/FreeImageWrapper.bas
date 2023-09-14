@@ -385,15 +385,6 @@ Public Declare Function FreeImage_Allocate Lib "FreeImage.dll" Alias "_FreeImage
   Optional ByVal RedMask As Long, _
   Optional ByVal GreenMask As Long, _
   Optional ByVal BlueMask As Long) As Long
-
-Public Declare Function FreeImage_AllocateT Lib "FreeImage.dll" Alias "_FreeImage_AllocateT@28" ( _
-           ByVal ImageType As FREE_IMAGE_TYPE, _
-           ByVal Width As Long, _
-           ByVal Height As Long, _
-  Optional ByVal BitsPerPixel As Long = 8, _
-  Optional ByVal RedMask As Long, _
-  Optional ByVal GreenMask As Long, _
-  Optional ByVal BlueMask As Long) As Long
   
 Public Declare Function FreeImage_HasPixelsInt Lib "FreeImage.dll" Alias "_FreeImage_HasPixels@4" ( _
            ByVal fiBitmap As Long) As Long

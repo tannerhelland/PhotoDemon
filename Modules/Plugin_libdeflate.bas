@@ -308,7 +308,7 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
         
         'Perform decompression
         ' LIBDEFLATEAPI enum libdeflate_result libdeflate_zlib_decompress(struct libdeflate_decompressor *decompressor, const void *in, size_t in_nbytes, void *out, size_t out_nbytes_avail, size_t *actual_out_nbytes_ret)
-        Dim lReturn As Long
+        Dim lReturn As LibDeflate_Result
         If (cmpFormat = cf_Zlib) Then
             lReturn = CallCDeclW(libdeflate_zlib_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
         ElseIf (cmpFormat = cf_Deflate) Then
@@ -320,7 +320,7 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
         'If decompression failed, try it again, but with the explicit instruction to attempt to decompress enough
         ' data to fill the output buffer.  If there is still more compressed data past that point, it will be
         ' lost/ignored, but this may produce enough data for the caller to proceed normally.
-        If (lReturn <> 0) And allowFallbacks Then
+        If (lReturn <> ld_Success) And allowFallbacks Then
             
             InternalError "LibDeflateDecompress", "full decompress failed; attempting partial decompress instead..."
             

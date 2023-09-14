@@ -3,8 +3,8 @@ Attribute VB_Name = "ExifTool"
 'ExifTool Plugin Interface
 'Copyright 2013-2023 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 30/May/18
-'Last update: rewrite ExifTool interop using pdString (instead of huge string append (&) blocks)
+'Last updated: 13/September/23
+'Last update: switch to pdPipeSync for one-off shell instances (like retrieving library version)
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -16,21 +16,21 @@ Attribute VB_Name = "ExifTool"
 '
 'https://exiftool.org/
 '
-'As of version 6.1 build 499, all ExifTool interaction is piped across stdin/out.  This includes sending requests
+'As of PhotoDemon 6.1.499, all ExifTool interaction is piped across stdin/out.  This includes sending requests
 ' to ExifTool, retrieving ExifTool results, and checking ExifTool returns for success/failure.  All of PhotoDemon's
 ' metadata code has been rewritten to take advantage of this new asynchronous implementation.
 '
-'In the first draft of this code, I used a sample VB module as a reference courtesy of Michael Wandel:
+'Prior to that release, I used a sample VB module as a valuable reference (c/o Michael Wandel):
 'http://owl.phy.queensu.ca/~phil/exiftool/modExiftool_101.zip
 '
-'...as well as a modified piping function, derived from code originally written by Joacim Andersson:
-'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
+'That reference code has long since been replaced with the current custom-built async implementation,
+' but I thought it worthwhile to mention it in case you want a (much simpler!) look at how you might interact
+' with ExifTool from VB6.
 '
-'Those code bits have long since been replaced with custom-built implementations, but I thought it worthwhile
-' to mention them in case others want a (much simpler!) look at how you might interact with ExifTool from VB6.
-'
-'This project is periodically tested against the newest v 11.XX build of ExifTool.  You should always be able
-' to drop-in the latest 11.XX build of ExifTool's Windows EXE release without probems.
+'This project is periodically tested against the newest build of ExifTool.  In most cases, you can drop in the
+' latest ExifTool Windows EXE release without problems, but occasionally you may need to delete the Data/PluginData
+' folder and allow ExifTool to rebuild it from scratch.  (This folder is where PD's copy of ExifTool extracts its
+' portable Perl runtime, and version changes can muck things up unpredictably.)
 '
 'Additional documentation regarding the use of ExifTool can be found in the official ExifTool package,
 ' downloadable from https://exiftool.org/
@@ -46,54 +46,10 @@ Option Explicit
 ' overwrite the clipboard with streaming metadata information.
 Public Const EXIFTOOL_DEBUGGING_ENABLED As Long = 0&
 
-'A number of API functions are required to pipe stdout
-Private Const STARTF_USESHOWWINDOW = &H1
-Private Const STARTF_USESTDHANDLES = &H100
-Private Const SW_NORMAL = 1
-Private Const SW_HIDE = 0
-Private Const DUPLICATE_CLOSE_SOURCE = &H1
-Private Const DUPLICATE_SAME_ACCESS = &H2
-
-Private Type SECURITY_ATTRIBUTES
-    nLength As Long
-    lpSecurityDescriptor As Long
-    bInheritHandle As Long
-End Type
-
-Private Type STARTUPINFO
-    cb As Long
-    lpReserved As String
-    lpDesktop As String
-    lpTitle As String
-    dwX As Long
-    dwY As Long
-    dwXSize As Long
-    dwYSize As Long
-    dwXCountChars As Long
-    dwYCountChars As Long
-    dwFillAttribute As Long
-    dwFlags As Long
-    wShowWindow As Integer
-    cbReserved2 As Integer
-    lpReserved2 As Long
-    hStdInput As Long
-    hStdOutput As Long
-    hStdError As Long
-End Type
-
-Private Type PROCESS_INFORMATION
-    hProcess As Long
-    hThread As Long
-    dwProcessID As Long
-    dwThreadID As Long
-End Type
-
+'ExifTool needs to unpack a portable copy of the perl runtime; hence the awkward SetEnvironmentVariableW usage
+' (this allows unpacking to a specific folder - /Data/PluginData in our case - instead of the system temp folder)
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-Private Declare Function CreatePipe Lib "kernel32" (phReadPipe As Long, phWritePipe As Long, lpPipeAttributes As Any, ByVal nSize As Long) As Long
-Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByRef lpStartupInfo As STARTUPINFO, ByRef lpProcessInformation As PROCESS_INFORMATION) As Long
-Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHandle As Long, ByVal hSourceHandle As Long, ByVal hTargetProcessHandle As Long, lpTargetHandle As Long, ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwOptions As Long) As Long
 Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
-Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
 Private Declare Function SetEnvironmentVariableW Lib "kernel32" (ByVal ptrToEnvName As Long, ByVal ptrToEnvValue As Long) As Long
 
 'A great deal of extra code is required for finding ExifTool instances left by previous unsafe shutdowns, and silently terminating them.
@@ -626,15 +582,18 @@ Public Function GetExifToolVersion() As String
     
     If PluginManager.IsPluginCurrentlyInstalled(CCP_ExifTool) Then
         
-        Dim exifPath As String
-        exifPath = PluginManager.GetPluginPath & "exiftool.exe"
+        Const EXIFTOOL_EXE_NAME As String = "exiftool.exe"
+        Dim exiftoolPath As String
+        exiftoolPath = PluginManager.GetPluginPath & EXIFTOOL_EXE_NAME
         
-        Dim outputString As String
-        If ShellExecuteCapture(exifPath, "exiftool.exe -ver", outputString) Then
-        
+        Dim cShell As pdPipeSync
+        Set cShell = New pdPipeSync
+        If cShell.RunAndCaptureOutput(exiftoolPath, EXIFTOOL_EXE_NAME & " -ver", False) Then
+            
             'The output string will generally be a simple version number, e.g. "XX.YY", and it will be
             ' terminated by a vbCrLf character.  Remove vbCrLf now.
-            outputString = Trim$(outputString)
+            Dim outputString As String
+            outputString = Trim$(cShell.GetStdOutDataAsString())
             If (InStr(1, outputString, vbCrLf, vbBinaryCompare) <> 0) Then outputString = Replace(outputString, vbCrLf, vbNullString)
             
             'Development versions of ExifTool (e.g. any version number that is not a multiple of 10) may include
@@ -1425,87 +1384,6 @@ Public Sub TerminateExifTool()
     End If
 
 End Sub
-
-'Capture output from the requested command-line executable and return it as a string.  At present, this is only used to retrieve
-' plugin version numbers, a task performed on-demand only when the Plugin Manager dialog is loaded.
-' ALSO NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his
-' original version is available at the top of this module.
-Public Function ShellExecuteCapture(ByVal sApplicationPath As String, ByRef sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
-    
-    dstString = vbNullString
-    
-    Dim hPipeRead As Long, hPipeWrite As Long
-    Dim hCurProcess As Long
-    Dim sa As SECURITY_ATTRIBUTES
-    
-    Dim sNewOutput As String
-    Dim lBytesRead As Long
-    
-    'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1k
-    Const BUFFER_SIZE As Long = 1024
-    
-    Dim baOutput() As Byte
-    ReDim baOutput(0 To BUFFER_SIZE - 1) As Byte
-
-    With sa
-        .nLength = Len(sa)
-        .bInheritHandle = 1
-    End With
-
-    If (CreatePipe(hPipeRead, hPipeWrite, sa, BUFFER_SIZE) = 0) Then
-        ShellExecuteCapture = False
-        PDDebug.LogAction "Failed to start plugin service (couldn't create pipe)."
-        Exit Function
-    End If
-    
-    hCurProcess = GetCurrentProcess()
-
-    'Replace the inheritable read handle with a non-inheritable one. (MSDN suggestion)
-    DuplicateHandle hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, 0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE
-
-    Dim startInfo As STARTUPINFO, procInfo As PROCESS_INFORMATION
-    With startInfo
-        .cb = Len(startInfo)
-        .dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
-        .hStdOutput = hPipeWrite
-        
-        'NOTE: calling functions typically request that the shelled window be shown in the IDE but not in the compiled .exe
-        If bShowWindow Then .wShowWindow = SW_NORMAL Else .wShowWindow = SW_HIDE
-        
-    End With
-    
-    If CreateProcessW(StrPtr(sApplicationPath), StrPtr(sCommandLineParams), ByVal 0&, ByVal 0&, 1&, 0&, ByVal 0&, 0&, startInfo, procInfo) Then
-
-        'Close the thread handle, as we have no use for it
-        CloseHandle procInfo.hThread
-
-        'Also close the pipe's write handle. This is important, because ReadFile will not return until all write handles
-        ' are closed or the buffer is full.
-        CloseHandle hPipeWrite
-        hPipeWrite = 0
-        
-        Do
-            If (ReadFile(hPipeRead, baOutput(0), BUFFER_SIZE, lBytesRead, ByVal 0&) = 0) Then Exit Do
-            sNewOutput = StrConv(baOutput, vbUnicode)
-            dstString = dstString & Left$(sNewOutput, lBytesRead)
-        Loop
-        
-        If (CloseHandle(procInfo.hProcess) <> 0) Then procInfo.hProcess = 0
-        If (CloseHandle(hCurProcess) <> 0) Then hCurProcess = 0
-        
-    Else
-        ShellExecuteCapture = False
-        PDDebug.LogAction "Failed to start plugin service (couldn't create process: " & Err.LastDllError & ")."
-        Exit Function
-    End If
-    
-    If (hPipeRead <> 0) Then CloseHandle hPipeRead
-    If (hPipeWrite <> 0) Then CloseHandle hPipeWrite
-    If (hCurProcess <> 0) Then CloseHandle hCurProcess
-    
-    ShellExecuteCapture = True
-    
-End Function
 
 'If an unclean shutdown is detected, use this function to try and terminate any ExifTool instances left over by the previous session.
 ' Many thanks to http://www.vbforums.com/showthread.php?321553-VB6-Killing-Processes&p=1898861#post1898861 for guidance on this task.

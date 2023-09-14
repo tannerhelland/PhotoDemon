@@ -491,7 +491,7 @@ Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib A
         Set cPackage = New pdPackageChunky
         
         Dim dstFilename As String
-        Dim tmpBytes() As Byte, tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
+        Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
         
         Dim numSuccessfulFiles As Long, numBytesExtracted As Long
         numSuccessfulFiles = 0

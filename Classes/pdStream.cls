@@ -308,7 +308,7 @@ End Sub
 Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone, Optional ByVal reuseExistingBuffer As Boolean = False) As Boolean
     
     'If we're already open, close the current stream before starting a new one.
-    If m_Open Then Me.StopStream Not reuseExistingBuffer
+    If m_Open Then Me.StopStream (Not reuseExistingBuffer)
     
     m_StreamMode = streamType
     m_StreamAccess = streamAccess

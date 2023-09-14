@@ -102,7 +102,7 @@ Friend Function IsFileORA(ByRef srcFilename As String, Optional ByVal requireVal
             'The file appears to be a valid zip archive.  Retrieve a list of included filenames;
             ' we're looking for "mimetype" as the first entry.
             Const IDX_FILENAME As Long = 0
-            potentiallyORA = Strings.StringsEqual(CStr(m_ZipArchive.FileInfo(0, zipIdxFileName)), "mimetype", False)
+            potentiallyORA = Strings.StringsEqual(CStr(m_ZipArchive.FileInfo(IDX_FILENAME, zipIdxFileName)), "mimetype", False)
             
             'If the mimetype file is present, extract it and ensure the contents are, per the spec:
             ' "...the string "image/openraster", with no whitespace or trailing newline."

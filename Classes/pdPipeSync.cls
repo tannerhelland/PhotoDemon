@@ -35,7 +35,6 @@ Private Const NORMAL_PRIORITY_CLASS As Long = &H20&
 Private Const STARTF_USESHOWWINDOW As Long = &H1&
 Private Const STARTF_USESTDHANDLES As Long = &H100&
 Private Const SW_HIDE As Long = 0&, SW_NORMAL As Long = 1&
-Private Const ERROR_BROKEN_PIPE As Long = 109&
 
 Private Type STARTUPINFO
     cb As Long
@@ -74,11 +73,9 @@ End Type
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CreatePipe Lib "kernel32" (ByRef phReadPipe As Long, ByRef phWritePipe As Long, ByRef lpPipeAttributes As Any, ByVal nSize As Long) As Long
 Private Declare Function CreateProcessW Lib "kernel32" (ByVal ptrToApplicationName As Long, ByVal ptrToCommandLine As Long, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, ByVal ptrToStartupInfo As Long, ByRef lpProcessInformation As PROCESSINFO) As Long
-Private Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long, ByVal lpDstBuffer As Long, ByVal nBufSize As Long, ByRef lpBytesRead As Long, ByRef lpTotalBytesAvail As Long, ByVal lpBytesLeftThisMessage As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function SetHandleInformation Lib "kernel32" (ByVal hObject As Long, ByVal dwMask As Long, ByVal dwFlags As Long) As Long
 Private Declare Function TerminateProcess Lib "kernel32" (ByVal hHandle As Long, ByVal uExitCode As Long) As Long
-Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal cToWrite As Long, ByRef cWritten As Long, ByVal lpOverlapped As Any) As Long
 
 Private m_ProcInfo As PROCESSINFO
 Private m_PipeSecurityAttributes As SECURITY_ATTRIBUTES
@@ -108,28 +105,45 @@ End Sub
 
 Friend Function TerminateChildProcess() As Boolean
     
-    If (m_ProcInfo.hProcess <> 0) Then
+    Const FUNC_NAME As String = "TerminateChildProcess"
     
-        Dim dstExitCode As Long
+    'Any open handles must be closed first
+    CloseHandleSafely m_PipeInWrite
+    CloseHandleSafely m_PipeInRead
+    CloseHandleSafely m_PipeOutWrite
+    CloseHandleSafely m_PipeOutRead
+    CloseHandleSafely m_PipeErrWrite
+    CloseHandleSafely m_PipeErrRead
+    
+    'Free our copy of the thread handle (should have happened immediately after process creation, so this is
+    ' just a failsafe)
+    CloseHandleSafely m_ProcInfo.hThread
+    
+    If (m_ProcInfo.hProcess <> 0) Then
         
-        'Terminate the child process
+        'Forcibly terminate the child process (if it hasn't already)
         If m_ChildProcessActive Then
-            TerminateProcess m_ProcInfo.hProcess, dstExitCode
-            m_ProcInfo.hProcess = 0
+            
+            Dim safelyTerminated As Long
+            safelyTerminated = TerminateProcess(m_ProcInfo.hProcess, 0&)
+            
+            If (safelyTerminated = 0) Then
+                
+                'If the child process self-terminated, our handle is already invalid and the function will return
+                ' ERROR_ACCESS_DENIED (see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess).
+                ' This case is *not* an error.
+                Const ERROR_ACCESS_DENIED As Long = 5&
+                If (Err.LastDllError <> ERROR_ACCESS_DENIED) Then InternalError FUNC_NAME, "couldn't terminate child process #" & m_ProcInfo.hProcess & "; err #" & Err.LastDllError
+                
+            End If
+            
             m_ChildProcessActive = False
+            
         End If
         
-        'Clear all buffers and close all pipes
-        m_BufferOut.StopStream True
-        m_BufferErr.StopStream True
-        
-        CloseHandleSafely m_PipeOutRead
-        CloseHandleSafely m_PipeErrRead
-        
-        'Release any remaining handles
-        If (m_ProcInfo.hThread <> 0) Then CloseHandleSafely m_ProcInfo.hThread
-        If (m_ProcInfo.hProcess <> 0) Then CloseHandleSafely m_ProcInfo.hProcess
-        
+        'With the process safely closed, release our handle to it as the final step
+        CloseHandleSafely m_ProcInfo.hProcess
+            
     End If
     
     TerminateChildProcess = True
@@ -142,7 +156,8 @@ Friend Function GetStdOutDataAsString() As String
     
         m_BufferOut.SetPosition 0, FILE_BEGIN
         
-        'Translate the requested amount of data from our internal buffer into a usable string.
+        'Translate the requested amount of data from our internal buffer into a BSTR (assuming the source
+        ' is UTF-8 encoded).
         If m_UseUTF8 Then
             GetStdOutDataAsString = m_BufferOut.ReadString_UTF8(m_BufferOut.GetStreamSize(), False)
             
@@ -173,8 +188,8 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
     
     Const FUNC_NAME As String = "RunAndCaptureOutput"
     
-    'Before doing anything else, we need to prep pipe security attributes.  Default settings are used,
-    ' and we explicitly make the handle inheritable.
+    'Before doing anything else, prep pipe security attributes.  Default settings are used,
+    ' and we explicitly make each handle inheritable.
     With m_PipeSecurityAttributes
         .nLength = Len(m_PipeSecurityAttributes)
         .lpSecurityDescriptor = 0&
@@ -186,7 +201,7 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
     Dim readPipeSize As Long
     readPipeSize = 1024
     
-    'Create an stdout pipe
+    'Create an stdout pipe at our custom size (see notes above)
     If (CreatePipe(m_PipeOutRead, m_PipeOutWrite, m_PipeSecurityAttributes, readPipeSize) = 0) Then
         InternalError FUNC_NAME, "CreatePipe failed for stdout", Err.LastDllError
     End If
@@ -241,7 +256,7 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
     
     'Per PD requirements, we must use the Unicode-friendly CreateProcess variety, to ensure Unicode paths
     ' are supported properly.  Note that we once again declare inheritable handles.
-    If (CreateProcessW(StrPtr(childCmdLine), StrPtr(childCmdLineParams), 0&, 0&, 1&, NORMAL_PRIORITY_CLASS, 0&, 0&, VarPtr(siStart), m_ProcInfo) = 0) Then
+    If (CreateProcessW(StrPtr(childCmdLine), StrPtr(childCmdLineParams), VarPtr(m_PipeSecurityAttributes), VarPtr(m_PipeSecurityAttributes), 1&, NORMAL_PRIORITY_CLASS, 0&, 0&, VarPtr(siStart), m_ProcInfo) = 0) Then
         
         'ExifTool failed to start.  Dump some (hopefully?) useful debug data before exiting.
         InternalError FUNC_NAME, "CreateProcessW failed with err#" & Err.LastDllError & ".  Relevant paths may include: "
@@ -253,21 +268,26 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
     
     Else
         
-        'Close the thread handle, as we have no use for it
+        'Close the thread handle, as we have no use for it here.
         CloseHandleSafely m_ProcInfo.hThread
         
-        'Success!  Close the handles inherited by the child process (as we no longer need them).
+        'Success!  Close our copies of the three pipe ends inherited by the child process.
         CloseHandleSafely m_PipeOutWrite
         CloseHandleSafely m_PipeErrWrite
         CloseHandleSafely m_PipeInRead
         m_ChildProcessActive = True
         
-        'Also close our write handle; this allows the child process to run to completion without waiting for further input
+        'Also close our write handle; this allows the child process to run to completion without waiting for further input.
+        ' (For async, you'd obviously need this - but this class is deliberately *synchronous*.)
         CloseHandleSafely m_PipeInWrite
         
-        'Read from stdout and stderr
-        Dim numBytesRead As Long
+        'Initialize a buffer to receive stdout.  Note that this stream reuses memory between calls, by design,
+        ' but it safely resets the underlying stream pointer (without needing to reallocate memory).
+        If (m_BufferOut Is Nothing) Then Set m_BufferOut = New pdStream Else m_BufferOut.StopStream False
+        m_BufferOut.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
         
+        'Read all available bytes from stdout and stderr
+        Dim numBytesRead As Long
         Do
             numBytesRead = 0
             m_BufferOut.EnsureBufferSpaceAvailable readPipeSize
@@ -278,6 +298,10 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
                 m_BufferOut.SetPosition numBytesRead, FILE_CURRENT
             End If
         Loop
+        
+        'Same initialization process for stderr
+        If (m_BufferErr Is Nothing) Then Set m_BufferErr = New pdStream Else m_BufferErr.StopStream False
+        m_BufferErr.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
         
         Do
             numBytesRead = 0
@@ -290,26 +314,21 @@ Friend Function RunAndCaptureOutput(ByVal childCmdLine As String, Optional ByVal
             End If
         Loop
         
-        'Ensure child process terminates
-        CloseHandleSafely m_ProcInfo.hProcess
-        
+        'We will forcibly terminate the child process outside this block
         RunAndCaptureOutput = True
         
     End If
     
-    'Regardless of success or failure, terminate all pipes and other handles safely
-    CloseHandleSafely m_ProcInfo.hProcess
-    CloseHandleSafely m_PipeOutWrite
-    CloseHandleSafely m_PipeErrWrite
-    CloseHandleSafely m_PipeInRead
-    CloseHandleSafely m_PipeInWrite
-    CloseHandleSafely m_PipeOutRead
-    CloseHandleSafely m_PipeErrRead
+    'Regardless of success or failure, terminate all pipes and other handles safely.
+    ' (Note that many of these handles have likely already been freed, but that's okay - CloseHandleSafely()
+    ' checks handle state before attempting to close.)
+    TerminateChildProcess
     
     m_ChildProcessActive = False
     
 End Function
 
+'Don't set this to TRUE unless you've verified that the child process will actually return UTF-8 data!
 Friend Sub SetUTF8Mode(ByVal useUTF8 As Boolean)
     m_UseUTF8 = useUTF8
 End Sub
@@ -322,10 +341,7 @@ Private Sub Class_Initialize()
     
     'Prep buffers for communication (stdout/err only!)
     Set m_BufferOut = New pdStream
-    m_BufferOut.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
-    
     Set m_BufferErr = New pdStream
-    m_BufferErr.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
     
     'By default, this class assumes ANSI interop.  Call the SetUTF8Mode function to change this behavior
     ' (but be sure to TEST accordingly - most apps don't require this!)
@@ -336,5 +352,11 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
+    
     TerminateChildProcess
+    
+    'Clear all internal buffers before exiting
+    If (Not m_BufferOut Is Nothing) Then m_BufferOut.StopStream True
+    If (Not m_BufferErr Is Nothing) Then m_BufferErr.StopStream True
+    
 End Sub
