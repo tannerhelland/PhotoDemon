@@ -3,8 +3,8 @@ Attribute VB_Name = "ExifTool"
 'ExifTool Plugin Interface
 'Copyright 2013-2023 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 13/September/23
-'Last update: switch to pdPipeSync for one-off shell instances (like retrieving library version)
+'Last updated: 18/September/23
+'Last update: expansive new upgrade-in-place system to solve errors when upgrading from ExifTool 12.44 to 12.65.
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -1305,11 +1305,151 @@ End Function
 ' loading via FreeImage or GDI+.
 Public Function StartExifTool() As Boolean
     
-    'Start by creating a temp folder for ExifTool-specific data, as necessary
+    'Start by creating a dedicated temp folder for ExifTool's required run-time extraction of Perl
     m_ExifToolDataFolder = UserPrefs.GetDataPath() & "PluginData\"
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
-    Files.PathCreate m_ExifToolDataFolder
+    
+    If Files.PathExists(m_ExifToolDataFolder) Then
+        
+        'Ensure that the version of ExifTool hasn't changed since the last extraction.
+        ' (If it has, errors can occur - this happened to PD after updating from the ExifTool 12.44 release
+        ' to a later build.)
+        '
+        'To do this, we can quickly grab the main ExifTool Perl file and compare it against our current expected
+        ' ExifTool version.  If the two do not match, kill the existing ExifTool folder and allow the .exe to
+        ' re-create it anew.
+        Const VERSION_REF_FILE As String = "inc\script\exiftool"
+        
+        Dim fullPathToRefFile As String
+        fullPathToRefFile = m_ExifToolDataFolder & VERSION_REF_FILE
+        
+        If Files.FileExists(fullPathToRefFile) Then
+            
+            Const SAFE_BUFFER_SIZE As Long = 1024
+            
+            Dim cStream As pdStream
+            Set cStream = New pdStream
+            If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, fullPathToRefFile, SAFE_BUFFER_SIZE, optimizeAccess:=OptimizeSequentialAccess) Then
+                
+                'Grab just the first 1024 bytes.  Version should appear around char ~450, so this is a
+                ' sufficiently safe sample size.
+                Dim fileContents As String
+                fileContents = cStream.ReadString_UTF8(SAFE_BUFFER_SIZE, False)
+                
+                'We no longer need access to the file
+                cStream.StopStream True
+                Set cStream = Nothing
+                
+                Const VERSION_STRING_PREFIX As String = "my $version = '"
+                
+                Dim posVersion As Long
+                posVersion = InStr(1, fileContents, VERSION_STRING_PREFIX, vbBinaryCompare)
+                If (posVersion > 0) Then
+                    
+                    'Increment past the initial single-quote
+                    posVersion = posVersion + Len(VERSION_STRING_PREFIX)
+                    
+                    'Find the version string trailer single-quote
+                    Dim posVersionEnd As Long
+                    posVersionEnd = InStr(posVersion, fileContents, "'", vbBinaryCompare)
+                    If (posVersionEnd > posVersion + 1) Then
+                        
+                        Dim efVersion As String
+                        efVersion = Mid$(fileContents, posVersion, posVersionEnd - posVersion)
+                        
+                        'Compare the embedded version to the expected version for this PhotoDemon build.
+                        Dim versionMatch As Boolean
+                        versionMatch = Strings.StringsEqual(efVersion, PluginManager.ExpectedPluginVersion(CCP_ExifTool), True)
+                        
+                        If (Not versionMatch) Then
+                            
+                            PDDebug.LogAction "Warning: ExifTool data folder is out of date.  Preparing to rebuild..."
+                            
+                            'We now need to remove all files and subfolders from the /PluginData folder so that
+                            ' ExifTool can rebuild it according to its current version.
+                            Dim filesToDelete As pdStringStack
+                            Set filesToDelete = New pdStringStack
+                            If Files.RetrieveAllFiles(m_ExifToolDataFolder, filesToDelete, True, False) Then
+                                
+                                Dim numFilesDeleted As Long
+                                numFilesDeleted = 0
+                                
+                                'In a perfect world, we could just remove files one-by-one and that would be that!
+                                ' Unfortunately, the Perl packer ExifTool uses generates a lot of files with weird
+                                ' permissions, so if we try to just blind-delete everything we will generate a ton
+                                ' of permission errors.
+                                '
+                                'I have instead tried to blacklist file locations where I've encountered permission
+                                ' errors while testing this feature, which should allows us to delete files that have
+                                ' caused upgrade errors in past versions *without* engaging with any portable Perl
+                                ' files that we don't have delete permissions on.  (Theoretically we could also check
+                                ' permissions on each file before attempting to delete, but mass-checking arbitrary
+                                ' file permissions risks upsetting some virus scanners, so I simply avoid interacting
+                                ' with unnecessary files at all.)
+                                Dim i As Long
+                                For i = 0 To filesToDelete.GetNumOfStrings - 1
+                                    
+                                    Dim targetFile As String
+                                    targetFile = filesToDelete.GetString(i)
+                                    
+                                    Dim okToDelete As Boolean
+                                    okToDelete = Files.FileExists(targetFile)   'Failsafe only
+                                    
+                                    'This blacklist is hard-coded per manual file permission checks in the past.
+                                    If okToDelete Then
+                                        okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\auto\", vbTextCompare) <= 0)
+                                        If okToDelete Then okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\unicore\", vbTextCompare) <= 0)
+                                        If okToDelete Then okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\Win32API\File\", vbTextCompare) <= 0)
+                                        If okToDelete Then okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\bytes_heavy.pl", vbTextCompare) <= 0)
+                                        If okToDelete Then okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\Config_git.pl", vbTextCompare) <= 0)
+                                        If okToDelete Then okToDelete = okToDelete And (InStr(1, targetFile, "\inc\lib\Config_heavy.pl", vbTextCompare) <= 0)
+                                    End If
+                                    
+                                    'Remove valid files (ExifTool will auto-regenerate them as necessary)
+                                    If okToDelete Then
+                                        If Files.FileDeleteIfExists(targetFile) Then
+                                            numFilesDeleted = numFilesDeleted + 1
+                                        Else
+                                            PDDebug.LogAction "Failed to delete: " & filesToDelete.GetString(i)
+                                        End If
+                                    End If
+                                    
+                                Next i
+                                
+                                PDDebug.LogAction "ExifTool upgrade prep resulted in " & numFilesDeleted & " of " & filesToDelete.GetNumOfStrings & " files removed."
+                                
+                                'With all files gone, ExifTool can now rebuild itself accordingly
+                                PDDebug.LogAction "ExifTool will now automatically rebuild its file cache..."
+                                
+                            End If
+                            
+                        '/if versions match, do nothing!  We are good to go.
+                        Else
+                            PDDebug.LogAction "(ExifTool version OK!)"
+                        End If
+                        
+                    '/some kind of formatting problem; file structure has possibly changed since I last investigated?
+                    Else
+                        PDDebug.LogAction "WARNING: EXIFTOOL VERSION FORMAT UNEXPECTED"
+                    End If
+                    
+                '/Version not found - file format has possibly changed?
+                Else
+                    PDDebug.LogAction "WARNING: NO EXIFTOOL VERSION IN PLUGINDATA"
+                End If
+                
+            '/If we can't open the file, do not attempt to analyze (ExifTool may have it open already,
+            ' in which case it's too late to do anything about it)
+            End If
+            
+        '/no else required; if the target file doesn't exist, ExifTool will create it automatically
+        End If
+        
+    'Create the folder anew
+    Else
+        Files.PathCreate m_ExifToolDataFolder
+    End If
     
     'Set any other, related ExifTool paths now
     m_DatabasePath = m_ExifToolDataFolder & "exifToolDatabase.xml"
