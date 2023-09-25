@@ -1334,14 +1334,20 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     'Ensure libjxl is available and functioning correctly (e.g. we are on Vista or later)
     If (Not Plugin_jxl.IsJXLImportAvailable()) Then
         
-        'Prompt for download (if allowed) and attempt to continue
-        If (Not Plugin_jxl.PromptForLibraryDownload_JXL(True)) Then Exit Function
-        If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
+        'If the target file is a likely JPEG-XL candidate (by file extension), ask the user if they want to
+        ' download libjxl.
+        If Strings.StringsEqual(Files.FileGetExtension(srcFile), "jxl", True) Then
+            
+            'Prompt for download (if allowed) and attempt to continue
+            If (Not Plugin_jxl.PromptForLibraryDownload_JXL(True)) Then Exit Function
+            If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
+            
+        'If this image isn't (likely) JPEG-XL, do not prompt
+        Else
+            Exit Function
+        End If
 
     End If
-    
-    'For now, perform basic validation against the file extension; this is primarily for performance reasons
-    If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "jxl", True) Then Exit Function
     
     'Offload the remainder of the job to the libjxl interface
     LoadJXL = Plugin_jxl.LoadJXL(srcFile, dstImage, dstDIB)
