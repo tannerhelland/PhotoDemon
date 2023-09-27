@@ -415,12 +415,9 @@ Private Sub cmdMerge_Click()
         Exit Sub
     End If
     
-    'Start by copying the contents of the master file into the destination string.  We will use that as our base, and update it
-    ' with the old translations as best we can.
+    'Start by copying the contents of the master file into the destination string.
+    ' We will use that as our base, and update it with the old translations as we go.
     m_NewLanguageText = m_AllEnUsText
-        
-    Dim sPos As Long
-    sPos = InStr(1, m_NewLanguageText, XML_PHRASE_OPEN, vbBinaryCompare)
     
     Dim origText As String, translatedText As String
     Dim findText As String, replaceText As String
@@ -437,24 +434,31 @@ Private Sub cmdMerge_Click()
     phrasesFound = 0
     phrasesMissed = 0
     
+    'Find the first occurence of a <phrase> tag
+    Dim sPos As Long, sPosTranslation As Long
+    sPos = InStr(1, m_NewLanguageText, XML_PHRASE_OPEN, vbBinaryCompare)
+    sPosTranslation = 1
+    
     'Start parsing the master text for <phrase> tags
     Do
     
         phrasesProcessed = phrasesProcessed + 1
-    
-        'Retrieve the original text associated with this phrase tag
-        origText = GetTextBetweenTags(m_AllEnUsText, "original", sPos)
         
-        'Attempt to retrieve a translation for this phrase using the old language file
-        translatedText = GetTranslationTagFromCaption(origText)
-                
+        'Retrieve the original text associated with this phrase tag
+        Const ORIG_TEXT_TAG As String = "original"
+        origText = GetTextBetweenTags(m_AllEnUsText, ORIG_TEXT_TAG, sPos)
+        
+        'Attempt to retrieve a translation for this phrase using the old language file.
+        translatedText = GetTranslationTagFromCaption(origText, sPosTranslation)
+        
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If (LenB(translatedText) = 0) Then
+            Debug.Print sPos
             If (InStr(1, origText, vbCrLf) > 0) Then
                 translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
         End If
-                
+        
         'If a translation was found, insert it into the new file
         If (LenB(translatedText) <> 0) Then
             
@@ -477,6 +481,29 @@ Private Sub cmdMerge_Click()
         
     Loop While sPos > 0
     
+    '(This next code block is copied verbatim from cmdMergeAll.  It has only been tested *there*.)
+    
+    'Finally, look for any language-specific text+translation pairs.  This (optional) segment can be used
+    ' to map phrases with identical English text (e.g. Color > Invert vs Selection > Invert) to unique
+    ' phrases in a given translation.
+    Dim posSpecialBlock As Long
+    posSpecialBlock = InStrRev(m_OldLanguageText, "<special-translations>", -1, vbBinaryCompare)
+    If (posSpecialBlock > 0) Then
+    
+        'Copy over the entire <special-translations> XML block as-is.
+        Const END_SPECIAL_BLOCK As String = "</special-translations>"
+        Dim posSpecialBlockEnd As Long
+        posSpecialBlockEnd = InStr(posSpecialBlock, m_OldLanguageText, END_SPECIAL_BLOCK, vbBinaryCompare)
+        If (posSpecialBlockEnd > posSpecialBlock) Then
+            
+            Dim insertPosition As Long
+            insertPosition = InStrRev(m_NewLanguageText, "</pdData>", -1, vbBinaryCompare)
+            If (insertPosition > 0) Then m_NewLanguageText = Replace$(m_NewLanguageText, "</pdData>", Mid$(m_OldLanguageText, posSpecialBlock, (posSpecialBlockEnd - posSpecialBlock) + Len(END_SPECIAL_BLOCK)) & vbCrLf & vbCrLf & "</pdData>")
+            
+        End If
+        
+    End If
+        
     'Prompt the user to save the results
     Dim cDialog As pdOpenSaveDialog
     Set cDialog = New pdOpenSaveDialog
@@ -513,29 +540,46 @@ Private Function GetPhraseTagLocation(ByRef srcString As String, Optional ByVal 
     If (sLocation > 0) Then
         sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbBinaryCompare)
         If (sLocation > 0) Then GetPhraseTagLocation = sLocation
+    
+    'If given a start location, try searching again from that location, but backward
+    Else
+        
+        If (startPos > 1) Then
+            
+            sLocation = InStrRev(m_OldLanguageText, srcString, startPos, vbBinaryCompare)
+        
+            If (sLocation > 0) Then
+                sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbBinaryCompare)
+                If (sLocation > 0) Then GetPhraseTagLocation = sLocation
+            End If
+            
+        End If
+        
     End If
 
 End Function
 
 'Given the original caption of a message or control, return the matching translation from the active translation file
-Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As String
-
+Private Function GetTranslationTagFromCaption(ByVal origCaption As String, Optional ByRef inOutWhereToStartSearch As Long = 1) As String
+    
+    GetTranslationTagFromCaption = vbNullString
+    
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
     PreprocessText origCaption
     origCaption = XML_ORIGINAL_OPEN & origCaption & XML_ORIGINAL_CLOSE
     
     Dim phraseLocation As Long
-    phraseLocation = GetPhraseTagLocation(origCaption)
+    phraseLocation = GetPhraseTagLocation(origCaption, inOutWhereToStartSearch)
     
     'Make sure a phrase tag was found
     If (phraseLocation > 0) Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = GetTextBetweenTags(m_OldLanguageText, "translation", phraseLocation)
-        GetTranslationTagFromCaption = origCaption
-        
+        Const TRANSLATION_TAG_NAME As String = "translation"
+        GetTranslationTagFromCaption = GetTextBetweenTags(m_OldLanguageText, TRANSLATION_TAG_NAME, phraseLocation)
+        inOutWhereToStartSearch = phraseLocation
     Else
-        GetTranslationTagFromCaption = vbNullString
+        inOutWhereToStartSearch = 1
     End If
 
 End Function
@@ -735,7 +779,7 @@ Private Sub cmdMergeAll_Click()
         Do
         
             phrasesProcessed = phrasesProcessed + 1
-        
+            
             'Retrieve the original text associated with this phrase tag
             origText = GetTextBetweenTags(m_AllEnUsText, TAG_NAME_ORIG, sPos)
             
@@ -925,6 +969,27 @@ Private Sub cmdMergeAll_Click()
         'All exact translations have now been merged, and near-exact translations have been written out to a
         ' text file for human review.
         If (numRescuedPhrases > 0) Then Debug.Print "NOTE: " & numRescuedPhrases & " near-identical phrases were rescued!"
+        
+        'Finally, look for any language-specific text+translation pairs.  This (optional) segment can be used
+        ' to map phrases with identical English text (e.g. Color > Invert vs Selection > Invert) to unique
+        ' phrases in a given translation.
+        Dim posSpecialBlock As Long
+        posSpecialBlock = InStrRev(m_OldLanguageText, "<special-translations>", -1, vbBinaryCompare)
+        If (posSpecialBlock > 0) Then
+        
+            'Copy over the entire <special-translations> XML block as-is.
+            Const END_SPECIAL_BLOCK As String = "</special-translations>"
+            Dim posSpecialBlockEnd As Long
+            posSpecialBlockEnd = InStr(posSpecialBlock, m_OldLanguageText, END_SPECIAL_BLOCK, vbBinaryCompare)
+            If (posSpecialBlockEnd > posSpecialBlock) Then
+                
+                Dim insertPosition As Long
+                insertPosition = InStrRev(m_NewLanguageText, "</pdData>", -1, vbBinaryCompare)
+                If (insertPosition > 0) Then m_NewLanguageText = Replace$(m_NewLanguageText, "</pdData>", Mid$(m_OldLanguageText, posSpecialBlock, (posSpecialBlockEnd - posSpecialBlock) + Len(END_SPECIAL_BLOCK)) & vbCrLf & vbCrLf & "</pdData>")
+                
+            End If
+            
+        End If
         
         'We can now save the final merged text out to file.
         
@@ -2046,24 +2111,27 @@ End Function
 'VB's IsNumeric function can't detect percentage text (e.g. "100%").  PhotoDemon includes text like this,
 ' but I don't want that text translated - so manually check for and reject it.
 Private Function IsNumericPercentage(ByVal srcString As String) As Boolean
-
+    
+    IsNumericPercentage = False
+    
     srcString = Trim$(srcString)
 
     'Start by checking for a percent in the right-most position
-    If (Right$(srcString, 1) = "%") Then
+    Const PERCENT_SIGN As String = "%"
+    If (Right$(srcString, 1) = PERCENT_SIGN) Then
         
         'If a percent was found, check the rest of the text to see if it's numeric
         IsNumericPercentage = IsNumeric(Left$(srcString, Len(srcString) - 1))
         
-    Else
-        IsNumericPercentage = False
     End If
 
 End Function
 
 'URLs shouldn't be translated.  Check for them and reject as necessary.
 Private Function IsURL(ByRef srcString As String) As Boolean
-    IsURL = (Left$(srcString, 6) = "ftp") Or (Left$(srcString, 7) = "http")
+    Const FTP_PREFIX As String = "ftp"
+    Const HTTP_PREFIX As String = "http"
+    IsURL = (Left$(srcString, 6) = FTP_PREFIX) Or (Left$(srcString, 7) = HTTP_PREFIX)
 End Function
 
 Private Sub Message(ByRef msgText As String)
@@ -2198,7 +2266,8 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
     IsAlpha = False
     
     If (Len(srcString) = 1) Then
-        IsAlpha = (UCase$(srcString) = "A") Or (UCase$(srcString) = "I")
+        Const ALPHA_A As String = "A", ALPHA_I As String = "I"
+        IsAlpha = (UCase$(srcString) = ALPHA_A) Or (UCase$(srcString) = ALPHA_I)
     Else
         
         Dim numAlphaChars As Long
@@ -2234,7 +2303,7 @@ Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
     
     'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place;
     ' as such, we want to auto-increment the language's version number to trigger an update on client machines.
-    If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
+    If (Strings.StringsEqual(origTagName, "langversion", True) And alsoIncrementVersion) Then
         
         findText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
         
