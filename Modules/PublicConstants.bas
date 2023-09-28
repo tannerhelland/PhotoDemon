@@ -116,3 +116,8 @@ Public Const IDE_BLACK As String = "#000000"
 
 'Default alpha cut-off when "auto" is selected
 Public Const PD_DEFAULT_ALPHA_CUTOFF As Long = 64
+
+'When applying localizations, individual controls can pass a unique name/ID string as the last parameter to
+' TranslateMessage by using this prefix.  The translation engine can then match the object name against
+' any special per-object (not per-caption) translations in the active language file
+Public Const SPECIAL_TRANSLATION_OBJECT_PREFIX As String = "obj-"

@@ -3,8 +3,8 @@ Attribute VB_Name = "Menus"
 'PhotoDemon Menu Manager
 'Copyright 2017-2023 by Tanner Helland
 'Created: 11/January/17
-'Last updated: 04/September/20
-'Last update: cool new algorithm for automatically determining (localized!) mnemonics at run-time
+'Last updated: 28/September/23
+'Last update: menus now pass menu-specific object IDs to the translation engine, enabling per-menu translations
 '
 'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.  This module
 ' handles the worst parts of run-time maintenance.
@@ -141,6 +141,9 @@ Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPo
 Private Declare Function IsCharAlphaW Lib "user32" (ByVal wChar As Integer) As Long
 Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
 Private Declare Function VkKeyScanW Lib "user32" (ByVal wChar As Integer) As Integer
+
+'Like the built-in VB6 menu editor, PD uses "-" as the caption for menu separator bars
+Private Const MENU_SEPARATOR As String = "-"
 
 'Primary menu collection
 Private m_Menus() As PD_MenuEntry
@@ -807,9 +810,9 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
             
             'Ignoring separators and null-length captions, localize the current English caption
             With m_Menus(i)
-                If (.me_Name <> "-") Then
+                If (.me_Name <> MENU_SEPARATOR) Then
                     If (LenB(.me_TextEn) <> 0) Then
-                        .me_TextTranslated = g_Language.TranslateMessage(.me_TextEn)
+                        .me_TextTranslated = g_Language.TranslateMessage(.me_TextEn, SPECIAL_TRANSLATION_OBJECT_PREFIX & .me_Name)
                     End If
                 End If
             End With
@@ -820,7 +823,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     Else
         For i = 0 To m_NumOfMenus - 1
             With m_Menus(i)
-                If (.me_Name <> "-") Then
+                If (.me_Name <> MENU_SEPARATOR) Then
                     If (LenB(.me_TextEn) <> 0) Then .me_TextTranslated = .me_TextEn
                 End If
             End With
@@ -835,7 +838,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
         With m_Menus(i)
             
             'Failsafe checks for separator and null menus (VB doesn't short-circuit, so we do it manually)
-            If (.me_Name <> "-") Then
+            If (.me_Name <> MENU_SEPARATOR) Then
             If (LenB(.me_TextEn) <> 0) Then
                 If (.me_HotKeyID >= 0) Then .me_HotKeyTextTranslated = Hotkeys.GetHotkeyText(.me_HotKeyID)
             End If
@@ -849,7 +852,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     For i = 0 To m_NumOfMenus - 1
     
         With m_Menus(i)
-            If (.me_Name <> "-") Then
+            If (.me_Name <> MENU_SEPARATOR) Then
                 If (LenB(.me_TextEn) <> 0) Then
                     If (.me_HotKeyID >= 0) Then
                         .me_TextFinal = .me_TextWithMnemonics & vbTab & .me_HotKeyTextTranslated
@@ -902,7 +905,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
                 If (.me_SubMenu <> lastLvl2Index) Then mnuNameLvl2 = vbNullString
                 
                 'Make sure this isn't just a menu separator
-                If (.me_Name <> "-") Then
+                If (.me_Name <> MENU_SEPARATOR) Then
                 
                     'Append first- and second-level menu names, if any
                     If (LenB(mnuNameLvl1) <> 0) Then mnuNameFinal = mnuNameLvl1 & " > "
@@ -1000,7 +1003,7 @@ Private Sub DetermineMnemonics()
         End With
         
         'With depth correctly set, we now want to skip any separator or null-length menus
-        If (m_Menus(i).me_TextEn = "-") Or (LenB(m_Menus(i).me_TextEn) = 0) Then GoTo NextMenuEntry
+        If (m_Menus(i).me_TextEn = MENU_SEPARATOR) Or (LenB(m_Menus(i).me_TextEn) = 0) Then GoTo NextMenuEntry
         
         'Defer to the mnemonic analyzer to solve for an actual mnemonic character (and character position)
         If EvaluateMnemonics(mnTarget, i, noKeys, mnPos, mnChar) Then
@@ -1217,7 +1220,7 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
     For i = 0 To m_NumOfMenus - 1
         
         'Ignore any separator or null-length menus, regardless of hierarchy
-        If (m_Menus(i).me_TextEn = "-") Or (LenB(m_Menus(i).me_TextEn) = 0) Then GoTo NextMenuEntry
+        If (m_Menus(i).me_TextEn = MENU_SEPARATOR) Or (LenB(m_Menus(i).me_TextEn) = 0) Then GoTo NextMenuEntry
         
         'Next, figure out if this menu exists in the same hierarchy
         ' as the target menu.
