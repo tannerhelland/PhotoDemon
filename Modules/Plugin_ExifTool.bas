@@ -699,7 +699,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     'If a translation is active, request descriptions in the current language
     If g_Language.TranslationActive Then
         cmdParams.AppendLine "-lang"
-        cmdParams.AppendLine g_Language.GetCurrentLanguage()
+        cmdParams.AppendLine g_Language.GetCurrentLanguage((g_Language.GetCurrentLanguage(False) = "zh"))
     End If
     
     'If the user wants us to estimate JPEG quality, do so now
