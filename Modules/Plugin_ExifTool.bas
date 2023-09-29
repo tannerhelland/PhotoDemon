@@ -3,8 +3,8 @@ Attribute VB_Name = "ExifTool"
 'ExifTool Plugin Interface
 'Copyright 2013-2023 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 30/May/18
-'Last update: rewrite ExifTool interop using pdString (instead of huge string append (&) blocks)
+'Last updated: 29/September/23
+'Last update: manually write pHYs block when exporting PNGs
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -1227,6 +1227,12 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
         cmdParams.AppendLine "-JFIF:XResolution=" & srcPDImage.GetDPI()
         cmdParams.AppendLine "-JFIF:YResolution=" & srcPDImage.GetDPI()
         cmdParams.AppendLine "-JFIF:ResolutionUnit=inches"
+    
+    'Similarly, not all PNG editors fully support XMP, so let's write a pHYs tag too.
+    ElseIf (srcPDImage.GetCurrentFileFormat = PDIF_PNG) Then
+        cmdParams.AppendLine "-PNG:PixelsPerUnitX=" & Int((srcPDImage.GetDPI() / 2.54) * 100# + 0.5)
+        cmdParams.AppendLine "-PNG:PixelsPerUnitY=" & Int((srcPDImage.GetDPI() / 2.54) * 100# + 0.5)
+        cmdParams.AppendLine "-PNG:PixelUnits=meters"
     End If
     
     'If we are exporting a multipage TIFF object, add some per-page information now
