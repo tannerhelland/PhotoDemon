@@ -6,10 +6,10 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>9.0b1373.21</langversion>
+<langversion>9.2 build 162</langversion>
 <langstatus>完成</langstatus>
 
-<author>ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi。Modify by Charltsing(QQ 564955427),2023.9.18</author>
+<author>Charltsing（QQ 564955427） revised on Sep 24,2023</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -40,7 +40,7 @@
 
 <phrase>
 <original>Internet import</original>
-<translation>互联网导入</translation>
+<translation>从网络导入</translation>
 </phrase>
 
 <phrase>
@@ -75,7 +75,7 @@
 
 <phrase>
 <original>Revert</original>
-<translation>恢复原状</translation>
+<translation>还原</translation>
 </phrase>
 
 <phrase>
@@ -95,7 +95,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation>导出颜色查找</translation>
+<translation>导出颜色查找表</translation>
 </phrase>
 
 <phrase>
@@ -210,12 +210,12 @@
 
 <phrase>
 <original>Fill</original>
-<translation>填充</translation>
+<translation>填充效果叠加</translation>
 </phrase>
 
 <phrase>
 <original>Stroke</original>
-<translation>画笔</translation>
+<translation>边框线</translation>
 </phrase>
 
 <phrase>
@@ -230,7 +230,7 @@
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>内容识别图像调整</translation>
+<translation>使用内容感知调整图像大小</translation>
 </phrase>
 
 <phrase>
@@ -240,7 +240,7 @@
 
 <phrase>
 <original>Fit canvas to active layer</original>
-<translation>画布适合到当前层</translation>
+<translation>适合画布到当前层</translation>
 </phrase>
 
 <phrase>
@@ -255,32 +255,32 @@
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation>修剪空白图片边框</translation>
+<translation>裁剪图片透明边缘</translation>
 </phrase>
 
 <phrase>
 <original>Straighten image</original>
-<translation>拉直图像</translation>
+<translation>图像倾斜校正</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation>顺时针90°旋转图像</translation>
+<translation>顺时针旋转90°</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation>逆时针90°旋转图像</translation>
+<translation>逆时针旋转90°</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 180</original>
-<translation>旋转图像180度</translation>
+<translation>旋转180°</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary image rotation</original>
-<translation>任意图像旋转</translation>
+<translation>任意角度旋转</translation>
 </phrase>
 
 <phrase>
@@ -300,7 +300,7 @@
 
 <phrase>
 <original>Flatten image</original>
-<translation>拼合图像</translation>
+<translation>合并图层</translation>
 </phrase>
 
 <phrase>
@@ -310,7 +310,7 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation>创建颜色查找</translation>
+<translation>创建颜色查找表</translation>
 </phrase>
 
 <phrase>
@@ -330,12 +330,12 @@
 
 <phrase>
 <original>Count unique colors</original>
-<translation>统计独有颜色</translation>
+<translation>统计唯一颜色</translation>
 </phrase>
 
 <phrase>
 <original>Add new layer</original>
-<translation>添加一个新的层</translation>
+<translation>添加新图层</translation>
 </phrase>
 
 <phrase>
@@ -345,7 +345,7 @@
 
 <phrase>
 <original>Duplicate Layer</original>
-<translation>重复层</translation>
+<translation>复制图层</translation>
 </phrase>
 
 <phrase>
@@ -355,12 +355,12 @@
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation>可见层的新层</translation>
+<translation>按可见层新建图层</translation>
 </phrase>
 
 <phrase>
 <original>Layer via copy</original>
-<translation>通过复制的图层;</translation>
+<translation>通过复制的图层</translation>
 </phrase>
 
 <phrase>
@@ -370,12 +370,12 @@
 
 <phrase>
 <original>Delete layer</original>
-<translation>删除层</translation>
+<translation>删除图层</translation>
 </phrase>
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation>删除隐藏层</translation>
+<translation>删除隐藏图层</translation>
 </phrase>
 
 <phrase>
@@ -390,17 +390,17 @@
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation>从可见层替换层</translation>
+<translation>从可见层替换图层</translation>
 </phrase>
 
 <phrase>
 <original>Merge layer up</original>
-<translation>合并层</translation>
+<translation>向上合并图层</translation>
 </phrase>
 
 <phrase>
 <original>Merge layer down</original>
-<translation>合并层向下</translation>
+<translation>向下合并图层</translation>
 </phrase>
 
 <phrase>
@@ -410,12 +410,12 @@
 
 <phrase>
 <original>Go to layer above</original>
-<translation>转到上方的图层</translation>
+<translation>转到上一图层</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation>转到下面的图层</translation>
+<translation>转到下一图层</translation>
 </phrase>
 
 <phrase>
@@ -425,22 +425,22 @@
 
 <phrase>
 <original>Raise layer to top</original>
-<translation>提高层到最上部</translation>
+<translation>图层提升到顶部</translation>
 </phrase>
 
 <phrase>
 <original>Raise layer</original>
-<translation>提高层</translation>
+<translation>上移一层</translation>
 </phrase>
 
 <phrase>
 <original>Lower layer</original>
-<translation>降低层</translation>
+<translation>下移一层</translation>
 </phrase>
 
 <phrase>
 <original>Lower layer to bottom</original>
-<translation>下移层至底部</translation>
+<translation>下移至底部</translation>
 </phrase>
 
 <phrase>
@@ -490,52 +490,52 @@
 
 <phrase>
 <original>Straighten layer</original>
-<translation>拉伸层</translation>
+<translation>图层倾斜校正</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation>顺时针旋转层90度</translation>
+<translation>图层顺时针旋转90°</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation>逆时针旋转层度</translation>
+<translation>图层逆时针旋转90°</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 180</original>
-<translation>旋转层180度</translation>
+<translation>图层旋转层180°</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation>任意旋转层</translation>
+<translation>任意旋转图层</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer horizontally</original>
-<translation>水平翻转层</translation>
+<translation>水平翻转图层</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer vertically</original>
-<translation>垂直翻转层</translation>
+<translation>垂直翻转图层</translation>
 </phrase>
 
 <phrase>
 <original>Reset layer size</original>
-<translation>重新设置层大小</translation>
+<translation>重新设置图层大小</translation>
 </phrase>
 
 <phrase>
 <original>Resize layer</original>
-<translation>调整层</translation>
+<translation>调整图层大小</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation>内容识别层调整</translation>
+<translation>使用内容识别调整图层大小</translation>
 </phrase>
 
 <phrase>
@@ -550,17 +550,17 @@
 
 <phrase>
 <original>Luminance to alpha</original>
-<translation>设置亮度到alpha</translation>
+<translation>设置亮度到alpha通道</translation>
 </phrase>
 
 <phrase>
 <original>Remove alpha channel</original>
-<translation>移除 Alpha 通道</translation>
+<translation>移除alpha通道</translation>
 </phrase>
 
 <phrase>
 <original>Threshold alpha</original>
-<translation>alpha 区间</translation>
+<translation>alpha阈值</translation>
 </phrase>
 
 <phrase>
@@ -575,7 +575,7 @@
 
 <phrase>
 <original>Split layer into image</original>
-<translation>将层拆分为图像</translation>
+<translation>将图层拆分为图像</translation>
 </phrase>
 
 <phrase>
@@ -585,7 +585,7 @@
 
 <phrase>
 <original>Split images into layers</original>
-<translation>将图像分割成层</translation>
+<translation>将图像分割成图层</translation>
 </phrase>
 
 <phrase>
@@ -645,27 +645,27 @@
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation>描边选择大纲</translation>
+<translation>轮廓描边</translation>
 </phrase>
 
 <phrase>
 <original>Load selection</original>
-<translation>加载选择</translation>
+<translation>加载选区</translation>
 </phrase>
 
 <phrase>
 <original>Save selection</original>
-<translation>保存选择</translation>
+<translation>保存选区</translation>
 </phrase>
 
 <phrase>
 <original>Export selected area as image</original>
-<translation>导出选择区域为一个图像</translation>
+<translation>导出选区为图像</translation>
 </phrase>
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation>导出选择遮罩为一个图像</translation>
+<translation>导出选区遮罩为图像</translation>
 </phrase>
 
 <phrase>
@@ -675,7 +675,7 @@
 
 <phrase>
 <original>Auto enhance</original>
-<translation>自动提升</translation>
+<translation>自动增强</translation>
 </phrase>
 
 <phrase>
@@ -700,7 +700,7 @@
 
 <phrase>
 <original>Levels</original>
-<translation>水平</translation>
+<translation>色阶</translation>
 </phrase>
 
 <phrase>
@@ -740,12 +740,12 @@
 
 <phrase>
 <original>Shift colors (left)</original>
-<translation>增强色（左）</translation>
+<translation>色彩推移（左）</translation>
 </phrase>
 
 <phrase>
 <original>Shift colors (right)</original>
-<translation>增强色（右）</translation>
+<translation>色彩推移（右）</translation>
 </phrase>
 
 <phrase>
@@ -755,12 +755,12 @@
 
 <phrase>
 <original>Temperature</original>
-<translation>温度</translation>
+<translation>色温</translation>
 </phrase>
 
 <phrase>
 <original>Tint</original>
-<translation>色彩</translation>
+<translation>色调</translation>
 </phrase>
 
 <phrase>
@@ -785,7 +785,7 @@
 
 <phrase>
 <original>Sepia</original>
-<translation>棕褐色</translation>
+<translation>棕色调</translation>
 </phrase>
 
 <phrase>
@@ -795,12 +795,12 @@
 
 <phrase>
 <original>Equalize</original>
-<translation>均衡</translation>
+<translation>均衡化</translation>
 </phrase>
 
 <phrase>
 <original>Stretch histogram</original>
-<translation>扩展直方图</translation>
+<translation>直方图拉伸</translation>
 </phrase>
 
 <phrase>
@@ -815,12 +815,12 @@
 
 <phrase>
 <original>Invert RGB</original>
-<translation>反转 RGB</translation>
+<translation>反转RGB</translation>
 </phrase>
 
 <phrase>
 <original>Dehaze</original>
-<translation>混浊剂</translation>
+<translation>除霾</translation>
 </phrase>
 
 <phrase>
@@ -840,22 +840,22 @@
 
 <phrase>
 <original>Gradient map</original>
-<translation>梯度图</translation>
+<translation>渐变映射</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation>调色板图</translation>
+<translation>调色板映射</translation>
 </phrase>
 
 <phrase>
 <original>Color to monochrome</original>
-<translation>彩色到单色</translation>
+<translation>彩色转单色</translation>
 </phrase>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation>单色到灰色</translation>
+<translation>单色转灰度</translation>
 </phrase>
 
 <phrase>
@@ -865,7 +865,7 @@
 
 <phrase>
 <original>Comic book</original>
-<translation>漫画</translation>
+<translation>漫画风格</translation>
 </phrase>
 
 <phrase>
@@ -900,7 +900,7 @@
 
 <phrase>
 <original>Plastic wrap</original>
-<translation>保鲜膜</translation>
+<translation>塑料布</translation>
 </phrase>
 
 <phrase>
@@ -950,7 +950,7 @@
 
 <phrase>
 <original>Correct lens distortion</original>
-<translation>矫正畸变</translation>
+<translation>矫正镜头畸变</translation>
 </phrase>
 
 <phrase>
@@ -960,7 +960,7 @@
 
 <phrase>
 <original>Droste</original>
-<translation>Droste效应</translation>
+<translation>画中画</translation>
 </phrase>
 
 <phrase>
@@ -970,22 +970,22 @@
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>挤压和旋转</translation>
+<translation>戳拽和旋转</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation>Poke效应</translation>
+<translation>戳拽</translation>
 </phrase>
 
 <phrase>
 <original>Ripple</original>
-<translation>波纹</translation>
+<translation>涟漪</translation>
 </phrase>
 
 <phrase>
 <original>Squish</original>
-<translation>果酱</translation>
+<translation>挤压</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>其他扭曲</translation>
+<translation>其它扭曲变形</translation>
 </phrase>
 
 <phrase>
@@ -1010,7 +1010,7 @@
 
 <phrase>
 <original>Enhance edges</original>
-<translation>增强边缘</translation>
+<translation>边缘增强</translation>
 </phrase>
 
 <phrase>
@@ -1020,12 +1020,12 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation>梯度流</translation>
+<translation>梯度</translation>
 </phrase>
 
 <phrase>
 <original>Range filter</original>
-<translation>距离滤波器</translation>
+<translation>Range滤波</translation>
 </phrase>
 
 <phrase>
@@ -1040,12 +1040,12 @@
 
 <phrase>
 <original>Bump map</original>
-<translation>凹凸图</translation>
+<translation>凹凸映射</translation>
 </phrase>
 
 <phrase>
 <original>Cross-screen</original>
-<translation>横屏</translation>
+<translation>Cross-screen</translation>
 </phrase>
 
 <phrase>
@@ -1060,12 +1060,12 @@
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation>扩张（最高级别）</translation>
+<translation>膨胀（最高级别）</translation>
 </phrase>
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>侵蚀（最低等级）</translation>
+<translation>腐蚀（最低等级）</translation>
 </phrase>
 
 <phrase>
@@ -1120,7 +1120,7 @@
 
 <phrase>
 <original>Dust and scratches</original>
-<translation>灰尘和划痕</translation>
+<translation>蒙尘和划痕</translation>
 </phrase>
 
 <phrase>
@@ -1140,7 +1140,7 @@
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation>SNN</translation>
+<translation>SNN均值滤波</translation>
 </phrase>
 
 <phrase>
@@ -1155,7 +1155,7 @@
 
 <phrase>
 <original>Fragment</original>
-<translation>分段</translation>
+<translation>镜像错位</translation>
 </phrase>
 
 <phrase>
@@ -1185,7 +1185,7 @@
 
 <phrase>
 <original>Truchet</original>
-<translation>Truchet拼贴</translation>
+<translation>Truchet花纹</translation>
 </phrase>
 
 <phrase>
@@ -1195,7 +1195,7 @@
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>反锐化遮罩</translation>
+<translation>USM锐化</translation>
 </phrase>
 
 <phrase>
@@ -1205,12 +1205,12 @@
 
 <phrase>
 <original>Diffuse</original>
-<translation>弥漫性</translation>
+<translation>漫反射</translation>
 </phrase>
 
 <phrase>
 <original>Kuwahara filter</original>
-<translation>Kuwahara过滤器</translation>
+<translation>手绘风格</translation>
 </phrase>
 
 <phrase>
@@ -1235,12 +1235,12 @@
 
 <phrase>
 <original>Twins</original>
-<translation>Twins</translation>
+<translation>镜像</translation>
 </phrase>
 
 <phrase>
 <original>Vignetting</original>
-<translation>渐晕</translation>
+<translation>暗角</translation>
 </phrase>
 
 <phrase>
@@ -1250,12 +1250,12 @@
 
 <phrase>
 <original>Perspective</original>
-<translation>透视</translation>
+<translation>透视变形</translation>
 </phrase>
 
 <phrase>
 <original>Polar conversion</original>
-<translation>极性转换</translation>
+<translation>极坐标变换</translation>
 </phrase>
 
 <phrase>
@@ -1265,7 +1265,7 @@
 
 <phrase>
 <original>Shear</original>
-<translation>剪切</translation>
+<translation>倾斜</translation>
 </phrase>
 
 <phrase>
@@ -1405,7 +1405,7 @@
 
 <phrase>
 <original>I can't decide.  Cancel this action.</original>
-<translation>我不能确定。取消此操作。</translation>
+<translation>我搞不明白，取消操作吧。</translation>
 </phrase>
 
 <phrase>
@@ -1415,7 +1415,7 @@
 
 <phrase>
 <original>Drop as image or layer</original>
-<translation>作为图像或图层删除</translation>
+<translation>作为图像或图层放置</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1475,7 +1475,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 <phrase>
 <original>Initial save required</original>
-<translation>初始保存所需</translation>
+<translation>需要初始保存</translation>
 </phrase>
 
 <phrase>
@@ -1488,6 +1488,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
 <translation>试图保存该图像时出现未知错误。请尝试将图像保存到一个备用格式。
+
 如果问题仍然存在，请报告PhotoDemon开发商</translation>
 </phrase>
 
@@ -1498,7 +1499,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>background</original>
-<translation>背景：</translation>
+<translation>背景</translation>
 </phrase>
 
 <phrase>
@@ -1520,7 +1521,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation>自动校正颜色和照明</translation>
+<translation>自动校正颜色和光照</translation>
 </phrase>
 
 <phrase>
@@ -1555,7 +1556,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Auto-enhancing color and lighting</original>
-<translation>自动增强色彩和照明</translation>
+<translation>自动增强色彩和光照</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -1579,14 +1580,14 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Carving image relief</original>
-<translation>雕刻图像浮雕</translation>
+<translation>勾勒图像浮雕</translation>
 </phrase>
 
 <!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>在这幅独特的颜色统计数</translation>
+<translation>计算此图像中的唯一颜色数</translation>
 </phrase>
 
 <phrase>
@@ -1599,6 +1600,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>此图像包含 %1 个唯一颜色（RGB）。
+
 此图像包含 %2 个唯一颜色+不透明度值（RGBA）。</translation>
 </phrase>
 
@@ -1621,12 +1623,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>waves</original>
-<translation>波动</translation>
+<translation>波浪</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation>按线缝合</translation>
+<translation>线缝</translation>
 </phrase>
 
 <phrase>
@@ -1646,7 +1648,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>line</original>
-<translation>线</translation>
+<translation>线性</translation>
 </phrase>
 
 <phrase>
@@ -1666,7 +1668,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>circle</original>
-<translation>圈</translation>
+<translation>径向</translation>
 </phrase>
 
 <!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -1685,7 +1687,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>图片就一个颜色，无需自动裁剪。</translation>
+<translation>图片是一种颜色，无需自动裁剪。</translation>
 </phrase>
 
 <phrase>
@@ -1720,22 +1722,22 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>适合画布到旋转层</translation>
+<translation>适合画布到图层</translation>
 </phrase>
 
 <phrase>
 <original>Image is fully transparent.  Trim abandoned.</original>
-<translation>图像是完全透明的，放弃修剪。</translation>
+<translation>图像是完全透明的，放弃裁剪。</translation>
 </phrase>
 
 <phrase>
 <original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>图像已修剪。（没有改变图像。）</translation>
+<translation>图像已裁剪。（没有改变图像。）</translation>
 </phrase>
 
 <phrase>
 <original>Trimming image</original>
-<translation>修整图像</translation>
+<translation>裁剪图像</translation>
 </phrase>
 
 <!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -1798,12 +1800,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Saving %1 file</original>
-<translation>正在保有 %1</translation>
+<translation>正在保存 %1</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
-<translation>%1 保存失败。请报告此错误使用帮助->提交错误报告。</translation>
+<translation>%1 保存失败。请使用帮助菜单->提交错误报告。</translation>
 </phrase>
 
 <phrase>
@@ -1873,7 +1875,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>clamp</original>
-<translation>夹具</translation>
+<translation>夹紧</translation>
 </phrase>
 
 <phrase>
@@ -1883,7 +1885,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>wrap</original>
-<translation>缠绕</translation>
+<translation>包围</translation>
 </phrase>
 
 <phrase>
@@ -1898,7 +1900,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>square</original>
-<translation>广场</translation>
+<translation>方形</translation>
 </phrase>
 
 <phrase>
@@ -1978,7 +1980,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Pin light</original>
-<translation>针光</translation>
+<translation>点光</translation>
 </phrase>
 
 <phrase>
@@ -1988,7 +1990,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Difference</original>
-<translation>差异</translation>
+<translation>差值</translation>
 </phrase>
 
 <phrase>
@@ -1998,12 +2000,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Subtract</original>
-<translation>减去</translation>
+<translation>相减</translation>
 </phrase>
 
 <phrase>
 <original>Divide</original>
-<translation>划分</translation>
+<translation>相除</translation>
 </phrase>
 
 <phrase>
@@ -2018,7 +2020,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Color</original>
-<translation>颜色</translation>
+<translation>色彩</translation>
 </phrase>
 
 <phrase>
@@ -2033,12 +2035,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Grain merge</original>
-<translation>合并纹理</translation>
+<translation>纹理合并</translation>
 </phrase>
 
 <phrase>
 <original>Erase</original>
-<translation>清除</translation>
+<translation>擦除</translation>
 </phrase>
 
 <phrase>
@@ -2058,12 +2060,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation>相对比色</translation>
+<translation>相对色度</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation>绝对色度法</translation>
+<translation>绝对色度</translation>
 </phrase>
 
 <phrase>
@@ -2150,27 +2152,27 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>New layer from selection</original>
-<translation>从选择新建层</translation>
+<translation>从选择新建图层</translation>
 </phrase>
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation>层更新成功。</translation>
+<translation>图层更新成功。</translation>
 </phrase>
 
 <phrase>
 <original>New layer added successfully.</original>
-<translation>新层添加成功.</translation>
+<translation>新图层添加成功.</translation>
 </phrase>
 
 <phrase>
 <original>Copying layer</original>
-<translation>复制层</translation>
+<translation>复制图层</translation>
 </phrase>
 
 <phrase>
 <original>Conversion complete.</original>
-<translation>转换完成。</translation>
+<translation>转换完毕。</translation>
 </phrase>
 
 <phrase>
@@ -2185,7 +2187,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>这个动作将文本和矢量图层转换成图像（栅格）图层，这意味着你可以不再修改图层的特定设置，比如文字，字体，颜色或者形状。</translation>
+<translation>这个动作将文本和矢量图层转换成图像（栅格）图层，这意味着你不能再修改图层的特定设置，比如文字，字体，颜色或者形状。</translation>
 </phrase>
 
 <phrase>
@@ -2200,32 +2202,32 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation>否，因为它们离开文本和矢量图层</translation>
+<translation>否，保持文本层和矢量层不变。</translation>
 </phrase>
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>这个文本层将被更改为一个图像（栅格）层，这意味着你可以不再修改它的文本或字体设置。</translation>
+<translation>这个文本层将被更改为一个图像（栅格）层，这意味着你不能再修改文本或字体设置。</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation>是，请转换该文本图层。</translation>
+<translation>是，请转换这个文本图层。</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation>否，放弃转换。</translation>
+<translation>否，保持文本层不变。</translation>
 </phrase>
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation>以后不自动提示我自动栅格化</translation>
+<translation>以后自动光栅格化将不再提示</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation>漆层</translation>
+<translation>图层</translation>
 </phrase>
 
 <phrase>
@@ -2242,7 +2244,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Loading image</original>
-<translation>打开图像</translation>
+<translation>加载图像</translation>
 </phrase>
 
 <phrase>
@@ -2298,9 +2300,9 @@ Please close this file in any other running programs, then try again.</original>
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>PhotoDemon无法加载以下图像：
+<translation>很不幸，PhotoDemon无法加载以下图像：
 %1
-请使用另一个程序在一个通用的格式保存该图像（如JPEG或PNG）前加载。谢谢!</translation>
+请使用其它程序将该图像保存为通用图像格式（如JPEG或PNG），然后再加载。谢谢!</translation>
 </phrase>
 
 <phrase>
@@ -2310,7 +2312,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>Layer import canceled.</original>
-<translation>取消导出层</translation>
+<translation>图层导出取消</translation>
 </phrase>
 
 <phrase>
@@ -2323,14 +2325,14 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>PhotoDemon无法加载下面的图像：
+<translation>PhotoDemon无法加载下面的文件：
 %1
-请验证这些图像是否存在，以及是否使用支持的图像格式（如JPEG或PNG）。 谢谢！</translation>
+请检查图像文件是否存在，以及是否是软件支持的图像格式（如JPEG或PNG）。</translation>
 </phrase>
 
 <phrase>
 <original>Some images were not loaded</original>
-<translation>一些图像没有加载</translation>
+<translation>某些图像没有加载</translation>
 </phrase>
 
 <phrase>
@@ -2340,7 +2342,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Image duplication complete.</original>
-<translation>图像复制完成。</translation>
+<translation>图像复制完毕。</translation>
 </phrase>
 
 <!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -2351,7 +2353,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 (Press No to continue recording.)</original>
 <translation>该宏不包含任何可记录的动作。要停止记录吗？
 
-（按否继续录音。）</translation>
+（按否继续记录。）</translation>
 </phrase>
 
 <phrase>
@@ -2374,12 +2376,13 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>如果您没有保存该宏，所有的行动，在这个会议记录将永久丢失。您确定要取消吗？
-（按“取消”返回到保存宏屏幕。请注意，您可以删除这个宏以后如果你决定你不想要它。）</translation>
+
+（按“取消”返回到保存宏屏幕。请注意，以后如果您决定你不想要它，可以删除这个宏。）</translation>
 </phrase>
 
 <phrase>
 <original>Warning: last chance to save macro</original>
-<translation>警告：最后一次保存宏</translation>
+<translation>警告：最后一个保存宏的机会</translation>
 </phrase>
 
 <phrase>
@@ -2414,12 +2417,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Macro complete!</original>
-<translation>宏完成！</translation>
+<translation>完成宏！</translation>
 </phrase>
 
 <phrase>
 <original>Incompatible macro found.  Macro canceled.</original>
-<translation>宏不兼容，取消。</translation>
+<translation>不兼容的宏，取消。</translation>
 </phrase>
 
 <phrase>
@@ -2448,17 +2451,17 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Adobe Color Swatch</original>
-<translation>Adobe 颜色色板</translation>
+<translation>Adobe颜色色板</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation>Adobe 颜色表</translation>
+<translation>Adobe颜色表</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange</original>
-<translation>Adobe 样本交换</translation>
+<translation>Adobe样本交换</translation>
 </phrase>
 
 <phrase>
@@ -2552,7 +2555,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation>开放媒体联盟提供免费的开源 64 位 AVIF 编码器和解码器库。 这些库每个大约为 ~%1 mb（总共 ~%2 mb）。 下载后，它们将允许 PhotoDemon 在任何 64 位系统上导入和导出 AVIF 文件。</translation>
+<translation>开放媒体联盟提供免费的开源64位AVIF编码器和解码器库。这些库每个大约为 ~%1 mb（总共 ~%2 mb）。 下载后，它们将允许PhotoDemon在任何64位系统上导入和导出AVIF文件。</translation>
 </phrase>
 
 <phrase>
@@ -2657,7 +2660,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Scan canceled at the user's request.</original>
-<translation>用户取消扫描。</translation>
+<translation>扫描被用户取消。</translation>
 </phrase>
 
 <phrase>
@@ -2739,9 +2742,9 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
-<translation>提交未知的处理器的要求：1％
+<translation>提交未知处理器请求：1％
 
-请报告通过帮助这个bug - >提交错误报告菜单。</translation>
+报告bug，请通过帮助菜单->提交错误报告。</translation>
 </phrase>
 
 <phrase>
@@ -2751,7 +2754,7 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 
 <phrase>
 <original>Out of memory.  Function canceled.</original>
-<translation>超出内存，过程取消。</translation>
+<translation>内存溢出，功能取消。</translation>
 </phrase>
 
 <phrase>
@@ -2769,7 +2772,7 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
 <translation>PhotoDemon找不到更多信息此错误。这可能意味着这个错误是一个错误，它需要修复！
 
-你想提交错误报告？ （整个过程不到一分钟，它可以帮助大家谁使用该软件。）</translation>
+你想提交错误报告？（只需要一分钟，您可以帮助使用该软件的每个人。）</translation>
 </phrase>
 
 <phrase>
@@ -2819,22 +2822,22 @@ Description: %2
 
 <phrase>
 <original>X offset</original>
-<translation>X轴偏移</translation>
+<translation>X 偏移</translation>
 </phrase>
 
 <phrase>
 <original>Y offset</original>
-<translation>Y轴偏移</translation>
+<translation>Y 偏移</translation>
 </phrase>
 
 <phrase>
 <original>width</original>
-<translation>宽度:</translation>
+<translation>宽度</translation>
 </phrase>
 
 <phrase>
 <original>height</original>
-<translation>高度:</translation>
+<translation>高度</translation>
 </phrase>
 
 <phrase>
@@ -2844,37 +2847,37 @@ Description: %2
 
 <phrase>
 <original>visibility</original>
-<translation>能见度</translation>
+<translation>可见度</translation>
 </phrase>
 
 <phrase>
 <original>non-destructive effect</original>
-<translation>无损效应</translation>
+<translation>无损效果</translation>
 </phrase>
 
 <phrase>
 <original>resize quality</original>
-<translation>调整图像质量</translation>
+<translation>调整大小的质量因数</translation>
 </phrase>
 
 <phrase>
 <original>horizontal shear</original>
-<translation>水平剪切</translation>
+<translation>水平倾斜</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation>垂直剪切</translation>
+<translation>垂直倾斜</translation>
 </phrase>
 
 <phrase>
 <original>alpha mode</original>
-<translation>Alpha模式</translation>
+<translation>透明模式</translation>
 </phrase>
 
 <phrase>
 <original>text</original>
-<translation>文字</translation>
+<translation>文本</translation>
 </phrase>
 
 <phrase>
@@ -2884,7 +2887,7 @@ Description: %2
 
 <phrase>
 <original>font face</original>
-<translation>字型</translation>
+<translation>字体</translation>
 </phrase>
 
 <phrase>
@@ -2899,7 +2902,7 @@ Description: %2
 
 <phrase>
 <original>automatic fit</original>
-<translation>自动贴合</translation>
+<translation>自适应</translation>
 </phrase>
 
 <phrase>
@@ -2934,7 +2937,7 @@ Description: %2
 
 <phrase>
 <original>antialiased</original>
-<translation>反锯齿</translation>
+<translation>抗锯齿</translation>
 </phrase>
 
 <phrase>
@@ -2949,7 +2952,7 @@ Description: %2
 
 <phrase>
 <original>hinting</original>
-<translation>提示</translation>
+<translation>hinting(小字号微调)</translation>
 </phrase>
 
 <phrase>
@@ -2969,12 +2972,12 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation>实线效果</translation>
+<translation>轮廓效果</translation>
 </phrase>
 
 <phrase>
 <original>outline style</original>
-<translation>外形风格</translation>
+<translation>轮廓样式</translation>
 </phrase>
 
 <phrase>
@@ -2999,7 +3002,7 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation>边缘</translation>
+<translation>边距</translation>
 </phrase>
 
 <phrase>
@@ -3049,7 +3052,7 @@ Description: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation>修改选择</translation>
+<translation>修改选区</translation>
 </phrase>
 
 <phrase>
@@ -3068,7 +3071,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 <phrase>
 <original>Bug report instructions</original>
-<translation>错误报告的说明</translation>
+<translation>错误报告介绍</translation>
 </phrase>
 
 <!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
@@ -3135,7 +3138,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>输出格式无法识别。保存失败。请使用帮助->提交错误报告菜单项报告这一事件。</translation>
+<translation>输出格式无法识别。保存失败。请使用帮助菜单->提交错误报告，报告这一问题。</translation>
 </phrase>
 
 <phrase>
@@ -3150,7 +3153,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>This is a still image (only one frame of animation).</original>
-<translation>这是一个静止图像（只有一帧动画）。</translation>
+<translation>这是一个静态图像（只有一帧动画）。</translation>
 </phrase>
 
 <phrase>
@@ -3199,12 +3202,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>PhotoDemon selection</original>
-<translation>PhotoDemon选择</translation>
+<translation>PhotoDemon选区</translation>
 </phrase>
 
 <phrase>
 <original>Load a previously saved selection</original>
-<translation>加载先前保存的选择</translation>
+<translation>加载先前保存的选区</translation>
 </phrase>
 
 <phrase>
@@ -3214,27 +3217,27 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Loading selection</original>
-<translation>加载选择</translation>
+<translation>加载选区</translation>
 </phrase>
 
 <phrase>
 <original>Selection loaded successfully</original>
-<translation>加载选择完成</translation>
+<translation>加载选区完成</translation>
 </phrase>
 
 <phrase>
 <original>Save the current selection</original>
-<translation>保存当前选择</translation>
+<translation>保存当前选区</translation>
 </phrase>
 
 <phrase>
 <original>Selection saved.</original>
-<translation>保存选择</translation>
+<translation>保存选区</translation>
 </phrase>
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>未知错误，选择没有保存，请重试。</translation>
+<translation>未知错误，选区没有保存，请重试。</translation>
 </phrase>
 
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -3246,7 +3249,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Feathering selection</original>
-<translation>羽化选择</translation>
+<translation>羽化选区</translation>
 </phrase>
 
 <phrase>
@@ -3256,12 +3259,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>锐化选择</translation>
+<translation>锐化选区</translation>
 </phrase>
 
 <phrase>
 <original>Growing selection</original>
-<translation>增加选择</translation>
+<translation>扩大选区</translation>
 </phrase>
 
 <phrase>
@@ -3271,7 +3274,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>收缩选择</translation>
+<translation>收缩选区</translation>
 </phrase>
 
 <phrase>
@@ -3295,12 +3298,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Move selection</original>
-<translation>移动选择</translation>
+<translation>移动选区</translation>
 </phrase>
 
 <phrase>
 <original>Resize selection</original>
-<translation>调整大小的选择</translation>
+<translation>调整选区大小</translation>
 </phrase>
 
 <phrase>
@@ -3349,19 +3352,19 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Move layer</original>
-<translation>移动层</translation>
+<translation>移动图层</translation>
 </phrase>
 
 <!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Ctrl+Click 设置克隆源</translation>
+<translation>Ctrl+Click 设定克隆源位置</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>克隆标记</translation>
+<translation>克隆图章</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3457,17 +3460,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>pt</original>
-<translation>pt</translation>
+<translation>磅</translation>
 </phrase>
 
 <phrase>
 <original>pc</original>
-<translation>pc</translation>
+<translation>派卡</translation>
 </phrase>
 
 <phrase>
 <original>percent</original>
-<translation>百分</translation>
+<translation>百分比</translation>
 </phrase>
 
 <phrase>
@@ -3492,7 +3495,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>points</original>
-<translation>点</translation>
+<translation>磅（点）</translation>
 </phrase>
 
 <phrase>
@@ -3509,7 +3512,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>启动时检测软件更新（此功能可以从工具-->选项菜单禁用）</translation>
+<translation>启动时检测软件更新（此功能可以从工具菜单-->选项禁用）</translation>
 </phrase>
 
 <phrase>
@@ -3524,12 +3527,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>alpha</original>
-<translation>Alpha</translation>
+<translation>alpha</translation>
 </phrase>
 
 <phrase>
 <original>beta</original>
-<translation>测试版</translation>
+<translation>beta</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3541,12 +3544,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>以前保存的预设可以选择在这里。你可以保存当前设置为一个新的预设通过单击“保存预设右边的按钮。</translation>
+<translation>以前保存的预设可以在这里选择。你可以通过单击“保存预设右边的按钮，保存当前设置为一个新的预设。</translation>
 </phrase>
 
 <phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>随机选择该工具的新的设置。这有助于探索如何不同的设置会影响图像。</translation>
+<translation>随机选择该工具的新的设置。这有助于探索不同的设置会如何影响图像。</translation>
 </phrase>
 
 <phrase>
@@ -3561,7 +3564,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation>保存当前设置新的预置。</translation>
+<translation>保存当前设置为新的预置。</translation>
 </phrase>
 
 <phrase>
@@ -3571,7 +3574,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Pin this panel open</original>
-<translation>钉住的面板打开</translation>
+<translation>固定的面板打开</translation>
 </phrase>
 
 <phrase>
@@ -3588,17 +3591,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
-<translation>此图像不包含任何GPS元数据。</translation>
+<translation>此图像不包含任何GPS数据。</translation>
 </phrase>
 
 <phrase>
 <original>No GPS data found</original>
-<translation>没有 GPS 数据</translation>
+<translation>没有GPS数据</translation>
 </phrase>
 
 <phrase>
 <original>Attempting to connect to the Internet</original>
-<translation>试图连接到互联网</translation>
+<translation>尝试连接到互联网</translation>
 </phrase>
 
 <phrase>
@@ -3618,7 +3621,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Downloading</original>
-<translation>正在下载</translation>
+<translation>正在下载...</translation>
 </phrase>
 
 <phrase>
@@ -3628,7 +3631,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation>正在下载 (%1 of %2 字节)</translation>
+<translation>正在下载... (%1 of %2 字节)</translation>
 </phrase>
 
 <phrase>
@@ -3646,8 +3649,6 @@ Please enter a numeric value.</original>
 
 You will need to manually download this file using your Internet browser.</original>
 <translation>不幸的是，%1 阻止PhotoDemon直接下载此文件。（直接下载有时被错误配置的服务器误认为是热链接），
-
-
 
 您需要使用浏览器手动下载此文件。</translation>
 </phrase>
@@ -3682,7 +3683,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>剪贴板是空的或不包含一个有效的图片格式。请复制一个有效图像到剪贴板并再试一次。</translation>
+<translation>剪贴板是空的或没有可识别的图片格式。请复制有效图像到剪贴板并再试一次。</translation>
 </phrase>
 
 <phrase>
@@ -3762,24 +3763,24 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>New layer</original>
-<translation>添加新层</translation>
+<translation>添加新图层</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Building color lookup</original>
-<translation>构建颜色查找</translation>
+<translation>构建颜色查找表</translation>
 </phrase>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation>全部支持的色彩查找表LUTs</translation>
+<translation>所有支持的LUTs调色预设</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation>选择色彩查找表LUT 文件</translation>
+<translation>选择LUT调色预设文件</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -3788,7 +3789,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Layer %1</original>
-<translation>层 %1</translation>
+<translation>图层 %1</translation>
 </phrase>
 
 <!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3815,17 +3816,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Apple)</original>
-<translation>XMP（苹果）</translation>
+<translation>XMP（Apple）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (ACD Systems)</original>
-<translation>XMP（ACD系统）</translation>
+<translation>XMP（ACD Systems）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Album)</original>
-<translation>XMP（Adobe专辑）</translation>
+<translation>XMP（Adobe Album）</translation>
 </phrase>
 
 <phrase>
@@ -3835,7 +3836,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Creative Commons)</original>
-<translation>XMP（创作共用）</translation>
+<translation>XMP（知识共享）</translation>
 </phrase>
 
 <phrase>
@@ -3845,22 +3846,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Adobe After Effects)</original>
-<translation>XMP（Adobe 后处理效果）</translation>
+<translation>XMP（AE）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Photoshop Camera Raw)</original>
-<translation>XMP（Photoshop中的Camera Raw）</translation>
+<translation>XMP（Photoshop Camera Raw）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dublin Core)</original>
-<translation>XMP（都柏林核心集）</translation>
+<translation>XMP（Dublin Core）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Description Explorer)</original>
-<translation>XMP（说明浏览器）</translation>
+<translation>XMP（Description Explorer）</translation>
 </phrase>
 
 <phrase>
@@ -3890,22 +3891,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Extensis Portfolio)</original>
-<translation>XMP（Extensis组合）</translation>
+<translation>XMP（Extensis Portfolio）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Fast Picture Viewer)</original>
-<translation>XMP（快速浏览图片）</translation>
+<translation>XMP（Fast Picture Viewer）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Getty Images)</original>
-<translation>XMP（Getty图像）</translation>
+<translation>XMP（Getty Images）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Google Photosphere)</original>
-<translation>XMP（谷歌光球）</translation>
+<translation>XMP（Google Photosphere）</translation>
 </phrase>
 
 <phrase>
@@ -3915,12 +3916,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (IPTC Core)</original>
-<translation>XMP（IPTC核心）</translation>
+<translation>XMP（IPTC Core）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Extension)</original>
-<translation>XMP（IPTC扩展）</translation>
+<translation>XMP（IPTC Extension）</translation>
 </phrase>
 
 <phrase>
@@ -3960,7 +3961,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Adobe PDF extended)</original>
-<translation>XMP（Adobe PDF扩展）</translation>
+<translation>XMP（Adobe PDF extended）</translation>
 </phrase>
 
 <phrase>
@@ -3980,17 +3981,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Plus License Data)</original>
-<translation>XMP（加上许可证数据）</translation>
+<translation>XMP（Plus License Data）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation>XMP（棱镜的图像）</translation>
+<translation>XMP（PRISM for images）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM)</original>
-<translation>XMP（棱镜）</translation>
+<translation>XMP（PRISM）</translation>
 </phrase>
 
 <phrase>
@@ -4030,22 +4031,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (General)</original>
-<translation>XMP（一般）</translation>
+<translation>XMP（General）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Basic Job)</original>
-<translation>XMP（基础性工作）</translation>
+<translation>XMP（Basic Job）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dynamic Media)</original>
-<translation>XMP（动态媒体）</translation>
+<translation>XMP（Dynamic Media）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Media Management)</original>
-<translation>XMP（媒体管理）</translation>
+<translation>XMP（Media Management）</translation>
 </phrase>
 
 <phrase>
@@ -4055,22 +4056,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Picture Licensing)</original>
-<translation>XMP (图片声明)</translation>
+<translation>XMP (Picture Licensing)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Rights Management)</original>
-<translation>XMP（版权管理）</translation>
+<translation>XMP（Rights Management）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Paged Text)</original>
-<translation>XMP（分页文本）</translation>
+<translation>XMP（Paged Text）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Misc)</original>
-<translation>XMP（杂项）</translation>
+<translation>XMP（Misc）</translation>
 </phrase>
 
 <phrase>
@@ -4180,7 +4181,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>recent images</original>
-<translation>近期图片</translation>
+<translation>最近的图片</translation>
 </phrase>
 
 <phrase>
@@ -4205,7 +4206,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Batch process</original>
-<translation>批量加工</translation>
+<translation>批量处理</translation>
 </phrase>
 
 <phrase>
@@ -4220,17 +4221,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Open location in Explorer</original>
-<translation>在资源管理器中打开位置</translation>
+<translation>在资源管理器中打开</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation>关闭所有除此之外</translation>
+<translation>关闭全部，仅保留当前图像</translation>
 </phrase>
 
 <phrase>
 <original>Center the image inside the viewport</original>
-<translation>居中在图像视窗内</translation>
+<translation>图像在窗口内居中</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4254,7 +4255,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>transparency format</original>
-<translation>透明度格式</translation>
+<translation>透明格式</translation>
 </phrase>
 
 <phrase>
@@ -4346,7 +4347,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>点击使主屏的油漆颜色成为当前颜色。</translation>
+<translation>点击使主屏的绘画颜色成为当前颜色。</translation>
 </phrase>
 
 <phrase>
@@ -4363,7 +4364,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation>顺时针旋转色调</translation>
+<translation>顺时针旋转色相</translation>
 </phrase>
 
 <phrase>
@@ -4403,7 +4404,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation>逆时针旋转色调</translation>
+<translation>逆时针旋转色相</translation>
 </phrase>
 
 <phrase>
@@ -4442,7 +4443,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Preset saved.</original>
-<translation>预设保存。</translation>
+<translation>预设已保存。</translation>
 </phrase>
 
 <phrase>
@@ -4457,7 +4458,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation>这个按钮将在你的网页浏览器中打开一个新的问题页面。  你将需要一个GitHub账户来继续。</translation>
+<translation>这个按钮将在你的网页浏览器中打开一个新的issue页面。你将需要一个GitHub账户来继续。</translation>
 </phrase>
 
 <phrase>
@@ -4495,7 +4496,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>一旦这个图像保存到磁盘，它的文件名就会出现在这里。</translation>
+<translation>将图像保存到磁盘后，文件名将显示在这里。</translation>
 </phrase>
 
 <phrase>
@@ -4505,7 +4506,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>一个图像的缩略图，看看它的名称和当前文件位置。</translation>
+<translation>鼠标在图像缩略图悬停，可查看文件名称和位置。</translation>
 </phrase>
 
 <!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -4514,7 +4515,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Rearrange layers</original>
-<translation>重新排列层</translation>
+<translation>重新排列图层</translation>
 </phrase>
 
 <!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4551,7 +4552,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation>JPEG特定设置</translation>
+<translation>JPEG设置</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -4596,17 +4597,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>resolution</original>
-<translation>解析度：</translation>
+<translation>分辨率</translation>
 </phrase>
 
 <phrase>
 <original>dimensions</original>
-<translation>尺寸：</translation>
+<translation>尺寸</translation>
 </phrase>
 
 <phrase>
 <original>aspect ratio</original>
-<translation>宽高比：</translation>
+<translation>宽高比</translation>
 </phrase>
 
 <phrase>
@@ -4621,12 +4622,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>保持纵横比（有时也称为约束比例）。使用此选项来调整图像的大小，同时保持同步的宽度和高度。</translation>
+<translation>保持长宽比例。使用此选项来调整图像的大小，同时保持同步的宽度和高度。</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation>保留长宽比</translation>
+<translation>保持长宽比</translation>
 </phrase>
 
 <phrase>
@@ -4651,24 +4652,24 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>exact aspect ratio will vary by image</original>
-<translation>将不同的图像精确纵横比</translation>
+<translation>具体长宽比例会因图像而异</translation>
 </phrase>
 
 <phrase>
 <original>exact size will vary by image</original>
-<translation>精确大小会因图像而异</translation>
+<translation>具体尺寸会因图像而异</translation>
 </phrase>
 
 <phrase>
 <original>%1, was %2</original>
-<translation>%1, 是 %2</translation>
+<translation>%1</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
-<translation>滚动这里</translation>
+<translation>滚动到这里</translation>
 </phrase>
 
 <phrase>
@@ -4747,14 +4748,14 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>PhotoDemon doesn't understand the expression: %1</original>
-<translation>PhotoDemon 不能解释这个表达：%1</translation>
+<translation>PhotoDemon 不能解释这个表达式：%1</translation>
 </phrase>
 
 <!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>size</original>
-<translation>大小</translation>
+<translation>尺寸</translation>
 </phrase>
 
 <phrase>
@@ -4774,12 +4775,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation>改变视觉缩放</translation>
+<translation>改变窗口缩放</translation>
 </phrase>
 
 <phrase>
 <original>Change the image size unit displayed to the left of this box</original>
-<translation>将图像大小单位显示为左边框的值</translation>
+<translation>更改此框左侧显示的图像大小单位</translation>
 </phrase>
 
 <!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -4821,7 +4822,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Online image</original>
-<translation>在线图像</translation>
+<translation>来自网络的图像</translation>
 </phrase>
 
 <phrase>
@@ -4836,7 +4837,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Export</original>
-<translation>输出</translation>
+<translation>导出</translation>
 </phrase>
 
 <phrase>
@@ -4851,7 +4852,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated WebP</original>
-<translation>动态WebP</translation>
+<translation>WebP动画</translation>
 </phrase>
 
 <phrase>
@@ -4886,7 +4887,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Special</original>
-<translation>特别</translation>
+<translation>其它剪贴板操作</translation>
 </phrase>
 
 <phrase>
@@ -4896,32 +4897,32 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Duplicate</original>
-<translation>重复</translation>
+<translation>图像拷贝</translation>
 </phrase>
 
 <phrase>
 <original>Resize</original>
-<translation>调整</translation>
+<translation>调整尺寸</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>内容识别调整</translation>
+<translation>使用内容识别调整尺寸</translation>
 </phrase>
 
 <phrase>
 <original>Crop to selection</original>
-<translation>裁剪选择图像</translation>
+<translation>裁剪选区</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty borders</original>
-<translation>修剪空边界</translation>
+<translation>裁剪透明边缘</translation>
 </phrase>
 
 <phrase>
 <original>Straighten</original>
-<translation>修正</translation>
+<translation>倾斜校正</translation>
 </phrase>
 
 <phrase>
@@ -4976,22 +4977,22 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Map photo location</original>
-<translation>图照片位置</translation>
+<translation>照片位置</translation>
 </phrase>
 
 <phrase>
 <original>Layer</original>
-<translation>层</translation>
+<translation>图层</translation>
 </phrase>
 
 <phrase>
 <original>Add</original>
-<translation>添加层</translation>
+<translation>添加图层</translation>
 </phrase>
 
 <phrase>
 <original>Basic layer</original>
-<translation>基本层</translation>
+<translation>基本图层</translation>
 </phrase>
 
 <phrase>
@@ -5006,7 +5007,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From visible layers</original>
-<translation>从可见层</translation>
+<translation>从可见图层</translation>
 </phrase>
 
 <phrase>
@@ -5016,12 +5017,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Current layer</original>
-<translation>当前层</translation>
+<translation>当前图层</translation>
 </phrase>
 
 <phrase>
 <original>Hidden layers</original>
-<translation>隐藏层</translation>
+<translation>隐藏图层</translation>
 </phrase>
 
 <phrase>
@@ -5051,12 +5052,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Move layer up</original>
-<translation>层上移</translation>
+<translation>图层上移</translation>
 </phrase>
 
 <phrase>
 <original>Move layer down</original>
-<translation>层下移</translation>
+<translation>图层下移</translation>
 </phrase>
 
 <phrase>
@@ -5071,12 +5072,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Visibility</original>
-<translation>可见度</translation>
+<translation>隐藏或显示图层</translation>
 </phrase>
 
 <phrase>
 <original>Show this layer</original>
-<translation>显示此层</translation>
+<translation>显示此图层</translation>
 </phrase>
 
 <phrase>
@@ -5091,7 +5092,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Size</original>
-<translation>大小</translation>
+<translation>尺寸</translation>
 </phrase>
 
 <phrase>
@@ -5111,7 +5112,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From color (chroma key)</original>
-<translation>从颜色（色度键）</translation>
+<translation>从颜色（色键）</translation>
 </phrase>
 
 <phrase>
@@ -5126,7 +5127,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Threshold</original>
-<translation>起点</translation>
+<translation>阈值</translation>
 </phrase>
 
 <phrase>
@@ -5146,17 +5147,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Current layer into standalone image</original>
-<translation>当前层到独立图像</translation>
+<translation>当前图层转换为独立图像</translation>
 </phrase>
 
 <phrase>
 <original>All layers into standalone images</original>
-<translation>所有层都成独立的图像</translation>
+<translation>所有图层转换为独立的图像</translation>
 </phrase>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>此图像中的其他打开图像（作为层）</translation>
+<translation>以图层方式打开其它图像到此图像</translation>
 </phrase>
 
 <phrase>
@@ -5171,7 +5172,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Invert</original>
-<translation>反选</translation>
+<translation>反转</translation>
 </phrase>
 
 <phrase>
@@ -5211,7 +5212,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Adjustments</original>
-<translation>图像调整</translation>
+<translation>调整</translation>
 </phrase>
 
 <phrase>
@@ -5256,12 +5257,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Lighting</original>
-<translation>照明</translation>
+<translation>光照</translation>
 </phrase>
 
 <phrase>
 <original>Map</original>
-<translation>地图</translation>
+<translation>映射</translation>
 </phrase>
 
 <phrase>
@@ -5296,12 +5297,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation>纠正现有的失真</translation>
+<translation>纠正存在的失真</translation>
 </phrase>
 
 <phrase>
 <original>Lens</original>
-<translation>镜片</translation>
+<translation>镜头</translation>
 </phrase>
 
 <phrase>
@@ -5321,12 +5322,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Dilate</original>
-<translation>扩张</translation>
+<translation>膨胀</translation>
 </phrase>
 
 <phrase>
 <original>Erode</original>
-<translation>侵蚀</translation>
+<translation>腐蚀</translation>
 </phrase>
 
 <phrase>
@@ -5366,7 +5367,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Transform</original>
-<translation>转换</translation>
+<translation>变形</translation>
 </phrase>
 
 <phrase>
@@ -5386,7 +5387,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Language</original>
-<translation>选择语言</translation>
+<translation>语言</translation>
 </phrase>
 
 <phrase>
@@ -5426,12 +5427,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Recent macros</original>
-<translation>最近宏</translation>
+<translation>最近使用的宏</translation>
 </phrase>
 
 <phrase>
 <original>Animated screen capture</original>
-<translation>动画屏幕录制</translation>
+<translation>屏幕动画录制</translation>
 </phrase>
 
 <phrase>
@@ -5476,12 +5477,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Fit image on screen</original>
-<translation>适应图像到屏幕</translation>
+<translation>适应图像到窗口</translation>
 </phrase>
 
 <phrase>
 <original>Zoom to value</original>
-<translation>缩放到值</translation>
+<translation>缩放到指定值</translation>
 </phrase>
 
 <phrase>
@@ -5526,7 +5527,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Medium buttons</original>
-<translation>中型按钮</translation>
+<translation>中等按钮</translation>
 </phrase>
 
 <phrase>
@@ -5541,7 +5542,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Layers</original>
-<translation>层</translation>
+<translation>图层</translation>
 </phrase>
 
 <phrase>
@@ -5601,12 +5602,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Support us with a one-time donation</original>
-<translation>用一次性捐款支持我们</translation>
+<translation>捐款支持我们</translation>
 </phrase>
 
 <phrase>
 <original>Ask a question</original>
-<translation>问个问题</translation>
+<translation>问题咨询</translation>
 </phrase>
 
 <phrase>
@@ -5641,7 +5642,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation>发现 PhotoDemon 新版本。此更新在后台自动处理</translation>
+<translation>发现PhotoDemon新版本，自动在后台进行升级。</translation>
 </phrase>
 
 <phrase>
@@ -5650,12 +5651,12 @@ The final value must be between %3 and %4.</original>
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
 <translation>PhotoDemon 新版本可用！
 
-此更新将在后台自动处理。它完成时，您将收到新的通知。</translation>
+此更新将在后台自动进行。它完成时，您将收到新的通知。</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Updates</original>
-<translation>PhotoDemon 更新</translation>
+<translation>PhotoDemon更新</translation>
 </phrase>
 
 <phrase>
@@ -5683,7 +5684,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Please wait while the new language is applied</original>
-<translation>请稍候，应用新语言</translation>
+<translation>请稍候，正在切换新的语言</translation>
 </phrase>
 
 <phrase>
@@ -5693,12 +5694,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying new translation</original>
-<translation>应用新语言</translation>
+<translation>应用新翻译</translation>
 </phrase>
 
 <phrase>
 <original>Language changed successfully.</original>
-<translation>切换语言成功。</translation>
+<translation>语言切换成功。</translation>
 </phrase>
 
 <!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
@@ -5735,7 +5736,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>final colors</original>
-<translation>最终的颜色</translation>
+<translation>最终颜色</translation>
 </phrase>
 
 <phrase>
@@ -5745,7 +5746,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>remove from image</original>
-<translation>从图像删除</translation>
+<translation>从图像移除</translation>
 </phrase>
 
 <phrase>
@@ -5762,7 +5763,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>真正的对比样本图像（速度较慢，但更准确）</translation>
+<translation>使用真实对比度进行图像采样（速度较慢，但更准确）。</translation>
 </phrase>
 
 <phrase>
@@ -5772,7 +5773,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>contrast</original>
-<translation>对比</translation>
+<translation>对比度</translation>
 </phrase>
 
 <phrase>
@@ -5782,12 +5783,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>modern</original>
-<translation>现代</translation>
+<translation>现代方式</translation>
 </phrase>
 
 <phrase>
 <original>legacy</original>
-<translation>遗产</translation>
+<translation>传统方式</translation>
 </phrase>
 
 <!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -5876,7 +5877,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>key (black)</original>
-<translation>键（黑色）</translation>
+<translation>黑色</translation>
 </phrase>
 
 <phrase>
@@ -5888,7 +5889,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>new balance</original>
-<translation>新的平衡</translation>
+<translation>色彩平衡</translation>
 </phrase>
 
 <phrase>
@@ -5905,7 +5906,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>new color</original>
-<translation>新的颜色</translation>
+<translation>着色</translation>
 </phrase>
 
 <phrase>
@@ -5927,7 +5928,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>number of gray shades</original>
-<translation>灰度数</translation>
+<translation>灰色阴影数</translation>
 </phrase>
 
 <phrase>
@@ -5994,19 +5995,19 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>调节色调，饱和度和亮度值</translation>
+<translation>调节色调、饱和度和亮度</translation>
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>available LUTs</original>
-<translation>可用色彩查找表LUTs</translation>
+<translation>可用LUTs调色预设</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation>导入色彩查找表LUT文件</translation>
+<translation>导入LUT调色预设文件</translation>
 </phrase>
 
 <phrase>
@@ -6026,7 +6027,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>颜色查找表LUT集合存储在 "%1"文件夹中</translation>
+<translation>你的LUT调色预置存储在 "%1"文件夹中</translation>
 </phrase>
 
 <phrase>
@@ -6053,7 +6054,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Replacing color</original>
-<translation>更换颜色</translation>
+<translation>替换颜色</translation>
 </phrase>
 
 <!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6065,7 +6066,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
-<translation>从时尚向棕褐色进行转换</translation>
+<translation>执行棕色调转换</translation>
 </phrase>
 
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6082,22 +6083,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>temperature</original>
-<translation>温度</translation>
+<translation>色温</translation>
 </phrase>
 
 <phrase>
 <original>warmer</original>
-<translation>稍暖</translation>
+<translation>暖色调</translation>
 </phrase>
 
 <phrase>
 <original>cooler</original>
-<translation>冷色</translation>
+<translation>冷色调</translation>
 </phrase>
 
 <phrase>
 <original>new temperature (K)</original>
-<translation>新的温度（K）</translation>
+<translation>新色温（K）</translation>
 </phrase>
 
 <phrase>
@@ -6112,7 +6113,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying new temperature to image</original>
-<translation>应用新的图像色温</translation>
+<translation>应用新色温到图像</translation>
 </phrase>
 
 <phrase>
@@ -6141,12 +6142,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vibrance</original>
-<translation>光彩</translation>
+<translation>自然饱和度</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting color vibrance</original>
-<translation>调节色彩的活力</translation>
+<translation>调节彩色自然饱和度</translation>
 </phrase>
 
 <!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6173,7 +6174,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying new curve to image</original>
-<translation>应用新曲线</translation>
+<translation>应用新曲线到图像</translation>
 </phrase>
 
 <phrase>
@@ -6198,7 +6199,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>instructions</original>
-<translation>指令</translation>
+<translation>说明</translation>
 </phrase>
 
 <phrase>
@@ -6208,7 +6209,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>right-click to remove nodes</original>
-<translation>右键单击要删除节点</translation>
+<translation>右键单击删除节点</translation>
 </phrase>
 
 <phrase>
@@ -6235,7 +6236,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>visible channels</original>
-<translation>可见光通道</translation>
+<translation>显示通道</translation>
 </phrase>
 
 <phrase>
@@ -6245,7 +6246,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>（注：移动鼠标到直方图计算这些值）</translation>
+<translation>（注：在直方图上移动鼠标可计算和查看数值）</translation>
 </phrase>
 
 <phrase>
@@ -6307,7 +6308,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>value</original>
-<translation>值</translation>
+<translation>亮度</translation>
 </phrase>
 
 <phrase>
@@ -6329,27 +6330,27 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>output levels</original>
-<translation>输出级别</translation>
+<translation>输出色阶</translation>
 </phrase>
 
 <phrase>
 <original>input levels</original>
-<translation>输入级别</translation>
+<translation>输入色阶</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>当这个按钮是活动的时候，你可以通过右键单击“预览”窗口中的颜色来设置“影子输入级”颜色。</translation>
+<translation>激活此按钮，可以在预览窗口中右键选择黑场（黑色阈值）。</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>当这个按钮是活动的时候，你可以在预览窗口中设置一个颜色，通过右键来设置高亮的输入级别。</translation>
+<translation>激活此按钮，可以在预览窗口中右键选择白场（白色阈值）。</translation>
 </phrase>
 
 <phrase>
 <original>Mapping new image levels</original>
-<translation>映射新的图像水平</translation>
+<translation>映射新的图像色阶</translation>
 </phrase>
 
 <!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -6400,29 +6401,29 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>new gamma curve</original>
-<translation>新的伽玛曲线</translation>
+<translation>新的gamma曲线</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting gamma values</original>
-<translation>调整伽玛值</translation>
+<translation>调整gamma值</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>gradient type</original>
-<translation>梯度类型</translation>
+<translation>渐变类型</translation>
 </phrase>
 
 <phrase>
 <original>midpoint</original>
-<translation>中点</translation>
+<translation>中间点</translation>
 </phrase>
 
 <phrase>
 <original>Applying gradient map</original>
-<translation>应用梯度映射</translation>
+<translation>应用渐变映射</translation>
 </phrase>
 
 <!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6444,7 +6445,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>像所有的单色到灰度的工具，这个工具会产生一个模糊的图像。你可以使用效果->锐化->反锐化掩模的工具来解决这个。（最好的结果是，使用锐化掩模半径至少为这个半径大）</translation>
+<translation>类似所有的单色到灰度工具一样，这个工具也会产生一个模糊的图像。你可以使用特效菜单->锐化->USM锐化工具来解决这个问题。（为了获得最佳效果，请使用至少与此半径一样大的“USM锐化”半径。）</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6473,12 +6474,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation>暖调滤镜 (%1)</translation>
+<translation>暖色调滤镜(%1)</translation>
 </phrase>
 
 <phrase>
 <original>Cooling filter (%1)</original>
-<translation>冷却滤镜 (%1)</translation>
+<translation>冷色调滤镜(%1)</translation>
 </phrase>
 
 <phrase>
@@ -6533,7 +6534,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Deep emerald</original>
-<translation>深翡翠</translation>
+<translation>深祖母绿</translation>
 </phrase>
 
 <phrase>
@@ -6560,12 +6561,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>highlight color</original>
-<translation>高亮颜色</translation>
+<translation>高亮色</translation>
 </phrase>
 
 <phrase>
 <original>shadow color</original>
-<translation>阴影颜色</translation>
+<translation>阴影色</translation>
 </phrase>
 
 <phrase>
@@ -6587,7 +6588,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>highlights</original>
-<translation>亮点</translation>
+<translation>高亮</translation>
 </phrase>
 
 <phrase>
@@ -6602,7 +6603,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Adjusting shadows, midtones, and highlights</original>
-<translation>调整阴影，中间调，和亮点</translation>
+<translation>调整阴影、中间调和高亮</translation>
 </phrase>
 
 <!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -6611,7 +6612,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Autosave data detected</original>
-<translation>自动数据检测</translation>
+<translation>检测到自动保存数据</translation>
 </phrase>
 
 <phrase>
@@ -6626,7 +6627,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
-<translation>发现自动保存数据。你想恢复它吗？</translation>
+<translation>发现上次自动保存的数据。你想恢复它吗？</translation>
 </phrase>
 
 <phrase>
@@ -6636,7 +6637,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>如果现在退出，此自动保存数据将永远丢失。 你确定要离开？</translation>
+<translation>如果现在退出，此自动保存数据将永远丢失。你确定要退出？</translation>
 </phrase>
 
 <phrase>
@@ -6680,14 +6681,14 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>HTML / CSS</original>
-<translation>HTML / CSS</translation>
+<translation>HTML/CSS</translation>
 </phrase>
 
 <!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Saved presets</original>
-<translation>保存预设</translation>
+<translation>保存的预设</translation>
 </phrase>
 
 <phrase>
@@ -6717,12 +6718,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>A preset with this name already exists.  Do you want to overwrite it?</original>
-<translation>此名称的预设已经存在，你想覆盖它吗？</translation>
+<translation>此预设名已经存在，你想覆盖它吗？</translation>
 </phrase>
 
 <phrase>
 <original>Overwrite existing preset</original>
-<translation>覆盖现有的预设</translation>
+<translation>覆盖已有的预设</translation>
 </phrase>
 
 <phrase>
@@ -6769,12 +6770,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>pattern</original>
-<translation>模式</translation>
+<translation>调色板</translation>
 </phrase>
 
 <phrase>
 <original>pattern color</original>
-<translation>图案颜色</translation>
+<translation>前景颜色</translation>
 </phrase>
 
 <phrase>
@@ -6806,12 +6807,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Yes</original>
-<translation>Yes</translation>
+<translation>是</translation>
 </phrase>
 
 <phrase>
 <original>No</original>
-<translation>No</translation>
+<translation>否</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -6840,12 +6841,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>additional options</original>
-<translation>其他选项</translation>
+<translation>附加选项</translation>
 </phrase>
 
 <phrase>
 <original>use gamma when blending</original>
-<translation>混合时使用伽玛</translation>
+<translation>混合时使用gamma</translation>
 </phrase>
 
 <phrase>
@@ -6870,7 +6871,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>save to gradient collection</original>
-<translation>保存到渐变集合</translation>
+<translation>保存到渐变预置</translation>
 </phrase>
 
 <phrase>
@@ -6880,7 +6881,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>position</original>
-<translation>新层上下位置：</translation>
+<translation>上下位置</translation>
 </phrase>
 
 <phrase>
@@ -6895,7 +6896,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>generate new pattern</original>
-<translation>生成新模式</translation>
+<translation>生成新调色板</translation>
 </phrase>
 
 <phrase>
@@ -6915,12 +6916,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vary hue</original>
-<translation>色调变化</translation>
+<translation>改变色相</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation>饱和度变化</translation>
+<translation>改变饱和度</translation>
 </phrase>
 
 <phrase>
@@ -6930,7 +6931,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vary alpha</original>
-<translation>改变Alpha</translation>
+<translation>改变alpha</translation>
 </phrase>
 
 <phrase>
@@ -6940,17 +6941,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>sort collection by</original>
-<translation>排序集合</translation>
+<translation>预置排序依据</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation>你的收藏</translation>
+<translation>你的预置</translation>
 </phrase>
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>您的集合中已存在名为“ %1 ”的渐变。 你想覆盖它吗？</translation>
+<translation>您的预置中已存在名为“ %1 ”的渐变。 你想覆盖它吗？</translation>
 </phrase>
 
 <phrase>
@@ -6960,7 +6961,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation>这个渐变没有名称，请在将其添加到收藏集之前为其命名。</translation>
+<translation>这个渐变没有名称，请在将其添加到预置之前为其命名。</translation>
 </phrase>
 
 <phrase>
@@ -7015,7 +7016,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient collection</original>
-<translation>渐变集合</translation>
+<translation>渐变预置</translation>
 </phrase>
 
 <phrase>
@@ -7040,7 +7041,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>您的渐变集合存储在“ %1 ”文件夹中</translation>
+<translation>您的渐变预置存储在“ %1 ”文件夹中</translation>
 </phrase>
 
 <phrase>
@@ -7368,8 +7369,7 @@ The update is automatically processing in the background.  You will receive a ne
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>注意：如果你点击“保存”，Photodemon将使用其当前文件名保存该图像。
 
-
-如果你想用另一个不同的文件名保存，请选择“取消”，然后使用文件->另存为”菜单项。</translation>
+如果你想用另一个不同的文件名保存，请选择“取消”，然后使用文件菜单->另存为。</translation>
 </phrase>
 
 <phrase>
@@ -7505,27 +7505,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>patch test size</original>
-<translation>补丁测试大小</translation>
+<translation>分片实验大小</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation>随机候选补丁</translation>
+<translation>随机候选分片</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation>细化(百分比)</translation>
+<translation>细化（百分比）</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation>补丁完美阈值</translation>
+<translation>分片完美度阈值</translation>
 </phrase>
 
 <phrase>
 <original>sample radius</original>
-<translation>样品半径</translation>
+<translation>样本半径</translation>
 </phrase>
 
 <phrase>
@@ -7695,7 +7695,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>loading plugin collection</original>
-<translation>加载插件集合</translation>
+<translation>加载预置插件</translation>
 </phrase>
 
 <phrase>
@@ -7715,19 +7715,19 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>下载一个或多个8bf文件后，使用设置按钮（上图）告诉PhotoDemon在哪里可以找到它们，PhotoDemon会将它们添加到你的特效集合中。</translation>
+<translation>下载一个或多个8bf文件后，使用设置按钮（上图）告诉PhotoDemon在哪里可以找到它们，PhotoDemon会将它们添加到你的预置特效中。</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation>处理后，删除该层</translation>
+<translation>处理后，删除该图层</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation>背景层</translation>
+<translation>背景图层</translation>
 </phrase>
 
 <phrase>
@@ -7757,7 +7757,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>foreground layer</original>
-<translation>前景层</translation>
+<translation>前景图层</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -7771,12 +7771,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>tip radius</original>
-<translation>笔尖半径：</translation>
+<translation>笔尖半径</translation>
 </phrase>
 
 <phrase>
 <original>pressure</original>
-<translation>笔触压力：</translation>
+<translation>笔触压力</translation>
 </phrase>
 
 <phrase>
@@ -7813,7 +7813,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush size</original>
-<translation>刷子大小</translation>
+<translation>笔刷尺寸</translation>
 </phrase>
 
 <phrase>
@@ -7823,7 +7823,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Animating image</original>
-<translation>正在生成漫画图像</translation>
+<translation>正在生成动画图像</translation>
 </phrase>
 
 <phrase>
@@ -7872,7 +7872,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>shadow cut-off</original>
-<translation>阴影切断</translation>
+<translation>阴影截止</translation>
 </phrase>
 
 <phrase>
@@ -7882,12 +7882,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>highlight cut-off</original>
-<translation>高亮截断</translation>
+<translation>高亮截止</translation>
 </phrase>
 
 <phrase>
 <original>contrast midpoint</original>
-<translation>对比中点</translation>
+<translation>对比度中点</translation>
 </phrase>
 
 <phrase>
@@ -7897,7 +7897,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Asking Sam Spade for help</original>
-<translation>向山姆提出帮助</translation>
+<translation>请求帮助</translation>
 </phrase>
 
 <!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -7909,7 +7909,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating glass tiles</original>
-<translation>生成磁贴</translation>
+<translation>生成玻璃砖效果</translation>
 </phrase>
 
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -7921,7 +7921,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>primary angle</original>
-<translation>主角</translation>
+<translation>主要角度</translation>
 </phrase>
 
 <phrase>
@@ -7936,7 +7936,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>secondary angle</original>
-<translation>二次角</translation>
+<translation>二次角度</translation>
 </phrase>
 
 <phrase>
@@ -7951,7 +7951,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Peering at image through imaginary kaleidoscope</original>
-<translation>盯着图像通过想象的万花筒</translation>
+<translation>通过想象的万花筒观察图像</translation>
 </phrase>
 
 <phrase>
@@ -7963,7 +7963,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>horizontal strength</original>
-<translation>横向强度</translation>
+<translation>水平强度</translation>
 </phrase>
 
 <phrase>
@@ -7973,7 +7973,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying modern art techniques</original>
-<translation>运用现代艺术手法</translation>
+<translation>应用现代艺术技术</translation>
 </phrase>
 
 <!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8002,12 +8002,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>light angle</original>
-<translation>光角度</translation>
+<translation>光线角度</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation>光强度</translation>
+<translation>光线强度</translation>
 </phrase>
 
 <phrase>
@@ -8088,7 +8088,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fast</original>
-<translation>快</translation>
+<translation>快速</translation>
 </phrase>
 
 <phrase>
@@ -8115,7 +8115,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>保持两个高、宽同步</translation>
+<translation>保持宽高同步</translation>
 </phrase>
 
 <phrase>
@@ -8191,12 +8191,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying motion blur</original>
-<translation>应用运动模糊</translation>
+<translation>应用动感模糊</translation>
 </phrase>
 
 <phrase>
 <original>gaussian</original>
-<translation>高斯</translation>
+<translation>高斯模糊</translation>
 </phrase>
 
 <!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8265,22 +8265,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(a) edges</original>
-<translation>（a）边</translation>
+<translation>边缘</translation>
 </phrase>
 
 <phrase>
 <original>(b) midpoints</original>
-<translation>（b）中点</translation>
+<translation>中心点</translation>
 </phrase>
 
 <phrase>
 <original>(c) whole image</original>
-<translation>（c）整幅图像</translation>
+<translation>整图</translation>
 </phrase>
 
 <phrase>
 <original>(d) zoom</original>
-<translation>（d）缩放</translation>
+<translation>缩放</translation>
 </phrase>
 
 <phrase>
@@ -8317,12 +8317,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>interior radius</original>
-<translation>内饰半径</translation>
+<translation>内半径</translation>
 </phrase>
 
 <phrase>
 <original>Deep-frying image</original>
-<translation>深油炸图像</translation>
+<translation>Deep-frying图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8334,17 +8334,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>inner radius</original>
-<translation>内半径</translation>
+<translation>内径</translation>
 </phrase>
 
 <phrase>
 <original>outer radius</original>
-<translation>外半径</translation>
+<translation>外径</translation>
 </phrase>
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation>召唤埃舍尔特效M. C. Escher</translation>
+<translation>埃舍尔奇幻特效</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8371,17 +8371,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>flatten corners</original>
-<translation>扁角</translation>
+<translation>抚平拐角</translation>
 </phrase>
 
 <phrase>
 <original>pull in</original>
-<translation>拉进</translation>
+<translation>拉近</translation>
 </phrase>
 
 <phrase>
 <original>push out</original>
-<translation>拉远</translation>
+<translation>推远</translation>
 </phrase>
 
 <phrase>
@@ -8408,19 +8408,19 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>pinch amount</original>
-<translation>挤压量</translation>
+<translation>戳拽量</translation>
 </phrase>
 
 <phrase>
 <original>Pinching and whirling image</original>
-<translation>挤压和旋转图像</translation>
+<translation>戳拽和旋转图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Poking image</original>
-<translation>Poking</translation>
+<translation>涨缩图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8437,7 +8437,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>time (phase)</original>
-<translation>时相</translation>
+<translation>时间（相位）</translation>
 </phrase>
 
 <phrase>
@@ -8449,7 +8449,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Squeezing image</original>
-<translation>压缩图像</translation>
+<translation>收缩图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8483,7 +8483,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Dipping image in virtual wave pool</original>
-<translation>虚拟波池中的浸渍图像</translation>
+<translation>模拟水波池中的图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Waves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8495,7 +8495,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Embossing image</original>
-<translation>压花图像</translation>
+<translation>浮雕图像</translation>
 </phrase>
 
 <!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8522,7 +8522,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying pass %1 of %2 for %3 filter</original>
-<translation>应用的%2 合格%1 %3过滤器</translation>
+<translation>正在处理%3过滤器，应用%2 通过%1</translation>
 </phrase>
 
 <phrase>
@@ -8596,7 +8596,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>render</original>
-<translation>递交</translation>
+<translation>渲染</translation>
 </phrase>
 
 <phrase>
@@ -8616,7 +8616,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation>计算梯度流</translation>
+<translation>计算渐变</translation>
 </phrase>
 
 <phrase>
@@ -8626,7 +8626,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>direction</original>
-<translation>用法</translation>
+<translation>方向</translation>
 </phrase>
 
 <phrase>
@@ -8677,7 +8677,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Illuminating image with imaginary blacklight</original>
-<translation>与假想的背光照明图像</translation>
+<translation>用想象的黑光照亮图像</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8706,7 +8706,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation>采用横屏过滤器</translation>
+<translation>应用Cross-screen过滤器</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8718,7 +8718,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Sprinkling image with shimmering rainbows</original>
-<translation>喷水图像闪耀的彩虹</translation>
+<translation>使用闪烁彩虹点缀图像</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Rainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8735,12 +8735,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color variance</original>
-<translation>颜色变化</translation>
+<translation>色彩方差</translation>
 </phrase>
 
 <phrase>
 <original>ray variance</original>
-<translation>射线方差</translation>
+<translation>光线方差</translation>
 </phrase>
 
 <phrase>
@@ -8776,7 +8776,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Lighting image on fire</original>
-<translation>消防照明图像</translation>
+<translation>火焰光照图像</translation>
 </phrase>
 
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8809,7 +8809,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color shift</original>
-<translation>颜色偏移</translation>
+<translation>色彩偏移</translation>
 </phrase>
 
 <phrase>
@@ -8848,12 +8848,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>gradient flow</original>
-<translation>梯度流</translation>
+<translation>渐变</translation>
 </phrase>
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation>计算能量梯度（合格 %1 /%2）</translation>
+<translation>计算能量渐变（通过 %1 /%2）</translation>
 </phrase>
 
 <phrase>
@@ -8890,7 +8890,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation>修复灰尘和划痕</translation>
+<translation>修复蒙尘和划痕</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8909,7 +8909,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation>应用谐波平均滤波器</translation>
+<translation>应用调和均值滤波器</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8928,12 +8928,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying erode (minimum rank) filter</original>
-<translation>应用侵蚀（最低等级）过滤器</translation>
+<translation>应用腐蚀（最低等级）过滤器</translation>
 </phrase>
 
 <phrase>
 <original>Applying dilate (maximum rank) filter</original>
-<translation>应用扩张（最高等级）过滤器</translation>
+<translation>应用膨胀（最高等级）过滤器</translation>
 </phrase>
 
 <phrase>
@@ -8945,22 +8945,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>cyan angle</original>
-<translation>青色</translation>
+<translation>青色角度</translation>
 </phrase>
 
 <phrase>
 <original>magenta angle</original>
-<translation>品红</translation>
+<translation>品红角度</translation>
 </phrase>
 
 <phrase>
 <original>yellow angle</original>
-<translation>黄色</translation>
+<translation>黄色角度</translation>
 </phrase>
 
 <phrase>
 <original>Printing image to digital halftone surface</original>
-<translation>打印图像数码网目调面</translation>
+<translation>将图像打印到数字半色调表面</translation>
 </phrase>
 
 <!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8984,7 +8984,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>manual</original>
-<translation>手册</translation>
+<translation>自定义</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9072,7 +9072,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rendering clouds</original>
-<translation>渲染云</translation>
+<translation>渲染云层</translation>
 </phrase>
 
 <phrase>
@@ -9120,7 +9120,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying unsharp mask (step %1 of %2)</original>
-<translation>应用锐化遮罩(步骤 %1 / %2)</translation>
+<translation>应用USM锐化(步骤 %1 / %2)</translation>
 </phrase>
 
 <!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9137,7 +9137,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fade edges</original>
-<translation>褪色边缘</translation>
+<translation>淡入淡出边缘</translation>
 </phrase>
 
 <phrase>
@@ -9299,14 +9299,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating image twin</original>
-<translation>生成Twin图像</translation>
+<translation>生成镜像图像</translation>
 </phrase>
 
 <!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying vignetting</original>
-<translation>应用渐晕</translation>
+<translation>应用暗角</translation>
 </phrase>
 
 <phrase>
@@ -9338,14 +9338,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying pan and zoom (Ken Burns) effect</original>
-<translation>应用平移和缩放（肯·伯恩斯）效果</translation>
+<translation>应用平移和缩放（Ken Burns）效果</translation>
 </phrase>
 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>自定义缩短（x，y）</translation>
 </phrase>
 
 <phrase>
@@ -9365,7 +9365,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>forward (outline defines destination area)</original>
-<translation>转发（轮廓定义目标区域）</translation>
+<translation>向前（轮廓定义目标区域）</translation>
 </phrase>
 
 <phrase>
@@ -9412,17 +9412,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rectangular to polar</original>
-<translation>矩形到极性</translation>
+<translation>平面坐标到极坐标</translation>
 </phrase>
 
 <phrase>
 <original>Polar to rectangular</original>
-<translation>极性到矩形</translation>
+<translation>极坐标到平面坐标</translation>
 </phrase>
 
 <phrase>
 <original>Polar inversion</original>
-<translation>极性反转</translation>
+<translation>反转极坐标</translation>
 </phrase>
 
 <!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -9434,7 +9434,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
-<translation>如果你想扩大画布以适应旋转的图像，请使用图像>旋转菜单。</translation>
+<translation>如果你想扩大画布以适应旋转的图像，请使用图像菜单->旋转。</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9458,12 +9458,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>area outside sphere</original>
-<translation>范围以外地区</translation>
+<translation>球外区域</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>围绕图像周围</translation>
+<translation>图像包裹球体</translation>
 </phrase>
 
 <phrase>
@@ -9495,12 +9495,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>source folder</original>
-<translation>源文件夹：</translation>
+<translation>源文件夹</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation>目标文件夹：</translation>
+<translation>目标文件夹（仅适用于修复的文件）</translation>
 </phrase>
 
 <phrase>
@@ -9520,7 +9520,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>overwrite matching filenames in the destination folder</original>
-<translation>覆盖目标文件夹重名文件</translation>
+<translation>覆盖目标文件夹中的同名文件</translation>
 </phrase>
 
 <phrase>
@@ -9540,14 +9540,15 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation>维修完成，修复 %1 个文件。</translation>
+<translation>修复完成，修复 %1 个文件。</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>%1 个文件修复成功，
+<translation>%1 个文件修复成功。
+
 已修复的文件已保存到目标文件夹中，未修复的文件保留在其原始位置。</translation>
 </phrase>
 
@@ -9650,7 +9651,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>fix exposure and lighting problems</original>
-<translation>修正曝光和照明的问题</translation>
+<translation>修正曝光和光照的问题</translation>
 </phrase>
 
 <phrase>
@@ -9760,7 +9761,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>replace spaces in filenames with underscores</original>
-<translation>在文件名用下划线代替空格</translation>
+<translation>用下划线替换文件名中的空格</translation>
 </phrase>
 
 <phrase>
@@ -9770,12 +9771,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>after images are processed, save them with the following name</original>
-<translation>图像处理后，将它们保存具有以下名称</translation>
+<translation>图像处理后，用以下名称保存</translation>
 </phrase>
 
 <phrase>
 <original>additional rename options</original>
-<translation>重命名选项</translation>
+<translation>其他重命名选项</translation>
 </phrase>
 
 <phrase>
@@ -9790,7 +9791,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Are you sure you want to cancel the current batch process?</original>
-<translation>你确定你想取消当前批处理？</translation>
+<translation>你确定想取消当前批处理？</translation>
 </phrase>
 
 <phrase>
@@ -9864,7 +9865,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>在继续之前，您需要单击“设置此格式的导出设置”按钮以指定要使用的导出设置。</translation>
+<translation>在继续执行之前，您需要单击“设置此格式的导出设置”按钮以指定要使用的导出设置。</translation>
 </phrase>
 
 <phrase>
@@ -9874,7 +9875,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon不能访问所请求的输出文件夹。请选择一个非系统的，无限制的文件夹进行批处理。</translation>
+<translation>PhotoDemon不能访问所请求的输出文件夹。请选择一个非系统的，没有权限限制的文件夹进行批处理。</translation>
 </phrase>
 
 <phrase>
@@ -9899,7 +9900,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>注：“宏”是一个简单的照片编辑动作列表。它可以包括任何调整，滤波效果，或在主程序。你可以通过“工具→宏→录制新宏”菜单创建一个新的宏。</translation>
+<translation>注：“宏”是一个简单的照片编辑动作列表。它可以包括任何调整，滤波效果，或在主程序。你可以通过工具菜单->宏->录制新宏，创建一个新的宏。</translation>
 </phrase>
 
 <phrase>
@@ -9944,12 +9945,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>如果“保持图像的原始格式”被选中，PhotoDemon将尝试保存每个图像的原始格式。如果不支持原始格式，以标准格式（JPEG或PNG，根据颜色深度）将被使用。</translation>
+<translation>如果“保持图像的原始格式”被选中，PhotoDemon将尝试保存每个图像的原始格式。如果不支持原始格式，则使用标准格式（JPEG或PNG，根据颜色深度）。</translation>
 </phrase>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>如果您选择将图像保存到一个新的格式，请确保您所选择的格式适用于列表中的所有图像。 （例如，具有透明性的图像应保存到支持透明度的格式！）</translation>
+<translation>如果您选择将图像保存到一个新的格式，请确保您所选择的格式适用于列表中的所有图像。（例如，具有透明度的图像应保存为支持透明度的图像格式！）</translation>
 </phrase>
 
 <phrase>
@@ -9969,12 +9970,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>为了您的方便，还提供了一些标准的重命名选项。请注意，在“其他选项重命名”的所有项目都是可选的。</translation>
+<translation>为了您的方便，还提供了一些标准的重命名选项。请注意，在“其他选项重命名选项”的所有项目都是可选的。</translation>
 </phrase>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>最后，如果该批次列表中两个或更多图像具有相同的文件名，并选择了“原始文件名”选项，这些文件将被自动保存时给出唯一的文件名（例如，“原始文件名（2）”）。</translation>
+<translation>最后，如果该批次列表中两个或更多图像具有相同的文件名，并选择了“原始文件名”选项，这些文件将在自动保存时指定唯一文件名（例如，“原始文件名（2）”）。</translation>
 </phrase>
 
 <phrase>
@@ -10054,12 +10055,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-<translation>如果PhotoDemon不支持的图像的原始格式，一个将用标准格式</translation>
+<translation>如果PhotoDevon不支持图像的原始格式，则将使用标准格式</translation>
 </phrase>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>（具体地，JPEG在92％质量为照片，和无损的PNG用于非照片）</translation>
+<translation>（具体地，照片使用JPEG 92％质量因数，非照片使用无损PNG）</translation>
 </phrase>
 
 <phrase>
@@ -10094,7 +10095,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>批量转换已取消，在  %1 之前取消处理图像，最后处理的图像是 "%2"。</translation>
+<translation>批量转换已取消。在取消之前处理了 %1 个图像，最后处理的图像是 "%2"。</translation>
 </phrase>
 
 <phrase>
@@ -10111,7 +10112,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
+<translation>alpha截止</translation>
 </phrase>
 
 <phrase>
@@ -10156,17 +10157,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>此按钮仅影响上面的预览。右侧的重复设置将由导出的图像文件使用。</translation>
+<translation>此按钮仅影响上面的预览。右侧的重复设置是导出的图像文件将使用的设置。</translation>
 </phrase>
 
 <phrase>
 <original>frame time (in ms)</original>
-<translation>帧时间（以毫秒为单位）</translation>
+<translation>帧时间（毫秒）</translation>
 </phrase>
 
 <phrase>
 <original>frame time for undefined layers (in ms)</original>
-<translation>未定义图层的帧时间（以毫秒为单位）</translation>
+<translation>未定义图层的帧时间（毫秒）</translation>
 </phrase>
 
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10185,7 +10186,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>balanced</original>
-<translation>保持平衡</translation>
+<translation>平衡</translation>
 </phrase>
 
 <phrase>
@@ -10338,7 +10339,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>screenshot source</original>
-<translation>截图来源</translation>
+<translation>截屏来源</translation>
 </phrase>
 
 <phrase>
@@ -10368,7 +10369,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>有些程序（包括 Windows 应用商店程序）不允许直接屏幕捕获，如果一个应用程序预览显示为黑色，请您需要截取一个完整的桌面截图，然后手动裁剪所需的窗口区域。</translation>
+<translation>有些程序（包括 Windows 应用商店程序）不允许直接截取窗口，如果一个应用程序预览显示为黑色，您需要截取一个完整的桌面截图，然后手动裁剪所需的窗口区域。</translation>
 </phrase>
 
 <phrase>
@@ -10568,12 +10569,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>by cut-off</original>
-<translation>通过切断</translation>
+<translation>截止</translation>
 </phrase>
 
 <phrase>
 <original>by color</original>
-<translation>通过颜色</translation>
+<translation>颜色</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10595,12 +10596,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>图标源</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>将每一层视为唯一的图标帧</translation>
 </phrase>
 
 <phrase>
@@ -10647,17 +10648,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Lossless (1:1)</original>
-<translation>无损（1：1）</translation>
+<translation>无损（1:1）</translation>
 </phrase>
 
 <phrase>
 <original>Low compression, good image quality (16:1)</original>
-<translation>低压缩，图像质量好（16：1）</translation>
+<translation>低压缩，图像质量好（16:1）</translation>
 </phrase>
 
 <phrase>
 <original>Moderate compression, medium image quality (32:1)</original>
-<translation>适度压缩，图像质量（32：1）</translation>
+<translation>适度压缩，图像质量（32:1）</translation>
 </phrase>
 
 <phrase>
@@ -10719,17 +10720,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>baseline</original>
-<translation>基线</translation>
+<translation>基线（标准）</translation>
 </phrase>
 
 <phrase>
 <original>optimized baseline</original>
-<translation>优化基线</translation>
+<translation>基线优化</translation>
 </phrase>
 
 <phrase>
 <original>progressive</original>
-<translation>进步</translation>
+<translation>连续</translation>
 </phrase>
 
 <phrase>
@@ -10751,34 +10752,34 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>压缩程度</translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation>快速，更大的文件</translation>
+<translation>快速，文件较大</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation>慢，较小的文件</translation>
+<translation>慢速，文件较小</translation>
 </phrase>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>无损</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>有损</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
-<translation>使用渐进式编码</translation>
+<translation>使用渐进编码</translation>
 </phrase>
 
 <phrase>
@@ -10913,7 +10914,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>color compression</original>
-<translation>色彩压缩</translation>
+<translation>彩色压缩</translation>
 </phrase>
 
 <phrase>
@@ -11073,7 +11074,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>base image and layer</original>
-<translation>基础图像和层</translation>
+<translation>基础图像和图层</translation>
 </phrase>
 
 <phrase>
@@ -11140,7 +11141,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>注意：调整它在此之前操作将拼合图像。</translation>
+<translation>注意：在调整图像大小之前将合并图像。</translation>
 </phrase>
 
 <phrase>
@@ -11150,7 +11151,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation>应用内容识别调整</translation>
+<translation>应用内容识别调整尺寸</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11162,7 +11163,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation>将此添加到“调整>颜色查找”工具</translation>
+<translation>将此添加到“调整>色彩>颜色查找”工具</translation>
 </phrase>
 
 <phrase>
@@ -11304,7 +11305,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tag restrictions</original>
-<translation>标签的限制</translation>
+<translation>标签限制</translation>
 </phrase>
 
 <phrase>
@@ -11329,7 +11330,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>integers >= 0</original>
-<translation>整数>=0</translation>
+<translation>整数 >=0</translation>
 </phrase>
 
 <phrase>
@@ -11416,32 +11417,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>延伸到新的大小（默认）</translation>
+<translation>拉伸到新尺寸（默认）</translation>
 </phrase>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>透明的边界是必须的</translation>
+<translation>缩放到新尺寸，根据需要保持边缘透明</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>完全拟合，根据需要裁剪</translation>
+<translation>缩放到新尺寸，根据需要裁剪多余部分</translation>
 </phrase>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation>一些图像重采样过滤器支持近似计算，这些性能改进，对质量的影响很小。</translation>
+<translation>一些图像重采样过滤器支持近似计算，这可以改进性能，同时对质量的影响很小。</translation>
 </phrase>
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>重采样的大小对图像质量的影响，请参考相关资料获取更多信息。</translation>
+<translation>重采样的大小对图像质量有影响，请参考相关资料获取更多信息。</translation>
 </phrase>
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>改变图像的纵横比时，可能发生拉伸变形。系统会可以用空边界或交叉代替来解决这个问题。</translation>
+<translation>改变图像的纵横比时，可能发生拉伸或缩放变形。PhotoDemon会使用透明边缘或裁剪边缘来进行处理。</translation>
 </phrase>
 
 <phrase>
@@ -11451,19 +11452,19 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Resizing layer</original>
-<translation>调整层大小</translation>
+<translation>调整图层大小</translation>
 </phrase>
 
 <!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
-<translation>边界区域</translation>
+<translation>边缘区域</translation>
 </phrase>
 
 <phrase>
 <original>Rotating layer</original>
-<translation>旋转层</translation>
+<translation>正在旋转图层</translation>
 </phrase>
 
 <phrase>
@@ -11488,24 +11489,24 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Rotate layer</original>
-<translation>旋转层</translation>
+<translation>旋转图层</translation>
 </phrase>
 
 <!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
-<translation>拉伸图像</translation>
+<translation>图像倾斜校正</translation>
 </phrase>
 
 <phrase>
 <original>Straightening layer</original>
-<translation>拉伸层</translation>
+<translation>图层倾斜校正</translation>
 </phrase>
 
 <phrase>
 <original>Straighten complete.</original>
-<translation>拉伸完成。</translation>
+<translation>倾斜校正完成。</translation>
 </phrase>
 
 <!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11527,19 +11528,19 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>top of layer stack</original>
-<translation>位于层顶部</translation>
+<translation>位于最顶层</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>位于层底部</translation>
+<translation>位于最底层</translation>
 </phrase>
 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>flatten behavior</original>
-<translation>扁平化操作</translation>
+<translation>合并行为</translation>
 </phrase>
 
 <phrase>
@@ -11571,7 +11572,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>if imported layer names match existing layer names</original>
-<translation>如果导入的层名称与现有的层名称匹配</translation>
+<translation>如果导入的图层名称在现有的图层名称中已经存在</translation>
 </phrase>
 
 <phrase>
@@ -11596,12 +11597,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>replace existing layers with imported ones</original>
-<translation>用导入的替换现有的层</translation>
+<translation>用导入图层的替换现有的图层</translation>
 </phrase>
 
 <phrase>
 <original>add duplicates as new layers</original>
-<translation>将重复项添加为新图层</translation>
+<translation>将同名的图层添加为新图层</translation>
 </phrase>
 
 <phrase>
@@ -11616,7 +11617,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>close images without prompting</original>
-<translation>无提示关闭图像</translation>
+<translation>关闭图像而不提示</translation>
 </phrase>
 
 <!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -11638,7 +11639,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Adding new alpha channel to image</original>
-<translation>添加新的Alpha通道图像</translation>
+<translation>添加Alpha通道</translation>
 </phrase>
 
 <!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11650,17 +11651,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>black is transparent</original>
-<translation>黑色是透明的</translation>
+<translation>黑色是透明色</translation>
 </phrase>
 
 <phrase>
 <original>white is transparent</original>
-<translation>白色是透明的</translation>
+<translation>白色是透明色</translation>
 </phrase>
 
 <phrase>
 <original>gray is transparent</original>
-<translation>灰色是透明的</translation>
+<translation>灰色是透明色</translation>
 </phrase>
 
 <!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11683,7 +11684,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>blend</original>
-<translation>融合</translation>
+<translation>混合</translation>
 </phrase>
 
 <phrase>
@@ -11693,7 +11694,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation>按住Shift键并单击：添加空白层</translation>
+<translation>按住Shift键并单击：添加空白图层</translation>
 </phrase>
 
 <phrase>
@@ -11708,12 +11709,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation>单击：将此层向上移动到层顶部</translation>
+<translation>单击：将此层向上移动到图层顶部</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation>按住Shift键并单击：将此层与其上方的层合并</translation>
+<translation>按住Shift键并单击：将此层与其上方的图层合并</translation>
 </phrase>
 
 <phrase>
@@ -11728,7 +11729,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation>按住Shift键并单击：将此层与其下方的层合并</translation>
+<translation>按住Shift键并单击：将此层与其下方的图层合并</translation>
 </phrase>
 
 <phrase>
@@ -11769,12 +11770,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>overview</original>
-<translation>概览</translation>
+<translation>预览</translation>
 </phrase>
 
 <phrase>
 <original>layers</original>
-<translation>层</translation>
+<translation>图层</translation>
 </phrase>
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11803,12 +11804,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>paint</original>
-<translation>涂料：</translation>
+<translation>画图</translation>
 </phrase>
 
 <phrase>
 <original>macro recording in progress</original>
-<translation>宏录制进行中</translation>
+<translation>宏录制进行中...</translation>
 </phrase>
 
 <phrase>
@@ -11838,12 +11839,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation>画图工具：使用鼠标，触摸板，或手写板来操作图像或层</translation>
+<translation>画图工具：使用鼠标，触控板，或手写板来操作图像或图层</translation>
 </phrase>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>创建一个空白图像（快捷键：Ctrl+N）。</translation>
+<translation>此选项将创建一个空白图像。也可以在文件菜单->导入，创建新图像（快捷键：Ctrl+N）。</translation>
 </phrase>
 
 <phrase>
@@ -11853,17 +11854,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>打开的图像一个要编辑的图像(快捷键：Ctrl+O)。</translation>
+<translation>你可以从桌面或Windows资源管理器中拖拽图片文件到PhotoDemon上。</translation>
 </phrase>
 
 <phrase>
 <original>Open one or more images for editing</original>
-<translation>打开一个或多个图像进行编辑</translation>
+<translation>打开一个或多个图像进行编辑。</translation>
 </phrase>
 
 <phrase>
 <original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>如果当前图像没有被保存，您将收到一个提示来保存它在它关闭之前。</translation>
+<translation>如果当前图像没有被保存，关闭之前您将收到一个保存提示。</translation>
 </phrase>
 
 <phrase>
@@ -11873,7 +11874,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>因为你已经关闭保存提示（通过工具 - >选项），您将不会收到一个提示关闭之前保存此图像。</translation>
+<translation>因为你已经关闭保存提示（通过工具菜单->选项），所以在关闭此图像之前，您将不会收到保存此图像的提示。</translation>
 </phrase>
 
 <phrase>
@@ -11883,37 +11884,37 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Save image in current format</original>
-<translation>图像保存在当前格式</translation>
+<translation>图像保存为当前格式</translation>
 </phrase>
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>您指定的“安全”的保存方式，这意味着每个省将创建一个新文件，文件名自动递增。</translation>
+<translation>您指定的“安全”的保存方式，这意味着每创建一个新文件，文件名自动递增。</translation>
 </phrase>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>使用该快速保存当前图像的无损复制。无损复制将保存在PDI的格式，在图像的当前文件夹，使用当前文件名（加上一个自动增加的数量，如有）。</translation>
+<translation>使用此选项可以快速保存当前图像的无损副本。无损副本将以PDI格式保存在图像的当前文件夹中，使用当前文件名（数字自动递增）。</translation>
 </phrase>
 
 <phrase>
 <original>Save lossless copy</original>
-<translation>保存无损复制</translation>
+<translation>保存无损副本</translation>
 </phrase>
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>保存为“命令”总是引发一个对话框，所以您可以指定当前图像的新文件名、文件夹和/或图像格式。</translation>
+<translation>“另存为”命令会弹出一个对话框，可以指定当前图像的新文件名、保存路径、图像格式。</translation>
 </phrase>
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation>保存为（导出到新的格式或文件名）</translation>
+<translation>另存为（导出为新的图像格式或其它文件名）</translation>
 </phrase>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>手（点击并拖动图像滚动）</translation>
+<translation>手形工具，点击并拖动图像</translation>
 </phrase>
 
 <phrase>
@@ -11923,82 +11924,82 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Zoom</original>
-<translation>缩放</translation>
+<translation>缩放工具</translation>
 </phrase>
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>移动和调整图像层</translation>
+<translation>移动工具，移动图像和调整图层尺寸</translation>
 </phrase>
 
 <phrase>
 <original>Select colors from the image</original>
-<translation>从图像中选择颜色</translation>
+<translation>吸管工具，从图像中选择颜色</translation>
 </phrase>
 
 <phrase>
 <original>Measure angles and distances</original>
-<translation>测量角度和距离</translation>
+<translation>测量工具，测量角度和距离</translation>
 </phrase>
 
 <phrase>
 <original>Rectangular Selection</original>
-<translation>矩形选择</translation>
+<translation>矩形选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Elliptical (Oval) Selection</original>
-<translation>椭圆</translation>
+<translation>椭圆选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Polygon Selection</original>
-<translation>多边形</translation>
+<translation>多边形选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>套索（手动）</translation>
+<translation>套索（手动选择）工具</translation>
 </phrase>
 
 <phrase>
 <original>Magic Wand Selection</original>
-<translation>魔法棒</translation>
+<translation>魔棒工具，选择相似区域</translation>
 </phrase>
 
 <phrase>
 <original>Basic Text</original>
-<translation>基本文本</translation>
+<translation>基本文本工具</translation>
 </phrase>
 
 <phrase>
 <original>Advanced Text</original>
-<translation>高级文本</translation>
+<translation>高级文本工具</translation>
 </phrase>
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation>铅笔（硬刷）</translation>
+<translation>铅笔工具，绘制硬边缘线条</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>画笔（软刷）</translation>
+<translation>画笔工具，绘制羽化边缘线条</translation>
 </phrase>
 
 <phrase>
 <original>Eraser</original>
-<translation>橡皮擦</translation>
+<translation>橡皮擦工具</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation>油漆桶（填充颜色）</translation>
+<translation>油漆桶工具，填充颜色</translation>
 </phrase>
 
 <phrase>
 <original>Gradient</original>
-<translation>渐变</translation>
+<translation>渐变工具</translation>
 </phrase>
 
 <phrase>
@@ -12018,7 +12019,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Color selector tool</original>
-<translation>颜色选择器工具</translation>
+<translation>颜色选择器</translation>
 </phrase>
 
 <phrase>
@@ -12048,7 +12049,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Magic wand selection tool</original>
-<translation>魔术棒选择工具</translation>
+<translation>魔棒选择工具</translation>
 </phrase>
 
 <phrase>
@@ -12068,7 +12069,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paintbrush tool</original>
-<translation>毛笔工具</translation>
+<translation>画笔工具</translation>
 </phrase>
 
 <phrase>
@@ -12078,7 +12079,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation>克隆标记工具</translation>
+<translation>克隆图章工具</translation>
 </phrase>
 
 <phrase>
@@ -12090,7 +12091,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>pattern mode</original>
-<translation>模型模式</translation>
+<translation>图案模式</translation>
 </phrase>
 
 <phrase>
@@ -12100,7 +12101,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>flow</original>
-<translation>连续性</translation>
+<translation>浓度</translation>
 </phrase>
 
 <phrase>
@@ -12110,7 +12111,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>hardness</original>
-<translation>硬度</translation>
+<translation>羽化</translation>
 </phrase>
 
 <phrase>
@@ -12120,7 +12121,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>layer</original>
-<translation>层</translation>
+<translation>图层</translation>
 </phrase>
 
 <phrase>
@@ -12140,7 +12141,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tile + flip both</original>
-<translation>平铺+翻转</translation>
+<translation>平铺+水平垂直翻转</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12167,7 +12168,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>n/a</original>
-<translation>N / A</translation>
+<translation>N/A</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12186,7 +12187,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tolerance</original>
-<translation>公差：</translation>
+<translation>容差</translation>
 </phrase>
 
 <phrase>
@@ -12216,12 +12217,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>填充支持许多不同的风格。 单击可在纯色、图案和渐变样式之间切换。</translation>
+<translation>填充支持许多不同的风格。单击可在纯色、图案和渐变样式之间切换。</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation>容差控制两个像素之间的相似程度，然后在它们之间展开填充。</translation>
+<translation>容差控制两个像素之间的相似程度，然后在它们之间进行填充。</translation>
 </phrase>
 
 <phrase>
@@ -12231,7 +12232,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation>通常，填充从目标像素展开，添加相邻像素。 您也可以将其设置为分析整个图像，而不考虑连续性。</translation>
+<translation>通常，填充从目标像素展开，添加相邻像素。您也可以将其设置为分析整个图像，而不考虑连续性。</translation>
 </phrase>
 
 <phrase>
@@ -12300,24 +12301,24 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>straighten image</original>
-<translation>拉直图像</translation>
+<translation>图像（倾斜校正）</translation>
 </phrase>
 
 <phrase>
 <original>straighten layer</original>
-<translation>矫直层</translation>
+<translation>图层（倾斜校正）</translation>
 </phrase>
 
 <phrase>
 <original>use measurement to</original>
-<translation>使用测量</translation>
+<translation>应用测量结果到：</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>size (w, h)</original>
-<translation>尺寸(宽w,高h)</translation>
+<translation>尺寸（宽，高）</translation>
 </phrase>
 
 <phrase>
@@ -12327,7 +12328,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>transform quality</original>
-<translation>转换质量</translation>
+<translation>变换质量</translation>
 </phrase>
 
 <phrase>
@@ -12337,7 +12338,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>show layer borders</original>
-<translation>显示层边框</translation>
+<translation>显示图层边框</translation>
 </phrase>
 
 <phrase>
@@ -12357,27 +12358,27 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>make transforms permanent</original>
-<translation>固化变换</translation>
+<translation>永久转换</translation>
 </phrase>
 
 <phrase>
 <original>sample selections from</original>
-<translation>样本选自</translation>
+<translation>样本选区来自</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation>默认选择行为</translation>
+<translation>默认选区行为</translation>
 </phrase>
 
 <phrase>
 <original>position (x, y)</original>
-<translation>位置(x,y)</translation>
+<translation>图像位置（X,Y）</translation>
 </phrase>
 
 <phrase>
 <original>shear (x, y)</original>
-<translation>剪切(x, y)</translation>
+<translation>剪切（X，Y）</translation>
 </phrase>
 
 <phrase>
@@ -12523,7 +12524,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation>这些选项控制受选择的区域。选择可以修改的画布上，而所有的这些设置是活动的。对于更高级的选择进行调整，使用选择菜单。</translation>
+<translation>选区通常是边界内的选择区域，但您可以在此处修改此行为。（对于高级选择区域调整，请使用“选择”菜单。）</translation>
 </phrase>
 
 <phrase>
@@ -12533,7 +12534,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>此羽化滑块就可以立即羽化调整。由于性能的原因，它被限制为小半径。对于较大的羽化半径，请使用选择 - >羽化菜单。</translation>
+<translation>此羽化滑块就可以立即羽化调整。由于性能的原因，它被限制为小半径。对于较大的羽化半径，请使用选择菜单->羽化。</translation>
 </phrase>
 
 <phrase>
@@ -12558,22 +12559,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Tolerance controls how similar a pixel must be to the target color before it is added to a magic wand selection.</original>
-<translation>容差控制像素在添加到魔杖选择之前与目标颜色的相似程度。</translation>
+<translation>容差控制像素在魔杖选择时与目标颜色的相似程度。</translation>
 </phrase>
 
 <phrase>
 <original>The magic wand tool can operate on the entire image, or just the active layer.</original>
-<translation>魔法棒可以在整个图像上操作，或者仅仅是在活动层上。</translation>
+<translation>魔棒可以在整个图像上操作，或者仅仅是在活动层上。</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
-<translation>通常，魔术棒会从目标像素中扩散，在选择的情况下增加相邻像素。可以把它设置为搜索整个图像，而不考虑连续性。</translation>
+<translation>通常，魔棒会从目标像素中扩展，在选择的情况下增加相邻像素。可以把它设置为搜索整个图像，而不考虑连续性。</translation>
 </phrase>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
-<translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
+<translation>此选项控制了魔棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
 <!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
@@ -12647,7 +12648,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation>偏移 (x, y)</translation>
+<translation>偏移（x，y）</translation>
 </phrase>
 
 <phrase>
@@ -12727,7 +12728,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>traditional Chinese</original>
-<translation>中国传统</translation>
+<translation>繁体中文</translation>
 </phrase>
 
 <phrase>
@@ -12752,7 +12753,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation>这是基本的文字层。 要使用高级文本工具进行编辑，必须首先将其转换为高级文本层。</translation>
+<translation>这是基本的文字层。要使用高级文本工具进行编辑，必须首先将其转换为高级文本层。</translation>
 </phrase>
 
 <phrase>
@@ -12779,12 +12780,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>list of phrases (%1 items)</original>
-<translation>总项目数(%1)</translation>
+<translation>总词条数(%1)</translation>
 </phrase>
 
 <phrase>
 <original>phrase groups</original>
-<translation>短语组</translation>
+<translation>词条分类</translation>
 </phrase>
 
 <phrase>
@@ -12794,7 +12795,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>translated phrase</original>
-<translation>翻译后内容：</translation>
+<translation>译文</translation>
 </phrase>
 
 <phrase>
@@ -12814,17 +12815,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation>(注意：CTRL+ENTER自动保存并进入下一乐句)。</translation>
+<translation>(注意：CTRL+ENTER 自动保存并进入下一词条)。</translation>
 </phrase>
 
 <phrase>
 <original>phrase types</original>
-<translation>短语类型</translation>
+<translation>词条类型</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation>行动名称</translation>
+<translation>动作名称</translation>
 </phrase>
 
 <phrase>
@@ -12854,7 +12855,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>copy system locale</original>
-<translation>复制系统定位</translation>
+<translation>从系统区域设置获取</translation>
 </phrase>
 
 <phrase>
@@ -12864,22 +12865,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>author name(s)</original>
-<translation>作者姓名(或名称):</translation>
+<translation>作者姓名</translation>
 </phrase>
 
 <phrase>
 <original>language status</original>
-<translation>语言状况</translation>
+<translation>语言文件状态</translation>
 </phrase>
 
 <phrase>
 <original>language version</original>
-<translation>语言版本</translation>
+<translation>语言文件版本</translation>
 </phrase>
 
 <phrase>
 <original>language name</original>
-<translation>语言名称:</translation>
+<translation>语言名称</translation>
 </phrase>
 
 <phrase>
@@ -12909,7 +12910,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation>这些可选设置可以加速翻译过程。  它们不会被保存到语言文件中。</translation>
+<translation>这些可选设置可以加速翻译过程。它们不会被保存到语言文件中。</translation>
 </phrase>
 
 <phrase>
@@ -12919,12 +12920,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>start new language</original>
-<translation>开始新的语言</translation>
+<translation>开始新的语言文件</translation>
 </phrase>
 
 <phrase>
 <original>edit existing language</original>
-<translation>编辑现有语言</translation>
+<translation>编辑现有语言文件</translation>
 </phrase>
 
 <phrase>
@@ -12934,7 +12935,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>处理词组 %1/%2</translation>
+<translation>处理词条 %1/%2</translation>
 </phrase>
 
 <phrase>
@@ -12944,7 +12945,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation>你确定要删除%1吗？ (这个动作不能撤销。)</translation>
+<translation>你确定要删除 %1 吗？ (这个动作不能撤销。)</translation>
 </phrase>
 
 <phrase>
@@ -12976,7 +12977,7 @@ Would you like to save your batch list before exiting?</original>
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>很遗憾，在这台电脑上无法找到 PhotoDemon 的 en-US 语言文件。  该文件包含在PhotoDemon的正式版本中，但它可能不包含在开发或测试版中。
+<translation>很遗憾，在这台电脑上无法找到 PhotoDemon 的 en-US 语言文件。该文件包含在PhotoDemon的正式版本中，但它可能不包含在开发或测试版中。
 
 要开始一个新的翻译，请从 photodemon.org 下载一个新的 PhotoDemon 版本。</translation>
 </phrase>
@@ -12985,9 +12986,9 @@ To start a new translation, please download a fresh copy of PhotoDemon from phot
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>这种语言文件无法加载。这有可能在这台电脑上拷贝已经过期。
+<translation>这种语言文件无法加载。这有可能在这台电脑上的PhotoDemon软件版本已经过期。
 
-要继续，请从PhotoDemon.org下载PhotoDemon的新副本。</translation>
+请从PhotoDemon.org下载PhotoDemon的新副本。</translation>
 </phrase>
 
 <phrase>
@@ -12997,7 +12998,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation>不符合参考的短语</translation>
+<translation>词条与引用不匹配</translation>
 </phrase>
 
 <phrase>
@@ -13017,7 +13018,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Step %1</original>
-<translation>第%1步</translation>
+<translation>第 %1 步</translation>
 </phrase>
 
 <phrase>
@@ -13032,7 +13033,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>localize phrases</original>
-<translation>本地化短语</translation>
+<translation>本地化词条</translation>
 </phrase>
 
 <phrase>
@@ -13042,17 +13043,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>all phrases</original>
-<translation>所有短语</translation>
+<translation>所有词条</translation>
 </phrase>
 
 <phrase>
 <original>translated phrases</original>
-<translation>翻译的短语</translation>
+<translation>已翻译的词条</translation>
 </phrase>
 
 <phrase>
 <original>untranslated phrases</original>
-<translation>未翻译的短语</translation>
+<translation>未翻译的词条</translation>
 </phrase>
 
 <phrase>
@@ -13067,7 +13068,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation>[文件中没有这句话]</translation>
+<translation>[文件中没有这个词条]</translation>
 </phrase>
 
 <phrase>
@@ -13141,7 +13142,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation>最近要记住的文件的最大数量</translation>
+<translation>记录近期文件的最大数量</translation>
 </phrase>
 
 <phrase>
@@ -13161,12 +13162,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>grid colors</original>
-<translation>网格色</translation>
+<translation>网格颜色</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation>最近的文件菜单文本</translation>
+<translation>最近的文件名显示格式</translation>
 </phrase>
 
 <phrase>
@@ -13186,7 +13187,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
-<translation>遵循图像文件内的自动旋转指令</translation>
+<translation>遵循图像文件内的自动旋转信息</translation>
 </phrase>
 
 <phrase>
@@ -13246,7 +13247,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>safe saving</original>
-<translation>安全另存</translation>
+<translation>安全保存</translation>
 </phrase>
 
 <phrase>
@@ -13261,7 +13262,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation>将PhotoDemon作为最后使用的编辑软件</translation>
+<translation>将PhotoDevon列为最后使用的编辑软件</translation>
 </phrase>
 
 <phrase>
@@ -13271,17 +13272,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>使用“另存为”时，使用初始文件夹</translation>
+<translation>“另存为”时的默认文件夹</translation>
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>使用“另存为”时</translation>
 </phrase>
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>压缩撤销/在以下级别重做数据</translation>
+<translation>按照下面的级别压缩undo/redo数据</translation>
 </phrase>
 
 <phrase>
@@ -13291,7 +13292,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when generating image and layer thumbnail images</original>
-<translation>生成的图像和图层缩略图时，</translation>
+<translation>生成图像和图层缩略图时</translation>
 </phrase>
 
 <phrase>
@@ -13316,7 +13317,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>undo/redo</original>
-<translation>撤销重做</translation>
+<translation>撤销/重做</translation>
 </phrase>
 
 <phrase>
@@ -13326,7 +13327,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>viewport</original>
-<translation>虚拟的窗口</translation>
+<translation>可视窗口</translation>
 </phrase>
 
 <phrase>
@@ -13470,7 +13471,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Loading</original>
-<translation>读取</translation>
+<translation>加载</translation>
 </phrase>
 
 <phrase>
@@ -13540,12 +13541,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>load into this instance</original>
-<translation>载入本例</translation>
+<translation>加载到此实例</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation>装入一个新的PhotoDemon实例</translation>
+<translation>加载到一个新的PhotoDemon实例</translation>
 </phrase>
 
 <phrase>
@@ -13570,7 +13571,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>大部分的数码照片包括旋转指令（EXIF方向的元数据），PhotoDemon将使用自动旋转照片。一些老的智能手机和相机可能不写这些说明正确的，所以如果你的照片被导入横盘或倒置，您可以尝试禁用自动旋转功能。</translation>
+<translation>大部分的数码照片包括旋转指令（EXIF方向的元数据），PhotoDemon将使用自动旋转照片。一些老的智能手机和相机可能不正确设置方向，所以如果你的照片变成横向或倒置，您可以尝试禁用自动旋转功能。</translation>
 </phrase>
 
 <phrase>
@@ -13595,7 +13596,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>大多数照片编辑器默认为当前图像的文件夹；对于涉及从一个文件夹加载图像但保存到新文件夹的工作流，请使用上次使用的文件夹以节省时间。</translation>
+<translation>大多数照片编辑器默认为当前图像的文件夹。如果要从一个文件夹加载图像并保存到新文件夹的批量工作，请使用“最后使用的文件夹”以节省时间。</translation>
 </phrase>
 
 <phrase>
@@ -13610,17 +13611,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>大多数照片编辑器默认为当前图像的格式。对于涉及以一种格式（如RAW）加载图像但保存为新格式（如JPEG）的工作流，请使用上次使用的格式以节省时间。</translation>
+<translation>大多数照片编辑器默认为当前图像的格式。对于涉及以一种格式（如RAW）加载图像但保存为新格式（如JPEG）的批量工作，请使用“最后使用的格式”以节省时间。</translation>
 </phrase>
 
 <phrase>
 <original>overwrite the current file (standard behavior)</original>
-<translation>改写当前文件（默认操作）</translation>
+<translation>改写当前文件（默认行为）</translation>
 </phrase>
 
 <phrase>
 <original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>保存一个新的副本，如“文件名（2）.JPG”（安全）</translation>
+<translation>保存一个新的副本，如“文件名（2）.JPG”（安全推荐）</translation>
 </phrase>
 
 <phrase>
@@ -13640,12 +13641,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>在大多数照片编辑器中，“另存为”命令默认为当前文件名。PhotoDevon还提供了一个“更安全”的选项，“另存为”将自动为您增加文件名</translation>
+<translation>在大多数照片编辑器中，“另存为”命令默认为当前文件名。PhotoDevon还提供了一个“更安全”的选项，“另存为”将自动为在文件名上增加数字序号。</translation>
 </phrase>
 
 <phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>EXIF规范要求程序在导出图像文件时正确地将自己标识为原始软件。为了保护隐私，您可以暂停此行为。</translation>
+<translation>EXIF规范要求程序在导出图像文件时正确地将自己标识为原始软件。为了保护隐私，您可以禁用此行为。</translation>
 </phrase>
 
 <phrase>
@@ -13665,12 +13666,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>一些界面元素接收自定义的装饰（如阴影）。在较旧的电脑上，这些装饰物可用于小的性能提升。</translation>
+<translation>一些界面控件有美化显示效果（如阴影）。在较旧的电脑上，可以禁用这些效果来小幅提高性能。</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon 会生成许多缩略图，尤其是当图像包含多层时。缩略图质量可以降低，以提高性能。</translation>
+<translation>PhotoDemon会生成许多缩略图，尤其是当图像包含多层时，可以降低缩略图质量以提高性能。</translation>
 </phrase>
 
 <phrase>
@@ -13680,22 +13681,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>低压缩设置需要更多磁盘空间，但撤消/重做操作会更快。高压缩设置需要较少的磁盘空间，但撤消/重做操作会较慢。关闭图像时，将删除撤消数据，因此此设置仅在正在编辑图像时影响磁盘空间。</translation>
+<translation>低压缩设置需要更多磁盘空间，但撤消/重做操作会更快。高压缩设置需要较少的磁盘空间，但撤消/重做操作会较慢。关闭图像时，将删除撤消数据，因此该设置仅在正在编辑图像时占用磁盘空间。</translation>
 </phrase>
 
 <phrase>
 <original>Primary display</original>
-<translation>主显示</translation>
+<translation>主显示器</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation>二级显示</translation>
+<translation>次显示器</translation>
 </phrase>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>关闭显示器颜色管理可以稍微提升性能， 如果您的显示器当前未配置颜色管理，请使用此设置。</translation>
+<translation>关闭显示器颜色管理可以稍微提升性能，如果您的显示器当前未配置颜色管理，请使用此设置。</translation>
 </phrase>
 
 <phrase>
@@ -13710,27 +13711,27 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>请指定当前连接到系统的每个显示器颜色配置文件。注意，括号中的文字是显示适配器驱动名为显示器。</translation>
+<translation>请为当前连接到系统的每个显示器指定一个颜色配置文件。请注意，括号中的文本是显示适配器驱动提供的。</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>点击该按钮，弹出一个“浏览颜色配置文件”对话框。</translation>
+<translation>选择显示器的颜色配置文件。颜色配置文件(也称为ICC或ICM文件)包含一组设置,这些设置有助于校准颜色在显示器上的显示方式。</translation>
 </phrase>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>如果您不知道此设置的控制方式，请将其设置为“感知”。 感知渲染是大多数用户的最佳选择。</translation>
+<translation>如果您不知道此设置的控制方式，请将其设置为“感知”。感知渲染是大多数用户的最佳选择。</translation>
 </phrase>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC主要与色度渲染意图相关，它有助于保留图像暗（阴影）区域的细节。 对于大多数工作流程，应打开BPC。</translation>
+<translation>BPC主要与色度渲染意图相关，它有助于保留图像暗（阴影）区域的细节。对于大多数工作流程，应打开BPC。</translation>
 </phrase>
 
 <phrase>
 <original>each session</original>
-<translation>每次启动时</translation>
+<translation>每次启动</translation>
 </phrase>
 
 <phrase>
@@ -13803,7 +13804,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>使用远程桌面或虚拟机时，高分辨率鼠标输入可能无法正常工作。 这是一个长期存在的Windows错误，在这些情况下您可以使用此设置恢复正确的鼠标行为。</translation>
+<translation>使用远程桌面或虚拟机时，高分辨率鼠标输入可能无法正常工作。这是一个长期存在的Windows问题，在这些情况下您可以使用此设置恢复正确的鼠标行为。</translation>
 </phrase>
 
 <phrase>
@@ -13823,7 +13824,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>此按钮可重置所有PhotoDemon设置。 如果程序出现意外行为，则可能会解决问题。</translation>
+<translation>此按钮可重置所有PhotoDemon设置。如果程序出现意外行为，重置设置可能会解决问题。</translation>
 </phrase>
 
 <phrase>
@@ -13833,7 +13834,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
+<translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
@@ -13865,7 +13866,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>forcibly disable</original>
-<translation>强行关闭</translation>
+<translation>强制禁用</translation>
 </phrase>
 
 <phrase>
@@ -13950,7 +13951,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation>此库PhotoDemon不能用。</translation>
+<translation>此库未随PhotoDevon一起提供。</translation>
 </phrase>
 
 <phrase>
@@ -14046,5 +14047,15 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- As of this build, PhotoDemon contains 5569 phrases. -->
 <!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
 <!-- These 2657 phrases contain approximately 11509 total words. -->
+
+<special-translations>
+
+<object-id>select_invert</object-id>
+<translation>反选</translation>
+
+<object-id>adj_invert</object-id>
+<translation>反相</translation>
+
+</special-translations>
 
 </pdData>

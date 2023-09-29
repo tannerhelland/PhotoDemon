@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_WebP"
 'WebP Library Interface
 'Copyright 2021-2023 by Tanner Helland
 'Created: 22/September/21
-'Last updated: 23/September/21
-'Last update: wrap up initial build
+'Last updated: 25/September/23
+'Last update: add code for new libwebp dependency (libsharpyuv)
 '
 'Per its documentation (available at https://github.com/webmproject/libwebp/), libwebp is...
 '
@@ -36,6 +36,10 @@ Option Explicit
 'Library handle will be non-zero if each library is available; you can also forcibly override the
 ' "availability" state by setting m_LibAvailable to FALSE
 Private m_hLibWebP As Long, m_hLibWebPDemux As Long, m_hLibWebPMux As Long, m_LibAvailable As Boolean
+
+'As of v1.3.2 (possibly earlier; this was when I updated from 1.2.4), libwebp has an extra dependency on
+' libsharpyuv (bundled with PD).  We must load this *prior* to loading any other webp dlls.
+Private m_hLibSharpYUV As Long
 
 'Forcibly disable libwebp interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -77,14 +81,19 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     
     'Initialize all webp libraries
     Dim strLibPath As String
+    
+    'New to 1.3.2 is the sharpyuv lib which must be loaded *first*
+    strLibPath = pathToDLLFolder & "libsharpyuv.dll"
+    m_hLibSharpYUV = VBHacks.LoadLib(strLibPath)
+    
+    'libwebp can now resolve dependencies correctly...
     strLibPath = pathToDLLFolder & "libwebp.dll"
     m_hLibWebP = VBHacks.LoadLib(strLibPath)
     strLibPath = pathToDLLFolder & "libwebpdemux.dll"
     m_hLibWebPDemux = VBHacks.LoadLib(strLibPath)
     strLibPath = pathToDLLFolder & "libwebpmux.dll"
     m_hLibWebPMux = VBHacks.LoadLib(strLibPath)
-    
-    m_LibAvailable = (m_hLibWebP <> 0) And (m_hLibWebPDemux <> 0) And (m_hLibWebPMux <> 0)
+    m_LibAvailable = (m_hLibSharpYUV <> 0) And (m_hLibWebP <> 0) And (m_hLibWebPDemux <> 0) And (m_hLibWebPMux <> 0)
     InitializeEngine = m_LibAvailable
     
     If (Not InitializeEngine) Then PDDebug.LogAction "WARNING!  LoadLibraryW failed to load one or more WebP libraries.  Last DLL error: " & Err.LastDllError
@@ -96,18 +105,25 @@ Public Function IsWebPEnabled() As Boolean
 End Function
 
 Public Sub ReleaseEngine()
-    If (m_hLibWebP <> 0) Then
-        VBHacks.FreeLib m_hLibWebP
-        m_hLibWebP = 0
+    
+    'For extra safety, free in reverse order from loading
+    If (m_hLibWebPMux <> 0) Then
+        VBHacks.FreeLib m_hLibWebPMux
+        m_hLibWebPMux = 0
     End If
     If (m_hLibWebPDemux <> 0) Then
         VBHacks.FreeLib m_hLibWebPDemux
         m_hLibWebPDemux = 0
     End If
-    If (m_hLibWebPMux <> 0) Then
-        VBHacks.FreeLib m_hLibWebPMux
-        m_hLibWebPMux = 0
+    If (m_hLibWebP <> 0) Then
+        VBHacks.FreeLib m_hLibWebP
+        m_hLibWebP = 0
     End If
+    If (m_hLibSharpYUV <> 0) Then
+        VBHacks.FreeLib m_hLibSharpYUV
+        m_hLibSharpYUV = 0
+    End If
+    
 End Sub
 
 'Import/Export/Validation functions follow

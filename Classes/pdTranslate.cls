@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2023 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 22/March/22
-'Last update: start integrating fast hash table for translation retrieval
+'Last updated: 28/September/23
+'Last update: new "assign translation by object ID instead of caption" feature (see https://github.com/tannerhelland/PhotoDemon/issues/491)
 '
 'In 2012, Frank Donckers made a significant contribution to PhotoDemon: a prototype for a run-time
 ' localization engine.  This may not sound like much, but VB6 does not provide native support for
@@ -27,7 +27,7 @@ Attribute VB_Exposed = False
 '
 'Today, PhotoDemon's translation engine is a lean-and-mean little machine.  It provides full
 ' support for Unicode text both on the backend (e.g. Unicode filenames) and on the front-end
-' (UI elements, user input).  This is achieved via a fully themable, UTF-8 compatible user-control
+' (UI elements, user input).  This is achieved via a fully themable, UTF-8 compatible UI
 ' suite hand-built for the project. New localizations can be applied (or undone) *at* run-time and
 ' *in* real-time, which I consider an indispensable feature, especially because translations are
 ' supplied by volunteers and may not always be 100% up-to-date.
@@ -50,7 +50,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'NOTE: this class frequently uses a type called pdLanguageFile.  Because outside functions
+'NOTE: this class frequently uses a type called PDLanguageFile.  Because outside functions
 ' (like the Language Editor) also access this type, it is located in Public_Variables.
 
 'Language-related WAPI
@@ -104,6 +104,16 @@ Private m_NetTranslateTime As Double
 'When a translation is successfully retrieved, we cache it in a fast string collection.
 ' Subsequent requests can query the table for greatly improved performance.
 Private m_FoundTranslations As pdStringHash
+
+'Some languages need translations that do not map 1:1 with English text.
+' (For example, `Color > Invert` vs `Select > Invert` requires different translations in Chinese for `Invert`,
+'  per https://github.com/tannerhelland/PhotoDemon/issues/491.)
+' Not all languages require this cache, so it may contain 0 entries at run-time - which is fine!
+Private m_ObjectTranslations As pdStringHash
+
+'If a special object ID cache exists, this will be set to TRUE (otherwise FALSE, which allows us to skip
+' additional queries into this table when looking up translations, for objects that pass object IDs)
+Private m_ObjectTranslationsExist As Boolean
 
 'In debug mode we track extra profiling data
 Private m_CacheHits As Long, m_CacheMisses As Long
@@ -306,6 +316,17 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
         'Reset the fast translation cache whenever the language changes
         If (m_FoundTranslations Is Nothing) Then Set m_FoundTranslations = New pdStringHash Else m_FoundTranslations.Reset
         
+        'Reset the custom per-object translation cache too.
+        ' (This cache is used in special situations, where English text does not map 1:1 to translated text.
+        '  It is used to look-up translations by object-ID instead of English caption/text.)
+        If (m_ObjectTranslations Is Nothing) Then Set m_ObjectTranslations = New pdStringHash Else m_ObjectTranslations.Reset
+        
+        'Build the special object-ID translation table (if one exists in the source file)
+        m_ObjectTranslationsExist = False
+        
+        Dim posSpecialObjectTable As Long
+        If m_XMLEngine.DoesTagExist("special-translations", vbNullString, vbNullString, posSpecialObjectTable) Then BuildSpecialObjectTable posSpecialObjectTable
+        
     End If
     
     'Mark the active language menu entry (and unmark all others).  This is necessary even if a translation is *not* active,
@@ -327,6 +348,7 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     ImageFormats.NotifyLanguageChanged
     
 End Sub
+
 Friend Function GetSystemUserCountry() As String
     GetSystemUserCountry = UCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
 End Function
@@ -576,6 +598,83 @@ Friend Sub CheckAvailableLanguages()
     'For i = 0 To m_numOfLanguages - 1
     '    Debug.Print m_availableLanguages(i).langID & vbCrLf & m_availableLanguages(i).langName & vbCrLf & m_availableLanguages(i).langStatus & vbCrLf & m_availableLanguages(i).langVersion
     'Next i
+    
+End Sub
+
+'Some languages need access to translations that do not map 1:1 with English text.
+' (For example, `Color > Invert` vs `Select > Invert` requires different translations in Chinese for `Invert`,
+'  per https://github.com/tannerhelland/PhotoDemon/issues/491.)
+'
+'To enable this type of mapping, translators are allowed to add a custom <special-translations> block to
+' a language file, which maps text to an *object-ID* instead of an English equivalent.
+'
+'This function builds that mapping (if one exists) directly into a hash table, which reduces the impact of
+' this feature on run-time translation lookup performance.
+Private Sub BuildSpecialObjectTable(Optional ByVal posSpecialBlock As Long = 1)
+    
+    'Ensure the object table exists and is empty
+    If (m_ObjectTranslations Is Nothing) Then Set m_ObjectTranslations = New pdStringHash Else m_ObjectTranslations.Reset
+    
+    'If the caller didn't pass an XML block location (in chars), retrieve that position now.
+    Const SPECIAL_BLOCK_NAME As String = "special-translations"
+    If (posSpecialBlock = 1) Then
+        If Not m_XMLEngine.DoesTagExist(SPECIAL_BLOCK_NAME, vbNullString, vbNullString, posSpecialBlock) Then
+            m_ObjectTranslationsExist = False
+            Exit Sub
+        End If
+    End If
+    
+    'posSpecialBlock now points to the start of the <special-translations> block in the source file
+    ' (if one exists).
+    
+    'Start by noting that object ID mappings are available for this language.
+    m_ObjectTranslationsExist = True
+    
+    'We now want to retrieve the list of object mappings specified in the language file.
+    Dim mappingBlockText As String
+    mappingBlockText = Trim$(m_XMLEngine.GetUniqueTag_String(SPECIAL_BLOCK_NAME, vbNullString, posSpecialBlock))
+    
+    'Failsafe only
+    If (LenB(mappingBlockText) = 0) Then
+        m_ObjectTranslationsExist = False
+        Exit Sub
+    End If
+    
+    'This is a little convoluted, but we're now going to dump this sub-block into its own XML object.
+    ' (This makes it faster to parse, especially if it's large.)
+    Dim mappingXML As pdXML
+    Set mappingXML = New pdXML
+    mappingXML.PrepareNewXML "object-text-mapping"
+    mappingXML.WriteTag SPECIAL_BLOCK_NAME, mappingBlockText, False, False
+    
+    'From the new XML object, retrieve a list of all object IDs with custom translations
+    Const OBJECT_ID_TAG As String = "object-id", OBJECT_TRANSLATION As String = "translation"
+    Dim posObjectNames() As Long, numObjectNames As Long
+    If mappingXML.FindAllTagLocations(posObjectNames, OBJECT_ID_TAG) Then
+        
+        numObjectNames = UBound(posObjectNames) + 1
+        If (numObjectNames > 0) Then
+            
+            'Iterate all found locations and pull the *actual* object IDs and corresponding translations
+            Dim i As Long
+            For i = 0 To numObjectNames - 1
+                
+                Dim objectID As String, translatedText As String
+                objectID = mappingXML.GetUniqueTag_String(OBJECT_ID_TAG, vbNullString, posObjectNames(i))
+                translatedText = mappingXML.GetUniqueTag_String(OBJECT_TRANSLATION, vbNullString, posObjectNames(i) + Len(objectID))
+                
+                'Add all non-zero-length translations and IDs to a fast hash table
+                If (LenB(translatedText) > 0) Then m_ObjectTranslations.AddItem objectID, translatedText
+                
+            Next i
+            
+            m_ObjectTranslationsExist = (m_ObjectTranslations.GetNumOfItems() > 0)
+            
+        End If
+        
+    Else
+        PDDebug.LogAction "WARNING: bad special object table in language file!"
+    End If
     
 End Sub
 
@@ -856,63 +955,111 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
 
 End Function
 
-'Given a message (basically, a string), return the translation of said string.
-' If a translation cannot be found, return the original string.
+'Given a source message (an English string), return a translated version using the active language file.
+' RETURNS: translated text if found, unmodified original en-US string if translated text is *not* found.
 Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
+    'Translations are profiled to prevent perf regressions
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
+    'Parameters can pass run-time text as optional parameters
+    Dim numOptionalParams As Long
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then numOptionalParams = (UBound(ExtraText) - LBound(ExtraText)) + 1
+    
+    'In version 9.2+, objects can now (optionally) identify themselves with a unique object ID.
+    ' PhotoDemon can use this ID to assign special translations that do not map 1:1 to English text
+    ' (based on caption alone.)
+    
+    'See https://github.com/tannerhelland/PhotoDemon/issues/491 for details on why this solution was necessary.
     Dim searchString As String, newString As String
-    If Me.TranslationActive And (LenB(srcMessage) <> 0) Then
+    Dim customIdTranslationFound As Boolean
+    
+    'See if this optional feature is active for this language
+    If m_ObjectTranslationsExist Then
         
-        'Always start by querying the fast translation cache.  Previously accessed translations
-        ' will be stored there.
-        Dim fastTranslationWorked As Boolean
-        If (m_FoundTranslations Is Nothing) Then
-            Set m_FoundTranslations = New pdStringHash
-        Else
-            fastTranslationWorked = m_FoundTranslations.GetItemByKey(srcMessage, newString)
-        End If
-        
-        If fastTranslationWorked Then m_CacheHits = m_CacheHits + 1 Else m_CacheMisses = m_CacheMisses + 1
-        
-        'If we didn't find the requested translation, pop into the full translation file to grab it.
-        If (LenB(newString) = 0) Then
-            searchString = srcMessage
-            newString = GetTranslationTagFromCaption(searchString)
-        End If
-        
-        'If no translation was found, return the original message as the "translation".
-        ' (This makes the program usable if a translation file is incomplete.)
-        If (LenB(newString) = 0) Then
+        'See if the caller passed any optional params
+        If (numOptionalParams >= 1) Then
             
-            'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again.
-            ' (This solves issues when software - including 3rd-party Git clients - modifies line endings on
-            '  localization files.)
-            If (InStr(1, searchString, vbCrLf, vbBinaryCompare) <> 0) Then
-                
-                newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
-                
-                If (LenB(newString) = 0) Then
-                    newString = srcMessage
-                Else
-                
-                    'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
-                    newString = Replace$(newString, vbLf, vbCrLf, 1, -1, vbBinaryCompare)
-                
+            searchString = ExtraText(numOptionalParams - 1)
+            
+            'Look for passed object IDs.  (These IDs must always be passed as the *last* parameter, using the prefix `obj-`.)
+            If (Len(searchString) > 4) Then
+                If (Left$(searchString, Len(SPECIAL_TRANSLATION_OBJECT_PREFIX)) = SPECIAL_TRANSLATION_OBJECT_PREFIX) Then
+                    
+                    'This object passed a unique ID as its last parameter.  Retrieve the object name, and look for a
+                    ' matching translation in the special object-ID-based translation table.
+                    customIdTranslationFound = m_ObjectTranslations.GetItemByKey(Right$(searchString, Len(searchString) - Len(SPECIAL_TRANSLATION_OBJECT_PREFIX)), newString)
+                    
+                    'Regardless of success or failure, decrement the parameter count to note that an object ID was passed.
+                    ' (We can use this knowledge to skip some parameter processing later in this function.)
+                    numOptionalParams = numOptionalParams - 1
+                    
                 End If
-                
-            Else
-                newString = srcMessage
             End If
             
         End If
+    End If
+    
+    If Me.TranslationActive And (LenB(srcMessage) <> 0) Then
         
-        'If the fast translation cache didn't contain this translation, add the manually retrieved value now.
-        ' (This makes subsequent lookups very fast.)
-        If (Not fastTranslationWorked) Then m_FoundTranslations.AddItem srcMessage, newString
-        
+        'Skip translations that were already applied using special per-object-id rules
+        If (Not customIdTranslationFound) Then
+            
+            newString = vbNullString
+            searchString = vbNullString
+            
+            'Always start by querying the fast translation cache.  Previously accessed translations
+            ' will be stored there.
+            Dim fastTranslationWorked As Boolean
+            If (m_FoundTranslations Is Nothing) Then
+                Set m_FoundTranslations = New pdStringHash
+            Else
+                fastTranslationWorked = m_FoundTranslations.GetItemByKey(srcMessage, newString)
+            End If
+            
+            If fastTranslationWorked Then m_CacheHits = m_CacheHits + 1 Else m_CacheMisses = m_CacheMisses + 1
+            
+            'If we didn't find the requested translation, pop into the full translation file to grab it.
+            If (LenB(newString) = 0) Then
+                searchString = srcMessage
+                newString = GetTranslationTagFromCaption(searchString)
+            End If
+            
+            'If no translation was found, return the original message as the "translation".
+            ' (This makes the program usable if a translation file is incomplete.)
+            If (LenB(newString) = 0) Then
+                
+                'If the source caption contains vbCrLf characters, replace them with plain vbLF characters and try again.
+                ' (This solves issues when software - including 3rd-party Git clients - modifies line endings on
+                '  localization files.)
+                If (InStr(1, searchString, vbCrLf, vbBinaryCompare) <> 0) Then
+                    
+                    newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, 1, -1, vbBinaryCompare))
+                    
+                    If (LenB(newString) = 0) Then
+                        newString = srcMessage
+                    Else
+                    
+                        'A match was found!  Convert vbLf to vbCrLf, to ensure proper rendering.
+                        ' (Thanks to Frank Donckers for this fix!)
+                        newString = Replace$(newString, vbLf, vbCrLf, 1, -1, vbBinaryCompare)
+                    
+                    End If
+                    
+                Else
+                    newString = srcMessage
+                End If
+                
+            End If
+            
+            'If the fast translation cache didn't contain this translation, add the manually retrieved value now.
+            ' (This makes subsequent lookups very fast.)
+            If (Not fastTranslationWorked) Then m_FoundTranslations.AddItem srcMessage, newString
+            
+        '/end "skip because we already applied a per-object-ID translation" check
+        End If
+            
     'If translations are not active, just use the existing string "as-is"
     Else
         newString = srcMessage
@@ -921,9 +1068,9 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     'newString now contains the translated message (or the original text, if no translation was found).
     
     'The last step is to replace any optional parameters in the text
-    If (UBound(ExtraText) >= LBound(ExtraText)) Then
+    If (numOptionalParams > 0) Then
         Dim i As Long
-        For i = LBound(ExtraText) To UBound(ExtraText)
+        For i = 0 To numOptionalParams - 1
             newString = Replace$(newString, "%" & CStr(i + 1), ExtraText(i), 1, -1, vbBinaryCompare)
         Next i
     End If
