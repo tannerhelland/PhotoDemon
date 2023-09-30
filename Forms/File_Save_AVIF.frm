@@ -195,7 +195,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
-    chkLivePreview.AssignTooltip "AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
+    chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -244,6 +244,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "AVIF")
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

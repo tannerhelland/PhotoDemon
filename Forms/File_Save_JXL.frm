@@ -157,6 +157,18 @@ Begin VB.Form dialog_ExportJXL
          ForeColor       =   4210752
          Layout          =   1
       End
+      Begin PhotoDemon.pdCheckBox chkLivePreview 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   8
+         Top             =   3840
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "preview quality changes"
+         FontSize        =   11
+         Value           =   0   'False
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
@@ -225,8 +237,9 @@ Private m_SrcImage As pdImage
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
 
-'Current original preview DIB, cropped and zoomed as necessary (but otherwise unmodified).
-Private m_PreviewDIB As pdDIB
+'Clean, modified source preview image, in PNG format.  (This only needs to be created when the preview source
+' image changes - e.g. if the user zooms or scrolls the preview control.)
+Private m_PreviewImagePath As String, m_PreviewImageBackup As pdDIB
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -252,6 +265,10 @@ End Function
 
 Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     UpdatePanelVisibility
+End Sub
+
+Private Sub chkLivePreview_Click()
+    UpdatePreview
 End Sub
 
 Private Sub UpdatePanelVisibility()
@@ -287,7 +304,7 @@ Private Sub cmdBar_OKClick()
     'Free resources that are no longer required
     Set m_CompositedImage = Nothing
     Set m_SrcImage = Nothing
-    Set m_PreviewDIB = Nothing
+    If (LenB(m_PreviewImagePath) > 0) Then Files.FileDeleteIfExists m_PreviewImagePath
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
@@ -333,8 +350,18 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub Form_Load()
+    chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
+    
+    'Ensure we release any temp files on exit
+    Files.FileDeleteIfExists m_PreviewImagePath
+    
+    'Release subclassing form themer
     ReleaseFormTheming Me
+    
 End Sub
 
 'The ShowDialog routine presents the user with this form.
@@ -346,6 +373,16 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
     Message "Waiting for user to specify export options... "
+    
+    'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
+    ' when absolutely necessary.
+    Set m_SrcImage = srcImage
+    If ((m_SrcImage Is Nothing) Or (Not Plugin_jxl.IsJXLExportAvailable())) Then
+        Interface.ShowDisabledPreviewImage pdFxPreview
+    Else
+        m_SrcImage.GetCompositedImage m_CompositedImage, True
+        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
+    End If
     
     'Populate the category button strip
     btsCategory.AddItem "basic", 0
@@ -371,16 +408,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'By default, the basic options panel is always shown.
     btsCategory.ListIndex = 0
     UpdatePanelVisibility
-    
-    'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
-    ' when absolutely necessary.
-    If (Not m_SrcImage Is Nothing) Then
-        m_SrcImage.GetCompositedImage m_CompositedImage, True
-        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
-    End If
-    
-    'In batch process mode, we won't have a sample image to preview
-    If (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Update the preview
     UpdatePreviewSource
@@ -427,21 +454,25 @@ End Sub
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
 
-    If (Not m_CompositedImage Is Nothing) Then
+    If Not (m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'The public workingDIB object now contains the preview area image.  Clone it locally.
-        If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
-        m_PreviewDIB.CreateFromExistingDIB workingDIB
+        If (m_PreviewImageBackup Is Nothing) Then Set m_PreviewImageBackup = New pdDIB
+        m_PreviewImageBackup.CreateFromExistingDIB workingDIB
         
-        'Perform a one-time swizzle here (from BGRA to RGBA order)
-        DIBs.SwizzleBR m_PreviewDIB
+        'TODO: modify workingDIB color-depth here to match the user's current color-depth settings
         
-        'TODO: forcible color-depth changes here?
+        'Save a copy of the source image to file, in PNG format.  (PD's current AVIF encoder
+        ' works as a command-line tool; we need to pass it a source PNG file.)
+        If (LenB(m_PreviewImagePath) > 0) Then Files.FileDeleteIfExists m_PreviewImagePath
+        m_PreviewImagePath = OS.UniqueTempFilename() & ".png"
+        If (Not Saving.QuickSaveDIBAsPNG(m_PreviewImagePath, workingDIB, False, True)) Then
+            InternalError "UpdatePreviewSource", "couldn't save preview png"
+        End If
         
     End If
     
@@ -449,15 +480,74 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If (cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing) And (Not m_PreviewDIB Is Nothing) Then
-        
-        'Retrieve a JPEG-XL version of the current preview image.
-        If Plugin_jxl.PreviewJXL(m_PreviewDIB, workingDIB, GetParamString_JXL()) Then
-            FinalizeNonstandardPreview pdFxPreview, True
-        Else
-            PDDebug.LogAction "WARNING: JPEG-XL EXPORT PREVIEW PROBLEM!"
-        End If
-        
-    End If
+    Const funcName As String = "UpdatePreview"
     
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_jxl.IsJXLExportAvailable() And (Not m_SrcImage Is Nothing)) Then
+        
+        'Make sure the preview source is up-to-date
+        If (workingDIB Is Nothing) Then UpdatePreviewSource
+        If (workingDIB Is Nothing) Then Exit Sub
+        
+        'Because JXL previews are so intensive to generate, this dialog provides a toggle so the user
+        ' can suspend real-time previews.
+        If chkLivePreview.Value Then
+            
+            'Now perform the (ugly) dance of workingDIB > PNG > JXL > PNG > workingDIB.
+            ' (Note that the first workingDIB > PNG step was performed by UpdatePreviewSource.)
+            
+            'Start by generating temporary filenames for intermediary files
+            Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameAVIF As String
+            tmpFilenameBase = OS.UniqueTempFilename()
+            tmpFilenameIntermediary = tmpFilenameBase & ".png"
+            tmpFilenameAVIF = tmpFilenameBase & ".jxl"
+            
+            ', 63 - sldQuality.Value, 10
+            
+            'Shell libjxl, and request it to convert the preview PNG to JXL
+            If Plugin_jxl.ConvertImageFileToJXL(m_PreviewImagePath, tmpFilenameAVIF) Then
+            
+                'Immediately shell it again, but this time, ask it to convert the AVIF it just made
+                ' back into a PNG
+                Files.FileDeleteIfExists tmpFilenameIntermediary
+                If Plugin_jxl.ConvertJXLtoImageFile(tmpFilenameAVIF, tmpFilenameIntermediary) Then
+                    
+                    'We are done with the AVIF; kill it
+                    Files.FileDeleteIfExists tmpFilenameAVIF
+                    
+                    'Load the finished PNG *back* into a pdDIB object
+                    If Loading.QuickLoadImageToDIB(tmpFilenameIntermediary, workingDIB, False, False, True) Then
+                        
+                        'We are done with the intermediary image; kill it
+                        Files.FileDeleteIfExists tmpFilenameIntermediary
+                        
+                        'Display the final result
+                        workingDIB.SetAlphaPremultiplication True, True
+                        FinalizeNonstandardPreview pdFxPreview, True
+                        
+                    Else
+                        InternalError funcName, "couldn't load finished PNG to pdDIB"
+                    End If
+                
+                Else
+                    InternalError funcName, "couldn't convert AVIF back to PNG"
+                End If
+            
+            Else
+                InternalError funcName, "couldn't save AVIF"
+            End If
+        
+        'Live previews are disabled; just mirror the original image to the screen
+        Else
+            workingDIB.CreateFromExistingDIB m_PreviewImageBackup
+            FinalizeNonstandardPreview pdFxPreview, False
+        End If
+                
+    Else
+        InternalError funcName, "avif library broken"
+    End If
+
+End Sub
+
+Private Sub InternalError(ByRef funcName As String, ByRef errMsg As String)
+    PDDebug.LogAction "WARNING! Problem in dialog_ExportJXL." & funcName & ": " & errMsg
 End Sub

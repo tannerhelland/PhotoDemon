@@ -1018,7 +1018,7 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     End If
     
     'Failsafe check before proceeding
-    If (Not Plugin_AVIF.IsAVIFExportAvailable()) Then GoTo ExportJXLError
+    If (Not Plugin_jxl.IsJXLExportAvailable()) Then GoTo ExportJXLError
     
     'JXL exporting leans on libjxl
     If Plugin_jxl.IsJXLExportAvailable() Then
