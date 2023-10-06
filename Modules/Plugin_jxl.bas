@@ -1232,6 +1232,14 @@ Public Sub ReleaseLibJXL()
     
 End Sub
 
+Public Function ConvertImageFileToJXL(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef convertParams As String = vbNullString) As Boolean
+
+End Function
+
+Public Function ConvertJXLtoImageFile(ByRef srcFile As String, ByRef dstFile As String) As Boolean
+
+End Function
+
 'Import/Export functions follow
 Public Function IsFileJXL(ByRef srcFile As String) As Boolean
     
@@ -1432,24 +1440,6 @@ LoadFailed:
     LoadJXL = False
     InternalError FUNC_NAME, "terminating due to error"
     
-End Function
-
-'After LoadJXL(), above, is called, basic attributes for the last-loaded image can be retrieved via these simple
-' GET-prefixed functions.
-Public Function LastJXL_OriginalColorDepth() As Long
-    LastJXL_OriginalColorDepth = (m_Header.num_color_channels + m_Header.num_extra_channels) * m_Header.bits_per_sample
-End Function
-
-Public Function LastJXL_HasAlpha() As Boolean
-    LastJXL_HasAlpha = (m_Header.num_extra_channels > 0)
-End Function
-
-Public Function LastJXL_IsAnimated() As Boolean
-    LastJXL_IsAnimated = (m_Header.have_animation <> 0)
-End Function
-
-Public Function LastJXL_IsGrayscale() As Boolean
-    LastJXL_IsGrayscale = (m_Header.num_color_channels = 1)
 End Function
 
 'Given an arbitrary source DIB and a string of JPEG-XL parameters, perform a rapid in-memory save to JPEG-XL format,
