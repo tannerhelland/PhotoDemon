@@ -551,7 +551,7 @@ End Sub
 
 'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
 ' its collection against the current language and theme, without requiring any special input or parameters.
-Friend Sub UpdateAgainstCurrentTheme()
+Friend Sub UpdateAgainstCurrentTheme(Optional ByRef ctlName As String = vbNullString)
     
     Dim oldTranslatedText As String
     oldTranslatedText = m_CaptionTranslated
@@ -568,7 +568,11 @@ Friend Sub UpdateAgainstCurrentTheme()
         
         'Update the translated caption accordingly
         If isTranslationActive Then
-            m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+            If (LenB(ctlName) > 0) Then
+                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn, SPECIAL_TRANSLATION_OBJECT_PREFIX & ctlName)
+            Else
+                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+            End If
         Else
             m_CaptionTranslated = m_CaptionEn
         End If

@@ -293,6 +293,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'If the owner does not want percentage available as an option, set this property to TRUE.
 Public Property Get DisablePercentOption() As Boolean
     DisablePercentOption = m_PercentDisabled

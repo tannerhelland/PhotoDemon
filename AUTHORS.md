@@ -51,6 +51,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Boban Gjerasimoski](https://www.behance.net/Boban_Gjerasimoski)
 * [Bonnie West](https://github.com/Planet-Source-Code/bonnie-west-the-optimum-fileexists-function__1-74264)
 * [Carles P.V.](https://github.com/Planet-Source-Code/carles-p-v-ibmp-1-2__1-42376)
+* [Charltsing](https://www.cnblogs.com/Charltsing/)
 * ChenLin
 * [Chiahong Hong](https://github.com/ChiahongHong)
 * [Clément Mariage](https://www.medexprim.com/)

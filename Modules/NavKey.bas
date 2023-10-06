@@ -123,7 +123,7 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As
         If (Not targetAlreadyExists) Then
             targetIndex = m_NumOfForms
             Set m_Forms(targetIndex) = New pdObjectList
-            m_Forms(targetIndex).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
+            m_Forms(targetIndex).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor, parentForm.Name
         End If
         
         m_LastForm = targetIndex
@@ -269,4 +269,12 @@ Private Function GetFormIndex(ByVal childHwnd As Long) As Long
         
     End If
     
+End Function
+
+'Given a child hWnd, return the name of its container window.  (PD uses this to generate runtime object names
+' for matching against localization text.)
+Public Function GetParentName(ByVal childHwnd As Long) As String
+    Dim idxParent As Long
+    idxParent = GetFormIndex(childHwnd)
+    If (idxParent >= 0) Then GetParentName = m_Forms(idxParent).GetParentName()
 End Function

@@ -686,21 +686,21 @@ Public Function GetPhotoDemonVersion() As String
                 If (g_Language Is Nothing) Then
                     buildStateString = "pre-alpha"
                 Else
-                    buildStateString = g_Language.TranslateMessage("pre-alpha")
+                    buildStateString = g_Language.TranslateMessage("pre-alpha", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-prealpha")
                 End If
             
             Case PD_ALPHA
                 If (g_Language Is Nothing) Then
                     buildStateString = "alpha"
                 Else
-                    buildStateString = g_Language.TranslateMessage("alpha")
+                    buildStateString = g_Language.TranslateMessage("alpha", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-alpha")
                 End If
             
             Case PD_BETA
                 If (g_Language Is Nothing) Then
                     buildStateString = "beta"
                 Else
-                    buildStateString = g_Language.TranslateMessage("beta")
+                    buildStateString = g_Language.TranslateMessage("beta", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-beta")
                 End If
         
         End Select

@@ -313,6 +313,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'The command bar is set to auto-unload its parent object when OK or CANCEL is pressed.  In some instances (e.g. forms prefaced with
 ' "dialog_", which return a VBMsgBoxResult), this behavior is not desirable.  It can be overridden by setting this property to TRUE.
 Public Property Get DontAutoUnloadParent() As Boolean
@@ -1144,7 +1149,7 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
         
         'Retrieve the control name and index, if any
         controlName = eControl.Name
-        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+        If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
         
         'Reset our control value checker
         controlValue = vbNullString
