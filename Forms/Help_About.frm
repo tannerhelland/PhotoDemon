@@ -340,6 +340,7 @@ Private Sub Form_Load()
     GenerateContributor "Bonnie West", "https://github.com/Planet-Source-Code/bonnie-west-the-optimum-fileexists-function__1-74264"
     GenerateContributor "Carles P.V.", "https://github.com/Planet-Source-Code/carles-p-v-ibmp-1-2__1-42376"
     GenerateContributor "CharLS Project, including Jan de Vaan and Victor Derks", "https://github.com/team-charls/charls"
+    GenerateContributor "Charltsing", "https://www.cnblogs.com/Charltsing/"
     GenerateContributor "ChenLin"
     GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
     GenerateContributor "Clément Mariage", "https:/www.medexprim.com"
