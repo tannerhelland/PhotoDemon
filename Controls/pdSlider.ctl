@@ -122,6 +122,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'Caption is handled just like a label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 Public Property Get Caption() As String

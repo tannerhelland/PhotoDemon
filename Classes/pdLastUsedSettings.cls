@@ -134,7 +134,7 @@ Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False
         For Each eControl In m_ParentForm.Controls
             
             controlName = eControl.Name
-            If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
             controlType = TypeName(eControl)
             controlValue = vbNullString
                 
@@ -271,7 +271,7 @@ Private Function ReadXMLSettings(Optional ByVal customSettingsOnly As Boolean = 
         For Each eControl In m_ParentForm.Controls
             
             controlName = eControl.Name
-            If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
             controlType = TypeName(eControl)
             
             'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
@@ -344,12 +344,6 @@ Private Function ReadXMLSettings(Optional ByVal customSettingsOnly As Boolean = 
     'We have now filled all controls with their relevant values from the XML file.
     ReadXMLSettings = True
     
-End Function
-
-'This helpful little function comes courtesy of coder Merri:
-' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
-Private Function InControlArray(ByRef Ctl As Object) As Boolean
-    InControlArray = Not (Ctl.Parent.Controls(Ctl.Name) Is Ctl)
 End Function
 
 Private Sub Class_Initialize()

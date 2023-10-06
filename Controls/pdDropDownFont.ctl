@@ -204,6 +204,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'Initialize the combo box.  This must be called once, by the caller, prior to display.  The combo box will internally cache its
 ' own copy of the font list, and if for some reason the list changes, this function can be called again to reset the font list.
 Public Sub InitializeFontList()

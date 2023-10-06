@@ -74,6 +74,11 @@ Private m_ParentRectScreen As winRect, m_ParentRectClient As winRect
 'Handle auto-resize of child controls for this window?
 Private m_AutoResize As Boolean
 
+'Because this class already tracks window relationships (particularly controls against their parent forms),
+' it provides a natural place to generate run-time object names.  PD uses these to generate unique control names
+' that localizers can use for translation purposes (e.g. "toolbar_Layers.layerpanel_Layers.lblLayerSettings(2)")
+Private m_ParentName As String
+
 'hWnds of child controls
 Private Const INIT_NUM_OF_CONTROLS As Long = 16
 
@@ -125,7 +130,8 @@ Private m_numOfControlsSort As Long
 'Subclasser for intercepting window messages
 Implements ISubclass
 
-Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
+'Start a subclasser against the target hWnd
+Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0, Optional ByRef parentName As String = vbNullString)
     
     If (PDMain.IsProgramRunning() And (hWnd <> 0)) Then
     
@@ -133,6 +139,7 @@ Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean, 
         GetWindowRect m_ParentHWnd, VarPtr(m_ParentRectScreen)
         GetClientRect m_ParentHWnd, VarPtr(m_ParentRectClient)
         m_AutoResize = handleAutoResize
+        m_ParentName = parentName
         
         'Some dialogs use custom preview windows; they need to notify us of this, so we can anchor
         ' that control specially
@@ -196,6 +203,10 @@ Friend Function GetFirstHWndForType(ByVal srcType As PD_ControlType) As Long
         Next i
     End If
 
+End Function
+
+Friend Function GetParentName() As String
+    GetParentName = m_ParentName
 End Function
 
 'Load individual controls using this function; we'll retrieve whatever we need from them

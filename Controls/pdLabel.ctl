@@ -116,12 +116,20 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'To improve run-time performance, a unique control name is only generated once, then cached
+Private m_controlName As String
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Label
 End Function
 
+'Return a unique control name, accounting for control indices.  (This is used for localization and debugging.)
 Public Function GetControlName() As String
-    GetControlName = UserControl.Extender.Name
+    If (LenB(m_controlName) = 0) Then
+        m_controlName = UserControl.Extender.Name
+        If VBHacks.InControlArray(UserControl.Extender) Then m_controlName = m_controlName & CONTROL_ARRAY_IDX_SEPARATOR & Trim$(Str$(UserControl.Extender.Index))
+    End If
+    GetControlName = m_controlName
 End Function
 
 'Alignment is handled just like VB's internal label alignment property.
@@ -555,11 +563,20 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+    
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
-        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        'If translators need per-object access to other controls, copy this line AND make additional changes
+        ' to the Object.GetControlName() function.
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage NavKey.GetParentName(Me.hWnd) & "." & Me.GetControlName()
+        
+        'If users report localization strings that require per-object control, it can be helpful to print
+        ' localization IDs by uncommenting this command (do NOT uncomment in production code!)
+        'PDDebug.LogAction NavKey.GetParentName(Me.hWnd) & "." & Me.GetControlName()
     End If
+    
 End Sub
 
 'Post-translation, we can request an immediate refresh

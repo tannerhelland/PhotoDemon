@@ -164,12 +164,28 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'To improve run-time performance, a unique control name is only generated once, then cached
+Private m_controlName As String, m_parentName As String, m_controlAndParentName As String
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ButtonStrip
 End Function
 
 Public Function GetControlName() As String
-    GetControlName = UserControl.Extender.Name
+    If (LenB(m_controlName) = 0) Then
+        m_controlName = UserControl.Extender.Name
+        If VBHacks.InControlArray(UserControl.Extender) Then m_controlName = m_controlName & CONTROL_ARRAY_IDX_SEPARATOR & Trim$(Str$(UserControl.Extender.Index))
+    End If
+    GetControlName = m_controlName
+End Function
+
+'Internal variation of GetControlName(), above, which appends parent name and unique ID for localization purposes.
+Private Function GetControlAndParentName() As String
+    If (LenB(m_parentName) = 0) Then
+        m_parentName = NavKey.GetParentName(Me.hWnd)
+        m_controlAndParentName = SPECIAL_TRANSLATION_OBJECT_PREFIX & m_parentName & "." & Me.GetControlName()
+    End If
+    GetControlAndParentName = m_controlAndParentName
 End Function
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
@@ -540,15 +556,13 @@ Public Sub AddItem(ByRef srcString As String, Optional ByVal itemIndex As Long =
     
     'We must also determine a translated caption, if any
     If (Not g_Language Is Nothing) And (LenB(srcString) <> 0) Then
-    
         If g_Language.TranslationActive Then
-            m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(itemIndex).btCaptionEn)
+            m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(srcString, GetControlAndParentName() & CONTROL_ARRAY_IDX_SEPARATOR & itemIndex)
         Else
-            m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
+            m_Buttons(itemIndex).btCaptionTranslated = srcString
         End If
-    
     Else
-        m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
+        m_Buttons(itemIndex).btCaptionTranslated = srcString
     End If
     
     'Erase any images previously assigned to this button
@@ -1130,31 +1144,31 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
         If PDMain.IsProgramRunning() Then
             
-            'See if translations are necessary.
-            Dim isTranslationActive As Boolean
+            'Notify the central tab-key holder of this control.  We need to do this *before* localization,
+            ' because the central control manager builds a parent+child tree and we will refer to it later to
+            ' generate a unique parent+child name for this control instance.
+            NavKey.NotifyControlLoad Me, hostFormhWnd
             
-            If (Not g_Language Is Nothing) Then
-                isTranslationActive = g_Language.TranslationActive()
-            Else
-                isTranslationActive = False
-            End If
+            'See if translations are necessary.
+            Dim isTranslationActive As Boolean: isTranslationActive = False
+            If (Not g_Language Is Nothing) Then isTranslationActive = g_Language.TranslationActive()
             
             'Apply the new translations, if any.
             Dim i As Long
-            For i = 0 To m_numOfButtons - 1
-                If isTranslationActive Then
-                    m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
-                Else
-                    m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
-                End If
-            Next i
+            If (m_numOfButtons > 0) Then
+                For i = 0 To m_numOfButtons - 1
+                    If isTranslationActive Then
+                        m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn, GetControlAndParentName() & CONTROL_ARRAY_IDX_SEPARATOR & i)
+                    Else
+                        m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
+                    End If
+                Next i
+            End If
             
         End If
         
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList
-        
-        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
         'Update all text managed by the support class (e.g. tooltips)
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage

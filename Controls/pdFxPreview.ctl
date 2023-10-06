@@ -134,6 +134,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'At design-time, use this property to determine whether the user is allowed to select colors directly from the
 ' preview window (helpful for tools like green screen, etc).
 Public Property Get AllowColorSelection() As Boolean

@@ -380,6 +380,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'Helper functions to ensure ideal UI behavior
 Public Function IsScreenCoordInsideCanvasView(ByVal srcX As Long, ByVal srcY As Long) As Boolean
 

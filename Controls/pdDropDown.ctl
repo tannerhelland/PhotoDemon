@@ -165,6 +165,11 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Workaround for VB6 quirks; see VBHacks.InControlArray()
+Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
+    IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
+End Function
+
 'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
 ' while BackColor controls the actual button fill (and can be anything you want).
 Public Property Get BackgroundColor() As OLE_COLOR

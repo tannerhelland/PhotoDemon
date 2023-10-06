@@ -188,7 +188,18 @@ End Function
 'This beautiful little function comes courtesy of coder Merri:
 ' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
 Public Function InControlArray(Ctl As Object) As Boolean
-    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+    
+    'When sited on an object that naturally exposes child controls, this function works as expected.
+    If (TypeOf Ctl.Parent Is Form) Or (TypeOf Ctl.Parent Is pdContainer) Then
+        InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+    
+    'Controls nested within a parent usercontrol will throw error 438 "Object doesn't support this property or method"
+    ' when attempting to iterate Ctl.Parent.Controls.  I'm not sure why this is, but we can work around it with a
+    ' custom wrapper function for the control's internal UserControl.Controls object.
+    Else
+        InControlArray = Ctl.Parent.IsChildInControlArray(Ctl)
+    End If
+    
 End Function
 
 'Given a VB array, return an IStream containing the array's data.  We use this frequently in PD to move arrays into

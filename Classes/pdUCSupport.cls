@@ -1393,7 +1393,7 @@ End Function
 
 'Whenever the caller user control receives an UpdateAgainstTheme/Language request, it needs to relay that to this support
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
-Friend Sub UpdateAgainstThemeAndLanguage()
+Friend Sub UpdateAgainstThemeAndLanguage(Optional ByRef ctlName As String = vbNullString)
     
     If PDMain.IsProgramRunning() Then
         
@@ -1412,7 +1412,7 @@ Friend Sub UpdateAgainstThemeAndLanguage()
             UpdateColorList
             
             'The caption manager will also refresh itself
-            If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme
+            If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme ctlName
             
             'After a theme change, the caller needs to repaint everything from scratch.
             SyncBackBufferSize True
