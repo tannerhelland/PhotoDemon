@@ -66,7 +66,7 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdButtonStrip btsQuality 
          Height          =   1095
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -76,7 +76,7 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdSlider sldEffort 
          Height          =   975
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   2280
          Width           =   6975
          _ExtentX        =   12303
@@ -96,12 +96,10 @@ Begin VB.Form dialog_ExportJXL
          Width           =   6975
          _ExtentX        =   7223
          _ExtentY        =   873
-         Min             =   1
-         Max             =   15
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   1
-         DefaultValue    =   1
+         Max             =   100
+         Value           =   90
+         NotchPosition   =   2
+         NotchValueCustom=   90
       End
       Begin PhotoDemon.pdLabel lblHint 
          Height          =   255
@@ -137,7 +135,7 @@ Begin VB.Form dialog_ExportJXL
          _ExtentX        =   4551
          _ExtentY        =   450
          Alignment       =   1
-         Caption         =   "low quality, small file"
+         Caption         =   "high quality, large file"
          FontItalic      =   -1  'True
          FontSize        =   9
          ForeColor       =   4210752
@@ -151,7 +149,7 @@ Begin VB.Form dialog_ExportJXL
          Width           =   2340
          _ExtentX        =   4128
          _ExtentY        =   450
-         Caption         =   "high quality, large file"
+         Caption         =   "low quality, small file"
          FontItalic      =   -1  'True
          FontSize        =   9
          ForeColor       =   4210752
@@ -160,38 +158,18 @@ Begin VB.Form dialog_ExportJXL
       Begin PhotoDemon.pdCheckBox chkLivePreview 
          Height          =   375
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   3840
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
          Caption         =   "preview quality changes"
          FontSize        =   11
-         Value           =   0   'False
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   1
-      Left            =   5880
-      Top             =   1080
-      Width           =   7215
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStrip btsDepth 
-         Height          =   1095
-         Left            =   120
-         TabIndex        =   5
-         Top             =   120
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   1931
-         Caption         =   "depth"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4695
-      Index           =   2
       Left            =   5880
       Top             =   1080
       Width           =   7215
@@ -217,8 +195,8 @@ Attribute VB_Exposed = False
 'JPEG XL Export Dialog
 'Copyright 2022-2023 by Tanner Helland
 'Created: 08/November/22
-'Last updated: 07/December/22
-'Last update: split lossy/lossless modes using a hard toggle
+'Last updated: 10/October/23
+'Last update: rework dialog to reflect new external process approach to jxl handling
 '
 'Dialog for presenting the user various options related to JPEG XL exporting.  All export options rely on
 ' libjxl for their actual implementation.
@@ -320,16 +298,7 @@ Private Function GetParamString_JXL() As String
     cParams.AddParam "jxl-lossy-quality", sldQuality.Value
     cParams.AddParam "jxl-effort", sldEffort.Value
     
-    Select Case btsDepth.ListIndex
-        Case 0
-            cParams.AddParam "jxl-color-format", "auto"
-        Case 1
-            cParams.AddParam "jxl-color-format", "color"
-        Case 2
-            cParams.AddParam "jxl-color-format", "gray"
-    End Select
-    
-    GetParamString_JXL = cParams.GetParamString
+    GetParamString_JXL = cParams.GetParamString()
     
 End Function
 
@@ -343,9 +312,7 @@ Private Sub cmdBar_ResetClick()
     sldQuality.Value = 1    'Visually lossless, but underlying RGB may change due to color space conversion(s)
     sldEffort.Value = 7     'Default per libjxl
     
-    'Auto color model detection
-    btsDepth.ListIndex = 0
-    
+    'Default metadata settings
     mtdManager.Reset
     
 End Sub
@@ -385,27 +352,20 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     End If
     
     'Populate the category button strip
-    btsCategory.AddItem "basic", 0
-    btsCategory.AddItem "advanced", 1
-    btsCategory.AddItem "metadata", 2
+    btsCategory.AddItem "image", 0
+    btsCategory.AddItem "metadata", 1
     
-    'Populate the "basic" options panel
+    'Populate the "image" options panel
     btsQuality.AddItem "lossless", 0
     btsQuality.AddItem "lossy", 1
     btsQuality.ListIndex = 0
     UpdateQualityVisibility
     
-    'Populate the "advanced" options panel
-    btsDepth.AddItem "auto", 0
-    btsDepth.AddItem "color", 1
-    btsDepth.AddItem "grayscale", 2
-    btsDepth.ListIndex = 0
-    
     'Next, prepare various controls on the metadata panel
     Set m_SrcImage = srcImage
     mtdManager.SetParentImage m_SrcImage, PDIF_JXL
     
-    'By default, the basic options panel is always shown.
+    'By default, the image options panel is always shown.
     btsCategory.ListIndex = 0
     UpdatePanelVisibility
     
@@ -464,12 +424,11 @@ Private Sub UpdatePreviewSource()
         If (m_PreviewImageBackup Is Nothing) Then Set m_PreviewImageBackup = New pdDIB
         m_PreviewImageBackup.CreateFromExistingDIB workingDIB
         
-        'TODO: modify workingDIB color-depth here to match the user's current color-depth settings
-        
         'Save a copy of the source image to file, in PNG format.  (PD's current AVIF encoder
         ' works as a command-line tool; we need to pass it a source PNG file.)
         If (LenB(m_PreviewImagePath) > 0) Then Files.FileDeleteIfExists m_PreviewImagePath
-        m_PreviewImagePath = OS.UniqueTempFilename() & ".png"
+        m_PreviewImagePath = OS.UniqueTempFilename(customExtension:="png")
+        
         If (Not Saving.QuickSaveDIBAsPNG(m_PreviewImagePath, workingDIB, False, True)) Then
             InternalError "UpdatePreviewSource", "couldn't save preview png"
         End If
@@ -482,7 +441,12 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
     Const funcName As String = "UpdatePreview"
     
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_jxl.IsJXLExportAvailable() And (Not m_SrcImage Is Nothing)) Then
+    If (Not Plugin_jxl.IsJXLExportAvailable()) Then
+        InternalError funcName, "libjxl broken"
+        Exit Sub
+    End If
+    
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (workingDIB Is Nothing) Then UpdatePreviewSource
@@ -494,46 +458,54 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             
             'Now perform the (ugly) dance of workingDIB > PNG > JXL > PNG > workingDIB.
             ' (Note that the first workingDIB > PNG step was performed by UpdatePreviewSource.)
+            '
+            'Note also that JPEG could be used as an intermediary format, but only for 24-bpp sources.
+            ' (This brings a perf boost but obviously you'll want to keep JPEG quality high to avoid
+            ' distorting the preview with JPEG-specific inaccuracies.)
             
             'Start by generating temporary filenames for intermediary files
-            Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameAVIF As String
+            Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameJXL As String
             tmpFilenameBase = OS.UniqueTempFilename()
             tmpFilenameIntermediary = tmpFilenameBase & ".png"
-            tmpFilenameAVIF = tmpFilenameBase & ".jxl"
-            
-            ', 63 - sldQuality.Value, 10
+            Do While Files.FileExists(tmpFilenameIntermediary)
+                tmpFilenameIntermediary = OS.UniqueTempFilename(customExtension:="png")
+            Loop
+            tmpFilenameJXL = tmpFilenameBase & ".jxl"
+            Do While Files.FileExists(tmpFilenameJXL)
+                tmpFilenameJXL = OS.UniqueTempFilename(customExtension:="jxl")
+            Loop
             
             'Shell libjxl, and request it to convert the preview PNG to JXL
-            If Plugin_jxl.ConvertImageFileToJXL(m_PreviewImagePath, tmpFilenameAVIF) Then
+            If Plugin_jxl.ConvertImageFileToJXL(m_PreviewImagePath, tmpFilenameJXL, GetParamString_JXL(), True) Then
             
-                'Immediately shell it again, but this time, ask it to convert the AVIF it just made
-                ' back into a PNG
-                Files.FileDeleteIfExists tmpFilenameIntermediary
-                If Plugin_jxl.ConvertJXLtoImageFile(tmpFilenameAVIF, tmpFilenameIntermediary) Then
+                'Immediately shell it again, but this time, ask it to convert the JXL it just made
+                ' back into a format we can read
+                Files.FileDeleteIfExists tmpFilenameIntermediary    'Failsafe only; existence was checked above
+                If Plugin_jxl.ConvertJXLtoImageFile(tmpFilenameJXL, tmpFilenameIntermediary) Then
                     
-                    'We are done with the AVIF; kill it
-                    Files.FileDeleteIfExists tmpFilenameAVIF
+                    'We are done with the JXL; kill it
+                    Files.FileDeleteIfExists tmpFilenameJXL
                     
-                    'Load the finished PNG *back* into a pdDIB object
+                    'Load the finished standard image *back* into a pdDIB object
                     If Loading.QuickLoadImageToDIB(tmpFilenameIntermediary, workingDIB, False, False, True) Then
                         
                         'We are done with the intermediary image; kill it
                         Files.FileDeleteIfExists tmpFilenameIntermediary
                         
-                        'Display the final result
-                        workingDIB.SetAlphaPremultiplication True, True
-                        FinalizeNonstandardPreview pdFxPreview, True
+                        'Ensure screen-compatible alpha status, then display the final result
+                        If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
+                        EffectPrep.FinalizeNonstandardPreview pdFxPreview, True
                         
                     Else
-                        InternalError funcName, "couldn't load finished PNG to pdDIB"
+                        InternalError funcName, "couldn't load standard image to pdDIB"
                     End If
                 
                 Else
-                    InternalError funcName, "couldn't convert AVIF back to PNG"
+                    InternalError funcName, "couldn't convert JXL to standard image"
                 End If
             
             Else
-                InternalError funcName, "couldn't save AVIF"
+                InternalError funcName, "couldn't save JXL"
             End If
         
         'Live previews are disabled; just mirror the original image to the screen
@@ -541,9 +513,8 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             workingDIB.CreateFromExistingDIB m_PreviewImageBackup
             FinalizeNonstandardPreview pdFxPreview, False
         End If
-                
-    Else
-        InternalError funcName, "avif library broken"
+    
+    '/no else required, previews are disabled due to a valid reason (settings haven't changed, batch process, etc)
     End If
 
 End Sub

@@ -269,7 +269,7 @@ Private Sub UpdatePreviewSource()
         'Save a copy of the source image to file, in PNG format.  (PD's current AVIF encoder
         ' works as a command-line tool; we need to pass it a source PNG file.)
         If (LenB(m_PreviewImagePath) > 0) Then Files.FileDeleteIfExists m_PreviewImagePath
-        m_PreviewImagePath = OS.UniqueTempFilename() & ".png"
+        m_PreviewImagePath = OS.UniqueTempFilename(customExtension:="png")
         If (Not Saving.QuickSaveDIBAsPNG(m_PreviewImagePath, workingDIB, False, True)) Then
             InternalError "UpdatePreviewSource", "couldn't save preview png"
         End If

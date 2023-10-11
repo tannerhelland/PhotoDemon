@@ -578,7 +578,7 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     'Generate a temporary filename for the intermediary PNG file.
     Dim tmpFilename As String
-    tmpFilename = OS.UniqueTempFilename() & ".png"
+    tmpFilename = OS.UniqueTempFilename(customExtension:="png")
     
     'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
     ' and format coverage than either FreeImage or GDI+.  Use it to dump a lossless copy of the current image
