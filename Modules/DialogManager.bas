@@ -697,6 +697,20 @@ Public Function PromptExportAnimatedGIF(ByRef srcImage As pdImage, ByRef dstForm
     
 End Function
 
+Public Function PromptExportAnimatedJXL(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportAnimatedJXL
+    dialog_ExportAnimatedJXL.ShowDialog srcImage
+    
+    PromptExportAnimatedJXL = dialog_ExportAnimatedJXL.GetDialogResult
+    dstFormatParams = dialog_ExportAnimatedJXL.GetFormatParams
+    dstMetadataParams = dialog_ExportAnimatedJXL.GetMetadataParams
+    
+    Unload dialog_ExportAnimatedJXL
+    Set dialog_ExportAnimatedJXL = Nothing
+    
+End Function
+
 Public Function PromptExportAnimatedPNG(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportAnimatedPNG

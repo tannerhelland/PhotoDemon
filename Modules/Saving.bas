@@ -361,7 +361,11 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_JXL
-                GetExportParamsFromDialog = (Dialogs.PromptJXLSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If displayAnimationVersion Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedJXL(srcImage, dstParamString, dstMetadataString) = vbOK)
+                Else
+                    GetExportParamsFromDialog = (Dialogs.PromptJXLSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                End If
             
             Case PDIF_JXR
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
@@ -440,7 +444,11 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_JXL
-            ExportToSpecificFormat = ImageExporter.ExportJXL(srcImage, dstPath, saveParameters, metadataParameters)
+            If srcImage.IsAnimated Then
+                ExportToSpecificFormat = ImageExporter.ExportJXL_Animated(srcImage, dstPath, saveParameters, metadataParameters)
+            Else
+                ExportToSpecificFormat = ImageExporter.ExportJXL(srcImage, dstPath, saveParameters, metadataParameters)
+            End If
         
         Case PDIF_JXR
             ExportToSpecificFormat = ImageExporter.ExportJXR(srcImage, dstPath, saveParameters, metadataParameters)
@@ -827,10 +835,10 @@ Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As p
     
 End Function
 
-'PhotoDemon can currently export animated GIF, PNG, and WebP images.  These fromats all have slight subtleties
-' in how we prep frames prior to export, but you can call this universal function to handle all those details
-' for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the pdImage
-' object you want saved.
+'PhotoDemon can currently export animated GIF, JPEG XL, PNG, and WebP images.  These fromats all have slight
+' subtleties in how we prep frames prior to export, but you can call this universal function to handle all those
+' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
+' pdImage object you want saved.
 Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcImage As pdImage) As Boolean
 
     Export_Animation = False
@@ -855,6 +863,8 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
     Select Case dstFormat
         Case PDIF_GIF
             cdTitle = g_Language.TranslateMessage("Export animated GIF")
+        Case PDIF_JXL
+            cdTitle = g_Language.TranslateMessage("Export animated JPEG XL")
         Case PDIF_PNG
             cdTitle = g_Language.TranslateMessage("Export animated PNG")
         Case PDIF_WEBP
@@ -872,6 +882,8 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
     Select Case dstFormat
         Case PDIF_GIF
             saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "GIF - Graphics Interchange Format (*.gif)|*.gif", , cdInitialFolder, cdTitle, ".gif", FormMain.hWnd)
+        Case PDIF_JXL
+            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "JXL - JPEG XL (*.jxl)|*.jxl", , cdInitialFolder, cdTitle, ".jxl", FormMain.hWnd)
         Case PDIF_PNG
             saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png", , cdInitialFolder, cdTitle, ".apng", FormMain.hWnd)
         Case PDIF_WEBP
@@ -905,6 +917,8 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
         Select Case dstFormat
             Case PDIF_GIF
                 promptResult = Dialogs.PromptExportAnimatedGIF(srcImage, formatParams, metadataParams)
+            Case PDIF_JXL
+                promptResult = Dialogs.PromptExportAnimatedJXL(srcImage, formatParams, metadataParams)
             Case PDIF_PNG
                 promptResult = Dialogs.PromptExportAnimatedPNG(srcImage, formatParams, metadataParams)
             Case PDIF_WEBP
@@ -924,6 +938,8 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
         Select Case dstFormat
             Case PDIF_GIF
                 saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile, formatParams, metadataParams)
+            Case PDIF_JXL
+                saveResult = ImageExporter.ExportJXL_Animated(srcImage, dstFile, formatParams, metadataParams)
             Case PDIF_PNG
                 saveResult = ImageExporter.ExportPNG_Animated(srcImage, dstFile, formatParams, metadataParams)
             Case PDIF_WEBP
@@ -957,20 +973,8 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
         Saving.EndSaveProcess
         Message "Save complete."
         
-        'Animated GIFs do not use our own encoder; instead, they rely on the 3rd-party FreeImage library.
-        ' If FreeImage fails, it should provide detailed information on any errors encountered.  Present these
-        ' to the user, in hopes that they might find it useful (or least pass it on to me!)
-        If (dstFormat = PDIF_GIF) Then
-            If (Not saveResult) Then
-                If Plugin_FreeImage.FreeImageErrorState Then
-                    Dim fiErrorList As String
-                    fiErrorList = Plugin_FreeImage.GetFreeImageErrors
-                    PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbOKOnly, "Error", fiErrorList
-                Else
-                    PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
-                End If
-            End If
-        End If
+        Export_Animation = saveResult
+        If (Not Export_Animation) Then PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
         
     Else
         Export_Animation = False

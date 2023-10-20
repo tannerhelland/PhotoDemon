@@ -221,6 +221,10 @@ Private Function Launch_ByName_MenuFile(ByRef srcMenuName As String, Optional By
                 If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export animated GIF", True
             
+            Case "file_export_animatedjxl"
+                If (Not PDImages.IsImageActive()) Then Exit Function
+                Process "Export animated JPEG XL", True
+                
             Case "file_export_animatedpng"
                 If (Not PDImages.IsImageActive()) Then Exit Function
                 Process "Export animated PNG", True
@@ -1653,6 +1657,7 @@ Public Sub BuildActionDatabase()
     AddAction "file_revert", "Revert"
     'AddAction "file_export"
     AddAction "file_export_animatedgif", "Export animated GIF"
+    AddAction "file_export_animatedjxl", "Export animated JPEG XL"
     AddAction "file_export_animatedpng", "Export animated PNG"
     AddAction "file_export_animatedwebp", "Export animated WebP"
     AddAction "file_export_colorlookup", "Export color lookup"

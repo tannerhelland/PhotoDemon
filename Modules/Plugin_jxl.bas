@@ -181,7 +181,7 @@ Public Function ConvertImageFileToJXL(ByRef srcFile As String, ByRef dstFile As 
     If (Not Files.FileExists(srcFile)) Then Exit Function
     
     'Ensure the source filename includes a recognizable format; if it does not, libjxl will choke
-    If (Files.FileGetExtension(srcFile) <> "png") And (Files.FileGetExtension(srcFile) <> "jpg") Then
+    If (Files.FileGetExtension(srcFile) <> "png") And (Files.FileGetExtension(srcFile) <> "apng") And (Files.FileGetExtension(srcFile) <> "jpg") Then
         InternalError FUNC_NAME, "bad extension"
         Exit Function
     End If
@@ -488,9 +488,13 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
                     dstDIB.SetAlphaPremultiplication True
                     
+                    'Note the original file format as JXL (*not* PNG, which is relevant because we are using
+                    ' PNG as an intermediary format and other load functions may mistakenly operate on PNG assumptions)
+                    dstImage.SetOriginalFileFormat PDIF_JXL
+                    
                     'Migrate the filled DIB into the destination image object, and initialize it as the base layer
                     Dim newLayerName As String
-                    newLayerName = Layers.GenerateInitialLayerName(srcFile, vbNullString, False, dstImage, dstDIB)
+                    newLayerName = Layers.GenerateInitialLayerName(srcFile, vbNullString, cPNG.IsAnimated(), dstImage, dstDIB)
                     
                     'Create the new layer in the target image, and pass our created name to it
                     Dim newLayerID As Long
@@ -521,7 +525,6 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     'Only *now* do we relay any useful state information to the destination image object.
                     ' (Note that these settings are PNG-specific, not JXL-specific, so e.g. a 12-bit JXL file
                     ' will use a 16-bit intermediary PNG - that's okay for our purposes!)
-                    dstImage.SetOriginalFileFormat PDIF_JXL
                     dstImage.SetOriginalColorDepth cPNG.GetBitsPerPixel()
                     dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
                     dstImage.SetOriginalAlpha cPNG.HasAlpha()
@@ -556,6 +559,13 @@ LoadFailed:
     LoadJXL = False
     InternalError FUNC_NAME, "terminating due to error"
     
+End Function
+
+'Preview a single frame as compressed to JXL format, using the passed compression settings.
+' This is typically used to generate previews in export dialogs.  Speed is emphasized wherever possible.
+' It's OK to pass identical source and destination frame objects.
+Public Function PreviewSingleFrameAsJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcOptions As String) As Boolean
+
 End Function
 
 'Save an arbitrary DIB to a standalone JPEG XL file.
@@ -594,6 +604,42 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
     
 FatalEncoderError:
     SaveJXL_ToFile = False
+    InternalError FUNC_NAME, "VB error # " & Err.Number
+
+End Function
+
+'Save a full image stack as an animated JPEG XL file (using APNG as an intermediary format).
+Public Function SaveJXL_ToFile_Animated(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SaveJXL_ToFile_Animated"
+    SaveJXL_ToFile_Animated = False
+    
+    'We don't actually need any special options here; we just need to save a PNG, then pass that PNG off to
+    ' libjxl for final conversion.
+    Dim tmpPngFile As String
+    tmpPngFile = OS.UniqueTempFilename(customExtension:="apng")
+    
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    SaveJXL_ToFile_Animated = (cPNG.SaveAPNG_ToFile(tmpPngFile, srcImage, png_AutoColorType, 0, 0, vbNullString) = png_Success)
+    
+    If SaveJXL_ToFile_Animated Then
+        
+        'Convert the saved PNG to JXL
+        SaveJXL_ToFile_Animated = Plugin_jxl.ConvertImageFileToJXL(tmpPngFile, dstFile, srcOptions, False)
+        
+        'Regardless of success/failure, delete the temporary PNG
+        Files.FileDeleteIfExists tmpPngFile
+        
+    Else
+        Files.FileDeleteIfExists tmpPngFile
+        InternalError FUNC_NAME, "tmp png failed"
+    End If
+    
+    Exit Function
+    
+FatalEncoderError:
+    SaveJXL_ToFile_Animated = False
     InternalError FUNC_NAME, "VB error # " & Err.Number
 
 End Function

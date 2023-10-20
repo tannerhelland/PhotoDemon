@@ -308,9 +308,9 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
-    'Default save quality is "Excellent"
-    sldQuality.Value = 1    'Visually lossless, but underlying RGB may change due to color space conversion(s)
-    sldEffort.Value = 7     'Default per libjxl
+    sldQuality.Value = 90       'Default per libjxl
+    sldEffort.Value = 7         'Default per libjxl
+    btsQuality.ListIndex = 0    'Default to lossless mode
     
     'Default metadata settings
     mtdManager.Reset
