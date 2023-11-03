@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，9.2 build 168）</langname>
-<langversion>9.2 build 168</langversion>
+<langversion>9.2 build 168.1</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 3, 2023, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -81,6 +81,11 @@
 <phrase>
 <original>Export animated GIF</original>
 <translation>导出动画GIF</translation>
+</phrase>
+
+<phrase>
+<original>Export animated JPEG XL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1338,7 @@
 <translation>清除最近的图像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1822,7 +1827,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>由于缺失FreeImage库，没有保存成功</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2535,28 +2540,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
-</phrase>
-
-<phrase>
 <original>Atkinson / Classic Macintosh</original>
 <translation>Atkinson（阿特金森抖动）</translation>
-</phrase>
-
-<phrase>
-<original>Floyd-Steinberg</original>
-<translation>Floyd-Steinberg（弗洛伊德-斯坦伯格抖动算法）</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki（斯塔基抖动）</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes（伯克抖动）</translation>
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
@@ -2708,11 +2693,26 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>unknown</original>
-<translation>未知</translation>
+<original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
+<translation></translation>
 </phrase>
 
-<!-- Plugin_jxl.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download libjxl at this time.</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -2744,7 +2744,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>Mozilla公共许可证2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3531,6 +3531,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation>未知</translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>启动时检测软件更新（此功能可以从工具菜单-->选项禁用）</translation>
 </phrase>
@@ -3555,7 +3560,7 @@ Please enter a numeric value.</original>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4866,6 +4871,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated JPEG XL</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Animated PNG</original>
 <translation>PNG动画</translation>
 </phrase>
@@ -5722,7 +5732,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7999,8 +8009,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>细节</original>
-<translation>详情</translation>
+<original>detail</original>
+<translation>细节</translation>
 </phrase>
 
 <phrase>
@@ -8009,11 +8019,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>detail</original>
-<translation>细节</translation>
-</phrase>
 
 <phrase>
 <original>smoothness</original>
@@ -8593,26 +8598,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>Roberts cross</original>
 <translation>Roberts cross（罗伯茨交叉算子）</translation>
-</phrase>
-
-<phrase>
-<original>Laplacian</original>
-<translation>Laplacian（拉普拉斯算子）</translation>
-</phrase>
-
-<phrase>
-<original>Sobel</original>
-<translation>Sobel（索贝尔算子）</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt</original>
-<translation>Prewitt（交叉微分算子）</translation>
-</phrase>
-
-<phrase>
-<original>Hilite</original>
-<translation>Hilite（高亮区域）</translation>
 </phrase>
 
 <!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -10519,8 +10504,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation>AVIF压缩计算很耗时，在较旧或较慢的PC上，您可能希望禁用实时预览。</translation>
+<original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation>压缩计算很耗时，在较旧或较慢的PC上，您可能希望禁用实时预览。</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10820,7 +10805,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>有损</translation>
 </phrase>
 
-<!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11311,6 +11296,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
 <translation>元数据支持由开源ExifTool库提供。</translation>
+</phrase>
+
+<phrase>
+<original>1 tag in this category</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13990,6 +13980,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>a JPEG XL image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This library does not ship with PhotoDemon.</original>
 <translation>此库未随PhotoDemon一起提供。</translation>
 </phrase>
@@ -13999,7 +13994,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>如果您与 %1 交互，PhotoDemon将为您下载并配置此库。</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 48 phrases. 24 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14080,14 +14075,20 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5569 phrases. -->
-<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 11509 total words. -->
+<!-- As of this build, PhotoDemon contains 5597 phrases. -->
+<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- These 2665 phrases contain approximately 11610 total words. -->
 
 <special-translations>
 

@@ -60,8 +60,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Why?
     
     'While this function stays busy loading the image in question, the ExifTool plugin runs asynchronously,
-    ' parsing image metadata and forwarding the results to a pdAsyncPipe instance on PD's primary form.
-    ' By using DoEvents throughout this function, we periodically yield control to that pdAsyncPipe instance,
+    ' parsing image metadata and forwarding the results to a pdPipeAsync instance on PD's primary form.
+    ' By using DoEvents throughout this function, we periodically yield control to that pdPipeAsync instance,
     ' which allows it to clear stdout so ExifTool can continue pushing metadata through.  (If we don't do this,
     ' ExifTool will freeze when stdout fills its buffer, which is not just possible but *probable*, given how
     ' much metadata the average JPEG contains.)
@@ -634,7 +634,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
         
         Case "JXL"
-            If Plugin_jxl.IsLibJXLAvailable() Then
+            If Plugin_jxl.IsJXLImportAvailable() Then
                 loadSuccessful = Plugin_jxl.LoadJXL(imagePath, tmpPDImage, targetDIB)
                 If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             End If
@@ -702,19 +702,17 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         '...into the /App/PhotoDemon/Plugins subfolder.
         Case "HEIF", "HEIFS", "HEIC", "HEICS", "AVCI", "AVCS", "AVIF", "AVIFS"
             If Plugin_AVIF.IsAVIFImportAvailable() Then
-            
-                Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
-                loadSuccessful = Plugin_AVIF.ConvertAVIFtoStandardImage(imagePath, tmpFile, intermediaryPDIF)
+                
+                'The separate AVIF apps convert AVIF to intermediary formats; we use PNG currently
+                Dim tmpFile As String
+                loadSuccessful = Plugin_AVIF.ConvertAVIFtoStandardImage(imagePath, tmpFile)
                 
                 If loadSuccessful Then
-                    If (intermediaryPDIF = PDIF_PNG) Then
-                        Set cPNG = New pdPNG
-                        loadSuccessful = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, targetDIB) < png_Failure)
-                    Else
-                        loadSuccessful = LoadGDIPlusImage(tmpFile, targetDIB, tmpPDImage)
-                    End If
+                    Set cPNG = New pdPNG
+                    loadSuccessful = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, targetDIB) < png_Failure)
                 End If
                 
+                'Free the intermediary file before continuing
                 Files.FileDeleteIfExists tmpFile
                 If (Not targetDIB.GetAlphaPremultiplication) Then targetDIB.SetAlphaPremultiplication True
                 If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True

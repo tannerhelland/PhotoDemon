@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1714</langversion>
+<langversion>8.9.1715</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -80,6 +80,11 @@
 
 <phrase>
 <original>Export animated GIF</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export animated JPEG XL</original>
 <translation></translation>
 </phrase>
 
@@ -1333,7 +1338,7 @@
 <translation>Wis recente lijst met afbeeldingen</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1822,7 +1827,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Opslaan kan niet worden voltooid zonder FreeImage bibliotheek.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2692,11 +2697,26 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>unknown</original>
-<translation>onbekend</translation>
+<original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
+<translation></translation>
 </phrase>
 
-<!-- Plugin_jxl.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download libjxl at this time.</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -2728,7 +2748,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <translation>Mozilla Openbare Licentie 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3516,6 +3536,11 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation>onbekend</translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Initialiseren software updater (deze functie kan worden uitgeschakeld vanaf het menu Gereedschappen -> Opties)</translation>
 </phrase>
@@ -3540,7 +3565,7 @@ Geef een numerieke waarde.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4851,6 +4876,11 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Animated JPEG XL</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Animated PNG</original>
 <translation>Geanimeerde PNG</translation>
 </phrase>
@@ -5708,7 +5738,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10480,8 +10510,8 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation>AVIF-Compressie is zeer rekenintensief.  Op oudere of tragere PC's kunt u live previews misschien beter uitschakelen.</translation>
+<original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation>Compressie is zeer rekenintensief.  Op oudere of tragere PC's kunt u live previews misschien beter uitschakelen.</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10781,7 +10811,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -13956,6 +13986,11 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>a JPEG XL image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This library does not ship with PhotoDemon.</original>
 <translation>Deze bibliotheek wordt niet met PhotoDemon meegeleverd.</translation>
 </phrase>
@@ -13965,7 +14000,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Als u reageert met %1, biedt PhotoDemon aan om deze bibliotheek voor u te downloaden en te configureren.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 48 phrases. 24 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14046,12 +14081,19 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5569 phrases. -->
-<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 11509 total words. -->
+<!-- As of this build, PhotoDemon contains 5597 phrases. -->
+<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>

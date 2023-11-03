@@ -538,9 +538,9 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim sFileType As String: sFileType = "AVIF"
     
     'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
-    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFExportAvailable()) Then
         
-        If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo ExportAVIFError
+        If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo ExportAVIFError
         
         'Downloading the AVIF plugins will raise new messages in the status bar; restore the original
         ' "saving %1 image" text
@@ -549,7 +549,7 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     End If
     
     'Failsafe check before proceeding
-    If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then GoTo ExportAVIFError
+    If (Not Plugin_AVIF.IsAVIFExportAvailable()) Then GoTo ExportAVIFError
     
     'Generate a composited image copy, with alpha automatically un-premultiplied
     Dim tmpImageCopy As pdDIB
@@ -578,7 +578,7 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     'Generate a temporary filename for the intermediary PNG file.
     Dim tmpFilename As String
-    tmpFilename = OS.UniqueTempFilename()
+    tmpFilename = OS.UniqueTempFilename(customExtension:="png")
     
     'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
     ' and format coverage than either FreeImage or GDI+.  Use it to dump a lossless copy of the current image
@@ -1005,8 +1005,23 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportJXL = False
     Dim sFileType As String: sFileType = "JXL"
     
+    'If this system is post-XP but libjxl doesn't exist, ask if we can download a copy
+    If OS.IsVistaOrLater And (Not Plugin_jxl.IsJXLExportAvailable()) Then
+        
+        'If the user doesn't allow download, we can't export
+        If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        
+        'Downloading libjxl will raise new messages in the status bar; restore the original
+        ' "saving %1 image" text
+        Message "Saving %1 file...", sFileType
+        
+    End If
+    
+    'Failsafe check before proceeding
+    If (Not Plugin_jxl.IsJXLExportAvailable()) Then GoTo ExportJXLError
+    
     'JXL exporting leans on libjxl
-    If Plugin_jxl.IsLibJXLEnabled() Then
+    If Plugin_jxl.IsJXLExportAvailable() Then
         
         'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
         ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
@@ -1020,7 +1035,7 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             tmpFilename = dstFile
         End If
         
-        'Use libjxl to save the WebP file
+        'Use libjxl to save (note: PNG is currently used as an intermediary format)
         If Plugin_jxl.SaveJXL_ToFile(srcPDImage, formatParams, tmpFilename) Then
         
             If Strings.StringsEqual(dstFile, tmpFilename) Then
@@ -1055,6 +1070,82 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportJXLError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportJXL = False
+    
+End Function
+
+'libjxl also provides animated JXL support (using APNG as an intermediary wrapper)
+Public Function ExportJXL_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportJXLError
+    
+    ExportJXL_Animated = False
+    Dim sFileType As String: sFileType = "JXL"
+    
+    'If this system is post-XP but libjxl doesn't exist, ask if we can download a copy
+    If OS.IsVistaOrLater And (Not Plugin_jxl.IsJXLExportAvailable()) Then
+        
+        'If the user doesn't allow download, we can't export
+        If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        
+        'Downloading libjxl will raise new messages in the status bar; restore the original
+        ' "saving %1 image" text
+        Message "Saving %1 file...", sFileType
+        
+    End If
+    
+    'Failsafe check before proceeding
+    If (Not Plugin_jxl.IsJXLExportAvailable()) Then GoTo ExportJXLError
+    
+    'JXL exporting leans on libjxl
+    If Plugin_jxl.IsJXLExportAvailable() Then
+        
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file *then* - this way, if an error occurs
+        ' mid-save, the original file is left untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Do
+                tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+            Loop While Files.FileExists(tmpFilename)
+        Else
+            tmpFilename = dstFile
+        End If
+        
+        'Use libjxl to save (note: PNG is currently used as an intermediary format)
+        If Plugin_jxl.SaveJXL_ToFile_Animated(srcPDImage, formatParams, tmpFilename) Then
+        
+            If Strings.StringsEqual(dstFile, tmpFilename) Then
+                ExportJXL_Animated = True
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            Else
+            
+                ExportJXL_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportJXL_Animated) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+                End If
+                
+            End If
+        
+        Else
+            ExportJXL_Animated = False
+            ExportDebugMsg "WARNING!  ExportJXL() failed for reasons unknown; check the debug log for additional details"
+        End If
+        
+        Exit Function
+    
+    Else
+        PDDebug.LogAction "libjxl missing or broken; JXL export abandoned"
+        ExportJXL_Animated = False
+    End If
+    
+    Exit Function
+    
+ExportJXLError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportJXL_Animated = False
     
 End Function
 

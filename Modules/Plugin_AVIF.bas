@@ -3,9 +3,8 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2023 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 06/April/22
-'Last update: use PD-specific repo for avifdec/enc since the libavif authors keep changing release availability;
-'             also, enable fast PNG writing thanks to an issue I submitted!
+'Last updated: 13/September/23
+'Last update: use the new pdPipeSync class for shell and output capture
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
@@ -36,11 +35,18 @@ Option Explicit
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).
 Private m_avifImportAvailable As Boolean, m_avifExportAvailable As Boolean
 
-Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef outputPDIF As PD_IMAGE_FORMAT = PDIF_PNG) As Boolean
+'Version numbers are only retrieved once, then cached.  (We need to check version numbers before
+' communicating with libavif, because some optional settings only work on specific library versions.)
+Private m_inputVersion As String, m_outputVersion As String
+
+'Convert an AVIF file to some other image format.  Currently, PD converts AVIF files to uncompressed PNGs,
+' then imports those PNGs directly.  Theoretically, you could use other intermediary formats, such as JPEG,
+' if that's better for your usage scenario...
+Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String) As Boolean
     
     Const funcName As String = "ConvertAVIFtoStandardImage"
     
-    'Safety checks on plugin
+    'Safety checks on plugin existence
     If (Not m_avifImportAvailable) Then
         InternalError funcName, "libavif broken or missing"
         Exit Function
@@ -62,11 +68,13 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     'If the destination file isn't specified, generate a random temp file name
     If (Not Files.FileExists(dstFile)) Then dstFile = OS.UniqueTempFilename()
     
-    'Ensure destination file has an appropriate extension (this is how the decoder
-    ' figures out which format to use)
+    'Ensure destination file has an appropriate extension (this is how the decoder knows which format to use)
+    Dim outputPDIF As PD_IMAGE_FORMAT
+    outputPDIF = PDIF_PNG
+    
     Dim reqExtension As String
     reqExtension = "png"
-    outputPDIF = PDIF_PNG
+    
     If Strings.StringsNotEqual(Files.FileGetExtension(dstFile), reqExtension, True) Then dstFile = dstFile & "." & reqExtension
     
     'Shell plugin and wait for return
@@ -93,9 +101,14 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append """"
     
     'Shell plugin and capture output for analysis
-    Dim outputString As String
-    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
     
+    If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
+        
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
@@ -130,24 +143,24 @@ End Function
 
 Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFile As String, Optional ByVal encoderQuality As Long = -1, Optional ByVal encoderSpeed As Long = -1) As Boolean
     
-    Const funcName As String = "ConvertStandardImageToAVIF"
+    Const FUNC_NAME As String = "ConvertStandardImageToAVIF"
     
     'Safety checks on plugin
     If (Not m_avifExportAvailable) Then
-        InternalError funcName, "libavif broken or missing"
+        InternalError FUNC_NAME, "libavif broken or missing"
         Exit Function
     End If
     
     Dim pluginPath As String
     pluginPath = PluginManager.GetPluginPath & "avifenc.exe"
     If (Not Files.FileExists(pluginPath)) Then
-        InternalError funcName, "libavif missing"
+        InternalError FUNC_NAME, "libavif missing"
         Exit Function
     End If
     
     'Safety checks on source and destination files
     If (Not Files.FileExists(srcFile)) Then
-        InternalError funcName, "source file doesn't exist"
+        InternalError FUNC_NAME, "source file doesn't exist"
         Exit Function
     End If
     
@@ -199,7 +212,8 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
         
     End If
     
-    'PD uses premultiplied alpha internally, so signal that to the encoder as well
+    'PD uses premultiplied alpha internally, so signal that to the encoder as well.
+    ' (NOTE: libavif hasn't always handled premultiplication correctly, so suspend this for now and revisit in future builds.)
     'shellCmd.Append "--premultiply "
     
     'Append properly delimited source image
@@ -207,77 +221,117 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append srcFile
     shellCmd.Append """ "
     
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
     'Append properly delimited destination image
     shellCmd.Append """"
-    shellCmd.Append dstFile
+    shellCmd.Append tmpFilename
     shellCmd.Append """"
     
-    'Final step - if destination file exists, kill it.
-    ' (TODO: convert to safe save approach)
-    Files.FileDeleteIfExists dstFile
+    'Want to confirm the shelled command?  See it here:
+    'PDDebug.LogAction shellCmd.ToString()
     
-    Debug.Print shellCmd.ToString()
+    'We are guaranteed that the destination file does not exist, but in case the user somehow (miraculously?)
+    ' created a file with that name in the past 0.01 ms, guarantee non-existence.
+    Files.FileDeleteIfExists tmpFilename
     
     'Shell plugin and capture output for analysis
-    Dim outputString As String
-    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
+    
+    If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
     
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
         targetStringSrc = "Successfully loaded: " & srcFile
-        targetStringDst = "Wrote AVIF: " & dstFile
+        targetStringDst = "Wrote AVIF: " & tmpFilename
         
         ConvertStandardImageToAVIF = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
         ConvertStandardImageToAVIF = ConvertStandardImageToAVIF And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
         
         'Want to review the output string manually?  Print it here:
-        PDDebug.LogAction outputString
+        'PDDebug.LogAction outputString
         
         'Record full details of failures
         If ConvertStandardImageToAVIF Then
             PDDebug.LogAction "libavif reports success!"
         Else
-            InternalError funcName, "save failed; output follows:"
+            InternalError FUNC_NAME, "save failed; output follows:"
             PDDebug.LogAction outputString
         End If
         
     Else
-        InternalError funcName, "shell failed"
+        InternalError FUNC_NAME, "shell failed"
+    End If
+    
+    'If the original file already existed, attempt to replace it now
+    If ConvertStandardImageToAVIF And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        ConvertStandardImageToAVIF = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        If (Not ConvertStandardImageToAVIF) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+        End If
     End If
     
 End Function
 
 Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
     
+    'These libraries are limited to Vista+ and 64-bit OSes only
     GetVersion = vbNullString
     If (Not OS.IsVistaOrLater) Then Exit Function
     
-    Dim okToCheck As Boolean
+    'The version-checker may have already been called this session;
+    ' use cached values from a previous run, if available.
     If testExportLibrary Then
-        okToCheck = PluginManager.IsPluginCurrentlyInstalled(CCP_AvifExport)
+        If (LenB(m_outputVersion) > 0) Then
+            GetVersion = m_outputVersion
+            Exit Function
+        End If
     Else
-        okToCheck = PluginManager.IsPluginCurrentlyInstalled(CCP_AvifImport)
+        If (LenB(m_inputVersion) > 0) Then
+            GetVersion = m_inputVersion
+            Exit Function
+        End If
     End If
+    
+    Dim targetAvifAppName As String
+    If testExportLibrary Then
+        targetAvifAppName = "avifenc.exe"
+    Else
+        targetAvifAppName = "avifdec.exe"
+    End If
+    
+    Dim pluginPath As String
+    pluginPath = PluginManager.GetPluginPath & targetAvifAppName
+    
+    Dim okToCheck As Boolean
+    okToCheck = Files.FileExists(PluginManager.GetPluginPath & targetAvifAppName)
     
     If okToCheck Then
         
-        Dim pluginPath As String
-        If testExportLibrary Then
-            pluginPath = PluginManager.GetPluginPath & "avifenc.exe"
-        Else
-            pluginPath = PluginManager.GetPluginPath & "avifdec.exe"
-        End If
+        Dim cShell As pdPipeSync
+        Set cShell = New pdPipeSync
         
-        Dim outputString As String, shellOK As Boolean
-        If testExportLibrary Then
-            shellOK = ShellExecuteCapture(pluginPath, "avifenc.exe -v", outputString)
-        Else
-            shellOK = ShellExecuteCapture(pluginPath, "avifdec.exe -v", outputString)
-        End If
-        
-        If shellOK Then
-        
+        If cShell.RunAndCaptureOutput(pluginPath, targetAvifAppName & " -v", False) Then
+            
+            Dim outputString As String
+            outputString = cShell.GetStdOutDataAsString()
+            
             'The output string is potentially quite large, and not stable between releases.
             ' For now, just blindly search for the text "Version: "
             Dim vPos As Long, targetString As String
@@ -305,7 +359,14 @@ Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
                 
 BadVersion:
                 GetVersion = verString
-            
+                
+                'Cache version number between calls
+                If testExportLibrary Then
+                    m_outputVersion = GetVersion
+                Else
+                    m_inputVersion = GetVersion
+                End If
+                
             'Failure to return version number is a bad sign, but this isn't the place to handle it.
             Else
                 PDDebug.LogAction "WARNING: couldn't retrieve version number of libavif."
@@ -356,7 +417,9 @@ End Function
 'Notify the user that PD can automatically download and configure AVIF support for them.
 '
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins
-Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+    
+    Const FUNC_NAME As String = "PromptForLibraryDownload_AVIF"
     
     On Error GoTo BadDownload
     
@@ -368,7 +431,7 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
         Set uiMsg = New pdString
         uiMsg.AppendLine g_Language.TranslateMessage("AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.")
         uiMsg.AppendLineBreak
-        uiMsg.AppendLine g_Language.TranslateMessage("The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.", 20, 40)
+        uiMsg.AppendLine g_Language.TranslateMessage("The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.", 12, 24)
         uiMsg.AppendLineBreak
         uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?")
         
@@ -389,65 +452,129 @@ Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boo
                 PDMsgBox uiMsg.ToString, vbInformation Or vbOKOnly, "Download canceled"
             End If
             
-            PromptForLibraryDownload = False
+            PromptForLibraryDownload_AVIF = False
             Exit Function
             
         End If
         
         'The user said YES!  Attempt to download the latest libavif release now.
-        Dim srcURL As String, dstFileDecoder As String
+        Dim srcURL As String, dstFileTemp As String
         
         'Before downloading anything, ensure we have write access on the plugin folder.
-        dstFileDecoder = PluginManager.GetPluginPath()
-        If Not Files.PathExists(dstFileDecoder, True) Then
+        dstFileTemp = PluginManager.GetPluginPath()
+        If Not Files.PathExists(dstFileTemp, True) Then
             PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
-            PromptForLibraryDownload = False
+            PromptForLibraryDownload_AVIF = False
             Exit Function
         End If
         
-        'We need to download both the import and export library.  Steps are the same for both.
+        'Previously, PhotoDemon downloaded each .exe as-is.  Now we package them into a single pdPackage file
+        ' and extract them post-download.  (This cuts download size by ~80%.)
         
-        'Start with import.
-        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-9.0-alpha.1/avifdec.exe"
-        dstFileDecoder = PluginManager.GetPluginPath() & "avifdec.exe"
+        'Grab the .pdz file.  This path is hard-coded according to my most recently tested version of avifdec/enc.
+        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.1/libavif-1.0.1.pdz"
+        dstFileTemp = PluginManager.GetPluginPath() & "libavif.tmp"
         
         'If the destination file does exist, kill it (maybe it's broken or bad)
-        Files.FileDeleteIfExists dstFileDecoder
+        Files.FileDeleteIfExists dstFileTemp
         
         'Download
         Dim tmpFile As String
         tmpFile = Web.DownloadURLToTempFile(srcURL, False)
         
-        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileDecoder
+        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileTemp
         Files.FileDeleteIfExists tmpFile
         
-        'Repeat for the encoder
-        Dim dstFileEncoder As String
-        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-9.0-alpha.1/avifenc.exe"
-        dstFileEncoder = PluginManager.GetPluginPath() & "avifenc.exe"
-        Files.FileDeleteIfExists dstFileEncoder
+        'With the pdPackage file successfully downloaded, extract avifdec and avifenc and place them in the plugins folder.
+        PDDebug.LogAction "Extracting latest libavif..."
+        Dim cPackage As pdPackageChunky
+        Set cPackage = New pdPackageChunky
         
-        tmpFile = vbNullString
-        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
+        Dim dstFilename As String
+        Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
         
-        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileEncoder
-        Files.FileDeleteIfExists tmpFile
+        Dim numSuccessfulFiles As Long, numBytesExtracted As Long
+        numSuccessfulFiles = 0
+        numBytesExtracted = 0
         
-        'Attempt to initialize both plugins
-        PluginManager.LoadPluginGroup False
-        
-        If targetIsImportLib Then
-            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport)
+        'Load the file into a temporary package manager
+        If cPackage.OpenPackage_File(dstFileTemp) Then
+            
+            'I use a custom-built tool to assemble pdPackage files; individual files are stored as simple name-value pairs
+            Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+                
+                'Ensure the chunk name is actually a "NAME" chunk
+                If (tmpChunkName = "NAME") Then
+                    
+                    'Convert the filename to a full path into the user's plugin folder
+                    dstFilename = PluginManager.GetPluginPath() & tmpStream.ReadString_UTF8(tmpChunkSize)
+                    
+                    'Next, extract the chunk's data
+                    If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                        
+                        'Ensure the chunk data is a "DATA" chunk
+                        If (tmpChunkName = "DATA") Then
+                            
+                            'Write the chunk's contents to file
+                            If Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True) Then
+                                numSuccessfulFiles = numSuccessfulFiles + 1
+                                numBytesExtracted = numBytesExtracted + tmpChunkSize
+                            Else
+                                InternalError FUNC_NAME, "failed to create target file " & dstFilename
+                            End If
+                        
+                        '/Validate DATA chunk
+                        End If
+                            
+                    '/Unexpected chunk
+                    Else
+                        InternalError FUNC_NAME, "bad data chunk: " & tmpChunkName
+                    End If
+                
+                '/Unexpected chunk
+                Else
+                    InternalError FUNC_NAME, "bad name chunk: " & tmpChunkName
+                End If
+            
+            'Iterate all remaining package items
+            Loop
+            
         Else
-            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifExport)
+            InternalError FUNC_NAME, "download failed!  libavif is *not* currently available to this PhotoDemon instance."
         End If
+        
+        'Free the underlying package object
+        Set cPackage = Nothing
+        
+        'Double-check expected number of files and total size of extracted bytes.
+        ' Currently we expect three files in the package:
+        ' - avifdec.exe (for decoding)
+        ' - avifenc.exe (for encoding)
+        ' - avif-LICENSE.txt (copyright and license info)
+        If (numSuccessfulFiles <> 3) Then InternalError FUNC_NAME, "unexpected extraction file count: " & numSuccessfulFiles
+        
+        'Current libavif build is 1.0.3768, downloaded from https://ci.appveyor.com/project/louquillio/libavif/builds/47660062/artifacts
+        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 24154944
+        If (numBytesExtracted = EXPECTED_TOTAL_EXTRACT_SIZE) Then
+            PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
+        Else
+            InternalError FUNC_NAME, "unexpected extraction size: " & numBytesExtracted & " vs " & EXPECTED_TOTAL_EXTRACT_SIZE
+        End If
+        
+        'Delete the temporary package file
+        Files.FileDeleteIfExists dstFileTemp
+        
+        'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
+        ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
+        PluginManager.LoadPluginGroup False
+        PromptForLibraryDownload_AVIF = PluginManager.IsPluginCurrentlyEnabled(CCP_libavif)
         
     End If
     
     Exit Function
     
 BadDownload:
-    PromptForLibraryDownload = False
+    PromptForLibraryDownload_AVIF = False
     Exit Function
 
 End Function

@@ -1125,7 +1125,7 @@ End Function
 ' kernel function - this is because that API has some annoying caveats, per https://msdn.microsoft.com/en-us/library/windows/desktop/aa364991(v=vs.85).aspx)
 '
 'Returns: valid filename (with prepended path and trailing ".tmp") if successful; null-string if unsuccessful
-Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_") As String
+Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_", Optional ByRef customExtension As String = "tmp") As String
     
     Dim tmpFolder As String
     
@@ -1152,7 +1152,7 @@ Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_"
         ' (This should always succeed on the first try, but better safe than sorry!)
         Dim finalName As String
         Do
-            finalName = tmpFolder & customPrefix & Left$(OS.GetArbitraryGUID(True), 8) & ".tmp"
+            finalName = tmpFolder & customPrefix & Left$(OS.GetArbitraryGUID(True), 8) & "." & customExtension
         Loop While Files.FileExists(finalName)
         
         'We are now guaranteed a file that does not yet exist!  Return it.

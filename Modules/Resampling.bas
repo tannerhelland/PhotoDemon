@@ -1335,9 +1335,6 @@ Public Function ResampleImageF(ByRef dstSurface As pdSurfaceF, ByRef srcSurface 
         VBHacks.GetHighResTime startTime
     End If
     
-    'Now, calculate all input weights
-    Const ONE_DIV_255 As Double = 1# / 255#
-    
     'Horizontal downsampling
     If (xScale < 1#) Then
         

@@ -195,7 +195,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
-    chkLivePreview.AssignTooltip "AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
+    chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -244,6 +244,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "AVIF")
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -268,7 +269,7 @@ Private Sub UpdatePreviewSource()
         'Save a copy of the source image to file, in PNG format.  (PD's current AVIF encoder
         ' works as a command-line tool; we need to pass it a source PNG file.)
         If (LenB(m_PreviewImagePath) > 0) Then Files.FileDeleteIfExists m_PreviewImagePath
-        m_PreviewImagePath = OS.UniqueTempFilename() & ".png"
+        m_PreviewImagePath = OS.UniqueTempFilename(customExtension:="png")
         If (Not Saving.QuickSaveDIBAsPNG(m_PreviewImagePath, workingDIB, False, True)) Then
             InternalError "UpdatePreviewSource", "couldn't save preview png"
         End If
@@ -299,7 +300,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             tmpFilenameBase = OS.UniqueTempFilename()
             tmpFilenameIntermediary = tmpFilenameBase & ".png"
             tmpFilenameAVIF = tmpFilenameBase & ".avif"
-        
+            
             'Shell libavif, and request it to convert the preview PNG to AVIF
             If Plugin_AVIF.ConvertStandardImageToAVIF(m_PreviewImagePath, tmpFilenameAVIF, 63 - sldQuality.Value, 10) Then
             

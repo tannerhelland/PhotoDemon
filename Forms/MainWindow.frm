@@ -154,28 +154,32 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated PNG..."
+            Caption         =   "Animated JPEG XL..."
             Index           =   1
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated WebP..."
+            Caption         =   "Animated PNG..."
             Index           =   2
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "-"
+            Caption         =   "Animated WebP..."
             Index           =   3
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color lookup..."
+            Caption         =   "-"
             Index           =   4
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color profile..."
+            Caption         =   "Color lookup..."
             Index           =   5
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "Color profile..."
             Index           =   6
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuFile 
@@ -3087,16 +3091,18 @@ Private Sub MnuFileExport_Click(Index As Integer)
         Case 0
             Actions.LaunchAction_ByName "file_export_animatedgif"
         Case 1
-            Actions.LaunchAction_ByName "file_export_animatedpng"
+            Actions.LaunchAction_ByName "file_export_animatedjxl"
         Case 2
-            Actions.LaunchAction_ByName "file_export_animatedwebp"
+            Actions.LaunchAction_ByName "file_export_animatedpng"
         Case 3
-            '(separator)
+            Actions.LaunchAction_ByName "file_export_animatedwebp"
         Case 4
-            Actions.LaunchAction_ByName "file_export_colorlookup"
+            '(separator)
         Case 5
-            Actions.LaunchAction_ByName "file_export_colorprofile"
+            Actions.LaunchAction_ByName "file_export_colorlookup"
         Case 6
+            Actions.LaunchAction_ByName "file_export_colorprofile"
+        Case 7
             Actions.LaunchAction_ByName "file_export_palette"
     End Select
 End Sub

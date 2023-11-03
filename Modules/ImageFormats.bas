@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2023 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 08/November/22
-'Last update: continued work on JPEG XL support
+'Last updated: 08/September/23
+'Last update: switch JPEG XL support to an on-demand download (on supported systems, e.g. Win 7+)
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -269,7 +269,9 @@ Public Sub GenerateInputFormats()
     
     AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
     
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_libjxl) Then AddInputFormat "JXL - JPEG XL", "*.jxl", PDIF_JXL
+    'JPEG XL images require an external plugin, but PD can download it automatically (with permission)
+    ' if the current system is compatible, even if the plugin isn't installed at startup.
+    If OS.IsWin7OrLater() Then AddInputFormat "JXL - JPEG XL", "*.jxl", PDIF_JXL
     
     If m_FreeImageEnabled Then
         AddInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", PDIF_JXR
@@ -413,9 +415,7 @@ Public Sub GenerateOutputFormats()
     
     'AV1-based codecs require an external plugin, but PD can download it automatically (with permission)
     ' if the current system is compatible, even if the plugin isn't installed at startup.
-    If OS.OSSupports64bitExe() Then
-        AddOutputFormat "AVIF - AV1 Image File", "avif", PDIF_AVIF
-    End If
+    If OS.OSSupports64bitExe() Then AddOutputFormat "AVIF - AV1 Image File", "avif", PDIF_AVIF
     
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
@@ -423,7 +423,11 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
     If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
-    If Plugin_jxl.IsLibJXLEnabled() Then AddOutputFormat "JXL - JPEG XL", "jxl", PDIF_JXL
+    
+    'JPEG XL images require an external plugin, but PD can download it automatically (with permission)
+    ' if the current system is compatible, even if the plugin isn't installed at startup.
+    If OS.IsWin7OrLater() Then AddOutputFormat "JXL - JPEG XL", "jxl", PDIF_JXL
+    
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
@@ -781,7 +785,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether the export format supports animation.
 Public Function IsAnimationSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
     Select Case outputPDIF
-        Case PDIF_GIF, PDIF_PNG, PDIF_WEBP
+        Case PDIF_GIF, PDIF_PNG, PDIF_WEBP, PDIF_JXL
             IsAnimationSupported = True
         Case Else
             IsAnimationSupported = False
@@ -854,16 +858,11 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
     Select Case srcFormat
         Case PDIF_CBZ
             IsExifToolRelevant = False
-        Case PDIF_ICO
-            IsExifToolRelevant = False
         Case PDIF_ORA
             IsExifToolRelevant = False
         Case PDIF_PDI
             IsExifToolRelevant = False
         Case PDIF_QOI
-            IsExifToolRelevant = False
-        'Testing only; comment should be added back eventually!
-        Case PDIF_GIF
             IsExifToolRelevant = False
         Case Else
             IsExifToolRelevant = True
