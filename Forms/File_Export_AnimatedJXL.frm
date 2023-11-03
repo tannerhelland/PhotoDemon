@@ -230,6 +230,24 @@ Private m_AniFrame As pdDIB
 ' This is challenging to do quickly and every optimization helps, including maintaining a persistent frame copy.
 Private m_tmpAnimationFrame As pdDIB
 
+'After many (failed) attempts to work with libjxl directly, stability issues prompted me to move everything
+' out-of-process for this particular format.  This has unfortunate performance knock-on effects, which means
+' we need to go to some extra lengths to make this dialog work okay-ish.
+'
+'As new animation frame previews are generated, this struct stores the results.  We only generate new frames
+' as necessary.  This allows a running animation preview to slowly become more and more accurate as the user
+' allows it to run.
+'
+'Because we cache temporary PNG files (used as the input to libjxl), we only have to produce new JXL output
+' on settings changes.  However, all temp files must obviously be deleted when the dialog closes.
+Private Type PD_JXLFramePreview
+    pathToPNG As String
+    settingsForPreviews As String
+    jxlPreviewDIB As pdDIB
+End Type
+
+Private m_numFramePreviews As Long, m_jxlFrames() As PD_JXLFramePreview
+
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -402,8 +420,22 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    
     Set m_Timer = Nothing
+    
+    If (m_numFramePreviews > 0) Then
+        
+        Dim i As Long
+        For i = 0 To UBound(m_jxlFrames)
+            If (LenB(m_jxlFrames(i).pathToPNG) <> 0) Then Files.FileDeleteIfExists m_jxlFrames(i).pathToPNG
+        Next i
+        
+        m_numFramePreviews = 0
+    
+    End If
+    
     ReleaseFormTheming Me
+    
 End Sub
 
 Private Sub SyncLoopButton(ByVal loopAmount As Long)
@@ -436,7 +468,7 @@ Private Function GetExportParamString() As String
     cParams.AddParam "frame-delay-default", sldFrameTime.Value
     
     'JPEG XL-specific settings follow
-    cParams.AddParam "jxl-quality", sldQuality.Value
+    cParams.AddParam "jxl-lossy-quality", sldQuality.Value
     cParams.AddParam "jxl-effort", sldEffort.Value
     
     GetExportParamString = cParams.GetParamString
@@ -597,6 +629,12 @@ Private Sub RenderAnimationFrame()
     If (m_tmpAnimationFrame Is Nothing) Then Exit Sub
     If (m_FrameCount <= 0) Or (m_SrcImage Is Nothing) Then Exit Sub
     
+    'Ensure our frame preview collection exists
+    If (m_numFramePreviews <> m_FrameCount) Then
+        m_numFramePreviews = m_FrameCount
+        ReDim m_jxlFrames(0 To m_numFramePreviews - 1) As PD_JXLFramePreview
+    End If
+    
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()
     
@@ -624,24 +662,60 @@ Private Sub RenderAnimationFrame()
         ' no way to do this efficiently, so we must pay the full penalty of round-tripping each frame through
         ' a full pdDIB > PNG > JXL > PNG > pdDIB iteration (sigh).
         
+        'Generate a specially crafted settings string
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
+        cParams.AddParam "jxl-lossy-quality", sldQuality.Value, True, True
+        cParams.AddParam "jxl-effort", 1&, True, True       'Always use minimal (fastest) effort for animations
+        
         'If lossy compression is being used, generate a preview of the compression.  (Note that JPEG XL treats
         ' a compression value of 90 as "visually lossless", which is why we don't bother with lossy compression
         ' until quality drops *below* 90.)
         If (sldQuality.Value < 90) Then
             
-            'Generate a specially crafted settings string
-            Dim cParams As pdSerialize
-            Set cParams = New pdSerialize
-            cParams.AddParam "jxl-quality", sldQuality.Value, True, True
-            cParams.AddParam "jxl-effort", 1&, True, True       'Always use minimal (fastest) effort for animations
+            'Generate a temporary PNG for this frame, as necessary
+            If (LenB(m_jxlFrames(idxFrame).pathToPNG) = 0) Then
+                m_jxlFrames(idxFrame).pathToPNG = OS.UniqueTempFilename(customExtension:="png")
+                Saving.QuickSaveDIBAsPNG m_jxlFrames(idxFrame).pathToPNG, m_tmpAnimationFrame, dontCompress:=True
+            End If
             
-            'Apply the compression (this may take awhile)
-            Plugin_jxl.PreviewSingleFrameAsJXL m_tmpAnimationFrame, m_tmpAnimationFrame, cParams.GetParamString()
+            'Apply the compression as necessary (this may take awhile)
+            If (m_jxlFrames(idxFrame).settingsForPreviews <> cParams.GetParamString()) Then
+            
+                Plugin_jxl.PreviewSingleFrameAsJXL m_jxlFrames(idxFrame).pathToPNG, m_tmpAnimationFrame, cParams.GetParamString()
+                
+                'Cache a local copy of the animation frame (so we don't have to generate it again unless settings change)
+                If (m_jxlFrames(idxFrame).jxlPreviewDIB Is Nothing) Then Set m_jxlFrames(idxFrame).jxlPreviewDIB = New pdDIB
+                m_jxlFrames(idxFrame).jxlPreviewDIB.CreateFromExistingDIB m_tmpAnimationFrame
+                
+                'Same for settings (this is how we detect when we need to generate a new preview)
+                m_jxlFrames(idxFrame).settingsForPreviews = cParams.GetParamString()
+                
+            End If
+            
+        Else
+            
+            'See if the previous preview string is different
+            If (m_jxlFrames(idxFrame).settingsForPreviews <> cParams.GetParamString()) Then
+                
+                'If the preview string has changed, copy over the current frame as-is
+                With m_jxlFrames(idxFrame)
+                    Set .jxlPreviewDIB = New pdDIB
+                    .jxlPreviewDIB.CreateFromExistingDIB m_tmpAnimationFrame
+                    .settingsForPreviews = cParams.GetParamString()
+                End With
+                
+            End If
             
         End If
         
-        'Paint the previewed compression frame onto the underlying frame object
-        m_tmpAnimationFrame.AlphaBlendToDC m_AniFrame.GetDIBDC
+        'Normally we would paint the previewed compression frame (in m_tmpAnimationFrame)
+        ' onto the underlying frame object here, but for this format, we instead use a persistent
+        ' collection of generated frames because they are so expensive to generate.
+        m_jxlFrames(idxFrame).jxlPreviewDIB.AlphaBlendToDC m_AniFrame.GetDIBDC
+        
+        'Resources can be problematic on huge animations
+        m_jxlFrames(idxFrame).jxlPreviewDIB.SuspendDIB autoKeepIfLarge:=False
         
         'Paint the final result to the screen, as relevant
         picPreview.CopyDIB m_AniFrame, False, True, True, True

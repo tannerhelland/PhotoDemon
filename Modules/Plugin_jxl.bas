@@ -284,7 +284,7 @@ Public Function ConvertJXLtoImageFile(ByRef srcFile As String, ByRef dstFile As 
         If JXL_DEBUG_VERBOSE Then DebugMsg "JXL format found.  Proceeding with conversion..."
         
         'Ensure the destination filename includes a recognizable format; if it does not, libjxl will choke
-        If (Files.FileGetExtension(dstFile) <> "png") And (Files.FileGetExtension(dstFile) <> "jpg") Then
+        If (Files.FileGetExtension(dstFile) <> "png") And (Files.FileGetExtension(dstFile) <> "apng") And (Files.FileGetExtension(dstFile) <> "jpg") Then
             InternalError FUNC_NAME, "bad extension"
             Exit Function
         End If
@@ -563,9 +563,132 @@ End Function
 
 'Preview a single frame as compressed to JXL format, using the passed compression settings.
 ' This is typically used to generate previews in export dialogs.  Speed is emphasized wherever possible.
-' It's OK to pass identical source and destination frame objects.
-Public Function PreviewSingleFrameAsJXL(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef srcOptions As String) As Boolean
+' (Per the name, do *not* pass an animated source file to this function!)
+Public Function PreviewSingleFrameAsJXL(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef srcOptions As String) As Boolean
 
+    Const FUNC_NAME As String = "PreviewSingleFrameAsJXL "
+    PreviewSingleFrameAsJXL = False
+    On Error GoTo PreviewFailed
+    
+    'Failsafe check
+    If (Not Plugin_jxl.IsJXLExportAvailable()) Then Exit Function
+    
+    'Second failsafe check
+    Dim pluginExeAndPath As String
+    pluginExeAndPath = PluginManager.GetPluginPath() & "cjxl.exe"
+    If (Not Files.FileExists(pluginExeAndPath)) Then Exit Function
+    
+    'Failsafe check on input
+    If (Not Files.FileExists(srcFile)) Then Exit Function
+    
+    'Ensure the source filename includes a recognizable format; if it does not, libjxl will choke
+    If (Files.FileGetExtension(srcFile) <> "png") And (Files.FileGetExtension(srcFile) <> "apng") And (Files.FileGetExtension(srcFile) <> "jpg") Then
+        InternalError FUNC_NAME, "bad extension"
+        Exit Function
+    End If
+    
+    'Start by constructing a command-line string
+    Dim shellCmd As pdString
+    Set shellCmd = New pdString
+    shellCmd.Append "cjxl.exe "
+    
+    'Input first (note the use of quotes to ensure safety with space-containing paths.)
+    shellCmd.Append """"
+    shellCmd.Append srcFile
+    shellCmd.Append """ "
+    
+    'Output next
+    Dim dstFile As String
+    dstFile = OS.UniqueTempFilename(customExtension:="jxl")
+    
+    shellCmd.Append """"
+    shellCmd.Append dstFile
+    shellCmd.Append """"
+    
+    'Retrieve parameters from incoming string.  Magic-number constants are taken directly from libjxl via "cjxl.exe -h"
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString srcOptions
+    
+    Dim jxlParamLossless As Boolean, jxlParamQuality As Single, jxlParamEffort As Long
+    jxlParamLossless = cParams.GetBool("jxl-lossless", False, True)
+    jxlParamQuality = cParams.GetSingle("jxl-lossy-quality", 90!, True)
+    
+    'Normally, we would pull effort like this...
+    'jxlParamEffort = cParams.GetLong("jxl-effort", 7)
+    '...but for previews, we want minimal effort to improve speed
+    jxlParamEffort = 1
+    
+    'Sanity check inputs.  Again, magic-number constants are taken directly from libjxl via "cjxl.exe -h"
+    If (jxlParamQuality < 0!) Then jxlParamQuality = 0!
+    If (jxlParamQuality > 100!) Then jxlParamQuality = 100!
+    
+    If (jxlParamEffort < 1) Then jxlParamEffort = 1
+    If (jxlParamEffort > 9) Then jxlParamEffort = 9
+    
+    'Append parameters to shell string
+    shellCmd.Append " "
+    If jxlParamLossless Then
+        shellCmd.Append "-q 100"
+    Else
+        shellCmd.Append "-q " & Trim$(Str$(jxlParamQuality))
+    End If
+    
+    shellCmd.Append " "
+    shellCmd.Append " -e " & Trim$(Str$(jxlParamEffort))
+    
+    If JXL_DEBUG_VERBOSE Then PDDebug.LogAction "Shelling libjxl..."
+    PDDebug.LogAction shellCmd.ToString()
+    
+    'Shell plugin and capture output for analysis
+    Dim outputString As String
+    
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
+    If cShell.RunAndCaptureOutput(pluginExeAndPath, shellCmd.ToString(), False) Then
+        
+        'For reasons I do not fathom, libjxl writes all state data to stderr only
+        ' (including normal success reporting *facepalm*)
+        outputString = cShell.GetStdErrDataAsString()
+        If JXL_DEBUG_VERBOSE Then PDDebug.LogAction "cjxl.exe returned: " & outputString
+        
+        'On a successful export, a line should appear in the output like:
+        ' "Compressed to 1234 bytes (0.123 bpp)."
+        PreviewSingleFrameAsJXL = (InStr(1, outputString, "Compressed to ", vbTextCompare) > 0)
+    
+    End If
+    
+    If (Not PreviewSingleFrameAsJXL) And JXL_DEBUG_VERBOSE Then
+        InternalError FUNC_NAME, "failed to generate jxl file"
+        Exit Function
+    End If
+    
+    'If we're still here, we now have a JXL file with the compression settings applied.
+    ' We now need to convert that file to some other standardized format (currently PNG)
+    Dim tmpFilename As String
+    tmpFilename = OS.UniqueTempFilename(customExtension:="png")
+    PreviewSingleFrameAsJXL = ConvertJXLtoImageFile(dstFile, tmpFilename)
+    
+    'Hopefully that worked...
+    If (Not PreviewSingleFrameAsJXL) And JXL_DEBUG_VERBOSE Then
+        InternalError FUNC_NAME, "failed to decode jxl file"
+        Exit Function
+    End If
+    
+    'Free the temporary JXL file
+    Files.FileDeleteIfExists dstFile
+    
+    'Load the final PNG file to a pdDIB object
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB Else dstDIB.ResetDIB 0
+    PreviewSingleFrameAsJXL = Loading.QuickLoadImageToDIB(tmpFilename, dstDIB, False, False)
+    Files.FileDeleteIfExists tmpFilename
+    
+    Exit Function
+    
+PreviewFailed:
+    PreviewSingleFrameAsJXL = False
+    InternalError FUNC_NAME, "terminating due to error"
+    
 End Function
 
 'Save an arbitrary DIB to a standalone JPEG XL file.
@@ -659,11 +782,11 @@ Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As
         'Ask the user for permission to (attempt) download
         Dim uiMsg As pdString
         Set uiMsg = New pdString
-        uiMsg.AppendLine g_Language.TranslateMessage("JPEG XL (JXL) is a potential next-generation replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that permanently enables JPEG XL support.")
+        uiMsg.AppendLine g_Language.TranslateMessage("JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.")
         uiMsg.AppendLineBreak
-        uiMsg.AppendLine g_Language.TranslateMessage("The libjxl library provides free, open-source JPEG XL encoders and decoders.  Portable copies of these tools require roughly ~%1 mb of disk space.  Once downloaded, they will allow PhotoDemon to import and export JPEG XL files.", 5)
+        uiMsg.AppendLine g_Language.TranslateMessage("The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).", 5)
         uiMsg.AppendLineBreak
-        uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?")
+        uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?")
         
         Dim msgReturn As VbMsgBoxResult
         msgReturn = PDMsgBox(uiMsg.ToString, vbInformation Or vbYesNoCancel, "Download required")
@@ -672,13 +795,7 @@ Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As
             'On a NO response, provide additional feedback.
             If (msgReturn = vbNo) Then
                 uiMsg.Reset
-                uiMsg.AppendLine g_Language.TranslateMessage("PhotoDemon will not download the JPEG XL libraries at this time.")
-                uiMsg.AppendLineBreak
-                uiMsg.AppendLine g_Language.TranslateMessage("To manually enable JPEG XL support, you can download the latest copies of the free ""%1"" and ""%2"" programs and place them into your PhotoDemon plugin folder:", "cjxl.exe", "djxl.exe")
-                uiMsg.AppendLine PluginManager.GetPluginPath()
-                uiMsg.AppendLineBreak
-                uiMsg.AppendLine g_Language.TranslateMessage("These free libraries are typically available at the libjxl release page:")
-                uiMsg.Append "https://github.com/libjxl/libjxl/releases"
+                uiMsg.AppendLine g_Language.TranslateMessage("PhotoDemon will not download libjxl at this time.")
                 PDMsgBox uiMsg.ToString, vbInformation Or vbOKOnly, "Download canceled"
             End If
             
