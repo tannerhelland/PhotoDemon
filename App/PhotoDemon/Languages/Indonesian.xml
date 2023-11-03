@@ -6,7 +6,7 @@
 
 <langid>indo-ID</langid>
 <langname>Indonesian</langname>
-<langversion>8.9.1712</langversion>
+<langversion>8.9.1713</langversion>
 <langstatus>90% complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -80,6 +80,11 @@
 
 <phrase>
 <original>Export animated GIF</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export animated JPEG XL</original>
 <translation></translation>
 </phrase>
 
@@ -1333,7 +1338,7 @@
 <translation>bersih baru-baru ini Daftar Gambar</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1820,7 +1825,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Menyimpan Tidak Dapat Di Selesaikan Tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 19 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2683,11 +2688,26 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>unknown</original>
+<original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation></translation>
 </phrase>
 
-<!-- Plugin_jxl.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download libjxl at this time.</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -2719,7 +2739,7 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3505,6 +3525,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Menginisialisasi pembaruan perangkat lunak (fitur ini dapat dinonaktifkan dari alat -> Pilihan)</translation>
 </phrase>
@@ -3529,7 +3554,7 @@ Please masukkan nilai berangka.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4837,6 +4862,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated JPEG XL</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Animated PNG</original>
 <translation></translation>
 </phrase>
@@ -5694,7 +5724,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10464,7 +10494,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
 <translation></translation>
 </phrase>
 
@@ -10765,7 +10795,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JXL.frm contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -13936,6 +13966,11 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
+<original>a JPEG XL image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This library does not ship with PhotoDemon.</original>
 <translation></translation>
 </phrase>
@@ -13945,7 +13980,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 48 phrases. 24 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14026,12 +14061,19 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5569 phrases. -->
-<!-- 2912 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 11509 total words. -->
+<!-- As of this build, PhotoDemon contains 5597 phrases. -->
+<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>
