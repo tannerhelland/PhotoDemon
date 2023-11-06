@@ -102,9 +102,18 @@ DamnThisPCisOld:
     ' where m_IsProgramRunning is declared.
     m_IsProgramRunning = True
     
+    'In the past, PhotoDemon would manually enable DEP in an attempt to satisfy various virus scanners.
+    ' (I never tested this empirically to see if it made a difference.)
+    '
+    'In 2023 I was notified that DEP breaks many legacy 3rd-party Photoshop plugins.  Ideally, I would write a
+    ' separate non-DEP .exe that runs Photoshop plugins and then communicates results back to PD itself,
+    ' but at present it's much easier for me to simply disable DEP in PD itself as I have no empirical evidence
+    ' that manually enabling DEP makes any difference to end-users.
+    
+    'CURRENTLY DISABLED PER COMMENT ABOVE:
     'On Win 7+, manually enable DEP.  This may decrease issues with low-quality 3rd-party virus
     ' and malware scanners, and PD works just fine with DEP enabled.
-    OS.EnableProcessDEP
+    'OS.EnableProcessDEP
     
     'FormMain can now be loaded.  (We load it first, because many initialization steps silently interact with it,
     ' like loading menu icons or prepping toolboxes.)  That said, the first step of FormMain's load process is calling
