@@ -621,9 +621,8 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         
         Dim xStride As Long, gValue As Byte, aValue As Byte
         
-        'Create a lookup table of possible grayscale values
-        Dim gLookup() As Byte
-        ReDim gLookup(0 To 255) As Byte
+        'Create a lookup table of possible grayscale values, already premultiplied
+        Dim gLookup(0 To 255) As Byte
         For x = 0 To 255
             gLookup(x) = Int(CDbl(x) * (CDbl(x) / 255#))
         Next x

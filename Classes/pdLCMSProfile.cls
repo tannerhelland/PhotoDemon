@@ -113,6 +113,10 @@ Friend Function HasProfile() As Boolean
     HasProfile = (m_ProfileHandle <> 0)
 End Function
 
+Friend Function IsGrayProfile() As Boolean
+    IsGrayProfile = (Me.GetColorSpace = cmsSigGray)
+End Function
+
 Friend Function ReleaseProfile() As Boolean
     ReleaseProfile = LittleCMS.LCMS_CloseProfileHandle(m_ProfileHandle)
     If ReleaseProfile Then m_ProfileHandle = 0

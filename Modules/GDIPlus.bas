@@ -1888,44 +1888,105 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
     ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
-    If (Not isCMYK) And (Not imgHasIccProfile) Then
+    If (Not isCMYK) And imgHasIccProfile Then
         
         PDDebug.LogAction "Applying color management to GDI+ image..."
         
         Set srcProfile = New pdLCMSProfile
         Set dstProfile = New pdLCMSProfile
         
+        Dim srcFormat As LCMS_PIXEL_FORMAT
+        
+        'Test the embedded profile for basic validity
         If srcProfile.CreateFromPDICCObject(embeddedProfile) Then
-            If dstProfile.CreateSRGBProfile() Then
+            
+            'Look for grayscale profiles.  If the source image was grayscale, it will have already been converted
+            ' to RGB/A - but if it contained an ICC profile in grayscale mode (alongside the gray data), we need
+            ' to apply special handling, because LittleCMS does not support applying gray-mode profiles to RGB pixels.
+            If srcProfile.IsGrayProfile Then
                 
-                Dim srcFormat As LCMS_PIXEL_FORMAT
-                If (dstDIB.GetDIBColorDepth = 24) Then srcFormat = TYPE_BGR_8 Else srcFormat = TYPE_BGRA_8
+                'Ensure alpha channel existence
+                If (dstDIB.GetDIBColorDepth = 24) Then dstDIB.ConvertTo32bpp
+                dstDIB.SetAlphaPremultiplication False
                 
-                Set cTransform = New pdLCMSTransform
-                If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
+                'Make a temporary copy of the base image in 8-bpp grayscale
+                Dim tmpBytes() As Byte
+                DIBs.GetDIBGrayscaleMap dstDIB, tmpBytes, False
+                
+                'Create a destination linear gray profile
+                If dstProfile.CreateGenericGrayscaleProfile() Then
                     
-                    '32-bpp images need to be unpremultiplied, but if the source image didn't contain any alpha
-                    ' (e.g. JPEGs), then this step is pointless as the target image has all-255 for its alpha channel.
-                    If (dstDIB.GetAlphaPremultiplication And imgHasAlpha) Then dstDIB.SetAlphaPremultiplication False
+                    'Convert source gray bytes to linear gray bytes
+                    srcFormat = TYPE_GRAY_8
                     
-                    Set srcProfile = Nothing: Set dstProfile = Nothing
-                    cmSuccessful = cTransform.ApplyTransformToPDDib(dstDIB)
+                    Set cTransform = New pdLCMSTransform
+                    If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
+                        
+                        cmSuccessful = cTransform.ApplyTransformToArbitraryMemory(VarPtr(tmpBytes(0, 0)), VarPtr(tmpBytes(0, 0)), dstDIB.GetDIBWidth, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth, False)
+                        
+                        'On a successful transform, copy the newly transformed gray data back into a standard RGBA object
+                        If cmSuccessful Then
+                            
+                            PDDebug.LogAction "Copying newly transformed gray data..."
+                            
+                            'Alpha is already premultiplied because we assume a fully opaque image (JPEGs don't support alpha)
+                            DIBs.CreateDIBFromGrayscaleMap dstDIB, tmpBytes, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
+                            dstDIB.SetColorManagementState cms_ProfileConverted
+                            dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                            
+                        End If
+                        
+                        Set cTransform = Nothing
                     
-                    If cmSuccessful Then
-                        PDDebug.LogAction "Copying newly transformed sRGB data..."
-                        dstDIB.SetColorManagementState cms_ProfileConverted
-                        dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
-                        dstDIB.SetAlphaPremultiplication True
+                    '/Failed to create gray transform; source transform is likely bugged in some way
                     End If
                     
-                    Set cTransform = Nothing
-                    
-                Else
-                    PDDebug.LogAction "WARNING!  Image could not be color-managed; color space mismatch is a likely explanation."
                 End If
+                
+                'Free local grayscale copy of image
+                Erase tmpBytes
+                
+            'Source profile is non-grayscale, so we can proceed normally
+            Else
+                
+                'Ensure we can create a successful destination sRGB profile (failsafe check only)
+                If dstProfile.CreateSRGBProfile() Then
+                    
+                    If (dstDIB.GetDIBColorDepth = 24) Then srcFormat = TYPE_BGR_8 Else srcFormat = TYPE_BGRA_8
+                    
+                    Set cTransform = New pdLCMSTransform
+                    If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
+                        
+                        '32-bpp images need to be unpremultiplied, but if the source image didn't contain any alpha
+                        ' (e.g. JPEGs), then this step is pointless as the target image has all-255 for its alpha channel.
+                        If (dstDIB.GetAlphaPremultiplication And imgHasAlpha) Then dstDIB.SetAlphaPremultiplication False
+                        
+                        Set srcProfile = Nothing: Set dstProfile = Nothing
+                        cmSuccessful = cTransform.ApplyTransformToPDDib(dstDIB)
+                        
+                        If cmSuccessful Then
+                            PDDebug.LogAction "Copying newly transformed sRGB data..."
+                            dstDIB.SetColorManagementState cms_ProfileConverted
+                            dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                            dstDIB.SetAlphaPremultiplication True
+                        End If
+                        
+                        Set cTransform = Nothing
+                        
+                    Else
+                        PDDebug.LogAction "WARNING!  Image could not be color-managed; color space mismatch is a likely explanation."
+                    End If
+                
+                '/created dst color profile successfully
+                End If
+            
+            '/source profile is gray vs colro
             End If
-        End If
         
+        '/source profile object created successfully
+        End If
+    
+    '/source image has embedded color profile
     End If
     
     'Return success!
