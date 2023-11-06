@@ -542,7 +542,7 @@ Private Sub CollectAllVersionNumbers()
     'Remove trailing build numbers from certain version strings.
     Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_libavif) And (i <> CCP_resvg) And (i <> CCP_libjxl) Then
+        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_libavif) And (i <> CCP_resvg) And (i <> CCP_libjxl) And (i <> CCP_CharLS) Then
             If (LenB(m_LibraryVersion(i)) <> 0) Then
                 dotPos = InStrRev(m_LibraryVersion(i), ".", -1, vbBinaryCompare)
                 If (dotPos <> 0) Then m_LibraryVersion(i) = Left$(m_LibraryVersion(i), dotPos - 1)
