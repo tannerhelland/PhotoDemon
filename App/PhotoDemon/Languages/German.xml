@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.114</langversion>
+<langversion>9.2.207</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -85,7 +85,7 @@
 
 <phrase>
 <original>Export animated JPEG XL</original>
-<translation></translation>
+<translation>Animiertes JPEG XL exportieren</translation>
 </phrase>
 
 <phrase>
@@ -2559,12 +2559,12 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation>AVIF ist ein modernes Bildformat, entwickelt von der Alliance for Open Media. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das die AVIF-Unterstützung permanent aktiviert.</translation>
+<translation>AVIF ist ein modernes Bildformat, entwickelt von der Alliance for Open Media. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das AVIF-Unterstützung permanent aktiviert.</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation>Die Alliance for Open Media stellt kostenlose, quelloffene 64-Bit-AVIF-Encoder- und Decoder-Bibliotheken zur Verfügung. Diese Bibliotheken sind jeweils ungefähr %1 MB groß (ca. %2 MB total). Einmal heruntergeladen, werden diese PhotoDemon erlauben, AVIF-Dateien auf jedem 64-Bit-System zu importieren und exportieren.</translation>
+<translation>Die Alliance for Open Media stellt kostenlose, quelloffene 64-Bit-AVIF-Encoder- und Decoder-Bibliotheken zur Verfügung. Diese Bibliotheken sind jeweils ~%1 MB groß (~%2 MB total). Einmal heruntergeladen, werden diese PhotoDemon erlauben, AVIF-Dateien auf jedem 64-Bit-System zu importieren und exportieren.</translation>
 </phrase>
 
 <phrase>
@@ -2584,12 +2584,12 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation>Um die AVIF-Unterstützung manuell zu aktivieren, können Sie die neuesten Kopien der kostenlosen Programme "%1" und "%2" herunterladen und diese in Ihrem PhotoDemon-Plug-in-Ordner platzieren</translation>
+<translation>Um AVIF-Unterstützung manuell zu aktivieren, können Sie die neuesten Kopien der kostenlosen Programme "%1" und "%2" herunterladen und diese in Ihrem PhotoDemon-Plug-in-Ordner platzieren</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation>Diese freien Bibliotheken sind immer verfügbar auf der libavif-Release-Seite der Alliance for Open Media</translation>
+<translation>Diese kostenlosen Bibliotheken sind immer verfügbar auf der libavif-Release-Seite der Alliance for Open Media</translation>
 </phrase>
 
 <phrase>
@@ -2698,22 +2698,22 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL (JXL) ist ein moderner Ersatz für das JPEG-Bildformat. PhotoDemon unterstützt JPEG XL-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das JPEG XL-Unterstützung hinzufügt.</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>Die libjxl-Bibliothek bietet kostenlose, quelloffene JPEG XL-Kompatibilität. Eine portable Kopie von libjxl erfordert ~%1 MB an Speicherplatz. Einmal heruntergeladen, kann PhotoDemon libjxl verwenden, um JPEG-XL-Bilder (einschließlich Animationen) zu laden und zu speichern.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Möchten Sie, dass PhotoDemon libjxl in Ihren PhotoDemon-Plug-in-Ordner herunterlädt?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon wird libjxl zum jetzigen Zeitpunkt nicht herunterladen.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -4877,7 +4877,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Animated JPEG XL</original>
-<translation></translation>
+<translation>Animiertes JPEG XL</translation>
 </phrase>
 
 <phrase>
@@ -13985,7 +13985,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>Ein JPEG XL-Bild</translation>
 </phrase>
 
 <phrase>
@@ -14081,7 +14081,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>Aufwand</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
