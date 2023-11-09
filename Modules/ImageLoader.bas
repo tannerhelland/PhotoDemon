@@ -941,43 +941,14 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
-    ' copying of the official libavif exe binaries (for example,
-    ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
-    '...into the /App/PhotoDemon/Plugins subfolder.
-    Dim potentialAVIF As Boolean
-    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
-    If potentialAVIF Then
-        
-        'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
-        If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
-            If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo LibAVIFDidntWork
+    'AVIF support was added in v9.0.
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadAVIF(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_libavif
+            dstImage.SetOriginalFileFormat PDIF_AVIF
         End If
-        
-        If Plugin_AVIF.IsAVIFImportAvailable() Then
-        
-            'It's an ugly workaround, but necessary; convert the AVIF into a temporary image file
-            ' in a supported format (currently PNG).
-            Dim tmpFile As String
-            CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
-            
-            'If that worked, load the intermediary image (PNG format) using the relevant decoder
-            If CascadeLoadGenericImage Then CascadeLoadGenericImage = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
-            
-            'Regardless of outcome, kill the temp file
-            Files.FileDeleteIfExists tmpFile
-            
-            'If succcessful, flag the image format and return
-            If CascadeLoadGenericImage Then
-                decoderUsed = id_libavif
-                dstImage.SetOriginalFileFormat PDIF_AVIF
-            End If
-            
-        End If
-        
     End If
-    
-LibAVIFDidntWork:
     
     'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
     ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
@@ -1197,6 +1168,51 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             
     End Select
+    
+End Function
+
+Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+    
+    LoadAVIF = False
+    On Error GoTo LibAVIFDidntWork
+    
+    'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and a copy of the official
+    ' exe binaries (for example, https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0) inside the
+    ' /App/PhotoDemon/Plugins subfolder.  PhotoDemon will offer to automatically download and configure a
+    ' portable copy if the user interacts with the AVIF format in some way (import/export).
+    Dim potentialAVIF As Boolean
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+    If potentialAVIF Then
+        
+        'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
+        If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+            If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then Exit Function
+        End If
+        
+        If Plugin_AVIF.IsAVIFImportAvailable() Then
+        
+            'It's an ugly workaround, but necessary; convert the AVIF to a temporary image file
+            ' in a format we can directly process (currently PNG).
+            Dim tmpFile As String
+            LoadAVIF = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
+            
+            'If that worked, load the intermediary image (PNG format) using the relevant decoder
+            If LoadAVIF Then LoadAVIF = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
+            
+            'Regardless of outcome, kill the temp file
+            Files.FileDeleteIfExists tmpFile
+            
+            'If succcessful, flag the image format and return
+            If LoadAVIF Then dstImage.SetOriginalFileFormat PDIF_AVIF
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+LibAVIFDidntWork:
+    LoadAVIF = False
     
 End Function
 
