@@ -73,7 +73,7 @@ End Function
 
 'Provide a common dialog that allows the user to retrieve a single image filename, which the calling function can
 ' then use as it pleases.
-Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String, ByVal ownerHwnd As Long) As Boolean
+Public Function PhotoDemon_OpenImageDialog_SingleFile(ByRef userImagePath As String, ByVal ownerHwnd As Long) As Boolean
 
     'Disable user input until the dialog closes
     Interface.DisableUserInput
@@ -86,8 +86,9 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     Dim tempPathString As String
     tempPathString = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
         
-    'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If openDialog.GetOpenFileName(userImagePath, , True, False, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
+    'Launch a common dialog instance, but restrict multi-file selection.
+    PhotoDemon_OpenImageDialog_SingleFile = openDialog.GetOpenFileName(userImagePath, , True, False, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd)
+    If PhotoDemon_OpenImageDialog_SingleFile Then
         
         'Save the new directory as the default path for future usage
         tempPathString = Files.FileGetPath(userImagePath)
@@ -95,14 +96,6 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         UserPrefs.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
-        
-        'All done!
-        PhotoDemon_OpenImageDialog_Simple = True
-        
-    'If the user cancels the common dialog box, simply exit out
-    Else
-        
-        PhotoDemon_OpenImageDialog_Simple = False
         
     End If
         

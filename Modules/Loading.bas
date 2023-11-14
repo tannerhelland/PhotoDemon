@@ -651,7 +651,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
-        Case "PNG"
+        Case "PNG", "APNG"
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
             loadSuccessful = (cPNG.LoadPNG_Simple(imagePath, tmpPDImage, targetDIB) < png_Failure)

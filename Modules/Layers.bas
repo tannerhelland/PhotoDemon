@@ -3,8 +3,8 @@ Attribute VB_Name = "Layers"
 'Layer Interface
 'Copyright 2014-2023 by Tanner Helland
 'Created: 24/March/14
-'Last updated: 20/January/22
-'Last update: new AddLayerViaSelection() function, for conveniently creating a layer from a selection region
+'Last updated: 14/November/23
+'Last update: new support for adding multiple layers from file at once (Layers > Add > from File...)
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -503,120 +503,177 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
 
 End Function
 
-'Load an image file, and add it to the current image as a new layer
-Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False) As Boolean
+'Load an image file, and add it to the current image as a new layer.
+' NOTE: this function is called from a lot of places!  Drag/drop, Edit > Paste, Layers > Replace layer, Layers > Add from file.
+' Each of these paths has slightyl different considerations (e.g. Layers > Add from File can add multiple layers at once).
+Public Function LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False) As Boolean
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
+    Dim listOfFiles As pdStringStack
     
     'If showDialog is TRUE, we need to get a file path from the user
-    If ShowDialog Then
+    If showDialog Then
     
-        'Retrieve a filepath
-        Dim imgFilePath As String
-        LoadImageAsNewLayer = FileMenu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd)
-        If LoadImageAsNewLayer Then
-            If replaceActiveLayerInstead Then
-                Process "Replace layer from file", False, imgFilePath, UNDO_Layer
+        'Retrieve one (or more) files from a common dialog.  Note that "Replace layer from file"
+        ' only allows a single image, while "New layer from file" allows multi-select.
+        Dim imgListCondensed As String
+        If replaceActiveLayerInstead Then
+            
+            'Ask for a single file
+            LoadImageAsNewLayer = FileMenu.PhotoDemon_OpenImageDialog_SingleFile(imgListCondensed, FormMain.hWnd)
+            If LoadImageAsNewLayer Then
+                Process "Replace layer from file", False, imgListCondensed, UNDO_Layer
             Else
-                Process "New layer from file", False, imgFilePath, UNDO_Image_VectorSafe
+                Exit Function
             End If
+        
+        'Multi-select version
+        Else
+            
+            'Ask for as many files as the user wants
+            LoadImageAsNewLayer = FileMenu.PhotoDemon_OpenImageDialog(listOfFiles, FormMain.hWnd)
+            If LoadImageAsNewLayer Then
+            
+                'Serialize the stack to a single string object, then continue processing
+                imgListCondensed = listOfFiles.SerializeStackToSingleString()
+                Process "New layer from file", False, imgListCondensed, UNDO_Image_VectorSafe
+                
+            Else
+                Exit Function
+            End If
+            
         End If
-    
+        
     'If showDialog is FALSE, the user has already selected a file, and we just need to load it
     Else
     
         'Prepare a temporary DIB
         Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
         
-        'Load the file in question
-        LoadImageAsNewLayer = Loading.QuickLoadImageToDIB(imagePath, tmpDIB)
-        If LoadImageAsNewLayer Then
+        'We now have two branches:
+        ' 1) "New layer from file"
+        '     - This supports loading a whole bunch of files at once
+        ' 2) "Replace layer from file"
+        '     - This supports loading just ONE file at a time
+        
+        'REPLACE active layer
+        If replaceActiveLayerInstead Then
             
-            'Forcibly convert the new layer to 32bpp
-            ' (failsafe only; it should already be in 32-bpp mode from the loader)
-            If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
-            
-            'We now have two pathways (because this function can create a new layer from file,
-            ' or simply update an existing layer's contents with an image file's contents)
-            
-            'If we are just replacing the current layer, this step is easier
-            If replaceActiveLayerInstead Then
+            'Load the image file, and treat it as a single layer (if the source is multi-layer)
+            Set tmpDIB = New pdDIB
+            LoadImageAsNewLayer = Loading.QuickLoadImageToDIB(imagePath, tmpDIB)
+            If LoadImageAsNewLayer Then
                 
-                'Easy-peasy - just replace the current layer's contents with the contents from the newly loaded file
+                'Forcibly convert the new layer to 32bpp
+                ' (failsafe only; it should already be in 32-bpp mode from the loader)
+                If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
+                
+                'Easy-peasy - replace the current layer's backing surface with the contents of the newly loaded file
                 PDImages.GetActiveImage.GetActiveLayer.SetLayerDIB tmpDIB
                 PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
                 
-            'If we are creating a new layer from scratch, the process is a bit more complicated.
+            'Failed to load the source image; the load function will have raised any relevant error UI
             Else
-                
-                'Ask the current image to prepare a blank layer for us
-                Dim newLayerID As Long
-                newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
-                
-                'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
-                If (LenB(customLayerName) = 0) Then
-                    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
-                Else
-                    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB
-                End If
-                
-                'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
-                ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
-                ' (Note that the caller can override this by supplying their own coordinates; if they do this,
-                ' we'll still validate the requested position to ensure it fits nicely in the current viewport.)
-                
-                'Start by retrieving the current top-left position of the canvas, in *image* coordinates
-                Dim newX As Double, newY As Double, safeX As Double, safeY As Double
-                If (Not PDImages.GetActiveImage Is Nothing) Then
-                    Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
-                    safeX = newX
-                    safeY = newY
-                Else
-                    newX = 0
-                    newY = 0
-                End If
-                
-                'If the caller passed in their own x and/or y value, validate each value before replacing
-                ' our auto-calculated position
-                If (xOffset <> LONG_MAX) Then
-                    
-                    newX = xOffset
-                    
-                    'Make sure the newly placed layer doesn't lie off-canvas.  (This is a risk with drag+drop,
-                    ' as the use may drop the layer into blank areas around the image.)
-                    If (newX > PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth) Then newX = PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth
-                    If (newX < 0) Then newX = 0
-                    
-                    'Finally, if our calculated position lies to the left of the current viewport,
-                    ' reposition it accordingly.  (This provides the most intuitive behavior, IMO, as it
-                    ' guarantees the newly created layer will *always* be visible within the current
-                    ' viewport, regardless of where the caller attempted to position it.)
-                    If (newX < safeX) Then newX = safeX
-                    
-                End If
-                
-                'Repeat all the above steps for y
-                If (yOffset <> LONG_MAX) Then
-                    newY = yOffset
-                    If (newY > PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight) Then newY = PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight
-                    If (newY < 0) Then newY = 0
-                    If (newY < safeY) Then newY = safeY
-                End If
-                
-                'Assign the new coordinates to our layer!
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
-                
-                'Notify the parent image that the entire image now needs to be recomposited
-                PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-                
+                PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
             End If
+        
+        'CREATE one or more new layers
+        Else
             
-            'IMPORTANT NOTE: tmpDIB has now been assigned as the backing surface for the new/updated layer.
-            ' Do *not* modify it further (or worse, release it) in this function, because you will be modifying
-            ' the actual layer contents instead of just a temporary surface.
+            'The user may be loading multiple images.  Parse the source file string into a string stack.
+            ' (This step will look for delimiters and safely convert the source string into a stack of filenames.)
+            Set listOfFiles = New pdStringStack
+            listOfFiles.RecreateStackFromSerializedString imagePath
+            
+            Dim i As Long
+            For i = 0 To listOfFiles.GetNumOfStrings - 1
+                
+                imagePath = listOfFiles.GetString(i)
+                
+                'Load the image file, and treat it as a single layer (if the source is multi-layer)
+                Set tmpDIB = New pdDIB
+                LoadImageAsNewLayer = Loading.QuickLoadImageToDIB(imagePath, tmpDIB)
+                If LoadImageAsNewLayer Then
+                    
+                    'Forcibly convert the new layer to 32bpp
+                    ' (failsafe only; it should already be in 32-bpp mode from the loader)
+                    If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
+                    
+                    'Ask the current image to prepare a blank layer for us
+                    Dim newLayerID As Long
+                    newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+                    
+                    'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
+                    If (LenB(customLayerName) = 0) Then
+                        PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, Trim$(Files.FileGetName(imagePath, True)), tmpDIB, True
+                    Else
+                        PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB, True
+                    End If
+                    
+                    'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
+                    ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
+                    ' (Note that the caller can override this by supplying their own coordinates; if they do this,
+                    ' we'll still validate the requested position to ensure it fits nicely in the current viewport.)
+                    
+                    'Start by retrieving the current top-left position of the canvas, in *image* coordinates
+                    Dim newX As Double, newY As Double, safeX As Double, safeY As Double
+                    If (Not PDImages.GetActiveImage Is Nothing) Then
+                        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
+                        safeX = newX
+                        safeY = newY
+                    Else
+                        newX = 0
+                        newY = 0
+                    End If
+                    
+                    'If the caller passed in their own x and/or y value, validate each value before replacing
+                    ' our auto-calculated position
+                    If (xOffset <> LONG_MAX) Then
+                        
+                        newX = xOffset
+                        
+                        'Make sure the newly placed layer doesn't lie off-canvas.  (This is a risk with drag+drop,
+                        ' as the use may drop the layer into blank areas around the image.)
+                        If (newX > PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth) Then newX = PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth
+                        If (newX < 0) Then newX = 0
+                        
+                        'Finally, if our calculated position lies to the left of the current viewport,
+                        ' reposition it accordingly.  (This provides the most intuitive behavior, IMO, as it
+                        ' guarantees the newly created layer will *always* be visible within the current
+                        ' viewport, regardless of where the caller attempted to position it.)
+                        If (newX < safeX) Then newX = safeX
+                        
+                    End If
+                    
+                    'Repeat all the above steps for y
+                    If (yOffset <> LONG_MAX) Then
+                        newY = yOffset
+                        If (newY > PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight) Then newY = PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight
+                        If (newY < 0) Then newY = 0
+                        If (newY < safeY) Then newY = safeY
+                    End If
+                    
+                    'Assign the new coordinates to our layer!
+                    PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
+                    PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
+                    
+                    'Notify the parent image that the entire image now needs to be recomposited
+                    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+                        
+                'Failed to load the source image; the load function will have raised any relevant error UI
+                Else
+                    PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
+                End If
+                
+            'Continue with any other files the user requested
+            Next i
+            
+        '/END replace layer vs create new layer
+        End If
+        
+        'If either layer path was successful, we now need to refresh the UI and create an Undo point
+        If LoadImageAsNewLayer Then
             
             'If the caller wants us to manually create an Undo point, do so now.
             ' (In PD, this is only required when adding images via Drag/Drop, which require a custom pathway.
@@ -637,7 +694,7 @@ Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal 
                         .pcUndoType = UNDO_Layer
                     Else
                         .pcID = g_Language.TranslateMessage("New layer from file")
-                        .pcUndoType = UNDO_Image_VectorSafe
+                        .pcUndoType = UNDO_Image_VectorSafe     'Because layer count has changed, we must generate a full-image undo
                     End If
                     
                 End With
@@ -645,9 +702,10 @@ Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal 
                 If replaceActiveLayerInstead Then
                     PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, PDImages.GetActiveImage.GetActiveLayerID
                 Else
-                    PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, newLayerID
+                    PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall
                 End If
                 
+            '/END create undo point
             End If
             
             'If requested, synchronize the interface to the new image
@@ -662,10 +720,10 @@ Public Function LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal 
                 Message "New layer added successfully."
             End If
         
-        Else
-            PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
+        '/END image data loaded successfully from file failsafe check
         End If
     
+    '/END showDialog true/false
     End If
 
 End Function

@@ -665,7 +665,7 @@ Friend Function SerializeStackToSingleString() As String
         'The first entry in the serialized string is always the string count
         Dim finalString As pdString
         Set finalString = New pdString
-        finalString.Append CStr(m_NumOfStrings)
+        finalString.Append Trim$(Str$(m_NumOfStrings))
         
         Dim tstPipeString As String: tstPipeString = "|"
         Dim rplPipeString As String: rplPipeString = "&pipe;"
@@ -674,7 +674,7 @@ Friend Function SerializeStackToSingleString() As String
         For i = 0 To m_NumOfStrings - 1
             finalString.Append tstPipeString
             If (InStr(1, m_Strings(i), tstPipeString, vbBinaryCompare) <> 0) Then
-                finalString.Append Replace$(m_Strings(i), tstPipeString, rplPipeString, , , vbBinaryCompare)
+                finalString.Append Replace$(m_Strings(i), tstPipeString, rplPipeString, Compare:=vbBinaryCompare)
             Else
                 finalString.Append m_Strings(i)
             End If
@@ -698,20 +698,28 @@ Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As 
     If (InStr(1, srcString, tstPipeString, vbBinaryCompare) <> 0) Then
     
         Dim stringArray() As String
-        stringArray = Split(srcString, tstPipeString, , vbBinaryCompare)
+        stringArray = Split(srcString, tstPipeString, -1, vbBinaryCompare)
         
-        m_NumOfStrings = CLng(stringArray(LBound(stringArray)))
+        Dim localNumOfStrings As Long
+        localNumOfStrings = CLng(stringArray(LBound(stringArray)))
         
         Dim i As Long
-        For i = 0 To m_NumOfStrings - 1
+        For i = 0 To localNumOfStrings - 1
             
-            If (InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0) Then
-                Me.AddString Replace$(stringArray(i + 1), rplPipeString, tstPipeString, , , vbBinaryCompare)
-            Else
-                Me.AddString stringArray(i + 1)
+            'Failsafe check only
+            If (i < UBound(stringArray)) Then
+                If (InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0) Then
+                    Me.AddString Replace$(stringArray(i + 1), rplPipeString, tstPipeString, 1, -1, vbBinaryCompare)
+                Else
+                    Me.AddString stringArray(i + 1)
+                End If
             End If
+            
         Next i
         
+    'No pipe chars found!  This must just be a single string; dump it into place as-is.
+    Else
+        Me.AddString srcString
     End If
     
     RecreateStackFromSerializedString = True
