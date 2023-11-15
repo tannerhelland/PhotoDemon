@@ -506,14 +506,14 @@ End Function
 'Load an image file, and add it to the current image as a new layer.
 ' NOTE: this function is called from a lot of places!  Drag/drop, Edit > Paste, Layers > Replace layer, Layers > Add from file.
 ' Each of these paths has slightyl different considerations (e.g. Layers > Add from File can add multiple layers at once).
-Public Function LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False) As Boolean
+Public Function LoadImageAsNewLayer(ByVal raiseDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False) As Boolean
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
     Dim listOfFiles As pdStringStack
     
-    'If showDialog is TRUE, we need to get a file path from the user
-    If showDialog Then
+    'If raiseDialog is TRUE, we need to get a file path from the user
+    If raiseDialog Then
     
         'Retrieve one (or more) files from a common dialog.  Note that "Replace layer from file"
         ' only allows a single image, while "New layer from file" allows multi-select.
@@ -545,7 +545,7 @@ Public Function LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal 
             
         End If
         
-    'If showDialog is FALSE, the user has already selected a file, and we just need to load it
+    'If raiseDialog is FALSE, the user has already selected a file, and we just need to load it
     Else
     
         'Prepare a temporary DIB
@@ -660,7 +660,11 @@ Public Function LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal 
                     
                     'Notify the parent image that the entire image now needs to be recomposited
                     PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-                        
+                    
+                    'If loading multiple files at once, suspend this layer to free up working space for
+                    ' future images.  (Images typically require a surplus of memory at load-time.)
+                    If (listOfFiles.GetNumOfStrings > 1) Then PDImages.GetActiveImage.GetLayerByID(newLayerID).SuspendLayer True
+                    
                 'Failed to load the source image; the load function will have raised any relevant error UI
                 Else
                     PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
@@ -723,7 +727,7 @@ Public Function LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal 
         '/END image data loaded successfully from file failsafe check
         End If
     
-    '/END showDialog true/false
+    '/END raiseDialog true/false
     End If
 
 End Function

@@ -150,12 +150,12 @@ Attribute VB_Exposed = False
 'Last updated: 06/April/22
 'Last update: add localized tooltips to the playback scrubber
 '
-'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  (Later, this would grow
-' to include animated WebP too.)  This dialog exposes relevant animation settings to the user,
-' including allowing them to turn multilayer non-animated images into animated ones (or vice-versa).
+'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  (Later versions have added
+' support for even more animated formats.)  This dialog exposes relevant animation settings to the user,
+' including convertnig multilayer non-animated images into animated ones (or vice-versa).
 '
-'Significantly, it also offers a large, resizable canvas for previewing animations.  This canvas
-' served as the test-bed for most of PD's run-time animation display capabilities.
+'This dialog also offers a large, resizable canvas for previewing animations.  This canvas served as the
+' test-bed for most of PD's run-time animation display capabilities.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

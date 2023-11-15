@@ -3,11 +3,12 @@ Attribute VB_Name = "Animation"
 'Animation Functions
 'Copyright 2019-2023 by Tanner Helland
 'Created: 20/August/19
-'Last updated: 30/August/20
-'Last update: new function for (reliably?) replacing an existing layer-name-frame-time with a new value
+'Last updated: 15/November/23
+'Last update: clean up code that converts animation frame times to/from layer names
 '
-'PhotoDemon was never meant to be an animation editor, but repeat user requests for animated GIF handling
-' led to a rudimentary set of import/export/playback features.
+'PhotoDemon was never meant to edit animations, but repeat user requests for animated GIF handling
+' have led to a rudimentary set of import/export/playback features.  (Support has also been extended
+' to a number of other animated formats, including APNG, WebP, JPEG XL, and possibly others.)
 '
 'This module collects a few useful tools for dealing with animated images.
 '
@@ -110,8 +111,9 @@ Public Sub CreateNewPDImageFromAnimation()
         'Be polite and remove the temporary file, then release this dialog completely
         Files.FileDeleteIfExists m_TmpAnimationFile
         m_TmpAnimationFile = vbNullString
-            
+        
     End If
+    
 End Sub
 
 Public Function UpdateFrameTimeInLayerName(ByRef srcLayerName As String, ByVal newFrameTime As Long) As String
@@ -153,37 +155,20 @@ Public Function UpdateFrameTimeInLayerName(ByRef srcLayerName As String, ByVal n
                 If (AscW(singleChar) >= ascLow) And (AscW(singleChar) <= ascHigh) Then finalString.Append singleChar
             Next i
             
-            On Error GoTo BadNumber
-            Dim curFrameTime As Long, curFrameTimeAsText As String
-            curFrameTime = CLng(finalString.ToString())
-            curFrameTimeAsText = Trim$(Str$(curFrameTime))
-            
-            'Replace the current frame time with the newly requested frame time
-            Dim startPos As Long
-            startPos = InStrRev(srcLayerName, curFrameTimeAsText)
-            
-            'I doubt it's physically possible to *not* find the string representation of the frame time inside the
-            ' layer name, but hey - anything is possible.  If this happens, we'll just append our new frame time value
-            ' at the end.
-            If (startPos < 1) Then
-                parenFound = False
-            Else
-            
-                'Append everything to the left of the old frame time with the new frame time
-                startPos = startPos - 1
-                UpdateFrameTimeInLayerName = Left$(srcLayerName, startPos) & Trim$(Str$(newFrameTime))
+            'Ensure we found a number that's (probably) less than 2^31
+            If (finalString.GetLength() > 0) And (finalString.GetLength() <= 10) Then
                 
-                'If characters followed the old frame time, append that text too
-                If ((startPos + Len(curFrameTimeAsText)) < Len(srcLayerName)) Then
-                    UpdateFrameTimeInLayerName = UpdateFrameTimeInLayerName & Right$(srcLayerName, Len(srcLayerName) - (startPos + Len(curFrameTimeAsText)))
-                End If
+                'Replace the numeric contents inside these parentheses with the new frame time
+                UpdateFrameTimeInLayerName = Left$(srcLayerName, strStart) & Trim$(Str$(newFrameTime)) & "ms)"
                 
                 'If we made it all the way here without errors, we found a valid frame time
                 validNumberFound = True
-                
+            
+            '/non-number found in trailing parentheses
+            Else
+                parenFound = False
             End If
             
-BadNumber:
             'If we didn't find a valid number inside the parentheses, we'll just append frame time to the end
             ' of the existing layer name.
             If (Not validNumberFound) Then parenFound = False
@@ -194,7 +179,7 @@ BadNumber:
     
     'If we didn't find parentheses in the layer name, just append the frame time to the end
     If (Not parenFound) Then
-        UpdateFrameTimeInLayerName = srcLayerName & " (" & Trim$(Str$(newFrameTime)) & " ms)"
+        UpdateFrameTimeInLayerName = srcLayerName & " (" & Trim$(Str$(newFrameTime)) & "ms)"
     End If
     
 End Function
