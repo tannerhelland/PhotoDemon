@@ -377,8 +377,8 @@ Private Function GetLocalParamString() As String
         .AddParam "foreground-opacity", sldForeground.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
         .AddParam "seed", rndSeed.Value
-        .AddParam "shape", Filters_Render.GetNameOfTruchetShape(cboGenerator.ListIndex)
-        .AddParam "pattern", Filters_Render.GetNameOfTruchetPattern(cboPattern.ListIndex)
+        .AddParam "shape", Filters_Render.GetNameOfTruchetShape(cboGenerator.ListIndex, False)
+        .AddParam "pattern", Filters_Render.GetNameOfTruchetPattern(cboPattern.ListIndex, False)
         .AddParam "line-width", sldLineWidth.Value
     End With
     

@@ -181,42 +181,84 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVa
         
 End Function
 
-Public Function GetNameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern) As String
-    Select Case truchetID
-        Case tp_Random
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("random")
-        Case tp_BaseImage
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("image")
-        Case tp_Repeat
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("repeat")
-        Case tp_Wave
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("waves")
-        Case tp_Quilt
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("quilt")
-        Case tp_Chain
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("chain")
-        Case tp_Weave
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("weave")
-    End Select
+Public Function GetNameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern, Optional ByVal getLocalizedName As Boolean = True) As String
+    
+    'A (sloppy) branch is used so that the language translation tool finds the various strings in this function
+    If getLocalizedName Then
+        Select Case truchetID
+            Case tp_Random
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("random")
+            Case tp_BaseImage
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("image")
+            Case tp_Repeat
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("repeat")
+            Case tp_Wave
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("waves")
+            Case tp_Quilt
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("quilt")
+            Case tp_Chain
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("chain")
+            Case tp_Weave
+                GetNameOfTruchetPattern = g_Language.TranslateMessage("weave")
+        End Select
+    Else
+        Select Case truchetID
+            Case tp_Random
+                GetNameOfTruchetPattern = "random"
+            Case tp_BaseImage
+                GetNameOfTruchetPattern = "image"
+            Case tp_Repeat
+                GetNameOfTruchetPattern = "repeat"
+            Case tp_Wave
+                GetNameOfTruchetPattern = "waves"
+            Case tp_Quilt
+                GetNameOfTruchetPattern = "quilt"
+            Case tp_Chain
+                GetNameOfTruchetPattern = "chain"
+            Case tp_Weave
+                GetNameOfTruchetPattern = "weave"
+        End Select
+    End If
+    
 End Function
 
-Public Function GetNameOfTruchetShape(ByVal truchetID As PD_TruchetShape) As String
-    Select Case truchetID
-        Case ts_Arc
-            GetNameOfTruchetShape = g_Language.TranslateMessage("arc")
-        Case ts_Line
-            GetNameOfTruchetShape = g_Language.TranslateMessage("line")
-        Case ts_Maze
-            GetNameOfTruchetShape = g_Language.TranslateMessage("maze")
-        Case ts_Triangle
-            GetNameOfTruchetShape = g_Language.TranslateMessage("triangle")
-        Case ts_Octagon
-            GetNameOfTruchetShape = g_Language.TranslateMessage("octagon")
-        Case ts_Circle
-            GetNameOfTruchetShape = g_Language.TranslateMessage("circle")
-    End Select
+Public Function GetNameOfTruchetShape(ByVal truchetID As PD_TruchetShape, Optional ByVal getLocalizedName As Boolean = True) As String
+    
+    'A (sloppy) branch is used so that the language translation tool finds the various strings in this function
+    If getLocalizedName Then
+        Select Case truchetID
+            Case ts_Arc
+                GetNameOfTruchetShape = g_Language.TranslateMessage("arc")
+            Case ts_Line
+                GetNameOfTruchetShape = g_Language.TranslateMessage("line")
+            Case ts_Maze
+                GetNameOfTruchetShape = g_Language.TranslateMessage("maze")
+            Case ts_Triangle
+                GetNameOfTruchetShape = g_Language.TranslateMessage("triangle")
+            Case ts_Octagon
+                GetNameOfTruchetShape = g_Language.TranslateMessage("octagon")
+            Case ts_Circle
+                GetNameOfTruchetShape = g_Language.TranslateMessage("circle")
+        End Select
+    Else
+        Select Case truchetID
+            Case ts_Arc
+                GetNameOfTruchetShape = "arc"
+            Case ts_Line
+                GetNameOfTruchetShape = "line"
+            Case ts_Maze
+                GetNameOfTruchetShape = "maze"
+            Case ts_Triangle
+                GetNameOfTruchetShape = "triangle"
+            Case ts_Octagon
+                GetNameOfTruchetShape = "octagon"
+            Case ts_Circle
+                GetNameOfTruchetShape = "circle"
+        End Select
+    End If
 End Function
 
+'Name *MUST* be the unmodified, en-US name!
 Public Function GetTruchetPatternFromName(ByRef truchetName As String) As PD_TruchetPattern
     Select Case LCase$(truchetName)
         Case "random"
@@ -236,6 +278,7 @@ Public Function GetTruchetPatternFromName(ByRef truchetName As String) As PD_Tru
     End Select
 End Function
 
+'Name *MUST* be the unmodified, en-US name!
 Public Function GetTruchetShapeFromName(ByRef truchetName As String) As PD_TruchetShape
     Select Case LCase$(truchetName)
         Case "arc"
