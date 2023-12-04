@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，9.2 build 168）</langname>
-<langversion>9.2 build 168.1</langversion>
+<langname>简体中文（夜间更新版，9.2 build 223）</langname>
+<langversion>9.2 build 223</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 3, 2023, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -85,17 +85,17 @@
 
 <phrase>
 <original>Export animated JPEG XL</original>
-<translation></translation>
+<translation>导出JPEG XL动画</translation>
 </phrase>
 
 <phrase>
 <original>Export animated PNG</original>
-<translation>导出动画PNG</translation>
+<translation>导出PNG动画</translation>
 </phrase>
 
 <phrase>
 <original>Export animated WebP</original>
-<translation>导出动态WebP</translation>
+<translation>导出WebP动画</translation>
 </phrase>
 
 <phrase>
@@ -975,12 +975,12 @@
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>涨缩和旋转</translation>
+<translation>挤压和旋转</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation>涨缩</translation>
+<translation>戳压</translation>
 </phrase>
 
 <phrase>
@@ -990,7 +990,7 @@
 
 <phrase>
 <original>Squish</original>
-<translation>挤压</translation>
+<translation>压扁</translation>
 </phrase>
 
 <phrase>
@@ -1275,7 +1275,7 @@
 
 <phrase>
 <original>Spherize</original>
-<translation>球面</translation>
+<translation>球面化</translation>
 </phrase>
 
 <phrase>
@@ -2694,22 +2694,22 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL(JXL)是JPEG图像格式的升级版本。 PhotoDemon 本身不支持JPEG XL图像，但它可以下载一个免费的开源插件来添加JPEG XL支持。</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>libjxl 库提供免费的开源JPEG XL兼容性。 libjxl的可移植副本将需要 ~%1 mb 的磁盘空间。下载后，PhotoDemon 可以使用libjxl库加载和保存JPEG XL图像（包括动画）。</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>您是否希望PhotoDemon将libjxl库下载到您的PhotoDemon插件文件夹？</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon没有下载libjxl库。</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -4872,7 +4872,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated JPEG XL</original>
-<translation></translation>
+<translation>JPEG XL动画</translation>
 </phrase>
 
 <phrase>
@@ -7599,7 +7599,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush</original>
-<translation>刷子</translation>
+<translation>画笔</translation>
 </phrase>
 
 <phrase>
@@ -8438,19 +8438,19 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>pinch amount</original>
-<translation>涨缩程度</translation>
+<translation>挤压程度</translation>
 </phrase>
 
 <phrase>
 <original>Pinching and whirling image</original>
-<translation>应用涨缩和旋转到图像</translation>
+<translation>应用挤压和旋转到图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Poking image</original>
-<translation>应用涨缩效果到图像</translation>
+<translation>应用戳压效果到图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8479,7 +8479,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Squeezing image</original>
-<translation>应用挤压效果到图像</translation>
+<translation>应用压扁效果到图像</translation>
 </phrase>
 
 <!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11300,7 +11300,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>1 tag in this category</original>
-<translation></translation>
+<translation>在这个类别中有1个标签</translation>
 </phrase>
 
 <phrase>
@@ -11310,7 +11310,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>no tags in this category</original>
-<translation>此类别中没有标签</translation>
+<translation>在这个类别中没有标签</translation>
 </phrase>
 
 <phrase>
@@ -13976,12 +13976,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>an AVIF image</original>
-<translation>AVIF图片</translation>
+<translation>AVIF图像</translation>
 </phrase>
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>JPEG XL图像</translation>
 </phrase>
 
 <phrase>
@@ -14077,7 +14077,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>效能(工作量)</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
