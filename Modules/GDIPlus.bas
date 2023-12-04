@@ -1968,7 +1968,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                             PDDebug.LogAction "Copying newly transformed sRGB data..."
                             dstDIB.SetColorManagementState cms_ProfileConverted
                             dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
-                            dstDIB.SetAlphaPremultiplication True
+                            If (Not dstDIB.GetAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
                         End If
                         
                         Set cTransform = Nothing
