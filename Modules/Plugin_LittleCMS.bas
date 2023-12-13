@@ -640,6 +640,7 @@ Public Function LCMS_GetProfileInfoString(ByVal hInputProfile As Long, ByVal pro
 End Function
 
 Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
+    trnsFlags = ValidateAlphaFlags(hInputFormat, trnsFlags)
     LCMS_CreateTwoProfileTransform = cmsCreateTransform(hInputProfile, hInputFormat, hOutputProfile, hOutputFormat, trnsRenderingIntent, trnsFlags)
 End Function
 
@@ -656,7 +657,23 @@ Public Function LCMS_CreateInPlaceTransformForDIB(ByVal hInputProfile As Long, B
         pxFormat = TYPE_BGR_8
     End If
     
+    trnsFlags = ValidateAlphaFlags(pxFormat, trnsFlags)
     LCMS_CreateInPlaceTransformForDIB = cmsCreateTransform(hInputProfile, pxFormat, hOutputProfile, pxFormat, trnsRenderingIntent, trnsFlags)
+    
+End Function
+
+'Validate COPY_ALPHA flag against source color space
+Private Function ValidateAlphaFlags(ByVal inFormat As LCMS_PIXEL_FORMAT, ByVal inFlags As LCMS_TRANSFORM_FLAGS) As LCMS_TRANSFORM_FLAGS
+    
+    ValidateAlphaFlags = inFlags
+    
+    'In lcms 2.16, new behavior was implemented for the COPY_ALPHA flag.  Alpha *must* be present in the source format
+    ' (destination doesn't matter) or this flag will cause a crash.
+    '
+    'Rather than add checks to *every* color-management call in PD (there are a ton!), perform a universal check here.
+    If ((inFormat And FLAG_ALPHAPRESENT) = 0) And ((inFlags And cmsFLAGS_COPY_ALPHA) <> 0) Then
+        ValidateAlphaFlags = ValidateAlphaFlags And (Not cmsFLAGS_COPY_ALPHA)
+    End If
     
 End Function
 
