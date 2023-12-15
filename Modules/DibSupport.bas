@@ -730,8 +730,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte, tmpSA As SafeArray2D
-        srcDIB.WrapArrayAroundDIB imageData, tmpSA
+        Dim imageData() As Byte, tmpSA As SafeArray1D
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -744,40 +743,42 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
         ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
         Dim alphaIsPremultiplied As Boolean: alphaIsPremultiplied = srcDIB.GetAlphaPremultiplication
-        Dim applyPremult() As Single, removePremult() As Single, tmpAlphaModifier As Single
-        ReDim applyPremult(0 To 255) As Single: ReDim removePremult(0 To 255) As Single
+        Dim applyPremult(0 To 255) As Single, removePremult(0 To 255) As Single, tmpAlphaModifier As Single
         
         If alphaIsPremultiplied Then
             For x = 0 To 255
-                applyPremult(x) = x / 255
-                If (x <> 0) Then removePremult(x) = 255 / x
+                applyPremult(x) = x / 255!
+                If (x <> 0) Then removePremult(x) = 255! / x Else removePremult(x) = 1!
             Next x
         End If
         
-        'Grayscale values are very look-up friendly
+        'Validate number of grayscale values before continuing
+        If (numOfShades < 2) Then numOfShades = 2
+        If (numOfShades > 256) Then numOfShades = 256
         Dim conversionFactor As Double
         conversionFactor = (255 / (numOfShades - 1))
         
         'Build a look-up table for our custom grayscale conversion results
         Dim gLookup(0 To 255) As Byte
         For x = 0 To 255
-            grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
-            If grayVal > 255 Then grayVal = 255
-            gLookup(x) = CByte(grayVal)
+            grayVal = Int(((CDbl(x) / conversionFactor) + 0.5) * conversionFactor)
+            If (grayVal > 255) Then grayVal = 255
+            gLookup(x) = grayVal
         Next x
             
         'Now we can loop through each pixel in the image, converting values as we go
         For y = initY To finalY
+            srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
         For x = initX To finalX Step 4
                 
             'Get the source pixel color values
-            b = imageData(x, y)
-            g = imageData(x + 1, y)
-            r = imageData(x + 2, y)
+            b = imageData(x)
+            g = imageData(x + 1)
+            r = imageData(x + 2)
             
             'Remove premultiplication, as necessary
             If alphaIsPremultiplied Then
-                a = imageData(x + 3, y)
+                a = imageData(x + 3)
                 If (a <> 255) Then
                     tmpAlphaModifier = removePremult(a)
                     r = (r * tmpAlphaModifier)
@@ -801,25 +802,24 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             End If
             
             If ignoreMagicMagenta Then
-                imageData(x, y) = grayVal
-                imageData(x + 1, y) = grayVal
-                imageData(x + 2, y) = grayVal
+                imageData(x) = grayVal
+                imageData(x + 1) = grayVal
+                imageData(x + 2) = grayVal
             Else
                 If (r <> 253) Or (g <> 0) Or (b <> 253) Then
-                    imageData(x, y) = grayVal
-                    imageData(x + 1, y) = grayVal
-                    imageData(x + 2, y) = grayVal
+                    imageData(x) = grayVal
+                    imageData(x + 1) = grayVal
+                    imageData(x + 2) = grayVal
                 End If
             End If
             
         Next x
+            srcDIB.UnwrapArrayFromDIB imageData
         Next y
         
-        srcDIB.UnwrapArrayFromDIB imageData
         MakeDIBGrayscale = True
         
     Else
-        Debug.Print "WARNING! Non-existent DIB passed to DIBs.MakeDIBGrayscale()."
         MakeDIBGrayscale = False
     End If
 
