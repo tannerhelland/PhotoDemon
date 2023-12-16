@@ -256,11 +256,6 @@ Private Sub UpdatePanelVisibility()
     Next i
 End Sub
 
-Private Sub btsDepth_Click(ByVal buttonIndex As Long)
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
 Private Sub btsQuality_Click(ByVal buttonIndex As Long)
     UpdateQualityVisibility
     UpdatePreview
