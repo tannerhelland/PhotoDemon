@@ -15,15 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Pop-up Menu Manager
 'Copyright 2019-2023 by Tanner Helland
 'Created: 29/May/19
-'Last updated: 29/May/19
-'Last update: initial build
+'Last updated: 16/December/23
+'Last update: total overhaul (added submenu support and refactored pretty much everything)
 '
-'As with nearly all built-in VB6 UI elements, popup menus do not support Unicode.  A custom solution
-' is required.
-'
-'This class is designed to make Unicode-aware popup menus easier.  I do not guarantee that it will
-' always rely on built-in WAPI menu functions.  It may (someday) be migrated to a custom, owner-drawn
-' version instead.
+'Like all other built-in VB6 UI elements, popup menus do not natively support Unicode.  This class provides a
+' custom solution by interacting directly with WAPI (user32), specifically TrackPopupMenu.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -32,11 +28,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public Event MenuClicked(ByVal mnuIndex As Long, ByRef clickedMenuCaption As String)
+Public Event MenuClicked(ByRef clickedMenuID As String, ByVal idxMenuTop As Long, ByVal idxMenuSub As Long)
 
 Private Type PopupMenuItem
-    pmCaption As String     'It is the caller's responsibility to translate captions *before* adding them
-    pmEnabled As Boolean
+    pmCaption As String             'It is the caller's responsibility to translate captions *before* adding them
+    pmID As String                  'User-passed ID, typically maps to an internal PD action ID
+    pmEnabled As Boolean            'Is this menu item enabled?
+    pmIdxTop As Long                'Top-level menu index
+    pmIdxSub As Long                'Submenu index (0-based, initializes to -1 for top-level items)
+    hMenuIfChildrenExist As Long    'Non-zero value if this top-level item pops up a submenu (populated automatically!)
 End Type
 
 Private Enum WapiMenuFlags
@@ -63,15 +63,31 @@ Private Declare Function CreatePopupMenu Lib "user32" () As Long
 Private Declare Function DestroyMenu Lib "user32" (ByVal hMenu As Long) As Long
 Private Declare Function TrackPopupMenu Lib "user32" (ByVal hMenu As Long, ByVal wFlags As Long, ByVal x As Long, ByVal y As Long, ByVal nReserved As Long, ByVal srcHWnd As Long, ByVal prcRect As Long) As Long
 
+Private Const MENU_NONE As Long = -1
+
 Private m_NumMenuItems As Long
 Private m_MenuItems() As PopupMenuItem
 Private Const NUM_MENU_ITEMS_START As Long = 8
 
-Friend Sub AddMenuItem(ByRef mnuCaptionTranslated As String, Optional ByVal mnuIsEnabled As Boolean = True)
+'Add a new menu item to this popup menu.
+' - mnuCaptionTranslated: per the name, the item caption ALREADY LOCALIZED
+' - [optional] menuID: unique string identifying this item (will be returned by MenuClicked event)
+' - [optional] idxMenuTop: top-level index which does *not* need to be passed; passed order is assumed as menu order when missing
+' - [optional] idxMenuSub: sub-menu index; assumed to be a top-level menu item when missing
+' - [optional] menuIsEnabled: self-explanatory
+Friend Sub AddMenuItem(ByRef menuCaptionTranslated As String, Optional ByRef menuID As String = vbNullString, Optional ByVal idxMenuTop As Long = MENU_NONE, Optional ByVal idxMenuSub As Long = MENU_NONE, Optional ByVal menuIsEnabled As Boolean = True)
     If (m_NumMenuItems > UBound(m_MenuItems)) Then ReDim Preserve m_MenuItems(0 To m_NumMenuItems * 2 - 1) As PopupMenuItem
     With m_MenuItems(m_NumMenuItems)
-        .pmCaption = mnuCaptionTranslated
-        .pmEnabled = mnuIsEnabled
+        .pmCaption = menuCaptionTranslated
+        .pmID = menuID
+        If (idxMenuTop = MENU_NONE) Then
+            .pmIdxTop = m_NumMenuItems
+            .pmIdxSub = MENU_NONE       'Sub-menu index is always ignored when order is implicit
+        Else
+            .pmIdxTop = idxMenuTop
+            .pmIdxSub = idxMenuSub
+        End If
+        .pmEnabled = menuIsEnabled
     End With
     m_NumMenuItems = m_NumMenuItems + 1
 End Sub
@@ -90,7 +106,7 @@ Friend Sub ShowMenu(ByVal srcHWnd As Long, ByVal srcX As Long, ByVal srcY As Lon
     srcPoint.y = srcY
     g_WindowManager.GetClientToScreen srcHWnd, srcPoint
     
-    'Create an API menu object
+    'Create an API menu object.  The returned value is the parent handle that contains all other submenus.
     Dim hMenu As Long
     hMenu = CreateMenu()
     
@@ -99,34 +115,131 @@ Friend Sub ShowMenu(ByVal srcHWnd As Long, ByVal srcX As Long, ByVal srcY As Lon
     
     Dim hRet As Long
     hRet = TrackPopupMenu(hMenu, TPM_NONOTIFY Or TPM_RETURNCMD, srcPoint.x, srcPoint.y, 0&, srcHWnd, 0&)
-    If (hRet <> 0) Then RaiseEvent MenuClicked(hRet - 1, m_MenuItems(hRet - 1).pmCaption)
+    If (hRet <> 0) Then
+        
+        'We add 1 to all IDs to differentiate them from a null return
+        hRet = hRet - 1
+        
+        'Return the clicked ID and associated indices
+        RaiseEvent MenuClicked(m_MenuItems(hRet).pmID, m_MenuItems(hRet).pmIdxTop, m_MenuItems(hRet).pmIdxSub)
+        
+    End If
     
-    'Destroy the menu object before exiting
+    'Destroy the menu object before exiting, and note that we don't need to destroy child menus per
+    ' https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu, which says...
+    ' "DestroyMenu is recursive, that is, it will destroy the menu and all its submenus."
     DestroyMenu hMenu
 
 End Sub
 
 'Create a novel API menu using current menu settings
 Private Function CreateMenu() As Long
-
+    
+    'Menu separators use a specific caption
+    Const MENU_SEPARATOR As String = "-"
+    Const MSG_APPEND_FAIL As String = "WARNING: pdPopupMenu.CreateMenu failed to append menu #"
+    
     'Construct the initial menu handle
     Dim hMenu As Long
     hMenu = CreatePopupMenu()
     
+    'Next, we need to build submenus.  Start by scanning the menu list and looking for menu entries with a parent menu.
+    ' Build a list of these, and we will construct each submenu separately.
+    Dim listOfSubmenus As pdStack
+    Set listOfSubmenus = New pdStack
+    
+    Dim i As Long, j As Long
+    For i = 0 To m_NumMenuItems - 1
+        If (m_MenuItems(i).pmIdxSub >= 0) Then
+            If (listOfSubmenus.DoesIntExist(m_MenuItems(i).pmIdxTop) < 0) Then listOfSubmenus.AddInt m_MenuItems(i).pmIdxTop
+        End If
+    Next i
+    
+    'Menu item states like enabled, checked, etc are set via flags
+    Dim mnuFlags As WapiMenuFlags
+    
+    'Only construct submenus as necessary
+    If (listOfSubmenus.GetNumOfInts > 0) Then
+        
+        'Handle each top-level menu one-at-a-time
+        For i = 0 To listOfSubmenus.GetNumOfInts - 1
+            
+            'Reset menu flags
+            mnuFlags = 0
+            
+            'Translate the index to the top-level menu to an index into the main menu item array
+            Dim idxParentInMenu As Long, idxParentInArray As Long
+            idxParentInMenu = listOfSubmenus.GetInt(i)
+            
+            For j = 0 To m_NumMenuItems - 1
+                If (m_MenuItems(j).pmIdxTop = idxParentInMenu) And (m_MenuItems(j).pmIdxSub = MENU_NONE) Then
+                    idxParentInArray = j
+                    Exit For
+                End If
+            Next j
+            
+            'Get an hMenu handle for the parent menu
+            Dim hMenuParent As Long
+            hMenuParent = CreatePopupMenu()
+            m_MenuItems(idxParentInArray).hMenuIfChildrenExist = hMenuParent
+            
+            'Find all child items of this submenu and append them in turn
+            For j = 0 To m_NumMenuItems - 1
+                If (m_MenuItems(j).pmIdxTop = idxParentInMenu) And (m_MenuItems(j).pmIdxSub >= 0) Then
+                    
+                    'Separator bars are handled manually
+                    If (m_MenuItems(j).pmCaption = MENU_SEPARATOR) Then
+                        If (AppendMenuW(hMenuParent, MF_SEPARATOR, j + 1, 0) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
+                    
+                    'Regular string menu item
+                    Else
+                        If m_MenuItems(j).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
+                        mnuFlags = mnuFlags Or MF_STRING Or MF_UNCHECKED
+                        If (AppendMenuW(hMenuParent, mnuFlags, j + 1, StrPtr(m_MenuItems(j).pmCaption)) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
+                    End If
+                    
+                End If
+            Next j
+            
+        Next i
+        
+    End If
+    
     'Add each menu item in turn
-    Dim i As Long
     For i = 0 To m_NumMenuItems - 1
         
-        'Separator bars are handled manually
-        If (m_MenuItems(i).pmCaption = "-") Then
-            If (AppendMenuW(hMenu, MF_SEPARATOR, i + 1, 0) = 0) Then PDDebug.LogAction "WARNING: pdPopupMenu.ShowMenu failed to append menu #" & i
+        'We only want to add top-level menu items here
+        If (m_MenuItems(i).pmIdxSub = MENU_NONE) Then
+            
+            'Reset menu flags
+            mnuFlags = 0
+            
+            'Look for items that raise submenus
+            If (m_MenuItems(i).hMenuIfChildrenExist <> 0) Then
+                
+                If m_MenuItems(i).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
+                mnuFlags = mnuFlags Or MF_POPUP
+                If (AppendMenuW(hMenu, mnuFlags, m_MenuItems(i).hMenuIfChildrenExist, StrPtr(m_MenuItems(i).pmCaption)) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
+                
+            'This is a normal menu item
+            Else
+                
+                'Separator bars are handled manually
+                If (m_MenuItems(i).pmCaption = MENU_SEPARATOR) Then
+                    If (AppendMenuW(hMenu, MF_SEPARATOR, i + 1, 0) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
+                
+                'Regular string menu item
+                Else
+                    If m_MenuItems(i).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
+                    mnuFlags = mnuFlags Or MF_STRING Or MF_UNCHECKED
+                    If (AppendMenuW(hMenu, mnuFlags, i + 1, StrPtr(m_MenuItems(i).pmCaption)) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
+                End If
+            
+            '/end submenu parent vs normal menu item branch
+            End If
         
-        'Regular string menu item
-        Else
-            Dim mnuFlags As WapiMenuFlags
-            If m_MenuItems(i).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
-            mnuFlags = mnuFlags Or MF_STRING Or MF_UNCHECKED
-            If (AppendMenuW(hMenu, mnuFlags, i + 1, StrPtr(m_MenuItems(i).pmCaption)) = 0) Then PDDebug.LogAction "WARNING: pdPopupMenu.ShowMenu failed to append menu #" & i
+        'Ignore submenu items completely (no else required)
+        'Else
         End If
         
     Next i

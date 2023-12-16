@@ -49,6 +49,23 @@ Friend Function AddInt(ByVal srcInt As Long) As Long
         
 End Function
 
+'Does a given integer appear in the stack?  Uses a naive loop for detection, so consider perf as necessary.
+' RETURNS: index >= 0 if int exists, -1 if int does *not* exist.  Returns first instance if multiples exist.
+Friend Function DoesIntExist(ByVal srcInt As Long) As Long
+    
+    DoesIntExist = -1
+    If (m_NumOfInts <= 0) Then Exit Function
+    
+    Dim i As Long
+    For i = 0 To m_NumOfInts - 1
+        If (m_Ints(i) = srcInt) Then
+            DoesIntExist = i
+            Exit Function
+        End If
+    Next i
+    
+End Function
+
 'Pop the top int off the stack.  Returns TRUE if pop is successful, FALSE if stack is empty.
 '
 'The function was designed to make popping the entire stack convenient (e.g. Do While strStack.PopString(tmpString)...)
@@ -75,7 +92,7 @@ End Function
 
 'Trim the stack to its exact size.  IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
 Friend Sub TrimStack()
-    ReDim Preserve m_Ints(0 To m_NumOfInts - 1) As Long
+    If (m_NumOfInts > 0) Then ReDim Preserve m_Ints(0 To m_NumOfInts - 1) As Long
 End Sub
 
 'Retrieve a value from the stack at any arbitrary position

@@ -171,8 +171,8 @@ Private m_MouseOverLayerBox As Boolean
 Private m_ScrollValue As Long, m_ScrollMax As Long
 
 'Popup menu when a layer is right-clicked
-Private WithEvents m_LayerPopup As pdPopupMenu
-Attribute m_LayerPopup.VB_VarHelpID = -1
+Private WithEvents m_PopupMenu As pdPopupMenu
+Attribute m_PopupMenu.VB_VarHelpID = -1
 Private m_RightClickIndex As Long
 
 'In 2020, I added a "flash" action; the canvas uses this to draw attention to the active layer when
@@ -291,12 +291,12 @@ Private Sub m_FlashTimer_Timer()
     
 End Sub
 
-Private Sub m_LayerPopup_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenuTop As Long, ByVal idxMenuSub As Long)
     
     'Make sure a valid layer was clicked
     If (m_RightClickIndex < 0) Then Exit Sub
     
-    Select Case mnuIndex
+    Select Case idxMenuTop
     
         'Hide all layers but this one
         Case 0
@@ -566,12 +566,14 @@ End Sub
 
 Private Sub ShowLayerPopupMenu(ByVal srcX As Long, ByVal srcY As Long)
     
-    m_LayerPopup.Reset
+    m_PopupMenu.Reset
     
     'Construct the menu
-    m_LayerPopup.AddMenuItem g_Language.TranslateMessage("Show only this layer")
+    With m_PopupMenu
+        .AddMenuItem g_Language.TranslateMessage("Show only this layer"), "show-only", 0
+    End With
     
-    m_LayerPopup.ShowMenu Me.hWnd, srcX, srcY
+    m_PopupMenu.ShowMenu Me.hWnd, srcX, srcY
     
 End Sub
 
@@ -893,7 +895,7 @@ Private Sub UserControl_Initialize()
     m_MouseY = -1
     m_ScrollValue = 0
     m_ScrollMax = 0
-    Set m_LayerPopup = New pdPopupMenu
+    Set m_PopupMenu = New pdPopupMenu
     
 End Sub
 
