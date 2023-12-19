@@ -564,13 +564,17 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     
 End Sub
 
+'The user has right-clicked a specific layer.  The layer index is saved in the module-level m_RightClickIndex value.
 Private Sub ShowLayerPopupMenu(ByVal srcX As Long, ByVal srcY As Long)
     
     m_PopupMenu.Reset
     
-    'Construct the menu
+    'Construct the menu.  (The current layout of this menu is a mashup between Photoshop and GIMP options.)
     With m_PopupMenu
-        .AddMenuItem g_Language.TranslateMessage("Show only this layer"), "show-only", 0
+        .AddMenuItem g_Language.TranslateMessage("Show this layer"), "show-layer", 0, menuIsChecked:=PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex, True).GetLayerVisibility()
+        .AddMenuItem g_Language.TranslateMessage("Show only this layer"), "show-only", 1
+        .AddMenuItem g_Language.TranslateMessage("Hide only this layer"), "hide-only", 2
+        .AddMenuItem "-"
     End With
     
     m_PopupMenu.ShowMenu Me.hWnd, srcX, srcY

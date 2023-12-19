@@ -34,6 +34,7 @@ Private Type PopupMenuItem
     pmCaption As String             'It is the caller's responsibility to translate captions *before* adding them
     pmID As String                  'User-passed ID, typically maps to an internal PD action ID
     pmEnabled As Boolean            'Is this menu item enabled?
+    pmChecked As Boolean            'Does this menu display a checkmark?
     pmIdxTop As Long                'Top-level menu index
     pmIdxSub As Long                'Submenu index (0-based, initializes to -1 for top-level items)
     hMenuIfChildrenExist As Long    'Non-zero value if this top-level item pops up a submenu (populated automatically!)
@@ -75,7 +76,7 @@ Private Const NUM_MENU_ITEMS_START As Long = 8
 ' - [optional] idxMenuTop: top-level index which does *not* need to be passed; passed order is assumed as menu order when missing
 ' - [optional] idxMenuSub: sub-menu index; assumed to be a top-level menu item when missing
 ' - [optional] menuIsEnabled: self-explanatory
-Friend Sub AddMenuItem(ByRef menuCaptionTranslated As String, Optional ByRef menuID As String = vbNullString, Optional ByVal idxMenuTop As Long = MENU_NONE, Optional ByVal idxMenuSub As Long = MENU_NONE, Optional ByVal menuIsEnabled As Boolean = True)
+Friend Sub AddMenuItem(ByRef menuCaptionTranslated As String, Optional ByRef menuID As String = vbNullString, Optional ByVal idxMenuTop As Long = MENU_NONE, Optional ByVal idxMenuSub As Long = MENU_NONE, Optional ByVal menuIsEnabled As Boolean = True, Optional ByVal menuIsChecked As Boolean = False)
     If (m_NumMenuItems > UBound(m_MenuItems)) Then ReDim Preserve m_MenuItems(0 To m_NumMenuItems * 2 - 1) As PopupMenuItem
     With m_MenuItems(m_NumMenuItems)
         .pmCaption = menuCaptionTranslated
@@ -88,6 +89,7 @@ Friend Sub AddMenuItem(ByRef menuCaptionTranslated As String, Optional ByRef men
             .pmIdxSub = idxMenuSub
         End If
         .pmEnabled = menuIsEnabled
+        .pmChecked = menuIsChecked
     End With
     m_NumMenuItems = m_NumMenuItems + 1
 End Sub
@@ -193,8 +195,13 @@ Private Function CreateMenu() As Long
                     
                     'Regular string menu item
                     Else
-                        If m_MenuItems(j).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
-                        mnuFlags = mnuFlags Or MF_STRING Or MF_UNCHECKED
+                        If m_MenuItems(j).pmEnabled Then
+                            mnuFlags = MF_ENABLED
+                            If m_MenuItems(j).pmChecked Then mnuFlags = mnuFlags Or MF_CHECKED Else mnuFlags = mnuFlags Or MF_UNCHECKED
+                        Else
+                            mnuFlags = MF_GRAYED Or MF_UNCHECKED
+                        End If
+                        mnuFlags = mnuFlags Or MF_STRING
                         If (AppendMenuW(hMenuParent, mnuFlags, j + 1, StrPtr(m_MenuItems(j).pmCaption)) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
                     End If
                     
@@ -230,8 +237,13 @@ Private Function CreateMenu() As Long
                 
                 'Regular string menu item
                 Else
-                    If m_MenuItems(i).pmEnabled Then mnuFlags = MF_ENABLED Else mnuFlags = MF_GRAYED
-                    mnuFlags = mnuFlags Or MF_STRING Or MF_UNCHECKED
+                    If m_MenuItems(i).pmEnabled Then
+                        mnuFlags = MF_ENABLED
+                        If m_MenuItems(i).pmChecked Then mnuFlags = mnuFlags Or MF_CHECKED Else mnuFlags = mnuFlags Or MF_UNCHECKED
+                    Else
+                        mnuFlags = MF_GRAYED Or MF_UNCHECKED
+                    End If
+                    mnuFlags = mnuFlags Or MF_STRING
                     If (AppendMenuW(hMenu, mnuFlags, i + 1, StrPtr(m_MenuItems(i).pmCaption)) = 0) Then PDDebug.LogAction MSG_APPEND_FAIL & i
                 End If
             
