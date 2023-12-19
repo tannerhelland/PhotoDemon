@@ -575,7 +575,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     
     markEventHandled = False
     
-    'All these keys set a new .ListIndex property.  We'll calculate a theoretical new ListIndex, then apply a universal
+    'Keys can set a new listindex.  We'll calculate a theoretical new ListIndex, then apply a universal
     ' bounds-check at the end.
     Dim newListIndex As Long
     newListIndex = m_ListIndex

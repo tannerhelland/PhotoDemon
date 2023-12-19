@@ -236,12 +236,8 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     If (Not IsCanvasInteractionAllowed) Then Exit Function
     
     'If there is no active images or valid layers, canvas interactions are also disallowed.  (This is primarily a failsafe check.)
-    If (Not PDImages.IsImageActive) Then
-        IsCanvasInteractionAllowed = False
-    Else
-        If (Not PDImages.GetActiveImage.IsActive) Then IsCanvasInteractionAllowed = False
-        If (PDImages.GetActiveImage.GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
-    End If
+    If (Not PDImages.GetActiveImage.IsActive) Then IsCanvasInteractionAllowed = False
+    If (PDImages.GetActiveImage.GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
     
     'If the central processor is active, exit - but *only* if our internal notification flags have not been triggered.
     ' (If those flags are active, it means an external caller has notified us of something it wants rendered.)
