@@ -82,14 +82,26 @@ Public Function LaunchAction_BySearch(ByRef srcSearchText As String) As Boolean
     LaunchAction_BySearch = Actions.LaunchAction_ByName(Menus.GetNameFromSearchText(srcSearchText), pdas_Search)
 End Function
 
-'Given an action name, apply the corresponding default processor action.  This function is referenced in many places
-' throughout PD (e.g. the program's menus pretty much all reference this!) and it is distinct from PD's Processor
-' module because it validates actions before executing them.  For example - if you request an operation associated
-' with a menu, it won't apply that action if the associated menu isn't enabled.  Similarly, if you request an
-' operation that requires an open image, this function will ensure an image is open before actually applying that
-' command.  PhotoDemon's central processor does not handle validation (but it handles a ton of other complex tasks,
-' like Undo/Redo behavior) so for operations that need to be safely validated, call *this* function instead.
-Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal actionSource As PD_ActionSource = pdas_Menu) As Boolean
+'Given an action name, apply the corresponding default processor action.
+'
+'This function is referenced in many places throughout PD (e.g. the program's menus pretty much all reference this!)
+' and it is distinct from PD's Processor module because it validates actions before executing them.  For example -
+' if you request an operation associated with a menu, this function won't apply that action if the associated menu is
+' disabled.  Similarly, if you request an operation that requires an open image, this function will ensure an image
+' is open before actually applying that command.  PhotoDemon's central processor does not handle validation (but it
+' handles a ton of other complex tasks, like Undo/Redo behavior) so for operations that need to be safely validated,
+' call *this* function instead.
+'
+'Under very specific circumstances, you may want to skip the automatic action validation that this function provides.
+' (For example, right-clicking an inactive layer in the layer toolbox may lead to initiating a "Merge Down" action.
+' The "Merge Down" menu always validates against the *active* layer, not an arbitrary one, so the resulting command
+' will always fail if the bottom layer in the image is the currently active one.)  If you are 100% certain that an
+' action is valid, you can skip the automatic validation steps by passing skipValidation as TRUE.  Be very careful
+' when doing this.
+'
+'Actions that appear in the Layer menu can also be applied to any arbitrary layer.  Just pass the target layer index
+' via targetLayerIndex.  (If no index is passed, actions will default to the currently active layer.)
+Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal actionSource As PD_ActionSource = pdas_Menu, Optional ByVal skipValidation As Boolean = False, Optional ByVal targetLayerIndex As Long = -1) As Boolean
     
     LaunchAction_ByName = False
     
@@ -101,17 +113,21 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     ' useful for actions with a menu surrogate.  If an action doesn't have a menu surrogate, we ignore
     ' the return from this function.)
     Dim mnuDoesntExist As Boolean
-    If (Not Menus.IsMenuEnabled(srcMenuName, mnuDoesntExist)) Then
-        If (Not mnuDoesntExist) Then
-            
-            'Check for some known exceptions to this rule.  These are primarily convenience functions,
-            ' which automatically remap to a similar task when the requested one isn't available.
-            ' (For example, Ctrl+V is "Paste as new layer", but if no image is open, we silently remap
-            ' to "Paste as new image".)
-            If (Not Strings.StringsEqualAny(srcMenuName, True, "edit_pasteaslayer")) Then
-                Exit Function
+    
+    'The user *can* choose to skip validation (see comments at the top of this function).
+    If (Not skipValidation) Then
+        If (Not Menus.IsMenuEnabled(srcMenuName, mnuDoesntExist)) Then
+            If (Not mnuDoesntExist) Then
+                
+                'Check for some known exceptions to this rule.  These are primarily convenience functions,
+                ' which automatically remap to a similar task when the requested one isn't available.
+                ' (For example, Ctrl+V is "Paste as new layer", but if no image is open, we silently remap
+                ' to "Paste as new image".)
+                If (Not Strings.StringsEqualAny(srcMenuName, True, "edit_pasteaslayer")) Then
+                    Exit Function
+                End If
+                
             End If
-            
         End If
     End If
     
@@ -125,7 +141,7 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuFile(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuEdit(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuImage(srcMenuName, actionSource)
-    If (Not cmdFound) Then cmdFound = Launch_ByName_MenuLayer(srcMenuName, actionSource)
+    If (Not cmdFound) Then cmdFound = Launch_ByName_MenuLayer(srcMenuName, actionSource, targetLayerIndex)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuSelect(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuAdjustments(srcMenuName, actionSource)
     If (Not cmdFound) Then cmdFound = Launch_ByName_MenuEffects(srcMenuName, actionSource)
@@ -484,10 +500,18 @@ Private Function Launch_ByName_MenuImage(ByRef srcMenuName As String, Optional B
     
 End Function
 
-Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional ByVal actionSource As PD_ActionSource = pdas_Menu) As Boolean
+'To specify a target layer for a given action, set targetLayerIndex to a value >= 0.  This index *is* validated,
+' and will be set to the active layer if an invalid index is passed.
+Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional ByVal actionSource As PD_ActionSource = pdas_Menu, Optional ByVal targetLayerIndex As Long = -1) As Boolean
 
     'All actions in this category require an open image.  If no images are open, do not apply the requested action.
     If (Not PDImages.IsImageActive()) Then Exit Function
+    
+    If (targetLayerIndex < 0) Then
+        targetLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    ElseIf (targetLayerIndex >= PDImages.GetActiveImage.GetNumOfLayers) Then
+        targetLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    End If
     
     Dim cmdFound As Boolean: cmdFound = True
     
@@ -498,10 +522,10 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 Process "Add new layer", True
                 
             Case "layer_addblank"
-                Process "Add blank layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+                Process "Add blank layer", False, BuildParamList("targetlayer", targetLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_duplicate"
-                Process "Duplicate Layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+                Process "Duplicate Layer", False, BuildParamList("targetlayer", targetLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_addfromclipboard"
                 Process "Paste", False, , UNDO_Image_VectorSafe
@@ -513,14 +537,14 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 Process "New layer from visible layers", False, , UNDO_Image_VectorSafe
                 
             Case "layer_addviacopy"
-                Process "Layer via copy", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+                Process "Layer via copy", False, BuildParamList("targetlayer", targetLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_addviacut"
-                Process "Layer via cut", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+                Process "Layer via cut", False, BuildParamList("targetlayer", targetLayerIndex), UNDO_Image
                 
         Case "layer_delete"
             Case "layer_deletecurrent"
-                Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+                Process "Delete layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_deletehidden"
                 Process "Delete hidden layers", False, , UNDO_Image_VectorSafe
@@ -536,10 +560,10 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 Process "Replace layer from visible layers", False, createUndo:=UNDO_Layer
                 
         Case "layer_mergeup"
-            Process "Merge layer up", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+            Process "Merge layer up", False, BuildParamList("layerindex", targetLayerIndex), UNDO_Image
             
         Case "layer_mergedown"
-            Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+            Process "Merge layer down", False, BuildParamList("layerindex", targetLayerIndex), UNDO_Image
             
         Case "layer_order"
             Case "layer_gotop"
@@ -555,29 +579,29 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 Process "Go to bottom layer", False, vbNullString, UNDO_Nothing
             
             Case "layer_movetop"
-                Process "Raise layer to top", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Raise layer to top", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
                 
             Case "layer_moveup"
-                Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Raise layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
                 
             Case "layer_movedown"
-                Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Lower layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
                 
             Case "layer_movebottom"
-                Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Lower layer to bottom", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
             
             Case "layer_reverse"
                 Process "Reverse layer order", False, vbNullString, UNDO_Image
         
         Case "layer_visibility"
             Case "layer_show"
-                Process "Toggle layer visibility", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
+                Process "Toggle layer visibility", False, BuildParamList("layerindex", targetLayerIndex), UNDO_LayerHeader
                 
             Case "layer_showonly"
-                Process "Show only this layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Show only this layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
                 
             Case "layer_hideonly"
-                Process "Hide only this layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                Process "Hide only this layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_ImageHeader
                 
             Case "layer_showall"
                 Process "Show all layers", False, vbNullString, UNDO_ImageHeader
@@ -619,7 +643,7 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 
         Case "layer_size"
             Case "layer_resetsize"
-                Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
+                Process "Reset layer size", False, BuildParamList("layerindex", targetLayerIndex), UNDO_LayerHeader
                 
             Case "layer_resize"
                 Process "Resize layer", True
@@ -628,7 +652,7 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
                 Process "Content-aware layer resize", True
                 
             Case "layer_fittoimage"
-                Process "Fit layer to image", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
+                Process "Fit layer to image", False, BuildParamList("layerindex", targetLayerIndex), UNDO_LayerHeader
                 
         Case "layer_transparency"
             Case "layer_colortoalpha"
@@ -645,7 +669,7 @@ Private Function Launch_ByName_MenuLayer(ByRef srcMenuName As String, Optional B
         
         Case "layer_rasterize"
             Case "layer_rasterizecurrent"
-                Process "Rasterize layer", , , UNDO_Layer
+                Process "Rasterize layer", False, BuildParamList("layerindex", targetLayerIndex), UNDO_Layer
                 
             Case "layer_rasterizeall"
                 Process "Rasterize all layers", , , UNDO_Image

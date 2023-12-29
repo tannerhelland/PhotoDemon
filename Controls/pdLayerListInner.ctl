@@ -296,22 +296,16 @@ Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenu
     'Make sure a valid layer was clicked
     If (m_RightClickIndex < 0) Then Exit Sub
     
-    Select Case idxMenuTop
+    'As a failsafe, before modifying the image, force any non-destructive changes (like visibility toggles)
+    ' to be included in the current image state, because right-click toggles can do things like modify
+    ' the active layer (which can cause non-destructive changes to be lost).
+    PDImages.GetActiveImage.UndoManager.ForceLastUndoDataToIncludeEverything
     
-        'Hide all layers but this one
-        Case 0
-            
-            'See if the clicked layer differs from the current active layer; if it does, we want to activate
-            ' the clicked layer (as the user is unlikely to want a soon-to-be-invisible layer as the active one!)
-            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex).GetLayerID) Then
-                Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
-                Layers.SetActiveLayerByIndex m_RightClickIndex, False
-            End If
-            
-            Process "Show only this layer", False, BuildParamList("layerindex", m_RightClickIndex), UNDO_ImageHeader
-            
-    End Select
-
+    'All popup menu items simply reference core PD actions, but some require us to temporarily suspend action validation.
+    ' (This is because some action validations can only be performed against the currently active layer, and via popup,
+    ' the user can select other layers.)
+    Actions.LaunchAction_ByName clickedMenuID, pdas_Menu, (clickedMenuID = "layer_mergeup") Or (clickedMenuID = "layer_mergedown"), m_RightClickIndex
+    
 End Sub
 
 'If the layer name textbox is visible and the Enter key is pressed, commit the changed layer name and hide the text box
@@ -569,12 +563,33 @@ Private Sub ShowLayerPopupMenu(ByVal srcX As Long, ByVal srcY As Long)
     
     m_PopupMenu.Reset
     
-    'Construct the menu.  (The current layout of this menu is a mashup between Photoshop and GIMP options.)
+    Dim menuItemVisible As Boolean
+    
+    'Construct the menu.  (The current layout of this menu largely mimics Photoshop.)
     With m_PopupMenu
-        .AddMenuItem g_Language.TranslateMessage("Show this layer"), "show-layer", 0, menuIsChecked:=PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex, True).GetLayerVisibility()
-        .AddMenuItem g_Language.TranslateMessage("Show only this layer"), "show-only", 1
-        .AddMenuItem g_Language.TranslateMessage("Hide only this layer"), "hide-only", 2
-        .AddMenuItem "-"
+        .AddMenuItem g_Language.TranslateMessage("Show this layer"), "layer_show", 0, menuIsChecked:=PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex, True).GetLayerVisibility()
+        .AddMenuItem g_Language.TranslateMessage("Show only this layer"), "layer_showonly", 1
+        .AddMenuItem g_Language.TranslateMessage("Hide only this layer"), "layer_hideonly", 2
+        .AddMenuItem "-", "-", 3
+        .AddMenuItem g_Language.TranslateMessage("Duplicate layer"), "layer_duplicate", 4
+        .AddMenuItem g_Language.TranslateMessage("Delete layer"), "layer_deletecurrent", 5, menuIsEnabled:=(PDImages.GetActiveImage.GetNumOfLayers() > 1)
+        .AddMenuItem "-", "-", 6
+        .AddMenuItem g_Language.TranslateMessage("Rasterize layer"), "layer_rasterizecurrent", 7, menuIsEnabled:=PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex, True).IsLayerVector()
+        .AddMenuItem "-", "-", 8
+        
+        Dim allowMergeUp As Boolean, allowMergeDown As Boolean
+        If (PDImages.GetActiveImage.GetNumOfLayers() > 1) Then
+            allowMergeUp = (Layers.IsLayerAllowedToMergeAdjacent(m_RightClickIndex, False) <> -1)
+            allowMergeDown = (Layers.IsLayerAllowedToMergeAdjacent(m_RightClickIndex, True) <> -1)
+        Else
+            allowMergeUp = False
+            allowMergeDown = False
+        End If
+        .AddMenuItem g_Language.TranslateMessage("Merge up"), "layer_mergeup", 9, menuIsEnabled:=allowMergeUp
+        .AddMenuItem g_Language.TranslateMessage("Merge down"), "layer_mergedown", 10, menuIsEnabled:=allowMergeDown
+        
+        .AddMenuItem g_Language.TranslateMessage("Merge visible layers"), "image_mergevisible", 11, menuIsEnabled:=(PDImages.GetActiveImage.GetNumOfVisibleLayers() > 1)
+        .AddMenuItem g_Language.TranslateMessage("Flatten image..."), "image_flatten", 12, menuIsEnabled:=(PDImages.GetActiveImage.GetNumOfLayers() > 1)
     End With
     
     m_PopupMenu.ShowMenu Me.hWnd, srcX, srcY

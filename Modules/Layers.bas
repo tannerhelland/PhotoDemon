@@ -940,7 +940,7 @@ End Sub
 
 'Merge the layer at layerIndex up or down.
 Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Boolean)
-
+    
     'Look for a valid target layer to merge with in the requested direction.
     Dim mergeTarget As Long
     mergeTarget = IsLayerAllowedToMergeAdjacent(dLayerIndex, mergeDown)
@@ -1006,11 +1006,11 @@ End Sub
 '
 'It should be obvious, but the parameter srcLayerIndex is the index of the layer the caller wants to merge.
 Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal moveDown As Boolean) As Long
-
+    
     Dim i As Long
     
     'First, make sure the layer in question exists
-    If Not PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex) Is Nothing Then
+    If (Not PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex) Is Nothing) Then
     
         'Check MERGE DOWN
         If moveDown Then
