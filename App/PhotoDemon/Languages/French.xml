@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.606</langversion>
+<langversion>6.7.607</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -4542,11 +4542,31 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
+<original>Show this layer</original>
+<translation>Montrer ce calque</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation>Dupliquer ce calque</translation>
+</phrase>
+
+<phrase>
+<original>Merge up</original>
+<translation>Fusionner avec le dessus</translation>
+</phrase>
+
+<phrase>
+<original>Merge down</original>
+<translation>Fusionner avec le dessous</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>Réorganiser les calques</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -5064,16 +5084,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
-<original>Merge up</original>
-<translation>Fusionner avec le dessus</translation>
-</phrase>
-
-<phrase>
-<original>Merge down</original>
-<translation>Fusionner avec le dessous</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Ordre</translation>
 </phrase>
@@ -5106,11 +5116,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 <phrase>
 <original>Visibility</original>
 <translation>Visibilité</translation>
-</phrase>
-
-<phrase>
-<original>Show this layer</original>
-<translation>Montrer ce calque</translation>
 </phrase>
 
 <phrase>
@@ -5736,7 +5741,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10207,6 +10212,13 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>compression level</original>
 <translation>Taux de compression</translation>
 </phrase>
@@ -11776,12 +11788,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>Clic : Dupliquer ce calque</translation>
 </phrase>
 
-<phrase>
-<original>Duplicate layer</original>
-<translation>Dupliquer ce calque</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -14094,19 +14101,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>effort</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5597 phrases. -->
-<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5614 phrases. -->
+<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
 <!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>

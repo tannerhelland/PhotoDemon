@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.18</langversion>
+<langversion>1.0.19</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -4521,11 +4521,31 @@ Bu dosyayı İnternet tarayıcınızı kullanarak manuel olarak indirmeniz gerek
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
+<original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation>Katmanı Çoğalt</translation>
+</phrase>
+
+<phrase>
+<original>Merge up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge down</original>
+<translation>Aşağı Birleştir</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation></translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -5042,16 +5062,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge up</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Merge down</original>
-<translation>Aşağı Birleştir</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Sıralama</translation>
 </phrase>
@@ -5083,11 +5093,6 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Visibility</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Show this layer</original>
 <translation></translation>
 </phrase>
 
@@ -5710,7 +5715,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10175,6 +10180,13 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>compression level</original>
 <translation></translation>
 </phrase>
@@ -11744,12 +11756,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Duplicate layer</original>
-<translation>Katmanı Çoğalt</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -14037,19 +14044,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>effort</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5597 phrases. -->
-<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5614 phrases. -->
+<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
 <!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>
