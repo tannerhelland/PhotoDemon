@@ -386,16 +386,18 @@ Public Function AddLayerFromVisibleLayers(Optional replaceActiveLayerInstead As 
     
 End Function
 
-'Shortcut function to mimic Ctrl+C, Ctrl+V
+'Shortcut function to mimic Ctrl+C, Ctrl+V, Remove selection
 Public Sub AddLayerViaCopy()
     g_Clipboard.ClipboardCopy False, False, pdcf_InternalPD
     g_Clipboard.ClipboardPaste True
+    Selections.RemoveCurrentSelection True
 End Sub
 
-'Shortcut function to mimic Ctrl+X, Ctrl+V
+'Shortcut function to mimic Ctrl+X, Ctrl+V, Remove selection
 Public Sub AddLayerViaCut()
     g_Clipboard.ClipboardCut False, pdcf_InternalPD
     g_Clipboard.ClipboardPaste True
+    Selections.RemoveCurrentSelection True
 End Sub
 
 'Shortcut function to create a new layer (sort of like AddLayerViaCopy/Cut above, but this
