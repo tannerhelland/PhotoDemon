@@ -33,6 +33,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'If TRUE, writes additional pipe creation notifications to the debug log.
+' (Turn off in production code!)
+Private Const PDPIPE_DEBUG_VERBOSE As Boolean = False
+
 'The type of raised event depends on the pipe's mode (currently only byte mode is implemented).
 Public Event BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
 
@@ -140,7 +144,7 @@ Friend Function CreatePipe(ByRef pipeName As String, ByRef instantiatedDstStream
     CreatePipe = (m_Pipe <> 0) And (m_Pipe <> INVALID_HANDLE_VALUE)
     If CreatePipe Then
         
-        PDDebug.LogAction "Successfully created pipe: " & m_Pipe & ", " & Err.LastDllError
+        If PDPIPE_DEBUG_VERBOSE Then PDDebug.LogAction "Successfully created pipe: " & m_Pipe & ", " & Err.LastDllError
         
         'Point our stream reference at the caller's stream; all pipe data will be placed there
         ' as it arrives.

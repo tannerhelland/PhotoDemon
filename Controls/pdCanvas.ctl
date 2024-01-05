@@ -369,8 +369,8 @@ End Enum
 Private m_Colors As pdThemeColors
 
 'Popup menu for the image strip
-Private WithEvents m_PopupImageStrip As pdPopupMenu
-Attribute m_PopupImageStrip.VB_VarHelpID = -1
+Private WithEvents m_PopupMenu As pdPopupMenu
+Attribute m_PopupMenu.VB_VarHelpID = -1
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Canvas
@@ -830,9 +830,9 @@ Private Sub hypRecentFiles_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     End If
 End Sub
 
-Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenuTop As Long, ByVal idxMenuSub As Long)
 
-    Select Case mnuIndex
+    Select Case idxMenuTop
         
         'Save
         Case 0
@@ -1534,7 +1534,7 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         
         'Raise the context menu
         BuildPopupMenu
-        If (Not m_PopupImageStrip Is Nothing) Then m_PopupImageStrip.ShowMenu ImageStrip.hWnd, x, y
+        If (Not m_PopupMenu Is Nothing) Then m_PopupMenu.ShowMenu ImageStrip.hWnd, x, y
         ShowCursor 1
         
     End If
@@ -2559,22 +2559,22 @@ End Sub
 
 Private Sub BuildPopupMenu()
     
-    Set m_PopupImageStrip = New pdPopupMenu
+    Set m_PopupMenu = New pdPopupMenu
     
-    With m_PopupImageStrip
+    With m_PopupMenu
         
-        .AddMenuItem Menus.GetCaptionFromName("file_save"), Menus.IsMenuEnabled("file_save")
-        .AddMenuItem Menus.GetCaptionFromName("file_savecopy"), Menus.IsMenuEnabled("file_savecopy")
-        .AddMenuItem Menus.GetCaptionFromName("file_saveas"), Menus.IsMenuEnabled("file_saveas")
-        .AddMenuItem Menus.GetCaptionFromName("file_revert"), Menus.IsMenuEnabled("file_revert")
+        .AddMenuItem Menus.GetCaptionFromName("file_save"), menuIsEnabled:=Menus.IsMenuEnabled("file_save")
+        .AddMenuItem Menus.GetCaptionFromName("file_savecopy"), menuIsEnabled:=Menus.IsMenuEnabled("file_savecopy")
+        .AddMenuItem Menus.GetCaptionFromName("file_saveas"), menuIsEnabled:=Menus.IsMenuEnabled("file_saveas")
+        .AddMenuItem Menus.GetCaptionFromName("file_revert"), menuIsEnabled:=Menus.IsMenuEnabled("file_revert")
         .AddMenuItem "-"
         
         'Open in Explorer only works if the image is currently on-disk
-        .AddMenuItem g_Language.TranslateMessage("Open location in Explorer"), (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
+        .AddMenuItem g_Language.TranslateMessage("Open location in Explorer"), menuIsEnabled:=(LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
         
         .AddMenuItem "-"
         .AddMenuItem Menus.GetCaptionFromName("file_close")
-        .AddMenuItem g_Language.TranslateMessage("Close all except this"), (PDImages.GetNumOpenImages() > 1)
+        .AddMenuItem g_Language.TranslateMessage("Close all except this"), menuIsEnabled:=(PDImages.GetNumOpenImages() > 1)
         
     End With
     

@@ -414,9 +414,9 @@ Private Sub m_DownButtonTimer_Timer()
 
 End Sub
 
-Private Sub m_PopupMenu_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenuTop As Long, ByVal idxMenuSub As Long)
     
-    Select Case mnuIndex
+    Select Case idxMenuTop
         
         'Scroll here
         Case 0
@@ -1281,35 +1281,35 @@ Private Sub CreatePopupMenu()
     If PDMain.IsProgramRunning() And (Not g_Language Is Nothing) Then
         
         Set m_PopupMenu = New pdPopupMenu
-        m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll here")
+        m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll here"), "scroll-here"
         m_PopupMenu.AddMenuItem "-"
         
         If m_OrientationHorizontal Then
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Left edge")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Right edge")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Left edge"), "top"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Right edge"), "bottom"
         Else
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Top")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Bottom")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Top"), "top"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Bottom"), "bottom"
         End If
         
         m_PopupMenu.AddMenuItem "-"
         
         If m_OrientationHorizontal Then
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page left")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page right")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page left"), "page-up"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page right"), "page-down"
         Else
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page up")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page down")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page up"), "page-up"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page down"), "page-down"
         End If
         
         m_PopupMenu.AddMenuItem "-"
         
         If m_OrientationHorizontal Then
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll left")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll right")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll left"), "scroll-up"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll right"), "scroll-down"
         Else
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll up")
-            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll down")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll up"), "scroll-up"
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll down"), "scroll-down"
         End If
         
     End If

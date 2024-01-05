@@ -490,12 +490,12 @@ Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericP
     
 End Sub
 
-'When a control tied to a non-destructive layer effect loses focus, it should call this function with its current value (translated
-' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this function
-' will add an Undo entry and notify the macro recorder (if active).
+'When a control tied to a non-destructive layer effect loses focus, it should call this function with its current value
+' (translated as appropriate).  This function will compare the value against its previously stored value, and if the two
+' do not match, this function will add an Undo entry and notify the macro recorder (if active).
 '
-'If the layer ID is significant, it can also be passed.  If supplied, it will be checked against the previous layer ID, and an Undo
-' will be generated only if the two values match.
+'If the layer ID is significant, it can also be passed.  If supplied, it will be checked against the previous layer ID,
+' and an Undo will be generated only if the two values match.
 Public Function FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1) As Boolean
     
     'Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
@@ -2594,7 +2594,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional ByVal rai
         
     'Rasterizing
     ElseIf Strings.StringsEqual(processID, "Rasterize layer", True) Then
-        Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
+        Layers.RasterizeLayer cParams.GetLong("layerindex")
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Rasterize all layers", True) Then

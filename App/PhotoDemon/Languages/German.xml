@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.207</langversion>
+<langversion>9.2.208</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4544,11 +4544,31 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
+<original>Show this layer</original>
+<translation>Diesen Layer zeigen</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation>Layer duplizieren</translation>
+</phrase>
+
+<phrase>
+<original>Merge up</original>
+<translation>Nach oben zusammenführen</translation>
+</phrase>
+
+<phrase>
+<original>Merge down</original>
+<translation>Nach unten zusammenführen</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>Layer neu anordnen</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -5066,16 +5086,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Merge up</original>
-<translation>Nach oben zusammenführen</translation>
-</phrase>
-
-<phrase>
-<original>Merge down</original>
-<translation>Nach unten zusammenführen</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Reihenfolge</translation>
 </phrase>
@@ -5108,11 +5118,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>Visibility</original>
 <translation>Sichtbarkeit</translation>
-</phrase>
-
-<phrase>
-<original>Show this layer</original>
-<translation>Diesen Layer zeigen</translation>
 </phrase>
 
 <phrase>
@@ -5738,7 +5743,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10207,6 +10212,13 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>effort</original>
+<translation>Aufwand</translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>compression level</original>
 <translation>Kompressionslevel</translation>
 </phrase>
@@ -11776,12 +11788,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klick: Ein Duplikat dieses Layers hinzufügen</translation>
 </phrase>
 
-<phrase>
-<original>Duplicate layer</original>
-<translation>Layer duplizieren</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -14079,19 +14086,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>effort</original>
-<translation>Aufwand</translation>
-</phrase>
-
-<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5597 phrases. -->
-<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5614 phrases. -->
+<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
 <!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>

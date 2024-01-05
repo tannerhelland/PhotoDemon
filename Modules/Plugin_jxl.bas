@@ -39,10 +39,6 @@ Private Const JXL_DEBUG_VERBOSE As Boolean = True
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).
 Private m_jxlImportAvailable As Boolean, m_jxlExportAvailable As Boolean
 
-'Version numbers are only retrieved once, then cached.  (We need to check version numbers before
-' communicating with libjxl, because some optional settings only work on specific library versions.)
-Private m_inputVersion As String, m_outputVersion As String
-
 'Initialize the library.  Do not call this until you have verified its existence (typically via the PluginManager module)
 Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
     

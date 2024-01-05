@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.329</langversion>
+<langversion>6.7.330</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -4538,11 +4538,31 @@ You will need to manually download this file using your Internet browser.</origi
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
+<original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge up</original>
+<translation>Combinar con capa superior</translation>
+</phrase>
+
+<phrase>
+<original>Merge down</original>
+<translation>Combinar con capa inferior</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>Reorganizar capas</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -5059,16 +5079,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge up</original>
-<translation>Combinar con capa superior</translation>
-</phrase>
-
-<phrase>
-<original>Merge down</original>
-<translation>Combinar con capa inferior</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Ordenar</translation>
 </phrase>
@@ -5100,11 +5110,6 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Visibility</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Show this layer</original>
 <translation></translation>
 </phrase>
 
@@ -5731,7 +5736,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 212 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10202,6 +10207,13 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>effort</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>compression level</original>
 <translation>Nivel de compresión</translation>
 </phrase>
@@ -11771,12 +11783,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Duplicate layer</original>
-<translation></translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -14074,19 +14081,12 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>effort</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2665</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5597 phrases. -->
-<!-- 2932 are duplicates, so only 2665 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5614 phrases. -->
+<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
 <!-- These 2665 phrases contain approximately 11610 total words. -->
 
 </pdData>

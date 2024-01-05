@@ -341,8 +341,8 @@ Private Sub SyncUI_MultipleLayerSettings()
     Menus.SetMenuEnabled "layer_deletehidden", (PDImages.GetActiveImage.GetNumOfHiddenLayers > 0) And (PDImages.GetActiveImage.GetNumOfHiddenLayers < PDImages.GetActiveImage.GetNumOfLayers)
     
     'Merge up/down are not available for layers at the top and bottom of the image
-    Menus.SetMenuEnabled "layer_mergeup", (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, False) <> -1)
-    Menus.SetMenuEnabled "layer_mergedown", (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
+    Menus.SetMenuEnabled "layer_mergeup", (Layers.IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, False) <> -1)
+    Menus.SetMenuEnabled "layer_mergedown", (Layers.IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
     
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top layers (similarly for bottom layers and "move down/bottom"),

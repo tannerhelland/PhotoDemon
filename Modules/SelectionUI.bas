@@ -672,37 +672,41 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
-    If (vkCode = VK_BACK) And ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
+    If (vkCode = VK_BACK) And ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And PDImages.GetActiveImage.IsSelectionActive Then
         
-        markEventHandled = True
-        
-        'Polygons: do not allow point removal if the polygon has already been successfully closed.
-        If (g_CurrentTool = SELECT_POLYGON) Then
-            If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) Then PDImages.GetActiveImage.MainSelection.RemoveLastPolygonPoint
-        
-        'Lassos: do not allow point removal if the lasso has already been successfully closed.
-        Else
-        
-            If (Not PDImages.GetActiveImage.MainSelection.GetLassoClosedState) Then
-        
-                'Ask the selection object to retreat its position
-                Dim newImageX As Double, newImageY As Double
-                PDImages.GetActiveImage.MainSelection.RetreatLassoPosition newImageX, newImageY
-                
-                'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
-                Dim newCanvasX As Double, newCanvasY As Double
-                Drawing.ConvertImageCoordsToCanvasCoords srcCanvas, PDImages.GetActiveImage(), newImageX, newImageY, newCanvasX, newCanvasY
-                
-                'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
-                srcCanvas.SetCursorToCanvasPosition newCanvasX, newCanvasY
+        If (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
+            
+            markEventHandled = True
+            
+            'Polygons: do not allow point removal if the polygon has already been successfully closed.
+            If (g_CurrentTool = SELECT_POLYGON) Then
+                If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) Then PDImages.GetActiveImage.MainSelection.RemoveLastPolygonPoint
+            
+            'Lassos: do not allow point removal if the lasso has already been successfully closed.
+            Else
+            
+                If (Not PDImages.GetActiveImage.MainSelection.GetLassoClosedState) Then
+            
+                    'Ask the selection object to retreat its position
+                    Dim newImageX As Double, newImageY As Double
+                    PDImages.GetActiveImage.MainSelection.RetreatLassoPosition newImageX, newImageY
+                    
+                    'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
+                    Dim newCanvasX As Double, newCanvasY As Double
+                    Drawing.ConvertImageCoordsToCanvasCoords srcCanvas, PDImages.GetActiveImage(), newImageX, newImageY, newCanvasX, newCanvasY
+                    
+                    'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
+                    srcCanvas.SetCursorToCanvasPosition newCanvasX, newCanvasY
+                    
+                End If
                 
             End If
             
+            'Redraw the screen to reflect this new change.
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+            
         End If
         
-        'Redraw the screen to reflect this new change.
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
-    
     End If
     
 End Sub

@@ -223,7 +223,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         
         'The only other supported key (at this point) is TAB.  Tab keypresses are handled by the object list;
         ' it's responsible for figuring out which control is next in order.
-        Else
+        ElseIf (navKeyCode = pdnk_Tab) Then
             m_Forms(formIndex).NotifyTabKey childHwnd, ((Shift And vbShiftMask) <> 0)
             NotifyNavKeypress = True
         End If
