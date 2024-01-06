@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2023 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 20/July/21
-'Last update: add a fast "RemoveString" function; this isn't actually needed in PD, but in the separate
-'             update-file-generator (which needs to manually flag some files as unnecessary)
+'Last updated: 06/January/24
+'Last update: minor hardening against actions like passing null objects
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -128,7 +127,7 @@ End Sub
 'Trim the stack to its exact size.
 ' IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
 Friend Sub TrimStack()
-    ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
+    If (m_NumOfStrings > 0) Then ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
 End Sub
 
 Friend Sub FreeString(ByVal strIndex As Long)
@@ -159,9 +158,9 @@ Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 
     If (m_NumOfStrings > 1) Then
     
-        'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order is typically pretty close
-        ' to sorted.  This saves us from needing an elaborate search algorithm; instead, a simple in-place bubble sort
-        ' is predictable and good enough.
+        'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order
+        ' is typically pretty close to sorted.  This saves us from needing an elaborate search algorithm;
+        ' instead, a simple in-place bubble sort is predictable and good enough.
         Dim i As Long, j As Long, loopBound As Long
         loopBound = m_NumOfStrings - 1
         
@@ -558,32 +557,49 @@ End Sub
 'Clone another string stack
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
     
-    'Initialize this stack to the size of the target
-    Me.ResetStack stackToClone.GetNumOfStrings()
-    
-    'Copy all strings
-    Dim i As Long
-    For i = 0 To stackToClone.GetNumOfStrings() - 1
-        Me.AddString stackToClone.GetString(i)
-    Next i
+    'Failsafe only
+    If Not (stackToClone Is Nothing) Then
+        
+        'Initialize this stack to the size of the target
+        Me.ResetStack stackToClone.GetNumOfStrings()
+        
+        If (stackToClone.GetNumOfStrings > 0) Then
+            
+            'Copy all strings
+            Dim i As Long
+            For i = 0 To stackToClone.GetNumOfStrings() - 1
+                Me.AddString stackToClone.GetString(i)
+            Next i
+            
+        End If
+        
+    End If
     
 End Sub
 
 'Return our list of strings as a bare string array
 Friend Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
-    ReDim dstStringArray(0 To m_NumOfStrings - 1) As String
-    Dim i As Long
-    For i = 0 To m_NumOfStrings - 1
-        dstStringArray(i) = m_Strings(i)
-    Next i
+    If (m_NumOfStrings > 0) Then
+        ReDim dstStringArray(0 To m_NumOfStrings - 1) As String
+        Dim i As Long
+        For i = 0 To m_NumOfStrings - 1
+            dstStringArray(i) = m_Strings(i)
+        Next i
+    Else
+        ReDim dstStringArray(0) As String
+    End If
 End Sub
 
 'Fill this stack with the contents of a bare string array.  Do not pass an uninitialized array.
 Friend Sub CreateFromStringArray(ByRef srcStringArray() As String)
-    Dim i As Long
-    For i = LBound(srcStringArray) To UBound(srcStringArray)
-        Me.AddString srcStringArray(i)
-    Next i
+    If (UBound(srcStringArray) >= 0) Then
+        Dim i As Long
+        For i = LBound(srcStringArray) To UBound(srcStringArray)
+            Me.AddString srcStringArray(i)
+        Next i
+    Else
+        Me.ResetStack
+    End If
 End Sub
 
 'Fill this stack by parsing a string.  VBA.Split() is currently used; obviously a faster solution could be implemented.
@@ -624,8 +640,8 @@ Friend Sub RemoveStringByIndex(ByVal stringIndex As Long)
 End Sub
 
 'Convenience wrapper to RemoveStringByIndex(), above.
-' Returns TRUE if string is found and removed successfully; FALSE means the
-' string doesn't exist in the current stack.
+' Returns TRUE if string is found and removed successfully;
+' FALSE means the string doesn't exist in the current stack.
 Friend Function RemoveStringByText(ByRef srcString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     Dim idxTarget As Long
     idxTarget = Me.ContainsString(srcString, ignoreCase)
@@ -691,6 +707,8 @@ Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As 
     On Error GoTo RecreateFailure
     
     Me.ResetStack
+    
+    If (LenB(srcString) = 0) Then Exit Function
     
     Dim tstPipeString As String: tstPipeString = "|"
     Dim rplPipeString As String: rplPipeString = "&pipe;"
