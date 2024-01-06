@@ -272,7 +272,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 22/August/23
 'Last update: minor tweaks as more libraries are moved to a "download on-demand" implementation

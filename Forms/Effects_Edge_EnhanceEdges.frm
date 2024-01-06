@@ -109,7 +109,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Enhancement Interface
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: sometimes 2002
 'Last updated: 29/July/17
 'Last update: performance improvements, migrate to XML params

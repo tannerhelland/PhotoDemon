@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Region Class
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 18/June/16 (but assembled from many bits written earlier)
 'Last updated: 19/June/16
 'Last update: continue expanding functionality

@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Label control
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 02/November/15
 'Last update: convert to ucSupport.  This control was a messy one, but it has the most to gain from program-level

@@ -1,7 +1,7 @@
 Attribute VB_Name = "TextSupport"
 '***************************************************************************
 'Miscellaneous functions related to specialized text handling
-'Copyright 2000-2023 by Tanner Helland
+'Copyright 2000-2024 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 21/January/22
 'Last update: fix minor parsing issue in IncrementTrailingNumber().  (Parentheses without a preceding

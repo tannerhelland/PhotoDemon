@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PD Object List Manager
-'Copyright 2017-2023 by Tanner Helland
+'Copyright 2017-2024 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 27/October/21
 'Last update: catch (and report) window maximize/restore events, in case we add availability to more tool windows
@@ -77,7 +77,7 @@ Private m_AutoResize As Boolean
 'Because this class already tracks window relationships (particularly controls against their parent forms),
 ' it provides a natural place to generate run-time object names.  PD uses these to generate unique control names
 ' that localizers can use for translation purposes (e.g. "toolbar_Layers.layerpanel_Layers.lblLayerSettings(2)")
-Private m_ParentName As String
+Private m_parentName As String
 
 'hWnds of child controls
 Private Const INIT_NUM_OF_CONTROLS As Long = 16
@@ -139,7 +139,7 @@ Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean, 
         GetWindowRect m_ParentHWnd, VarPtr(m_ParentRectScreen)
         GetClientRect m_ParentHWnd, VarPtr(m_ParentRectClient)
         m_AutoResize = handleAutoResize
-        m_ParentName = parentName
+        m_parentName = parentName
         
         'Some dialogs use custom preview windows; they need to notify us of this, so we can anchor
         ' that control specially
@@ -206,7 +206,7 @@ Friend Function GetFirstHWndForType(ByVal srcType As PD_ControlType) As Long
 End Function
 
 Friend Function GetParentName() As String
-    GetParentName = m_ParentName
+    GetParentName = m_parentName
 End Function
 
 'Load individual controls using this function; we'll retrieve whatever we need from them

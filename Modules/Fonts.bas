@@ -1,7 +1,7 @@
 Attribute VB_Name = "Fonts"
 '***************************************************************************
 'PhotoDemon Font Manager
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 26/April/15
 'Last update: start splitting relevant bits from pdFont into this separate manager module.

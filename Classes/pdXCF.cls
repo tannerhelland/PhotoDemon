@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon XCF (GIMP native file format) Container and Parser
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 30/March/22
 'Last updated: 25/May/22
 'Last update: add support for GZip variants (.xcfgz, .xcf.gz)

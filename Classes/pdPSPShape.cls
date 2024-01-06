@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Vector Shape Container
-'Copyright 2020-2023 by Tanner Helland
+'Copyright 2020-2024 by Tanner Helland
 'Created: 31/December/20
 'Last updated: 25/May/22
 'Last update: in text layers, replace standalone LF chars with CRLF to ensure correct linebreak behavior

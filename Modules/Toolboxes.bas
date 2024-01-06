@@ -1,7 +1,7 @@
 Attribute VB_Name = "Toolboxes"
 '***************************************************************************
 'Toolbox Manager
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 06/March/16
 'Last update: split toolbox-specific code out of the (now very large) Interface module and into this dedicated home.

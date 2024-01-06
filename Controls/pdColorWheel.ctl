@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Color Wheel" color selector
-'Copyright 2015-2023 by Tanner Helland
+'Copyright 2015-2024 by Tanner Helland
 'Created: 19/October/15
 'Last updated: 15/February/16
 'Last update: implement theming and a few new features

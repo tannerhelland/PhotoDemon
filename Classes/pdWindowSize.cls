@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DPI-Aware Window Resize class
-'Copyright 2015-2023 by Tanner Helland
+'Copyright 2015-2024 by Tanner Helland
 'Created: 23/September/15 (but built from many parts existing earlier)
 'Last updated: 26/August/20
 'Last update: add optional support for handling min/max messages; this will be important when I finally

@@ -173,7 +173,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright 2000-2023 by Tanner Helland
+'Copyright 2000-2024 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 11/August/17
 'Last update: hide the background color selector if the current image doesn't contain transparency

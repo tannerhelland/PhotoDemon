@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Modern Art Tool
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 09/Feb/13
 'Last updated: 23/November/15
 'Last update: convert to XML parameter list

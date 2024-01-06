@@ -78,7 +78,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Oil Painting Effect Tool
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 09/August/13
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params

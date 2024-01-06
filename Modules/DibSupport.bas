@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIBs"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 27/March/15 (though many individual functions are much older!)
 'Last updated: 28/October/22
 'Last update: improve behavior of alpha-channel thresholding

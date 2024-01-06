@@ -61,7 +61,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'SVG Import Dialog (also works on Windows metafiles, e.g. EMF/WMF)
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 02/March/22
 'Last updated: 09/December/22
 'Last update: expand the dialog to work with Windows metafiles too (EMF/WMF)

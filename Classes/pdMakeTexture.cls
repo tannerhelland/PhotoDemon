@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Seamless Texture Generation class
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 21/April/22
 'Last updated: 02/May/22
 'Last update: split into separate class from in-painter; these two functions share a lot of code,

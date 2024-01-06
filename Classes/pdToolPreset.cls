@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Individual Tool Preset handler
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 07/March/15
 'Last update: split some parts of preset management out of the command bar and into this standalone class

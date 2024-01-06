@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 13/September/22
 'Last update: new func for wrapping a signed short array around arbitrary pointers (for HGT import)

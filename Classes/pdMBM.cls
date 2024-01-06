@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon MBM (Psion, Symbian) Image Importer (export not currently supported)
-'Copyright 2020-2023 by Tanner Helland
+'Copyright 2020-2024 by Tanner Helland
 'Created: 03/November/20
 'Last updated: 30/December/20
 'Last update: add support for AIF files, including embedded masks

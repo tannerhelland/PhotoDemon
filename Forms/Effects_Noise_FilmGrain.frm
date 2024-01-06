@@ -78,7 +78,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Add Film Grain Tool
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 07/August/17
 'Last update: convert to XML params, large performance improvements

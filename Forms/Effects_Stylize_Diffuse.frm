@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 8/14/01
 'Last updated: 08/August/17
 'Last update: migrate to XML params, large performance improvements

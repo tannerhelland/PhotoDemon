@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fast Histogram class (focused on RGB/A support), using hash-table + separate chaining (linked-list) for collisions
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 07/March/22
 'Last updated: 22/March/22
 'Last update: fix bug on properly resetting overflow index after table resize

@@ -168,7 +168,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'TIFF export dialog
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 29/April/16
 'Last update: repurpose old color-depth dialog into a TIFF-specific one

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_AVIF"
 '***************************************************************************
 'libavif Interface
-'Copyright 2021-2023 by Tanner Helland
+'Copyright 2021-2024 by Tanner Helland
 'Created: 13/July/21
 'Last updated: 13/September/23
 'Last update: use the new pdPipeSync class for shell and output capture

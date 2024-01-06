@@ -1,7 +1,7 @@
 Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 14/December/21
 'Last update: fix cursor hotspot placement bug when creating cursors from resources

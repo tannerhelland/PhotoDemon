@@ -1,7 +1,7 @@
 Attribute VB_Name = "CanvasManager"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 18/October/21
 'Last update: rework image unload wrappers to support new "automatic session restore after reboot" preference

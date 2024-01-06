@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Canvas Size Handler
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 09/January/17
 'Last update: overhaul anchor point code to use arrows rendered at run-time (instead of fixed resources)

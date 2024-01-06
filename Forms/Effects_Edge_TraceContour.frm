@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Trace Contour (Outline) Tool
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 15/Feb/13
 'Last updated: 24/June/20
 'Last update: introduce wavelet optimizations for the median step; this provides large performance improvements

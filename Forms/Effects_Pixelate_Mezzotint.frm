@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Mezzotint Effect Tool
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 03/April/15
 'Last updated: 04/April/15
 'Last update: wrap up initial build

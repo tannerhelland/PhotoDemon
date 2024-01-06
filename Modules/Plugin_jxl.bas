@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_jxl"
 '***************************************************************************
 'JPEG-XL Reference Library (libjxl) Interface
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 28/September/22
 'Last updated: 22/August/23
 'Last update: after many months (!!!) of waiting for the libjxl library to stabilize, I am giving up

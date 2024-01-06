@@ -196,7 +196,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Kaleiodoscope" Distortion
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 20/February/18
 'Last update: large performance improvements

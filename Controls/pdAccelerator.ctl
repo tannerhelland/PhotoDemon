@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
-'Copyright 2013-2023 by Tanner Helland and contributors
+'Copyright 2013-2024 by Tanner Helland and contributors
 'Created: 06/November/15 (split off from a heavily modified vbaIHookControl by Steve McMahon)
 'Last updated: 06/October/21
 'Last update: map "duplicate" virtual key IDs (e.g. keyboard + and numpad +) to the same internal key ID;

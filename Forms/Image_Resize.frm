@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 12/December/01
 'Last updated: 09/April/22
 'Last update: ensure at least 1x1 source pixels exist when generating a preview (this solves an issue where

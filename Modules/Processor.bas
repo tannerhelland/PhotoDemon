@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 31/March/22
 'Last update: add check for non-destructive property changes on layers that may have been deleted by the last effect

@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserControls"
 '***************************************************************************
 'Helper functions for various PhotoDemon UCs
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 20/August/15
 'Last update: start migrating various UC-inspecific functions here

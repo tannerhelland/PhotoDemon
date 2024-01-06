@@ -253,7 +253,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Palette Map Dialog (aka indexed color, reduce color count)
-'Copyright 2000-2023 by Tanner Helland
+'Copyright 2000-2024 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 21/September/21
 'Last update: overhaul UI to support new neural-network quantization features

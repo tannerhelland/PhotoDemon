@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'First-run Dialog
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 12/February/12
 'Last updated: 14/February/17
 'Last update: finally finish implementing this thing!

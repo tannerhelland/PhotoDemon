@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Nature > "Snow" Effect Dialog
-'Copyright 2017-2023 by Tanner Helland
+'Copyright 2017-2024 by Tanner Helland
 'Created: 03/August/17
 'Last updated: 04/August/17
 'Last update: wrap up initial build

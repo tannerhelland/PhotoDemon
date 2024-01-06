@@ -119,7 +119,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 20/April/20
 'Last update: condense conversions into a single function; perf optimize that function;

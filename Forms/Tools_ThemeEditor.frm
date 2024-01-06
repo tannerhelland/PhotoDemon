@@ -300,7 +300,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Resource editor dialog
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 22/August/16
 'Last updated: 14/April/22
 'Last update: replace lingering picture box with pdPictureBox

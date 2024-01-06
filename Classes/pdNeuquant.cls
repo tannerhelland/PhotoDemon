@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Neuquant-inspired Neural Network Color Quantization Class
-'Copyright 2021-2023 by Tanner Helland
+'Copyright 2021-2024 by Tanner Helland
 'Created: 16/September/21
 'Last updated: 21/September/21
 'Last update: myriad optimizations against VB6 quirks

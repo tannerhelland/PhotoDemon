@@ -67,7 +67,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tint Dialog
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 03/July/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 21/January/22
 'Last update: new support for moving only selected pixels via the Move/Size tool

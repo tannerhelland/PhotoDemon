@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDImages"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 03/December/18
 'Last update: separate from the old canvas handler, and fully integrate the old bare "m_PDImages()" array

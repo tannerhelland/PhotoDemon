@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sharpen Tool
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params

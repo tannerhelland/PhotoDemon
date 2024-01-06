@@ -1,7 +1,7 @@
 Attribute VB_Name = "EffectPrep"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 25/July/17
 'Last update: greatly optimize effects when an active selection is present

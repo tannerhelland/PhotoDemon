@@ -319,7 +319,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color-Picker Tool Panel
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 07/November/21
 'Last update: migrate to new flyout-driven UI

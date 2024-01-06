@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Move"
 '***************************************************************************
 'PhotoDemon Move/Size Tool Manager
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 24/May/14
 'Last updated: 22/December/22
 'Last update: add some trivial key-handling bits for the Hand tool (which is a different tool, but it has

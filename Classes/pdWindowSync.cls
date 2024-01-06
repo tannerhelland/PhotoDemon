@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Synchronization class
-'Copyright 2015-2023 by Tanner Helland
+'Copyright 2015-2024 by Tanner Helland
 'Created: 26/September/15
 'Last updated: 06/February/16
 'Last update: migrate to safer subclassing technique

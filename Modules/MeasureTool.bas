@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Measure"
 '***************************************************************************
 'Measure tool interface
-'Copyright 2018-2023 by Tanner Helland
+'Copyright 2018-2024 by Tanner Helland
 'Created: 11/July/17
 'Last updated: 13/July/17
 'Last update: wrap up initial build

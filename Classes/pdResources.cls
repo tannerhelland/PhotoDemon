@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Resource Manager
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 13/December/16
 'Last updated: 21/June/22
 'Last update: automatically extract 3D LUT (color lookup table) collection on first run

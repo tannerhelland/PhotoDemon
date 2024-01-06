@@ -1,7 +1,7 @@
 Attribute VB_Name = "Files"
 '***************************************************************************
 'Comprehensive wrapper for pdFSO (Unicode file and folder functions)
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 18/March/22
 'Last update: add additional pdFSO function wrapper(s)

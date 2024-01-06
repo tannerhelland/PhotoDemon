@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
-'Copyright 2019-2023 by Tanner Helland
+'Copyright 2019-2024 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 27/June/23
 'Last update: add additional failsafe checks for vector mask intersection with attached layer

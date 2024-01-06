@@ -142,7 +142,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: some time 2002
 'Last updated: 07/September/21
 'Last update: change "auto threshold" calculation to use Otsu's method (https://en.wikipedia.org/wiki/Otsu%27s_method);

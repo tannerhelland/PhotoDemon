@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon String Builder class
-'Copyright 2017-2023 by Tanner Helland
+'Copyright 2017-2024 by Tanner Helland
 'Created: 06/October/17
 'Last updated: 06/October/17
 'Last update: initial build

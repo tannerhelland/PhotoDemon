@@ -1,7 +1,7 @@
 Attribute VB_Name = "Autosaves"
 '***************************************************************************
 'Image Autosave Handler
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 18/January/14
 'Last updated: 18/October/21
 'Last update: use autosave engine to (silently) restore previous sessions after forced system reboot

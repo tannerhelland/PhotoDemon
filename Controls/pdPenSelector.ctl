@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pen Selector custom control
-'Copyright 2015-2023 by Tanner Helland
+'Copyright 2015-2024 by Tanner Helland
 'Created: 04/July/15
 'Last updated: 20/June/16
 'Last update: migrate to pd2D for all UI rendering

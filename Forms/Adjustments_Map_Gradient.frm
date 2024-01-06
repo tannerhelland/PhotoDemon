@@ -170,7 +170,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Map Adjustment Dialog
-'Copyright 2022-2023 by Tanner Helland
+'Copyright 2022-2024 by Tanner Helland
 'Created: 03/March/2022
 'Last updated: 10/March/2022
 'Last update: provide a "simple" mode for people who don't want to dive into the full gradient editor

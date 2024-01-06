@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats"
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright 2012-2023 by Tanner Helland
+'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 08/September/23
 'Last update: switch JPEG XL support to an on-demand download (on supported systems, e.g. Win 7+)

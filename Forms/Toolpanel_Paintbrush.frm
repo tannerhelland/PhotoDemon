@@ -260,7 +260,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Paintbrush Tool Panel
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 31/Oct/16
 'Last updated: 01/December/21
 'Last update: migrate UI to new flyout design

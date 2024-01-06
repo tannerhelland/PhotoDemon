@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Effect > Animation > Playback speed
-'Copyright 2019-2023 by Tanner Helland
+'Copyright 2019-2024 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 20/April/22
 'Last update: split off from main Image > Animation dialog as a dedicated "effect"

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_CharLS"
 '***************************************************************************
 'CharLS (lossless JPEG) Library Interface
-'Copyright 2021-2023 by Tanner Helland
+'Copyright 2021-2024 by Tanner Helland
 'Created: 12/September/21
 'Last updated: 16/September/21
 'Last update: import support for additional color-depths

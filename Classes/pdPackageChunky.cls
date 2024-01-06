@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackageChunky" v2.0 Interface (e.g. chunk-based archive handler)
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 03/June/19
 'Last updated: 11/March/20
 'Last update: require callers to manually validate buffer length when requesting blind write-to-ptr behavior

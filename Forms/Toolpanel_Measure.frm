@@ -322,7 +322,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Measurement Tool Panel
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 11/July/18
 'Last updated: 09/November/21
 'Last update: convert to new flyout-driven UI

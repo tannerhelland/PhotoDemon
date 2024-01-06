@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2023 by Tanner Helland
+'Copyright 2014-2024 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 05/September/23
 'Last update: switch JPEG-XL support to on-demand (instead of trying to ship it with PD)

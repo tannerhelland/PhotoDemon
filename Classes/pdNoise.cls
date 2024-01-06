@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Noise Generator
-'Copyright 2017-2023 by Tanner Helland
+'Copyright 2017-2024 by Tanner Helland
 'Created: 17/October/17
 'Last updated: 17/October/17
 'Last update: migrate noise-related functions from elsewhere in the project, add some new functions from

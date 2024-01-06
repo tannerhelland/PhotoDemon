@@ -1,7 +1,7 @@
 Attribute VB_Name = "Compression"
 '***************************************************************************
 'Unified Compression Interface for PhotoDemon
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 02/December/16
 'Last updated: 24/November/20
 'Last update: remove old workarounds for libdeflate lacking 0-mode compression; v1.7 now supports this

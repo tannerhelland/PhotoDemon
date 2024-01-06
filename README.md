@@ -2,7 +2,7 @@
 
 | Stable (9.0) | Nightly (9.2-a) | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v9.0/PhotoDemon-9.0.zip) | [Download ZIP (14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v9.0/PhotoDemon-9.0.zip) | [Download ZIP (15 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -18,7 +18,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ![Screenshot](https://photodemon.org/media/images/photodemon_9.0.png)
 
-PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 15 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -67,14 +67,23 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Import support for [satellite topography (HGT) images](https://www2.jpl.nasa.gov/srtm/faq.html#data)
 - Icon (ICO) export now provides [much higher-quality downsampling](https://github.com/tannerhelland/PhotoDemon/commit/6c3dc5ae7b33791d3cb2c7611409679f3a4c3e40) and a new `use merged image` option allows you to automatically generate icon frames from a merged multi-layer image.
 - Windows metafiles (EMF, WMF) now provide an import dialog where you can choose custom rasterization dimensions.
+- Bug-fixes and performance improvements to [multi-page TIFF export](https://github.com/tannerhelland/PhotoDemon/issues/508), with special thanks to [hi5](https://github.com/hi5).
+- Improved compatibility with vector layers and masks in [Photoshop (PSD) images](https://github.com/tannerhelland/PhotoDemon/commit/8a7bd8120aad2ce73922fb4b277fce3fe7f6a663).
 
 ### Image and Layer tools
 
 - [The Advanced Text Tool supports new features](https://github.com/tannerhelland/PhotoDemon/pull/431), including justified text alignment, custom fill + stroke order, and new antialiasing settings.
+- [Multiple image files can now be added by a single Add Layer action](https://github.com/tannerhelland/PhotoDemon/commit/ad020a5bd82f817855f1babc37187b584559ca4d), which is helpful for creating new animations from static image collections.
 - The `[Effects > Transform > Perspective]` tool now supports [custom forshortening values in both x- and y-directions](https://github.com/tannerhelland/PhotoDemon/commit/27f6d12242fad25e14b0226831d88fdd4ee7dc31).
+
+### Adjustments and Effects
+
+- [Improved support for Photoshop (8bf) filters](https://github.com/tannerhelland/PhotoDemon/commit/4d3c2a8319bdfc0ecbc0f0c0e07a6904fb36830d), with special thanks to [0xC0000054](https://github.com/0xC0000054).
 
 ### User interface 
 
+- [Automatic file-type detection from typed file extensions](https://github.com/tannerhelland/PhotoDemon/commit/ff684a1656078d14df9a0b19db210a79e590d71b) is now provided when saving to new formats, with special thanks to [hi5](https://github.com/hi5).
+- [Improved right-click menus](https://github.com/tannerhelland/PhotoDemon/pull/516) in the primary Layers toolbox.
 - [Improved Windows XP support](https://github.com/tannerhelland/PhotoDemon/commit/8b339413e4604a568c829df9f42e52aacd786d51), including better coverage of 3rd-party libraries that have XP-specific limitations.
 
 ### Batch processing

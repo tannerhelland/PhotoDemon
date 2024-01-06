@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Zoom"
 '***************************************************************************
 'Zoom on-canvas tool interface
-'Copyright 2021-2023 by Tanner Helland
+'Copyright 2021-2024 by Tanner Helland
 'Created: 14/December/21
 'Last updated: 14/December/21
 'Last update: start migrating zoom bits from elsewhere into this dedicated module

@@ -171,7 +171,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Render Clouds Effect
-'Copyright 2019-2023 by Tanner Helland
+'Copyright 2019-2024 by Tanner Helland
 'Created: 23/July/19
 'Last updated: 23/July/19
 'Last update: initial build

@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make color transparent ("green screen") tool dialog
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 10/June/16
 'Last update: add a LittleCMS path for the algorithm; this improves performance by ~30%

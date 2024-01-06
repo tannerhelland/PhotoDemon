@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color/Transparency depth selector User Control
-'Copyright 2016-2023 by Tanner Helland
+'Copyright 2016-2024 by Tanner Helland
 'Created: 22/April/16
 'Last updated: 24/March/20
 'Last update: improve UI reflow behavior when control is not yet visible (e.g. first load)

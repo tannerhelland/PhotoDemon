@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2023 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 17/October/22
 'Last update: finish up proper storage of JPEG XL original image settings

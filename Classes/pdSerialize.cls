@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Internal Parameter Handler v2
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 25/March/13
 'Last updated: 28/February/20
 'Last update: make .AddParam() smarter - we know numeric datatypes are already XML-safe, so don't bother

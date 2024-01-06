@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "CanvasView" User Control (e.g. the primary component of pdCanvas)
-'Copyright 2002-2023 by Tanner Helland
+'Copyright 2002-2024 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 10/September/20
 'Last update: change the way canvas background color is handled; it is now directly exposed via Tools > Options

@@ -39,7 +39,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tools Toolbox
-'Copyright 2013-2023 by Tanner Helland
+'Copyright 2013-2024 by Tanner Helland
 'Created: 03/October/13
 'Last updated: 31/October/16
 'Last update: minor code cleanup

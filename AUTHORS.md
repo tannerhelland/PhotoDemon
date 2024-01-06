@@ -4,7 +4,7 @@
 
 ### Patrons
 
-Ongoing development is supported by PhotoDemon's [Patreon members](https://www.patreon.com/photodemon/overview).  Visit [PhotoDemon's Patreon page](https://www.patreon.com/photodemon/overview) to learn more about patron benefits, like [in-depth updates on new PhotoDemon features](https://www.patreon.com/photodemon/posts).
+Ongoing development is supported by PhotoDemon's [Patreon members](https://www.patreon.com/photodemon/overview).  Thank you to everyone who supports PhotoDemon's ongoing development!
 
 Super Patrons:
 

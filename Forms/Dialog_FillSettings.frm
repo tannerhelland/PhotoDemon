@@ -234,7 +234,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brush Selection Dialog
-'Copyright 2015-2023 by Tanner Helland
+'Copyright 2015-2024 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 13/April/22
 'Last update: replace lingering picture box with pdPictureBox
