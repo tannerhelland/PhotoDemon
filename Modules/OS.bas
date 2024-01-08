@@ -465,7 +465,7 @@ Private Function AppProcessID() As Long
             End If
             
             'Regardless of outcome, close the ToolHelp enumerator when we're done
-            CloseHandle hSnapShot
+            If (hSnapShot <> 0) Then CloseHandle hSnapShot
         
         Else
             m_AppProcID = 0

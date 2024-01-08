@@ -218,9 +218,14 @@ Friend Function FileAppendBinaryData(ByVal srcPointer As Long, ByVal srcLengthIn
     Dim hFile As Long
     If Me.FileCreateAppendHandle(dstFilename, hFile) Then
         
-        'Write the byte array and exit!
-        FileAppendBinaryData = Me.FileWriteData(hFile, srcPointer, srcLengthInBytes)
-        Me.FileCloseHandle hFile
+        'Failsafe only
+        If (hFile <> 0) Then
+            
+            'Write the byte array and exit!
+            FileAppendBinaryData = Me.FileWriteData(hFile, srcPointer, srcLengthInBytes)
+            Me.FileCloseHandle hFile
+            
+        End If
         
     'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
     ' but if a previous "file exists and is writable" check passed, that outcome is extremely unlikely.
@@ -251,10 +256,15 @@ Friend Function FileAppendText(ByVal srcString As String, ByRef dstFilename As S
     Dim hFile As Long
     If Me.FileCreateAppendHandle(dstFilename, hFile) Then
         
-        'Write the byte array and exit!
-        Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
-        Me.FileCloseHandle hFile
-        FileAppendText = True
+        'Failsafe only
+        If (hFile <> 0) Then
+            
+            'Write the byte array and exit!
+            Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
+            Me.FileCloseHandle hFile
+            FileAppendText = True
+            
+        End If
         
     'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
     ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
@@ -272,10 +282,15 @@ End Function
 'Close an open file handle.  (Returns TRUE if successful.)
 Friend Function FileCloseHandle(ByRef srcHandle As Long) As Boolean
     
-    If (srcHandle <> 0) Then
+    If (srcHandle <> 0) And (srcHandle <> INVALID_HANDLE_VALUE) Then
         FileCloseHandle = (CloseHandle(srcHandle) <> 0)
     Else
-        FSOError "FileCloseHandle", "was passed an empty handle.  Ask yourself why this handle was already closed!"
+        If (srcHandle = 0) Then
+            FSOError "FileCloseHandle", "empty handle."
+        Else
+            FSOError "FileCloseHandle", "invalid handle."
+            FileCloseHandle = True
+        End If
     End If
     
     'As a convenience to the caller, manually reset the handle to 0.  (This is why it's passed ByRef.)
@@ -432,6 +447,9 @@ Friend Function FileCreateFromPtr(ByVal ptrSrc As Long, ByVal dataLength As Long
     Else
         createSuccess = FileCreateHandle(pathToFile, hFile, True, True, OptimizeSequentialAccess)
     End If
+    
+    'Failsafe only; successful returns should always provide a non-zero hFile
+    createSuccess = createSuccess And (hFile <> 0)
     
     If createSuccess Then
         FileCreateFromPtr = FileWriteData(hFile, ptrSrc, dataLength)
@@ -718,28 +736,34 @@ Friend Function FileGetTimeAsCurrency(ByRef srcFile As String, Optional ByVal ty
     Dim hFile As Long
     If FileCreateHandle(srcFile, hFile, True) Then
         
-        Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
-        If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
-        
-            Dim srcTime As WAPI_FILETIME
+        'Failsafe only
+        If (hFile <> 0) Then
             
-            If (typeOfTime = PDFT_AccessTime) Then
-                srcTime = accessTime
-            ElseIf (typeOfTime = PDFT_WriteTime) Then
-                srcTime = writeTime
-            Else
-                srcTime = createTime
+            Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
+            If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
+            
+                Dim srcTime As WAPI_FILETIME
+                
+                If (typeOfTime = PDFT_AccessTime) Then
+                    srcTime = accessTime
+                ElseIf (typeOfTime = PDFT_WriteTime) Then
+                    srcTime = writeTime
+                Else
+                    srcTime = createTime
+                End If
+                
+                'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
+                ' comparison functions, but for now, you have to deal with times being returned as currency.
+                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
+                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
+            
             End If
             
-            'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
-            ' comparison functions, but for now, you have to deal with times being returned as currency.
-            CopyMemoryStrict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
-            CopyMemoryStrict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
-        
+            CloseHandle hFile
+            
+        '/hFile != 0
         End If
         
-        CloseHandle hFile
-    
     End If
 
 End Function
@@ -850,8 +874,10 @@ Friend Function FileLenW(ByRef srcPath As String) As Long
     
     Dim hFile As Long
     If Me.FileCreateHandle(srcPath, hFile, True) Then
-        FileLenW = CLng(FileLenW_Large(hFile))
-        Me.FileCloseHandle hFile
+        If (hFile <> 0) Then
+            FileLenW = CLng(FileLenW_Large(hFile))
+            Me.FileCloseHandle hFile
+        End If
     Else
         FileLenW = 0
     End If
@@ -894,36 +920,42 @@ Friend Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As
         Dim hFile As Long
         If FileCreateHandle(srcFile, hFile, True, False, OptimizeSequentialAccess) Then
             
-            'Prep the destination buffer.  (Note that we check buffer size in advance; there's no reason to resize it
-            ' if we're just going to overwrite it with new data!)
-            Dim lenOfFile As Long
-            lenOfFile = CLng(FileLenW_Large(hFile))
-            
-            'Only proceed if the file is not zero-length
-            If (lenOfFile > 0) Then
+            'Failsafe only
+            If (hFile <> 0) Then
                 
-                If VBHacks.IsArrayInitialized(dstArray) Then
-                    If (LBound(dstArray) <> 0) Or (UBound(dstArray) <> lenOfFile - 1) Then ReDim dstArray(0 To lenOfFile - 1) As Byte
+                'Prep the destination buffer.  (Note that we check buffer size in advance; there's no reason to resize it
+                ' if we're just going to overwrite it with new data!)
+                Dim lenOfFile As Long
+                lenOfFile = CLng(FileLenW_Large(hFile))
+                
+                'Only proceed if the file is not zero-length
+                If (lenOfFile > 0) Then
+                    
+                    If VBHacks.IsArrayInitialized(dstArray) Then
+                        If (LBound(dstArray) <> 0) Or (UBound(dstArray) <> lenOfFile - 1) Then ReDim dstArray(0 To lenOfFile - 1) As Byte
+                    Else
+                        ReDim dstArray(0 To lenOfFile - 1) As Byte
+                    End If
+                    
+                    'Retrieve the full file contents
+                    Dim tmpVerify As Long
+                    If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
+                        FileLoadAsByteArray = True
+                    Else
+                        FSOError "FileLoadAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
+                    End If
+                    
                 Else
-                    ReDim dstArray(0 To lenOfFile - 1) As Byte
+                    FSOError "FileLoadAsByteArray", "source file is zero-length: " & srcFile
+                    ReDim dstArray(0) As Byte
+                    FileLoadAsByteArray = False
                 End If
                 
-                'Retrieve the full file contents
-                Dim tmpVerify As Long
-                If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
-                    FileLoadAsByteArray = True
-                Else
-                    FSOError "FileLoadAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
-                End If
+                CloseHandle hFile
                 
-            Else
-                FSOError "FileLoadAsByteArray", "source file is zero-length: " & srcFile
-                ReDim dstArray(0) As Byte
-                FileLoadAsByteArray = False
+            '/hFile != 0
             End If
-            
-            CloseHandle hFile
-            
+                
         Else
             FSOError "FileLoadAsByteArray", "failed to create a valid handle for " & srcFile & ". Abandoning load."
         End If
@@ -1288,20 +1320,26 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
         'Open the file
         Dim hFile As Long
         If Me.FileCreateHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
-        
-            'If requested, write a BOM first.  This is desirable for PD's internal files,
-            ' as it makes it very quick to identify new UTF-8 ones vs old Windows-1252 ones.
-            If useUTF8_BOM Then
-                Dim bomMarker(0 To 2) As Byte
-                bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
-                Me.FileWriteData hFile, VarPtr(bomMarker(0)), 3
+            
+            'Failsafe only
+            If (hFile <> 0) Then
+                
+                'If requested, write a BOM first.  This is desirable for PD's internal files,
+                ' as it makes it very quick to identify new UTF-8 ones vs old Windows-1252 ones.
+                If useUTF8_BOM Then
+                    Dim bomMarker(0 To 2) As Byte
+                    bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
+                    Me.FileWriteData hFile, VarPtr(bomMarker(0)), 3
+                End If
+                
+                'Write the byte array and exit!
+                Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
+                Me.FileCloseHandle hFile
+                FileSaveAsText = True
+                
+            '/hFile != 0
             End If
-            
-            'Write the byte array and exit!
-            Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
-            Me.FileCloseHandle hFile
-            FileSaveAsText = True
-            
+                
         Else
             FSOError "FileSaveAsText", "could not create file handle"
         End If

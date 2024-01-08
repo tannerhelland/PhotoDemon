@@ -44,15 +44,6 @@ End Enum
 #End If
 
 'Download code from some random dialogs (e.g. "download image") needs to be moved here! TODO
-'Private Declare Function HttpQueryInfoW Lib "wininet" (ByVal hHttpRequest As Long, ByVal lInfoLevel As Long, ByVal ptrSBuffer As Long, ByRef lBufferLength As Long, ByRef lIndex As Long) As Long
-'Private Declare Function InternetCloseHandle Lib "wininet" (ByVal hInet As Long) As Long
-'Private Declare Function InternetOpenW Lib "wininet" (ByVal lpszAgent As Long, ByVal dwAccessType As Long, ByVal lpszProxyName As Long, ByVal lpszProxyBypass As Long, ByVal dwFlags As Long) As Long
-'Private Declare Function InternetOpenUrlW Lib "wininet" (ByVal hInternetSession As Long, ByVal lpszUrl As Long, ByVal lpszHeaders As Long, ByVal dwHeadersLength As Long, ByVal dwFlags As Long, ByVal dwContext As Long) As Long
-'Private Declare Function InternetReadFile Lib "wininet" (ByVal hFile As Long, ByVal ptrToBuffer As Long, ByVal dwNumberOfBytesToRead As Long, ByRef lNumberOfBytesRead As Long) As Long
-'
-'Private Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
-'Private Const INTERNET_OPEN_TYPE_PRECONFIG As Long = 0
-'Private Const INTERNET_FLAG_RELOAD As Long = &H80000000
 
 'Open a string as a hyperlink in the user's default browser
 Public Sub OpenURL(ByRef targetURL As String)
@@ -179,7 +170,7 @@ Public Function DownloadURLToTempFile(ByRef URL As String, Optional ByVal suppre
     
     If (hUrl = 0) Then
         If (Not suppressErrorMsgs) Then PDMsgBox "PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Error", URL
-        If hInternetSession Then InternetCloseHandle hInternetSession
+        If (hInternetSession <> 0) Then InternetCloseHandle hInternetSession
         DownloadURLToTempFile = vbNullString
         Screen.MousePointer = 0
         Exit Function
