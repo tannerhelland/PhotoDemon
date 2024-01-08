@@ -193,6 +193,24 @@ Private Sub AssembleNightlyBuild()
     'Manually remove any files we don't want to include in nightly downloads
     nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifdec.exe", True
     nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifenc.exe", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlicommon.dll", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlidec.dll", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlienc.dll", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\cjxl.exe", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\djxl.exe", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxl.dll", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxl_threads.dll", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxlinfo.exe", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.brotli", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.giflib", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.highway", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjpeg-turbo", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjxl", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libpng", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libwebp", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.sjpeg", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.skcms", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.zlib", True
     
     'Make a copy of the current file list for post-compression verification
     Dim verifyFiles As pdStringStack
