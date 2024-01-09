@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Bar control
 'Copyright 2019-2024 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 04/December/20
-'Last update: migrate orphaned GDI+ calls to pd2D
+'Last updated: 09/January/24
+'Last update: harden against potential errors (see https://github.com/tannerhelland/PhotoDemon/issues/509)
 '
 'This is PD's version of a "search box" - an edit box that raises a neighboring list window with a list
 ' of "hits" that match the current search query.  Search matching is left up to the parent window, which
@@ -372,6 +372,7 @@ End Sub
 Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    If (m_SearchResults Is Nothing) Then Exit Sub
     
     'Cache colors in advance, so we can simply reuse them in the inner loop
     Dim itemFillColor As Long, itemFillBorderColor As Long, itemFontColor As Long
@@ -381,7 +382,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     
     'Grab the rendering rect
     Dim tmpRectF As RectF
-    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
+    If (ptrToRectF <> 0) Then CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     'Paint the fill and border
     Dim cSurface As pd2DSurface: Set cSurface = New pd2DSurface
@@ -408,11 +409,14 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     Dim tmpString As String
     tmpString = m_SearchResults.GetString(itemIndex)
     
-    tmpFont.SetFontColor itemFontColor
-    tmpFont.AttachToDC bufferDC
-    tmpFont.SetTextAlignment vbLeftJustify
-    tmpFont.FastRenderTextWithClipping tmpRectF.Left + textPadding, tmpRectF.Top + LIST_PADDING_VERTICAL, tmpRectF.Width - LIST_PADDING_HORIZONTAL, tmpRectF.Height - LIST_PADDING_VERTICAL, tmpString, False, True, False
-    tmpFont.ReleaseFromDC
+    'Failsafe only
+    If (LenB(tmpString) > 0) Then
+        tmpFont.SetFontColor itemFontColor
+        tmpFont.AttachToDC bufferDC
+        tmpFont.SetTextAlignment vbLeftJustify
+        tmpFont.FastRenderTextWithClipping tmpRectF.Left + textPadding, tmpRectF.Top + LIST_PADDING_VERTICAL, tmpRectF.Width - LIST_PADDING_HORIZONTAL, tmpRectF.Height - LIST_PADDING_VERTICAL, tmpString, False, True, False
+        tmpFont.ReleaseFromDC
+    End If
     
 End Sub
 
@@ -561,13 +565,16 @@ End Sub
 ' on all edit box _Change() events.
 Private Sub PerformSearch()
     
+    'Errors are not expected; this is purely a failsafe against unexpected localization surprises
+    On Error GoTo BadSearch
+    
     'Failsafe checks to make sure the caller gave us something to search
     If (m_SearchStack Is Nothing) Or (m_EditBox Is Nothing) Then
         Set m_SearchResults = Nothing
         Exit Sub
     End If
     
-    If (m_SearchStack.GetNumOfStrings = 0) Then
+    If (m_SearchStack.GetNumOfStrings <= 0) Then
         Set m_SearchResults = Nothing
         Exit Sub
     End If
@@ -575,7 +582,7 @@ Private Sub PerformSearch()
     Dim strSource As String
     strSource = Trim$(m_EditBox.Text)
     
-    If (LenB(Trim$(strSource)) = 0) Then
+    If (LenB(strSource) = 0) Then
         Set m_SearchResults = Nothing
         Exit Sub
     End If
@@ -602,6 +609,9 @@ Private Sub PerformSearch()
     
     Set lstSearchTerms = tmpSearchList
     
+    'Cancel search if there are no useable search terms in the current search string
+    If (lstSearchTerms.GetNumOfStrings <= 0) Then Exit Sub
+    
     'Search is pretty simple: iterate the list the caller provided, and see if the search string occurs
     ' inside any of the strings we were passed.  Exact matches are given priority over partial matches,
     ' but otherwise, no special search "ranking" is currently performed.
@@ -609,10 +619,14 @@ Private Sub PerformSearch()
     ReDim alreadyAdded(0 To m_SearchStack.GetNumOfStrings - 1) As Boolean
     
     'First, look for an exact match of the given search term.
+    Dim testString As String
     For i = 0 To m_SearchStack.GetNumOfStrings - 1
-        If Strings.StringsEqual(strSource, m_SearchStack.GetString(i), True) Then
-            m_SearchResults.AddString m_SearchStack.GetString(i)
-            alreadyAdded(i) = True
+        testString = m_SearchStack.GetString(i)
+        If Strings.StringsEqual(strSource, testString, True) Then
+            If (LenB(testString) > 0) Then
+                m_SearchResults.AddString m_SearchStack.GetString(i)
+                alreadyAdded(i) = True
+            End If
         End If
     Next i
     
@@ -628,8 +642,9 @@ Private Sub PerformSearch()
             curHits = 0
             
             'Iterate all separate search words, and count how many hits we get
+            testString = m_SearchStack.GetString(i)
             For j = 0 To lstSearchTerms.GetNumOfStrings - 1
-                If (InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare) <> 0) Then curHits = curHits + 1
+                If (InStr(1, testString, lstSearchTerms.GetString(j), vbTextCompare) <> 0) Then curHits = curHits + 1
             Next j
             
             If (curHits > maxHits) Then maxHits = curHits
@@ -657,7 +672,7 @@ Private Sub PerformSearch()
         ' As a concrete example, if the user searches for "gra"...
         ' - "Gradient tool" is a best result (it starts with "gra")
         ' - "Monochrome to grayscale" is a better result (a word other than the first one
-        '   starts with "gra"
+        '   starts with "gra")
         ' - "Histogram" is just a good result (because "gra" appears in the text, but it's in
         '   the middle of a word rather than the start).
         
@@ -687,35 +702,46 @@ Private Sub PerformSearch()
                     resultIsBetter = False
                     resultIsBest = False
                     
-                    For j = 0 To lstSearchTerms.GetNumOfStrings - 1
+                    'Cache the target search string for improved performance, and perform additional failsafe checks
+                    ' (just in case).
+                    testString = m_SearchStack.GetString(i)
+                    If (LenB(testString) > 0) Then
                         
-                        hitPosition = InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare)
-                        If (hitPosition <> 0) Then
+                        For j = 0 To lstSearchTerms.GetNumOfStrings - 1
                             
-                            curHits = curHits + 1
-                            
-                            'Classify this as a "good" or "better" result
-                            If (hitPosition = 1) Then
-                                resultIsBest = True
-                            Else
-                                If (Mid$(m_SearchStack.GetString(i), hitPosition - 1, 1) = " ") Then resultIsBetter = True
+                            hitPosition = InStr(1, testString, lstSearchTerms.GetString(j), vbTextCompare)
+                            If (hitPosition <> 0) Then
+                                
+                                curHits = curHits + 1
+                                
+                                'Classify this as a "good" or "better" result based on where in the string the match
+                                ' was found (remember: start-of-first-word is prioritized over start-of-later-word
+                                ' which is prioritized over match-in-middle-of-word).
+                                If (hitPosition = 1) Then
+                                    resultIsBest = True
+                                Else
+                                    Const SPACE_CHAR As String = " "
+                                    If (Mid$(testString, hitPosition - 1, 1) = SPACE_CHAR) Then resultIsBetter = True
+                                End If
+                                
                             End If
                             
+                        Next j
+                        
+                        If (curHits = loopHits) Then
+                            If resultIsBest And (curHits = maxHits) Then
+                                bestResults.AddString testString
+                            ElseIf resultIsBest Or resultIsBetter Then
+                                betterResults.AddString testString
+                            Else
+                                goodResults.AddString testString
+                            End If
+                            alreadyAdded(i) = True
                         End If
                         
-                    Next j
-                    
-                    If (curHits = loopHits) Then
-                        If resultIsBest And (curHits = maxHits) Then
-                            bestResults.AddString m_SearchStack.GetString(i)
-                        ElseIf resultIsBest Or resultIsBetter Then
-                            betterResults.AddString m_SearchStack.GetString(i)
-                        Else
-                            goodResults.AddString m_SearchStack.GetString(i)
-                        End If
-                        alreadyAdded(i) = True
+                    '/Failsafe length check on testString (m_SearchStack.GetString(i))
                     End If
-                    
+                        
                 End If
             Next i
         Next loopHits
@@ -729,6 +755,8 @@ Private Sub PerformSearch()
     'Other matching mechanisms could be performed here in the future (e.g. phonetic algorithms), but they
     ' are not implemented currently as internationalization concerns terrify me.  English searches would
     ' be easy enough to handle, but other languages... I'd definitely need outside help.
+    
+BadSearch:
     
 End Sub
 
@@ -744,7 +772,7 @@ Private Sub UpdateResultsList()
         ' from the menu manager
         Dim i As Long
         For i = 0 To m_SearchResults.GetNumOfStrings - 1
-            listSupport.AddItem m_SearchResults.GetString(i), , , , False
+            listSupport.AddItem m_SearchResults.GetString(i), itemShouldBeTranslated:=False
         Next i
         
     End If
@@ -761,11 +789,16 @@ Private Sub RefreshSearchResults()
         'Compare the old and new search results list to see if any changes were made;
         ' this affects how we assign a list index in the dropdown window
         m_ResultsChanged = True
+        
+        'Ensure at least 1 search hit exists
         If (Not m_SearchResults Is Nothing) Then
             If (m_SearchResults.GetNumOfStrings > 0) Then
+                
+                'Only perform a comparison against previous results if we actually have a previous result to compare
                 If (Not m_LastResults Is Nothing) Then
                     If (m_LastResults.GetNumOfStrings = m_SearchResults.GetNumOfStrings) Then
-                    
+                        
+                        'Compare lists for equality
                         Dim i As Long, mismatchFound As Boolean
                         For i = 0 To m_LastResults.GetNumOfStrings - 1
                             If Strings.StringsNotEqual(m_LastResults.GetString(i), m_SearchResults.GetString(i)) Then
@@ -792,12 +825,13 @@ Private Sub RefreshSearchResults()
         'If we do, forward the matches to the listbox and display it
         UpdateResultsList
         
+        'If search results exist, raise the list box; otherwise, hide it unconditionally
         If (m_SearchResults Is Nothing) Then
             HideListBox
             Exit Sub
+        Else
+            If (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox Else HideListBox
         End If
-        
-        If (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox Else HideListBox
         
     End If
         

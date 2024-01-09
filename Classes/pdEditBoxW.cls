@@ -562,7 +562,11 @@ End Function
 
 'Change the edit box position and size in one fell swoop.  Coordinates are RELATIVE TO THE PARENT WINDOW.
 Friend Sub Move(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
-    If (m_EditBoxHwnd <> 0) Then MoveWindow m_EditBoxHwnd, newLeft, newTop, newWidth, newHeight, 1&
+    If (m_EditBoxHwnd <> 0) Then
+        Dim moveSuccess As Boolean
+        moveSuccess = (MoveWindow(m_EditBoxHwnd, newLeft, newTop, newWidth, newHeight, 1&) <> 0)
+        If (Not moveSuccess) Then PDDebug.LogAction "WARNING: pdEditBoxW.Move failed with code " & Err.LastDllError
+    End If
 End Sub
 
 'This function actually does two things: makes the edit box the foreground window, then assigns it keyboard focus.
