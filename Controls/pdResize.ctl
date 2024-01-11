@@ -347,13 +347,13 @@ Public Function IsValid(Optional ByVal showErrors As Boolean = True) As Boolean
     
     If (pxWidthFloat < 1) Or (pxHeightFloat < 1) Then
         IsValid = False
-        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbOKOnly, "Invalid measurement"
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and %1 pixels.", vbInformation Or vbOKOnly, "Invalid measurement", CStr(PD_MAX_IMAGE_DIMENSION)
         Exit Function
     End If
     
-    If (pxWidthFloat > 32760) Or (pxHeightFloat > 32760) Then
+    If (pxWidthFloat > PD_MAX_IMAGE_DIMENSION) Or (pxHeightFloat > PD_MAX_IMAGE_DIMENSION) Then
         IsValid = False
-        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbOKOnly, "Invalid measurement"
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and %1 pixels.", vbInformation Or vbOKOnly, "Invalid measurement", CStr(PD_MAX_IMAGE_DIMENSION)
         Exit Function
     End If
     
@@ -651,14 +651,14 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As PD_MeasurementUnit, ByVal ne
         Case mu_Pixels
             tudWidth.SigDigits = 0
             tudWidth.Min = 1
-            tudWidth.Max = 32760
+            tudWidth.Max = PD_MAX_IMAGE_DIMENSION
             If (m_initWidth <> 0) Then tudWidth.DefaultValue = m_initWidth Else tudWidth.DefaultValue = g_Displays.GetDesktopWidth
             If (m_initHeight <> 0) Then tudHeight.DefaultValue = m_initHeight Else tudHeight.DefaultValue = g_Displays.GetDesktopHeight
             
         Case Else
             tudWidth.SigDigits = 2
             tudWidth.Min = 0.01
-            If (newUnit = mu_Millimeters) Or (newUnit = mu_Points) Or (newUnit = mu_Picas) Then tudWidth.Max = 320000# Else tudWidth.Max = 32000#
+            If (newUnit = mu_Millimeters) Or (newUnit = mu_Points) Or (newUnit = mu_Picas) Then tudWidth.Max = CDbl(PD_MAX_IMAGE_DIMENSION * 10) Else tudWidth.Max = CDbl(PD_MAX_IMAGE_DIMENSION)
             If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
             If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
             
@@ -725,6 +725,8 @@ Private Sub UserControl_Initialize()
     
     m_allowedToUpdateWidth = True
     m_allowedToUpdateHeight = True
+    tudWidth.Max = PD_MAX_IMAGE_DIMENSION
+    tudHeight.Max = PD_MAX_IMAGE_DIMENSION
     
     'Populate all dropdowns
     PopulateDropdowns

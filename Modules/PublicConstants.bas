@@ -28,6 +28,9 @@ Public Const PDP_GENERIC_ERROR As Long = 9001
 ' have to manually change them when I think up better or more appropriate ones)
 Public Const MACRO_EXT As String * 3 = "pdm"
 
+'Maximum allowed image dimensions (width, height); used at run-time to set max values for things like Image > Resize
+Public Const PD_MAX_IMAGE_DIMENSION As Long = 100000
+
 'Standard API constants
 Public Const MAX_PATH_LEN As Long = 260
 
