@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，9.2 build 223）</langname>
-<langversion>9.2 build 223.1</langversion>
+<langversion>9.2 build 223.2</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 3, 2023, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -4656,8 +4656,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>最终的宽度和高度必须在1和32760像素之间。</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>最终的宽度和高度必须在1和%1像素之间。</translation>
 </phrase>
 
 <phrase>

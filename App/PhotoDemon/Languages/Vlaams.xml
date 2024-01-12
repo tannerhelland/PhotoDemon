@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1716</langversion>
+<langversion>8.9.1717</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4661,8 +4661,8 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>De uiteindelijke breedte- en hoogtemetingen moeten tussen 1 en 32760 pixels liggen.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>De uiteindelijke breedte- en hoogtemetingen moeten tussen 1 en %1 pixels liggen.</translation>
 </phrase>
 
 <phrase>

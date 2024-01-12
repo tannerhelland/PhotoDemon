@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.607</langversion>
+<langversion>6.7.608</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -4659,8 +4659,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Les mesures finales de largeur et de hauteur doivent être comprises entre 1 et 32760 pixels.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Les mesures finales de largeur et de hauteur doivent être comprises entre 1 et %1 pixels.</translation>
 </phrase>
 
 <phrase>

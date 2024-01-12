@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.330</langversion>
+<langversion>6.7.331</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -4655,8 +4655,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Las medidas finales de ancho y alto deben estar entre 1 y 32760 píxeles.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Las medidas finales de ancho y alto deben estar entre 1 y %1 píxeles.</translation>
 </phrase>
 
 <phrase>
