@@ -223,8 +223,8 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     Dim cdFormatIndex As Long
     Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
     
-    'TODO: replace these magic numbers with meaningful constants
-    If (UserPrefs.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
+    Const PD_SAVE_USE_CURRENT_FORMAT = 0, PD_SAVE_USE_LAST_FORMAT As Long = 1
+    If (UserPrefs.GetPref_Long("Saving", "Suggested Format", PD_SAVE_USE_CURRENT_FORMAT) = PD_SAVE_USE_LAST_FORMAT) And (g_LastSaveFilter <> PD_USER_PREF_UNKNOWN) Then
         cdFormatIndex = g_LastSaveFilter
         suggestedSaveFormat = ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         suggestedFileExtension = ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)

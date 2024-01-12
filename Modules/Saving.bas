@@ -846,7 +846,17 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
     
     'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
     If (srcImage.GetNumOfLayers <= 1) Then
-        If Not PromptSingleFrameSave() Then Exit Function
+        
+        'Prompt the user for how they want to succeed.
+        ' (This is a simple OK/Cancel dialog that returns TRUE if user is OK simply exporting
+        ' a single-frame image, despite them clicking Export > Animation).
+        If (Not PromptSingleFrameSave()) Then
+            
+            'TODO: route this to the new Export menu once it exists!
+            Export_Animation = FileMenu.MenuSaveAs(srcImage)
+            Exit Function
+            
+        End If
     End If
     
     'Reuse the user's current "save image" path for the export
