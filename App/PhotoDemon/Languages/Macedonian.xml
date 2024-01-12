@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1716</langversion>
+<langversion>8.9.1717</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4652,8 +4652,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Завршно ширина и висина мерења мора да биде помеѓу 1 и s32760 пиксели.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Завршно ширина и висина мерења мора да биде помеѓу 1 и s%1 пиксели.</translation>
 </phrase>
 
 <phrase>

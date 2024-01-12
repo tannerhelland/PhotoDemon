@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>9.1.238</langversion>
+		<langversion>9.1.248</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -4613,7 +4613,7 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
 <translation></translation>
 </phrase>
 

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.208</langversion>
+<langversion>9.2.209</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4661,8 +4661,8 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Die finalen Breiten- und Höhenmessungen müssen zwischen 1 und 32760 Pixel liegen.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Die finalen Breiten- und Höhenmessungen müssen zwischen 1 und %1 Pixel liegen.</translation>
 </phrase>
 
 <phrase>

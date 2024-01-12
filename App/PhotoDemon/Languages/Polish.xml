@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.15</langversion>
+<langversion>9.0.16</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -4658,8 +4658,8 @@ Musisz ręcznie pobrać ten plik za pomocą przeglądarki internetowej.</transla
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Wyjściowa szerokość i wysokość musi być pomiędzy 1 i 32760 pikseli.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Wyjściowa szerokość i wysokość musi być pomiędzy 1 i %1 pikseli.</translation>
 </phrase>
 
 <phrase>

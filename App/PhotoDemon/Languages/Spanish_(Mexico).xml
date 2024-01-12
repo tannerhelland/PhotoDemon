@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.19</langversion>
+<langversion>9.0.20</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -4661,8 +4661,8 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Las medidas finales de anchura y altura deben estar entre 1 y 32760 píxeles.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Las medidas finales de anchura y altura deben estar entre 1 y %1 píxeles.</translation>
 </phrase>
 
 <phrase>

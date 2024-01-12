@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.19</langversion>
+<langversion>1.0.20</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -4638,7 +4638,7 @@ Bu dosyayı İnternet tarayıcınızı kullanarak manuel olarak indirmeniz gerek
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
 <translation></translation>
 </phrase>
 

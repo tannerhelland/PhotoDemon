@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1708</langversion>
+<langversion>8.9.1709</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -4657,8 +4657,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Pengukuran lebar dan tinggi akhir harus antara 1 dan 32760 piksel.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Pengukuran lebar dan tinggi akhir harus antara 1 dan %1 piksel.</translation>
 </phrase>
 
 <phrase>

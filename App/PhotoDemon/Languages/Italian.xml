@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1623</langversion>
+<langversion>8.9.1624</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -4660,8 +4660,8 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation>Le misure finali di larghezza e altezza devono essere comprese tra 1 e 32760 pixel.</translation>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
+<translation>Le misure finali di larghezza e altezza devono essere comprese tra 1 e %1 pixel.</translation>
 </phrase>
 
 <phrase>

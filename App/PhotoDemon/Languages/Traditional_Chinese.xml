@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.290</langversion>
+<langversion>7.0.291</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -4620,7 +4620,7 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<original>The final width and height measurements must be between 1 and %1 pixels.</original>
 <translation></translation>
 </phrase>
 
