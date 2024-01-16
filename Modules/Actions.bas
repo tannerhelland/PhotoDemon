@@ -233,21 +233,17 @@ Private Function Launch_ByName_MenuFile(ByRef srcMenuName As String, Optional By
             Process "Revert", False, , UNDO_Everything
             
         Case "file_export"
-            Case "file_export_animatedgif"
+            Case "file_export_image"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated GIF", True
+                Process "Export image", True
             
-            Case "file_export_animatedjxl"
+            Case "file_export_layers"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated JPEG XL", True
+                Process "Export layers", True
                 
-            Case "file_export_animatedpng"
+            Case "file_export_animation"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated PNG", True
-                
-            Case "file_export_animatedwebp"
-                If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated WebP", True
+                Process "Export animation", True
                 
             Case "file_export_colorlookup"
                 If (Not PDImages.IsImageActive()) Then Exit Function

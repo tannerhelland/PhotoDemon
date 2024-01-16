@@ -150,19 +150,19 @@ Begin VB.Form FormMain
          Caption         =   "Export"
          Index           =   12
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated GIF..."
+            Caption         =   "Image to file..."
             Index           =   0
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated JPEG XL..."
+            Caption         =   "Layers to files..."
             Index           =   1
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated PNG..."
+            Caption         =   "-"
             Index           =   2
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Animated WebP..."
+            Caption         =   "Animation..."
             Index           =   3
          End
          Begin VB.Menu MnuFileExport 
@@ -3089,13 +3089,13 @@ End Sub
 Private Sub MnuFileExport_Click(Index As Integer)
     Select Case Index
         Case 0
-            Actions.LaunchAction_ByName "file_export_animatedgif"
+            Actions.LaunchAction_ByName "file_export_image"
         Case 1
-            Actions.LaunchAction_ByName "file_export_animatedjxl"
+            Actions.LaunchAction_ByName "file_export_layers"
         Case 2
-            Actions.LaunchAction_ByName "file_export_animatedpng"
+            '(separator)
         Case 3
-            Actions.LaunchAction_ByName "file_export_animatedwebp"
+            Actions.LaunchAction_ByName "file_export_animation"
         Case 4
             '(separator)
         Case 5

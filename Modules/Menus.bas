@@ -177,10 +177,10 @@ Public Sub InitializeMenus()
     AddMenuItem "Save as...", "file_saveas", 0, 10, , "file_saveas"
     AddMenuItem "Revert", "file_revert", 0, 11
     AddMenuItem "Export", "file_export", 0, 12
-        AddMenuItem "Animated GIF...", "file_export_animatedgif", 0, 12, 0
-        AddMenuItem "Animated JPEG XL...", "file_export_animatedjxl", 0, 12, 1
-        AddMenuItem "Animated PNG...", "file_export_animatedpng", 0, 12, 2
-        AddMenuItem "Animated WebP...", "file_export_animatedwebp", 0, 12, 3
+        AddMenuItem "Image to file...", "file_export_image", 0, 12, 0
+        AddMenuItem "Layers to files...", "file_export_layers", 0, 12, 1
+        AddMenuItem "-", "-", 0, 12, 2
+        AddMenuItem "Animation...", "file_export_animation", 0, 12, 3
         AddMenuItem "-", "-", 0, 12, 4
         AddMenuItem "Color lookup...", "file_export_colorlookup", 0, 12, 5
         AddMenuItem "Color profile...", "file_export_colorprofile", 0, 12, 6
