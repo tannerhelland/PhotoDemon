@@ -1397,8 +1397,7 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export image", True) Then
-        'TODO:
-        'Saving.Export_Animation PDIF_GIF, PDImages.GetActiveImage()
+        FileMenu.MenuExportImage PDImages.GetActiveImage()
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export layers", True) Then
@@ -1407,7 +1406,6 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animation", True) Then
-        'TODO:
         Saving.Export_Animation PDImages.GetActiveImage()
         Process_FileMenu = True
     

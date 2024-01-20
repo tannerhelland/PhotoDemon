@@ -45,23 +45,33 @@ End Function
 'INPUTS:
 '   1) pdImage to be saved
 '   2) Destination file path
-'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc).  Save As commands
-'      forcibly set this to TRUE, so that the user can input new export settings.
-Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False) As Boolean
+'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc).
+'      Save As and Export operations forcibly set this to TRUE, so that the user can specify new export settings.
+'   4) Optional: pass a non-unknown image format to treat this as an EXPORT vs a SAVE.
+'      (EXPORT does *not* update image save state, meaning states like "unsaved changes" remain as-is.)
+Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False, Optional useThisExportFormat As PD_IMAGE_FORMAT = PDIF_UNKNOWN) As Boolean
     
     'There are a few different ways the save process can "fail":
     ' 1) a save dialog with extra options is required, and the user cancels it
     ' 2) file-system errors (folder not writable, not enough free space, etc)
     ' 3) save engine errors (e.g. FreeImage explodes mid-save)
     
-    'These have varying degrees of severity, but I mention this in advance because a number of post-save behaviors (like updating
-    ' the Recent Files list) are abandoned under *any* of these occurrences.  As such, a lot of this function postpones various
-    ' tasks until after all possible failure states have been dealt with.
+    'These have varying degrees of severity, but I mention this in advance because a number of
+    ' post-save behaviors (like updating the Recent Files list) are abandoned under *any* of these
+    ' occurrences.  As such, a lot of this function postpones various tasks until after all possible
+    ' failure states have been dealt with.
     Dim saveSuccessful As Boolean: saveSuccessful = False
     
     'The caller must tell us which format they want us to use.
+    Dim saveIsExport As Boolean
+    saveIsExport = (useThisExportFormat <> PDIF_UNKNOWN)
+    
     Dim saveFormat As PD_IMAGE_FORMAT
-    saveFormat = srcImage.GetCurrentFileFormat
+    If saveIsExport Then
+        saveFormat = useThisExportFormat
+    Else
+        saveFormat = srcImage.GetCurrentFileFormat
+    End If
     
     Dim dictEntry As String
     
@@ -112,20 +122,31 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         needToDisplayDialog = False
     End If
     
-    'All export dialogs fulfill the same purpose: they fill an XML string with a list of key+value pairs detailing setting relevant
-    ' to that format.  This XML string is then passed to the respective save function, which applies the settings as relevant.
+    'All save dialogs fulfill the same purpose: they fill an XML string with a list of key+value pairs
+    ' defining export settings.  This XML string is then passed to the respective save function,
+    ' which applies individual settings as relevant.
     
-    'Upon a successful save, we cache that format-specific parameter string inside the parent image; the same settings are then
-    ' reused on subsequent saves, instead of re-prompting the user.
+    'Upon a successful save, we cache that format-specific parameter string inside the parent image;
+    ' the same settings can then be reused on subsequent saves, instead of re-prompting the user.
     
     'It is now time to retrieve said parameter string, either from a dialog, or from the pdImage settings dictionary.
+    ' (Note that EXPORT and SAVE AS operations *always* display an export dialog; SAVE operations only
+    ' raise a dialog on the *first* save operation.)
     Dim saveParameters As String, metadataParameters As String
     If needToDisplayDialog Then
         
+        'Normally, we auto-detect animated images and raise an animation dialog accordingly, but PhotoDemon's
+        ' EXPORT menu requires the user to explicitly choose between animated and still states.  (The regular
+        ' SAVE menu auto-detects the correct animation setting for you.)
+        Dim useAnimationDialog As Boolean
+        If saveIsExport Then
+            useAnimationDialog = False
+        Else
+            If (Not srcImage Is Nothing) Then useAnimationDialog = srcImage.IsAnimated Else useAnimationDialog = False
+        End If
+        
         'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
-        Dim useAnimationDialog As Boolean
-        If (Not srcImage Is Nothing) Then useAnimationDialog = srcImage.IsAnimated Else useAnimationDialog = False
         If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters, useAnimationDialog) Then
             srcImage.ImgStorage.AddEntry "MetadataSettings", metadataParameters
             
@@ -166,29 +187,35 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     saveSuccessful = Saving.ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
     If saveSuccessful Then
         
-        'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
-        ' can use these instead of querying the user again.
-        dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
-        srcImage.ImgStorage.AddEntry dictEntry, saveParameters
+        'The file was saved successfully!  Copy the save parameters into the parent pdImage object;
+        ' subsequent "save" actions can use these instead of querying the user again.
+        ' (Note that this is only done for SAVE actions, not EXPORT actions.)
+        If (Not saveIsExport) Then
+            
+            dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
+            srcImage.ImgStorage.AddEntry dictEntry, saveParameters
+            
+            'If a dialog was displayed, note that as well
+            If needToDisplayDialog Then
+                dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
+                srcImage.ImgStorage.AddEntry dictEntry, True
+            End If
+            
+            'Similarly, remember the file's location and selected name for future saves
+            srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
+            srcImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(dstPath, True)
+            srcImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(dstPath)
+            
+            'Update the parent image's save state.
+            If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
         
-        'If a dialog was displayed, note that as well
-        If needToDisplayDialog Then
-            dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
-            srcImage.ImgStorage.AddEntry dictEntry, True
         End If
         
-        'Similarly, remember the file's location and selected name for future saves
-        srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
-        srcImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(dstPath, True)
-        srcImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(dstPath)
-        
-        'Update the parent image's save state.
-        If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
-        
         'If the file was successfully written, we can now embed any additional metadata.
-        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-        ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
-        ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil
+        ' of routing all metadata handling through an external app.  Exiftool requires an existant
+        ' file to be used as a target, and an existant metadata file to be used as its source.
+        ' It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
         If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
             
             'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
@@ -196,13 +223,21 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             
         End If
         
-        'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
-        ' only applied if we are *not* in the midst  of a batch conversion.
+        'With all save work complete, we can now update various UI bits to reflect the new image.
+        ' Note that these changes are only applied if we are *not* in the midst of a batch conversion.
         If (Macros.GetMacroStatus <> MacroBATCH) Then
+            
+            'Recent files list is always updated, even for export operations
             g_RecentFiles.AddFileToList dstPath, srcImage
-            Interface.SyncInterfaceToCurrentImage
-            Interface.NotifyImageChanged PDImages.GetActiveImageID()
-            Menus.UpdateSpecialMenu_WindowsOpen
+            
+            'For save operations (NOT export operations) also update the UI to reflect the new filename
+            ' and/or filetype, if any.
+            If (Not saveIsExport) Then
+                Interface.SyncInterfaceToCurrentImage
+                Interface.NotifyImageChanged PDImages.GetActiveImageID()
+                Menus.UpdateSpecialMenu_WindowsOpen
+            End If
+            
         End If
         
         'At this point, it's safe to re-enable the main form and restore the default cursor
@@ -840,10 +875,6 @@ End Function
 ' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
 ' pdImage object you want saved.
 Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
-
-    'TODO: no longer pass dstFormat; infer it from current image (if possible).
-    'After that, present dialog with inferred format pre-selected.
-    'Post-dialog, launch the correct settings dialog for chosen format.
     
     'Failsafe checks
     Export_Animation = False
@@ -857,24 +888,26 @@ Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
         ' (This is a simple OK/Cancel dialog that returns TRUE if user is OK simply exporting
         ' a single-frame image, despite them clicking Export > Animation.)
         If PromptSingleFrameSave() Then
-            
-            'TODO: route this to the new Export menu once it exists!
-            Export_Animation = FileMenu.MenuSaveAs(srcImage)
+            Export_Animation = FileMenu.MenuExportImage(srcImage)
             
         'User doesn't want to export the file after all; do nothing!
         End If
         
-        'Exit immediately on single-layer images, as I can't guarantee that all animation export functions
-        ' operate correctly on single-frame images.
+        'Exit immediately on single-layer images, as I can't guarantee animation export functions
+        ' work correctly on single-frame images.
         Exit Function
         
     End If
     
-    'Reuse the user's current "export image" path for the export (and failing that, fall back to just their
-    ' "save image" folder, and failing that fall back to the current user's /Pictures folder)
+    'If this image has already been exported this session, reuse that path for this export.  Failing that...
+    ' Fall back to the image's current on-disk folder.  Failing that...
+    ' Fall back to the last-used "save image" folder.  Failing that...
+    ' Fall back to the current user's Pictures folder.
     Dim cdInitialFolder As String
-    cdInitialFolder = UserPrefs.GetPref_String("Paths", "export-animation", vbNullString)
+    cdInitialFolder = UserPrefs.GetPref_String("Paths", "export-image", vbNullString)
+    If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", OS.SpecialFolder(CSIDL_MYPICTURES))
+    cdInitialFolder = Files.PathAddBackslash(cdInitialFolder)
     
     'Suggest a default file name.  This is the last-used export name for this image (if one exists),
     ' or failing that, just the current image's name.
@@ -1072,7 +1105,7 @@ Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
         End If
         
         'Update the stored last-exported-folder and file type
-        UserPrefs.SetPref_String "Paths", "export-animation", Files.FileGetPath(dstFile)
+        UserPrefs.SetPref_String "Paths", "export-image", Files.FileGetPath(dstFile)
         UserPrefs.SetPref_Long "Saving", "export-animation-format-idx", idxCmnDlgFilter
         
         'Next, retrieve export settings specific to the target format

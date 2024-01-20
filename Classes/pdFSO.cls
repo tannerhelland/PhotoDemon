@@ -718,9 +718,11 @@ End Function
 'Given a full path+filename string, return only the folder portion.
 ' Returns a blank string if a folder cannot be extracted.
 Friend Function FileGetPath(ByRef srcPath As String) As String
-    Dim slashPosition As Long
-    slashPosition = InStrRev(srcPath, "\", -1, vbBinaryCompare)
-    If (slashPosition <> 0) Then FileGetPath = Left$(srcPath, slashPosition)
+    If (LenB(srcPath) > 0) Then
+        Dim slashPosition As Long
+        slashPosition = InStrRev(srcPath, "\", -1, vbBinaryCompare)
+        If (slashPosition <> 0) Then FileGetPath = Left$(srcPath, slashPosition)
+    End If
 End Function
 
 'Return varies types of file times in currency format.  By default, WAPI functions return file times using a custom
