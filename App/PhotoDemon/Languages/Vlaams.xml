@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1717</langversion>
+<langversion>8.9.1718</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -79,23 +79,18 @@
 </phrase>
 
 <phrase>
-<original>Export animated GIF</original>
+<original>Export image</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated JPEG XL</original>
+<original>Export layers</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Export animated WebP</original>
-<translation></translation>
+<original>Export animation</original>
+<translation>Animatie exporteren</translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1333,7 @@
 <translation>Wis recente lijst met afbeeldingen</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1522,7 +1517,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <translation>Afbeelding is te groot</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -3185,12 +3180,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>U kunt doorgaan, maar het beeld zal worden opgeslagen als een statisch beeld, niet als een geanimeerd beeld.</translation>
 </phrase>
 
-<phrase>
-<original>Export animation</original>
-<translation>Animatie exporteren</translation>
-</phrase>
-
-<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4891,23 +4881,18 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>Animated GIF</original>
-<translation>Geanimeerde GIF</translation>
-</phrase>
-
-<phrase>
-<original>Animated JPEG XL</original>
+<original>Image to file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated PNG</original>
-<translation>Geanimeerde PNG</translation>
+<original>Layers to files</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated WebP</original>
-<translation>Geanimeerde WebP</translation>
+<original>Animation</original>
+<translation>Animatie</translation>
 </phrase>
 
 <phrase>
@@ -5008,11 +4993,6 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 <phrase>
 <original>Flip vertical</original>
 <translation>Vertikaal omkeren</translation>
-</phrase>
-
-<phrase>
-<original>Animation</original>
-<translation>Animatie</translation>
 </phrase>
 
 <phrase>
@@ -5743,7 +5723,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14090,10 +14070,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2665</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5614 phrases. -->
-<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
-<!-- These 2665 phrases contain approximately 11610 total words. -->
+<!-- As of this build, PhotoDemon contains 5610 phrases. -->
+<!-- 2949 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 11598 total words. -->
 
 </pdData>

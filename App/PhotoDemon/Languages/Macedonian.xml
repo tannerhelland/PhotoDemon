@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1717</langversion>
+<langversion>8.9.1718</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -79,22 +79,17 @@
 </phrase>
 
 <phrase>
-<original>Export animated GIF</original>
+<original>Export image</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated JPEG XL</original>
+<original>Export layers</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Export animated WebP</original>
+<original>Export animation</original>
 <translation></translation>
 </phrase>
 
@@ -1338,7 +1333,7 @@
 <translation>Clear recent листа на сликата</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1521,7 +1516,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Сликата е преголема</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -3178,12 +3173,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Export animation</original>
-<translation></translation>
-</phrase>
-
-<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4881,23 +4871,18 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Animated GIF</original>
+<original>Image to file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated JPEG XL</original>
+<original>Layers to files</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Animated WebP</original>
-<translation></translation>
+<original>Animation</original>
+<translation>Анимации</translation>
 </phrase>
 
 <phrase>
@@ -4998,11 +4983,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Flip vertical</original>
 <translation>флип вертикално</translation>
-</phrase>
-
-<phrase>
-<original>Animation</original>
-<translation>Анимации</translation>
 </phrase>
 
 <phrase>
@@ -5733,7 +5713,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14076,10 +14056,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2665</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5614 phrases. -->
-<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
-<!-- These 2665 phrases contain approximately 11610 total words. -->
+<!-- As of this build, PhotoDemon contains 5610 phrases. -->
+<!-- 2949 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 11598 total words. -->
 
 </pdData>
