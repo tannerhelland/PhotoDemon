@@ -1192,6 +1192,16 @@ Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
     
 End Function
 
+'PhotoDemon can currently export animated GIF, JPEG XL, PNG, and WebP images.  These fromats all have slight
+' subtleties in how we prep frames prior to export, but you can call this universal function to handle all those
+' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
+' pdImage object you want saved.
+Public Function Export_LayersToFile(ByRef srcImage As pdImage, ByRef listOfParams As String) As Boolean
+    
+    'TODO
+    
+End Function
+
 'Save the current pdImage's list of edits to a standalone 3D lut file.
 Public Function SaveColorLookupToFile(ByRef srcImage As pdImage) As Boolean
     

@@ -1651,20 +1651,15 @@ Private Sub Form_Load()
         For i = 0 To chkActions.Count - 1
             chkActions(i).Value = False
         Next i
-                
-    'Populate all file-format-related combo boxes, tooltips, and options
+        
+        'Populate all file-format-related combo boxes, tooltips, and options
         m_ExportSettingsSet = False
         For i = 0 To ImageFormats.GetNumOfOutputFormats()
             cmbOutputFormat.AddItem ImageFormats.GetOutputFormatDescription(i), i
         Next i
         
         'Save JPEGs by default
-        For i = 0 To cmbOutputFormat.ListCount
-            If (StrComp(LCase$(ImageFormats.GetOutputFormatExtension(i)), "jpg", vbBinaryCompare) = 0) Then
-                cmbOutputFormat.ListIndex = i
-                Exit For
-            End If
-        Next i
+        cmbOutputFormat.ListIndex = ImageFormats.GetIndexOfOutputPDIF(PDIF_JPEG)
         
         'Advanced import options are now available for vector formats (e.g. SVG)
         btsVectorImport.AddItem "use embedded size", 0
@@ -1681,8 +1676,8 @@ Private Sub Form_Load()
     optFormat(0).Value = True
     
     'Populate the combo box for file rename options
-    cmbOutputOptions.AddItem "Original filenames"
-    cmbOutputOptions.AddItem "Ascending numbers (1, 2, 3, etc.)"
+    cmbOutputOptions.AddItem "original filenames"
+    cmbOutputOptions.AddItem "ascending numbers (1, 2, 3, etc.)"
     cmbOutputOptions.ListIndex = 0
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.

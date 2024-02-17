@@ -3,8 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 31/March/22
-'Last update: add check for non-destructive property changes on layers that may have been deleted by the last effect
+'Last updated: 22/January/24
+'Last update: new additions for the expanded File > Export menu
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -1401,8 +1401,7 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export layers", True) Then
-        'TODO:
-        'Saving.Export_Animation PDIF_JXL, PDImages.GetActiveImage()
+        If raiseDialog Then ShowPDDialog vbModal, FormExportLayers Else Saving.Export_LayersToFile PDImages.GetActiveImage, processParameters
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animation", True) Then

@@ -38,7 +38,7 @@ Option Explicit
 Private m_FreeImageEnabled As Boolean
 
 'Number of available input, output formats
-Private numOfInputFormats As Long, numOfOutputFormats As Long
+Private m_numOfInputFormats As Long, m_numOfOutputFormats As Long
 
 'Array of available input, output extensions.
 Private inputExtensions() As String, outputExtensions() As String
@@ -78,7 +78,7 @@ End Function
 
 'Return the PDIF ("PD image format" constant) at a given index
 Public Function GetInputPDIF(ByVal dIndex As Long) As Long
-    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfInputFormats) Then
         GetInputPDIF = inputPDIFs(dIndex)
     Else
         GetInputPDIF = PDIF_UNKNOWN
@@ -87,7 +87,7 @@ End Function
 
 'Return the friendly input format description at a given index
 Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
-    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfInputFormats) Then
         GetInputFormatDescription = inputDescriptions(dIndex)
     Else
         GetInputFormatDescription = vbNullString
@@ -96,7 +96,7 @@ End Function
 
 'Return the input format extension at a given index
 Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
-    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfInputFormats) Then
         GetInputFormatExtensions = inputExtensions(dIndex)
     Else
         GetInputFormatExtensions = vbNullString
@@ -118,7 +118,7 @@ End Function
 
 'Return the number of available input format types
 Public Function GetNumOfInputFormats() As Long
-    GetNumOfInputFormats = numOfInputFormats
+    GetNumOfInputFormats = m_numOfInputFormats
 End Function
 
 'Return a list of input filetypes formatted for use with a common dialog box
@@ -143,7 +143,7 @@ End Function
 
 'Return the FIF (image format constant) at a given index
 Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
-    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfInputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
         GetOutputPDIF = PDIF_UNKNOWN
@@ -152,7 +152,7 @@ End Function
 
 'Return the friendly output format description at a given index
 Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
-    If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfOutputFormats) Then
         GetOutputFormatDescription = outputDescriptions(dIndex)
     Else
         GetOutputFormatDescription = vbNullString
@@ -161,7 +161,7 @@ End Function
 
 'Return the output format extension at a given index
 Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
-    If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfOutputFormats) Then
         GetOutputFormatExtension = outputExtensions(dIndex)
     Else
         GetOutputFormatExtension = vbNullString
@@ -170,7 +170,7 @@ End Function
 
 'Return the number of available output format types
 Public Function GetNumOfOutputFormats() As Long
-    GetNumOfOutputFormats = numOfOutputFormats
+    GetNumOfOutputFormats = m_numOfOutputFormats
 End Function
 
 'Return a list of output filetypes formatted for use with a common dialog box
@@ -346,16 +346,16 @@ Public Sub GenerateInputFormats()
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
     
     'Resize our description and extension arrays to match their final size
-    numOfInputFormats = m_curFormatIndex
-    ReDim Preserve inputDescriptions(0 To numOfInputFormats) As String
-    ReDim Preserve inputExtensions(0 To numOfInputFormats) As String
-    ReDim Preserve inputPDIFs(0 To numOfInputFormats) As PD_IMAGE_FORMAT
+    m_numOfInputFormats = m_curFormatIndex
+    ReDim Preserve inputDescriptions(0 To m_numOfInputFormats) As String
+    ReDim Preserve inputExtensions(0 To m_numOfInputFormats) As String
+    ReDim Preserve inputPDIFs(0 To m_numOfInputFormats) As PD_IMAGE_FORMAT
     
     'Now that all input files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
     Dim x As Long
-    For x = 0 To numOfInputFormats
+    For x = 0 To m_numOfInputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
         If (x <> 0) Then
@@ -441,16 +441,16 @@ Public Sub GenerateOutputFormats()
     If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
-    numOfOutputFormats = m_curFormatIndex
-    ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
-    ReDim Preserve outputExtensions(0 To numOfOutputFormats) As String
-    ReDim Preserve outputPDIFs(0 To numOfOutputFormats) As PD_IMAGE_FORMAT
+    m_numOfOutputFormats = m_curFormatIndex
+    ReDim Preserve outputDescriptions(0 To m_numOfOutputFormats) As String
+    ReDim Preserve outputExtensions(0 To m_numOfOutputFormats) As String
+    ReDim Preserve outputPDIFs(0 To m_numOfOutputFormats) As PD_IMAGE_FORMAT
     
     'Now that all output files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
     Dim x As Long
-    For x = 0 To numOfOutputFormats
+    For x = 0 To m_numOfOutputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
         If (x <> 0) Then
