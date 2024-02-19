@@ -143,7 +143,7 @@ End Function
 
 'Return the FIF (image format constant) at a given index
 Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
-    If (dIndex >= 0) And (dIndex <= m_numOfInputFormats) Then
+    If (dIndex >= 0) And (dIndex <= m_numOfOutputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
         GetOutputPDIF = PDIF_UNKNOWN

@@ -4,7 +4,7 @@ Begin VB.Form FormExportLayers
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Layers to files"
-   ClientHeight    =   7170
+   ClientHeight    =   7620
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   8535
@@ -22,36 +22,44 @@ Begin VB.Form FormExportLayers
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   478
+   ScaleHeight     =   508
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   569
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkOverwrite 
+      Height          =   375
+      Left            =   210
+      TabIndex        =   11
+      Top             =   2295
+      Width           =   7935
+      _ExtentX        =   13996
+      _ExtentY        =   661
+      Caption         =   "overwrite matching filenames in the destination folder"
+   End
+   Begin PhotoDemon.pdCommandBar cmdBar 
+      Height          =   750
+      Left            =   0
+      TabIndex        =   10
+      Top             =   6870
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   1323
+   End
    Begin PhotoDemon.pdButtonStrip btsWhichLayers 
       Height          =   990
       Left            =   120
-      TabIndex        =   6
-      Top             =   1200
-      Width           =   8175
-      _ExtentX        =   14420
+      TabIndex        =   5
+      Top             =   120
+      Width           =   8190
+      _ExtentX        =   14446
       _ExtentY        =   1746
       Caption         =   "layers to export"
    End
-   Begin PhotoDemon.pdCommandBarMini cmdBar 
-      Align           =   2  'Align Bottom
-      Height          =   615
-      Left            =   0
-      TabIndex        =   2
-      Top             =   6555
-      Width           =   8535
-      _ExtentX        =   15055
-      _ExtentY        =   1085
-      DontAutoUnloadParent=   -1  'True
-   End
    Begin PhotoDemon.pdButton cmdDstFolder 
       Height          =   450
-      Left            =   7800
+      Left            =   7785
       TabIndex        =   0
-      Top             =   555
+      Top             =   1755
       Width           =   525
       _ExtentX        =   926
       _ExtentY        =   794
@@ -59,11 +67,11 @@ Begin VB.Form FormExportLayers
    End
    Begin PhotoDemon.pdTextBox txtDstFolder 
       Height          =   315
-      Left            =   360
+      Left            =   240
       TabIndex        =   1
-      Top             =   630
-      Width           =   7335
-      _ExtentX        =   12938
+      Top             =   1830
+      Width           =   7440
+      _ExtentX        =   13123
       _ExtentY        =   556
       Text            =   "automatically generated at run-time"
    End
@@ -71,7 +79,7 @@ Begin VB.Form FormExportLayers
       Height          =   285
       Index           =   0
       Left            =   120
-      Top             =   120
+      Top             =   1320
       Width           =   8145
       _ExtentX        =   14367
       _ExtentY        =   503
@@ -82,8 +90,8 @@ Begin VB.Form FormExportLayers
    Begin PhotoDemon.pdTextBox txtPrefix 
       Height          =   315
       Left            =   390
-      TabIndex        =   3
-      Top             =   3960
+      TabIndex        =   2
+      Top             =   4440
       Width           =   3720
       _ExtentX        =   6562
       _ExtentY        =   556
@@ -91,38 +99,38 @@ Begin VB.Form FormExportLayers
    Begin PhotoDemon.pdButton cmdExportSettings 
       Height          =   735
       Left            =   225
-      TabIndex        =   4
-      Top             =   5400
-      Width           =   8070
-      _ExtentX        =   14235
+      TabIndex        =   3
+      Top             =   5880
+      Width           =   8085
+      _ExtentX        =   14261
       _ExtentY        =   1296
       Caption         =   "set export settings for this format..."
    End
    Begin PhotoDemon.pdDropDown cboOutputFormat 
       Height          =   735
       Left            =   120
-      TabIndex        =   5
-      Top             =   4560
-      Width           =   8175
-      _ExtentX        =   14420
+      TabIndex        =   4
+      Top             =   5040
+      Width           =   8190
+      _ExtentX        =   14446
       _ExtentY        =   1296
       Caption         =   "file type"
    End
    Begin PhotoDemon.pdButtonStrip btsFilename 
       Height          =   990
       Left            =   120
-      TabIndex        =   7
-      Top             =   2400
-      Width           =   8175
-      _ExtentX        =   14420
+      TabIndex        =   6
+      Top             =   2880
+      Width           =   8190
+      _ExtentX        =   14446
       _ExtentY        =   1746
       Caption         =   "filename"
    End
    Begin PhotoDemon.pdTextBox txtSuffix 
       Height          =   315
       Left            =   4470
-      TabIndex        =   8
-      Top             =   3960
+      TabIndex        =   7
+      Top             =   4440
       Width           =   3720
       _ExtentX        =   6562
       _ExtentY        =   556
@@ -130,8 +138,8 @@ Begin VB.Form FormExportLayers
    Begin PhotoDemon.pdCheckBox chkSuffix 
       Height          =   330
       Left            =   4440
-      TabIndex        =   9
-      Top             =   3570
+      TabIndex        =   8
+      Top             =   4050
       Width           =   3750
       _ExtentX        =   7990
       _ExtentY        =   582
@@ -141,8 +149,8 @@ Begin VB.Form FormExportLayers
    Begin PhotoDemon.pdCheckBox chkPrefix 
       Height          =   330
       Left            =   360
-      TabIndex        =   10
-      Top             =   3570
+      TabIndex        =   9
+      Top             =   4050
       Width           =   3750
       _ExtentX        =   6615
       _ExtentY        =   582
@@ -197,13 +205,22 @@ Private Sub cboOutputFormat_Click()
     
 End Sub
 
-Private Sub cmdBar_OKClick()
-    
+Private Sub cmdBar_ExtraValidations()
+
     'Make sure the user clicked the "set export options" button for their selected format
     If (Not m_ExportSettingsSet) Then
         PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation Or vbOKOnly, "Export settings required"
+        cmdBar.ValidationFailed
         Exit Sub
     End If
+    
+End Sub
+
+Private Sub cmdBar_OKClick()
+    
+    'Lock the UI
+    Me.Visible = False
+    Saving.BeginSaveProcess
     
     'Make sure the destination folder exists
     Dim cFSO As pdFSO
@@ -214,10 +231,14 @@ Private Sub cmdBar_OKClick()
     If (Not Files.PathExists(dstFolder, False)) Then Files.PathCreate dstFolder, True
     
     'Figure out export format
-    Dim exportFormat As PD_IMAGE_FORMAT
+    Dim exportFormat As PD_IMAGE_FORMAT, exportExtension As String
     exportFormat = ImageFormats.GetOutputPDIF(Me.cboOutputFormat.ListIndex)
+    exportExtension = ImageFormats.GetOutputFormatExtension(Me.cboOutputFormat.ListIndex)
+    PDDebug.LogAction "Starting layer export to " & ImageFormats.GetOutputFormatDescription(Me.cboOutputFormat.ListIndex) & " format..."
     
-    'Time to start iterating layers.  Start by figuring out initial and final indices
+    'Time to start iterating layers.  Start by figuring out initial and final indices, and from that,
+    ' how many layers we'll actually need to process.
+    Dim numTotalLayers As Long
     Dim idxStart As Long, idxEnd As Long
     Select Case btsWhichLayers.ListIndex
         
@@ -225,18 +246,29 @@ Private Sub cmdBar_OKClick()
         Case 0
             idxStart = 0
             idxEnd = PDImages.GetActiveImage.GetNumOfLayers - 1
+            
+            'Use the start and end indices to calculate the total number of layers being exported
+            numTotalLayers = (idxEnd - idxStart) + 1
         
         'Visible layers only
         Case 1
             idxStart = 0
             idxEnd = PDImages.GetActiveImage.GetNumOfLayers - 1
+            
+            'Total layer count will be initialized in a later step
+            numTotalLayers = 0
         
         'Current layer only
         Case 2
             idxStart = PDImages.GetActiveImage.GetActiveLayerIndex
             idxEnd = PDImages.GetActiveImage.GetActiveLayerIndex
+            numTotalLayers = 1
         
     End Select
+    
+    'Prep any remaining UI elements
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.SetProgBarMax numTotalLayers
     
     'Make a backup list of layer visibility (as we're going to cheat and simply toggle layer visibility
     ' on the active image).
@@ -246,7 +278,11 @@ Private Sub cmdBar_OKClick()
     Dim i As Long
     For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
         backupVisibility(i) = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility()
+        If backupVisibility(i) Then numTotalLayers = numTotalLayers + 1
     Next i
+    
+    Dim numCurrentLayer As Long
+    numCurrentLayer = 1
     
     'Start iterating layers and export as we go!
     For i = idxStart To idxEnd
@@ -255,16 +291,20 @@ Private Sub cmdBar_OKClick()
         ' but the user selected "export visible layers only"
         Dim okToExport As Boolean
         okToExport = True
-        If (btsWhichLayers.ListIndex = 1) Then okToExport = okToExport And PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility()
+        If (btsWhichLayers.ListIndex = 1) Then okToExport = (okToExport And PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility())
         
         'If this layer is a valid export target, we need to make all other layers invisible, then export the result
         If okToExport Then
             
+            'Update the UI
+            Message "Exporting layer %1 of %2...", numCurrentLayer, numTotalLayers
+            ProgressBars.SetProgBarVal numCurrentLayer
+            
             'Hide all layers but this one
             Dim j As Long
             For j = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
-                PDImages.GetActiveImage.GetLayerByIndex(i).SetLayerVisibility (i = j)
-                PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, i
+                PDImages.GetActiveImage.GetLayerByIndex(j).SetLayerVisibility (i = j)
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, j
             Next j
             
             'Grab a composite copy of the new visibility-adjusted image
@@ -287,35 +327,88 @@ Private Sub cmdBar_OKClick()
             
             'Generate an output filename
             Dim newFilename As String
-            newFilename = GetFinalFilename(i)
+            newFilename = dstFolder & GetFinalFilename(i) & "." & exportExtension
+            
+            'The user may choose to disallow overwriting existing files, so check file existence now.
+            okToExport = True
+            If Files.FileExists(newFilename) Then
+                If chkOverwrite.Value Then
+                    Files.FileDelete newFilename
+                Else
+                    okToExport = False
+                End If
+            End If
             
             'We're now going to loop into the batch process exporter, because it works great for one-off file exports
-            Saving.PhotoDemon_BatchSaveImage tmpComposite, newFilename, exportFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
+            If okToExport Then Saving.PhotoDemon_BatchSaveImage tmpImage, newFilename, exportFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
             
             'Free the temporary image
             Set tmpImage = Nothing
+            
+            'Track processed layer count, so we can keep the UI updated accurately
+            numCurrentLayer = numCurrentLayer + 1
+            
+            'Before moving to the next layer (or exiting), restore original layer visibility
+            For j = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                PDImages.GetActiveImage.GetLayerByIndex(j).SetLayerVisibility backupVisibility(j)
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, j
+            Next j
             
         End If
         
     Next i
     
-    'Before exiting, restore original layer visibility
-    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
-        PDImages.GetActiveImage.GetLayerByIndex(i).SetLayerVisibility backupVisibility(i)
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, i
-    Next i
+    'Unlock and reset the UI
+    Message "Finished."
+    ProgressBars.ReleaseProgressBar
+    Saving.EndSaveProcess
     
 End Sub
 
 'Do not pass invalid files or paths to this function.  It does not validate inputs.
 Private Function GetFinalFilename(ByVal idxLayer As Long) As String
     
-    'The valid filename for this file depends on the user's current settings.  Start by grabbing the layer's current name.
-    Dim curLayerName As String
-    curLayerName = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerName()
+    'The valid filename for this file depends on the user's current settings.
     
+    'Start by assembling a base name.  This can be either the current layer name, or its index.
+    Dim baseLayerName As String
+    If (btsFilename.ListIndex = 0) Then
+        baseLayerName = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerName()
+    Else
+        baseLayerName = Trim$(Str$(idxLayer + 1))
+    End If
+    
+    'Add a prefix (conditionally)
+    If chkPrefix.Value Then baseLayerName = txtPrefix.Text & baseLayerName
+    
+    'Add a suffix (conditionally)
+    If chkSuffix.Value Then baseLayerName = baseLayerName & txtSuffix.Text
+    
+    'Strip invalid filename chars, if any
+    baseLayerName = Files.FileMakeNameValid(baseLayerName)
+    
+    'Filename is ready!
+    GetFinalFilename = baseLayerName
     
 End Function
+
+Private Sub cmdBar_ResetClick()
+    
+    'Default to the user's "save image" path,
+    If UserPrefs.DoesValueExist("Paths", "export-layers") Then
+        txtDstFolder.Text = UserPrefs.GetPref_String("Paths", "export-layers", UserPrefs.GetPref_String("Paths", "Save Image", vbNullString))
+    Else
+        txtDstFolder.Text = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    End If
+    
+    chkPrefix.Value = False
+    txtPrefix.Text = vbNullString
+    chkSuffix.Value = False
+    txtSuffix.Text = vbNullString
+    
+    cboOutputFormat.ListIndex = ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG)
+    
+End Sub
 
 Private Sub cmdDstFolder_Click()
     Dim folderPath As String
@@ -395,9 +488,9 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub txtPrefix_Change()
-    If (Not chkPrefix.Value) Then chkPrefix.Value = True
+    chkPrefix.Value = (LenB(txtPrefix.Text) > 0)
 End Sub
 
 Private Sub txtSuffix_Change()
-    If (Not chkSuffix.Value) Then chkSuffix.Value = True
+    chkSuffix.Value = (LenB(txtSuffix.Text) > 0)
 End Sub
