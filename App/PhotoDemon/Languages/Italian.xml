@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1625</langversion>
+<langversion>8.9.1626</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -10068,12 +10068,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Original filenames</original>
+<original>original filenames</original>
 <translation>Nomi dei file originali</translation>
 </phrase>
 
 <phrase>
-<original>Ascending numbers (1, 2, 3, etc.)</original>
+<original>ascending numbers (1, 2, 3, etc.)</original>
 <translation>Numeri ascendenti (1, 2, 3, etc.)</translation>
 </phrase>
 
@@ -14076,12 +14076,54 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>layers to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exporting layer %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer name</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2669</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5610 phrases. -->
-<!-- 2949 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 11598 total words. -->
+<!-- As of this build, PhotoDemon contains 5629 phrases. -->
+<!-- 2960 are duplicates, so only 2669 unique phrases have been written to file. -->
+<!-- These 2669 phrases contain approximately 11616 total words. -->
 
 </pdData>
