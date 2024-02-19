@@ -4,10 +4,10 @@ Begin VB.Form FormExportLayers
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Layers to files"
-   ClientHeight    =   7620
+   ClientHeight    =   6645
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   8535
+   ClientWidth     =   12000
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,17 +22,17 @@ Begin VB.Form FormExportLayers
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   508
+   ScaleHeight     =   443
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   569
+   ScaleWidth      =   800
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkOverwrite 
       Height          =   375
       Left            =   210
       TabIndex        =   11
-      Top             =   2295
-      Width           =   7935
-      _ExtentX        =   13996
+      Top             =   1095
+      Width           =   11535
+      _ExtentX        =   20346
       _ExtentY        =   661
       Caption         =   "overwrite matching filenames in the destination folder"
    End
@@ -40,26 +40,27 @@ Begin VB.Form FormExportLayers
       Height          =   750
       Left            =   0
       TabIndex        =   10
-      Top             =   6870
-      Width           =   8535
-      _ExtentX        =   15055
+      Top             =   5895
+      Width           =   12000
+      _ExtentX        =   21167
       _ExtentY        =   1323
+      HideRandomizeButton=   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsWhichLayers 
-      Height          =   990
+      Height          =   1695
       Left            =   120
       TabIndex        =   5
-      Top             =   120
-      Width           =   8190
-      _ExtentX        =   14446
-      _ExtentY        =   1746
+      Top             =   3960
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   2990
       Caption         =   "layers to export"
    End
    Begin PhotoDemon.pdButton cmdDstFolder 
       Height          =   450
-      Left            =   7785
+      Left            =   11250
       TabIndex        =   0
-      Top             =   1755
+      Top             =   555
       Width           =   525
       _ExtentX        =   926
       _ExtentY        =   794
@@ -69,9 +70,9 @@ Begin VB.Form FormExportLayers
       Height          =   315
       Left            =   240
       TabIndex        =   1
-      Top             =   1830
-      Width           =   7440
-      _ExtentX        =   13123
+      Top             =   630
+      Width           =   10800
+      _ExtentX        =   19050
       _ExtentY        =   556
       Text            =   "automatically generated at run-time"
    End
@@ -79,9 +80,9 @@ Begin VB.Form FormExportLayers
       Height          =   285
       Index           =   0
       Left            =   120
-      Top             =   1320
-      Width           =   8145
-      _ExtentX        =   14367
+      Top             =   120
+      Width           =   11625
+      _ExtentX        =   20505
       _ExtentY        =   503
       Caption         =   "destination folder"
       FontSize        =   12
@@ -91,28 +92,28 @@ Begin VB.Form FormExportLayers
       Height          =   315
       Left            =   390
       TabIndex        =   2
-      Top             =   4440
-      Width           =   3720
-      _ExtentX        =   6562
+      Top             =   3240
+      Width           =   5385
+      _ExtentX        =   9499
       _ExtentY        =   556
    End
    Begin PhotoDemon.pdButton cmdExportSettings 
-      Height          =   735
-      Left            =   225
+      Height          =   855
+      Left            =   6105
       TabIndex        =   3
-      Top             =   5880
-      Width           =   8085
-      _ExtentX        =   14261
-      _ExtentY        =   1296
+      Top             =   4800
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   1508
       Caption         =   "set export settings for this format..."
    End
    Begin PhotoDemon.pdDropDown cboOutputFormat 
       Height          =   735
-      Left            =   120
+      Left            =   6000
       TabIndex        =   4
-      Top             =   5040
-      Width           =   8190
-      _ExtentX        =   14446
+      Top             =   3960
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   1296
       Caption         =   "file type"
    End
@@ -120,28 +121,28 @@ Begin VB.Form FormExportLayers
       Height          =   990
       Left            =   120
       TabIndex        =   6
-      Top             =   2880
-      Width           =   8190
-      _ExtentX        =   14446
+      Top             =   1680
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1746
       Caption         =   "filename"
    End
    Begin PhotoDemon.pdTextBox txtSuffix 
       Height          =   315
-      Left            =   4470
+      Left            =   6030
       TabIndex        =   7
-      Top             =   4440
-      Width           =   3720
-      _ExtentX        =   6562
+      Top             =   3240
+      Width           =   5745
+      _ExtentX        =   10134
       _ExtentY        =   556
    End
    Begin PhotoDemon.pdCheckBox chkSuffix 
       Height          =   330
-      Left            =   4440
+      Left            =   6000
       TabIndex        =   8
-      Top             =   4050
-      Width           =   3750
-      _ExtentX        =   7990
+      Top             =   2850
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   582
       Caption         =   "add a suffix to each filename:"
       Value           =   0   'False
@@ -150,9 +151,9 @@ Begin VB.Form FormExportLayers
       Height          =   330
       Left            =   360
       TabIndex        =   9
-      Top             =   4050
-      Width           =   3750
-      _ExtentX        =   6615
+      Top             =   2850
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   582
       Caption         =   "add a prefix to each filename:"
       Value           =   0   'False
@@ -211,6 +212,7 @@ Private Sub cmdBar_ExtraValidations()
     If (Not m_ExportSettingsSet) Then
         PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation Or vbOKOnly, "Export settings required"
         cmdBar.ValidationFailed
+        cmdExportSettings.SetFocus
         Exit Sub
     End If
     
@@ -278,7 +280,9 @@ Private Sub cmdBar_OKClick()
     Dim i As Long
     For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
         backupVisibility(i) = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility()
-        If backupVisibility(i) Then numTotalLayers = numTotalLayers + 1
+        If (btsWhichLayers.ListIndex = 1) Then
+            If backupVisibility(i) Then numTotalLayers = numTotalLayers + 1
+        End If
     Next i
     
     Dim numCurrentLayer As Long
