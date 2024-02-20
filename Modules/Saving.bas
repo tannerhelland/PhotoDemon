@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 21/June/22
-'Last update: add safe saving to color lookup export
+'Last updated: 16/January/24
+'Last update: overhaul the way the Export > Animation menu works (condense format-specific menus into a single entry)
 '
 'This module handles high-level image export duties.  Low-level export functions
 ' are generally located in the ImageExport module; see there for per-format details.
@@ -45,23 +45,33 @@ End Function
 'INPUTS:
 '   1) pdImage to be saved
 '   2) Destination file path
-'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc).  Save As commands
-'      forcibly set this to TRUE, so that the user can input new export settings.
-Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False) As Boolean
+'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc).
+'      Save As and Export operations forcibly set this to TRUE, so that the user can specify new export settings.
+'   4) Optional: pass a non-unknown image format to treat this as an EXPORT vs a SAVE.
+'      (EXPORT does *not* update image save state, meaning states like "unsaved changes" remain as-is.)
+Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False, Optional useThisExportFormat As PD_IMAGE_FORMAT = PDIF_UNKNOWN) As Boolean
     
     'There are a few different ways the save process can "fail":
     ' 1) a save dialog with extra options is required, and the user cancels it
     ' 2) file-system errors (folder not writable, not enough free space, etc)
     ' 3) save engine errors (e.g. FreeImage explodes mid-save)
     
-    'These have varying degrees of severity, but I mention this in advance because a number of post-save behaviors (like updating
-    ' the Recent Files list) are abandoned under *any* of these occurrences.  As such, a lot of this function postpones various
-    ' tasks until after all possible failure states have been dealt with.
+    'These have varying degrees of severity, but I mention this in advance because a number of
+    ' post-save behaviors (like updating the Recent Files list) are abandoned under *any* of these
+    ' occurrences.  As such, a lot of this function postpones various tasks until after all possible
+    ' failure states have been dealt with.
     Dim saveSuccessful As Boolean: saveSuccessful = False
     
     'The caller must tell us which format they want us to use.
+    Dim saveIsExport As Boolean
+    saveIsExport = (useThisExportFormat <> PDIF_UNKNOWN)
+    
     Dim saveFormat As PD_IMAGE_FORMAT
-    saveFormat = srcImage.GetCurrentFileFormat
+    If saveIsExport Then
+        saveFormat = useThisExportFormat
+    Else
+        saveFormat = srcImage.GetCurrentFileFormat
+    End If
     
     Dim dictEntry As String
     
@@ -112,20 +122,31 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         needToDisplayDialog = False
     End If
     
-    'All export dialogs fulfill the same purpose: they fill an XML string with a list of key+value pairs detailing setting relevant
-    ' to that format.  This XML string is then passed to the respective save function, which applies the settings as relevant.
+    'All save dialogs fulfill the same purpose: they fill an XML string with a list of key+value pairs
+    ' defining export settings.  This XML string is then passed to the respective save function,
+    ' which applies individual settings as relevant.
     
-    'Upon a successful save, we cache that format-specific parameter string inside the parent image; the same settings are then
-    ' reused on subsequent saves, instead of re-prompting the user.
+    'Upon a successful save, we cache that format-specific parameter string inside the parent image;
+    ' the same settings can then be reused on subsequent saves, instead of re-prompting the user.
     
     'It is now time to retrieve said parameter string, either from a dialog, or from the pdImage settings dictionary.
+    ' (Note that EXPORT and SAVE AS operations *always* display an export dialog; SAVE operations only
+    ' raise a dialog on the *first* save operation.)
     Dim saveParameters As String, metadataParameters As String
     If needToDisplayDialog Then
         
+        'Normally, we auto-detect animated images and raise an animation dialog accordingly, but PhotoDemon's
+        ' EXPORT menu requires the user to explicitly choose between animated and still states.  (The regular
+        ' SAVE menu auto-detects the correct animation setting for you.)
+        Dim useAnimationDialog As Boolean
+        If saveIsExport Then
+            useAnimationDialog = False
+        Else
+            If (Not srcImage Is Nothing) Then useAnimationDialog = srcImage.IsAnimated Else useAnimationDialog = False
+        End If
+        
         'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
-        Dim useAnimationDialog As Boolean
-        If (Not srcImage Is Nothing) Then useAnimationDialog = srcImage.IsAnimated Else useAnimationDialog = False
         If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters, useAnimationDialog) Then
             srcImage.ImgStorage.AddEntry "MetadataSettings", metadataParameters
             
@@ -166,29 +187,35 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     saveSuccessful = Saving.ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
     If saveSuccessful Then
         
-        'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
-        ' can use these instead of querying the user again.
-        dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
-        srcImage.ImgStorage.AddEntry dictEntry, saveParameters
+        'The file was saved successfully!  Copy the save parameters into the parent pdImage object;
+        ' subsequent "save" actions can use these instead of querying the user again.
+        ' (Note that this is only done for SAVE actions, not EXPORT actions.)
+        If (Not saveIsExport) Then
+            
+            dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
+            srcImage.ImgStorage.AddEntry dictEntry, saveParameters
+            
+            'If a dialog was displayed, note that as well
+            If needToDisplayDialog Then
+                dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
+                srcImage.ImgStorage.AddEntry dictEntry, True
+            End If
+            
+            'Similarly, remember the file's location and selected name for future saves
+            srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
+            srcImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(dstPath, True)
+            srcImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(dstPath)
+            
+            'Update the parent image's save state.
+            If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
         
-        'If a dialog was displayed, note that as well
-        If needToDisplayDialog Then
-            dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
-            srcImage.ImgStorage.AddEntry dictEntry, True
         End If
         
-        'Similarly, remember the file's location and selected name for future saves
-        srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
-        srcImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(dstPath, True)
-        srcImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(dstPath)
-        
-        'Update the parent image's save state.
-        If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
-        
         'If the file was successfully written, we can now embed any additional metadata.
-        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-        ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
-        ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil
+        ' of routing all metadata handling through an external app.  Exiftool requires an existant
+        ' file to be used as a target, and an existant metadata file to be used as its source.
+        ' It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
         If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
             
             'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
@@ -196,13 +223,21 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             
         End If
         
-        'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
-        ' only applied if we are *not* in the midst  of a batch conversion.
+        'With all save work complete, we can now update various UI bits to reflect the new image.
+        ' Note that these changes are only applied if we are *not* in the midst of a batch conversion.
         If (Macros.GetMacroStatus <> MacroBATCH) Then
+            
+            'Recent files list is always updated, even for export operations
             g_RecentFiles.AddFileToList dstPath, srcImage
-            Interface.SyncInterfaceToCurrentImage
-            Interface.NotifyImageChanged PDImages.GetActiveImageID()
-            Menus.UpdateSpecialMenu_WindowsOpen
+            
+            'For save operations (NOT export operations) also update the UI to reflect the new filename
+            ' and/or filetype, if any.
+            If (Not saveIsExport) Then
+                Interface.SyncInterfaceToCurrentImage
+                Interface.NotifyImageChanged PDImages.GetActiveImageID()
+                Menus.UpdateSpecialMenu_WindowsOpen
+            End If
+            
         End If
         
         'At this point, it's safe to re-enable the main form and restore the default cursor
@@ -839,62 +874,154 @@ End Function
 ' subtleties in how we prep frames prior to export, but you can call this universal function to handle all those
 ' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
 ' pdImage object you want saved.
-Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcImage As pdImage) As Boolean
-
+Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
+    
+    'Failsafe checks
     Export_Animation = False
     If (srcImage Is Nothing) Then Exit Function
     
     'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
+    ' (That can be handled by the default "export" function.
     If (srcImage.GetNumOfLayers <= 1) Then
-        If Not PromptSingleFrameSave() Then Exit Function
+        
+        'Prompt the user for how they want to succeed.
+        ' (This is a simple OK/Cancel dialog that returns TRUE if user is OK simply exporting
+        ' a single-frame image, despite them clicking Export > Animation.)
+        If PromptSingleFrameSave() Then
+            Export_Animation = FileMenu.MenuExportImage(srcImage)
+            
+        'User doesn't want to export the file after all; do nothing!
+        End If
+        
+        'Exit immediately on single-layer images, as I can't guarantee animation export functions
+        ' work correctly on single-frame images.
+        Exit Function
+        
     End If
     
-    'Reuse the user's current "save image" path for the export
+    'If this image has already been exported this session, reuse that path for this export.  Failing that...
+    ' Fall back to the image's current on-disk folder.  Failing that...
+    ' Fall back to the last-used "save image" folder.  Failing that...
+    ' Fall back to the current user's Pictures folder.
     Dim cdInitialFolder As String
-    cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    cdInitialFolder = UserPrefs.GetPref_String("Paths", "export-image", vbNullString)
+    If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", OS.SpecialFolder(CSIDL_MYPICTURES))
+    cdInitialFolder = Files.PathAddBackslash(cdInitialFolder)
     
-    'Suggest a default file name.  (At present, we just reuse the current image's name.)
+    'Suggest a default file name.  This is the last-used export name for this image (if one exists),
+    ' or failing that, just the current image's name.
     Dim dstFile As String
-    dstFile = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    dstFile = srcImage.ImgStorage.GetEntry_String("export-animation-filename", vbNullString)
+    If (LenB(dstFile) = 0) Then dstFile = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If (LenB(dstFile) = 0) Then dstFile = g_Language.TranslateMessage("New image")
     dstFile = cdInitialFolder & dstFile
     
     Dim cdTitle As String
-    Select Case dstFormat
-        Case PDIF_GIF
-            cdTitle = g_Language.TranslateMessage("Export animated GIF")
-        Case PDIF_JXL
-            cdTitle = g_Language.TranslateMessage("Export animated JPEG XL")
-        Case PDIF_PNG
-            cdTitle = g_Language.TranslateMessage("Export animated PNG")
-        Case PDIF_WEBP
-            cdTitle = g_Language.TranslateMessage("Export animated WebP")
+    cdTitle = g_Language.TranslateMessage("Export animation")
+    
+    'Build a list of acceptable animation export formats.
+    Dim exportFilter As pdString
+    Set exportFilter = New pdString
+    
+    exportFilter.Append "GIF - Graphics Interchange Format (*.gif)|*.gif|"
+    exportFilter.Append "JXL - JPEG XL (*.jxl)|*.jxl|"
+    exportFilter.Append "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png|"
+    exportFilter.Append "WEBP - Google WebP (*.webp)|*.webp"
+    
+    Dim exportExtension As pdString
+    Set exportExtension = New pdString
+    exportExtension.Append ".gif|"
+    exportExtension.Append ".jxl|"
+    exportExtension.Append ".png|"
+    exportExtension.Append ".webp"
+    
+    'The current list of export formats (and their indices, 1-based) is:
+    ' 1) GIF
+    ' 2) JPEG-XL
+    ' 3) PNG
+    ' 4) WebP
+    Const PD_DEFAULT_ANIM_FORMAT As Long = PDIF_PNG
+    Const PD_DEFAULT_ANIM_FORMAT_IDX As Long = 3
+    
+    'Figure out which file format to suggest, based on the current image format.  The current formula is:
+    ' 1) If the user already exported this image to an animation-capable format this session, use that.  Otherwise...
+    ' 2) If the current image is already in an animation-friendly format, use that.  Otherwise...
+    ' 3) If the user has previously exported animations to a given format, use that.  Otherwise...
+    ' 4) Suggest APNG as the target format.  (It has widest compatibility for a lossless format.)
+    
+    'See if this image has already been exported to an animation file this session.
+    Dim idxCmnDlgFilter As Long
+    If srcImage.ImgStorage.DoesKeyExist("export-animation-format") Then
+        
+        'The user has exported this image to an animation file already.  Retrieve the format they used previously,
+        ' and auto-suggest it again.
+        Dim tmpFormat As PD_IMAGE_FORMAT
+        tmpFormat = srcImage.ImgStorage.GetEntry_Long("export-animation-format", PD_DEFAULT_ANIM_FORMAT)
+        
+        Select Case tmpFormat
+            Case PDIF_GIF
+                idxCmnDlgFilter = 1
+            Case PDIF_JXL
+                idxCmnDlgFilter = 2
+            Case PDIF_PNG
+                idxCmnDlgFilter = 3
+            Case PDIF_WEBP
+                idxCmnDlgFilter = 4
+            Case Else
+                idxCmnDlgFilter = PD_DEFAULT_ANIM_FORMAT_IDX
+        End Select
+        
+    Else
+        
+        'The user hasn't exported to an animation file this session.  Try to use the image's current format, if any.
+        If (srcImage.GetCurrentFileFormat = PDIF_GIF) Then
+            idxCmnDlgFilter = 1
+        ElseIf (srcImage.GetCurrentFileFormat = PDIF_JXL) Then
+            idxCmnDlgFilter = 2
+        ElseIf (srcImage.GetCurrentFileFormat = PDIF_PNG) Then
+            idxCmnDlgFilter = 3
+        ElseIf (srcImage.GetCurrentFileFormat = PDIF_WEBP) Then
+            idxCmnDlgFilter = 4
+        
+        'The image is not in a format that supports animation (or is a new image that has never been saved).
+        Else
+            
+            'Suggest the last-used animation export format, if any.  (And failing that, default to APNG.)
+            idxCmnDlgFilter = UserPrefs.GetPref_Long("Saving", "export-animation-format-idx", PD_DEFAULT_ANIM_FORMAT_IDX)
+            
+        End If
+        
+    End If
+    
+    'idxCmnDlgFilter now represents that suggested file format for the common dialog box.
+    ' Determine a matching default extension.
+    Dim cmnDlgFileExtension As String, initSuggestedFormat As PD_IMAGE_FORMAT
+    Select Case idxCmnDlgFilter
+        Case 1
+            cmnDlgFileExtension = "gif"
+            initSuggestedFormat = PDIF_GIF
+        Case 2
+            cmnDlgFileExtension = "jxl"
+            initSuggestedFormat = PDIF_JXL
+        Case 3
+            cmnDlgFileExtension = "png"
+            initSuggestedFormat = PDIF_PNG
+        Case 4
+            cmnDlgFileExtension = "webp"
+            initSuggestedFormat = PDIF_WEBP
         Case Else
-            PDDebug.LogAction "WARNING! Saving.Export_Animation received bad PDIF: " & dstFormat
-            Exit Function
+            idxCmnDlgFilter = PD_DEFAULT_ANIM_FORMAT_IDX
+            cmnDlgFileExtension = "png"
+            initSuggestedFormat = PDIF_PNG
     End Select
     
-    'Start by prompting the user for an export path
+    'Prompt the user for an export filename and format.
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
-    
-    Dim saveSuccess As Boolean
-    Select Case dstFormat
-        Case PDIF_GIF
-            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "GIF - Graphics Interchange Format (*.gif)|*.gif", , cdInitialFolder, cdTitle, ".gif", FormMain.hWnd)
-        Case PDIF_JXL
-            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "JXL - JPEG XL (*.jxl)|*.jxl", , cdInitialFolder, cdTitle, ".jxl", FormMain.hWnd)
-        Case PDIF_PNG
-            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png", , cdInitialFolder, cdTitle, ".apng", FormMain.hWnd)
-        Case PDIF_WEBP
-            saveSuccess = saveDialog.GetSaveFileName(dstFile, , True, "WEBP - Google WebP (*.webp)|*.webp", , cdInitialFolder, cdTitle, ".webp", FormMain.hWnd)
-    End Select
-    
-    If saveSuccess Then
+    If saveDialog.GetSaveFileName(dstFile, , True, exportFilter.ToString, idxCmnDlgFilter, cdInitialFolder, cdTitle, "." & cmnDlgFileExtension, FormMain.hWnd) Then
         
-        'The user supplied a path.
-        
-        'Before proceeding with the save, check for some file-level errors that may cause problems.
+        'The user clicked OK.  Before proceeding, we need to perform some additional checks on file type.
         
         'If the file already exists, ensure we have write+delete access
         If (Not Files.FileTestAccess_Write(dstFile)) Then
@@ -904,17 +1031,88 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
             Exit Function
         End If
         
-        'Update the stored last-save-folder value
-        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
-        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
+        'Next, we need to see if the user hand-typed a file extension instead of selecting one from the dropdown.
         
-        'Next, retrieve export settings
-        ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported
-        ' by the batch processor.)
+        'Start by converting the returned format index from common-dialog notion (1-based) to an internal format ID.
+        Dim dstImageFormat As PD_IMAGE_FORMAT
+        Select Case idxCmnDlgFilter
+            Case 1
+                dstImageFormat = PDIF_GIF
+            Case 2
+                dstImageFormat = PDIF_JXL
+            Case 3
+                dstImageFormat = PDIF_PNG
+            Case 4
+                dstImageFormat = PDIF_WEBP
+            Case Else
+                dstImageFormat = PDIF_PNG
+        End Select
+        
+        'See if the user changed to a different file format than the one we auto-suggested.
+        If (dstImageFormat = initSuggestedFormat) Then
+            
+            'The user did *not* change the suggested format.
+            
+            'As a courtesy, see if they manually typed in a different *file extension* than the one we suggested.
+            ' (If they did, let's try and honor their typed extension, if it's valid.)
+            If (Files.FileGetExtension(dstFile) <> cmnDlgFileExtension) Then
+                
+                'Yikes!  The user did NOT change the file type dropdown, but they DID manually type out a new
+                ' file extension.
+            
+                'See if we can guess what file format they're attempting to save to.
+                Dim dstFormatByExtension As PD_IMAGE_FORMAT
+                dstFormatByExtension = ImageFormats.GetPDIFFromExtension(Files.FileGetExtension(dstFile), True)
+                
+                'If the typed format corresponds to a known format (that differs from the one we originally suggested),
+                ' silently redirect the save function to use *the format they typed out* instead.
+                '
+                '(If, however, their extension doesn't correspond to any known format, or if it corresponds to
+                ' a known format that PD cannot currently export to - e.g. "SVG" which is import-only - rely on
+                ' the value of the common-dialog format dropdown like a normal Save-As operation would.)
+                If (dstFormatByExtension <> dstImageFormat) Then
+                    If (dstFormatByExtension <> PDIF_UNKNOWN) Then
+                        
+                        'Ensure the target format supports animation
+                        If (dstFormatByExtension = PDIF_GIF) Or (dstFormatByExtension = PDIF_JXL) Or (dstFormatByExtension = PDIF_PNG) Or (dstFormatByExtension = PDIF_WEBP) Then
+                            dstImageFormat = dstFormatByExtension
+                            
+                            Select Case dstImageFormat
+                                Case PDIF_GIF
+                                    idxCmnDlgFilter = 1
+                                Case PDIF_JXL
+                                    idxCmnDlgFilter = 2
+                                Case PDIF_PNG
+                                    idxCmnDlgFilter = 3
+                                Case PDIF_WEBP
+                                    idxCmnDlgFilter = 4
+                                Case Else
+                                    dstImageFormat = PD_DEFAULT_ANIM_FORMAT
+                                    idxCmnDlgFilter = PD_DEFAULT_ANIM_FORMAT_IDX
+                            End Select
+                            
+                        'Target format does not support animation and cannot be used.  Drop back to the dropdown
+                        ' format selected in the common dialog.
+                        Else
+                            '(format was already set in a previous step; do nothing here!)
+                        End If
+                    
+                    End If
+                End If
+                
+            End If
+            
+        End If
+        
+        'Update the stored last-exported-folder and file type
+        UserPrefs.SetPref_String "Paths", "export-image", Files.FileGetPath(dstFile)
+        UserPrefs.SetPref_Long "Saving", "export-animation-format-idx", idxCmnDlgFilter
+        
+        'Next, retrieve export settings specific to the target format
         Dim formatParams As String, metadataParams As String
         Dim promptResult As VbMsgBoxResult
         
-        Select Case dstFormat
+        Select Case dstImageFormat
             Case PDIF_GIF
                 promptResult = Dialogs.PromptExportAnimatedGIF(srcImage, formatParams, metadataParams)
             Case PDIF_JXL
@@ -925,17 +1123,20 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
                 promptResult = Dialogs.PromptExportAnimatedWebP(srcImage, formatParams, metadataParams)
         End Select
         
+        'User can also cancel at this stage
         If (promptResult <> vbOK) Then
             Export_Animation = False
             Exit Function
         End If
+        
+        'We now have everything we need to start the save process.
         
         'Lock the UI
         Saving.BeginSaveProcess
         
         'Perform the actual save
         Dim saveResult As Boolean
-        Select Case dstFormat
+        Select Case dstImageFormat
             Case PDIF_GIF
                 saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile, formatParams, metadataParams)
             Case PDIF_JXL
@@ -947,26 +1148,33 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
         End Select
         
         If saveResult Then
-        
+            
+            'Tag the image object with the save format used *and* the export filename.
+            ' (We can reuse these on subsequent exports, as needed.)
+            srcImage.ImgStorage.AddEntry "export-animation-filename", Files.FileGetName(dstFile, False)
+            srcImage.ImgStorage.AddEntry "export-animation-format", dstImageFormat
+            
             'If the file was successfully written, we can now embed any additional metadata.
-            ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-            ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
-            ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+            ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing
+            ' all metadata handling through an external library.  Exiftool requires an existant file to be used
+            ' as a target, and an existant metadata file to be used as its source.  It cannot operate purely
+            ' in-memory - but hey, that's why it's asynchronous!)
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
                 
                 'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
-                If ImageFormats.IsExifToolRelevant(dstFormat) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
+                If ImageFormats.IsExifToolRelevant(dstImageFormat) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
                 
             End If
             
-            'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
-            ' only applied if we are *not* in the midst  of a batch conversion.
+            'With all save work complete, we can now update various UI bits to reflect the new image.
+            ' (Note that these changes are only applied if we are *not* in the midst of a batch conversion.)
             If (Macros.GetMacroStatus <> MacroBATCH) Then
                 g_RecentFiles.AddFileToList dstFile, srcImage
                 Interface.SyncInterfaceToCurrentImage
                 Interface.NotifyImageChanged PDImages.GetActiveImageID()
             End If
-            
+        
+        '/end successful save operation
         End If
         
         'Free the UI
@@ -976,9 +1184,21 @@ Public Function Export_Animation(ByVal dstFormat As PD_IMAGE_FORMAT, ByRef srcIm
         Export_Animation = saveResult
         If (Not Export_Animation) Then PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
         
+    '/User cancelled the original save dialog.
     Else
         Export_Animation = False
     End If
+    
+    
+End Function
+
+'PhotoDemon can currently export animated GIF, JPEG XL, PNG, and WebP images.  These fromats all have slight
+' subtleties in how we prep frames prior to export, but you can call this universal function to handle all those
+' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
+' pdImage object you want saved.
+Public Function Export_LayersToFile(ByRef srcImage As pdImage, ByRef listOfParams As String) As Boolean
+    
+    'TODO
     
 End Function
 
@@ -1149,9 +1369,11 @@ End Function
 
 'If the current image only has one frame of animation, we can still save it, but the image (obviously) won't animate.
 ' Call this function to ask the user if they still want to proceed.
-'RETURNS: TRUE if the user still wants to proceed, FALSE if they do not.
+'RETURNS: TRUE if the user still wants to proceed (OK), FALSE if they do not (CANCEL).
 Private Function PromptSingleFrameSave() As Boolean
-
+    
+    PromptSingleFrameSave = False
+    
     Dim msgText As pdString
     Set msgText = New pdString
     
@@ -1161,7 +1383,8 @@ Private Function PromptSingleFrameSave() As Boolean
     
     Dim msgResult As VbMsgBoxResult
     msgResult = PDMsgBox(msgText.ToString(), vbOKCancel Or vbApplicationModal Or vbExclamation, "Export animation")
-    If (msgResult = vbCancel) Then Exit Function
+    
+    PromptSingleFrameSave = (msgResult = vbOK)
     
 End Function
 

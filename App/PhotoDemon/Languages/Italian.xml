@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1624</langversion>
+<langversion>8.9.1626</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -79,23 +79,18 @@
 </phrase>
 
 <phrase>
-<original>Export animated GIF</original>
-<translation>Esporta GIF animata</translation>
-</phrase>
-
-<phrase>
-<original>Export animated JPEG XL</original>
+<original>Export image</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated PNG</original>
-<translation>Esporta PNG animata</translation>
+<original>Export layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Export animated WebP</original>
-<translation>Esporta WebP animata</translation>
+<original>Export animation</original>
+<translation>Animazione per l'esportazione</translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1333,7 @@
 <translation>Cancella lista di immagini recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1522,7 +1517,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation>Immagine troppo grande</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -3184,12 +3179,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Si può procedere, ma l'immagine verrà salvata come immagine statica e non animata.</translation>
 </phrase>
 
-<phrase>
-<original>Export animation</original>
-<translation>Animazione per l'esportazione</translation>
-</phrase>
-
-<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4890,23 +4880,18 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
-<original>Animated GIF</original>
-<translation>GIF animata</translation>
-</phrase>
-
-<phrase>
-<original>Animated JPEG XL</original>
+<original>Image to file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated PNG</original>
-<translation>PNG animata</translation>
+<original>Layers to files</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Animated WebP</original>
-<translation>WebP animata</translation>
+<original>Animation</original>
+<translation>Animazione</translation>
 </phrase>
 
 <phrase>
@@ -5007,11 +4992,6 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 <phrase>
 <original>Flip vertical</original>
 <translation>Capovolgi verticalmente</translation>
-</phrase>
-
-<phrase>
-<original>Animation</original>
-<translation>Animazione</translation>
 </phrase>
 
 <phrase>
@@ -5742,7 +5722,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 395 phrases. 215 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10088,12 +10068,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Original filenames</original>
+<original>original filenames</original>
 <translation>Nomi dei file originali</translation>
 </phrase>
 
 <phrase>
-<original>Ascending numbers (1, 2, 3, etc.)</original>
+<original>ascending numbers (1, 2, 3, etc.)</original>
 <translation>Numeri ascendenti (1, 2, 3, etc.)</translation>
 </phrase>
 
@@ -14096,12 +14076,54 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>layers to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exporting layer %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer name</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2665</phrasecount>
+<phrasecount>2669</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5614 phrases. -->
-<!-- 2949 are duplicates, so only 2665 unique phrases have been written to file. -->
-<!-- These 2665 phrases contain approximately 11610 total words. -->
+<!-- As of this build, PhotoDemon contains 5629 phrases. -->
+<!-- 2960 are duplicates, so only 2669 unique phrases have been written to file. -->
+<!-- These 2669 phrases contain approximately 11616 total words. -->
 
 </pdData>

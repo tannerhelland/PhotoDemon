@@ -28,6 +28,7 @@ Public g_ConfirmClosingUnsaved As Boolean
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed
 ' upon program load and unload.)
+Public Const PD_USER_PREF_UNKNOWN As Long = -1
 Public g_LastOpenFilter As Long, g_LastSaveFilter As Long
 
 'DIB that contains a 2x2 pattern of the alpha checkerboard.  Use it with CreatePatternBrush to paint the alpha

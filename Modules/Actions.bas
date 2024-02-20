@@ -233,21 +233,17 @@ Private Function Launch_ByName_MenuFile(ByRef srcMenuName As String, Optional By
             Process "Revert", False, , UNDO_Everything
             
         Case "file_export"
-            Case "file_export_animatedgif"
+            Case "file_export_image"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated GIF", True
+                Process "Export image", True
             
-            Case "file_export_animatedjxl"
+            Case "file_export_layers"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated JPEG XL", True
+                Process "Export layers", True
                 
-            Case "file_export_animatedpng"
+            Case "file_export_animation"
                 If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated PNG", True
-                
-            Case "file_export_animatedwebp"
-                If (Not PDImages.IsImageActive()) Then Exit Function
-                Process "Export animated WebP", True
+                Process "Export animation", True
                 
             Case "file_export_colorlookup"
                 If (Not PDImages.IsImageActive()) Then Exit Function
@@ -1660,7 +1656,7 @@ End Sub
 Public Sub BuildActionDatabase()
     
     m_numActions = 0
-    ReDim m_Actions(0 To 255) As PD_Action
+    ReDim m_Actions(0 To 511) As PD_Action  'This upper limit will automatically be resized, as necessary
     
     AddAction "file_new", "New image"
     AddAction "file_open", "Open"
@@ -1680,10 +1676,9 @@ Public Sub BuildActionDatabase()
     AddAction "file_saveas", "Save as"
     AddAction "file_revert", "Revert"
     'AddAction "file_export"
-    AddAction "file_export_animatedgif", "Export animated GIF"
-    AddAction "file_export_animatedjxl", "Export animated JPEG XL"
-    AddAction "file_export_animatedpng", "Export animated PNG"
-    AddAction "file_export_animatedwebp", "Export animated WebP"
+    AddAction "file_export_image", "Export image to file"
+    AddAction "file_export_layers", "Export layers to files"
+    AddAction "file_export_animation", "Export animation"
     AddAction "file_export_colorlookup", "Export color lookup"
     AddAction "file_export_colorprofile", "Export color profile"
     AddAction "file_export_palette", "Export palette"
@@ -2042,6 +2037,8 @@ Public Sub BuildActionDatabase()
     AddAction "tool_active_hardnessup"
     AddAction "tool_active_sizedown"
     AddAction "tool_active_sizeup"
+    
+    PDDebug.LogAction CStr(m_numActions) & " actions registered this session."
     
 End Sub
 

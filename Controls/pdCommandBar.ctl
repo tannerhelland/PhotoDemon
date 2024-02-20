@@ -136,8 +136,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2024 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 18/October/21
-'Last update: unify settings strategy with pdLastUsedSettings
+'Last updated: 19/February/24
+'Last update: new property for hiding randomize button (it doesn't make any sense on some dialogs)
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -183,10 +183,10 @@ Public Event CancelClick()
 Public Event BeforeResetClick()
 Public Event ResetClick()
 
-'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event, as this
-' control is capable of randomizing all stock PD controls.  But for tool dialogs like Curves, where a completely
-' custom interface exists, this event can be used by the parent to perform their own randomizing on non-stock
-' controls.
+'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event,
+' as this control is capable of randomizing all stock PD controls.  But for tool dialogs like Curves,
+' where a completely custom interface exists, the parent can use this event to perform their own randomizing
+' on custom controls.
 Public Event BeforeRandomizeClick()
 Public Event RandomizeClick()
 
@@ -247,16 +247,20 @@ Private m_userAllowsPreviews As Boolean
 Private m_numCustomPresetEntries As Long
 Private m_customPresetNames() As String, m_customPresetData() As String
 
-'If a parent dialog wants to suspend auto-load of last-used settings (e.g. the Resize dialog, because last-used
-' settings will be some other image's dimensions), this bool will be set to TRUE
+'If a parent dialog wants to suspend auto-loading last-used settings (e.g. the Resize dialog,
+' because last-used settings contain some other image's dimensions), this will be set to TRUE
 Private m_suspendLastUsedAutoLoad As Boolean
 
 'If the parent does not want the command bar to auto-unload it when OK or CANCEL is pressed, this will be set to TRUE
 Private m_dontAutoUnloadParent As Boolean
 
-'If the caller doesn't want us to manually reset control values (e.g. when the preset file is damaged or missing), they can set
-' this to TRUE.  If set, they will bear full responsibility for restoring control state at first-run.
+'If the caller doesn't want us to reset control values (e.g. when the preset file is damaged or missing),
+' they can set this to TRUE.  When set, the caller bears responsibility for restoring control state at first-run.
 Private m_dontResetAutomatically As Boolean
+
+'Some dialogs don't need the randomize button.  It can be suspended via property, and the UI will
+' automatically reflow as needed.
+Private m_hideRandomizeButton As Boolean
 
 'To avoid "Client Site not available (Error 398)", we wait to access certain parent properties until
 ' Init/ReadProperty events have fired.  (See MSDN: https://msdn.microsoft.com/en-us/library/aa243344(v=vs.60).aspx)
@@ -362,6 +366,15 @@ End Property
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
+End Property
+
+Public Property Get HideRandomizeButton() As Boolean
+    HideRandomizeButton = m_hideRandomizeButton
+End Property
+
+Public Property Let HideRandomizeButton(ByVal newValue As Boolean)
+    m_hideRandomizeButton = newValue
+    PropertyChanged "HideRandomizeButton"
 End Property
 
 'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
@@ -995,6 +1008,7 @@ Private Sub UserControl_InitProperties()
     DontAutoLoadLastPreset = False
     DontAutoUnloadParent = False
     DontResetAutomatically = False
+    HideRandomizeButton = False
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -1007,6 +1021,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         DontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
         DontAutoUnloadParent = .ReadProperty("DontAutoUnloadParent", False)
         DontResetAutomatically = .ReadProperty("DontResetAutomatically", False)
+        HideRandomizeButton = .ReadProperty("HideRandomizeButton", False)
     End With
     m_ParentAvailable = True
 End Sub
@@ -1106,6 +1121,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "AutoloadLastPreset", m_suspendLastUsedAutoLoad, False
         .WriteProperty "DontAutoUnloadParent", m_dontAutoUnloadParent, False
         .WriteProperty "DontResetAutomatically", m_dontResetAutomatically, False
+        .WriteProperty "HideRandomizeButton", m_hideRandomizeButton, False
     End With
 End Sub
 
@@ -1503,6 +1519,32 @@ Private Sub UpdateControlLayout()
         'Right-align the Cancel and OK buttons
         cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - Interface.FixDPI(8)
         cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - Interface.FixDPI(8)
+        
+        'Next, we need to align other controls on this dialog under certain circumstances.
+        
+        'The left-most button (reset, cmdAction(0)) is *always* available; leave it as-is
+        
+        'The next button (randomize, cmdAction(1)) can be disabled at design-time
+        If m_hideRandomizeButton Then
+            
+            cmdAction(1).Visible = False
+            
+            'Other controls need to be shifted accordingly.
+            
+            'Undo/redo for the dialog
+            cmdAction(3).SetLeft cmdAction(0).GetLeft + cmdAction(0).GetWidth + Interface.FixDPI(3)
+            cmdAction(4).SetLeft cmdAction(3).GetLeft
+            
+            'Preset dropdown
+            cboPreset.SetLeft cmdAction(3).GetLeft + cmdAction(3).GetWidth + Interface.FixDPI(8)
+            
+            'Save as new preset
+            cmdAction(2).SetLeft cboPreset.GetLeft + cboPreset.GetWidth + Interface.FixDPI(4)
+            
+            'Report a bug (only available in nightly builds)
+            cmdAction(5).SetLeft cmdAction(2).GetLeft + cmdAction(2).GetWidth
+        
+        End If
         
     End If
     

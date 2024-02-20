@@ -104,6 +104,133 @@ Public Function PhotoDemon_OpenImageDialog_SingleFile(ByRef userImagePath As Str
     
 End Function
 
+'Subroutine for displaying an "export" common dialog, then saving a pdImage object to a common-dialog derived filename.
+' Export differs in subtle ways from a normal save operation, primarily in how image state is updated afterwards.
+Public Function MenuExportImage(ByRef srcImage As pdImage) As Boolean
+    
+    'Failsafe checks
+    MenuExportImage = False
+    If (srcImage Is Nothing) Then Exit Function
+    
+    Dim saveFileDialog As pdOpenSaveDialog
+    Set saveFileDialog = New pdOpenSaveDialog
+    
+    'We now need to figure out what folder to suggest to the user.
+    
+    'If this image has already been exported this session, reuse that path for this export.  Failing that...
+    ' Fall back to the image's current on-disk folder.  Failing that...
+    ' Fall back to the last-used "save image" folder.  Failing that...
+    ' Fall back to the current user's Pictures folder.
+    Dim cdInitialFolder As String
+    cdInitialFolder = UserPrefs.GetPref_String("Paths", "export-image", vbNullString)
+    If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    If (LenB(cdInitialFolder) = 0) Then cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", OS.SpecialFolder(CSIDL_MYPICTURES))
+    cdInitialFolder = Files.PathAddBackslash(cdInitialFolder)
+    
+    'Next, we need to determine what file name to suggest. This is the last-used export name for this image
+    ' (if one exists), or failing that, the image's current name.
+    Dim dstFile As String
+    dstFile = srcImage.ImgStorage.GetEntry_String("export-image-filename", vbNullString)
+    If (LenB(dstFile) = 0) Then dstFile = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(dstFile) = 0) Then dstFile = g_Language.TranslateMessage("New image")
+    dstFile = cdInitialFolder & dstFile
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export image")
+    
+    'Next, we need to figure out what file format to suggest.  Use the last-exported format for this image
+    ' (if available).  Otherwise...
+    ' Fall back to the image's current format.  Otherwise...
+    ' Fall back to the last-used export format.  Otherwise...
+    ' Fall back to PNG.
+    Dim idxCmnDlgFilter As Long
+    If srcImage.ImgStorage.DoesKeyExist("export-image-format") Then
+    
+        'The user has exported this image to file already.  Retrieve the format they used previously,
+        ' and auto-suggest it again.
+        Dim tmpFormat As PD_IMAGE_FORMAT
+        tmpFormat = srcImage.ImgStorage.GetEntry_Long("export-image-format", PDIF_PNG)
+        idxCmnDlgFilter = ImageFormats.GetIndexOfOutputPDIF(tmpFormat)
+        
+    Else
+        
+        'The user hasn't exported this file this session.  Try to use the image's current format, if any.
+        If (srcImage.GetCurrentFileFormat <> PDIF_UNKNOWN) And (ImageFormats.GetIndexOfOutputPDIF(srcImage.GetCurrentFileFormat) >= 0) Then
+            idxCmnDlgFilter = ImageFormats.GetIndexOfOutputPDIF(srcImage.GetCurrentFileFormat) + 1
+        
+        'The image is not in a format that PD can export (or it's a new image that has never been saved).
+        Else
+            
+            'Suggest the last-used export format, if any.  (And failing that, default to PNG.)
+            idxCmnDlgFilter = UserPrefs.GetPref_Long("Saving", "export-image-format-idx", ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1)
+            
+        End If
+        
+    End If
+    
+    'idxCmnDlgFilter now represents that suggested file format for the common dialog box.
+    ' Determine a matching default extension.
+    Dim cmnDlgFileExtension As String, initSuggestedFormat As PD_IMAGE_FORMAT
+    initSuggestedFormat = ImageFormats.GetOutputPDIF(idxCmnDlgFilter)
+    cmnDlgFileExtension = ImageFormats.GetExtensionFromPDIF(initSuggestedFormat)
+    
+    'Prompt the user for an export filename and format.
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    If saveDialog.GetSaveFileName(dstFile, , True, ImageFormats.GetCommonDialogOutputFormats, idxCmnDlgFilter, cdInitialFolder, cdTitle, ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    
+        'The user clicked OK.
+        
+        'Next, we need to see if the user hand-typed a file extension instead of selecting one from the dropdown.
+        
+        'Start by converting the returned format index from common-dialog notion (1-based) to an internal format ID.
+        Dim dstImageFormat As PD_IMAGE_FORMAT
+        dstImageFormat = ImageFormats.GetOutputPDIF(idxCmnDlgFilter - 1)
+        
+        'See if the user changed to a different file format than the one we auto-suggested.
+        If (dstImageFormat = initSuggestedFormat) Then
+            
+            'The user did *not* change the suggested format.
+            
+            'As a courtesy, see if they manually typed in a different *file extension* than the one we suggested.
+            ' (If they did, let's try and honor any known format associated with their typed extension.)
+            If (Files.FileGetExtension(dstFile) <> cmnDlgFileExtension) Then
+                
+                'Yikes!  The user did NOT change the file type dropdown, but they DID manually type out a new
+                ' file extension.
+                
+                'See if we can guess what file format they're attempting to save to.
+                Dim dstFormatByExtension As PD_IMAGE_FORMAT
+                dstFormatByExtension = ImageFormats.GetPDIFFromExtension(Files.FileGetExtension(dstFile), True)
+                
+                'If the typed format corresponds to a known format (that differs from the one we originally suggested),
+                ' silently redirect the save function to use *the format they typed out* instead.
+                '
+                '(If, however, their extension doesn't correspond to any known format, or if it corresponds to
+                ' a known format that PD cannot currently export to - e.g. "SVG" which is import-only - rely on
+                ' the value of the common-dialog format dropdown like a normal Save-As operation would.)
+                If (dstFormatByExtension <> PDIF_UNKNOWN) And (dstFormatByExtension <> dstImageFormat) And (ImageFormats.GetIndexOfOutputPDIF(dstFormatByExtension) >= 0) Then
+                    dstImageFormat = dstFormatByExtension
+                    idxCmnDlgFilter = ImageFormats.GetIndexOfOutputPDIF(dstFormatByExtension) + 1
+                End If
+                
+            End If
+            
+        End If
+        
+        'Update the stored last-exported-folder and file type
+        UserPrefs.SetPref_String "Paths", "export-image", Files.FileGetPath(dstFile)
+        UserPrefs.SetPref_Long "Saving", "export-image-format-idx", idxCmnDlgFilter
+        
+        'Our work here is done!  Transfer control to the core SaveImage routine, which handles the actual export process.
+        MenuExportImage = PhotoDemon_SaveImage(srcImage, dstFile, True, dstImageFormat)
+        
+    Else
+        MenuExportImage = False
+    End If
+    
+End Function
+
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As.
 Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
@@ -223,8 +350,8 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     Dim cdFormatIndex As Long
     Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
     
-    'TODO: replace these magic numbers with meaningful constants
-    If (UserPrefs.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
+    Const PD_SAVE_USE_CURRENT_FORMAT = 0, PD_SAVE_USE_LAST_FORMAT As Long = 1
+    If (UserPrefs.GetPref_Long("Saving", "Suggested Format", PD_SAVE_USE_CURRENT_FORMAT) = PD_SAVE_USE_LAST_FORMAT) And (g_LastSaveFilter <> PD_USER_PREF_UNKNOWN) Then
         cdFormatIndex = g_LastSaveFilter
         suggestedSaveFormat = ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         suggestedFileExtension = ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)

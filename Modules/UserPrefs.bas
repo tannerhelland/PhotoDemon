@@ -595,8 +595,8 @@ Public Sub LoadUserSettings()
         g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
         
         'Grab the last-used common dialog filters
-        g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
-        g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
+        g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)    'Default to "All compatible images"
+        g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", PD_USER_PREF_UNKNOWN)
         
         'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
         ' every time they're needed.)
@@ -687,7 +687,7 @@ Private Sub CreateNewPreferencesFile()
             .WriteTag "HasGitHubAccount", vbNullString
             .WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
             .WriteTag "LastPreferencesPage", "0"
-            .WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
+            .WriteTag "LastSaveFilter", Trim$(Str$(PD_USER_PREF_UNKNOWN))  'Mark the last-used save filter as "unknown"
             .WriteTag "LastWindowState", "0"
             .WriteTag "LastWindowLeft", "1"
             .WriteTag "LastWindowTop", "1"
