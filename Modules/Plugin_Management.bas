@@ -66,7 +66,7 @@ Private Const EXPECTED_LIBJXL_VERSION As String = "0.8.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
-Private Const EXPECTED_RESVG_VERSION As String = "0.35.0"
+Private Const EXPECTED_RESVG_VERSION As String = "0.40.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.3.2"
 Private Const EXPECTED_ZSTD_VERSION As String = "10505"
 
