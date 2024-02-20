@@ -210,6 +210,10 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "file_savecopy"
     Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbShiftMask, "file_saveas"
     Hotkeys.AddHotkey vbKeyF12, 0, "file_revert"
+    
+        'File -> Export submenu
+        Hotkeys.AddHotkey vbKeyW, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_export_image"
+        
     Hotkeys.AddHotkey vbKeyB, vbCtrlMask, "file_batch_process"
     Hotkeys.AddHotkey vbKeyP, vbCtrlMask, "file_print"
     Hotkeys.AddHotkey vbKeyQ, vbCtrlMask, "file_quit"
