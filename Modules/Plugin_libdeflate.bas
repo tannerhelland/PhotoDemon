@@ -179,6 +179,11 @@ Public Sub ReleaseEngine()
     End If
 End Sub
 
+'libdeflate doesn't export a version function, but this class was last tested against the v1.19 release.
+Public Function GetCompressorVersion() As String
+    GetCompressorVersion = "1.19"
+End Function
+
 Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib) As Boolean
     CompressPtrToPtr = LibDeflateCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cmpFormat)
 End Function
@@ -423,11 +428,6 @@ End Function
 
 Public Function IsCompressorReady() As Boolean
     IsCompressorReady = (m_libDeflateHandle <> 0)
-End Function
-
-'libdeflate doesn't export a version function, but this class was last tested against the v1.15 release (released Jan 2022).
-Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.18"
 End Function
 
 'Private methods follow
