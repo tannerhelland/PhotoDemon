@@ -62,7 +62,7 @@ Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
 Private Const EXPECTED_LIBAVIF_VERSION As String = "1.0.4"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.19"
-Private Const EXPECTED_LIBJXL_VERSION As String = "0.8.1"
+Private Const EXPECTED_LIBJXL_VERSION As String = "0.10.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
@@ -204,7 +204,7 @@ Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
         Case CCP_libdeflate
             GetPluginFilename = "libdeflate.dll"
         Case CCP_libjxl
-            GetPluginFilename = "jxl.dll"
+            GetPluginFilename = "djxl.exe"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
@@ -342,12 +342,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
             dstStringStack.AddString "libdeflate-LICENSE.txt"
         
         Case CCP_libjxl
-            dstStringStack.AddString "brotlicommon.dll"
-            dstStringStack.AddString "brotlidec.dll"
-            dstStringStack.AddString "brotlienc.dll"
             dstStringStack.AddString "cjxl.exe"
-            dstStringStack.AddString "djxl.exe"
-            dstStringStack.AddString "jxl_threads.dll"
             dstStringStack.AddString "jxlinfo.exe"
             dstStringStack.AddString "libjxl-LICENSE.txt"
         
@@ -903,9 +898,6 @@ Public Sub TerminateAllPlugins()
     
     Plugin_resvg.ReleaseEngine
     PDDebug.LogAction "resvg released"
-    
-    Plugin_jxl.ReleaseLibJXL
-    PDDebug.LogAction "libjxl released"
     
     Plugin_FreeImage.ReleaseFreeImage
     ImageFormats.SetFreeImageEnabled False

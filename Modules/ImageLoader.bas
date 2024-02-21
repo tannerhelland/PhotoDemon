@@ -1371,6 +1371,9 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             Exit Function
         End If
 
+    'If libjxl *is* available, check for plugin updates before proceeding
+    Else
+        Plugin_jxl.CheckJXLVersionAndOfferUpdates True
     End If
     
     'Offload the remainder of the job to the libjxl interface

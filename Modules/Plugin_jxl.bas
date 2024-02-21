@@ -3,11 +3,8 @@ Attribute VB_Name = "Plugin_jxl"
 'JPEG-XL Reference Library (libjxl) Interface
 'Copyright 2022-2024 by Tanner Helland
 'Created: 28/September/22
-'Last updated: 22/August/23
-'Last update: after many months (!!!) of waiting for the libjxl library to stabilize, I am giving up
-'             working directly with the library as a library, and am instead resorting to shelling the
-'             various libjxl utilities as separate apps.  This is in no way portable, but it drastically
-'             improves reliability and while an ugly project today, should eventually save me a *ton* of work.
+'Last updated: 21/February/24
+'Last update: offer automatic updates if the installed copy of libjxl lags the latest officially supported version
 '
 'libjxl (available at https://github.com/libjxl/libjxl) is the official reference library implementation
 ' for the modern JPEG-XL format.  Support for this format was added during the PhotoDemon 10.0 release cycle.
@@ -61,11 +58,7 @@ Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
     
     'Both cjxl and djxl require a host of support files.
     Dim supportFilesOK As Boolean
-    supportFilesOK = Files.FileExists(pathToDLLFolder & "jxl.dll")
-    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "jxl_threads.dll")
-    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlicommon.dll")
-    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlidec.dll")
-    supportFilesOK = supportFilesOK And Files.FileExists(pathToDLLFolder & "brotlienc.dll")
+    supportFilesOK = Files.FileExists(pathToDLLFolder & "jxlinfo.exe")
     
     m_jxlExportAvailable = m_jxlExportAvailable And supportFilesOK
     m_jxlImportAvailable = m_jxlImportAvailable And supportFilesOK
@@ -150,14 +143,6 @@ End Function
 Public Function IsJXLImportAvailable() As Boolean
     IsJXLImportAvailable = m_jxlImportAvailable
 End Function
-
-'When PD closes, make sure to release any open handles
-Public Sub ReleaseLibJXL()
-    
-    'The new external-process approach to .jxl files requires no extra termination steps
-    ' (because the library is loaded and freed on-demand).
-    
-End Sub
 
 Public Function ConvertImageFileToJXL(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef convertParams As String = vbNullString, Optional ByVal isLivePreview As Boolean = False) As Boolean
 
@@ -763,6 +748,62 @@ FatalEncoderError:
 
 End Function
 
+'Returns TRUE if the installed version of libjxl is >= the expected version of libjxl.
+' By design, this function also returns TRUE if libjxl is NOT installed - this is purposeful because
+' I don't want to raise "library out of date" warnings if the library doesn't even exist (there's a
+' separate code pathway for downloading the library for the first time).
+Public Function CheckJXLVersionAndOfferUpdates(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+    
+    'By design, this function returns TRUE if libavif doesn't exist.
+    Dim libNotInstalled As Boolean
+    If targetIsImportLib Then
+        libNotInstalled = (Not IsJXLImportAvailable)
+    Else
+        libNotInstalled = (Not IsJXLExportAvailable)
+    End If
+    
+    If libNotInstalled Then
+        CheckJXLVersionAndOfferUpdates = True
+        Exit Function
+    End If
+    
+    'Still here?  libavif exists in this install.  Let's pull its version and compare it to the expected version
+    ' (for this build of PhotoDemon).
+    Dim curVersion As String
+    curVersion = Plugin_jxl.GetLibJXLVersion()
+    
+    Dim expectedVersion As String
+    expectedVersion = PluginManager.ExpectedPluginVersion(CCP_libjxl)
+    
+    If Updates.IsNewVersionHigher(curVersion, expectedVersion) Then
+        
+        'The installed copy of libavif is out-of-date.  Offer to download a new copy.
+        CheckJXLVersionAndOfferUpdates = False
+        
+        Dim okToDownload As VbMsgBoxResult
+        okToDownload = Updates.OfferPluginUpdate("libjxl", curVersion, expectedVersion)
+        If (okToDownload = vbYes) Then
+            
+            CheckJXLVersionAndOfferUpdates = DownloadLatestLibjxl()
+            
+            'On a successful download, clean-up any old libjxl files remaining in the plugin folder
+            If CheckJXLVersionAndOfferUpdates Then
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "brotlicommon.dll"
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "brotlidec.dll"
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "brotlienc.dll"
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "libjxl.dll"
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "jxl.dll"
+                Files.FileDeleteIfExists PluginManager.GetPluginPath() & "jxl_threads.dll"
+            End If
+            
+        End If
+        
+    Else
+        CheckJXLVersionAndOfferUpdates = True
+    End If
+    
+End Function
+
 'Notify the user that PD can automatically download and configure JPEG XL support for them.
 '
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins.
@@ -801,110 +842,7 @@ Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As
         End If
         
         'The user said YES!  Attempt to download the latest libavif release now.
-        Dim srcURL As String, dstFileTemp As String
-        
-        'Before downloading anything, ensure we have write access on the plugin folder.
-        dstFileTemp = PluginManager.GetPluginPath()
-        If Not Files.PathExists(dstFileTemp, True) Then
-            PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
-            PromptForLibraryDownload_JXL = False
-            Exit Function
-        End If
-        
-        'Grab the .pdz file.  This path is hard-coded according to my most recently tested version of libjxl.
-        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libjxl-plugins-0.8.1/libjxl-0.8.1.pdz"
-        dstFileTemp = PluginManager.GetPluginPath() & "libavif.tmp"
-        
-        'If the destination file does exist, kill it (maybe it's broken or bad)
-        Files.FileDeleteIfExists dstFileTemp
-        
-        'Download
-        Dim tmpFile As String
-        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
-        
-        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileTemp
-        Files.FileDeleteIfExists tmpFile
-        
-        'With the pdPackage file successfully downloaded, extract avifdec and avifenc and place them in the plugins folder.
-        PDDebug.LogAction "Extracting latest libjxl..."
-        Dim cPackage As pdPackageChunky
-        Set cPackage = New pdPackageChunky
-        
-        Dim dstFilename As String
-        Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
-        
-        Dim numSuccessfulFiles As Long, numBytesExtracted As Long
-        numSuccessfulFiles = 0
-        numBytesExtracted = 0
-        
-        'Load the file into a temporary package manager
-        If cPackage.OpenPackage_File(dstFileTemp) Then
-            
-            'I use a custom-built tool to assemble pdPackage files; individual files are stored as simple name-value pairs
-            Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
-                
-                'Ensure the chunk name is actually a "NAME" chunk
-                If (tmpChunkName = "NAME") Then
-                    
-                    'Convert the filename to a full path into the user's plugin folder
-                    dstFilename = PluginManager.GetPluginPath() & tmpStream.ReadString_UTF8(tmpChunkSize)
-                    
-                    'Next, extract the chunk's data
-                    If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
-                        
-                        'Ensure the chunk data is a "DATA" chunk
-                        If (tmpChunkName = "DATA") Then
-                            
-                            'Write the chunk's contents to file
-                            If Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True) Then
-                                numSuccessfulFiles = numSuccessfulFiles + 1
-                                numBytesExtracted = numBytesExtracted + tmpChunkSize
-                            Else
-                                InternalError FUNC_NAME, "failed to create target file " & dstFilename
-                            End If
-                        
-                        '/Validate DATA chunk
-                        End If
-                            
-                    '/Unexpected chunk
-                    Else
-                        InternalError FUNC_NAME, "bad data chunk: " & tmpChunkName
-                    End If
-                
-                '/Unexpected chunk
-                Else
-                    InternalError FUNC_NAME, "bad name chunk: " & tmpChunkName
-                End If
-            
-            'Iterate all remaining package items
-            Loop
-            
-        Else
-            InternalError FUNC_NAME, "download failed!  libjxl is *not* currently available to this PhotoDemon instance."
-        End If
-        
-        'Free the underlying package object
-        Set cPackage = Nothing
-        
-        'Double-check expected number of files and total size of extracted bytes.
-        ' Currently we expect a number of files in the package, including license files (this may vary by libjxl release).
-        If (numSuccessfulFiles <> 18) Then InternalError FUNC_NAME, "unexpected extraction file count: " & numSuccessfulFiles
-        
-        'Current libjxl build is 0.8.1, downloaded from https://github.com/libjxl/libjxl/releases/tag/v0.8.1
-        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 4592488
-        If (numBytesExtracted = EXPECTED_TOTAL_EXTRACT_SIZE) Then
-            PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
-        Else
-            InternalError FUNC_NAME, "unexpected extraction size: " & numBytesExtracted & " vs " & EXPECTED_TOTAL_EXTRACT_SIZE
-        End If
-        
-        'Delete the temporary package file
-        Files.FileDeleteIfExists dstFileTemp
-        
-        'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
-        ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
-        PluginManager.LoadPluginGroup False
-        PromptForLibraryDownload_JXL = PluginManager.IsPluginCurrentlyEnabled(CCP_libjxl)
+        PromptForLibraryDownload_JXL = DownloadLatestLibjxl()
         
     End If
     
@@ -914,6 +852,23 @@ BadDownload:
     PromptForLibraryDownload_JXL = False
     Exit Function
 
+End Function
+
+'Attempt to download the latest libjxl copy to this PC.
+Private Function DownloadLatestLibjxl() As Boolean
+    
+    ' Currently we expect these files in the package:
+    ' - cjxl.exe (for encoding)
+    ' - djxl.exe (for decoding)
+    ' - jxlinfo.exe (for determining if a given file is a valid JXL image)
+    ' - libjxl-LICENSE.txt (copyright and license info)
+    Const EXPECTED_NUM_FILES As Long = 4
+    
+    'Current libjxl build is 0.10.0, downloaded from https://github.com/libjxl/libjxl/releases/tag/v0.10.0
+    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 7624703
+    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libjxl-plugins-0.10.0/libjxl-0.10.0.pdz"
+    DownloadLatestLibjxl = Updates.DownloadPluginUpdate(CCP_libjxl, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
+    
 End Function
 
 'The following two functions are for logging errors (always active) and/or informational processing messages

@@ -1014,10 +1014,15 @@ Public Function ExportJXL(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim sFileType As String: sFileType = "JXL"
     
     'If this system is post-XP but libjxl doesn't exist, ask if we can download a copy
-    If OS.IsVistaOrLater And (Not Plugin_jxl.IsJXLExportAvailable()) Then
+    If OS.IsVistaOrLater Then
         
-        'If the user doesn't allow download, we can't export
-        If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        'Either offer to download libjxl for the first time, or if the library already exists alongside
+        ' this PD install, check for plugin updates
+        If (Not Plugin_jxl.IsJXLExportAvailable()) Then
+            If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        Else
+            Plugin_jxl.CheckJXLVersionAndOfferUpdates False
+        End If
         
         'Downloading libjxl will raise new messages in the status bar; restore the original
         ' "saving %1 image" text
@@ -1092,8 +1097,13 @@ Public Function ExportJXL_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     'If this system is post-XP but libjxl doesn't exist, ask if we can download a copy
     If OS.IsVistaOrLater And (Not Plugin_jxl.IsJXLExportAvailable()) Then
         
-        'If the user doesn't allow download, we can't export
-        If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        'Either offer to download libjxl for the first time, or if the library already exists alongside
+        ' this PD install, check for plugin updates
+        If (Not Plugin_jxl.IsJXLExportAvailable()) Then
+            If (Not Plugin_jxl.PromptForLibraryDownload_JXL()) Then GoTo ExportJXLError
+        Else
+            Plugin_jxl.CheckJXLVersionAndOfferUpdates False
+        End If
         
         'Downloading libjxl will raise new messages in the status bar; restore the original
         ' "saving %1 image" text

@@ -539,13 +539,13 @@ End Function
 'Attempt to download the latest libavif copy to this PC.
 Private Function DownloadLatestLibAVIF() As Boolean
     
-    ' Currently we expect three files in the package:
+    ' Currently we expect these files in the package:
     ' - avifdec.exe (for decoding)
     ' - avifenc.exe (for encoding)
     ' - avif-LICENSE.txt (copyright and license info)
     Const EXPECTED_NUM_FILES As Long = 3
     
-    'Current libavif build is 1.0.1, downloaded from https://github.com/AOMediaCodec/libavif/releases/tag/v1.0.1
+    'Current libavif build is 1.0.4, downloaded from https://github.com/AOMediaCodec/libavif/releases/tag/v1.0.4
     Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 23881536
     Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.4/libavif-1.0.4.pdz"
     DownloadLatestLibAVIF = Updates.DownloadPluginUpdate(CCP_libavif, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
