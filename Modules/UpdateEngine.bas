@@ -897,6 +897,146 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     
 End Function
 
+'Raise a modal message box that offers to download a new copy of some third-party plugin.
+' This function uses general language appropriate for any plugin; it's up to the caller to do something
+' interesting based on the return of this function (TRUE if the user consents to the update).
+Public Function OfferPluginUpdate(Optional ByRef pluginName As String = vbNullString, Optional ByRef curVersion As String = vbNullString, Optional ByRef newVersion As String = vbNullString) As VbMsgBoxResult
+    
+    Dim uiMsg As pdString
+    Set uiMsg = New pdString
+    
+    uiMsg.Append g_Language.TranslateMessage("This action relies on a third-party plugin")
+    If (LenB(pluginName) >= 0) Then uiMsg.Append " (" & pluginName & ")"
+    uiMsg.Append ". "
+    uiMsg.AppendLine g_Language.TranslateMessage("An updated version of this plugin is available.")
+    uiMsg.AppendLineBreak
+    
+    If (LenB(curVersion) >= 0) And (LenB(newVersion) >= 0) Then
+        uiMsg.AppendLine g_Language.TranslateMessage("Your version: %1", curVersion)
+        uiMsg.AppendLine g_Language.TranslateMessage("New version: %1", newVersion)
+        uiMsg.AppendLineBreak
+    End If
+    
+    uiMsg.AppendLine g_Language.TranslateMessage("Would you like PhotoDemon to update this plugin for you?")
+    
+    OfferPluginUpdate = PDMsgBox(uiMsg.ToString, vbYesNoCancel Or vbApplicationModal Or vbInformation, "Update available")
+    
+End Function
+
+'Attempt to update a plugin by downloading a .pdz file (from GitHub) and auto-extracting its contents
+' to the local PD plugin folder.
+Public Function DownloadPluginUpdate(ByVal pluginID As PD_PluginCore, ByRef srcURL As String, Optional ByVal numFilesExpected As Long = 0, Optional ByVal numBytesExpected As Long = 0) As Boolean
+    
+    Const FUNC_NAME As String = "DownloadPluginUpdate"
+    
+    Dim dstFileTemp As String
+    
+    'Before downloading anything, ensure we have write access on the plugin folder.
+    dstFileTemp = PluginManager.GetPluginPath()
+    If Not Files.PathExists(dstFileTemp, True) Then
+        PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
+        DownloadPluginUpdate = False
+        Exit Function
+    End If
+    
+    PDDebug.LogAction "Attempting to update " & PluginManager.GetPluginName(pluginID) & "..."
+    
+    'Previously, PhotoDemon downloaded each plugin file as-is.  Now we package them into a single pdPackage file
+    ' and extract them post-download.  (This cuts download size significantly.)
+    
+    'Generate a temporary filename based on the plugin being downloaded
+    dstFileTemp = PluginManager.GetPluginPath() & PluginManager.GetPluginName(pluginID) & ".tmp"
+    
+    'If the destination temp file exists, kill it
+    ' (This condition is unexpected, but maybe a previous update attempt failed?)
+    Files.FileDeleteIfExists dstFileTemp
+    
+    'Download the user's source URL to a system-generated temp file, then copy it into our local PD folder
+    Dim tmpFile As String
+    tmpFile = Web.DownloadURLToTempFile(srcURL, False)
+    
+    If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileTemp
+    Files.FileDeleteIfExists tmpFile
+    
+    'With the pdPackage file successfully downloaded, extract all files to the plugins folder.
+    PDDebug.LogAction "Extracting update for " & PluginManager.GetPluginName(pluginID) & "..."
+    Dim cPackage As pdPackageChunky
+    Set cPackage = New pdPackageChunky
+    
+    Dim dstFilename As String
+    Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
+    
+    Dim numSuccessfulFiles As Long, numBytesExtracted As Long
+    numSuccessfulFiles = 0
+    numBytesExtracted = 0
+    
+    'Load the file into a temporary package manager
+    If cPackage.OpenPackage_File(dstFileTemp) Then
+        
+        'I use a custom-built tool to assemble pdPackage files; individual files are stored as simple name-value pairs
+        Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+            
+            'Ensure the chunk name is actually a "NAME" chunk
+            If (tmpChunkName = "NAME") Then
+                
+                'Convert the filename to a full path into the user's plugin folder
+                dstFilename = PluginManager.GetPluginPath() & tmpStream.ReadString_UTF8(tmpChunkSize)
+                
+                'Next, extract the chunk's data
+                If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                    
+                    'Ensure the chunk data is a "DATA" chunk
+                    If (tmpChunkName = "DATA") Then
+                        
+                        'Write the chunk's contents to file
+                        If Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True) Then
+                            numSuccessfulFiles = numSuccessfulFiles + 1
+                            numBytesExtracted = numBytesExtracted + tmpChunkSize
+                        Else
+                            InternalDebugMsg "failed to create target file " & dstFilename, FUNC_NAME
+                        End If
+                    
+                    '/Validate DATA chunk
+                    End If
+                        
+                '/Unexpected chunk
+                Else
+                    InternalDebugMsg "bad data chunk: " & tmpChunkName, FUNC_NAME
+                End If
+            
+            '/Unexpected chunk
+            Else
+                InternalDebugMsg "bad name chunk: " & tmpChunkName, FUNC_NAME
+            End If
+        
+        'Iterate all remaining package items
+        Loop
+        
+    Else
+        InternalDebugMsg "download failed!  " & PluginManager.GetPluginName(pluginID) & " will *not* be available to this PhotoDemon instance.", FUNC_NAME
+    End If
+    
+    'Free the underlying package object
+    Set cPackage = Nothing
+    
+    'Double-check expected number of files and total size of extracted bytes.
+    If (numSuccessfulFiles <> numFilesExpected) Then InternalDebugMsg "unexpected extraction file count: " & numSuccessfulFiles, FUNC_NAME
+    If (numBytesExtracted = numBytesExpected) Then
+        PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
+    Else
+        InternalDebugMsg "unexpected extraction size: " & numBytesExtracted & " vs " & numBytesExpected, FUNC_NAME
+    End If
+    
+    'Delete the temporary package file
+    Files.FileDeleteIfExists dstFileTemp
+    
+    'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
+    ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
+    PluginManager.LoadPluginGroup False
+    DownloadPluginUpdate = PluginManager.IsPluginCurrentlyEnabled(pluginID)
+    
+End Function
+
 'Updates involve the Internet, so any number of things can go wrong.  PD versions (post-7.0) post a lot
 ' of internal debug data throughout this module, to help us identify problems where we can.
 Private Sub InternalDebugMsg(ByRef srcMsg As String, ByRef srcFunctionName As String, Optional ByVal errNumber As Long = 0, Optional ByRef errDescription As String = vbNullString)

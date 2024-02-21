@@ -542,9 +542,13 @@ Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim sFileType As String: sFileType = "AVIF"
     
     'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
-    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFExportAvailable()) Then
+    If OS.OSSupports64bitExe Then
         
-        If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo ExportAVIFError
+        If (Not Plugin_AVIF.IsAVIFExportAvailable()) Then
+            If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then GoTo ExportAVIFError
+        Else
+            Plugin_AVIF.CheckAVIFVersionAndOfferUpdates False
+        End If
         
         'Downloading the AVIF plugins will raise new messages in the status bar; restore the original
         ' "saving %1 image" text

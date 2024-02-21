@@ -1185,8 +1185,16 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
     If potentialAVIF Then
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
-        If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
-            If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then Exit Function
+        If OS.OSSupports64bitExe Then
+            
+            If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+                If (Not Plugin_AVIF.PromptForLibraryDownload_AVIF()) Then Exit Function
+            
+            'If the library *does* exist, check for updates
+            Else
+                Plugin_AVIF.CheckAVIFVersionAndOfferUpdates True
+            End If
+            
         End If
         
         If Plugin_AVIF.IsAVIFImportAvailable() Then

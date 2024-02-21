@@ -16,7 +16,7 @@ Attribute VB_Name = "PluginManager"
 ' to make third-party library deployment and maintainence easier in a "portable" application context.
 '
 'When adding a new required library, please make sure to read the module-level declarations,
-' particularly the CORE_PLUGINS enum and the CORE_PLUGIN_COUNT constant at the top of this file.
+' particularly the PD_PluginCore enum and the CORE_PLUGIN_COUNT constant at the top of this file.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -25,7 +25,7 @@ Attribute VB_Name = "PluginManager"
 
 Option Explicit
 
-'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum),
+'This constant is used to iterate all core plugins (as listed under the PD_PluginCore enum),
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
@@ -33,7 +33,7 @@ Private Const CORE_PLUGIN_COUNT As Long = 13
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
-Public Enum CORE_PLUGINS
+Public Enum PD_PluginCore
     CCP_CharLS
     CCP_ExifTool
     CCP_EZTwain
@@ -60,7 +60,7 @@ Private Const EXPECTED_CHARLS_VERSION As String = "2.4.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.70"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
-Private Const EXPECTED_LIBAVIF_VERSION As String = "1.0.1"
+Private Const EXPECTED_LIBAVIF_VERSION As String = "1.0.4"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.19"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.8.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
@@ -131,7 +131,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
     Dim startTime As Currency
     
     'Plugin loading is handled in a loop.  This loop will call several helper functions, passing each sequential plugin
-    ' index as defined by the CORE_PLUGINS enum (and matching CORE_PLUGIN_COUNT const).  Some initialization steps are
+    ' index as defined by the PD_PluginCore enum (and matching CORE_PLUGIN_COUNT const).  Some initialization steps are
     ' shared among all plugins (e.g. checking for the plugin's existence), while some require custom initializations.
     ' This behavior is all carefully documented in the functions called by the initialization loop.
     Dim i As Long
@@ -189,7 +189,7 @@ End Sub
 
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include
 ' helper files, like README or LICENSE files - just the core DLL or EXE for the plugin.
-Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginFilename = "charls-2-x86.dll"
@@ -220,7 +220,7 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
     End Select
 End Function
 
-Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginName(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginName = "CharLS"
@@ -258,7 +258,7 @@ End Function
 ' 2) Using some plugin-specific mechanism (typically an exported GetVersion() function of some sort)
 '
 'If a version cannot be retrieved, this function returns a blank string
-Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
     
     GetPluginVersion = vbNullString
     
@@ -315,7 +315,7 @@ End Function
 '
 'Returns TRUE if one or more helper files exist; FALSE if none exist.  This should make it easier for the caller
 ' to know if the string stack needs to be processed further.
-Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, ByRef dstStringStack As pdStringStack) As Boolean
+Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore, ByRef dstStringStack As pdStringStack) As Boolean
     
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
     dstStringStack.ResetStack
@@ -380,19 +380,19 @@ End Function
 
 'The Plugin Manager dialog allows the user to forcibly disable plugins.  This can be very helpful when testing bugs and crashes,
 ' but generally isn't relevant for a casual user.  Regardless, the plugin loader will check this value prior to initializing a plugin.
-Private Function IsPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function IsPluginAllowed(ByVal pluginEnumID As PD_PluginCore) As Boolean
     IsPluginAllowed = Not UserPrefs.GetPref_Boolean("Plugins", "Force " & PluginManager.GetPluginName(pluginEnumID) & " Disable", False)
 End Function
 
 'Simplified function to forcibly disable a plugin via the user's preference file.  Note that this *will not take affect for
 ' this session* by design; you must subsequently call the SetPluginEnablement() function to live-change the setting.
-Public Sub SetPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
+Public Sub SetPluginAllowed(ByVal pluginEnumID As PD_PluginCore, ByVal newEnabledState As Boolean)
     UserPrefs.SetPref_Boolean "Plugins", "Force " & PluginManager.GetPluginName(pluginEnumID) & " Disable", Not newEnabledState
 End Sub
 
 'Simplified function to detect if a given plugin is currently enabled.  (Plugins can be disabled for a variety of reasons,
 ' including forcible disablement by the user, bugs, missing files, etc; this catch-all function returns a binary "enabled" state.)
-Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As PD_PluginCore) As Boolean
     Select Case pluginEnumID
         Case CCP_CharLS
             IsPluginCurrentlyEnabled = Plugin_CharLS.IsCharLSEnabled()
@@ -426,7 +426,7 @@ End Function
 'Simplified function to forcibly en/disable a given plugin for this session.  Note that this has program-wide repercussions,
 ' including UI states that may no longer be valid - as such, this function should *not* be changed by anything except the
 ' Plugin Manager dialog or the plugin initialization functions.
-Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
+Public Sub SetPluginEnablement(ByVal pluginEnumID As PD_PluginCore, ByVal newEnabledState As Boolean)
     Select Case pluginEnumID
         Case CCP_CharLS
             Plugin_CharLS.ForciblySetAvailability newEnabledState
@@ -460,14 +460,14 @@ End Sub
 
 'Simplified function to detect if a given plugin is currently installed in PD's plugin folder.  This is (obviously) separate
 ' from a plugin actually being *enabled*, as that requires initialization and other steps.
-Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As PD_PluginCore) As Boolean
     IsPluginCurrentlyInstalled = Files.FileExists(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
 'Some libraries are available on-demand (like libavif, which is enormous and most users won't need it).
 ' It's OK if these libraries are missing on a default install - it just means the user hasn't triggered
 ' any actions that prompt their download.
-Public Function IsPluginAvailableOnDemand(ByVal pluginID As CORE_PLUGINS) As Boolean
+Public Function IsPluginAvailableOnDemand(ByVal pluginID As PD_PluginCore) As Boolean
     
     IsPluginAvailableOnDemand = False
     
@@ -487,7 +487,7 @@ End Function
 ' on-demand, as user operations require.
 '
 'This function determines if a plugin is forcibly loaded during that initial "high-priority" wave, or later.
-Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Public Function IsPluginHighPriority(ByVal pluginEnumID As PD_PluginCore) As Boolean
     
     IsPluginHighPriority = False
     
@@ -508,7 +508,7 @@ End Function
 ' that it's just not feasible to build some of the required 3rd-party libraries in XP-compatible ways.
 ' This function can be used to query whether a plugin was disabled simply because it's not XP-compatible.
 ' (Ignore the return of this function when running on Vista+, obviously.)
-Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As PD_PluginCore) As Boolean
     
     IsPluginUnavailableOnXP = False
     
@@ -525,7 +525,7 @@ End Function
 
 'Simplified function to return the expected version number of a plugin.  These numbers change with each PD release, and they can
 ' be helpful for seeing if a user has manually updated a plugin file to some new version (which is generally okay!)
-Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function ExpectedPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             ExpectedPluginVersion = EXPECTED_CHARLS_VERSION
@@ -557,7 +557,7 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
 End Function
 
 'Simplified function for retrieving the homepage URL for a given plugin
-Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginHomepage = "https://github.com/team-charls/charls"
@@ -589,7 +589,7 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
 End Function
 
 'Simplified function for retrieving the license name for a given plugin
-Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
@@ -621,7 +621,7 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
 End Function
 
 'Simplified function for retrieving the license URL for a given plugin
-Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As String
+Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginLicenseURL = "https://github.com/team-charls/charls/blob/master/LICENSE.md"
@@ -660,7 +660,7 @@ End Function
 ' is verified as existing in PD's plugin folder, and the user has not forcibly disabled that plugin.
 '
 'Returns TRUE if the plugin was initialized successfully; FALSE otherwise.
-Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolean
     
     'Because this function has variable complexity (depending on the plugin), an intermediary value is used to track success/failure.
     ' At the end of the function, the function return will simply copy this value, so make sure it's set correctly before the
@@ -733,7 +733,7 @@ End Function
 
 'Most plugins provide a single global "is plugin available" flag, which spares the program from having to plow through
 ' all these verification steps when it needs to do something with a plugin.
-Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
+Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As PD_PluginCore, ByVal pluginState As Boolean)
     
     Select Case pluginEnumID
         
@@ -785,7 +785,7 @@ End Sub
 '
 'It provides a catch-all for custom initialization behavior (e.g. modifying UI bits to reflect plugin-related features).
 ' New plugins do not need to make use of this functionality.
-Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
+Private Sub FinalizePluginInitialization(ByVal pluginEnumID As PD_PluginCore, ByVal pluginState As Boolean)
 
     Select Case pluginEnumID
                 
@@ -809,7 +809,7 @@ End Sub
 ' 3) If it finds a missing plugin in the program folder, it will automatically move the file to the plugin folder, including any
 '     helper files (README, LICENSE, etc).
 ' 4) If the move is successful, it will return TRUE and exit.
-Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boolean
     
     'Start by getting the filename of the plugin in question
     Dim pluginFilename As String

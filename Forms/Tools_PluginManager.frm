@@ -556,7 +556,7 @@ End Sub
 
 'Given a plugin's availability, expected version, and index on this form, populate the relevant labels associated with it.
 ' This function will return TRUE if the plugin is in good status, FALSE if it isn't (for any reason)
-Private Function CheckLibraryStateUI(ByVal pluginID As CORE_PLUGINS, Optional ByRef dstStateString As String = vbNullString, Optional ByRef dstStateUIColor As Long = vbBlack) As Boolean
+Private Function CheckLibraryStateUI(ByVal pluginID As PD_PluginCore, Optional ByRef dstStateString As String = vbNullString, Optional ByRef dstStateUIColor As Long = vbBlack) As Boolean
     
     'Is this plugin present on the machine?
     If PluginManager.IsPluginCurrentlyInstalled(pluginID) Then
@@ -679,7 +679,7 @@ Private Sub LibraryChanged()
         picContainer(0).Visible = False
         picContainer(1).Visible = True
         
-        Dim pluginIndex As CORE_PLUGINS, pluginName As String
+        Dim pluginIndex As PD_PluginCore, pluginName As String
         pluginIndex = lstPlugins.ListIndex - 1
         pluginName = PluginManager.GetPluginName(pluginIndex)
         

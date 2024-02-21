@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2024 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 13/September/23
-'Last update: use the new pdPipeSync class for shell and output capture
+'Last updated: 21/February/24
+'Last update: new engine that can offer ongoing automatic updates of libavif to users
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
@@ -15,7 +15,7 @@ Attribute VB_Name = "Plugin_AVIF"
 '
 ' https://github.com/AOMediaCodec/libavif
 '
-'PhotoDemon has been designed against v0.10.0 (06 April '22).  It may not work with other versions.
+'PhotoDemon has been designed against v1.0.4 (08 Feb '24).  It may not work with other versions.
 ' Additional documentation regarding the use of libavif is available as part of the official library,
 ' downloadable from https://github.com/AOMediaCodec/libavif.  You can also run the exe files manually
 ' with the -h extension for details on how they work.
@@ -414,6 +414,72 @@ Public Function IsAVIFImportAvailable() As Boolean
     IsAVIFImportAvailable = m_avifImportAvailable
 End Function
 
+Public Function QuickLoadPotentialAVIFToDIB(ByRef srcFile As String, ByRef dstDIB As pdDIB, Optional ByRef tmpPDImage As pdImage = Nothing) As Boolean
+    
+    If Plugin_AVIF.IsAVIFImportAvailable() Then
+        
+        'The separate AVIF apps convert AVIF to intermediary formats; we use PNG currently
+        Dim tmpFile As String
+        QuickLoadPotentialAVIFToDIB = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
+        
+        If QuickLoadPotentialAVIFToDIB Then
+            Dim cPNG As pdPNG
+            Set cPNG = New pdPNG
+            If tmpPDImage Is Nothing Then Set tmpPDImage = New pdImage
+            QuickLoadPotentialAVIFToDIB = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, dstDIB) < png_Failure)
+            Set cPNG = Nothing
+        End If
+        
+        'Free the intermediary file before continuing
+        Files.FileDeleteIfExists tmpFile
+        If (Not dstDIB.GetAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
+        
+    End If
+    
+End Function
+
+'Returns TRUE if the installed version of libavif is >= the expected version of libavif.
+' By design, this function also returns TRUE if libavif is NOT installed - this is purposeful because
+' I don't want to raise "library out of date" warnings if the library doesn't even exist (there's a
+' separate code pathway for downloading the library for the first time).
+Public Function CheckAVIFVersionAndOfferUpdates(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+    
+    'By design, this function returns TRUE if libavif doesn't exist.
+    Dim libavifNotInstalled As Boolean
+    If targetIsImportLib Then
+        libavifNotInstalled = (Not IsAVIFImportAvailable)
+    Else
+        libavifNotInstalled = (Not IsAVIFExportAvailable)
+    End If
+    
+    If libavifNotInstalled Then
+        CheckAVIFVersionAndOfferUpdates = True
+        Exit Function
+    End If
+    
+    'Still here?  libavif exists in this install.  Let's pull its version and compare it to the expected version
+    ' (for this build of PhotoDemon).
+    Dim curVersion As String
+    curVersion = Plugin_AVIF.GetVersion(targetIsImportLib)
+    
+    Dim expectedVersion As String
+    expectedVersion = PluginManager.ExpectedPluginVersion(CCP_libavif)
+    
+    If Updates.IsNewVersionHigher(curVersion, expectedVersion) Then
+        
+        'The installed copy of libavif is out-of-date.  Offer to download a new copy.
+        CheckAVIFVersionAndOfferUpdates = False
+        
+        Dim okToDownload As VbMsgBoxResult
+        okToDownload = Updates.OfferPluginUpdate("libavif", curVersion, expectedVersion)
+        If (okToDownload = vbYes) Then CheckAVIFVersionAndOfferUpdates = DownloadLatestLibAVIF()
+        
+    Else
+        CheckAVIFVersionAndOfferUpdates = True
+    End If
+    
+End Function
+
 'Notify the user that PD can automatically download and configure AVIF support for them.
 '
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins
@@ -458,116 +524,7 @@ Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib A
         End If
         
         'The user said YES!  Attempt to download the latest libavif release now.
-        Dim srcURL As String, dstFileTemp As String
-        
-        'Before downloading anything, ensure we have write access on the plugin folder.
-        dstFileTemp = PluginManager.GetPluginPath()
-        If Not Files.PathExists(dstFileTemp, True) Then
-            PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
-            PromptForLibraryDownload_AVIF = False
-            Exit Function
-        End If
-        
-        'Previously, PhotoDemon downloaded each .exe as-is.  Now we package them into a single pdPackage file
-        ' and extract them post-download.  (This cuts download size by ~80%.)
-        
-        'Grab the .pdz file.  This path is hard-coded according to my most recently tested version of avifdec/enc.
-        srcURL = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.1/libavif-1.0.1.pdz"
-        dstFileTemp = PluginManager.GetPluginPath() & "libavif.tmp"
-        
-        'If the destination file does exist, kill it (maybe it's broken or bad)
-        Files.FileDeleteIfExists dstFileTemp
-        
-        'Download
-        Dim tmpFile As String
-        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
-        
-        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileTemp
-        Files.FileDeleteIfExists tmpFile
-        
-        'With the pdPackage file successfully downloaded, extract avifdec and avifenc and place them in the plugins folder.
-        PDDebug.LogAction "Extracting latest libavif..."
-        Dim cPackage As pdPackageChunky
-        Set cPackage = New pdPackageChunky
-        
-        Dim dstFilename As String
-        Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
-        
-        Dim numSuccessfulFiles As Long, numBytesExtracted As Long
-        numSuccessfulFiles = 0
-        numBytesExtracted = 0
-        
-        'Load the file into a temporary package manager
-        If cPackage.OpenPackage_File(dstFileTemp) Then
-            
-            'I use a custom-built tool to assemble pdPackage files; individual files are stored as simple name-value pairs
-            Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
-                
-                'Ensure the chunk name is actually a "NAME" chunk
-                If (tmpChunkName = "NAME") Then
-                    
-                    'Convert the filename to a full path into the user's plugin folder
-                    dstFilename = PluginManager.GetPluginPath() & tmpStream.ReadString_UTF8(tmpChunkSize)
-                    
-                    'Next, extract the chunk's data
-                    If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
-                        
-                        'Ensure the chunk data is a "DATA" chunk
-                        If (tmpChunkName = "DATA") Then
-                            
-                            'Write the chunk's contents to file
-                            If Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True) Then
-                                numSuccessfulFiles = numSuccessfulFiles + 1
-                                numBytesExtracted = numBytesExtracted + tmpChunkSize
-                            Else
-                                InternalError FUNC_NAME, "failed to create target file " & dstFilename
-                            End If
-                        
-                        '/Validate DATA chunk
-                        End If
-                            
-                    '/Unexpected chunk
-                    Else
-                        InternalError FUNC_NAME, "bad data chunk: " & tmpChunkName
-                    End If
-                
-                '/Unexpected chunk
-                Else
-                    InternalError FUNC_NAME, "bad name chunk: " & tmpChunkName
-                End If
-            
-            'Iterate all remaining package items
-            Loop
-            
-        Else
-            InternalError FUNC_NAME, "download failed!  libavif is *not* currently available to this PhotoDemon instance."
-        End If
-        
-        'Free the underlying package object
-        Set cPackage = Nothing
-        
-        'Double-check expected number of files and total size of extracted bytes.
-        ' Currently we expect three files in the package:
-        ' - avifdec.exe (for decoding)
-        ' - avifenc.exe (for encoding)
-        ' - avif-LICENSE.txt (copyright and license info)
-        If (numSuccessfulFiles <> 3) Then InternalError FUNC_NAME, "unexpected extraction file count: " & numSuccessfulFiles
-        
-        'Current libavif build is 1.0.3768, downloaded from https://ci.appveyor.com/project/louquillio/libavif/builds/47660062/artifacts
-        Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 24154944
-        If (numBytesExtracted = EXPECTED_TOTAL_EXTRACT_SIZE) Then
-            PDDebug.LogAction "Successfully extracted " & numSuccessfulFiles & " files totaling " & numBytesExtracted & " bytes."
-        Else
-            InternalError FUNC_NAME, "unexpected extraction size: " & numBytesExtracted & " vs " & EXPECTED_TOTAL_EXTRACT_SIZE
-        End If
-        
-        'Delete the temporary package file
-        Files.FileDeleteIfExists dstFileTemp
-        
-        'Attempt to initialize both the import and export plugins, and return whatever PD's central plugin manager
-        ' says is the state of these libraries (it may perform multiple initialization steps, including testing OS compatibility)
-        PluginManager.LoadPluginGroup False
-        PromptForLibraryDownload_AVIF = PluginManager.IsPluginCurrentlyEnabled(CCP_libavif)
+        PromptForLibraryDownload_AVIF = DownloadLatestLibAVIF()
         
     End If
     
@@ -577,6 +534,22 @@ BadDownload:
     PromptForLibraryDownload_AVIF = False
     Exit Function
 
+End Function
+
+'Attempt to download the latest libavif copy to this PC.
+Private Function DownloadLatestLibAVIF() As Boolean
+    
+    ' Currently we expect three files in the package:
+    ' - avifdec.exe (for decoding)
+    ' - avifenc.exe (for encoding)
+    ' - avif-LICENSE.txt (copyright and license info)
+    Const EXPECTED_NUM_FILES As Long = 3
+    
+    'Current libavif build is 1.0.1, downloaded from https://github.com/AOMediaCodec/libavif/releases/tag/v1.0.1
+    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 23881536
+    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.4/libavif-1.0.4.pdz"
+    DownloadLatestLibAVIF = Updates.DownloadPluginUpdate(CCP_libavif, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
+    
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
