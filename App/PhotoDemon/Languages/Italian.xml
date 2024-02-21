@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1626</langversion>
+<langversion>8.9.1628</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -2592,12 +2592,7 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 <translation>Download annullato</translation>
 </phrase>
 
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>PhotoDemon si trova in una cartella di sistema con restrizioni.   Poichè PhotoDemon non dispone di privilegi amministrativi, non può scaricare file.  Per favore sposta PhotoDemon in una cartella senza restrizioni di scrittura e riprova.</translation>
-</phrase>
-
-<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_AVIF.bas contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2711,7 +2706,12 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <translation></translation>
 </phrase>
 
-<!-- Plugin_jxl.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<translation>PhotoDemon si trova in una cartella di sistema con restrizioni.   Poichè PhotoDemon non dispone di privilegi amministrativi, non può scaricare file.  Per favore sposta PhotoDemon in una cartella senza restrizioni di scrittura e riprova.</translation>
+</phrase>
+
+<!-- Plugin_jxl.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -3554,7 +3554,32 @@ Per favore inserisci un valore numerico.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your version: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New version: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to update this plugin for you?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Update available</original>
+<translation></translation>
+</phrase>
+
+<!-- UpdateEngine.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -14120,10 +14145,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2674</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5629 phrases. -->
-<!-- 2960 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 11616 total words. -->
+<!-- As of this build, PhotoDemon contains 5638 phrases. -->
+<!-- 2964 are duplicates, so only 2674 unique phrases have been written to file. -->
+<!-- These 2674 phrases contain approximately 11647 total words. -->
 
 </pdData>

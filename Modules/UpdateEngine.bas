@@ -905,10 +905,7 @@ Public Function OfferPluginUpdate(Optional ByRef pluginName As String = vbNullSt
     Dim uiMsg As pdString
     Set uiMsg = New pdString
     
-    uiMsg.Append g_Language.TranslateMessage("This action relies on a third-party plugin")
-    If (LenB(pluginName) >= 0) Then uiMsg.Append " (" & pluginName & ")"
-    uiMsg.Append ". "
-    uiMsg.AppendLine g_Language.TranslateMessage("An updated version of this plugin is available.")
+    uiMsg.AppendLine g_Language.TranslateMessage("This action relies on a third-party plugin (%1).  An updated version of this plugin is available.", pluginName)
     uiMsg.AppendLineBreak
     
     If (LenB(curVersion) >= 0) And (LenB(newVersion) >= 0) Then
