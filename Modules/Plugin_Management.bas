@@ -29,7 +29,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 13
+Private Const CORE_PLUGIN_COUNT As Long = 14
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
@@ -44,6 +44,7 @@ Public Enum PD_PluginCore
     CCP_libwebp
     CCP_LittleCMS
     CCP_lz4
+    CCP_pdfium
     CCP_pspiHost
     CCP_resvg
     CCP_zstd
@@ -51,7 +52,8 @@ End Enum
 
 #If False Then
     Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pspiHost = 0, CCP_libwebp = 0, CCP_resvg = 0, CCP_zstd = 0, CCP_libjxl = 0
+    Private Const CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pdfium = 0, CCP_pspiHost = 0
+    Private Const CCP_resvg = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -65,6 +67,7 @@ Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.19"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.10.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
+Private Const EXPECTED_PDFIUM_VERSION As String = "123.0.6309"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.40.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.3.2"
@@ -209,6 +212,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
             GetPluginFilename = "liblz4.dll"
+        Case CCP_pdfium
+            GetPluginFilename = "pdfium.dll"
         Case CCP_pspiHost
             GetPluginFilename = "pspiHost.dll"
         Case CCP_libwebp
@@ -240,6 +245,8 @@ Public Function GetPluginName(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginName = "LittleCMS"
         Case CCP_lz4
             GetPluginName = "LZ4"
+        Case CCP_pdfium
+            GetPluginName = "pdfium"
         Case CCP_pspiHost
             GetPluginName = "pspiHost"
         Case CCP_libwebp
@@ -282,18 +289,21 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
         Case CCP_libjxl
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_jxl.GetLibJXLVersion()
         
+        Case CCP_libwebp
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_WebP.GetVersion()
+        
         Case CCP_LittleCMS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
         
         Case CCP_lz4
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_lz4.GetLz4Version()
             
+        Case CCP_pdfium
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PDF.GetVersion()
+            
         Case CCP_pspiHost
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
             
-        Case CCP_libwebp
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_WebP.GetVersion()
-        
         Case CCP_resvg
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_resvg.GetVersion()
         
@@ -352,6 +362,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
         Case CCP_lz4
             dstStringStack.AddString "liblz4-LICENSE.txt"
         
+        Case CCP_pdfium
+            dstStringStack.AddString "pdfium-LICENSE.txt"
+            
         Case CCP_pspiHost
             dstStringStack.AddString "pspiHost-LICENSE.txt"
             
@@ -403,14 +416,16 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As PD_PluginCore) As
             IsPluginCurrentlyEnabled = m_LibDeflateEnabled
         Case CCP_libjxl
             IsPluginCurrentlyEnabled = Plugin_jxl.IsJXLImportAvailable()
+        Case CCP_libwebp
+            IsPluginCurrentlyEnabled = Plugin_WebP.IsWebPEnabled()
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
             IsPluginCurrentlyEnabled = m_lz4Enabled
+        Case CCP_pdfium
+            IsPluginCurrentlyEnabled = Plugin_PDF.IsPDFiumAvailable()
         Case CCP_pspiHost
             IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
-        Case CCP_libwebp
-            IsPluginCurrentlyEnabled = Plugin_WebP.IsWebPEnabled()
         Case CCP_resvg
             IsPluginCurrentlyEnabled = Plugin_resvg.IsResvgEnabled()
         Case CCP_zstd
@@ -438,14 +453,16 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As PD_PluginCore, ByVal newEna
             m_LibDeflateEnabled = newEnabledState
         Case CCP_libjxl
             Plugin_jxl.ForciblySetAvailability newEnabledState
+        Case CCP_libwebp
+            Plugin_WebP.ForciblySetAvailability newEnabledState
         Case CCP_LittleCMS
             m_LCMSEnabled = newEnabledState
         Case CCP_lz4
             m_lz4Enabled = newEnabledState
+        Case CCP_pdfium
+            Plugin_PDF.ForciblySetAvailability newEnabledState
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability newEnabledState
-        Case CCP_libwebp
-            Plugin_WebP.ForciblySetAvailability newEnabledState
         Case CCP_resvg
             Plugin_resvg.ForciblySetAvailability newEnabledState
         Case CCP_zstd
@@ -536,14 +553,16 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As PD_PluginCore) As St
             ExpectedPluginVersion = EXPECTED_LIBDEFLATE_VERSION
         Case CCP_libjxl
             ExpectedPluginVersion = EXPECTED_LIBJXL_VERSION
+        Case CCP_libwebp
+            ExpectedPluginVersion = EXPECTED_WEBP_VERSION
         Case CCP_LittleCMS
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
         Case CCP_lz4
             ExpectedPluginVersion = EXPECTED_LZ4_VERSION
+        Case CCP_pdfium
+            ExpectedPluginVersion = EXPECTED_PDFIUM_VERSION
         Case CCP_pspiHost
             ExpectedPluginVersion = EXPECTED_PSPI_VERSION
-        Case CCP_libwebp
-            ExpectedPluginVersion = EXPECTED_WEBP_VERSION
         Case CCP_resvg
             ExpectedPluginVersion = EXPECTED_RESVG_VERSION
         Case CCP_zstd
@@ -568,14 +587,16 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginHomepage = "https://github.com/ebiggers/libdeflate"
         Case CCP_libjxl
             GetPluginHomepage = "https://github.com/libjxl/libjxl"
+        Case CCP_libwebp
+            GetPluginHomepage = "https://developers.google.com/speed/webp"
         Case CCP_LittleCMS
             GetPluginHomepage = "http://www.littlecms.com"
         Case CCP_lz4
             GetPluginHomepage = "https://lz4.github.io/lz4/"
+        Case CCP_pdfium
+            GetPluginHomepage = "https://pdfium.googlesource.com/pdfium/"
         Case CCP_pspiHost
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
-        Case CCP_libwebp
-            GetPluginHomepage = "https://developers.google.com/speed/webp"
         Case CCP_resvg
             GetPluginHomepage = "https://github.com/RazrFalcon/resvg"
         Case CCP_zstd
@@ -600,14 +621,16 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As Str
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_libjxl
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_libwebp
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_LittleCMS
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_lz4
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_pdfium
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_pspiHost
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
-        Case CCP_libwebp
-            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_resvg
             GetPluginLicenseName = g_Language.TranslateMessage("Mozilla Public License 2.0")
         Case CCP_zstd
@@ -632,14 +655,16 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As Stri
             GetPluginLicenseURL = "https://github.com/ebiggers/libdeflate/blob/master/COPYING"
         Case CCP_libjxl
             GetPluginLicenseURL = "https://github.com/libjxl/libjxl/blob/main/LICENSE"
+        Case CCP_libwebp
+            GetPluginLicenseURL = "https://github.com/webmproject/libwebp/blob/master/COPYING"
         Case CCP_LittleCMS
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
         Case CCP_lz4
             GetPluginLicenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE"
+        Case CCP_pdfium
+            GetPluginLicenseURL = "https://pdfium.googlesource.com/pdfium/+/main/LICENSE"
         Case CCP_pspiHost
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
-        Case CCP_libwebp
-            GetPluginLicenseURL = "https://github.com/webmproject/libwebp/blob/master/COPYING"
         Case CCP_resvg
             GetPluginLicenseURL = "https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt"
         Case CCP_zstd
@@ -657,9 +682,8 @@ End Function
 'Returns TRUE if the plugin was initialized successfully; FALSE otherwise.
 Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolean
     
-    'Because this function has variable complexity (depending on the plugin), an intermediary value is used to track success/failure.
-    ' At the end of the function, the function return will simply copy this value, so make sure it's set correctly before the
-    ' function ends.
+    'Because this function has variable complexity (depending on the plugin), an intermediary value is used
+    ' to track success/failure. At the end of this function, the return is simply a copy of this value.
     Dim initializationSuccessful As Boolean
     
     Select Case pluginEnumID
@@ -707,13 +731,16 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
         Case CCP_libjxl
             initializationSuccessful = Plugin_jxl.InitializeLibJXL(PluginManager.GetPluginPath)
             
+        Case CCP_libwebp
+            initializationSuccessful = Plugin_WebP.InitializeEngine(PluginManager.GetPluginPath)
+        
         'LittleCMS maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
             
-        Case CCP_libwebp
-            initializationSuccessful = Plugin_WebP.InitializeEngine(PluginManager.GetPluginPath)
-        
+        Case CCP_pdfium
+            initializationSuccessful = Plugin_PDF.InitializeEngine(PluginManager.GetPluginPath)
+            
         Case CCP_pspiHost
             initializationSuccessful = Plugin_8bf.InitializeEngine(PluginManager.GetPluginPath)
             
@@ -754,18 +781,21 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As PD_PluginCore, ByVal plug
         Case CCP_libjxl
             Plugin_jxl.ForciblySetAvailability pluginState
         
+        Case CCP_libwebp
+            Plugin_WebP.ForciblySetAvailability pluginState
+            
         Case CCP_LittleCMS
             m_LCMSEnabled = pluginState
         
         Case CCP_lz4
             m_lz4Enabled = pluginState
             
+        Case CCP_pdfium
+            Plugin_PDF.ForciblySetAvailability pluginState
+            
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability pluginState
             
-        Case CCP_libwebp
-            Plugin_WebP.ForciblySetAvailability pluginState
-        
         Case CCP_resvg
             Plugin_resvg.ForciblySetAvailability pluginState
         
@@ -890,11 +920,14 @@ Public Sub TerminateAllPlugins()
     Plugin_CharLS.ReleaseEngine
     PDDebug.LogAction "CharLS released"
     
-    Plugin_8bf.ReleaseEngine
-    PDDebug.LogAction "pspiHost released"
-    
     Plugin_WebP.ReleaseEngine
     PDDebug.LogAction "libwebp released"
+    
+    Plugin_PDF.ReleaseEngine
+    PDDebug.LogAction "pdfium released"
+    
+    Plugin_8bf.ReleaseEngine
+    PDDebug.LogAction "pspiHost released"
     
     Plugin_resvg.ReleaseEngine
     PDDebug.LogAction "resvg released"
