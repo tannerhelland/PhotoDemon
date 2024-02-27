@@ -1382,7 +1382,16 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
     'If libjxl *is* available, check for plugin updates before proceeding
     Else
-        Plugin_jxl.CheckJXLVersionAndOfferUpdates True
+        
+        'Before offering updates, see if the target file is even a JPEG XL image.
+        ' (If it isn't, we don't want to spam the user with an irrelevant update notification.)
+        If Plugin_jxl.IsFileJXL(srcFile) Then
+            Plugin_jxl.CheckJXLVersionAndOfferUpdates True
+        Else
+            LoadJXL = False
+            Exit Function
+        End If
+        
     End If
     
     'Offload the remainder of the job to the libjxl interface

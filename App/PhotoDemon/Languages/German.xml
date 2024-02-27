@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.213</langversion>
+<langversion>9.2.275</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Bild exportieren</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Layer exportieren</translation>
 </phrase>
 
 <phrase>
@@ -3532,7 +3532,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Software-Updater wird initialisiert (dieses Feature kann über das Menü "Extras > Optionen" deaktiviert werden)</translation>
+<translation>Initialisieren von Software-Updater (dieses Feature kann über das Menü "Extras > Optionen" deaktiviert werden)</translation>
 </phrase>
 
 <phrase>
@@ -3557,27 +3557,27 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Diese Aktion beruht auf einem Drittanbieter-Plug-in (%1). Eine aktualisierte Version von diesem Plug-in ist verfügbar.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>Ihre Version: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Neue Version: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>Möchten Sie, dass PhotoDemon dieses Plug-in für Sie aktualisiert?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Update verfügbar</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4261,7 +4261,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Action canceled: target layer isn't visible.</original>
-<translation>Aktion abgebrochen: Ziel-Layer ist nicht sichtbar</translation>
+<translation>Aktion abgebrochen: Ziel-Layer ist nicht sichtbar.</translation>
 </phrase>
 
 <phrase>
@@ -4907,12 +4907,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>Bild in Datei</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Layer in Dateien</translation>
 </phrase>
 
 <phrase>
@@ -11197,7 +11197,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation>Content-abhängige Größenänderungs-Engine wird initialisiert</translation>
+<translation>Initialisieren von Content-abhängiger Größenänderungs-Engine</translation>
 </phrase>
 
 <phrase>
@@ -11790,7 +11790,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation>Klick: Ein Duplikat dieses Layers hinzufügen</translation>
+<translation>Klick: Ein Duplikat von diesem Layer hinzufügen</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -13687,7 +13687,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>In den meisten Foto-Editoren wird bei dem Befehl "Speichern unter" standardmäßig der aktuelle Dateiname verwendet. PhotoDemon bietet auch eine "sicherere" Option, bei der "Speichern unter" automatisch die Dateinamen für Sie erhöht.</translation>
+<translation>In den meisten Foto-Editoren wird bei dem Befehl "Speichern unter" standardmäßig der aktuelle Dateiname verwendet. PhotoDemon bietet auch eine "sicherere" Option, bei der "Speichern unter" automatisch die Dateinamen für Sie inkrementiert.</translation>
 </phrase>
 
 <phrase>
@@ -14093,42 +14093,42 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>Zu exportierende Layer</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>Zielordner</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>Dateityp</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Layer %1 von %2 wird exportiert</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>Alle Layer</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>Sichtbare Layer</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>Aktueller Layer</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>Layer-Name</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
