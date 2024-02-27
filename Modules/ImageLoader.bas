@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/October/22
-'Last update: finish up proper storage of JPEG XL original image settings
+'Last updated: 27/February/24
+'Last update: initial build of PDF import
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -996,7 +996,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'WebP was originally handled by FreeImage, but in v9.0 we switched to using libwebp directly
+    'WebP was originally handled by FreeImage, but in v9.0 I switched to using libwebp directly
     If (Not CascadeLoadGenericImage) And Plugin_WebP.IsWebPEnabled() Then
         If Plugin_WebP.IsWebP(srcFile) Then
             CascadeLoadGenericImage = LoadWebP(srcFile, dstImage, dstDIB)
@@ -1040,6 +1040,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If CascadeLoadGenericImage Then
             decoderUsed = id_HGTParser
             dstImage.SetOriginalFileFormat PDIF_HGT
+        End If
+    End If
+    
+    'PDF support was added in v10.0
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadPDF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_pdfium
+            dstImage.SetOriginalFileFormat PDIF_PDF
         End If
     End If
     
@@ -1457,6 +1466,129 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
         dstImage.SetOriginalColorDepth 32
         dstImage.SetOriginalGrayscale False
         dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
+    
+End Function
+
+Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadPDF = False
+    
+    'pdPDF handles all the dirty work for us
+    Dim cPDF As pdPDF
+    Set cPDF = New pdPDF
+    
+    'Validate the potential PDF file
+    Dim passwordRequired As Boolean
+    LoadPDF = cPDF.IsFilePDF(srcFile, passwordRequired, True)
+    
+    'If a password is required, ask for it now
+    Dim pdfPassword As String
+    If (LoadPDF And passwordRequired) Then
+        'TODO: retrieve password and attempt load again
+        'LoadPDF = cPDF.LoadPDFFromFile(srcFile, True, pdfPassword)
+    Else
+        pdfPassword = vbNullString
+        LoadPDF = cPDF.LoadPDFFromFile(srcFile, False, pdfPassword)
+    End If
+    
+    'In the future, more complex validation could be performed here, but for now,
+    ' let's just double-confirm that the PDF object is happy with the loaded PDF.
+    If LoadPDF Then LoadPDF = cPDF.HasPDF()
+    
+    'If we don't have a valid, loaded PDF, exit immediately.
+    If (Not LoadPDF) Then Exit Function
+    
+    'If we're still here, a valid PDF exists and is ready for further processing.
+    
+    'Get the page count, then load up the first page
+    Dim numPages As Long
+    numPages = cPDF.GetPageCount
+    If (numPages <= 0) Then Exit Function
+    If (Not cPDF.LoadPage(0)) Then Exit Function
+    
+    'Eventually I'll need to provide a UI here, but for now, let's just try and load the whole damn thing.
+    Const PAGE_RESOLUTION_IN_DPI As Single = 72!
+    Dim docDPI As Single
+    docDPI = PAGE_RESOLUTION_IN_DPI
+    
+    'Retrieve the dimensions of the first page IN POINTS
+    Dim baseImageWidth As Single, baseImageHeight As Single
+    baseImageWidth = cPDF.GetPageWidthInPoints()
+    baseImageHeight = cPDF.GetPageHeightInPoints()
+    
+    'Use this to calculate a page size in pixels
+    Dim baseWidthInPixels As Long, baseHeightInPixels As Long
+    baseWidthInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageWidth, docDPI))
+    baseHeightInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageHeight, docDPI))
+    
+    'This will be the base size of the image.  Layers *may* be a different size.
+    
+    'Initialize the target image with basic properties
+    If (dstImage Is Nothing) Then Set dstImage = New pdImage
+    dstImage.Width = baseWidthInPixels
+    dstImage.Height = baseHeightInPixels
+    dstImage.SetDPI docDPI, docDPI
+    
+    'Time to start iterating layers!
+    Dim idxPage As Long
+    For idxPage = 0 To cPDF.GetPageCount() - 1
+        
+        'Size can vary by page and bounding box.  Calculate a size for *this* page.
+        Dim thisPageWidthPts As Single, thisPageHeightPts As Single
+        If cPDF.LoadPage(idxPage) Then
+            
+            thisPageWidthPts = cPDF.GetPageWidthInPoints()
+            thisPageHeightPts = cPDF.GetPageHeightInPoints()
+            
+            'Convert the default page dimensions (in points) to pixels
+            Dim thisPageWidthPx As Long, thisPageHeightPx As Long
+            thisPageWidthPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageWidthPts, docDPI))
+            thisPageHeightPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageHeightPts, docDPI))
+            
+            'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
+            Dim tmpDIB As pdDIB
+            If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+            tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, vbBlack, 0
+            
+            'Debug.Print thisPageWidthPx, thisPageHeightPx
+            
+            'Render the page contents onto the target DIB
+            ' (TODO: expose rendering options to the user)
+            ' (TODO: calculate the way bounding boxes affect this)
+            cPDF.RenderCurrentPageToPDDib tmpDIB, 0, 0, thisPageWidthPx, thisPageHeightPx, FPDF_Normal, 0&
+            tmpDIB.SetAlphaPremultiplication True
+            
+            'Prep a new layer object and initialize it
+            Dim newLayerID As Long, tmpLayer As pdLayer
+            newLayerID = dstImage.CreateBlankLayer()
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            
+            'We need a base layer name for each page.  For now, this is just "page".
+            ' (TODO: let the user supply this.)
+            Dim baseLayerName As String
+            baseLayerName = g_Language.TranslateMessage("Page %1", idxPage + 1)
+            tmpLayer.InitializeNewLayer PDL_Image, baseLayerName, tmpDIB, True
+            
+        End If
+        
+    Next idxPage
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadPDF Then
+        
+        dstImage.SetOriginalFileFormat PDIF_PDF
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha False
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.

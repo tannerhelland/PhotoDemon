@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 08/September/23
-'Last update: switch JPEG XL support to an on-demand download (on supported systems, e.g. Win 7+)
+'Last updated: 23/February/24
+'Last update: wire up PDF import
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -12,18 +12,19 @@ Attribute VB_Name = "ImageFormats"
 ' of importing and exporting.  Import/export lists are separately maintained, and the presence of a
 ' format in the Import category does not guarantee a similar presence in the Export category.
 '
-'Some esoteric formats rely on the external FreeImage.dll for loading and/or saving.  Similarly,
-' some formats support multiple import engines (e.g. PNGs are preferentially loaded by an internal
-' PNG decoder, but we could theoretically hand them off to GDI+ or FreeImage too).  From this
-' module alone, it won't be clear which engine or third-party library (if any) is used to load a
-' given format - for that, consult the relevant debug log ([PD path]/Data/Debug) after loading an
-' image file.
+'Some esoteric formats rely on external libraries for loading and/or saving.  Similarly, some formats
+' support multiple import engines (e.g. PNGs are preferentially loaded by an internal PNG decoder,
+' but we could theoretically hand them off to other libraries).  From this module alone, it won't be
+' clear which engine or third-party library (if any) is used to load a given format - for that,
+' consult the relevant debug log ([PD path]/Data/Debug) after loading an image file.
 '
 'Note also that as of 2020, many formats use native PhotoDemon-specific encoder/decoder classes.
 ' These formats are *always* available regardless of 3rd-party library status, but some formats
 ' may have add-on features that require third-party libraries - for example, PSD files are
 ' typically RLE (PackBits) encoded, which PhotoDemon can decode natively, but HDR PSD images can
 ' optionally use DEFLATE compression which requires PD to tap into a 3rd-party library (libdeflate).
+' These complexities are all managed silently, but if you want to use image support code in another
+' project, you'll need to dive deeper than just this module.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -33,7 +34,7 @@ Attribute VB_Name = "ImageFormats"
 Option Explicit
 
 'Is the FreeImage DLL available?  We store this value here because we fall back to FreeImage
-' for any images that don't load via traditional means (which provides last-ditch coverage for
+' for images that don't load via traditional means (which provides last-ditch coverage for
 ' esoteric and/or legacy formats).
 Private m_FreeImageEnabled As Boolean
 
@@ -287,6 +288,9 @@ Public Sub GenerateInputFormats()
         AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
         AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
     End If
+    
+    'In v10.0, support was added for PDFs (via pdfium)
+    If Plugin_PDF.IsPDFiumAvailable() Then AddInputFormat "PDF - Portable Document Format", "*.pdf", PDIF_PDF
     
     'PDI (PhotoDemon's native file format) is always available!
     AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
@@ -548,6 +552,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "pcd"
         Case PDIF_PCX
             GetExtensionFromPDIF = "pcx"
+        Case PDIF_PDF
+            GetExtensionFromPDIF = "pdf"
         Case PDIF_PDI
             GetExtensionFromPDIF = "pdi"
         'Case PDIF_PFM
@@ -686,6 +692,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
             GetPDIFFromExtension = PDIF_PCD
         Case "pcx"
             GetPDIFFromExtension = PDIF_PCX
+        Case "pdf"
+            GetPDIFFromExtension = PDIF_PDF
         Case "pdi"
             GetPDIFFromExtension = PDIF_PDI
         Case "pct"
@@ -756,6 +764,8 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_JXR
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_MBM
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        Case PDIF_PDF
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_PDI
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
@@ -859,6 +869,8 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
         Case PDIF_CBZ
             IsExifToolRelevant = False
         Case PDIF_ORA
+            IsExifToolRelevant = False
+        Case PDIF_PDF
             IsExifToolRelevant = False
         Case PDIF_PDI
             IsExifToolRelevant = False
