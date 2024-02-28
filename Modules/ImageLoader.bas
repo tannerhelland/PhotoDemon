@@ -1486,7 +1486,7 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
     
 End Function
 
-Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False) As Boolean
 
     LoadPDF = False
     
@@ -1546,9 +1546,45 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     dstImage.Height = baseHeightInPixels
     dstImage.SetDPI docDPI, docDPI
     
+    'Figure out which pages the user actually wants loaded
+    Dim listOfPages As pdStack
+    Set listOfPages = New pdStack
+    If previewOnly Then
+        listOfPages.AddInt 0
+    Else
+        
+        'TODO: allow reversing page order
+        Dim i As Long
+        For i = cPDF.GetPageCount() - 1 To 0 Step -1
+            listOfPages.AddInt i
+        Next i
+        
+    End If
+    
+    'If this is *not* a preview (or batch process), prep some UI bits
+    Dim updateUI As Boolean
+    updateUI = (Not previewOnly) And (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK)
+    
+    Dim numPagesTotal
+    numPagesTotal = listOfPages.GetNumOfInts()
+    
+    If updateUI Then
+        ProgressBars.SetProgBarMax numPagesTotal
+        ProgressBars.SetProgBarVal 0
+    End If
+    
     'Time to start iterating layers!
-    Dim idxPage As Long
-    For idxPage = 0 To cPDF.GetPageCount() - 1
+    Dim idxPage As Long, numPagesProcessed As Long
+    numPagesProcessed = 0
+    
+    Do While listOfPages.PopInt(idxPage)
+        
+        numPagesProcessed = numPagesProcessed + 1
+        
+        If updateUI Then
+            ProgressBars.SetProgBarVal numPagesProcessed
+            Message "Loading page %1 of %2...", CStr(numPagesProcessed), numPagesTotal, "DONOTLOG"
+        End If
         
         'Size can vary by page and bounding box.  Calculate a size for *this* page.
         Dim thisPageWidthPts As Single, thisPageHeightPts As Single
@@ -1565,7 +1601,19 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
             Dim tmpDIB As pdDIB
             If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-            tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, vbBlack, 0
+            
+            'In preview mode, we want to render the page against a white background.  (Many PDFs only store black
+            ' outlines against a transparent background, to improve printer behavior - and the previews look funny
+            ' if rendered against a checkerboard!)
+            Dim bkColor As Long, bkOpacity As Long
+            If previewOnly Then
+                bkColor = RGB(255, 255, 255)
+                bkOpacity = 255
+            Else
+                bkColor = RGB(0, 0, 0)
+                bkOpacity = 0
+            End If
+            tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, bkColor, bkOpacity
             
             'Debug.Print thisPageWidthPx, thisPageHeightPx
             
@@ -1586,9 +1634,18 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             baseLayerName = g_Language.TranslateMessage("Page %1", idxPage + 1)
             tmpLayer.InitializeNewLayer PDL_Image, baseLayerName, tmpDIB, True
             
+            'Make the base layer visible, but no others.
+            ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
+            tmpLayer.SetLayerVisibility (numPagesProcessed = 1)
+            tmpLayer.SetLayerBlendMode BM_Normal
+            
         End If
         
-    Next idxPage
+    Loop
+    
+    'Set the base layer as the active one
+    ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
+    dstImage.SetActiveLayerByIndex 0
     
     'Perform some PD-specific object initialization before exiting
     If LoadPDF Then
@@ -1606,6 +1663,9 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
+    
+    'Unload any changes made to the primary app UI
+    If updateUI Then ProgressBars.ReleaseProgressBar
     
 End Function
 
