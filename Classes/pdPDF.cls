@@ -154,6 +154,20 @@ Friend Function GetPageHeightInPoints() As Single
     
 End Function
 
+Friend Function GetPageOrientation() As PDFium_Orientation
+    
+    Const FUNC_NAME As String = "GetPageOrientation"
+    
+    'Make sure a valid page is loaded
+    If (m_hPage = 0) Then
+        InternalError FUNC_NAME, "no page loaded"
+        Exit Function
+    End If
+    
+    GetPageOrientation = CallCDeclW(FPDFPage_GetRotation, vbLong, m_hPage)
+    
+End Function
+
 Friend Function GetPageWidthInPoints() As Single
 
     Const FUNC_NAME As String = "GetPageWidthInPoints"
@@ -175,6 +189,11 @@ End Function
 
 'Test if an arbitrary file is a valid PDF.
 Friend Function IsFilePDF(ByRef srcFile As String, Optional ByRef passwordRequired As Boolean = False, Optional ByVal leaveHandleOpen As Boolean = True) As Boolean
+    
+    IsFilePDF = False
+    
+    'If the required 3rd-party library isn't available, bail
+    If (Not Plugin_PDF.IsPDFiumAvailable()) Then Exit Function
     
     'Reset the validation tracker
     m_lastValidatedFile = vbNullString
@@ -206,6 +225,12 @@ Friend Function LoadPage(ByVal idxPage As Long) As Boolean
     
     Const FUNC_NAME As String = "LoadPage"
     
+    'Make sure a PDF is loaded
+    If (m_hPDF = 0) Then
+        InternalError FUNC_NAME, "no PDF loaded"
+        Exit Function
+    End If
+    
     'Validate the page index
     If (idxPage < 0) Or (idxPage >= Me.GetPageCount()) Then
         InternalError FUNC_NAME, "bad page index"
@@ -229,6 +254,11 @@ End Function
 ' you can supply a password (as a string) via inPassword and this function will use that password
 ' to try and open the file.
 Friend Function LoadPDFFromFile(ByRef srcFile As String, Optional ByRef outPasswordRequired As Boolean = False, Optional ByRef inPassword As String = vbNullString) As Long
+    
+    LoadPDFFromFile = False
+    
+    'If the required 3rd-party library isn't available, bail
+    If (Not Plugin_PDF.IsPDFiumAvailable()) Then Exit Function
     
     'If a PDF is already loaded, the caller may have just validated the file and is now proceeding
     ' with a full load.
@@ -375,6 +405,9 @@ Private Sub Class_Terminate()
 End Sub
 
 Private Function GetLastPDFiumError() As FPDF_ErrorCodes
+    
+    'If the required 3rd-party library isn't available, bail
+    If (Not Plugin_PDF.IsPDFiumAvailable()) Then Exit Function
     
     'From the header:
     ' "If the previous SDK call succeeded, the return value of this

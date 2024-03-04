@@ -144,6 +144,8 @@ Public Enum PDFium_ProcAddress
     FPDFBitmap_CreateEx
     FPDFBitmap_Destroy
     
+    FPDFPage_GetRotation
+    
     [last_address]
 End Enum
 
@@ -152,7 +154,7 @@ End Enum
     Private Const FPDF_GetPageCount = 0, FPDF_LoadPage = 0, FPDF_GetPageWidthF = 0, FPDF_GetPageWidth = 0, FPDF_GetPageHeightF = 0
     Private Const FPDF_GetPageHeight = 0, FPDF_GetPageBoundingBox = 0, FPDF_GetPageSizeByIndexF = 0, FPDF_GetPageSizeByIndex = 0
     Private Const FPDF_RenderPage = 0, FPDF_RenderPageBitmap = 0, FPDF_RenderPageBitmapWithMatrix = 0, FPDF_ClosePage = 0
-    Private Const FPDF_DeviceToPage = 0, FPDF_PageToDevice = 0, FPDFBitmap_CreateEx = 0
+    Private Const FPDF_DeviceToPage = 0, FPDF_PageToDevice = 0, FPDFBitmap_CreateEx = 0, FPDFPage_GetRotation = 0
 #End If
 
 'Child classes need to retrieve this proc list in order to efficiently interface with pdfium
@@ -236,6 +238,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(FPDF_PageToDevice) = GetProcAddress(m_LibHandle, "FPDF_PageToDevice")
         m_ProcAddresses(FPDFBitmap_CreateEx) = GetProcAddress(m_LibHandle, "FPDFBitmap_CreateEx")
         m_ProcAddresses(FPDFBitmap_Destroy) = GetProcAddress(m_LibHandle, "FPDFBitmap_Destroy")
+        m_ProcAddresses(FPDFPage_GetRotation) = GetProcAddress(m_LibHandle, "FPDFPage_GetRotation")
         
         'Initialize all module-level arrays
         ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer

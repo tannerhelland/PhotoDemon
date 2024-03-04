@@ -1486,9 +1486,18 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
     
 End Function
 
-Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False) As Boolean
+'Load a PDF file as a multi-layer image (typically one page per layer).  This function can also be used to load the first
+' page from a PDF (for preview purposes) - to enable this, set "previewOnly" to TRUE.
+'
+'This function may need to raise a UI to ask the user for PDF import settings (like page resolution).  To skip this
+' (during a batch process, for example), set the "noUI" parameter to TRUE.  When "previewOnly" is set to TRUE,
+' the "noUI" parameter will automatically be enabled as well.
+Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False, Optional ByVal noUI As Boolean = False) As Boolean
 
     LoadPDF = False
+    
+    'If the user requests "preview only" mode, set the "noUI" mode to match
+    If previewOnly Then noUI = True
     
     'pdPDF handles all the dirty work for us
     Dim cPDF As pdPDF
@@ -1515,36 +1524,85 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'If we don't have a valid, loaded PDF, exit immediately.
     If (Not LoadPDF) Then Exit Function
     
-    'If we're still here, a valid PDF exists and is ready for further processing.
-    
-    'Get the page count, then load up the first page
+    'Get the page count and validate it as > 0
     Dim numPages As Long
     numPages = cPDF.GetPageCount
     If (numPages <= 0) Then Exit Function
     If (Not cPDF.LoadPage(0)) Then Exit Function
     
-    'Eventually I'll need to provide a UI here, but for now, let's just try and load the whole damn thing.
-    Const PAGE_RESOLUTION_IN_DPI As Single = 72!
-    Dim docDPI As Single
-    docDPI = PAGE_RESOLUTION_IN_DPI
+    'If we're still here, a valid PDF exists and is ready for further processing.
     
-    'Retrieve the dimensions of the first page IN POINTS
+    'If a UI is allowed, prompt the user for import settings
+    Dim userAnswer As VbMsgBoxResult, userSettings As String
+    If (Not noUI) And (Not previewOnly) Then
+        
+        userAnswer = Dialogs.PromptImportPDF(cPDF, userSettings)
+        
+        'The user can cancel the import dialog; abandon the entire load process if this happens
+        If (userAnswer <> vbOK) Then
+            LoadPDF = False
+            Exit Function
+        End If
+        
+    End If
+    
+    'Prep a parser for any user settings set via the import dialog
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString userSettings
+    
+    'Retrieve user width/height and DPI settings
+    Dim userWidthPx As Long, userHeightPx As Long, userDPI As Single
+    userWidthPx = cSettings.GetLong("final-width-px", 0, True)
+    userHeightPx = cSettings.GetLong("final-height-px", 0, True)
+    userDPI = cSettings.GetSingle("final-dpi", 96!, True)
+    
+    'Failsafe against insane DPI values
+    If (userDPI <= 1!) Then userDPI = 1!
+    
+    'If the retrieval of user settings failed, use a default DPI and retrieve the embedded PDF dimensions
+    'As a failsafe, retrieve the dimensions of the first page IN POINTS.  (We can use this to generate
+    ' a default image size if retrieving user settings failed for some reason.)
     Dim baseImageWidth As Single, baseImageHeight As Single
     baseImageWidth = cPDF.GetPageWidthInPoints()
     baseImageHeight = cPDF.GetPageHeightInPoints()
     
-    'Use this to calculate a page size in pixels
-    Dim baseWidthInPixels As Long, baseHeightInPixels As Long
-    baseWidthInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageWidth, docDPI))
-    baseHeightInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageHeight, docDPI))
+    'TODO: what we probably want to do in the long-run is use the ratio of the first page's dimensions
+    ' against the user-selected dimensions as the guide for *each* page... because pages can have their
+    ' own dimensions!  So hard-setting each page to the same dimensions doesn't work.  (Of course, this
+    ' depends on what pages the user is importing too - if they import just *one* page vs *all* pages!)
     
-    'This will be the base size of the image.  Layers *may* be a different size.
+    'Use either the user settings, or the failsafe backup to calculate a page size IN PIXELS
+    Dim defaultWidthInPixels As Long, defaultHeightInPixels As Long
+    defaultWidthInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageWidth, userDPI))
+    defaultHeightInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageHeight, userDPI))
+    
+    Dim baseWidthInPixels As Long, baseHeightInPixels As Long
+    If (userWidthPx <= 0) Then
+        baseWidthInPixels = defaultWidthInPixels
+    Else
+        baseWidthInPixels = userWidthPx
+    End If
+    If (userHeightPx <= 0) Then
+        baseHeightInPixels = defaultHeightInPixels
+    Else
+        baseHeightInPixels = userHeightPx
+    End If
+    
+    'We now want to determine a ratio between the page size the user selected, and the underlying
+    ' page dimensions.  How we calculate this ratio doesn't really matter, it just needs to be consistent
+    ' for *all* imported pages - because, for example, the user could choose to arbitrarily scale pages
+    ' to half their width, but their original height - and we need to honor this for pages that are
+    ' rotated or at a different size than the base page, too!
+    Dim hRatio As Single, vRatio As Single
+    hRatio = CDbl(baseWidthInPixels) / CDbl(defaultWidthInPixels)
+    vRatio = CDbl(baseHeightInPixels) / CDbl(defaultHeightInPixels)
     
     'Initialize the target image with basic properties
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     dstImage.Width = baseWidthInPixels
     dstImage.Height = baseHeightInPixels
-    dstImage.SetDPI docDPI, docDPI
+    dstImage.SetDPI userDPI, userDPI
     
     'Figure out which pages the user actually wants loaded
     Dim listOfPages As pdStack
@@ -1595,8 +1653,12 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             
             'Convert the default page dimensions (in points) to pixels
             Dim thisPageWidthPx As Long, thisPageHeightPx As Long
-            thisPageWidthPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageWidthPts, docDPI))
-            thisPageHeightPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageHeightPts, docDPI))
+            thisPageWidthPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageWidthPts, userDPI))
+            thisPageHeightPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageHeightPts, userDPI))
+            
+            'Multiply the final size (in pixels) by the ratio calculated from the user's import settings
+            thisPageWidthPx = Int(thisPageWidthPx * hRatio + 0.5)
+            thisPageHeightPx = Int(thisPageHeightPx * vRatio + 0.5)
             
             'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
             Dim tmpDIB As pdDIB
@@ -1614,8 +1676,6 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 bkOpacity = 0
             End If
             tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, bkColor, bkOpacity
-            
-            'Debug.Print thisPageWidthPx, thisPageHeightPx
             
             'Render the page contents onto the target DIB
             ' (TODO: expose rendering options to the user)
