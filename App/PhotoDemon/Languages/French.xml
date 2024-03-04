@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.612</langversion>
+<langversion>6.7.613</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Exporter l'image</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Exporter les calques</translation>
 </phrase>
 
 <phrase>
@@ -4905,12 +4905,12 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>Image en fichier</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Calques en fichiers</translation>
 </phrase>
 
 <phrase>
@@ -10225,7 +10225,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>compression level</original>
-<translation>Taux de compression</translation>
+<translation>niveau de compression</translation>
 </phrase>
 
 <!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10694,7 +10694,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>image compression ratio</original>
-<translation>Rapport de compression d'image</translation>
+<translation>taux de compression d'image</translation>
 </phrase>
 
 <phrase>
@@ -10803,7 +10803,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>force de compression</translation>
 </phrase>
 
 <phrase>
@@ -10818,12 +10818,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>sans perte</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>avec perte</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13329,7 +13329,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>quand "Enregistrer sous" est utilisé</translation>
 </phrase>
 
 <phrase>
@@ -13683,17 +13683,17 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>suggérer le nom de fichier courant (comportement par defaut)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>suggérer une nouvelle copie tel "nom de fichier (2).jpg (comportement sûr)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. Photodemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
 </phrase>
 
 <phrase>
@@ -13982,7 +13982,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>incompatible avec Windows XP</translation>
 </phrase>
 
 <phrase>
@@ -14012,7 +14012,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>une image JPEG XL</translation>
 </phrase>
 
 <phrase>
@@ -14108,42 +14108,42 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>calques à exporter</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>dossier de destination</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>type de fichier</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Export du calque %1 sur %2</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>tous les calques</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>calques visibles</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>calque courant</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>nom du calque</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
