@@ -3,8 +3,8 @@ Attribute VB_Name = "Units"
 'Unit Conversion Functions
 'Copyright 2014-2024 by Tanner Helland
 'Created: 10/February/14
-'Last updated: 30/December/14
-'Last update: harden code against potential divide-by-zero errors
+'Last updated: 04/March/24
+'Last update: helper function to retrieve OS user preference for metric vs imperial units
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until February '14.  This module is now used to store all the random bits of unit conversion math required by the
@@ -42,6 +42,15 @@ End Enum
 #If False Then
     Private Const ru_PPI = 0, ru_PPCM = 1
 #End If
+
+'Used to query the OS to determine if metric or imperial units should be the default
+Private Const LOCALE_USER_DEFAULT As Long = &H400&
+
+'From MSDN:
+' System of measurement. The maximum number of characters allowed for this string is two, including a terminating null character.
+' This value is 0 if the metric system (Systéme International d'Units, or S.I.) is used, and 1 if the United States system is used.
+Private Const LOCALE_IMEASURE As Long = 13&
+Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
@@ -183,4 +192,22 @@ End Function
 
 Public Function GetNumOfAvailableUnits() As Long
     GetNumOfAvailableUnits = MU_MAX
+End Function
+
+'Returns TRUE if the current user's locale settings prefer METRIC (not imperial)
+Public Function LocaleUsesMetric() As Boolean
+    
+    'Because GetLocaleInfo only returns a 1 or a 0 for metric vs non-metric, we don't need a large buffer.
+    Dim sBuffer As String, sRet As String
+    sBuffer = String$(4, 0)
+    
+    Const LOCALE_IMEASURE As Long = &HD&
+    sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, StrPtr(sBuffer), Len(sBuffer))
+    
+    If (sRet > 0) Then
+        LocaleUsesMetric = (CLng(Left$(sBuffer, sRet - 1)) = 0)
+    Else
+        LocaleUsesMetric = False
+    End If
+    
 End Function

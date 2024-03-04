@@ -382,7 +382,7 @@ End Function
 
 'Given a locale information constant, return a corresponding string
 Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
-    Dim sBuffer As String, sRet As String
+    Dim sBuffer As String, sRet As Long
     sBuffer = String$(256, 0)
     sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, lInfo, StrPtr(sBuffer), Len(sBuffer))
     If (sRet > 0) Then
