@@ -3,8 +3,8 @@ Attribute VB_Name = "Dialogs"
 'Custom Dialog Interface
 'Copyright 2012-2024 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 08/November/22
-'Last update: small wrapper for JPEG XL export
+'Last updated: 01/March/24
+'Last update: small wrapper for PDF import settings
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -755,31 +755,44 @@ End Function
 'Note: this function also works with WMF files
 Public Function PromptImportEMF(ByVal hGdipImage As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
     
-    Load dialog_SVGImport
-    dialog_SVGImport.ShowDialog 0&, origWidth, origHeight, hGdipImage
+    Load dialog_ImportSVG
+    dialog_ImportSVG.ShowDialog 0&, origWidth, origHeight, hGdipImage
     
-    PromptImportEMF = dialog_SVGImport.GetDialogResult
-    dstWidth = dialog_SVGImport.GetUserWidth
-    dstHeight = dialog_SVGImport.GetUserHeight
-    dstDPI = dialog_SVGImport.GetUserDPI
+    PromptImportEMF = dialog_ImportSVG.GetDialogResult
+    dstWidth = dialog_ImportSVG.GetUserWidth
+    dstHeight = dialog_ImportSVG.GetUserHeight
+    dstDPI = dialog_ImportSVG.GetUserDPI
     
-    Unload dialog_SVGImport
-    Set dialog_SVGImport = Nothing
+    Unload dialog_ImportSVG
+    Set dialog_ImportSVG = Nothing
     
 End Function
 
 Public Function PromptImportSVG(ByVal hResvgTree As Long, ByVal origWidth As Long, ByVal origHeight As Long, ByRef dstWidth As Long, ByRef dstHeight As Long, ByRef dstDPI As Long) As VbMsgBoxResult
     
-    Load dialog_SVGImport
-    dialog_SVGImport.ShowDialog hResvgTree, origWidth, origHeight, 0&
+    Load dialog_ImportSVG
+    dialog_ImportSVG.ShowDialog hResvgTree, origWidth, origHeight, 0&
     
-    PromptImportSVG = dialog_SVGImport.GetDialogResult
-    dstWidth = dialog_SVGImport.GetUserWidth
-    dstHeight = dialog_SVGImport.GetUserHeight
-    dstDPI = dialog_SVGImport.GetUserDPI
+    PromptImportSVG = dialog_ImportSVG.GetDialogResult
+    dstWidth = dialog_ImportSVG.GetUserWidth
+    dstHeight = dialog_ImportSVG.GetUserHeight
+    dstDPI = dialog_ImportSVG.GetUserDPI
     
-    Unload dialog_SVGImport
-    Set dialog_SVGImport = Nothing
+    Unload dialog_ImportSVG
+    Set dialog_ImportSVG = Nothing
+    
+End Function
+
+Public Function PromptImportPDF(ByRef cPDF As pdPDF, ByRef dstSettings As String) As VbMsgBoxResult
+
+    Load dialog_ImportPDF
+    dialog_ImportPDF.ShowDialog cPDF
+    
+    PromptImportPDF = dialog_ImportPDF.GetDialogResult()
+    dstSettings = dialog_ImportPDF.GetDialogParamString()
+    
+    Unload dialog_ImportPDF
+    Set dialog_ImportPDF = Nothing
     
 End Function
 

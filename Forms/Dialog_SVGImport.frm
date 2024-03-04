@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form dialog_SVGImport 
+Begin VB.Form dialog_ImportSVG 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -54,7 +54,7 @@ Begin VB.Form dialog_SVGImport
       DontAutoUnloadParent=   -1  'True
    End
 End
-Attribute VB_Name = "dialog_SVGImport"
+Attribute VB_Name = "dialog_ImportSVG"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
