@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Generic (int) Stack
 'Copyright 2015-2024 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 22/March/18
-'Last update: split off from pdStringStack, because stuffing ints into strings is idiotic
+'Last updated: 08/March/24
+'Last update: various helper functions to help with page selection during PDF import
 '
 'Per its name, this class provides a simple interface to a stack comprised of ints.
 '
@@ -159,6 +159,62 @@ FailsafeReset:
     If (newStackSize <= 0) Then newStackSize = INIT_STACK_SIZE
     ReDim m_Ints(0 To newStackSize - 1) As Long
     
+End Sub
+
+'Reverse the order of items in the stack.  PD uses this when importing PDFs as the user can choose to
+' swap page order (putting the first page at the *top* of the stack instead of the traditional bottom).
+Friend Sub ReverseStack()
+    
+    If (m_NumOfInts > 0) Then
+        
+        Dim ubStack As Long
+        ubStack = m_NumOfInts - 1
+        
+        Dim i As Long
+        For i = 0 To (m_NumOfInts \ 2) - 1
+            SwapIndices i, ubStack - i
+        Next i
+        
+    End If
+    
+End Sub
+
+'Sort stack entries from least to most (if sortAscending is TRUE)
+Friend Sub SortStackByValue(Optional ByVal sortAscending As Boolean = True)
+
+    If (m_NumOfInts > 1) Then
+    
+        'Given PD's standard use-case for this function (PDF import, at present), the existing stack order
+        ' is typically already sorted.  This saves us from needing an elaborate search algorithm;
+        ' instead, a simple in-place bubble sort is predictable and good enough.
+        Dim i As Long, j As Long, loopBound As Long
+        loopBound = m_NumOfInts - 1
+        
+        For i = 0 To loopBound
+            For j = i To loopBound
+                
+                'Compare two entries, and if the larger one precedes the smaller one, swap them
+                If sortAscending Then
+                    If (m_Ints(j) < m_Ints(i)) Then SwapIndices i, j
+                    
+                'An opposite check is used for descending order.
+                Else
+                    If (m_Ints(j) > m_Ints(i)) Then SwapIndices i, j
+                End If
+                
+            Next j
+        Next i
+        
+    End If
+
+End Sub
+
+'Helper for sort functions.
+Private Sub SwapIndices(ByVal idx1 As Long, ByVal idx2 As Long)
+    Dim tmpLong As Long
+    tmpLong = m_Ints(idx2)
+    m_Ints(idx2) = m_Ints(idx1)
+    m_Ints(idx1) = tmpLong
 End Sub
 
 Private Sub Class_Initialize()
