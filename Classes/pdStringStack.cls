@@ -166,15 +166,15 @@ Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
         
         'Loop through all entries in the stack, sorting them as we go
         For i = 0 To loopBound
-            For j = 0 To loopBound
+            For j = i To loopBound
                 
                 'Compare two entries, and if the longer one precedes the shorter one, swap them
                 If sortAscending Then
-                    If LenB(m_Strings(i)) < LenB(m_Strings(j)) Then SwapIndices i, j
+                    If LenB(m_Strings(j)) < LenB(m_Strings(i)) Then SwapIndices i, j
                 
                 'An opposite check is used for descending order.
                 Else
-                    If LenB(m_Strings(i)) > LenB(m_Strings(j)) Then SwapIndices i, j
+                    If LenB(m_Strings(j)) > LenB(m_Strings(i)) Then SwapIndices i, j
                 End If
                 
             Next j
