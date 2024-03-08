@@ -1604,6 +1604,8 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     dstImage.Height = baseHeightInPixels
     dstImage.SetDPI userDPI, userDPI
     
+    Dim i As Long
+    
     'Figure out which pages the user actually wants loaded
     Dim listOfPages As pdStack
     Set listOfPages = New pdStack
@@ -1611,13 +1613,52 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         listOfPages.AddInt 0
     Else
         
+        'Retrieve the list of pages from the incoming param string
+        Dim strPagesToImport As String
+        strPagesToImport = cSettings.GetString("import-pages", "all", True)
+        
+        'Note that the pages to be imported are loaded into a stack, and the stack is popped in
+        ' *REVERSE* order - so we deliberately add pages to the stack in reverse order, to ensure
+        ' correct order when popped.
+        
+        'Add all pages
+        If Strings.StringsEqual(strPagesToImport, "all", True) Then
+            For i = cPDF.GetPageCount() - 1 To 0 Step -1
+                listOfPages.AddInt i
+            Next i
+        
+        'Add only the first pages
+        ElseIf Strings.StringsEqual(strPagesToImport, "first", True) Then
+            listOfPages.AddInt 0
+        
+        'Custom page range
+        ElseIf Strings.StringsEqual(strPagesToImport, "custom", True) Then
+            
+            'Retrieve the list of pages from a separate custom element, and ask the converter to change
+            ' numbers from base-1 to base-0
+            If TextSupport.ConvertPageRangeToStack(cSettings.GetString("page-list"), listOfPages, -1) Then
+                
+                'Reverse order so that the *lowest* page number comes *last*
+                listOfPages.ReverseStack
+                
+            'List is bad; default to first page only
+            Else
+                listOfPages.ResetStack
+                listOfPages.AddInt 0
+            End If
+            
+        'Bad param string; default to first page only
+        Else
+            listOfPages.AddInt 0
+        End If
+        
         'TODO: allow reversing page order
-        Dim i As Long
-        For i = cPDF.GetPageCount() - 1 To 0 Step -1
-            listOfPages.AddInt i
-        Next i
         
     End If
+    
+    'Before continuing, ensure the list of pages is sorted from most to least (because we pop pages off
+    ' the stack in reverse order)
+    listOfPages.SortStackByValue False
     
     'If this is *not* a preview (or batch process), prep some UI bits
     Dim updateUI As Boolean

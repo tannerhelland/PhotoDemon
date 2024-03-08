@@ -25,6 +25,25 @@ Begin VB.Form dialog_ImportPDF
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   890
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox txtPageRange 
+      Height          =   375
+      Left            =   4920
+      TabIndex        =   4
+      Top             =   4680
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdButtonStrip btsPages 
+      Height          =   975
+      Left            =   4800
+      TabIndex        =   3
+      Top             =   3600
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   1720
+      Caption         =   "pages"
+   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
       Left            =   4800
@@ -36,13 +55,13 @@ Begin VB.Form dialog_ImportPDF
       FontSize        =   12
    End
    Begin PhotoDemon.pdDropDown cboPreview 
-      Height          =   735
+      Height          =   615
       Left            =   120
       TabIndex        =   2
-      Top             =   4560
+      Top             =   4680
       Width           =   4455
       _ExtentX        =   7858
-      _ExtentY        =   1296
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdResize rszUI 
       Height          =   2895
@@ -55,12 +74,12 @@ Begin VB.Form dialog_ImportPDF
       DefaultToRealWorldUnits=   -1  'True
    End
    Begin PhotoDemon.pdPictureBox picPreview 
-      Height          =   4335
+      Height          =   4455
       Left            =   120
       Top             =   120
       Width           =   4455
       _ExtentX        =   7858
-      _ExtentY        =   7646
+      _ExtentY        =   7858
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -83,12 +102,12 @@ Attribute VB_Exposed = False
 'PDF Import Dialog
 'Copyright 2024-2024 by Tanner Helland
 'Created: 29/February/24
-'Last updated: 29/February/24
+'Last updated: 08/March/24
 'Last update: use the SVG import dialog as the basis for a similar(ish) PDF import dialog
 '
 'Like Photoshop and GIMP (and probably others), PhotoDemon allows users to set their own PDF resolution,
-' image size, and various other PDF-specific features at import-time.  This dialog provides a UI for
-' those settings.
+' image size, pages-to-import, and various other PDF-specific features at import-time.  This dialog
+' provides a UI for any custom settings.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -114,7 +133,7 @@ Private m_baseImageWidthInPx As Long, m_baseImageHeightInPx As Long
 
 'This dialog automatically redraws the preview window as necessary.  To suspend this behavior
 ' (while prepping the dialog for first show, for example) set this to TRUE.
-Private m_suspendRedraws As Boolean
+Private m_SuspendRedraws As Boolean
 
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
@@ -131,13 +150,54 @@ Public Function GetDialogParamString() As String
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
+    
+    'Dimensions
     cParams.AddParam "final-width-px", finalWidthPx, True
     cParams.AddParam "final-height-px", finalHeightPx, True
     cParams.AddParam "final-dpi", finalDPI, True
     
+    'Pages to import
+    If (btsPages.ListIndex = 0) Then
+        cParams.AddParam "import-pages", "all", True, True
+    ElseIf (btsPages.ListIndex = 1) Then
+        cParams.AddParam "import-pages", "first", True, True
+    Else
+    
+        cParams.AddParam "import-pages", "custom", True, True
+        
+        'Ensure the page range can be parsed and that at least one valid page is listed
+        Dim listOfPages As pdStack
+        Set listOfPages = New pdStack
+        If TextSupport.ConvertPageRangeToStack(txtPageRange.Text, listOfPages) Then
+            
+            Dim listOfPagesAsText As pdString
+            Set listOfPagesAsText = New pdString
+            
+            Dim i As Long, idxLast As Long
+            idxLast = listOfPages.GetNumOfInts - 1
+            For i = 0 To listOfPages.GetNumOfInts - 1
+                listOfPagesAsText.Append listOfPages.GetInt(i)
+                If (i < idxLast) Then listOfPagesAsText.Append ","
+            Next i
+            
+            cParams.AddParam "page-list", listOfPagesAsText.ToString(), True
+            
+        End If
+        
+    End If
+    
     GetDialogParamString = cParams.GetParamString()
     
 End Function
+
+Private Sub btsPages_Click(ByVal buttonIndex As Long)
+    UpdatePagesUI
+End Sub
+
+'When the user selects "custom page range", provide a text box where they can specify the desired range
+Private Sub UpdatePagesUI()
+    txtPageRange.Visible = (btsPages.ListIndex = 2)
+End Sub
 
 Private Sub cboPreview_Click()
     UpdatePreview
@@ -153,6 +213,53 @@ End Sub
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
     Me.Visible = False
+End Sub
+
+Private Sub cmdBar_ExtraValidations()
+    
+    'If the user wants to specify a custom page range, ensure their text passes validation
+    If (btsPages.ListIndex = 2) Then
+        
+        Dim listOfPages As pdStack
+        If (Not TextSupport.ConvertPageRangeToStack(txtPageRange.Text, listOfPages)) Then
+            PDMsgBox "The range ""%1"" is not valid.", vbExclamation Or vbOKOnly, "Error", txtPageRange.Text
+            cmdBar.ValidationFailed
+            txtPageRange.SetFocus
+            Exit Sub
+        
+        'The range is valid *textually speaking*, but it may include pages outside this PDF's range.
+        ' Check that next.
+        Else
+            
+            If (Not m_PDF Is Nothing) Then
+                
+                'Sort the list of pages from least-to-most
+                listOfPages.SortStackByValue True
+                
+                Dim idxFirst As Long, idxLast As Long
+                idxFirst = listOfPages.GetInt(0)
+                idxLast = listOfPages.GetInt(listOfPages.GetNumOfInts - 1)
+                
+                'The warning text is copied from PD's standard range warning in the TextSupport module;
+                ' it's not *ideal*, but it cuts down on unique text for my volunteer localizers.
+                If (Not TextSupport.EntryValid(idxFirst, 1, m_PDF.GetPageCount(), False, False)) Then
+                    PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", idxFirst, 1, m_PDF.GetPageCount()
+                    cmdBar.ValidationFailed
+                    txtPageRange.SetFocus
+                    Exit Sub
+                ElseIf (Not TextSupport.EntryValid(idxLast, 1, m_PDF.GetPageCount(), False, False)) Then
+                    PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", idxLast, 1, m_PDF.GetPageCount()
+                    cmdBar.ValidationFailed
+                    txtPageRange.SetFocus
+                    Exit Sub
+                End If
+                
+            End If
+            
+        End If
+    
+    End If
+    
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -180,6 +287,15 @@ Private Sub cmdBar_ReadCustomPresetData()
     'Do *not* remember the user's last page setting
     cboPreview.ListIndex = 0
     
+    'Do *not* remember the user's last custom page range
+    If (Not m_PDF Is Nothing) Then
+        If (m_PDF.GetPageCount > 1) Then
+            txtPageRange.Text = "1-" & m_PDF.GetPageCount
+        Else
+            txtPageRange.Text = "1"
+        End If
+    End If
+    
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -197,7 +313,7 @@ End Sub
 Private Sub Form_Load()
     
     'Do not allow previews until the form is fully loaded
-    m_suspendRedraws = True
+    m_SuspendRedraws = True
     
 End Sub
 
@@ -209,7 +325,7 @@ End Sub
 Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     
     'Do not provide any page previews until the load process is complete
-    m_suspendRedraws = True
+    m_SuspendRedraws = True
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_UserDialogAnswer = vbCancel
@@ -223,13 +339,25 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     
     'Populate the preview dropdown with all available pages
     cmdBar.RequestPresetNoLoad cboPreview
-    If (m_PDF.GetPageCount > 0) Then
-        Dim i As Long
-        For i = 0 To m_PDF.GetPageCount - 1
-            cboPreview.AddItem g_Language.TranslateMessage("Page %1", i + 1), i
-        Next i
+    If (Not m_PDF Is Nothing) Then
+        If (m_PDF.GetPageCount > 0) Then
+            Dim i As Long
+            For i = 0 To m_PDF.GetPageCount - 1
+                cboPreview.AddItem g_Language.TranslateMessage("Page %1", i + 1), i
+            Next i
+        End If
+        cboPreview.ListIndex = 0
     End If
-    cboPreview.ListIndex = 0
+    
+    'Allow the user to import first page / all pages / custom pages
+    Dim textAllPages As String
+    textAllPages = g_Language.TranslateMessage("all pages")
+    If (Not m_PDF Is Nothing) Then textAllPages = textAllPages & " " & g_Language.TranslateMessage("(%1 total)", m_PDF.GetPageCount())
+    btsPages.AddItem textAllPages, 0
+    btsPages.AddItem "first page only", 1
+    btsPages.AddItem "custom range", 2
+    btsPages.ListIndex = 0
+    UpdatePagesUI
     
     'PDFs supply their size in points.  We need to convert this to pixels to set a default size.
     
@@ -252,7 +380,7 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PDF")
     
     'Allow previews
-    m_suspendRedraws = False
+    m_SuspendRedraws = False
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -263,7 +391,7 @@ End Sub
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
-    If m_suspendRedraws Then Exit Sub
+    If m_SuspendRedraws Then Exit Sub
     
     Dim cSurface As pd2DSurface
     Set cSurface = New pd2DSurface
