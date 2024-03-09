@@ -1657,8 +1657,12 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     End If
     
     'Before continuing, ensure the list of pages is sorted from most to least (because we pop pages off
-    ' the stack in reverse order)
-    listOfPages.SortStackByValue False
+    ' the stack in reverse order), but note that the user can override this in the import UI
+    If cSettings.GetBool("reverse-pages", False, True) Then
+        listOfPages.SortStackByValue True
+    Else
+        listOfPages.SortStackByValue False
+    End If
     
     'If this is *not* a preview (or batch process), prep some UI bits
     Dim updateUI As Boolean

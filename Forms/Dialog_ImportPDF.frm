@@ -3,10 +3,10 @@ Begin VB.Form dialog_ImportPDF
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   ClientHeight    =   6165
+   ClientHeight    =   7485
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   13350
+   ClientWidth     =   13500
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,76 +21,181 @@ Begin VB.Form dialog_ImportPDF
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   411
+   ScaleHeight     =   499
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   890
+   ScaleWidth      =   900
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdTextBox txtPageRange 
-      Height          =   375
-      Left            =   4920
-      TabIndex        =   4
-      Top             =   4680
-      Width           =   8175
-      _ExtentX        =   14420
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdButtonStrip btsPages 
-      Height          =   975
+   Begin PhotoDemon.pdButtonStrip btsPanel 
+      Height          =   1095
       Left            =   4800
-      TabIndex        =   3
-      Top             =   3600
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   1720
-      Caption         =   "pages"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Left            =   4800
-      Top             =   120
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   661
-      Caption         =   "image size"
+      TabIndex        =   5
+      Top             =   1320
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   1931
+      Caption         =   "import settings"
       FontSize        =   12
    End
    Begin PhotoDemon.pdDropDown cboPreview 
-      Height          =   615
-      Left            =   120
-      TabIndex        =   2
-      Top             =   4680
-      Width           =   4455
-      _ExtentX        =   7858
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdResize rszUI 
-      Height          =   2895
-      Left            =   4800
+      Height          =   375
+      Left            =   240
       TabIndex        =   1
       Top             =   600
-      Width           =   8415
-      _ExtentX        =   14843
-      _ExtentY        =   6165
-      DefaultToRealWorldUnits=   -1  'True
+      Width           =   4335
+      _ExtentX        =   7646
+      _ExtentY        =   661
    End
    Begin PhotoDemon.pdPictureBox picPreview 
-      Height          =   4455
-      Left            =   120
-      Top             =   120
-      Width           =   4455
-      _ExtentX        =   7858
-      _ExtentY        =   7858
+      Height          =   5535
+      Left            =   240
+      Top             =   1080
+      Width           =   4335
+      _ExtentX        =   7646
+      _ExtentY        =   9763
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5415
-      Width           =   13350
-      _ExtentX        =   23548
+      Top             =   6735
+      Width           =   13500
+      _ExtentX        =   23813
       _ExtentY        =   1323
       DontAutoUnloadParent=   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Index           =   1
+      Left            =   4800
+      Top             =   120
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   661
+      Caption         =   "file information"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdLabel lblOriginal 
+      Height          =   345
+      Index           =   0
+      Left            =   4920
+      Top             =   510
+      Width           =   8415
+      _ExtentX        =   14843
+      _ExtentY        =   609
+      Caption         =   ""
+   End
+   Begin PhotoDemon.pdLabel lblOriginal 
+      Height          =   375
+      Index           =   1
+      Left            =   4920
+      Top             =   840
+      Width           =   8415
+      _ExtentX        =   14843
+      _ExtentY        =   661
+      Caption         =   ""
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Index           =   0
+      Left            =   120
+      Top             =   120
+      Width           =   4455
+      _ExtentX        =   9763
+      _ExtentY        =   661
+      Caption         =   "preview"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   4095
+      Index           =   0
+      Left            =   4800
+      Top             =   2520
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   7223
+      Begin PhotoDemon.pdResize rszUI 
+         Height          =   2895
+         Left            =   120
+         TabIndex        =   2
+         Top             =   600
+         Width           =   9255
+         _ExtentX        =   16325
+         _ExtentY        =   5106
+         DefaultToRealWorldUnits=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   2
+         Left            =   120
+         Top             =   120
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   661
+         Caption         =   "document size"
+         FontSize        =   12
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   4095
+      Index           =   1
+      Left            =   4800
+      Top             =   2520
+      Visible         =   0   'False
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   7223
+      Begin PhotoDemon.pdCheckBox chkPageOptions 
+         Height          =   375
+         Index           =   0
+         Left            =   360
+         TabIndex        =   6
+         Top             =   2160
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   661
+         Caption         =   "reverse page order"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdTextBox txtPageRange 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   3
+         Top             =   1200
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButtonStrip btsPages 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   4
+         Top             =   120
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   1720
+         Caption         =   "pages to import"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   3
+         Left            =   120
+         Top             =   1680
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   661
+         Caption         =   "other options"
+         FontSize        =   12
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   4095
+      Index           =   2
+      Left            =   4800
+      Top             =   2520
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   7223
    End
 End
 Attribute VB_Name = "dialog_ImportPDF"
@@ -186,6 +291,11 @@ Public Function GetDialogParamString() As String
         
     End If
     
+    'Other page settings
+    cParams.AddParam "reverse-pages", chkPageOptions(0).Value, True
+    
+    'Rendering settings TODO
+    
     GetDialogParamString = cParams.GetParamString()
     
 End Function
@@ -197,6 +307,10 @@ End Sub
 'When the user selects "custom page range", provide a text box where they can specify the desired range
 Private Sub UpdatePagesUI()
     txtPageRange.Visible = (btsPages.ListIndex = 2)
+End Sub
+
+Private Sub btsPanel_Click(ByVal buttonIndex As Long)
+    UpdatePanelVisibility
 End Sub
 
 Private Sub cboPreview_Click()
@@ -302,6 +416,7 @@ Private Sub cmdBar_ResetClick()
     cboPreview.ListIndex = 0
     rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
     rszUI.AspectRatioLock = True
+    chkPageOptions(0).Value = False
 End Sub
 
 Private Sub Form_Activate()
@@ -349,6 +464,13 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
         cboPreview.ListIndex = 0
     End If
     
+    'This dialog has too many import options, so it's split into separate panels
+    btsPanel.AddItem "size", 0
+    btsPanel.AddItem "pages", 1
+    btsPanel.AddItem "rendering", 2
+    btsPanel.ListIndex = 0
+    UpdatePanelVisibility
+    
     'Allow the user to import first page / all pages / custom pages
     Dim textAllPages As String
     textAllPages = g_Language.TranslateMessage("all pages")
@@ -362,21 +484,44 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     'PDFs supply their size in points.  We need to convert this to pixels to set a default size.
     
     'Retrieve the dimensions of the first page IN POINTS
-    m_baseImageWidthInPts = m_PDF.GetPageWidthInPoints()
-    m_baseImageHeightInPts = m_PDF.GetPageHeightInPoints()
-    
-    'Use this to calculate a page size IN PIXELS.
-    m_baseImageWidthInPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, m_baseImageWidthInPts, DEFAULT_DPI))
-    m_baseImageHeightInPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, m_baseImageHeightInPts, DEFAULT_DPI))
-    
-    'Use the pixel measurements to initialize the resize box.  Note that this uses a default DPI value,
-    ' but we can override this in a later step (after the command bar has initialized and retrieved the
-    ' user's last-used values).
-    rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
-    rszUI.AspectRatioLock = True
+    If (Not m_PDF Is Nothing) Then
+        
+        'Ensure a page is loaded
+        m_PDF.LoadPage 0
+        
+        m_baseImageWidthInPts = m_PDF.GetPageWidthInPoints()
+        m_baseImageHeightInPts = m_PDF.GetPageHeightInPoints()
+        
+        'Use the pts dimensions to calculate a page size IN PIXELS.
+        m_baseImageWidthInPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, m_baseImageWidthInPts, DEFAULT_DPI))
+        m_baseImageHeightInPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, m_baseImageHeightInPts, DEFAULT_DPI))
+        
+        'Use the pixel measurements to initialize the resize box.  Note that this uses a default DPI value,
+        ' but we can override this in a later step (after the command bar has initialized and retrieved the
+        ' user's last-used values).
+        rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
+        rszUI.AspectRatioLock = True
+        
+        'Because a source PDF object was supplied, we can display basic page count and dimension information.
+        lblOriginal(0).Caption = g_Language.TranslateMessage("%1 pages", m_PDF.GetPageCount())
+        
+        'If page size is uniform, display it alongsize page count.
+        If m_PDF.IsPageSizeUniform() Then
+            lblOriginal(1).Caption = g_Language.TranslateMessage("page size:  %1", GetPageSizeAsString(0))
+        Else
+            lblOriginal(1).Caption = g_Language.TranslateMessage("page size varies (first page is %1)", GetPageSizeAsString(0))
+        End If
+        
+    'If no source PDF was supplied, default to screen size and blank out the "original PDF settings" box
+    Else
+        rszUI.SetInitialDimensions g_Displays.GetDesktopWidth, g_Displays.GetDesktopHeight
+        rszUI.AspectRatioLock = False
+        lblOriginal(0).Caption = g_Language.TranslateMessage("unknown")
+        lblOriginal(1).Caption = vbNullString
+    End If
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PDF")
     
     'Allow previews
@@ -386,6 +531,36 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     ShowPDDialog vbModal, Me, True
     
 End Sub
+
+'Return a given page's dimensions as a nicely formatted string (e.g.'8.5" x 11"')
+Private Function GetPageSizeAsString(Optional ByVal idxPage As Long = 0) As String
+    
+    If (Not m_PDF Is Nothing) Then
+    
+        'Retrieve page dimensions from the PDF object
+        Dim pWidth As Single, pHeight As Single
+        pWidth = m_PDF.GetPageWidthInPoints_ByIndex(idxPage)
+        pHeight = m_PDF.GetPageHeightInPoints_ByIndex(idxPage)
+        
+        'Convert that dimension to inches and cm
+        Dim inchWidth As Single, inchHeight As Single
+        inchWidth = pWidth / 72!
+        inchHeight = pHeight / 72!
+        
+        Dim cmWidth As Single, cmHeight As Single
+        cmWidth = Units.GetCMFromInches(inchWidth)
+        cmHeight = Units.GetCMFromInches(inchHeight)
+        
+        'Format by current OS locale
+        If Units.LocaleUsesMetric() Then
+            GetPageSizeAsString = g_Language.TranslateMessage("%1 cm x %2 cm", Format$(cmWidth, "0.0#"), Format$(cmHeight, "0.0#"))
+        Else
+            GetPageSizeAsString = g_Language.TranslateMessage("%1"" x %2""", Format$(inchWidth, "0.0#"), Format$(inchHeight, "0.0#"))
+        End If
+        
+    End If
+    
+End Function
 
 'Update the preview window with a preview of the current PDF page
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
@@ -452,6 +627,15 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDark)
     PD2D.DrawRectangleI cSurface, cPen, 0, 0, ctlWidth - 1, ctlHeight - 1
 
+End Sub
+
+Private Sub UpdatePanelVisibility()
+    
+    Dim i As Long
+    For i = pnlOptions.lBound To pnlOptions.UBound
+        pnlOptions(i).Visible = (i = btsPanel.ListIndex)
+    Next i
+    
 End Sub
 
 Private Sub UpdatePreview()

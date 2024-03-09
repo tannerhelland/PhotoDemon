@@ -57,6 +57,11 @@ End Enum
     Private Const FPDF_ERR_SUCCESS = 0, FPDF_ERR_UNKNOWN = 1, FPDF_ERR_FILE = 2, FPDF_ERR_FORMAT = 3, FPDF_ERR_PASSWORD = 4, FPDF_ERR_SECURITY = 5, FPDF_ERR_PAGE = 6, FPDF_ERR_XFALOAD = 7, FPDF_ERR_XFALAYOUT = 8
 #End If
 
+Private Type PDFium_SizeF
+    pdfWidth As Single
+    pdfHeight As Single
+End Type
+
 'This library has very specific compiler needs in order to produce maximum perf code, so rather than
 ' recompile it, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
@@ -78,8 +83,9 @@ Private m_hPDF As Long
 ' just-validated source file.
 Private m_lastValidatedFile As String
 
-'If a page is active and loaded, this will be non-zero.  Pages need to be manually closed before
-' opening a new page or document.
+'If a page is active and loaded, this will be non-zero.  The open page (if any) needs to be manually closed
+' before opening a new page or changing documents.  (Note that pdfium itself allows unlimited open handles,
+' but that greatly complicates this class so it enforces serial page access.)
 Private m_hPage As Long
 
 'Close the currently open page.  This class handles this automatically, so you don't need to call this
@@ -139,7 +145,7 @@ Friend Function GetPageCount() As Long
     
 End Function
 
-'Retrieve page dimensions IN POINTS (1/72 inch)
+'Height of the currently open page, in points (1/72")
 Friend Function GetPageHeightInPoints() As Single
     
     Const FUNC_NAME As String = "GetPageHeightInPoints"
@@ -154,6 +160,15 @@ Friend Function GetPageHeightInPoints() As Single
     
 End Function
 
+'Height of any arbitrary page, in points (1/72").  Does not validate page index.
+Friend Function GetPageHeightInPoints_ByIndex(ByVal idxPage As Long) As Single
+    Dim tmpSizeF As PDFium_SizeF
+    If (CallCDeclW(FPDF_GetPageSizeByIndexF, vbLong, m_hPDF, idxPage, VarPtr(tmpSizeF)) <> 0) Then
+        GetPageHeightInPoints_ByIndex = tmpSizeF.pdfHeight
+    End If
+End Function
+
+'Orientation of the currently open page
 Friend Function GetPageOrientation() As PDFium_Orientation
     
     Const FUNC_NAME As String = "GetPageOrientation"
@@ -168,6 +183,7 @@ Friend Function GetPageOrientation() As PDFium_Orientation
     
 End Function
 
+'Width of the currently open page, in points (1/72")
 Friend Function GetPageWidthInPoints() As Single
 
     Const FUNC_NAME As String = "GetPageWidthInPoints"
@@ -180,6 +196,14 @@ Friend Function GetPageWidthInPoints() As Single
     
     GetPageWidthInPoints = CallCDeclW(FPDF_GetPageWidthF, vbSingle, m_hPage)
     
+End Function
+
+'Width of any arbitrary page, in points (1/72").  Does not validate page index.
+Friend Function GetPageWidthInPoints_ByIndex(ByVal idxPage As Long) As Single
+    Dim tmpSizeF As PDFium_SizeF
+    If (CallCDeclW(FPDF_GetPageSizeByIndexF, vbLong, m_hPDF, idxPage, VarPtr(tmpSizeF)) <> 0) Then
+        GetPageWidthInPoints_ByIndex = tmpSizeF.pdfWidth
+    End If
 End Function
 
 'Returns TRUE if this class holds a working PDF instance
@@ -213,6 +237,38 @@ Friend Function IsFilePDF(ByRef srcFile As String, Optional ByRef passwordRequir
     'The file failed validation; clear any relevant trackers
     Else
         m_lastValidatedFile = vbNullString
+    End If
+    
+End Function
+
+'If all pages in the PDF have the same page size, this will be TRUE; FALSE means pages have variable sizes.
+Friend Function IsPageSizeUniform() As Boolean
+    
+    'Assume uniformity.  We'll exit if we encounter a page with differing sizes.
+    IsPageSizeUniform = True
+    
+    'If there's only one page, the answer is always TRUE
+    If (Me.GetPageCount() <= 1) Then Exit Function
+    
+    'Pull the size of the first page
+    Dim firstPageSize As PDFium_SizeF, otherPageSize As PDFium_SizeF
+    
+    Dim apiSuccess As Long
+    apiSuccess = CallCDeclW(FPDF_GetPageSizeByIndexF, vbLong, m_hPDF, 0&, VarPtr(firstPageSize))
+    
+    If (apiSuccess <> 0) Then
+        
+        Dim i As Long
+        For i = 1 To Me.GetPageCount() - 1
+            apiSuccess = CallCDeclW(FPDF_GetPageSizeByIndexF, vbLong, m_hPDF, i, VarPtr(otherPageSize))
+            If (apiSuccess <> 0) Then
+                If (firstPageSize.pdfWidth <> otherPageSize.pdfWidth) Or (firstPageSize.pdfHeight <> otherPageSize.pdfHeight) Then
+                    IsPageSizeUniform = False
+                    Exit Function
+                End If
+            End If
+        Next i
+        
     End If
     
 End Function
