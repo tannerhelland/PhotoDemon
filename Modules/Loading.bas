@@ -262,6 +262,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_JXL)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PDF)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_WEBP) And (decoderUsed = id_libwebp))
@@ -650,6 +651,15 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             Set cORA = New pdOpenRaster
             If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
+        Case "PDF"
+            Dim cPDF As pdPDF
+            Set cPDF = New pdPDF
+            If cPDF.IsFilePDF(imagePath, False, True) Then
+                loadSuccessful = ImageImporter.LoadPDF(imagePath, tmpPDImage, targetDIB, True)
+                If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+            End If
+            cPDF.ClosePDF
             
         Case "PNG", "APNG"
             Dim cPNG As pdPNG
@@ -855,6 +865,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "resvg"
         Case id_libjxl
             GetDecoderName = "libjxl"
+        Case id_pdfium
+            GetDecoderName = "pdfium"
         Case Else
             GetDecoderName = "unknown?!"
     End Select

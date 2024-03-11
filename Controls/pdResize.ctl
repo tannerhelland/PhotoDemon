@@ -261,6 +261,9 @@ Private m_UnknownSizeMode As Boolean
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
 
+'If, at load-time, the owner wants us to default to inch/cm instead of pixels, this will be TRUE.
+Private m_DefaultToRealWorldUnits As Boolean
+
 'To minimize the frequency of raised _Change events, we only raise events if something has actually changed.
 Private m_LastImgWidthPixels As Long, m_LastImgHeightPixels As Long
 
@@ -297,6 +300,18 @@ End Function
 Public Function IsChildInControlArray(ByRef ctlChild As Object) As Boolean
     IsChildInControlArray = Not UserControl.Controls(ctlChild.Name) Is ctlChild
 End Function
+
+'In most instances (e.g. Image > Resize), this control should default to PIXELS as the measurement.
+' But in rare instances (e.g. Import > PDF), we want to default to real-world units (inch or cm,
+' with PD choosing the appropriate one for the current user locale).
+Public Property Get DefaultToRealWorldUnits() As Boolean
+    DefaultToRealWorldUnits = m_DefaultToRealWorldUnits
+End Property
+
+Public Property Let DefaultToRealWorldUnits(ByVal newValue As Boolean)
+    m_DefaultToRealWorldUnits = newValue
+    PropertyChanged "DefaultToRealWorldUnits"
+End Property
 
 'If the owner does not want percentage available as an option, set this property to TRUE.
 Public Property Get DisablePercentOption() As Boolean
@@ -700,9 +715,9 @@ Public Sub SetInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long,
     
     'Display the initial width/height
     m_unitSyncingSuspended = True
-    tudWidth = srcWidth
-    tudHeight = srcHeight
-    tudResolution = srcDPI
+    tudWidth.Value = srcWidth
+    tudHeight.Value = srcHeight
+    tudResolution.Value = srcDPI
     m_unitSyncingSuspended = False
     
     'Set the "previous unit of measurement" to equal pixels, as that's always how we begin
@@ -711,6 +726,17 @@ Public Sub SetInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long,
     'Set the "previous unit of resolution" to equal PPI, as that is PD's default
     m_previousUnitOfResolution = ru_PPI
     cmbResolution.ListIndex = ru_PPI
+    
+    'If the user wants this control to default to "real world units", swap to inches or cm (as appropriate)
+    If Me.DefaultToRealWorldUnits Then
+        If Units.LocaleUsesMetric() Then
+            UserControl.cmbWidthUnit.ListIndex = mu_Centimeters
+            UserControl.cmbHeightUnit.ListIndex = mu_Centimeters
+        Else
+            UserControl.cmbWidthUnit.ListIndex = mu_Inches
+            UserControl.cmbHeightUnit.ListIndex = mu_Inches
+        End If
+    End If
     
 End Sub
 
@@ -749,12 +775,14 @@ End Sub
 Private Sub UserControl_InitProperties()
     UnknownSizeMode = False
     DisablePercentOption = False
+    DefaultToRealWorldUnits = False
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         UnknownSizeMode = .ReadProperty("UnknownSizeMode", False)
         DisablePercentOption = .ReadProperty("DisablePercentOption", False)
+        DefaultToRealWorldUnits = .ReadProperty("DefaultToRealWorldUnits", False)
     End With
 End Sub
 
@@ -786,6 +814,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "UnknownSizeMode", m_UnknownSizeMode, False
         .WriteProperty "DisablePercentOption", m_PercentDisabled, False
+        .WriteProperty "DefaultToRealWorldUnits", m_DefaultToRealWorldUnits, False
     End With
 End Sub
 

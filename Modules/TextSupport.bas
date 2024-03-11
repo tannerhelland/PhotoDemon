@@ -3,9 +3,8 @@ Attribute VB_Name = "TextSupport"
 'Miscellaneous functions related to specialized text handling
 'Copyright 2000-2024 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 21/January/22
-'Last update: fix minor parsing issue in IncrementTrailingNumber().  (Parentheses without a preceding
-'             space character no longer forcibly replace the preceding character with a space.)
+'Last updated: 08/March/24
+'Last update: new page range parser (added as part of PDF import)
 '
 'PhotoDemon interacts with a *lot* of text input.  This module contains various bits of text support code,
 ' typically based around tasks like "validate a user's text input" or "convert arbitrary text input
@@ -81,6 +80,124 @@ Public Function CDblCustom(ByVal srcString As String) As Double
         CDblCustom = 0#
     End If
 
+End Function
+
+'Convert a page-range string (e.g. "1, 3, 5-10") to a stack of integers (e.g. "1, 3, 5, 6, 7, 8, 9, 10").
+' Returns TRUE if the page range was successfully parsed and at least one valid page exists;
+' FALSE if there were errors.  (You can use this return for basic input validation.)
+'
+'Because the user will supply pages on the range [1, n] but internally we often reference on the range [1, n-1]
+' you can pass -1 to the "modifyAllValuesByThis" parameter to subtract one from all pages found in the string
+Public Function ConvertPageRangeToStack(ByRef srcRange As String, ByRef dstStack As pdStack, Optional ByVal modifyAllValuesByThis As Long = 0) As Boolean
+    
+    If (dstStack Is Nothing) Then Set dstStack = New pdStack
+    
+    'Assume failure
+    ConvertPageRangeToStack = False
+    
+    'I want this function to be a little more resilient and user-friendly than various pre-built page range
+    ' parsers found online.
+    
+    'For example, users should be allowed to use spaces as delimiters (e.g. "1 3 5-10") and the parser
+    ' should handle that gracefully.
+    
+    'To simplify parsing, let's turn all commas into spaces (and standardize other whitespace chars)
+    ' and then tokenize against whitespace, ignoring everything that isn't a number or a dash/hyphen
+    Dim processedRange As String
+    processedRange = srcRange
+    If (InStr(1, processedRange, vbTab, vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, vbTab, " ", 1, -1, vbBinaryCompare)
+    If (InStr(1, processedRange, vbCr, vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, vbCr, " ", 1, -1, vbBinaryCompare)
+    If (InStr(1, processedRange, vbLf, vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, vbLf, " ", 1, -1, vbBinaryCompare)
+    If (InStr(1, processedRange, ",", vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, ",", " ", 1, -1, vbBinaryCompare)
+    If (InStr(1, processedRange, ";", vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, ";", " ", 1, -1, vbBinaryCompare)
+    
+    'Internationalized list separators follow
+    'https://en.wikipedia.org/wiki/Comma#Languages_other_than_Western_European
+    If (InStr(1, processedRange, ChrW(&H3001&), vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, ChrW(&H3001&), " ", 1, -1, vbBinaryCompare)
+    
+    'Ensure hyphens are separated by whitespace too
+    Const HYPHEN_CHAR As String = "-"
+    If (InStr(1, processedRange, HYPHEN_CHAR, vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, HYPHEN_CHAR, " - ", 1, -1, vbBinaryCompare)
+    
+    'Condense any/all double-plus space occurrences down to single spaces
+    Const DOUBLE_SPACE As String = "  ", SINGLE_SPACE As String = " "
+    Do While (InStr(1, processedRange, DOUBLE_SPACE, vbBinaryCompare) <> 0)
+        processedRange = Replace$(processedRange, DOUBLE_SPACE, SINGLE_SPACE, 1, -1, vbBinaryCompare)
+    Loop
+    
+    'With whitespace standardized, we can now split on spaces and have a nicely tokenized list of (hopefully)
+    ' just numbers and just hyphens.  This makes it trivial to process.
+    Dim listOfTokens() As String
+    listOfTokens = Split(processedRange, SINGLE_SPACE, -1, vbBinaryCompare)
+    
+    If (UBound(listOfTokens) >= LBound(listOfTokens)) Then
+        
+        Dim i As Long, j As Long, lastNumber As Long, nextNumber As Long
+        i = LBound(listOfTokens)
+        
+        Do While (i <= UBound(listOfTokens))
+            
+            'Add numbers directly to the destination stack (and remember this as the "last number encountered")
+            If IsNumeric(listOfTokens(i)) Then
+                lastNumber = CLng(listOfTokens(i))
+                dstStack.AddInt lastNumber + modifyAllValuesByThis
+            
+            'Hyphens denote ranges
+            ElseIf (listOfTokens(i) = HYPHEN_CHAR) Then
+                
+                'Ensure that another number follows this one.
+                If (i < UBound(listOfTokens)) Then
+                    
+                    'Ensure the next entry is numeric
+                    If IsNumeric(listOfTokens(i + 1)) Then
+                        
+                        nextNumber = CLng(listOfTokens(i + 1))
+                        
+                        'Ensure the next number is *larger* than the current one.
+                        If (nextNumber > lastNumber) Then
+                            
+                            'Add all numbers between the last number (exclusive) and this one to the stack
+                            For j = (lastNumber + 1) To nextNumber
+                                dstStack.AddInt j + modifyAllValuesByThis
+                            Next j
+                            
+                            'Increment the token pointer *to* the trailing number; the i + 1 at the end of this
+                            ' loop will increment it again, to ensure it points past this hyphen group
+                            i = i + 1
+                            
+                        '/number after hyphen is <= the number before the hyphen; failure!
+                        Else
+                            Exit Function
+                        End If
+                        
+                    '/next token isn't numeric; failure!
+                    Else
+                        Exit Function
+                    End If
+                    
+                '/no following token; failure!
+                Else
+                    Exit Function
+                End If
+            
+            'Any other entries are invalid; failure!
+            Else
+                Exit Function
+            End If
+            
+            'Advance to the next token
+            i = i + 1
+            
+        Loop
+        
+        'Return success if at least one valid page was found
+        ConvertPageRangeToStack = (dstStack.GetNumOfInts > 0)
+    
+    'No valid tokens found; abandon ship
+    Else
+        ConvertPageRangeToStack = False
+    End If
+    
 End Function
 
 'Because VB6's built-in Format$() function uses locale-specific decimal signs, and it exhibits stupid

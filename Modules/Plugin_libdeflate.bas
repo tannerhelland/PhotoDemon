@@ -72,8 +72,8 @@ Private m_libDeflateHandle As Long
 'Private Declare Function libdeflate_zlib_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 'Private Declare Function libdeflate_gzip_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 
-'zstd has very specific compiler needs in order to produce maximum perf code, so rather than
-' recompile myself, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
+'This library has very specific compiler needs in order to produce maximum perf code, so rather than
+' custom compile it, I use the official Windows binaries and wrap 'em using DispCallFunc.
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 

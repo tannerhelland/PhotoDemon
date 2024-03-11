@@ -308,13 +308,14 @@ Public Enum PD_ImageDecoder
     id_libwebp
     id_resvg
     id_libjxl
+    id_pdfium
 End Enum
 
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
     Private Const id_CBZParser = 0, id_HGTParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0
     Private Const id_PNGParser = 0, id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_XCFParser = 0
-    Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0, id_libjxl = 0
+    Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0, id_libjxl = 0, id_pdfium = 0
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
@@ -582,6 +583,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_XCF = 122      'GIMP XCF was added in 9.0
     PDIF_HGT = 123      'Shuttle Radar Topography Mission (SRTM) import was added in 10.0 nightly builds
     PDIF_JXL = 124      'JPEG XL was added in 10.0 nightly builds
+    PDIF_PDF = 125      'PDF was added in 10.0 nightly builds
     
 End Enum
 
@@ -595,6 +597,7 @@ End Enum
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116, PDIF_PSP = 117
     Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121, PDIF_XCF = 122, PDIF_HGT = 123, PDIF_JXL = 124
+    Const PDIF_PDF = 125
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

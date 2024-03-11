@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/October/22
-'Last update: finish up proper storage of JPEG XL original image settings
+'Last updated: 27/February/24
+'Last update: initial build of PDF import
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -996,7 +996,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'WebP was originally handled by FreeImage, but in v9.0 we switched to using libwebp directly
+    'WebP was originally handled by FreeImage, but in v9.0 I switched to using libwebp directly
     If (Not CascadeLoadGenericImage) And Plugin_WebP.IsWebPEnabled() Then
         If Plugin_WebP.IsWebP(srcFile) Then
             CascadeLoadGenericImage = LoadWebP(srcFile, dstImage, dstDIB)
@@ -1040,6 +1040,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If CascadeLoadGenericImage Then
             decoderUsed = id_HGTParser
             dstImage.SetOriginalFileFormat PDIF_HGT
+        End If
+    End If
+    
+    'PDF support was added in v10.0
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadPDF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_pdfium
+            dstImage.SetOriginalFileFormat PDIF_PDF
         End If
     End If
     
@@ -1474,6 +1483,314 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
+    
+End Function
+
+'Load a PDF file as a multi-layer image (typically one page per layer).  This function can also be used to load the first
+' page from a PDF (for preview purposes) - to enable this, set "previewOnly" to TRUE.
+'
+'This function may need to raise a UI to ask the user for PDF import settings (like page resolution).  To skip this
+' (during a batch process, for example), set the "noUI" parameter to TRUE.  When "previewOnly" is set to TRUE,
+' the "noUI" parameter will automatically be enabled as well.
+Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False, Optional ByVal noUI As Boolean = False) As Boolean
+
+    LoadPDF = False
+    
+    'If the user requests "preview only" mode, set the "noUI" mode to match
+    If previewOnly Then noUI = True
+    
+    'pdPDF handles all the dirty work for us
+    Dim cPDF As pdPDF
+    Set cPDF = New pdPDF
+    
+    'Validate the potential PDF file
+    Dim passwordRequired As Boolean
+    LoadPDF = cPDF.IsFilePDF(srcFile, passwordRequired, True)
+    
+    'If a password is required, ask for it now
+    Dim pdfPassword As String
+    If (LoadPDF And passwordRequired) Then
+        'TODO: retrieve password and attempt load again
+        'LoadPDF = cPDF.LoadPDFFromFile(srcFile, True, pdfPassword)
+    Else
+        pdfPassword = vbNullString
+        LoadPDF = cPDF.LoadPDFFromFile(srcFile, False, pdfPassword)
+    End If
+    
+    'In the future, more complex validation could be performed here, but for now,
+    ' let's just double-confirm that the PDF object is happy with the loaded PDF.
+    If LoadPDF Then LoadPDF = cPDF.HasPDF()
+    
+    'If we don't have a valid, loaded PDF, exit immediately.
+    If (Not LoadPDF) Then Exit Function
+    
+    'Get the page count and validate it as > 0
+    Dim numPages As Long
+    numPages = cPDF.GetPageCount
+    If (numPages <= 0) Then Exit Function
+    If (Not cPDF.LoadPage(0)) Then Exit Function
+    
+    'If we're still here, a valid PDF exists and is ready for further processing.
+    
+    'If a UI is allowed, prompt the user for import settings
+    Dim userAnswer As VbMsgBoxResult, userSettings As String
+    If (Not noUI) And (Not previewOnly) Then
+        
+        userAnswer = Dialogs.PromptImportPDF(cPDF, userSettings)
+        
+        'The user can cancel the import dialog; abandon the entire load process if this happens
+        If (userAnswer <> vbOK) Then
+            LoadPDF = False
+            Exit Function
+        End If
+        
+    End If
+    
+    'Prep a parser for any user settings set via the import dialog
+    Dim cSettings As pdSerialize
+    Set cSettings = New pdSerialize
+    cSettings.SetParamString userSettings
+    
+    'Retrieve user width/height and DPI settings
+    Dim userWidthPx As Long, userHeightPx As Long, userDPI As Single
+    userWidthPx = cSettings.GetLong("final-width-px", 0, True)
+    userHeightPx = cSettings.GetLong("final-height-px", 0, True)
+    userDPI = cSettings.GetSingle("final-dpi", 96!, True)
+    
+    'Failsafe against insane DPI values
+    If (userDPI <= 1!) Then userDPI = 1!
+    
+    'If the retrieval of user settings failed, use a default DPI and retrieve the embedded PDF dimensions
+    'As a failsafe, retrieve the dimensions of the first page IN POINTS.  (We can use this to generate
+    ' a default image size if retrieving user settings failed for some reason.)
+    Dim baseImageWidth As Single, baseImageHeight As Single
+    baseImageWidth = cPDF.GetPageWidthInPoints()
+    baseImageHeight = cPDF.GetPageHeightInPoints()
+    
+    'Use either the user settings, or the failsafe backup to calculate a page size IN PIXELS
+    Dim defaultWidthInPixels As Long, defaultHeightInPixels As Long
+    defaultWidthInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageWidth, userDPI))
+    defaultHeightInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageHeight, userDPI))
+    
+    Dim baseWidthInPixels As Long, baseHeightInPixels As Long
+    If (userWidthPx <= 0) Then
+        baseWidthInPixels = defaultWidthInPixels
+    Else
+        baseWidthInPixels = userWidthPx
+    End If
+    If (userHeightPx <= 0) Then
+        baseHeightInPixels = defaultHeightInPixels
+    Else
+        baseHeightInPixels = userHeightPx
+    End If
+    
+    'We now want to determine a ratio between the page size the user selected, and the underlying
+    ' page dimensions.  How we calculate this ratio doesn't really matter, it just needs to be consistent
+    ' for *all* imported pages - because, for example, the user could choose to arbitrarily scale pages
+    ' to half their width, but their original height - and we need to honor this for pages that are
+    ' rotated or at a different size than the base page, too!
+    Dim hRatio As Single, vRatio As Single
+    hRatio = CDbl(baseWidthInPixels) / CDbl(defaultWidthInPixels)
+    vRatio = CDbl(baseHeightInPixels) / CDbl(defaultHeightInPixels)
+    
+    'Initialize the target image with basic properties
+    If (dstImage Is Nothing) Then Set dstImage = New pdImage
+    dstImage.Width = baseWidthInPixels
+    dstImage.Height = baseHeightInPixels
+    dstImage.SetDPI userDPI, userDPI
+    
+    Dim i As Long
+    
+    'Figure out which pages the user actually wants loaded
+    Dim listOfPages As pdStack
+    Set listOfPages = New pdStack
+    
+    If previewOnly Then
+        listOfPages.AddInt 0
+    Else
+        
+        'Retrieve the list of pages from the incoming param string
+        Dim strPagesToImport As String
+        strPagesToImport = cSettings.GetString("import-pages", "all", True)
+        
+        'Note that the pages to be imported are loaded into a stack, and the stack is popped in
+        ' *REVERSE* order - so we deliberately add pages to the stack in reverse order, to ensure
+        ' correct order when popped.
+        
+        'Add all pages
+        If Strings.StringsEqual(strPagesToImport, "all", True) Then
+            For i = cPDF.GetPageCount() - 1 To 0 Step -1
+                listOfPages.AddInt i
+            Next i
+        
+        'Add only the first pages
+        ElseIf Strings.StringsEqual(strPagesToImport, "first", True) Then
+            listOfPages.AddInt 0
+        
+        'Custom page range
+        ElseIf Strings.StringsEqual(strPagesToImport, "custom", True) Then
+            
+            'Retrieve the list of pages from a separate custom element, and ask the converter to change
+            ' numbers from base-1 to base-0
+            If TextSupport.ConvertPageRangeToStack(cSettings.GetString("page-list"), listOfPages, -1) Then
+                
+                'Reverse order so that the *lowest* page number comes *last*
+                listOfPages.ReverseStack
+                
+            'List is bad; default to first page only
+            Else
+                listOfPages.ResetStack
+                listOfPages.AddInt 0
+            End If
+            
+        'Bad param string; default to first page only
+        Else
+            listOfPages.AddInt 0
+        End If
+        
+    End If
+    
+    'Before continuing, ensure the list of pages is sorted from most to least (because we pop pages off
+    ' the stack in reverse order), but note that the user can override this in the import UI
+    If cSettings.GetBool("reverse-pages", False, True) Then
+        listOfPages.SortStackByValue True
+    Else
+        listOfPages.SortStackByValue False
+    End If
+    
+    'Cache background color and/or transparency settings in advance (so we don't have to dip into the
+    ' settings object in the inner loop)
+    Dim bkColor As Long, bkOpaque As Boolean, bkOpacity As Long
+    bkOpaque = cSettings.GetBool("background-solid", True, True)
+    bkColor = cSettings.GetLong("background-color", RGB(255, 255, 255), True)
+    
+    'Other render settings are supplied to pdfium as flags
+    Dim renderFlags As PDFium_RenderOptions: renderFlags = 0
+    
+    'Antialias for displays, printer, or none
+    Select Case cSettings.GetLong("antialiasing", 0, True)
+        Case 0
+            renderFlags = renderFlags = FPDF_LCD_TEXT
+        Case 1
+            renderFlags = FPDF_PRINTING
+        Case Else
+            renderFlags = FPDF_RENDER_NO_SMOOTHIMAGE Or FPDF_RENDER_NO_SMOOTHPATH Or FPDF_RENDER_NO_SMOOTHTEXT
+    End Select
+    
+    If cSettings.GetBool("annotations", False, True) Then renderFlags = renderFlags Or FPDF_ANNOT
+    
+    'If this is *not* a preview (or batch process), prep some UI bits
+    Dim updateUI As Boolean
+    updateUI = (Not previewOnly) And (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK)
+    
+    Dim numPagesTotal
+    numPagesTotal = listOfPages.GetNumOfInts()
+    
+    If updateUI Then
+        ProgressBars.SetProgBarMax numPagesTotal
+        ProgressBars.SetProgBarVal 0
+    End If
+    
+    'Time to start iterating layers!
+    Dim idxPage As Long, numPagesProcessed As Long
+    numPagesProcessed = 0
+    
+    Do While listOfPages.PopInt(idxPage)
+        
+        numPagesProcessed = numPagesProcessed + 1
+        
+        If updateUI Then
+            ProgressBars.SetProgBarVal numPagesProcessed
+            Message "Loading page %1 of %2...", CStr(numPagesProcessed), numPagesTotal, "DONOTLOG"
+        End If
+        
+        'Size can vary by page and bounding box.  Calculate a size for *this* page.
+        Dim thisPageWidthPts As Single, thisPageHeightPts As Single
+        If cPDF.LoadPage(idxPage) Then
+            
+            thisPageWidthPts = cPDF.GetPageWidthInPoints()
+            thisPageHeightPts = cPDF.GetPageHeightInPoints()
+            
+            'Convert the default page dimensions (in points) to pixels
+            Dim thisPageWidthPx As Long, thisPageHeightPx As Long
+            thisPageWidthPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageWidthPts, userDPI))
+            thisPageHeightPx = Int(Units.ConvertOtherUnitToPixels(mu_Points, thisPageHeightPts, userDPI))
+            
+            'Multiply the final size (in pixels) by the ratio calculated from the user's import settings
+            thisPageWidthPx = Int(thisPageWidthPx * hRatio + 0.5)
+            thisPageHeightPx = Int(thisPageHeightPx * vRatio + 0.5)
+            
+            'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
+            Dim tmpDIB As pdDIB
+            If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+            
+            'In preview mode, we want to render the page against a white background.  (Many PDFs only store black
+            ' outlines against a transparent background, to improve printer behavior - and the previews look funny
+            ' if rendered against a checkerboard!)
+            If previewOnly Then
+                bkColor = RGB(255, 255, 255)
+                bkOpacity = 255
+            Else
+                If bkOpaque Then
+                    'Color is set from the settings object, above
+                    bkOpacity = 255
+                Else
+                    bkColor = RGB(0, 0, 0)
+                    bkOpacity = 0
+                End If
+            End If
+            tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, bkColor, bkOpacity
+            tmpDIB.SetInitialAlphaPremultiplicationState True
+            
+            'Render the page contents onto the target DIB
+            ' (TODO: expose rendering options to the user)
+            ' (TODO: calculate the way bounding boxes affect this)
+            cPDF.RenderCurrentPageToPDDib tmpDIB, 0, 0, thisPageWidthPx, thisPageHeightPx, FPDF_Normal, renderFlags
+            If (Not bkOpacity) Then tmpDIB.SetAlphaPremultiplication True, True
+            
+            'Prep a new layer object and initialize it
+            Dim newLayerID As Long, tmpLayer As pdLayer
+            newLayerID = dstImage.CreateBlankLayer()
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            
+            'We need a base layer name for each page.  For now, this is just "page".
+            ' (TODO: let the user supply this.)
+            Dim baseLayerName As String
+            baseLayerName = g_Language.TranslateMessage("Page %1", idxPage + 1)
+            tmpLayer.InitializeNewLayer PDL_Image, baseLayerName, tmpDIB, True
+            
+            'Make the base layer visible, but no others.
+            ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
+            tmpLayer.SetLayerVisibility (numPagesProcessed = 1)
+            tmpLayer.SetLayerBlendMode BM_Normal
+            
+        End If
+        
+    Loop
+    
+    'Set the base layer as the active one
+    ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
+    dstImage.SetActiveLayerByIndex 0
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadPDF Then
+        
+        dstImage.SetOriginalFileFormat PDIF_PDF
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha False
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
+    
+    'Unload any changes made to the primary app UI
+    If updateUI Then ProgressBars.ReleaseProgressBar
     
 End Function
 
