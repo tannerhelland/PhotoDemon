@@ -1567,11 +1567,6 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     baseImageWidth = cPDF.GetPageWidthInPoints()
     baseImageHeight = cPDF.GetPageHeightInPoints()
     
-    'TODO: what we probably want to do in the long-run is use the ratio of the first page's dimensions
-    ' against the user-selected dimensions as the guide for *each* page... because pages can have their
-    ' own dimensions!  So hard-setting each page to the same dimensions doesn't work.  (Of course, this
-    ' depends on what pages the user is importing too - if they import just *one* page vs *all* pages!)
-    
     'Use either the user settings, or the failsafe backup to calculate a page size IN PIXELS
     Dim defaultWidthInPixels As Long, defaultHeightInPixels As Long
     defaultWidthInPixels = Int(Units.ConvertOtherUnitToPixels(mu_Points, baseImageWidth, userDPI))
@@ -1609,6 +1604,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Figure out which pages the user actually wants loaded
     Dim listOfPages As pdStack
     Set listOfPages = New pdStack
+    
     If previewOnly Then
         listOfPages.AddInt 0
     Else
@@ -1652,8 +1648,6 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             listOfPages.AddInt 0
         End If
         
-        'TODO: allow reversing page order
-        
     End If
     
     'Before continuing, ensure the list of pages is sorted from most to least (because we pop pages off
@@ -1663,6 +1657,12 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Else
         listOfPages.SortStackByValue False
     End If
+    
+    'Cache background color and/or transparency settings in advance (so we don't have to dip into the
+    ' settings object in the inner loop)
+    Dim bkColor As Long, bkOpaque As Boolean, bkOpacity As Long
+    bkOpaque = cSettings.GetBool("background-solid", True, True)
+    bkColor = cSettings.GetLong("background-color", RGB(255, 255, 255), True)
     
     'If this is *not* a preview (or batch process), prep some UI bits
     Dim updateUI As Boolean
@@ -1712,21 +1712,26 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             'In preview mode, we want to render the page against a white background.  (Many PDFs only store black
             ' outlines against a transparent background, to improve printer behavior - and the previews look funny
             ' if rendered against a checkerboard!)
-            Dim bkColor As Long, bkOpacity As Long
             If previewOnly Then
                 bkColor = RGB(255, 255, 255)
                 bkOpacity = 255
             Else
-                bkColor = RGB(0, 0, 0)
-                bkOpacity = 0
+                If bkOpaque Then
+                    'Color is set from the settings object, above
+                    bkOpacity = 255
+                Else
+                    bkColor = RGB(0, 0, 0)
+                    bkOpacity = 0
+                End If
             End If
             tmpDIB.CreateBlank thisPageWidthPx, thisPageHeightPx, 32, bkColor, bkOpacity
+            tmpDIB.SetInitialAlphaPremultiplicationState True
             
             'Render the page contents onto the target DIB
             ' (TODO: expose rendering options to the user)
             ' (TODO: calculate the way bounding boxes affect this)
             cPDF.RenderCurrentPageToPDDib tmpDIB, 0, 0, thisPageWidthPx, thisPageHeightPx, FPDF_Normal, 0&
-            tmpDIB.SetAlphaPremultiplication True
+            If (Not bkOpacity) Then tmpDIB.SetAlphaPremultiplication True, True
             
             'Prep a new layer object and initialize it
             Dim newLayerID As Long, tmpLayer As pdLayer

@@ -108,6 +108,34 @@ Begin VB.Form dialog_ImportPDF
    End
    Begin PhotoDemon.pdContainer pnlOptions 
       Height          =   4095
+      Index           =   2
+      Left            =   4800
+      Top             =   2520
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   7223
+      Begin PhotoDemon.pdColorSelector clsBackground 
+         Height          =   615
+         Left            =   360
+         TabIndex        =   8
+         Top             =   1200
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   1085
+      End
+      Begin PhotoDemon.pdButtonStrip btsTransparency 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   7
+         Top             =   120
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   1720
+         Caption         =   "background"
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   4095
       Index           =   0
       Left            =   4800
       Top             =   2520
@@ -187,15 +215,6 @@ Begin VB.Form dialog_ImportPDF
          Caption         =   "other options"
          FontSize        =   12
       End
-   End
-   Begin PhotoDemon.pdContainer pnlOptions 
-      Height          =   4095
-      Index           =   2
-      Left            =   4800
-      Top             =   2520
-      Width           =   8535
-      _ExtentX        =   15055
-      _ExtentY        =   7223
    End
 End
 Attribute VB_Name = "dialog_ImportPDF"
@@ -294,7 +313,9 @@ Public Function GetDialogParamString() As String
     'Other page settings
     cParams.AddParam "reverse-pages", chkPageOptions(0).Value, True
     
-    'Rendering settings TODO
+    'Rendering settings
+    cParams.AddParam "background-solid", (btsTransparency.ListIndex = 0)
+    cParams.AddParam "background-color", clsBackground.Color
     
     GetDialogParamString = cParams.GetParamString()
     
@@ -309,11 +330,24 @@ Private Sub UpdatePagesUI()
     txtPageRange.Visible = (btsPages.ListIndex = 2)
 End Sub
 
+Private Sub UpdateTransparencyUI()
+    clsBackground.Visible = (Me.btsTransparency.ListIndex = 0)
+End Sub
+
 Private Sub btsPanel_Click(ByVal buttonIndex As Long)
     UpdatePanelVisibility
 End Sub
 
+Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
+    UpdateTransparencyUI
+    UpdatePreview
+End Sub
+
 Private Sub cboPreview_Click()
+    UpdatePreview
+End Sub
+
+Private Sub clsBackground_ColorChanged()
     UpdatePreview
 End Sub
 
@@ -417,6 +451,7 @@ Private Sub cmdBar_ResetClick()
     rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
     rszUI.AspectRatioLock = True
     chkPageOptions(0).Value = False
+    clsBackground.Color = RGB(255, 255, 255)
 End Sub
 
 Private Sub Form_Activate()
@@ -480,6 +515,11 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     btsPages.AddItem "custom range", 2
     btsPages.ListIndex = 0
     UpdatePagesUI
+    
+    'Background in PDFs typically assume white, but the user can toggle this
+    btsTransparency.AddItem "solid color", 0
+    btsTransparency.AddItem "transparent", 1
+    btsTransparency.ListIndex = 0
     
     'PDFs supply their size in points.  We need to convert this to pixels to set a default size.
     
@@ -600,11 +640,16 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
             'TODO: adjust background color painting per user settings
             Dim previewDIB As pdDIB
             Set previewDIB = New pdDIB
-            previewDIB.CreateBlank newWidth, newHeight, 32, RGB(255, 255, 255), 255
+            If (btsTransparency.ListIndex = 0) Then
+                previewDIB.CreateBlank newWidth, newHeight, 32, clsBackground.Color, 255
+            Else
+                previewDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+            End If
             previewDIB.SetInitialAlphaPremultiplicationState True
             
             'Ask the PDF object for a preview
             m_PDF.RenderCurrentPageToPDDib previewDIB, 0, 0, newWidth, newHeight
+            If (btsTransparency.ListIndex = 1) Then previewDIB.SetAlphaPremultiplication True, True
             
             'We now need to figure out positioning of the DIB in the target window (and we may need a checkerboard
             ' background behind it, too)
