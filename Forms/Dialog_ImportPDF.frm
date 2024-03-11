@@ -118,7 +118,7 @@ Begin VB.Form dialog_ImportPDF
          Height          =   615
          Left            =   360
          TabIndex        =   8
-         Top             =   1200
+         Top             =   3360
          Width           =   8055
          _ExtentX        =   14208
          _ExtentY        =   1085
@@ -127,11 +127,31 @@ Begin VB.Form dialog_ImportPDF
          Height          =   975
          Left            =   120
          TabIndex        =   7
-         Top             =   120
+         Top             =   2280
          Width           =   8295
          _ExtentX        =   14631
          _ExtentY        =   1720
          Caption         =   "background"
+      End
+      Begin PhotoDemon.pdButtonStrip btsAntialiasing 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   9
+         Top             =   1200
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   1720
+         Caption         =   "antialiasing"
+      End
+      Begin PhotoDemon.pdButtonStrip btsAnnotations 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   10
+         Top             =   120
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   1720
+         Caption         =   "annotations"
       End
    End
    Begin PhotoDemon.pdContainer pnlOptions 
@@ -316,10 +336,20 @@ Public Function GetDialogParamString() As String
     'Rendering settings
     cParams.AddParam "background-solid", (btsTransparency.ListIndex = 0)
     cParams.AddParam "background-color", clsBackground.Color
+    cParams.AddParam "antialiasing", btsAntialiasing.ListIndex
+    cParams.AddParam "annotations", (btsAnnotations.ListIndex = 0)
     
     GetDialogParamString = cParams.GetParamString()
     
 End Function
+
+Private Sub btsAnnotations_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
+
+Private Sub btsAntialiasing_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
 
 Private Sub btsPages_Click(ByVal buttonIndex As Long)
     UpdatePagesUI
@@ -452,6 +482,8 @@ Private Sub cmdBar_ResetClick()
     rszUI.AspectRatioLock = True
     chkPageOptions(0).Value = False
     clsBackground.Color = RGB(255, 255, 255)
+    btsAntialiasing.ListIndex = 0
+    btsAnnotations.ListIndex = 1
 End Sub
 
 Private Sub Form_Activate()
@@ -520,6 +552,16 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     btsTransparency.AddItem "solid color", 0
     btsTransparency.AddItem "transparent", 1
     btsTransparency.ListIndex = 0
+    
+    'Other rendering options are available
+    btsAntialiasing.AddItem "optimize for screens", 0
+    btsAntialiasing.AddItem "optimize for printing", 1
+    btsAntialiasing.AddItem "off", 2
+    btsAntialiasing.ListIndex = 0
+    
+    btsAnnotations.AddItem "on", 0
+    btsAnnotations.AddItem "off", 1
+    btsAnnotations.ListIndex = 1
     
     'PDFs supply their size in points.  We need to convert this to pixels to set a default size.
     
@@ -647,8 +689,27 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
             End If
             previewDIB.SetInitialAlphaPremultiplicationState True
             
+            'Convert UI settings to underlying library rendering flags
+            
+            'Antialias for displays
+            Dim renderFlags As PDFium_RenderOptions: renderFlags = 0
+            
+            If (btsAntialiasing.ListIndex = 0) Then
+                renderFlags = FPDF_LCD_TEXT
+                
+            'Antialias for printing
+            ElseIf (btsAntialiasing.ListIndex = 1) Then
+                renderFlags = FPDF_PRINTING
+                
+            'No antialiasing
+            Else
+                renderFlags = FPDF_RENDER_NO_SMOOTHIMAGE Or FPDF_RENDER_NO_SMOOTHPATH Or FPDF_RENDER_NO_SMOOTHTEXT
+            End If
+            
+            If (btsAnnotations.ListIndex = 0) Then renderFlags = renderFlags Or FPDF_ANNOT
+            
             'Ask the PDF object for a preview
-            m_PDF.RenderCurrentPageToPDDib previewDIB, 0, 0, newWidth, newHeight
+            m_PDF.RenderCurrentPageToPDDib previewDIB, 0, 0, newWidth, newHeight, FPDF_Normal, renderFlags
             If (btsTransparency.ListIndex = 1) Then previewDIB.SetAlphaPremultiplication True, True
             
             'We now need to figure out positioning of the DIB in the target window (and we may need a checkerboard

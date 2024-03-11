@@ -1664,6 +1664,21 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     bkOpaque = cSettings.GetBool("background-solid", True, True)
     bkColor = cSettings.GetLong("background-color", RGB(255, 255, 255), True)
     
+    'Other render settings are supplied to pdfium as flags
+    Dim renderFlags As PDFium_RenderOptions: renderFlags = 0
+    
+    'Antialias for displays, printer, or none
+    Select Case cSettings.GetLong("antialiasing", 0, True)
+        Case 0
+            renderFlags = renderFlags = FPDF_LCD_TEXT
+        Case 1
+            renderFlags = FPDF_PRINTING
+        Case Else
+            renderFlags = FPDF_RENDER_NO_SMOOTHIMAGE Or FPDF_RENDER_NO_SMOOTHPATH Or FPDF_RENDER_NO_SMOOTHTEXT
+    End Select
+    
+    If cSettings.GetBool("annotations", False, True) Then renderFlags = renderFlags Or FPDF_ANNOT
+    
     'If this is *not* a preview (or batch process), prep some UI bits
     Dim updateUI As Boolean
     updateUI = (Not previewOnly) And (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK)
@@ -1730,7 +1745,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             'Render the page contents onto the target DIB
             ' (TODO: expose rendering options to the user)
             ' (TODO: calculate the way bounding boxes affect this)
-            cPDF.RenderCurrentPageToPDDib tmpDIB, 0, 0, thisPageWidthPx, thisPageHeightPx, FPDF_Normal, 0&
+            cPDF.RenderCurrentPageToPDDib tmpDIB, 0, 0, thisPageWidthPx, thisPageHeightPx, FPDF_Normal, renderFlags
             If (Not bkOpacity) Then tmpDIB.SetAlphaPremultiplication True, True
             
             'Prep a new layer object and initialize it
