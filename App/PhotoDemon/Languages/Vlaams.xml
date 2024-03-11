@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1721</langversion>
+<langversion>8.9.1723</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1841,7 +1841,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Er is een fout opgetreden (#%1 - %2). PDI Laden afgebroken.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<phrase>
+<original>Page %1</original>
+<translation>Pagina %1</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -2235,12 +2240,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Kader %1</translation>
 </phrase>
 
-<phrase>
-<original>Page %1</original>
-<translation>Pagina %1</translation>
-</phrase>
-
-<!-- Layers.bas contains 58 phrases. 34 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -2706,12 +2706,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>U hebt PhotoDemon in een beveiligde systeemmap geplaatst.  Omdat PhotoDemon geen beheerderstoegang heeft, kan het geen bestanden voor u downloaden.  Verplaats PhotoDemon naar een map zonder beperkingen en probeer het opnieuw.</translation>
-</phrase>
-
-<!-- Plugin_jxl.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -2743,7 +2738,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <translation>Mozilla Openbare Licentie 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 26 phrases. 20 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3580,7 +3575,12 @@ Geef een numerieke waarde.</translation>
 <translation></translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<translation>U hebt PhotoDemon in een beveiligde systeemmap geplaatst.  Omdat PhotoDemon geen beheerderstoegang heeft, kan het geen bestanden voor u downloaden.  Verplaats PhotoDemon naar een map zonder beperkingen en probeer het opnieuw.</translation>
+</phrase>
+
+<!-- UpdateEngine.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -7139,6 +7139,138 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
+<phrase>
+<original>import settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>anti-aliasing</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>andere opties</translation>
+</phrase>
+
+<phrase>
+<original>The range "%1" is not valid.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify import options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rendering</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all pages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(%1 total)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first page only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom range</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent</original>
+<translation>transparant</translation>
+</phrase>
+
+<phrase>
+<original>optimize for screens</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimize for printing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 pages</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>page size:  %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>page size varies (first page is %1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>opties voor %1</translation>
+</phrase>
+
+<phrase>
+<original>%1 cm x %2 cm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1" x %2"</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
@@ -7203,17 +7335,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
-<phrase>
-<original>Waiting for user to specify import options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>%1 options</original>
-<translation>opties voor %1</translation>
-</phrase>
-
-<!-- Dialog_SVGImport.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -8624,16 +8746,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>other options</original>
-<translation>andere opties</translation>
-</phrase>
-
-<phrase>
 <original>Tracing image edges with virtual paintbrush</original>
 <translation>Zoeken afbeeldingsranden met virtuele penseel</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>background color and opacity</original>
@@ -10250,6 +10367,48 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>layers to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exporting layer %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer name</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
 <original>description</original>
 <translation>beschrijving</translation>
 </phrase>
@@ -10438,11 +10597,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>transparent</original>
-<translation>transparant</translation>
-</phrase>
-
-<phrase>
 <original>black</original>
 <translation>zwart</translation>
 </phrase>
@@ -10457,7 +10611,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>aangepaste kleur</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>copies</original>
@@ -12648,11 +12802,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>anti-aliasing</translation>
-</phrase>
-
-<phrase>
 <original>alignment</original>
 <translation>uitlijning</translation>
 </phrase>
@@ -12682,7 +12831,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Klik hier om deze laag om te zetten naar aan basis tekstlaag</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -14093,54 +14242,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>layers to export</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>destination folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>file type</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Exporting layer %1 of %2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>all layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>visible layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>current layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer name</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2674</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5638 phrases. -->
-<!-- 2964 are duplicates, so only 2674 unique phrases have been written to file. -->
-<!-- These 2674 phrases contain approximately 11647 total words. -->
+<!-- As of this build, PhotoDemon contains 5691 phrases. -->
+<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 11694 total words. -->
 
 </pdData>

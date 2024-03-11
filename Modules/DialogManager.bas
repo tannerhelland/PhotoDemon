@@ -815,4 +815,3 @@ Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
     Set FormClipboard = Nothing
     
 End Sub
-
