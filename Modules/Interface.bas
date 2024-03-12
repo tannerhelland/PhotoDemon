@@ -1738,7 +1738,9 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
     dstCombo.AddItem "Luminosity", , True
     dstCombo.AddItem "Grain extract"
     dstCombo.AddItem "Grain merge", , True
-    dstCombo.AddItem "Erase"
+    dstCombo.AddItem "Erase", , True
+    dstCombo.AddItem "Behind"
+    dstCombo.AddItem "Overwrite"
     
     dstCombo.ListIndex = blendIndex
     

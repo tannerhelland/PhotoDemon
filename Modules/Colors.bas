@@ -62,6 +62,8 @@ Public Enum PD_BlendMode
     BM_GrainExtract = 24
     BM_GrainMerge = 25
     BM_Erase = 26
+    BM_Behind = 27
+    BM_Overwrite = 28
 End Enum
 
 #If False Then
@@ -70,7 +72,7 @@ End Enum
     Const BM_SoftLight = 10, BM_HardLight = 11, BM_VividLight = 12, BM_LinearLight = 13, BM_PinLight = 14
     Const BM_HardMix = 15, BM_Difference = 16, BM_Exclusion = 17, BM_Subtract = 18, BM_Divide = 19
     Const BM_Hue = 20, BM_Saturation = 21, BM_Color = 22, BM_Luminosity = 23, BM_GrainExtract = 24
-    Const BM_GrainMerge = 25, BM_Erase = 26
+    Const BM_GrainMerge = 25, BM_Erase = 26, BM_Behind = 27, BM_Overwrite = 28
 #End If
 
 'PD supports the notion "alpha modes", including "inheritance," where a layer "inherits" the alpha of a layer beneath it,
@@ -1013,6 +1015,10 @@ Public Function GetBlendModeIDFromString(ByRef srcString As String) As PD_BlendM
             GetBlendModeIDFromString = BM_GrainMerge
         Case "eras"
             GetBlendModeIDFromString = BM_Erase
+        Case "bhnd"
+            GetBlendModeIDFromString = BM_Behind
+        Case "copy"
+            GetBlendModeIDFromString = BM_Overwrite
         Case Else
             GetBlendModeIDFromString = BM_Normal
             PDDebug.LogAction "WARNING! Colors.GetBlendModeStringFromID received a bad value: " & srcString
@@ -1079,10 +1085,13 @@ Public Function GetBlendModeStringFromID(ByVal srcMode As PD_BlendMode) As Strin
             GetBlendModeStringFromID = "gmrg"
         Case BM_Erase
             GetBlendModeStringFromID = "eras"
+        Case BM_Behind
+            GetBlendModeStringFromID = "bhnd"
+        Case BM_Overwrite
+            GetBlendModeStringFromID = "copy"
         Case Else
             GetBlendModeStringFromID = "    "
             PDDebug.LogAction "WARNING! Colors.GetBlendModeStringFromID received a bad value: " & srcMode
     End Select
     
 End Function
-

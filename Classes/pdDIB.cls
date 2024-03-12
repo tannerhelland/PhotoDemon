@@ -883,7 +883,47 @@ CouldNotCreateDIB:
     
 End Function
 
-'Replace the entire DIB's contents with some solid color
+'Replace a rectangle of the DIB with a fixed RGBA value.
+' IMPORTANTLY: it is up to the caller to handle alpha premultiplication on the passed color + alpha value,
+' based on the underlying premultiplied alpha state of the target DIB.
+Friend Sub FillRectWithColor(ByRef dstRectF As RectF, Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0!)
+
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+        
+    'If the DIB is 24bpp, apply the color using GDI
+    If (m_dibColorDepth = 24) Then
+        
+        GDI.FillRectToDC Me.GetDIBDC, Int(dstRectF.Left), Int(dstRectF.Top), Int(dstRectF.Width) + 1, Int(dstRectF.Height) + 1, fillColor
+        
+        'Alpha premultiplication technically doesn't matter in 24-bpp mode, so reset it to its default value (FALSE)
+        m_IsAlphaPremultiplied = False
+        
+    '32-bpp requires GDI+
+    Else
+        
+        Dim fillAlphaL As Long
+        fillAlphaL = Int(fillAlpha * 2.55! + 0.5!)
+        
+        Dim tmpSurface As Long, tmpBrush As Long
+        tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(Me.GetDIBDC)
+        tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlphaL)
+        
+        GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
+        GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, Int(dstRectF.Left), Int(dstRectF.Top), Int(dstRectF.Width + 0.5!), Int(dstRectF.Height + 0.5!)
+        GDI_Plus.ReleaseGDIPlusBrush tmpBrush
+        GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
+        
+        m_IsAlphaPremultiplied = (fillAlphaL = 255) Or ((fillAlphaL = 0) And (fillColor = 0))
+        
+    End If
+    
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
+    
+End Sub
+
+'Replace the entire DIB's contents with a fixed RGBA value
 Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0!)
 
     'Unsuspend this DIB (as necessary)
@@ -926,7 +966,7 @@ Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
             Dim tmpSurface As Long, tmpBrush As Long
             tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(Me.GetDIBDC)
             tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
-                
+            
             GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
             GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, -1, -1, m_dibWidth + 2, m_dibHeight + 2
             GDI_Plus.ReleaseGDIPlusBrush tmpBrush

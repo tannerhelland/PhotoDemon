@@ -59,20 +59,23 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         
         'With loop bounds safely calculated, we can now proceed with blending.
         
-        'Because we are potentially doing a *lot* of calculations here, we need to make a temporary copy of the top DIB.  (Our copy will
-        ' be a beaten, mangled mess by the end of this function, and we aren't allowed to make changes to the caller's copy.)
+        'Because we are potentially doing a *lot* of calculations here, we need to make a temporary copy of the top DIB.
+        ' (Our copy will be a beaten, mangled mess by the end of this function, and we aren't allowed to make changes
+        ' to the caller's copy.)
         If (m_topDIBCopy.GetDIBWidth <> topDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight <> topDIB.GetDIBHeight) Then
             m_topDIBCopy.CreateBlank topDIB.GetDIBWidth, topDIB.GetDIBHeight, 32, 0, 0
         End If
+        
         GDI.BitBltWrapper m_topDIBCopy.GetDIBDC, 0, 0, topDIB.GetDIBWidth, topDIB.GetDIBHeight, topDIB.GetDIBDC, 0, 0, vbSrcCopy
         m_topDIBCopy.SetInitialAlphaPremultiplicationState topDIB.GetAlphaPremultiplication
         
-        'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass that handles several things:
+        'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass
+        ' that handles several things:
         ' 1) Apply layer masks (if any)
         ' 2) Apply alpha inheritance (if any)
+        ' 3) Overwrite blend mode on paintbrush (identified by presence of a top layer mask)
         
         'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
-        
         If (topAlphaMode <> AM_Normal) Or (bottomAlphaMode <> AM_Normal) Or (Not topLayerMask Is Nothing) Then
             PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF, topLayerMask
         End If
@@ -167,6 +170,13 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
                     ApplyBlendMode_Erase m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, alphaModifier
                 End If
             
+            Case BM_Behind
+                '"Behind" mode is handled by the final blend step (see below)
+                
+            Case BM_Overwrite
+                'Note that overwrite mode also requires a mask - this is so that paint strokes can be correctly composited.
+                'TODO
+            
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
                 PDDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
@@ -176,9 +186,45 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         'Composited results will have been placed inside the temporary top DIB copy.  Apply the final blend now!
         If applyFinalBlend Then
             
-            'Some blend modes ignore this step (Erase, at present)
-            If (blendMode <> BM_Erase) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, Int(alphaModifier * 255! + 0.5!)
-            'Debug.Print "Blending this many pixels: " & CStr((finalX - initX + 1) * (finalY - initY + 1))
+            'In "behind" blend mode, this step is different.
+            If (blendMode = BM_Behind) Then
+                
+                'In "Behind" blend mode, we actually blend the bottom DIB "atop" the top DIB.  Instead of making a
+                ' temporary copy of the top DIB, we actually need to make a copy of the *bottom* one.
+                If (m_topDIBCopy.GetDIBWidth <> bottomDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight <> bottomDIB.GetDIBHeight) Then
+                    m_topDIBCopy.CreateBlank bottomDIB.GetDIBWidth, bottomDIB.GetDIBHeight, 32, 0, 0
+                End If
+                
+                GDI.BitBltWrapper m_topDIBCopy.GetDIBDC, 0, 0, bottomDIB.GetDIBWidth, bottomDIB.GetDIBHeight, bottomDIB.GetDIBDC, 0, 0, vbSrcCopy
+                m_topDIBCopy.SetInitialAlphaPremultiplicationState bottomDIB.GetAlphaPremultiplication
+                
+                'm_topDIBCopy now contains a copy of the *bottom* DIB's data.  Next we want to "cut out" the
+                ' merge region in the *bottom* DIB, and replace it with the top DIB's pixels.  (We also need
+                ' to blank out the target region first, so that the layer's opacity - if any - is reflected
+                ' correctly in the blend.)
+                Dim tmpFillRectF As RectF
+                With tmpFillRectF
+                    .Left = xOffsetBottom + initX
+                    .Top = yOffsetBottom + initY
+                    .Width = finalX - initX + 1
+                    .Height = finalY - initY + 1
+                End With
+                
+                bottomDIB.FillRectWithColor tmpFillRectF, 0, 0
+                topDIB.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, Int(alphaModifier * 255! + 0.5!)
+                
+                'Now, blend the *copy* of the bottom layer onto the space where we just "chopped out"
+                ' the bottom layer's pixels and replaced them with the top layer's
+                m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, 255!
+            
+            'All other blend modes behave normally
+            Else
+            
+                'Some blend modes ignore this step (Erase, at present)
+                If (blendMode <> BM_Erase) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, Int(alphaModifier * 255! + 0.5!)
+                'Debug.Print "Blending this many pixels: " & CStr((finalX - initX + 1) * (finalY - initY + 1))
+            
+            End If
             
             'Also, locked alpha requires us to restore the original bottom layer alpha values now
             If (bottomAlphaMode = AM_Locked) Then PostProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
@@ -365,8 +411,9 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     
 End Sub
 
-'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
-' the actual blending code inside each blend function, because special alpha handling is never required.
+'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).
+' This greatly simplifies the actual blending code inside each blend function, because special alpha handling
+' is never required.
 Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As PD_AlphaMode, ByVal topAlphaMode As PD_AlphaMode, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'Only some settings require us to use this function.
@@ -406,8 +453,8 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             If (tmpFinalX > topLayerMask.GetDIBStride - 1) Then tmpFinalX = topLayerMask.GetDIBStride - 1
             If (tmpFinalY > topLayerMask.GetDIBHeight - 1) Then tmpFinalY = topLayerMask.GetDIBHeight - 1
             
-            '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-            ' which we reset between scanlines.
+            '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access),
+            ' so we cheat and use 1D arrays, which we reset between scanlines.
             bottomScanlineSize = topDIB.GetDIBStride:  bottomDIBPointer = topDIB.GetDIBPointer
             topScanlineSize = topLayerMask.GetDIBStride:  topDIBPointer = topLayerMask.GetDIBPointer
             
@@ -1199,7 +1246,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 If (newG < 0!) Then newG = -newG
                 newB = (bottomB - topB)
                 If (newB < 0!) Then newB = -newB
-                    
+                
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
                 If (bottomA <> 1!) Then

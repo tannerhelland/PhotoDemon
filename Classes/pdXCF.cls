@@ -1333,7 +1333,7 @@ Private Function GetPDBlendFromGIMPBlend(ByVal srcGIMPBlend As Long) As PD_Blend
             GetPDBlendFromGIMPBlend = BM_Normal
         'Behind
         Case 29
-            GetPDBlendFromGIMPBlend = BM_Normal
+            GetPDBlendFromGIMPBlend = BM_Behind
         'Multiply
         Case 30
             GetPDBlendFromGIMPBlend = BM_Multiply
