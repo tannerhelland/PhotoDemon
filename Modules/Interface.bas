@@ -1740,7 +1740,9 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
     dstCombo.AddItem "Grain merge", , True
     dstCombo.AddItem "Erase", , True
     dstCombo.AddItem "Behind"
-    dstCombo.AddItem "Overwrite"
+    
+    'Overwrite mode is currently TODO!
+    'dstCombo.AddItem "Overwrite"
     
     dstCombo.ListIndex = blendIndex
     
