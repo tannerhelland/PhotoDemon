@@ -5,11 +5,11 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，9.2 build 223）</langname>
-<langversion>9.2 build 223.8</langversion>
+<langname>简体中文（夜间更新版，9.2 build 311）</langname>
+<langversion>9.2 build 311.1</langversion>
 <langstatus>完成</langstatus>
 
-<author>Charltsing（QQ 564955427） revised on Oct 3, 2023, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
+<author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>导出图像</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>导出图层</translation>
 </phrase>
 
 <phrase>
@@ -2049,6 +2049,11 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>继承</translation>
 </phrase>
@@ -2123,7 +2128,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>预览不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -3547,27 +3552,27 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>此操作依赖于第三方插件（%1）。此插件的更新版本可用。</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>您的版本：%1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>新版本：%1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>你想让PhotoDevon为你更新这个插件吗？</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>更新可用</translation>
 </phrase>
 
 <phrase>
@@ -4236,7 +4241,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Open image</original>
-<translation>打开图片</translation>
+<translation>打开图片或PDF文件</translation>
 </phrase>
 
 <phrase>
@@ -4902,12 +4907,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>图像转文件</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>图层转文件</translation>
 </phrase>
 
 <phrase>
@@ -7135,12 +7140,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>导入设置</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>文件信息</translation>
 </phrase>
 
 <phrase>
@@ -7150,22 +7155,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>注释</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>文档尺寸</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>页面逆序</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>要导入的页面</translation>
 </phrase>
 
 <phrase>
@@ -7175,7 +7180,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>范围“%1”无效。</translation>
 </phrase>
 
 <phrase>
@@ -7185,37 +7190,37 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>页面</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>渲染</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>全部页面</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(共%1页)</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>仅首页</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>自定义范围</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>纯色</translation>
 </phrase>
 
 <phrase>
@@ -7225,27 +7230,27 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>针对屏幕进行优化</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>针对打印进行优化</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 页</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>页面尺寸:  %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>页面尺寸不一致（第一页为%1）</translation>
 </phrase>
 
 <phrase>
@@ -7255,12 +7260,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 厘米 x %2 厘米</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1 英寸 x %2 英寸</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -10362,42 +10367,42 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>要导出的图层</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>目标文件夹</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>文件类型</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>正在导出图层%1（共%2）</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>全部图层</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>可见图层</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>当前图层</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>图层名称</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -14238,11 +14243,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2696</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5691 phrases. -->
-<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5692 phrases. -->
+<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
+<!-- These 2696 phrases contain approximately 11695 total words. -->
 
 <special-translations>
 

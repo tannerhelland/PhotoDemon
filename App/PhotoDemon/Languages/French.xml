@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.615</langversion>
+<langversion>6.7.616</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2049,6 +2049,11 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 </phrase>
 
 <phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Hérité</translation>
 </phrase>
@@ -2123,7 +2128,7 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 <translation>aperçu non disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2689,22 +2694,23 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL (JXL) est un remplacement plus moderne pour le format d'image JPEG. PhotoDemon ne supporte pas nativement les images JPEG XL, mais il peut télécharger un plugin open source qui ajoute le support pour le JPEG XL.</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>La librairie libjxl fournit gratuitement, en open-source la compatibilité JPEG XL. Une copie portable de libjxl nécessitera ~%1 mb d'espace disque. Une fois ceci téléchargé, PhotoDemon peut utiliser libjxl pour charger et sauvegarder les images JPEG XL (incluant les animations)
+</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Désirez vous que PhotoDemon télécharge libjxl dans le dossier plugin de PhotoDemon?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon ne va pas télécharger libjxl à ce moment.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -3552,27 +3558,27 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Cette action repose sur un plugin tiers (%1). Une version mise à jour de ce plugin est disponible.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>Votre version: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Nouvelle version: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>Voulez vous que PhotoDemon mette à jour ce plugin pour vous?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Mise à jour disponible</translation>
 </phrase>
 
 <phrase>
@@ -7139,12 +7145,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>paramètres d'importation</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>informations du fichier</translation>
 </phrase>
 
 <phrase>
@@ -7154,22 +7160,22 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>annotations</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>taille du document</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>ordre inversé des pages</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>pages à importer</translation>
 </phrase>
 
 <phrase>
@@ -7179,7 +7185,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>la quantité %1 n'est pas valide</translation>
 </phrase>
 
 <phrase>
@@ -7189,37 +7195,37 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>pages</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>rendu</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>toutes les pages</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(%1 au total)</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>première page uniquement</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>quantité à définir</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>pleine couleur</translation>
 </phrase>
 
 <phrase>
@@ -7229,27 +7235,27 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>optimiser pour les écrans</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>optimiser pour l'impression</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 pages</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>taille de page: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>tailles de page variables (la première page est de %1)</translation>
 </phrase>
 
 <phrase>
@@ -7259,12 +7265,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x %2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -9506,7 +9512,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>raccourci personnalisé (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9747,12 +9753,12 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>à l'import d'images vectorielles</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>(optionnel) paramètres d'importation avancés</translation>
 </phrase>
 
 <phrase>
@@ -10196,12 +10202,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>utiliser la taille intégrée</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>utiliser une taille personnalisée</translation>
 </phrase>
 
 <phrase>
@@ -10335,7 +10341,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>effort</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10801,12 +10807,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>source de l'icone</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>traiter chaque calque comme une icone isolée</translation>
 </phrase>
 
 <phrase>
@@ -14257,10 +14263,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2696</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5691 phrases. -->
-<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5692 phrases. -->
+<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
+<!-- These 2696 phrases contain approximately 11695 total words. -->
 
 </pdData>

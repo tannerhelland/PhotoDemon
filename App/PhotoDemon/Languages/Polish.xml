@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.22</langversion>
+<langversion>9.0.23</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -2049,6 +2049,11 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 </phrase>
 
 <phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Dziedziczone</translation>
 </phrase>
@@ -2123,7 +2128,7 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 <translation>Podgląd niedostępny</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -14242,10 +14247,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2696</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5691 phrases. -->
-<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5692 phrases. -->
+<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
+<!-- These 2696 phrases contain approximately 11695 total words. -->
 
 </pdData>

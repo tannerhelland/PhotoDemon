@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1715</langversion>
+<langversion>8.9.1716</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2049,6 +2049,11 @@ Setelah mengaktifkan dukungan untuk format gambar ini, demi kebaikan, salin arsi
 </phrase>
 
 <phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Diwarisi</translation>
 </phrase>
@@ -2123,7 +2128,7 @@ Setelah mengaktifkan dukungan untuk format gambar ini, demi kebaikan, salin arsi
 <translation>Pratinjau tidak tersedia</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -14238,10 +14243,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, pastikan untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2696</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5691 phrases. -->
-<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5692 phrases. -->
+<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
+<!-- These 2696 phrases contain approximately 11695 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.277</langversion>
+<langversion>9.2.311</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2049,6 +2049,11 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 </phrase>
 
 <phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Übernehmen</translation>
 </phrase>
@@ -2123,7 +2128,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Preview nicht verfügbar</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -7141,12 +7146,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>Importeinstellungen</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>Dateiinformationen</translation>
 </phrase>
 
 <phrase>
@@ -7156,22 +7161,22 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>Annotationen</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>Dokumentgröße</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>Umgekehrte Seitenreihenfolge</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>Zu importierende Seiten</translation>
 </phrase>
 
 <phrase>
@@ -7181,7 +7186,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>Der Bereich "%1" ist nicht gültig.</translation>
 </phrase>
 
 <phrase>
@@ -7191,37 +7196,37 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>Seiten</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>Rendering</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>Alle Seiten</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(%1 total)</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>Nur erste Seite</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>Benutzerdefinierter Bereich</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>Solide Farbe</translation>
 </phrase>
 
 <phrase>
@@ -7231,27 +7236,27 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>Für Screens optimieren</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>Für Druck optimieren</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 Seite(n)</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>Seitengröße: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>Seitengröße variiert (erste Seite ist %1)</translation>
 </phrase>
 
 <phrase>
@@ -7261,12 +7266,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x %2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -14242,10 +14247,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2696</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5691 phrases. -->
-<!-- 2996 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5692 phrases. -->
+<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
+<!-- These 2696 phrases contain approximately 11695 total words. -->
 
 </pdData>
