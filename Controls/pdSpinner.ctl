@@ -446,8 +446,9 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
     If (vKey = pdnk_Enter) Then
         
         'Look for user-entered equations
-        Dim calcValue As Double
-        If IsTextEntryValid(False, calcValue) Then
+        Dim calcValue As Double, entryLooksValid As Boolean
+        entryLooksValid = IsTextEntryValid(False, calcValue)
+        If entryLooksValid Then
             
             'If the entry is an equation, on an "Enter" key hit, apply the equation
             ' (i.e. replace the existing edit box text with the equation's result).
@@ -460,6 +461,18 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
             End If
         Else
             preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
+        End If
+        
+        'If we are on a modal dialog, the NavKey module will have handled the Enter keypress for us
+        ' (typically by triggering the OK button on our owner form).  If, however, we are on a toolbox,
+        ' it will *not* have handled the Enter button - so let's see if we're sited on the main form,
+        ' and if we are, set focus to the canvas.
+        If (m_EntryType <> set_Formula) And entryLooksValid And (Not preventFurtherHandling) Then
+            
+            'Okay: the edit box has a valid, non-formula entry, and this edit box is *not* sited on
+            ' a modal dialog.  Double-check that a dialog isn't active, then set focus to the canvas.
+            If (Not Interface.IsModalDialogActive()) Then FormMain.MainCanvas(0).SetFocusToCanvasView
+            
         End If
         
     ElseIf (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
