@@ -213,7 +213,7 @@ End Function
 'Given a source SVG file, attempt to load it into a target pdImage/pdDIB.  For preview-only mode (i.e. non-interactive),
 ' pass TRUE for the nonInteractiveMode parameter.  Additional overrides can be supplied via the optional overrideParameters
 ' pdSerialize string; see the code for details on what is/isn't supported this way.
-Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString) As Boolean
+Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal nonInteractiveMode As Boolean = False, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
     
     LoadSVG_FromFile = False
     
@@ -370,6 +370,7 @@ Public Function LoadSVG_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             If (Not dstImage Is Nothing) Then dstImage.SetDPI userDPI, userDPI
             
         Else
+            userCanceledImportDialog = (userInput = vbCancel)
             LoadSVG_FromFile = False
             GoTo SafeCleanup
         End If

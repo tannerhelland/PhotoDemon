@@ -684,14 +684,14 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
 End Function
 
 'SVG support is primarily handled by the 3rd-party resvg library
-Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal overrideParameters As String = vbNullString) As Boolean
+Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
     
     On Error GoTo LoadSVGFail
     
     'For now, we rely on proper file extensions before handing data off to resvg
     If Plugin_resvg.IsResvgEnabled() Then
         
-        LoadSVG = Plugin_resvg.LoadSVG_FromFile(imagePath, dstImage, dstDIB, False, overrideParameters)
+        LoadSVG = Plugin_resvg.LoadSVG_FromFile(imagePath, dstImage, dstDIB, False, overrideParameters, userCanceledImportDialog)
         
         'If successful, set format-specific flags in the parent pdImage object
         If LoadSVG Then
@@ -887,7 +887,7 @@ End Function
 
 'Test an incoming image file against every supported decoder engine.  This ensures the greatest likelihood of loading
 ' a problematic file.
-Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString) As Boolean
+Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
     
     CascadeLoadGenericImage = False
     
@@ -1018,7 +1018,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         
     'SVG/Z support was added in v9.0
     If (Not CascadeLoadGenericImage) And Plugin_resvg.IsFileSVGCandidate(srcFile) Then
-        CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage, overrideParameters)
+        CascadeLoadGenericImage = LoadSVG(srcFile, dstDIB, dstImage, overrideParameters, userCanceledImportDialog)
         If CascadeLoadGenericImage Then
             decoderUsed = id_resvg
             dstImage.SetOriginalFileFormat PDIF_SVG
@@ -1045,7 +1045,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     'PDF support was added in v10.0
     If (Not CascadeLoadGenericImage) Then
-        CascadeLoadGenericImage = LoadPDF(srcFile, dstImage, dstDIB)
+        CascadeLoadGenericImage = LoadPDF(srcFile, dstImage, dstDIB, False, False, userCanceledImportDialog)
         If CascadeLoadGenericImage Then
             decoderUsed = id_pdfium
             dstImage.SetOriginalFileFormat PDIF_PDF
@@ -1492,7 +1492,7 @@ End Function
 'This function may need to raise a UI to ask the user for PDF import settings (like page resolution).  To skip this
 ' (during a batch process, for example), set the "noUI" parameter to TRUE.  When "previewOnly" is set to TRUE,
 ' the "noUI" parameter will automatically be enabled as well.
-Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False, Optional ByVal noUI As Boolean = False) As Boolean
+Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False, Optional ByVal noUI As Boolean = False, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
 
     LoadPDF = False
     
@@ -1540,6 +1540,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         
         'The user can cancel the import dialog; abandon the entire load process if this happens
         If (userAnswer <> vbOK) Then
+            userCanceledImportDialog = (userAnswer = vbCancel)
             LoadPDF = False
             Exit Function
         End If

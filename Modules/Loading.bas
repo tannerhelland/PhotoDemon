@@ -196,16 +196,21 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     Dim freeImage_Return As PD_OPERATION_OUTCOME
     
+    'In recent years, I've tried to support more vector formats in PD.  These formats often require an import dialog
+    ' (where the user can control rasterization settings).  If the user cancels these import dialogs, we don't want
+    ' to pester them with error dialogs.  Formats that support a user dialog will set this value as necessary.
+    Dim userCanceledImportDialog As Boolean: userCanceledImportDialog = False
+    
     If (internalFormatID = PDIF_UNKNOWN) Then
     
         'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
         ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
-        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
+        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters, userCanceledImportDialog)
         
         '*************************************************************************************************************************************
         ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
         '*************************************************************************************************************************************
-        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) And (Not userCanceledImportDialog) Then
             PDDebug.LogAction "Starting separate metadata extraction thread..."
             ExifTool.StartMetadataProcessing srcFile, targetImage
         End If
@@ -540,7 +545,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", newImageJustLoaded:=True
         Message "Image loaded successfully."
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And (Not userCanceledImportDialog) Then
             Message "Failed to load %1", srcFile
             PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
         End If
