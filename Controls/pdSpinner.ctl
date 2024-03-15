@@ -443,7 +443,26 @@ End Sub
 ' options on an associated command bar (if any)
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
-    If (vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
+    If (vKey = pdnk_Enter) Then
+        
+        'Look for user-entered equations
+        Dim calcValue As Double
+        If IsTextEntryValid(False, calcValue) Then
+            
+            'If the entry is an equation, on an "Enter" key hit, apply the equation
+            ' (i.e. replace the existing edit box text with the equation's result).
+            If (m_EntryType = set_Formula) Then
+                Me.Value = CDblCustom(calcValue)
+                m_EditBox.Text = GetFormattedStringValue(m_Value)
+                m_EditBox.SelStart = Len(m_EditBox.Text)
+            Else
+                preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
+            End If
+        Else
+            preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
+        End If
+        
+    ElseIf (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
         preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
     ElseIf (vKey = vbKeyUp) Then
         MoveValueDown
