@@ -1004,9 +1004,9 @@ Public Function GetLastProcessorID() As String
     GetLastProcessorID = m_LastProcess.pcID
 End Function
 
-'Look for miscellaneous non-destructive operations that may have occurred since the last process request.  (At present, this is only
-' required for selection actions - and in fact, selection modifications should probably be rewritten to operate like other
-' non-destructive actions in the program!)
+'Look for miscellaneous non-destructive operations that may have occurred since the last process request.
+' (At present, this is only required for selection actions - and in fact, selection modifications should
+' probably be rewritten to operate like other non-destructive actions in the program!)
 Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
     On Error GoTo CheckForCanvasModifyFail

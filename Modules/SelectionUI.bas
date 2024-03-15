@@ -1100,7 +1100,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                                 Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
-                            ElseIf (transformType = 8) Then
+                            ElseIf (transformType = poi_Interior) Then
                                 Process "Move selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                                 
                             'Anything else is assumed to be resizing an existing selection
