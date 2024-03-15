@@ -1532,7 +1532,7 @@ End Sub
 'The phrase list box label will automatically be updated with the current count of list items
 Private Sub UpdatePhraseBoxTitle()
     Dim numPhrasesDisplay As Long
-    If (lstPhrases.ListCount > 0) Then numPhrasesDisplay = lstPhrases.ListCount - 1 Else numPhrasesDisplay = 0
+    If (lstPhrases.ListCount > 0) Then numPhrasesDisplay = lstPhrases.ListCount Else numPhrasesDisplay = 0
     lstPhrases.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", numPhrasesDisplay)
 End Sub
 
