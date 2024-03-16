@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1631</langversion>
+<langversion>8.9.1632</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Esporta immagine</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Esporta livelli</translation>
 </phrase>
 
 <phrase>
@@ -2050,7 +2050,7 @@ Per abilitare il supporto a immagine, per favore copia il file FreeImage.dll (sc
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Dietro</translation>
 </phrase>
 
 <phrase>
@@ -2693,22 +2693,22 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL (JXL) è un sostituto moderno per il formato JPEG. PhotoDemon non supporta nativamente il formato JPEG XL, ma può scaricare un plugin gratuito e open-source che aggiunge il supporto JPEG XL.</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>La libreria gratuita e open-source libjxl fornisce la compatibilità con JPEG XL. Una copia portatile di libjxl richiederà circa ~%1 mb di spazio su disco. Una volta scaricata, PhotoDemon potrà usare libjxl per caricare e salvare le immagini JPEG XL (incluse le animazioni).</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Vuoi che PhotoDemon scarichi libjxl nella cartella dei plugin?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon non scaricherà libjxl in questo momento.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -3536,7 +3536,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation>%1,%2 Beta %3</translation>
+<translation>%1.%2 Beta %3</translation>
 </phrase>
 
 <phrase>
@@ -3556,27 +3556,27 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Questa azione richiede un plugin di terze parti (%1). È disponibile un aggiornamento per questo plugin.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>La tua versione: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Nuova versione: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>Vuoi che PhotoDemon aggiorni questo plugin?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Aggiornamento disponibile</translation>
 </phrase>
 
 <phrase>
@@ -3838,7 +3838,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Layer %1</original>
-<translation>Livello 1%</translation>
+<translation>Livello %1</translation>
 </phrase>
 
 <!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4911,12 +4911,12 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>Immagine in file</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Livelli in file</translation>
 </phrase>
 
 <phrase>
@@ -5700,7 +5700,7 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
 <translation>È disponibile una nuova versione di PhotoDemon! 
 
-Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una nuova notifica quando sarà completato.</translation>
+L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nuova notifica quando sarà completato.</translation>
 </phrase>
 
 <phrase>
@@ -7133,24 +7133,24 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
-<translation>Comprendo il rischio di avviare PhotoDemon nell'IDE</translation>
+<translation>Comprendo i rischi di avviare PhotoDemon nell'IDE</translation>
 </phrase>
 
 <phrase>
 <original>Do not display this warning again</original>
-<translation>Non mostrare ancora questo avviso</translation>
+<translation>Non mostrare più questo avviso</translation>
 </phrase>
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>impostazioni di importazione</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>informazioni file</translation>
 </phrase>
 
 <phrase>
@@ -7160,22 +7160,22 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>annotazioni</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>dimensione documento</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>inverti ordine delle pagine</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>pagine da importare</translation>
 </phrase>
 
 <phrase>
@@ -7185,7 +7185,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>Il range "%1" non è valido.</translation>
 </phrase>
 
 <phrase>
@@ -7195,37 +7195,37 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>pagine</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>rendering</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>tutte le pagine</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(%1 totali)</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>solo prima pagina</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>range personalizzato</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>colore a tinta unita</translation>
 </phrase>
 
 <phrase>
@@ -7235,27 +7235,27 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>ottimizza per lo schermo</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>ottimizza per la stampa</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 pagine</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>dimensioni pagina: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>dimensioni pagina variabile (prima pagina: %1)</translation>
 </phrase>
 
 <phrase>
@@ -7265,12 +7265,12 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x %2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -7430,7 +7430,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 
 <phrase>
 <original>interface accent color</original>
-<translation>colore dell'accento dell'interfaccia</translation>
+<translation>colore principale dell'interfaccia</translation>
 </phrase>
 
 <phrase>
@@ -8098,7 +8098,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>potete anche impostare una posizione centrale cliccando sulla finestra di anteprima</translation>
+<translation>puoi anche impostare una posizione centrale cliccando sulla finestra di anteprima</translation>
 </phrase>
 
 <phrase>
@@ -9716,7 +9716,8 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
 <translation>%1 file riparati.
 
-I file riparati sono stati salvati nella cartella di destinazione.  I file non riparati rimangono nella loro posizione originale.</phrase>
+I file riparati sono stati salvati nella cartella di destinazione.  I file non riparati rimangono nella loro posizione originale.</translation>
+</phrase>
 
 <phrase>
 <original>Repairs complete</original>
@@ -10345,7 +10346,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>sforzo</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10376,42 +10377,42 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>livelli da esportare</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>cartella di destinazione</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>tipo file</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Esportazione livello %1 di %2</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>tutti i livelli</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>livelli visibili</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>livello corrente</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>nome livello</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -11535,7 +11536,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>integers only [%1 to %2]</original>
-<translation>solo numeri interi [%1 a %2]/translation>
+<translation>solo numeri interi [da %1 a %2]</translation>
 </phrase>
 
 <phrase>
@@ -13100,12 +13101,12 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>optional translation aids</original>
-<translation>aiuti di traduzione opzionali</translation>
+<translation>aiuti per la traduzione opzionali</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation>chiave API DeepL.com gratuita per suggerimenti di traduzioe automatici</translation>
+<translation>chiave API DeepL.com gratuita per suggerimenti di traduzione automatici</translation>
 </phrase>
 
 <phrase>
@@ -13592,7 +13593,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>memory usage will be displayed here</original>
-<translation>l'utilizzo della memoria è mostrato qui</translation>
+<translation>l'utilizzo di memoria è mostrato qui</translation>
 </phrase>
 
 <phrase>
@@ -13861,17 +13862,17 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>maximize quality</original>
-<translation>massimizzare la qualità</translation>
+<translation>massimizza la qualità</translation>
 </phrase>
 
 <phrase>
 <original>balance performance and quality</original>
-<translation>prestazioni tra equilibrio e qualità</translation>
+<translation>bilancia prestazioni e qualità</translation>
 </phrase>
 
 <phrase>
 <original>maximize performance</original>
-<translation>massimizzare le prestazioni</translation>
+<translation>massimizza le prestazioni</translation>
 </phrase>
 
 <phrase>
@@ -14051,7 +14052,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>Reset all library options</original>
-<translation>Reimpostare tutte le opzioni della libreria</translation>
+<translation>Reimposta tutte le opzioni della libreria</translation>
 </phrase>
 
 <phrase>
@@ -14161,7 +14162,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>un'immagine JPEG XL</translation>
 </phrase>
 
 <phrase>
