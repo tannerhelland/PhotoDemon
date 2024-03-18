@@ -362,6 +362,51 @@ Public Function ForceSingleLine(ByRef srcString As String) As String
     If (InStr(1, ForceSingleLine, vbLf, vbBinaryCompare) <> 0) Then ForceSingleLine = Replace$(ForceSingleLine, vbLf, vbNullString)
 End Function
 
+'Given a character position, return the entire line of text containing that position.
+' Works with both CrLf and plain Lf line-endings, but not vbCr (at present).
+' The trailing line-ending, if any, will *NOT* be returned as part of the string (by design).
+'
+'Note that idxChar should be 1-BASED, not 0-BASED (like InStr returns).
+Public Function GetLineContainingPosition(ByRef srcString As String, ByVal idxChar As Long) As String
+    
+    If (idxChar > 0) And (idxChar <= Len(srcString)) Then
+        
+        Dim posLeft As Long, posRight As Long
+        
+        'Find the left-most line indicator
+        posLeft = InStrRev(srcString, vbLf, idxChar, vbBinaryCompare)
+        If (posLeft > 0) Then
+            
+            'Position includes the vbLf char; strip that from the position
+            posLeft = posLeft + 1
+            
+        'No left-most char found; use start of string
+        Else
+            posLeft = 1
+        End If
+        
+        'Now, search rightward for the next line-ending (or end of string)
+        posRight = InStr(idxChar, srcString, vbLf, vbBinaryCompare)
+        If (posRight = 0) Then
+            posRight = Len(srcString)
+        ElseIf (posRight > posLeft) Then
+            
+            'Strip the trailing Lf and immediately preceding Cr too (if it exists).
+            If Mid$(srcString, posRight - 1, 1) = vbCr Then posRight = posRight - 1
+            GetLineContainingPosition = Mid$(srcString, posLeft, posRight - posLeft)
+            
+        'The user sent us a line-ending char?  Not really an intended use-case, but okay...
+        Else
+            GetLineContainingPosition = vbNullString
+        End If
+        
+    '/Bad character position
+    Else
+        GetLineContainingPosition = srcString
+    End If
+    
+End Function
+
 'Given a source string, parse it into a list of discrete words and return said list.
 ' NOTE: this function should really use Uniscribe so that it can split words in languages
 ' that do not use space as a delimiter.  TODO!

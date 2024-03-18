@@ -191,7 +191,7 @@ Public Sub GenerateInputFormats()
     
     '(These format lists are automatically trimmed after library status is evaluated.
     ' The arbitrary upper limit only needs to be revisited if I greatly expand format support in the future!)
-    Const MAX_NUM_INPUT_FORMATS As Long = 60
+    Const MAX_NUM_INPUT_FORMATS As Long = 75
     ReDim inputExtensions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
     ReDim inputDescriptions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
     ReDim inputPDIFs(0 To MAX_NUM_INPUT_FORMATS - 1) As PD_IMAGE_FORMAT
@@ -343,8 +343,14 @@ Public Sub GenerateInputFormats()
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
     
+    'In v10, I wrote a custom XBM parser (after being notified that FreeImage hard-crashes on all XBM files)
+    AddInputFormat "XBM - X Bitmap", "*.xbm", PDIF_XBM
+    
     'In v9.0, I wrote a custom XCF parser for PD
     AddInputFormat "XCF - GIMP (GNU Image Manipulation Program)", "*.xcf;*.xcfgz;*.xcf.gz", PDIF_XCF
+    
+    'FreeImage supports XPM files (and I may write my own decoder later)
+    If m_FreeImageEnabled Then AddInputFormat "XPM - X Pixmap", "*.xpm", PDIF_XPM
     
     'Finish out the list with an obligatory "All files" option
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1

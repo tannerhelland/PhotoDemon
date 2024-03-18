@@ -31,6 +31,7 @@ Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
 Private Const USE_INTERNAL_PARSER_QOI As Boolean = True
+Private Const USE_INTERNAL_PARSER_XBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_XCF As Boolean = True
 
 'PNGs get some special preference due to their ubiquity; a persistent class enables better caching
@@ -1052,6 +1053,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'A custom XBM parser was added in v10.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_XBM Then
+        CascadeLoadGenericImage = LoadXBM(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_XBMParser
+            dstImage.SetOriginalFileFormat PDIF_XBM
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1097,6 +1107,11 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
 End Function
 
 Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+    
+    AttemptFreeImageLoad = False
+    
+    'FreeImage has known crashes on certain image formats.  Do NOT attempt to load these!
+    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "xbm", True) Then Exit Function
     
     PDDebug.LogAction "Attempting to load via FreeImage..."
     
@@ -2070,6 +2085,49 @@ Private Function LoadWebP(ByRef srcFile As String, ByRef dstImage As pdImage, By
         PDDebug.LogAction "WARNING! LoadWebP() couldn't load source file."
     End If
     
+End Function
+
+'Load an X Bitmap (XBM) image.  Originally this was handled by FreeImage, but FreeImage crashes on every XBM load attempt.
+' So I wrote my own loader in March 2024.
+Private Function LoadXBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadXBM = False
+    
+    'pdXBM handles all the dirty work for us
+    Dim cReader As pdXBM
+    Set cReader = New pdXBM
+    
+    'Validate the file
+    If cReader.IsFileXBM(srcFile) Then
+    
+        'Load the file
+        LoadXBM = cReader.LoadXBM_FromFile(srcFile, dstImage, dstDIB)
+        
+        'Perform some PD-specific object initialization before exiting
+        If LoadXBM Then
+            
+            dstImage.SetOriginalFileFormat PDIF_XBM
+            dstImage.NotifyImageChanged UNDO_Everything
+            dstImage.SetOriginalGrayscale True
+            dstImage.SetOriginalAlpha False
+            
+            'XBM images are always 1-bit
+            dstImage.SetOriginalColorDepth 1
+            
+            'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns
+            ' a width/height of zero, the upstream load function will think the load process failed.
+            ' Because of that, we must initialize the DIB to *something*.
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            dstDIB.CreateBlank 16, 16, 32, 0
+            
+            'As simple 1-bit icons, XBM files obviously don't support color management!
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+        End If
+    
+    '/File is not XBM format
+    End If
+        
 End Function
 
 Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
