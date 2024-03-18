@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1632</langversion>
+<langversion>8.9.1633</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -9725,11 +9725,6 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 </phrase>
 
 <phrase>
-<original>Repairs complete</original>
-<translation>Riparazioni complete</translation>
-</phrase>
-
-<phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
 <translation>La cartella sorgente non contiene alcun file.  Si prega di provare un'altra cartella.</translation>
 </phrase>
@@ -11537,11 +11532,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <phrase>
 <original>integers only [%1 to %2]</original>
 <translation>solo numeri interi [da %1 a %2]</translation>
-</phrase>
-
-<phrase>
-<original>integers only</original>
-<translation>solo numeri interi</translation>
 </phrase>
 
 <phrase>
