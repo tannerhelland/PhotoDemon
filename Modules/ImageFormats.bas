@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 23/February/24
-'Last update: wire up PDF import
+'Last updated: 18/March/24
+'Last update: wire up XBM import
 '
 'This module determines run-time read/write support for various image formats.
 '

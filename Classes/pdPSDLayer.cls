@@ -2411,8 +2411,7 @@ Private Function ExpandMonochrome(ByRef srcChannel As PSD_ChannelInfo, ByVal num
     Dim numPixelsProcessed As Long
     
     'There's not a performance-friendly way to mask flags in VB, so let's just use a byte array for clarity
-    Dim bitFlags() As Byte
-    ReDim bitFlags(0 To 7) As Byte
+    Dim bitFlags(0 To 7) As Byte
     bitFlags(0) = 128
     bitFlags(1) = 64
     bitFlags(2) = 32

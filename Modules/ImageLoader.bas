@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 27/February/24
-'Last update: initial build of PDF import
+'Last updated: 18/March/24
+'Last update: initial build of XBM import
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -2113,12 +2113,6 @@ Private Function LoadXBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             
             'XBM images are always 1-bit
             dstImage.SetOriginalColorDepth 1
-            
-            'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns
-            ' a width/height of zero, the upstream load function will think the load process failed.
-            ' Because of that, we must initialize the DIB to *something*.
-            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-            dstDIB.CreateBlank 16, 16, 32, 0
             
             'As simple 1-bit icons, XBM files obviously don't support color management!
             dstDIB.SetColorManagementState cms_ProfileConverted

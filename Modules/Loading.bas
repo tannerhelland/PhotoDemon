@@ -872,6 +872,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "libjxl"
         Case id_pdfium
             GetDecoderName = "pdfium"
+        Case id_XBMParser
+            GetDecoderName = "Internal XBM parser"
         Case Else
             GetDecoderName = "unknown?!"
     End Select
