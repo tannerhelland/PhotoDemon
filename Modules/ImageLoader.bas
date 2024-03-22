@@ -31,6 +31,7 @@ Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
 Private Const USE_INTERNAL_PARSER_QOI As Boolean = True
+Private Const USE_INTERNAL_PARSER_WBMP As Boolean = True
 Private Const USE_INTERNAL_PARSER_XBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_XCF As Boolean = True
 
@@ -1062,6 +1063,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'A custom WBMP parser was added in v10.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_WBMP Then
+        CascadeLoadGenericImage = LoadWBMP(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_WBMPParser
+            dstImage.SetOriginalFileFormat PDIF_WBMP
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -2019,6 +2029,43 @@ Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
     End If
 
+End Function
+
+'Load a WAP Bitmap (WBMP).  Originally this was handled by FreeImage, but as part of a broader movement way from
+' relying on FreeImage (the library is effectively abandoned) I wrote my own small WBMP decoder in 2024.
+Private Function LoadWBMP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadWBMP = False
+    
+    'pdWBMP handles all the dirty work for us
+    Dim cReader As pdWBMP
+    Set cReader = New pdWBMP
+    
+    'Validate the file
+    If cReader.IsFileWBMP(srcFile) Then
+    
+        'Load the file
+        LoadWBMP = cReader.LoadWBMP_FromFile(srcFile, dstImage, dstDIB)
+        
+        'Perform some PD-specific object initialization before exiting
+        If LoadWBMP Then
+            
+            dstImage.SetOriginalFileFormat PDIF_WBMP
+            dstImage.NotifyImageChanged UNDO_Everything
+            dstImage.SetOriginalGrayscale True
+            dstImage.SetOriginalAlpha False
+            
+            'WBMP images are always 1-bit
+            dstImage.SetOriginalColorDepth 1
+            
+            'As simple 1-bit icons, WBMP files obviously don't support color management!
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+        End If
+    
+    '/File is not WBMP format
+    End If
+        
 End Function
 
 'Use libwebp to parse a WebP file

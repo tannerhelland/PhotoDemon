@@ -301,6 +301,7 @@ Public Enum PD_ImageDecoder
     id_PSDParser
     id_PSPParser
     id_QOIParser
+    id_WBMPParser
     id_XBMParser
     id_XCFParser
     id_WIC
@@ -315,8 +316,9 @@ End Enum
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
     Private Const id_CBZParser = 0, id_HGTParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0
-    Private Const id_PNGParser = 0, id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_XBMParser = 0, id_XCFParser = 0
-    Private Const id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0, id_libjxl = 0, id_pdfium = 0
+    Private Const id_PNGParser = 0, id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_WBMPParser = 0, id_XBMParser = 0
+    Private Const id_XCFParser = 0, id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0, id_libjxl = 0
+    Private Const id_pdfium = 0
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.

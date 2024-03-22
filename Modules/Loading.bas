@@ -856,6 +856,10 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "Internal PaintShop Pro parser"
         Case id_QOIParser
             GetDecoderName = "Internal QOI parser"
+        Case id_WBMPParser
+            GetDecoderName = "Internal WBMP parser"
+        Case id_XBMParser
+            GetDecoderName = "Internal XBM parser"
         Case id_XCFParser
             GetDecoderName = "Internal XCF parser"
         Case id_WIC
@@ -872,8 +876,6 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "libjxl"
         Case id_pdfium
             GetDecoderName = "pdfium"
-        Case id_XBMParser
-            GetDecoderName = "Internal XBM parser"
         Case Else
             GetDecoderName = "unknown?!"
     End Select
