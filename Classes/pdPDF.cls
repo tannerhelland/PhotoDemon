@@ -411,17 +411,7 @@ Friend Sub RenderCurrentPageToPDDib(ByRef dstDIB As pdDIB, ByVal dstLeft As Long
         Exit Sub
     End If
     
-    'PDFium can render to a few different pixel formats
-    ' More DIB formats
-    ' Unknown or unsupported format.
-    Const FPDFBitmap_Unknown = 0
-    ' Gray scale bitmap, one byte per pixel.
-    Const FPDFBitmap_Gray = 1
-    ' 3 bytes per pixel, byte order: blue, green, red.
-    Const FPDFBitmap_BGR = 2
-    ' 4 bytes per pixel, byte order: blue, green, red, unused.
-    Const FPDFBitmap_BGRx = 3
-    ' 4 bytes per pixel, byte order: blue, green, red, alpha.
+    'PDFium can render to a few different pixel formats; we only need BGRA for PD
     Const FPDFBitmap_BGRA = 4
     
     'Wrap a PDFium bitmap around the pdDIB object

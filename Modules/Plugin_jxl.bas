@@ -809,8 +809,6 @@ End Function
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins.
 Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
     
-    Const FUNC_NAME As String = "PromptForLibraryDownload_JXL"
-    
     On Error GoTo BadDownload
     
     'Like most modern libraries, libjxl requires at least Win 7

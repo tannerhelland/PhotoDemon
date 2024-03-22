@@ -485,8 +485,6 @@ End Function
 'Returns TRUE if PD successfully downloaded (and initialized) all required plugins
 Public Function PromptForLibraryDownload_AVIF(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
     
-    Const FUNC_NAME As String = "PromptForLibraryDownload_AVIF"
-    
     On Error GoTo BadDownload
     
     'Only attempt download if the current Windows install is 64-bit

@@ -45,11 +45,6 @@ End Enum
 
 'Used to query the OS to determine if metric or imperial units should be the default
 Private Const LOCALE_USER_DEFAULT As Long = &H400&
-
-'From MSDN:
-' System of measurement. The maximum number of characters allowed for this string is two, including a terminating null character.
-' This value is 0 if the metric system (Systéme International d'Units, or S.I.) is used, and 1 if the United States system is used.
-Private Const LOCALE_IMEASURE As Long = 13&
 Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
@@ -201,6 +196,9 @@ Public Function LocaleUsesMetric() As Boolean
     Dim sBuffer As String, sRet As String
     sBuffer = String$(4, 0)
     
+    'From MSDN:
+    ' System of measurement. The maximum number of characters allowed for this string is two, including a terminating null character.
+    ' This value is 0 if the metric system (Systéme International d'Units, or S.I.) is used, and 1 if the United States system is used.
     Const LOCALE_IMEASURE As Long = &HD&
     sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, StrPtr(sBuffer), Len(sBuffer))
     

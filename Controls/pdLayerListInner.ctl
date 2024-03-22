@@ -563,8 +563,6 @@ Private Sub ShowLayerPopupMenu(ByVal srcX As Long, ByVal srcY As Long)
     
     m_PopupMenu.Reset
     
-    Dim menuItemVisible As Boolean
-    
     'Construct the menu.  (The current layout of this menu largely mimics Photoshop.)
     With m_PopupMenu
         .AddMenuItem g_Language.TranslateMessage("Show this layer"), "layer_show", 0, menuIsChecked:=PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex, True).GetLayerVisibility()

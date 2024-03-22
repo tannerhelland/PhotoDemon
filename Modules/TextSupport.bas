@@ -113,7 +113,7 @@ Public Function ConvertPageRangeToStack(ByRef srcRange As String, ByRef dstStack
     
     'Internationalized list separators follow
     'https://en.wikipedia.org/wiki/Comma#Languages_other_than_Western_European
-    If (InStr(1, processedRange, ChrW(&H3001&), vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, ChrW(&H3001&), " ", 1, -1, vbBinaryCompare)
+    If (InStr(1, processedRange, ChrW$(&H3001&), vbBinaryCompare) <> 0) Then processedRange = Replace$(processedRange, ChrW$(&H3001&), " ", 1, -1, vbBinaryCompare)
     
     'Ensure hyphens are separated by whitespace too
     Const HYPHEN_CHAR As String = "-"

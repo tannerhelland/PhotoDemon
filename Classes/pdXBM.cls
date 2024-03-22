@@ -19,7 +19,7 @@ Attribute VB_Exposed = False
 'Last update: wrap up initial build
 '
 'The XBM file format is *ancient*.  PhotoDemon originally just handed XBM support off to the 3rd-party
-' FreeImage library, but FreeImage crashes on pretety much all XBM files (including modern exported ones
+' FreeImage library, but FreeImage crashes on pretty much all XBM files (including modern exported ones
 ' from well-known software like GIMP).
 '
 'So in 2024, I wrote my own XBM decoder.  It definitely falls on the "quick-and-dirty" side of things,
@@ -55,11 +55,9 @@ Private m_Width As Long, m_Height As Long
 'Byte-by-byte access is provided, as always, by a pdStream instance.
 Private m_Stream As pdStream
 
-'The last filename loaded.  The contents of the filename will be stored in m_FileAsString, below.
+'The last filename loaded.  We use this to skip validation during loading, if the caller already called
+' IsFileXBM on the current filename they want loaded.
 Private m_OpenFilename As String
-
-'Once the file is validated, its raw text is dumped into this string.
-Private m_FileAsString As String
 
 'XBM files are just raw C code, so they don't validate normally.  Instead, I treat the file as a string
 ' and attempt to find key consts (declaring reasonable image dimensions).
@@ -227,6 +225,8 @@ Friend Function LoadXBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
     Const FUNC_NAME As String = "LoadXBM_FromFile"
     LoadXBM_FromFile = False
+    
+    On Error GoTo BadXBMFile
     
     'Validate the file
     If Me.IsFileXBM(srcFile, False) Then
