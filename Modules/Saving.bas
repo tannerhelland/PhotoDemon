@@ -519,6 +519,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_TIFF
             ExportToSpecificFormat = ImageExporter.ExportTIFF(srcImage, dstPath, saveParameters, metadataParameters)
         
+        Case PDIF_WBMP
+            ExportToSpecificFormat = ImageExporter.ExportWBMP(srcImage, dstPath, saveParameters, metadataParameters)
+            
         Case PDIF_WEBP
             If srcImage.IsAnimated Then
                 ExportToSpecificFormat = ImageExporter.ExportWebP_Animated(srcImage, dstPath, saveParameters, metadataParameters)

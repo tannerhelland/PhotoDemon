@@ -311,8 +311,8 @@ Public Function GetDIBColorCountObject(ByRef srcDIB As pdDIB, ByRef dstColorCoun
     
 End Function
 
-'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
-' stretches from 0 to 255.
+'Given a DIB, return a 2D Byte array of the DIB's luminance values.
+' The optional toNormalize parameter guarantees that the output stretches from 0 to 255.
 'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
 'ALSO NOTE: this function does not support progress reports, by design.
 Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean

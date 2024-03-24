@@ -768,16 +768,16 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Double
-    conversionFactor = (255 / (numOfShades - 1))
+    conversionFactor = 255 / (numOfShades - 1)
     
     'Build a look-up table for our custom conversion
     Dim g As Long, newG As Long
-    Dim grayLookUp() As Byte
-    ReDim grayLookUp(0 To 255) As Byte
+    'Dim grayLookUp() As Byte
+    Dim grayLookUp(0 To 255) As Byte
     
     For x = 0 To 255
         g = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
-        If g > 255 Then g = 255
+        If (g > 255) Then g = 255
         grayLookUp(x) = g
     Next x
     
@@ -787,8 +787,8 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     Dim errorVal As Double
     Dim dDivisor As Double
     
-    Dim ditherTable() As Byte
-    ReDim ditherTable(-1 To 1, 0 To 1) As Byte
+    'Dim ditherTable() As Byte
+    Dim ditherTable(-1 To 1, 0 To 1) As Byte
             
     ditherTable(1, 0) = 7
     ditherTable(-1, 1) = 3
@@ -820,9 +820,9 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
         g = g + dErrors(x, y)
         
         'Convert to a lookup-table safe value
-        If g >= 255 Then
+        If (g >= 255) Then
             newG = 255
-        ElseIf g < 0 Then
+        ElseIf (g < 0) Then
             newG = 0
         Else
             newG = g
@@ -835,7 +835,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
         errorVal = g - grayLookUp(newG)
         
         'If there is an error, spread it according to the dither table formula
-        If errorVal <> 0 Then
+        If (errorVal <> 0) Then
         
             For i = xLeft To xRight
             For j = 0 To yDown
@@ -850,9 +850,9 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
-                If xStride < initX Then GoTo NextDitheredPixel
-                If xStride > finalX Then GoTo NextDitheredPixel
-                If quickY > finalY Then GoTo NextDitheredPixel
+                If (xStride < initX) Then GoTo NextDitheredPixel
+                If (xStride > finalX) Then GoTo NextDitheredPixel
+                If (quickY > finalY) Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
                 dErrors(xStride, quickY) = dErrors(xStride, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))

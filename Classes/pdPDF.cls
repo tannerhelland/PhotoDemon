@@ -65,7 +65,6 @@ End Type
 'This library has very specific compiler needs in order to produce maximum perf code, so rather than
 ' recompile it, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
 'DLL addresses are only calculated once, by Plugin_PDF (we just borrow its list)
 Private m_ProcAddresses() As PDFium_ProcAddress

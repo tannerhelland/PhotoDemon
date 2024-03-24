@@ -2543,6 +2543,58 @@ Private Function GetFreeImageTIFFConstant(ByRef compressionName As String) As Lo
     End If
 End Function
 
+'WBMP uses native codecs (implemented in the pdWBMP class)
+Public Function ExportWBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportError
+    
+    ExportWBMP = False
+    Dim sFileType As String: sFileType = "WBMP"
+    
+    'Generate a composited image copy (against a white background; we do not offer a full dialog for this format)
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, True
+    tmpImageCopy.CompositeBackgroundColor 255, 255, 255
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    'All export details are handled by a pdWBMP instance
+    Dim cExport As pdWBMP
+    Set cExport = New pdWBMP
+    If cExport.SaveWBMP_ToFile(tmpFilename, srcPDImage, tmpImageCopy) Then
+        
+        'If we are not overwriting an existing file, exit immediately; otherwise, attempt to replace the original file
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportWBMP = True
+        Else
+            ExportWBMP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            If (Not ExportWBMP) Then
+                Files.FileDeleteIfExists tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+        End If
+        
+    End If
+    
+    Exit Function
+    
+ExportError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportWBMP = False
+    
+End Function
+
 'Save to WebP format using Google's official libwebp library
 Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     

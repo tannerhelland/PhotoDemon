@@ -50,6 +50,11 @@ Private m_Stream As pdStream
 'The last filename loaded.  The contents of the filename will be stored in m_FileAsString, below.
 Private m_OpenFilename As String
 
+'WBMPs use VLQs ("variable-length quantities"), which are 128-bits of data with a 1-bit flag indicating
+' "more data follows" if set to 1.  To simplify the process of encoding these in VB6, I use a fixed
+' 5-byte array (which can store up to 4 individual bytes of actual data encoded as a VLQ).
+Private m_VLQ(0 To 4) As Byte
+
 'WBMP files use a very small header with no magic numbers, so we check a few key fields (including width/height)
 ' when attempting to validate.
 Friend Function IsFileWBMP(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True, Optional ByVal closeStreamWhenDone As Boolean = True) As Boolean
@@ -300,6 +305,158 @@ Private Function ReadVLQ(ByRef srcStream As pdStream) As Long
 BadVLQ:
     ReadVLQ = 0
     InternalError FUNC_NAME, "bad VLQ entry"
+    
+End Function
+
+'Encode a "variable-length quantity" entry inside the target stream, starting at the current stream location.
+' VLQs are a way to encode 128-bit entries in a variable-length stream, by using the first bit of each byte
+' to indicate that additional bytes follow.  (A 0 in the MSB position indicates no additional bits follow.)
+Private Sub WriteVLQ(ByRef dstStream As pdStream, ByVal valToWrite As Long)
+    
+    Dim numBytesEncoded As Long, tmpEncode As Byte
+    numBytesEncoded = 0
+    
+    'It's easier to calculate VLQs from right to left, then "push" the encoded
+    ' bytes out in the reverse order we calculated them.
+    Do
+        
+        'Add the least-significant 7-bits to the running list
+        m_VLQ(numBytesEncoded) = (valToWrite And &H7F&)
+        numBytesEncoded = numBytesEncoded + 1
+        
+        'Shift the original value 7-bits to the left
+        valToWrite = valToWrite \ 128
+        
+    Loop While (valToWrite > 0)
+    
+    'Push the finished byte stream out to file (in *reverse* order), and add a preceding 1-bit to all bits
+    ' but the final one, to indicate that additional bits follow.
+    Dim i As Long
+    For i = numBytesEncoded - 1 To 0 Step -1
+        tmpEncode = m_VLQ(i)
+        If (i > 0) Then tmpEncode = tmpEncode Or &H80&
+        dstStream.WriteByte tmpEncode
+    Next i
+    
+End Sub
+
+'Save an arbitrary DIB to a standalone WBMP file.  An optional parent pdImage object can also be passed,
+' but it is not currently required (or even used).
+Friend Function SaveWBMP_ToFile(ByRef dstFile As String, ByRef srcImage As pdImage, ByRef srcDIB As pdDIB) As Boolean
+    
+    Const FUNC_NAME As String = "SaveWBMP_ToFile"
+    SaveWBMP_ToFile = False
+    
+    On Error GoTo SaveFailed
+    
+    'WBMP files are very easy to save.  There are no user-controlled parameters, and saving is deterministic.
+    
+    'WBMP files are always saved as 1-bit monochrome, so the only thing we need to embed in the file
+    ' (besides pixel contents, obviously) are the image's dimensions!
+    
+    'Start by opening a pdStream instance on the target file, then writing a fixed-size header.
+    Set m_Stream = New pdStream
+    If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, optimizeAccess:=OptimizeSequentialAccess)) Then
+        InternalError FUNC_NAME, "couldn't initialize stream on target file"
+        SaveWBMP_ToFile = False
+        Exit Function
+    End If
+    
+    'Set up progress bar reports
+    ProgressBars.SetProgBarMax srcDIB.GetDIBHeight
+    
+    Dim progBarCheck As Long
+    progBarCheck = ProgressBars.FindBestProgBarValue()
+    
+    'Headers for WBMP files are fixed, and only one type of WBMP image is defined by the spec.  Easy-peasy!
+    m_Stream.WriteByte 0
+    m_Stream.WriteByte 0
+    WriteVLQ m_Stream, srcDIB.GetDIBWidth
+    WriteVLQ m_Stream, srcDIB.GetDIBHeight
+    
+    'We expect the caller to already have retrieved the composited image and composited it against
+    ' a background (into srcDIB).  Now all we have to do is retrieve each pixel and write it out as
+    ' a monochrome bit stream.
+    
+    'Convert the source image into a grayscale byte array
+    Dim imgGray() As Byte
+    DIBs.GetDIBGrayscaleMap srcDIB, imgGray, False
+    
+    'Use dithering to further convert that byte array to a list of pure 0 or 255 values
+    Filters_ByteArray.ThresholdByteArray imgGray, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 127
+    
+    'There's not a performance-friendly way to mask flags in VB, so let's just use a byte array for clarity
+    Dim bitFlags(0 To 7) As Byte
+    bitFlags(0) = 128
+    bitFlags(1) = 64
+    bitFlags(2) = 32
+    bitFlags(3) = 16
+    bitFlags(4) = 8
+    bitFlags(5) = 4
+    bitFlags(6) = 2
+    bitFlags(7) = 1
+    
+    'Iterate scanlines (encoded pixels must null-pad bits beyond the current scanline) and dump
+    ' encoded bytes to file as we go!
+    Dim x As Long, y As Long, i As Long, encodedByte As Byte
+    
+    Dim xLimit As Long
+    xLimit = (srcDIB.GetDIBWidth - 1)
+    
+    'It's slow to write individual bytes out to stream (via function), so instead, cache each
+    ' scanline into an array and dump them out in groups.
+    Dim xEncoded() As Byte, maxBytesScanline As Long, idxDst As Long
+    maxBytesScanline = Int((srcDIB.GetDIBWidth + 7) \ 8)
+    ReDim xEncoded(0 To maxBytesScanline - 1) As Byte
+    
+    For y = 0 To srcDIB.GetDIBHeight - 1
+        
+        'Reset the x-trackers
+        x = 0
+        idxDst = 0
+        
+        Do
+            
+            encodedByte = 0
+            
+            'Copy the next 8 pixels into a single byte
+            For i = 0 To 7
+                
+                'Because the image's converted grayscale values are guaranteed to be 0 or 255,
+                ' we can skip an expensive conditional (note the commented out code, which I've
+                ' left for clarity) and simply && the gray value as-is
+                'If (imgGray(x, y) > 0) Then encodedByte = encodedByte Or bitFlags(i)
+                encodedByte = encodedByte Or (bitFlags(i) And imgGray(x, y))
+                x = x + 1
+                If (x > xLimit) Then Exit For
+                
+            Next i
+            
+            'Cache this byte locally.
+            'm_Stream.WriteByte encodedByte
+            xEncoded(idxDst) = encodedByte
+            idxDst = idxDst + 1
+            
+        Loop While (x < xLimit)
+        
+        'Dump the encoded array out to file
+        m_Stream.WriteBytesFromPointer VarPtr(xEncoded(0)), maxBytesScanline
+        
+        'Relay progress as we go
+        If (y And progBarCheck) = 0 Then ProgressBars.SetProgBarVal y
+        
+    Next y
+    
+    'Finished!
+    m_Stream.StopStream
+    ProgressBars.ReleaseProgressBar
+    
+    SaveWBMP_ToFile = True
+    Exit Function
+    
+SaveFailed:
+    SaveWBMP_ToFile = False
+    InternalError FUNC_NAME, "internal VB error #" & Err.Number & ": " & Err.Description
     
 End Function
 

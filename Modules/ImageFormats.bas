@@ -448,6 +448,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "QOI - Quite OK Image", "qoi", PDIF_QOI
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
+    AddOutputFormat "WBMP - Wireless Bitmap", "wbm", PDIF_WBMP
     If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
