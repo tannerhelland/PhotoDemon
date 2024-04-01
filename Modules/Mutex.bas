@@ -19,7 +19,7 @@ Attribute VB_Name = "Mutex"
 
 Option Explicit
 
-Private Const DISABLE_MUTEX_IN_IDE As Boolean = False
+Private Const DISABLE_MUTEX_IN_IDE As Boolean = True
 
 Private m_Mutex As pdMutex
 
@@ -34,10 +34,15 @@ Public Function IsThisOnlyInstance() As Boolean
     'Only check instancing once, at startup time
     If (Not m_HaveCheckedAlready) Then
         
-        If (Not OS.IsProgramCompiled) And DISABLE_MUTEX_IN_IDE Then
-            IsThisOnlyInstance = (Not App.PrevInstance)
+        If (m_Mutex Is Nothing) Then Set m_Mutex = New pdMutex
+        
+        If (Not OS.IsProgramCompiled) Then
+            If (Not DISABLE_MUTEX_IN_IDE) Then
+                IsThisOnlyInstance = (Not m_Mutex.DoesMutexAlreadyExist(UserPrefs.GetUniqueAppID(), True))
+            Else
+                IsThisOnlyInstance = True
+            End If
         Else
-            If (m_Mutex Is Nothing) Then Set m_Mutex = New pdMutex
             IsThisOnlyInstance = (Not m_Mutex.DoesMutexAlreadyExist(UserPrefs.GetUniqueAppID(), True))
         End If
         

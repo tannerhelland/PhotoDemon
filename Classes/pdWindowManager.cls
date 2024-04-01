@@ -104,6 +104,7 @@ Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, B
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function SetActiveWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function SetForegroundWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
@@ -171,6 +172,9 @@ Private m_tmpMinMax As MinMaxInfo
 '***********************************************************************************************
 '  GENERIC HELPER FUNCTIONS: VB-friendly wrappers to window-related APIs
 '***********************************************************************************************
+Friend Sub BringWindowToForeground(ByVal dstHWnd As Long)
+    SetForegroundWindow dstHWnd
+End Sub
 
 Friend Sub SetOSDarkTheme(ByVal dstHWnd As Long)
     If OS.IsWin10OrLater() Then

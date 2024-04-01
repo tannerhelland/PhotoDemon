@@ -1981,7 +1981,10 @@ Private Sub Form_Load()
         ' for other active PhotoDemon sessions.  The user can set an option (in Tools > Options)
         ' to only allow one PhotoDemon instance at a time.  Attempting to load an image into a
         ' new PhotoDemon instance will instead route that image here, to this instance.
-        If Mutex.IsThisOnlyInstance() And OS.IsProgramCompiled() Then
+        '
+        '(Note that this check *also* occurs in the IDE, contingent on a compile-time constant
+        ' in the Mutex module.)
+        If Mutex.IsThisOnlyInstance() Then
             
             'Write a unique session name to the user prefs file; other instances will use this
             ' to connect to our named pipe.
@@ -2341,7 +2344,7 @@ Private Sub Form_Unload(Cancel As Integer)
             PDDebug.LogAction "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
         End If
     End If
-        
+    
     'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
     ' it can compare its version against this value, to infer if an update occurred.
     PDDebug.LogAction "Writing session data to file..."
@@ -2613,6 +2616,9 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
                         End If
                         
                     Next i
+                    
+                    'Bring FormMain to the forefront to indicate that something has happened.
+                    If (Not g_WindowManager Is Nothing) Then g_WindowManager.BringWindowToForeground FormMain.hWnd
                     
                 End If
                 

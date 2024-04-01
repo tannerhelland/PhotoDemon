@@ -240,9 +240,9 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Check multi-session status"
     
     'This step requires access to the UserPrefs module, as each PD install location uses a unique key.
-    ' (Note that we obviously disable this step in the IDE, as I often want to test things against a
-    ' side-by-side compiled copy of PD.)
-    If (Not Mutex.IsThisOnlyInstance) And OS.IsProgramCompiled Then
+    ' (Note that this check *can happen in the IDE*, contingent on a compile-time constant in the
+    ' Mutex module.)
+    If (Not Mutex.IsThisOnlyInstance) Then
         
         PDDebug.LogAction "This PhotoDemon instance is not unique!  Querying user preferences for session behavior..."
         
