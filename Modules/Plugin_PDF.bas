@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_PDF"
 'Adobe PDF Interface (via pdfium)
 'Copyright 2024-2024 by Tanner Helland
 'Created: 23/February/24
-'Last updated: 23/February/24
-'Last update: start work on initial build
+'Last updated: 01/April/24
+'Last update: don't attempt to unload the library if it wasn't loaded in the first place
 '
 'PhotoDemon uses the pdfium library (https://pdfium.googlesource.com/pdfium/) for all PDF features.
 ' pdfium is provided under BSD-3 and Apache 2.0 licenses (https://pdfium.googlesource.com/pdfium/+/main/LICENSE).
@@ -268,17 +268,20 @@ End Function
 
 Public Sub ReleaseEngine()
     
-    'From the header:
-    ' "After this function is called, you must not call any PDF processing functions.
-    '  Calling this function does not automatically close other objects.
-    '  It is recommended to close other objects before closing the library with this function."
-    CallCDeclW FPDF_DestroyLibrary, vbEmpty
-    
-    'Free the library handle
     If (m_LibHandle <> 0) Then
+    
+        'From the header:
+        ' "After this function is called, you must not call any PDF processing functions.
+        '  Calling this function does not automatically close other objects.
+        '  It is recommended to close other objects before closing the library with this function."
+        CallCDeclW FPDF_DestroyLibrary, vbEmpty
+    
+        'Free the library handle
         VBHacks.FreeLib m_LibHandle
-        m_LibHandle = 0
+        
     End If
+    
+    m_LibHandle = 0
     
 End Sub
 
