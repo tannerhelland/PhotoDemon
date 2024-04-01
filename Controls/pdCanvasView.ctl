@@ -406,36 +406,13 @@ End Sub
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there, or even better, stop being lazy
 ' and write a universal drag/drop handler!)
 Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If (Not g_AllowDragAndDrop) Then Exit Sub
-    
-    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
-    ' to load the OLE source.
-    Dim dropAsNewLayer As VbMsgBoxResult
-    dropAsNewLayer = Dialogs.PromptDropAsNewLayer()
-    If (dropAsNewLayer <> vbCancel) Then
-        If (dropAsNewLayer = vbNo) Then
-            g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo), Int(x + 0.5!), Int(y + 0.5!)
-        Else
-            g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
-        End If
-    End If
-    
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift, x, y
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there, or even better, stop being lazy
 ' and write a universal drag/drop handler!)
 Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-
-    'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
-    ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
-    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
-        Effect = vbDropEffectCopy And Effect
-    Else
-        Effect = vbDropEffectNone
-    End If
-    
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).

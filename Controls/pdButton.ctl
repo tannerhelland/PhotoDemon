@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Generic Button control
 'Copyright 2014-2024 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 03/May/20
-'Last update: switch to pd2D for UI rendering
+'Last updated: 01/April/24
+'Last update: raise custom drag/drop events (that the owner can respond to as they wish)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -70,6 +70,13 @@ Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTa
 'As of Feb 2018, pdButton now offers an "owner-drawn" rendering mode.  This was required for the color selector
 ' panel on the main window, as the settings button is too short to support text display.
 Public Event DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
+
+'In April 2024, I added DragDrop relays (to enable custom drag/drop behavior on individual buttons).
+' (Despite the name, these relays are for the underlying OLE-prefixed events, which are the only drag/drop
+' events PD uses.)
+Public Event CustomDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+Public Event CustomDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
+Private m_CustomDragDropEnabled As Boolean
 
 Public Enum PDButton_RenderMode
     BRM_Normal = 0
@@ -158,6 +165,15 @@ Public Property Let BackColor(ByVal newBackColor As OLE_COLOR)
         m_BackColor = newBackColor
         RedrawBackBuffer
     End If
+End Property
+
+Public Property Get CustomDragDropEnabled() As Boolean
+    CustomDragDropEnabled = m_CustomDragDropEnabled
+End Property
+
+Public Property Let CustomDragDropEnabled(ByVal newValue As Boolean)
+    m_CustomDragDropEnabled = newValue
+    If newValue Then UserControl.OLEDropMode = 1 Else UserControl.OLEDropMode = 0
 End Property
 
 Public Property Get RenderMode() As PDButton_RenderMode
@@ -503,11 +519,20 @@ Private Sub UserControl_InitProperties()
     BackColor = vbWhite
     BackgroundColor = vbWhite
     Caption = vbNullString
+    CustomDragDropEnabled = False
     Enabled = True
     FontSize = 10
     RenderMode = BRM_Normal
     UseCustomBackColor = False
     UseCustomBackgroundColor = False
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -520,6 +545,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         m_BackColor = .ReadProperty("BackColor", vbWhite)
         m_BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
         Caption = .ReadProperty("Caption", vbNullString)
+        CustomDragDropEnabled = .ReadProperty("CustomDragDropEnabled", False)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         RenderMode = .ReadProperty("RenderMode", 0)
@@ -537,6 +563,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
+        .WriteProperty "CustomDragDropEnabled", Me.CustomDragDropEnabled, False
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
         .WriteProperty "RenderMode", Me.RenderMode, 0

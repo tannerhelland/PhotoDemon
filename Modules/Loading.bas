@@ -946,6 +946,44 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
 
 End Function
 
+'Load an image via drag/drop on an individual control.
+' Optionally, a target x/y can be passed (this is really only useful for dropping on an existing canvas;
+' the values will be ignored otherwise).
+Public Function LoadFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, Optional ByRef x As Single = 0!, Optional ByRef y As Single = 0!) As Boolean
+
+    'Make sure the main window is available (e.g. a modal dialog hasn't stolen focus)
+    If (Not g_AllowDragAndDrop) Then Exit Function
+    
+    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
+    ' to load the OLE source.
+    Dim dropAsNewLayer As VbMsgBoxResult
+    dropAsNewLayer = Dialogs.PromptDropAsNewLayer()
+    
+    If (dropAsNewLayer <> vbCancel) Then
+        If (dropAsNewLayer = vbNo) And ((x <> 0!) Or (y <> 0!)) Then
+            LoadFromDragDrop = g_Clipboard.LoadImageFromDragDrop(Data, Effect, (dropAsNewLayer = vbNo), Int(x + 0.5!), Int(y + 0.5!))
+        Else
+            LoadFromDragDrop = g_Clipboard.LoadImageFromDragDrop(Data, Effect, (dropAsNewLayer = vbNo))
+        End If
+    End If
+    
+End Function
+
+'I don't know if it makes sense here, but because this module handles loading via drag+drop,
+' I've also placed a helper function here for handling cursor update on a drag/over event.
+Public Function HelperForDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer) As Boolean
+
+    'PD supports a lot of potential drop sources these days.
+    ' These values are defined and addressed by the main clipboard handler, because Drag/Drop and clipboard actions
+    ' share a lot of code.
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
+        Effect = vbDropEffectCopy And Effect
+    Else
+        Effect = vbDropEffectNone
+    End If
+
+End Function
+
 'This routine sets the message on the splash screen (used only when the program is first started)
 Public Sub LogStartupEvent(ByRef sMsg As String)
     

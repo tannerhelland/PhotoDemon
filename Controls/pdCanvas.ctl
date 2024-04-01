@@ -87,6 +87,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   1085
          _ExtentY        =   873
          Caption         =   "New image..."
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   12
       End
       Begin PhotoDemon.pdButton cmdStart 
@@ -99,6 +100,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   1085
          _ExtentY        =   873
          Caption         =   "Open image..."
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   12
       End
       Begin PhotoDemon.pdButton cmdStart 
@@ -111,6 +113,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   1085
          _ExtentY        =   873
          Caption         =   "Import from clipboard..."
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   12
       End
       Begin PhotoDemon.pdButton cmdStart 
@@ -123,6 +126,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   1085
          _ExtentY        =   873
          Caption         =   "Batch process..."
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   12
       End
       Begin PhotoDemon.pdButton cmdRecent 
@@ -134,6 +138,7 @@ Begin VB.UserControl pdCanvas
          Width           =   615
          _ExtentX        =   1085
          _ExtentY        =   873
+         CustomDragDropEnabled=   -1  'True
       End
    End
    Begin PhotoDemon.pdProgressBar mainProgBar 
@@ -242,8 +247,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2024 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 08/April/22
-'Last update: fix tab order of start screen (vertical columns are not handled correctly by PD's auto-tab-key algorithm)
+'Last updated: 01/April/24
+'Last update: allow drag+dropping image files on the command buttons on an empty canvas view
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -733,6 +738,14 @@ Private Sub cmdRecent_Click(Index As Integer)
     End If
 End Sub
 
+Private Sub cmdRecent_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift, x, y
+End Sub
+
+Private Sub cmdRecent_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
 Private Sub cmdRecent_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     
     If shiftTabWasPressed Then
@@ -770,6 +783,14 @@ Private Sub cmdStart_Click(Index As Integer)
         Actions.LaunchAction_ByName "file_batch_process"
     End If
 
+End Sub
+
+Private Sub cmdStart_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift, x, y
+End Sub
+
+Private Sub cmdStart_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 Private Sub cmdStart_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
