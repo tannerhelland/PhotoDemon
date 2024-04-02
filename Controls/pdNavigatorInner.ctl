@@ -17,6 +17,7 @@ Begin VB.UserControl pdNavigatorInner
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -236,22 +237,22 @@ Public Function GetFrameTimeInMS(ByVal frameIndex As Long) As Long
 End Function
 
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
     
     'Skip overlays while animating (the animator responds to clicks, instead)
     If (m_Timer.IsActive) Then Exit Sub
     
     If ((Button And pdLeftButton) <> 0) Then
-        If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
+        If PDMath.IsPointInRectF(X, Y, m_ImageRegion) Then ScrollToXY X, Y
     End If
     
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     m_MouseInsideBox = True
 End Sub
 
-Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     m_MouseInsideBox = False
     m_LastMouseX = -1: m_LastMouseY = -1
@@ -262,13 +263,17 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
     
-    m_LastMouseX = x: m_LastMouseY = y
+    m_LastMouseX = X: m_LastMouseY = Y
     
     'Set the cursor depending on whether the mouse is inside the image portion of the navigator control
-    If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then
-        ucSupport.RequestCursor IDC_HAND
+    If (m_ImageRegion.Width <> 0!) And (m_ImageRegion.Height <> 0!) Then
+        If PDMath.IsPointInRectF(X, Y, m_ImageRegion) Then
+            ucSupport.RequestCursor IDC_HAND
+        Else
+            ucSupport.RequestCursor IDC_DEFAULT
+        End If
     Else
         ucSupport.RequestCursor IDC_DEFAULT
     End If
@@ -279,7 +284,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     'If the mouse button is down, scroll to that (x, y) position.  Note that we don't care if the cursor is in-bounds;
     ' the ScrollToXY function will automatically fix that for us.
     If (Button And pdLeftButton) <> 0 Then
-        ScrollToXY x, y
+        ScrollToXY X, Y
     Else
         RedrawBackBuffer
     End If
@@ -322,15 +327,15 @@ Public Sub StopAnimation()
 End Sub
 
 'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
-Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
+Private Sub ScrollToXY(ByVal X As Single, ByVal Y As Single)
 
     'Make sure the image region has been successfully created, or this is all for naught
     If PDImages.IsImageActive() And (m_ImageRegion.Width <> 0!) And (m_ImageRegion.Height <> 0!) Then
     
         'Convert the (x, y) to the [0, 1] range
         Dim xRatio As Double, yRatio As Double
-        xRatio = (x - m_ImageRegion.Left) / m_ImageRegion.Width
-        yRatio = (y - m_ImageRegion.Top) / m_ImageRegion.Height
+        xRatio = (X - m_ImageRegion.Left) / m_ImageRegion.Width
+        yRatio = (Y - m_ImageRegion.Top) / m_ImageRegion.Height
         If (xRatio < 0#) Then xRatio = 0#: If (xRatio > 1#) Then xRatio = 1#
         If (yRatio < 0#) Then yRatio = 0#: If (yRatio > 1#) Then yRatio = 1#
         
@@ -381,6 +386,14 @@ Private Sub UserControl_Initialize()
         Set m_Thumbs = New pdSpriteSheet
     End If
     
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, X, Y, State
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -668,10 +681,16 @@ Private Sub RedrawBackBuffer(Optional ByVal skipAnimationStep As Boolean = False
         'If an image has been loaded, determine a centered position for the image's thumbnail
         If (Not PDImages.IsImageActive()) Then
             With m_ThumbRect
-                .Width = 0
-                .Height = 0
-                .Left = 0
-                .Top = 0
+                .Width = 0!
+                .Height = 0!
+                .Left = 0!
+                .Top = 0!
+            End With
+            With m_ImageRegion
+                .Width = 0!
+                .Height = 0!
+                .Left = 0!
+                .Top = 0!
             End With
         Else
             

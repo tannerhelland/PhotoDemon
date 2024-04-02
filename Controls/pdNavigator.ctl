@@ -17,6 +17,7 @@ Begin VB.UserControl pdNavigator
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   158
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   322
@@ -323,6 +324,14 @@ Private Sub UserControl_Initialize()
     'Set default animation status
     m_Animated = False
     
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, X, Y, State
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
