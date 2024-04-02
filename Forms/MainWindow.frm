@@ -2138,28 +2138,11 @@ End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If (Not g_AllowDragAndDrop) Then Exit Sub
-    
-    'Use the external function (in the clipboard handler, as the code is roughly identical to
-    ' clipboard pasting) to load the OLE source.
-    Dim dropAsNewLayer As VbMsgBoxResult
-    dropAsNewLayer = Dialogs.PromptDropAsNewLayer()
-    If (dropAsNewLayer <> vbCancel) Then g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
-    
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
 End Sub
 
 Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-    
-    'PD supports many different types of drop sources.  These values are defined and addressed by
-    ' the main clipboard handler, because Drag/Drop and clipboard actions use very similar code.
-    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
-        Effect = vbDropEffectCopy And Effect
-    Else
-        Effect = vbDropEffectNone
-    End If
-
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 'If the user attempts to close the program, run some checks first.  Specifically, we want to notify them

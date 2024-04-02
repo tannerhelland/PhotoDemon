@@ -32,9 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Label control
 'Copyright 2014-2024 by Tanner Helland
 'Created: 28/October/14
-'Last updated: 02/November/15
-'Last update: convert to ucSupport.  This control was a messy one, but it has the most to gain from program-level
-'             font caching (vs each control maintaining its own font copy).
+'Last updated: 01/April/24
+'Last update: raise custom drag/drop events (that the owner can respond to as they wish)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -62,7 +61,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control raises no events, by design.
+'In April 2024, I added DragDrop relays (to enable custom drag/drop behavior on individual buttons).
+' (Despite the name, these relays are for the underlying OLE-prefixed events, which are the only drag/drop
+' events PD uses.)
+Public Event CustomDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+Public Event CustomDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
+Private m_CustomDragDropEnabled As Boolean
 
 'Rather than handle autosize and wordwrap separately, this control combines them into a single "Layout" property.
 ' All four possible layout approaches are covered by this enum.
@@ -179,6 +183,15 @@ Public Property Let Caption(ByRef newCaption As String)
         
     End If
     
+End Property
+
+Public Property Get CustomDragDropEnabled() As Boolean
+    CustomDragDropEnabled = m_CustomDragDropEnabled
+End Property
+
+Public Property Let CustomDragDropEnabled(ByVal newValue As Boolean)
+    m_CustomDragDropEnabled = newValue
+    If newValue Then UserControl.OLEDropMode = 1 Else UserControl.OLEDropMode = 0
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -361,6 +374,16 @@ Private Sub UserControl_InitProperties()
     FontItalic = False
     FontSize = 10
     
+    CustomDragDropEnabled = False
+    
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -374,6 +397,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Alignment = .ReadProperty("Alignment", vbLeftJustify)
         m_BackColor = .ReadProperty("BackColor", vbWindowBackground)
         Caption = .ReadProperty("Caption", "caption")
+        CustomDragDropEnabled = .ReadProperty("CustomDragDropEnabled", False)
         FontBold = .ReadProperty("FontBold", False)
         FontItalic = .ReadProperty("FontItalic", False)
         FontSize = .ReadProperty("FontSize", 10)
@@ -396,6 +420,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Alignment", Alignment, vbLeftJustify
         .WriteProperty "BackColor", m_BackColor, vbWindowBackground
         .WriteProperty "Caption", Caption, "caption"
+        .WriteProperty "CustomDragDropEnabled", Me.CustomDragDropEnabled, False
         .WriteProperty "FontBold", FontBold, False
         .WriteProperty "FontItalic", FontItalic, False
         .WriteProperty "FontSize", FontSize, 10

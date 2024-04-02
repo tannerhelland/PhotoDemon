@@ -41,6 +41,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   1508
          _ExtentY        =   873
          Caption         =   "quick start"
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   18
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -52,6 +53,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   3413
          _ExtentY        =   873
          Caption         =   "recent images"
+         CustomDragDropEnabled=   -1  'True
          FontSize        =   18
       End
       Begin PhotoDemon.pdHyperlink hypRecentFiles 
@@ -786,7 +788,7 @@ Private Sub cmdStart_Click(Index As Integer)
 End Sub
 
 Private Sub cmdStart_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-    Loading.LoadFromDragDrop Data, Effect, Button, Shift, x, y
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
 End Sub
 
 Private Sub cmdStart_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
@@ -849,6 +851,14 @@ Private Sub hypRecentFiles_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     Else
         newTargetHwnd = cmdStart(cmdStart.lBound).hWnd
     End If
+End Sub
+
+Private Sub lblTitle_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub lblTitle_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenuTop As Long, ByVal idxMenuSub As Long)
