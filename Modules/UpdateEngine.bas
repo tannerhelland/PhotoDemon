@@ -3,8 +3,8 @@ Attribute VB_Name = "Updates"
 'Automatic App Updater
 'Copyright 2012-2024 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 07/October/21
-'Last update: move some global variables here, make 'em private, and wrap them with safety functions
+'Last updated: 02/April/24
+'Last update: rework to prep for a more rapid release schedule (using year.month version numbers)
 '
 'This module includes support functions for determining if a new version of PhotoDemon is available
 ' for automatic patching.
@@ -160,9 +160,9 @@ End Function
 
 'tl;dr: given an XML report from photodemon.org, initiate a program update package download, as necessary.
 '
-'Long explanation: this function checks to see if PhotoDemon.exe is out of date against the current update
-' track (stable, beta, or nightly, per the current user preference).  If the .exe *is* out of date,
-' a full update package gets downloaded.
+'Long explanation: this function checks to see if PhotoDemon.exe is out of date against the current
+' update track (stable, beta, or nightly, per the current user preference).  If the .exe *is* out of date,
+' the latest update package will be downloaded.
 '
 'Returns: TRUE if an update is available *and* its download was initiated successfully; FALSE otherwise
 Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
@@ -577,8 +577,8 @@ Public Function GetUpdateTrack() As PD_UpdateTrack
     GetUpdateTrack = m_UpdateTrack
 End Function
 
-'Outside functions can also request a human-readable string of the literal update number (e.g. Major.Minor.Build, untouched).
-Public Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As Boolean = False) As String
+'Produce a human-readable string of the literal update number (e.g. Major.Minor.Build).
+Private Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As Boolean = False) As String
     
     'Parse the version string, which is currently on the form Major.Minor.Build.Revision
     Dim verStrings() As String
@@ -667,117 +667,41 @@ End Function
 'Retrieve PD's current version, modified against "beta" labels, etc
 Public Function GetPhotoDemonVersion() As String
     
-    'Even-numbered releases are "official" releases, so simply return the full version string
-    If (CLng(App.Minor) Mod 2 = 0) Then
+    'Build state can be retrieved from the compile-time const PD_BUILD_QUALITY
+    Dim buildStateString As String
     
-        GetPhotoDemonVersion = App.Major & "." & App.Minor
-        If (App.Revision <> 0) Then GetPhotoDemonVersion = GetPhotoDemonVersion & "." & App.Revision
-        
-    Else
+    Select Case PD_BUILD_QUALITY
     
-        'Odd-numbered development releases of the pattern X.9 are production builds for the next major version, e.g. (X+1).0
+        Case PD_ALPHA
+            If (g_Language Is Nothing) Then
+                buildStateString = "alpha"
+            Else
+                buildStateString = g_Language.TranslateMessage("alpha", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-alpha")
+            End If
         
-        'Build state can be retrieved from the public const PD_BUILD_QUALITY
-        Dim buildStateString As String
+        Case PD_BETA
+            If (g_Language Is Nothing) Then
+                buildStateString = "beta"
+            Else
+                buildStateString = g_Language.TranslateMessage("beta", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-beta")
+            End If
         
-        Select Case PD_BUILD_QUALITY
-        
-            Case PD_PRE_ALPHA
-                If (g_Language Is Nothing) Then
-                    buildStateString = "pre-alpha"
-                Else
-                    buildStateString = g_Language.TranslateMessage("pre-alpha", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-prealpha")
-                End If
-            
-            Case PD_ALPHA
-                If (g_Language Is Nothing) Then
-                    buildStateString = "alpha"
-                Else
-                    buildStateString = g_Language.TranslateMessage("alpha", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-alpha")
-                End If
-            
-            Case PD_BETA
-                If (g_Language Is Nothing) Then
-                    buildStateString = "beta"
-                Else
-                    buildStateString = g_Language.TranslateMessage("beta", SPECIAL_TRANSLATION_OBJECT_PREFIX & "version-beta")
-                End If
-        
-        End Select
-        
-        'Assemble a full title string, while handling the special case of .9 version numbers, which serve as production
-        ' builds for the next .0 release.
-        If (App.Minor = 9) Then
-            GetPhotoDemonVersion = CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
-        Else
-            GetPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
-        End If
-        
-    End If
+        'No special text is required for production builds
+        Case Else
+            buildStateString = vbNullString
+    
+    End Select
+    
+    'Strip exact build numbers from production builds; on all other builds, include a text description
+    ' (e.g. "alpha" or "beta") and full build number so I can more easily track bug reports.
+    GetPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor)
+    If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then GetPhotoDemonVersion = GetPhotoDemonVersion & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
     
 End Function
 
 'Retrieve PD's current version witout any appended tags (e.g. "beta"), and with a "0" automatically plugged in for build.
 Public Function GetPhotoDemonVersionCanonical() As String
     GetPhotoDemonVersionCanonical = Trim$(Str$(App.Major)) & "." & Trim$(Str$(App.Minor)) & ".0." & Trim$(Str$(App.Revision))
-End Function
-
-'Retrieve PD's current version (not revision!) as a pure major/minor string.  This is not generally recommended for displaying
-' to the user, but it's helpful for things like update checks.
-Public Function GetPhotoDemonVersionMajorMinorOnly() As String
-    GetPhotoDemonVersionMajorMinorOnly = Trim$(Str$(App.Major)) & "." & Trim$(Str$(App.Minor))
-End Function
-
-Public Function GetPhotoDemonVersionRevisionOnly() As String
-    GetPhotoDemonVersionRevisionOnly = Trim$(Str$(App.Revision))
-End Function
-
-'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return a canonical major/minor string, e.g. "6.0"
-Public Function RetrieveVersionMajorMinorAsString(ByVal srcVersionString As String) As String
-
-    'To avoid locale issues, replace any "," with "."
-    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
-    
-    'For this function to work, the major/minor data has to exist somewhere in the string.  Look for at least one "." occurrence.
-    Dim tmpArray() As String
-    tmpArray = Split(srcVersionString, ".")
-    
-    If (UBound(tmpArray) >= 1) Then
-        RetrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
-    Else
-        RetrieveVersionMajorMinorAsString = vbNullString
-    End If
-
-End Function
-
-'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return the revision number
-' as a string, e.g. 4 for "6.0.04".  If no revision is found, return 0.
-Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) As Long
-    
-    'An improperly formatted version number can cause failure; if this happens, we'll assume a revision of 0, which should
-    ' force a re-download of the problematic file.
-    On Error GoTo CantFormatRevisionAsLong
-    
-    'To avoid locale issues, replace any "," with "."
-    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
-    
-    'For this function to work, the revision has to exist somewhere in the string.  Look for at least two "." occurrences.
-    Dim tmpArray() As String
-    tmpArray = Split(srcVersionString, ".")
-    
-    If (UBound(tmpArray) >= 2) Then
-        RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
-    
-    'If one or less "." chars are found, assume a revision of 0
-    Else
-        RetrieveVersionRevisionAsLong = 0
-    End If
-    
-    Exit Function
-    
-CantFormatRevisionAsLong:
-    RetrieveVersionRevisionAsLong = 0
-
 End Function
 
 'Given two version numbers, return TRUE if the second version is larger than the first.
@@ -840,7 +764,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
         ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures
         ' that e.g. 6.6.0 does not update to 6.5.1.)
         Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean
-                
+        
         For i = 0 To 3
             
             Select Case i

@@ -807,7 +807,7 @@ Private Sub CreateNewPreferencesFile()
                 ' casual users to the nightly builds to address specific bugs they've experienced.  They likely don't
                 ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
                 ' can always opt for a faster update frequency.
-                Case PD_PRE_ALPHA, PD_ALPHA
+                Case PD_ALPHA
                     .WriteTag "UpdateTrack", ut_Developer
                     
                 Case PD_BETA

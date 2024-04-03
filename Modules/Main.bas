@@ -142,7 +142,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     ' parameters are automatically set.
     
     'If the program is in pre-alpha or alpha state, enable timing reports.
-    If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
+    If (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
     
     'Enable program-wide high-performance timer objects
     VBHacks.EnableHighResolutionTimers
