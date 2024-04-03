@@ -1147,8 +1147,13 @@ Public Function SimplifyPathFromMarchingSquares(ByRef srcPath As pd2DPath) As Bo
     SimplifyPathFromMarchingSquares = srcPath.GetPathPoints(listOfPoints, numOfPoints, listOfSubpaths, listOfClosedStates, numOfSubpaths)
     If (Not SimplifyPathFromMarchingSquares) Then Exit Function
     
-    'The source path has given us everything we need.  Reset it to null-path state.
+    'The source path has given us everything we need.  Reset it to null-path state...
+    ' (April 2024) BUT also ensure we preserve fill rule (which is odd-even for outlines generated
+    ' from edge-tracing, like PD's magic wand uses!)
+    Dim origFillRule As PD_2D_FillRule
+    origFillRule = srcPath.GetFillRule()
     srcPath.ResetPath
+    srcPath.SetFillRule origFillRule
     
     'We can now hand off each individual sub-path to the standalone "simplify for screen" function.
     Dim idxFirst As Long, idxLast As Long, numPointsRemoved As Long, numPointsRemovedTotal As Long

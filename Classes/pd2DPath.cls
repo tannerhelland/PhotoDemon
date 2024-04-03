@@ -533,7 +533,7 @@ Friend Function GetFillRule() As PD_2D_FillRule
     If (m_PathHandle = 0) Then
         GetFillRule = DEFAULT_FILL_RULE
     Else
-        If (Not GdipGetPathFillMode(m_PathHandle, GetFillRule)) Then InternalError "GetFillRule", "GDI+ failure"
+        If (GdipGetPathFillMode(m_PathHandle, GetFillRule) <> GP_OK) Then InternalError "GetFillRule", "GDI+ failure"
     End If
 End Function
 
