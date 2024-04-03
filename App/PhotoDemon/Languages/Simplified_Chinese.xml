@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，9.2 build 311）</langname>
-<langversion>9.2 build 311.1</langversion>
+<langversion>9.2 build 311.2</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -3536,11 +3536,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>pre-alpha</original>
-<translation>技术预览版</translation>
-</phrase>
-
-<phrase>
 <original>alpha</original>
 <translation>透明</translation>
 </phrase>
@@ -3580,7 +3575,7 @@ Please enter a numeric value.</original>
 <translation>您已将PhotoDemon放置在受限系统文件夹中。因为PhotoDemon没有管理员权限，所以无法为您下载文件。请将PhotoDemon移动到不受限制的文件夹，然后重试。</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -14243,11 +14238,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2696</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5692 phrases. -->
-<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
-<!-- These 2696 phrases contain approximately 11695 total words. -->
+<!-- As of this build, PhotoDemon contains 5690 phrases. -->
+<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 11694 total words. -->
 
 <special-translations>
 

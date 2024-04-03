@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.27</langversion>
+<langversion>1.0.28</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -3518,11 +3518,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>pre-alpha</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>alpha</original>
 <translation>alpha</translation>
 </phrase>
@@ -3562,7 +3557,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -14205,10 +14200,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2696</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5692 phrases. -->
-<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
-<!-- These 2696 phrases contain approximately 11695 total words. -->
+<!-- As of this build, PhotoDemon contains 5690 phrases. -->
+<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 11694 total words. -->
 
 </pdData>

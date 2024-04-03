@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.616</langversion>
+<langversion>6.7.617</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3542,11 +3542,6 @@ Veuillez entrer une valeur numérique.</translation>
 </phrase>
 
 <phrase>
-<original>pre-alpha</original>
-<translation>pré-alpha</translation>
-</phrase>
-
-<phrase>
 <original>alpha</original>
 <translation>alpha</translation>
 </phrase>
@@ -3586,7 +3581,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Vous avez placé PhotoDemon dans un dossier système dont les droits sont limités.  PhotoDemon ne disposant pas d'un accès administrateur, ne peut donc pas télécharger de fichiers pour vous.  Veuillez déplacer PhotoDemon dans un dossier sans droits limités et réessayez.</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -14263,10 +14258,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2696</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5692 phrases. -->
-<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
-<!-- These 2696 phrases contain approximately 11695 total words. -->
+<!-- As of this build, PhotoDemon contains 5690 phrases. -->
+<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 11694 total words. -->
 
 </pdData>

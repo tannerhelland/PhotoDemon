@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.27</langversion>
+<langversion>9.0.28</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -3541,11 +3541,6 @@ Por favor, introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>pre-alpha</original>
-<translation>pre-alfa</translation>
-</phrase>
-
-<phrase>
 <original>alpha</original>
 <translation>alfa</translation>
 </phrase>
@@ -3585,7 +3580,7 @@ Por favor, introduzca un valor numérico.</translation>
 <translation>Has colocado PhotoDemon en una carpeta restringida del sistema.  Como PhotoDemon no tiene acceso de administrador, no puede descargar archivos para usted.  Por favor, mueva PhotoDemon a una carpeta no restringida e inténtelo de nuevo.</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -14249,10 +14244,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2696</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5692 phrases. -->
-<!-- 2996 are duplicates, so only 2696 unique phrases have been written to file. -->
-<!-- These 2696 phrases contain approximately 11695 total words. -->
+<!-- As of this build, PhotoDemon contains 5690 phrases. -->
+<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 11694 total words. -->
 
 </pdData>
