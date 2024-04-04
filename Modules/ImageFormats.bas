@@ -440,6 +440,7 @@ Public Sub GenerateOutputFormats()
     
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
+    If Plugin_PDF.IsPDFiumAvailable() Then AddOutputFormat "PDF - Portable Document Format", "pdf", PDIF_PDF
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
     If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
@@ -773,7 +774,7 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_MBM
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_PDF
-            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
         Case PDIF_PDI
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_PNG
@@ -854,6 +855,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         Case PDIF_JXR
             IsExportDialogSupported = True
+        Case PDIF_PDF
+            IsExportDialogSupported = False     'Will be true soon!
         Case PDIF_PNG
             IsExportDialogSupported = True
         Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
@@ -876,8 +879,6 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
         Case PDIF_CBZ
             IsExifToolRelevant = False
         Case PDIF_ORA
-            IsExifToolRelevant = False
-        Case PDIF_PDF
             IsExifToolRelevant = False
         Case PDIF_PDI
             IsExifToolRelevant = False

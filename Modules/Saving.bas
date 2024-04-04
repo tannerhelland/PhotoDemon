@@ -404,7 +404,10 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             
             Case PDIF_JXR
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-        
+            
+            Case PDIF_PDF
+                'TODO!
+            
             Case PDIF_PNG
                 If displayAnimationVersion Then
                     GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
@@ -491,6 +494,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_ORA
             ExportToSpecificFormat = ImageExporter.ExportORA(srcImage, dstPath, saveParameters, metadataParameters)
         
+        Case PDIF_PDF
+            ExportToSpecificFormat = ImageExporter.ExportPDF(srcImage, dstPath, saveParameters, metadataParameters)
+            
         Case PDIF_PDI
             ExportToSpecificFormat = Saving.SavePDI_Image(srcImage, dstPath, False, cf_Zstd, cf_Zstd, False, True, Compression.GetDefaultCompressionLevel(cf_Zstd))
                         

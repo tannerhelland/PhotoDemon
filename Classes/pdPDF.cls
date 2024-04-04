@@ -428,6 +428,26 @@ Friend Sub RenderCurrentPageToPDDib(ByRef dstDIB As pdDIB, ByVal dstLeft As Long
     
 End Sub
 
+Friend Function SavePDFToFile(ByRef srcPDImage As pdImage, ByVal dstFile As String) As Boolean
+    
+    Const FUNC_NAME As String = "SavePDFToFile"
+    
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcPDImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError FUNC_NAME, "invalid function parameters"
+        SavePDFToFile = False
+        Exit Function
+    End If
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError FUNC_NAME, "Internal VB error #" & Err.Number & ": " & Err.Description
+    SavePDFToFile = False
+    
+End Function
+
 Private Sub Class_Initialize()
     
     'Initialize all module-level arrays

@@ -1519,6 +1519,59 @@ ExportORAError:
     
 End Function
 
+Public Function ExportPDF(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+
+    On Error GoTo ExportError
+
+    ExportPDF = False
+    Dim sFileType As String: sFileType = "PDF"
+    
+    'Most of the heavy lifting for the save will be performed by the pdPDF class
+    Dim cExport As pdPDF
+    Set cExport = New pdPDF
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    If cExport.SavePDFToFile(srcPDImage, tmpFilename) Then
+    
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportPDF = True
+        
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
+        
+            ExportPDF = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            
+            If (Not ExportPDF) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+            
+        End If
+    
+    Else
+        ExportPDF = False
+        ExportDebugMsg "WARNING!  pdPDF.SavePDF() failed for reasons unknown; check the debug log for additional details"
+    End If
+    
+    Exit Function
+    
+ExportError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPDF = False
+    
+End Function
+
 Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportPNGError
