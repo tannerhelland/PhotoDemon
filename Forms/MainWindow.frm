@@ -1729,6 +1729,14 @@ Begin VB.Form FormMain
          Caption         =   "Show status bar"
          Index           =   7
       End
+      Begin VB.Menu MnuView 
+         Caption         =   "-"
+         Index           =   8
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to canvas edges"
+         Index           =   9
+      End
    End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "Window"
@@ -3828,6 +3836,10 @@ Private Sub MnuView_Click(Index As Integer)
             Actions.LaunchAction_ByName "view_rulers"
         Case 7
             Actions.LaunchAction_ByName "view_statusbar"
+        Case 8
+            '(separator)
+        Case 9
+            Actions.LaunchAction_ByName "snap_canvasedge"
     End Select
 End Sub
 

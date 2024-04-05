@@ -3,12 +3,13 @@ Attribute VB_Name = "Tools_Move"
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2024 by Tanner Helland
 'Created: 24/May/14
-'Last updated: 22/December/22
-'Last update: add some trivial key-handling bits for the Hand tool (which is a different tool, but it has
-'             so few features that it's easier to just condense things here)
+'Last updated: 05/April/24
+'Last update: start wiring up Snap capabilities
 '
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
+'
+'As of 2024, This module also handles move-related duties like snapping to various features.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -17,10 +18,19 @@ Attribute VB_Name = "Tools_Move"
 
 Option Explicit
 
+Public Enum PD_SnapTargets
+    pdst_CanvasEdge
+End Enum
+
+#If False Then
+    Private Const pdst_CanvasEdge = 0
+#End If
+
 'The move/size tool exposes a number of UI-only options (like drawing borders around active layers).
 ' To improve viewport performance, we cache those settings locally, and the viewport queries us instead
 ' of directly querying the associated UI elements.
 Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+Private m_SnapToCanvasEdge As Boolean, m_SnapDistance As Long
 
 'Same goes for various selection-related move settings (for moving selected pixels).  These are simple
 ' flags whose value is relayed from the Move/Size options panel.
@@ -315,6 +325,19 @@ Public Function GetDrawLayerRotateNodes() As Boolean
     GetDrawLayerRotateNodes = m_DrawRotateNodes
 End Function
 
+Public Function GetSnapCanvasEdge() As Boolean
+    GetSnapCanvasEdge = m_SnapToCanvasEdge
+End Function
+
+Public Function GetSnapDistance() As Long
+    
+    GetSnapDistance = m_SnapDistance
+    
+    'Failsafe only; should never trigger
+    If (GetSnapDistance < 1) Then GetSnapDistance = 8
+    
+End Function
+
 Public Sub SetDrawLayerBorders(ByVal newState As Boolean)
     m_DrawLayerBorders = newState
 End Sub
@@ -325,6 +348,16 @@ End Sub
 
 Public Sub SetDrawLayerRotateNodes(ByVal newState As Boolean)
     m_DrawRotateNodes = newState
+End Sub
+
+Public Sub SetSnapCanvasEdge(ByVal newState As Boolean)
+    m_SnapToCanvasEdge = newState
+End Sub
+
+Public Sub SetSnapDistance(ByVal newDistance As Long)
+    m_SnapDistance = newDistance
+    If (m_SnapDistance < 1) Then m_SnapDistance = 1
+    If (m_SnapDistance > 255) Then m_SnapDistance = 255     'GIMP uses a 255 max value; that seems reasonable
 End Sub
 
 'Relay functions for move selected pixels behavior

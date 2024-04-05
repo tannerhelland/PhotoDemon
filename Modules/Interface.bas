@@ -1210,6 +1210,30 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
 
 End Sub
 
+'Toggle one of the "snap to..." settings in the View menu.
+' To forcibly set to a specific state (instead of toggling), set the forceInsteadOfToggle param to TRUE.
+Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal forceInsteadOfToggle As Boolean = False, Optional ByVal newState As Boolean = True)
+    
+    'Convert the snap target into a menu index
+    Const IDX_BASE As Long = 9
+    Dim idxTarget As Long
+    
+    'While calculating which on-screen menu to update, we also need to relay changes to two places:
+    ' 1) the tools_move module (which handles actual snap calculations)
+    ' 2) the user preferences file (to ensure everything is synchronized between sessions)
+    Select Case snapTarget
+        Case pdst_CanvasEdge
+            idxTarget = IDX_BASE + 0
+            If (Not forceInsteadOfToggle) Then newState = Not Tools_Move.GetSnapCanvasEdge()
+            Tools_Move.SetSnapCanvasEdge newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-canvas-edge", newState
+    End Select
+    
+    'Update the target menu state
+    FormMain.MnuView(idxTarget).Checked = newState
+    
+End Sub
+
 Public Function FixDPI(ByVal pxMeasurement As Long) As Long
 
     'The first time this function is called, m_DPIRatio will be 0.  Calculate it.

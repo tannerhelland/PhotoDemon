@@ -590,6 +590,8 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 8, 5
     AddMenuItem "Show rulers", "view_rulers", 8, 6
     AddMenuItem "Show status bar", "view_statusbar", 8, 7
+    AddMenuItem "-", "-", 8, 8
+    AddMenuItem "Snap to canvas edge", "snap_canvasedge", 8, 9
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9

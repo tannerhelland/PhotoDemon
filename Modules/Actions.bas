@@ -1299,6 +1299,7 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
     If (Not PDImages.IsImageActive()) Then Exit Function
     
     Dim cmdFound As Boolean: cmdFound = True
+    Dim newState As Boolean
     
     Select Case srcMenuName
     
@@ -1344,16 +1345,17 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
                 
         Case "view_rulers"
-            Dim newRulerState As Boolean
-            newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
-            FormMain.MnuView(6).Checked = newRulerState
-            FormMain.MainCanvas(0).SetRulerVisibility newRulerState
+            newState = Not FormMain.MainCanvas(0).GetRulerVisibility()
+            FormMain.MnuView(6).Checked = newState
+            FormMain.MainCanvas(0).SetRulerVisibility newState
             
         Case "view_statusbar"
-            Dim newStatusBarState As Boolean
-            newStatusBarState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
-            FormMain.MnuView(7).Checked = newStatusBarState
-            FormMain.MainCanvas(0).SetStatusBarVisibility newStatusBarState
+            newState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
+            FormMain.MnuView(7).Checked = newState
+            FormMain.MainCanvas(0).SetStatusBarVisibility newState
+            
+        Case "snap_canvasedge"
+            Interface.ToggleSnapOptions pdst_CanvasEdge
             
         Case Else
             cmdFound = False
@@ -2000,6 +2002,7 @@ Public Sub BuildActionDatabase()
     AddAction "zoom_1_16", vbNullString
     AddAction "view_rulers", vbNullString
     AddAction "view_statusbar", vbNullString
+    AddAction "snap_canvasedge", vbNullString
     'AddAction "window_toolbox"
     AddAction "window_displaytoolbox", vbNullString
     AddAction "window_displaytoolcategories", vbNullString
