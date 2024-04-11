@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools"
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2024 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 21/January/22
-'Last update: new support for moving only selected pixels via the Move/Size tool
+'Last updated: 10/April/24
+'Last update: add snap support when moving or resizing a layer
 '
 'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -249,13 +249,67 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
 End Sub
 
+'Snap the passed point to any relevant snap targets (based on the user's current snap settings).
+Private Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As PointFloat)
+    
+    'If no snap targets exist (because the user has disabled snapping), ensure the destination point
+    ' mirrors the source point
+    dstPointF = srcPointF
+    
+    'Skip any further processing if the user hasn't enabled snapping
+    If (Not Tools_Move.GetSnapCanvasEdge()) Then Exit Sub
+    
+    'Start by constructing a list of potential snap targets, based on current user settings.
+    Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
+    numXSnaps = GetSnapTargets_X(xSnaps)
+    numYSnaps = GetSnapTargets_Y(ySnaps)
+    
+    'Ensure some snap targets exist
+    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
+    
+    'We now have a list of snap comparison targets.  We don't care what these targets represent -
+    ' we just want to find the "best" one from each list.
+    Dim i As Long, idxSmallestX As Long, minDistX As Double
+    
+    'Set the minimum distance to an arbitrarily huge number, then find minimum x-distances
+    minDistX = DOUBLE_MAX
+    For i = 0 To numXSnaps - 1
+        With xSnaps(i)
+            .cDistance1 = PDMath.DistanceOneDimension(srcPointF.x, .cValue)
+            If (.cDistance1 < minDistX) Then
+                minDistX = .cDistance1
+                idxSmallestX = i
+            End If
+        End With
+    Next i
+    
+    'Repeat all the above steps for y-coordinates
+    Dim idxSmallestY As Long, minDistY As Double
+    minDistY = DOUBLE_MAX
+    
+    For i = 0 To numYSnaps - 1
+        With ySnaps(i)
+            .cDistance1 = PDMath.DistanceOneDimension(srcPointF.y, .cValue)
+            If (.cDistance1 < minDistY) Then
+                minDistY = .cDistance1
+                idxSmallestY = i
+            End If
+        End With
+    Next i
+    
+    'Determine the minimum snap distance required for this zoom value.
+    Dim snapThreshold As Double
+    snapThreshold = Tools_Move.GetSnapDistance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
+    
+    'If the minimum value falls beneath the minimum snap distance, snap away!
+    If (minDistX < snapThreshold) Then dstPointF.x = xSnaps(idxSmallestX).cValue
+    If (minDistY < snapThreshold) Then dstPointF.y = ySnaps(idxSmallestY).cValue
+    
+End Sub
+
 'Snap the passed rect to any relevant snap targets (based on the user's current snap settings).
 ' Because this function snaps only by moving the target rect, it is guaranteed that only the
 ' top and left values will be changed by the function (width/height will *not*).
-'
-'TODO: this function obviously snaps just the left/right coords, at present - but some ops
-' will eventually need "stretching" the rect to fit - do we handle that here, or use a separate function?
-' IDK yet.
 Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     
     'By default, return the same rect.  (This is important if the user has disabled snapping.)
@@ -266,28 +320,11 @@ Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     
     'Start by constructing a list of potential snap targets, based on current user settings.
     Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
+    numXSnaps = GetSnapTargets_X(xSnaps)
+    numYSnaps = GetSnapTargets_Y(ySnaps)
     
-    'Start with some arbitrarily sized list (these will be enlarged as necessary)
-    ReDim xSnaps(0 To 15) As SnapComparison
-    ReDim ySnaps(0 To 15) As SnapComparison
-    
-    'Canvas edges first
-    If Tools_Move.GetSnapCanvasEdge() Then
-        
-        'Ensure at least two coords available in the target arrays
-        If (UBound(xSnaps) < numXSnaps + 1) Then ReDim Preserve xSnaps(0 To numXSnaps * 2 - 1) As SnapComparison
-        If (UBound(ySnaps) < numYSnaps + 1) Then ReDim Preserve ySnaps(0 To numYSnaps * 2 - 1) As SnapComparison
-        
-        'Add canvas boundaries to the snap list
-        xSnaps(numXSnaps).cValue = 0#
-        xSnaps(numXSnaps + 1).cValue = PDImages.GetActiveImage.Width
-        numXSnaps = numXSnaps + 2
-        
-        ySnaps(numYSnaps).cValue = 0#
-        ySnaps(numYSnaps + 1).cValue = PDImages.GetActiveImage.Height
-        numYSnaps = numYSnaps + 2
-        
-    End If
+    'Ensure some snap targets exist
+    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
     
     'We now have a list of snap comparison targets.  We don't care what these targets represent -
     ' we just want to find the "best" one from each list.
@@ -299,10 +336,9 @@ Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     compareRectF.Right = srcRectF.Left + srcRectF.Width - 1
     compareRectF.Bottom = srcRectF.Top + srcRectF.Height - 1
     
-    'With the best point found in each list, see if they fall beneath the target snap distance.
     Dim i As Long, idxSmallestX As Long, minDistX As Double
     
-    'Set the minimum distance to an arbitrarily huge number
+    'Set the minimum distance to an arbitrarily huge number, then find the smallest x-distance
     minDistX = DOUBLE_MAX
     For i = 0 To numXSnaps - 1
         With xSnaps(i)
@@ -361,6 +397,52 @@ Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     
 End Sub
 
+'Get a list of current x-snap targets (determined by user settings).
+' RETURNS: number of entries in the list, or 0 if snapping is disabled by the user.
+Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
+    
+    'Start with some arbitrarily sized list (these will be enlarged as necessary)
+    ReDim dstSnaps(0 To 15) As SnapComparison
+    GetSnapTargets_X = 0
+    
+    'Canvas edges first
+    If Tools_Move.GetSnapCanvasEdge() Then
+        
+        'Ensure at space is available in the target array
+        If (UBound(dstSnaps) < GetSnapTargets_X + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
+        
+        'Add canvas boundaries to the snap list
+        dstSnaps(GetSnapTargets_X).cValue = 0#
+        dstSnaps(GetSnapTargets_X + 1).cValue = PDImages.GetActiveImage.Width
+        GetSnapTargets_X = GetSnapTargets_X + 2
+        
+    End If
+    
+End Function
+
+'Get a list of current y-snap targets (determined by user settings).
+' RETURNS: number of entries in the list, or 0 if snapping is disabled by the user.
+Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
+    
+    'Start with some arbitrarily sized list (these will be enlarged as necessary)
+    ReDim dstSnaps(0 To 15) As SnapComparison
+    GetSnapTargets_Y = 0
+    
+    'Canvas edges first
+    If Tools_Move.GetSnapCanvasEdge() Then
+        
+        'Ensure at space is available in the target array
+        If (UBound(dstSnaps) < GetSnapTargets_Y + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
+        
+        'Add canvas boundaries to the snap list
+        dstSnaps(GetSnapTargets_Y).cValue = 0#
+        dstSnaps(GetSnapTargets_Y + 1).cValue = PDImages.GetActiveImage.Height
+        GetSnapTargets_Y = GetSnapTargets_Y + 2
+        
+    End If
+    
+End Function
+
 'This function can be used to move and/or non-destructively resize an image layer.
 '
 'If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE. This instructs the function
@@ -374,11 +456,32 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'Also, mark the tool engine as busy to prevent re-entrance issues
     Tools.SetToolBusyState True
     
+    'For operations only involving a single point of transformation (e.g. resizing a layer by corner-dragging),
+    ' we can apply snapping *now*, to the mouse coordinate itself.
+    '
+    'For operations that transform multiple points (like moving an entire layer), we need to snap points *besides*
+    ' the mouse pointer (e.g. the layer edges, which are not located at the mouse position), so we'll need to wait
+    ' to snap until the transform has been applied to the underlying layer.
+    Dim srcPtF As PointFloat, snappedPtF As PointFloat
+    If Tools_Move.GetSnapCanvasEdge() Then
+        
+        Select Case m_CurPOI
+            Case poi_CornerNW, poi_CornerNE, poi_CornerSW, poi_CornerSE
+                srcPtF.x = curImageX
+                srcPtF.y = curImageY
+                SnapPointByMoving srcPtF, snappedPtF
+                curImageX = snappedPtF.x
+                curImageY = snappedPtF.y
+                
+        End Select
+        
+    End If
+        
     'Convert the current x/y pair to the layer coordinate space.  This takes into account any active affine transforms
     ' on the image (e.g. rotation), which may place the point in a totally different position relative to the underlying layer.
     Dim curLayerX As Single, curLayerY As Single
     Drawing.ConvertImageCoordsToLayerCoords srcImage, srcLayer, curImageX, curImageY, curLayerX, curLayerY
-            
+    
     'As a convenience for later calculations, calculate offsets between the initial transform coordinates (set at MouseDown)
     ' and the current ones.  Repeat this for both the image and layer coordinate spaces, as we need different ones for different
     ' transform types.
@@ -391,11 +494,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
         
     'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
     ' and disallow anything that results in invalid coordinates or sizes.
-    Dim newLeft As Double, newTop As Double, newRight As Double, newBottom As Double
-    
-    'In 2024, "snap" support was added to move operations.  This requires to pre-process all coordinates against
-    ' potential snap targets *before* handing them off to the target layer object.
-    Dim srcRectF As RectF, snappedRectF As RectF
+    Dim newLeft As Single, newTop As Single, newRight As Single, newBottom As Single
     
     'The way we assign new offsets and/or sizes to the layer depends on the POI (point of interest) the user is interacting with.
     ' Layers currently support nine points of interest: each of their 4 corners, 4 rotational points (lying on the center of
@@ -410,7 +509,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'Aspect ratio is locked on SHIFT keypress, or with the fixed toggle on the move/size toolpanel
     Dim lockAspectRatio As Boolean
     lockAspectRatio = isShiftDown
-    If (g_CurrentTool = NAV_MOVE) Then lockAspectRatio = lockAspectRatio Or toolpanel_MoveSize.chkAspectRatio.value
+    If (g_CurrentTool = NAV_MOVE) Then lockAspectRatio = lockAspectRatio Or toolpanel_MoveSize.chkAspectRatio.Value
     
     'Check the POI we were given, and update the layer accordingly.
     With srcLayer
@@ -475,6 +574,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newTop = m_InitLayerCoords_Pure(0).y
                 
+                'Finish calculating things like required minimum layer size and aspect ratio preservation
                 If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
                 If lockAspectRatio Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
                 If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
@@ -534,10 +634,11 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 Dim newAngle As Double
                 newAngle = PDMath.AngleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
                 
-                'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
-                ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
-                ' match the difference between the relevant coordinate of the intersecting lines.  (The relevant coordinate varies
-                ' based on the orientation of the default, non-rotated line defined by ptIntersect and pt1.)
+                'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.
+                ' This also means that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround
+                ' is to force the sign to match the difference between the relevant coordinate of the intersecting lines.
+                ' (The relevant coordinate varies based on the orientation of the default, non-rotated line defined by
+                ' ptIntersect and pt1.)
                 If (m_CurPOI = poi_EdgeE) Then
                     If (pt2.y < pt1.y) Then newAngle = -newAngle
                 ElseIf (m_CurPOI = poi_EdgeS) Then
@@ -558,10 +659,14 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 ' the transform produces
                 .SetLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
                 .SetLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
+                
+                Dim srcRectF As RectF
                 .GetLayerBoundaryRect srcRectF
                 
                 'Hand the layer rect off to the snap calculator, then take whatever it returns and
-                ' forward just the left/top coordinates *back* to the target layer.
+                ' forward just the left/top coordinates *back* to the target layer (because snapping
+                ' won't modify the rect's size - only its position).
+                Dim snappedRectF As RectF
                 SnapRectByMoving srcRectF, snappedRectF
                 .SetLayerOffsetX snappedRectF.Left
                 .SetLayerOffsetY snappedRectF.Top
@@ -894,14 +999,14 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 With toolpanel_TextBasic
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
-                    .sldTextFontSize.value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
+                    .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
-                    .sltTextClarity.value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextContrast)
-                    .btnFontStyles(0).value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
-                    .btnFontStyles(1).value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
-                    .btnFontStyles(2).value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
-                    .btnFontStyles(3).value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
+                    .sltTextClarity.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextContrast)
+                    .btnFontStyles(0).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
+                    .btnFontStyles(1).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
+                    .btnFontStyles(2).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
+                    .btnFontStyles(3).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
                     .btsHAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
                 End With
@@ -963,8 +1068,8 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
             Case NAV_MOVE
             
                 'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX toolpanel_MoveSize.tudLayerMove(0).value
-                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY toolpanel_MoveSize.tudLayerMove(1).value
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX toolpanel_MoveSize.tudLayerMove(0).Value
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY toolpanel_MoveSize.tudLayerMove(1).Value
                 
                 'Setting layer width and height isn't activated at present, on purpose
                 'PDImages.GetActiveImage.getActiveLayer.setLayerWidth toolpanel_MoveSize.tudLayerMove(2).Value
@@ -974,23 +1079,23 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 PDImages.GetActiveImage.GetActiveLayer.SetLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
                 
                 'Layer angle and shear are newly available as of 7.0
-                PDImages.GetActiveImage.GetActiveLayer.SetLayerAngle toolpanel_MoveSize.sltLayerAngle.value
-                PDImages.GetActiveImage.GetActiveLayer.SetLayerShearX toolpanel_MoveSize.sltLayerShearX.value
-                PDImages.GetActiveImage.GetActiveLayer.SetLayerShearY toolpanel_MoveSize.sltLayerShearY.value
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerShearX toolpanel_MoveSize.sltLayerShearX.Value
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerShearY toolpanel_MoveSize.sltLayerShearY.Value
             
             Case TEXT_BASIC
                 
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_TextBasic.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_TextBasic.cboTextFontFace.List(toolpanel_TextBasic.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextBasic.sldTextFontSize.value
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextBasic.sldTextFontSize.Value
                     .SetTextLayerProperty ptp_FontColor, toolpanel_TextBasic.csTextFontColor.Color
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextBasic.cboTextRenderingHint.ListIndex
-                    .SetTextLayerProperty ptp_TextContrast, toolpanel_TextBasic.sltTextClarity.value
-                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextBasic.btnFontStyles(0).value
-                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextBasic.btnFontStyles(1).value
-                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextBasic.btnFontStyles(2).value
-                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextBasic.btnFontStyles(3).value
+                    .SetTextLayerProperty ptp_TextContrast, toolpanel_TextBasic.sltTextClarity.Value
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextBasic.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextBasic.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextBasic.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextBasic.btnFontStyles(3).Value
                     .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_TextBasic.btsHAlignment.ListIndex
                     .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_TextBasic.btsVAlignment.ListIndex
                 End With
@@ -1005,39 +1110,39 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_TextAdvanced.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_TextAdvanced.cboTextFontFace.List(toolpanel_TextAdvanced.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.value
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.Value
                     .SetTextLayerProperty ptp_StretchToFit, toolpanel_TextAdvanced.btsStretch.ListIndex
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextAdvanced.cboTextRenderingHint.ListIndex
                     .SetTextLayerProperty ptp_TextHinting, (toolpanel_TextAdvanced.btsHinting.ListIndex = 1)
-                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).value
-                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextAdvanced.btnFontStyles(1).value
-                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextAdvanced.btnFontStyles(2).value
-                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextAdvanced.btnFontStyles(3).value
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextAdvanced.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextAdvanced.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextAdvanced.btnFontStyles(3).Value
                     .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_TextAdvanced.btsHAlignment.ListIndex
                     .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_TextAdvanced.btsVAlignment.ListIndex
                     .SetTextLayerProperty ptp_WordWrap, toolpanel_TextAdvanced.cboWordWrap.ListIndex
-                    .SetTextLayerProperty ptp_FillActive, toolpanel_TextAdvanced.chkFillText.value
+                    .SetTextLayerProperty ptp_FillActive, toolpanel_TextAdvanced.chkFillText.Value
                     .SetTextLayerProperty ptp_FillBrush, toolpanel_TextAdvanced.bsText.Brush
-                    .SetTextLayerProperty ptp_OutlineActive, toolpanel_TextAdvanced.chkOutlineText.value
+                    .SetTextLayerProperty ptp_OutlineActive, toolpanel_TextAdvanced.chkOutlineText.Value
                     .SetTextLayerProperty ptp_OutlinePen, toolpanel_TextAdvanced.psText.Pen
-                    .SetTextLayerProperty ptp_BackgroundActive, toolpanel_TextAdvanced.chkBackground.value
+                    .SetTextLayerProperty ptp_BackgroundActive, toolpanel_TextAdvanced.chkBackground.Value
                     .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_TextAdvanced.bsTextBackground.Brush
-                    .SetTextLayerProperty ptp_BackBorderActive, toolpanel_TextAdvanced.chkBackgroundBorder.value
+                    .SetTextLayerProperty ptp_BackBorderActive, toolpanel_TextAdvanced.chkBackgroundBorder.Value
                     .SetTextLayerProperty ptp_BackBorderPen, toolpanel_TextAdvanced.psTextBackground.Pen
-                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_TextAdvanced.sldLineSpacing.value
-                    .SetTextLayerProperty ptp_MarginLeft, toolpanel_TextAdvanced.tudMargin(0).value
-                    .SetTextLayerProperty ptp_MarginRight, toolpanel_TextAdvanced.tudMargin(1).value
-                    .SetTextLayerProperty ptp_MarginTop, toolpanel_TextAdvanced.tudMargin(2).value
-                    .SetTextLayerProperty ptp_MarginBottom, toolpanel_TextAdvanced.tudMargin(3).value
-                    .SetTextLayerProperty ptp_CharInflation, toolpanel_TextAdvanced.sltCharInflation.value
-                    .SetTextLayerProperty ptp_CharJitterX, toolpanel_TextAdvanced.tudJitter(0).value
-                    .SetTextLayerProperty ptp_CharJitterY, toolpanel_TextAdvanced.tudJitter(1).value
+                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_TextAdvanced.sldLineSpacing.Value
+                    .SetTextLayerProperty ptp_MarginLeft, toolpanel_TextAdvanced.tudMargin(0).Value
+                    .SetTextLayerProperty ptp_MarginRight, toolpanel_TextAdvanced.tudMargin(1).Value
+                    .SetTextLayerProperty ptp_MarginTop, toolpanel_TextAdvanced.tudMargin(2).Value
+                    .SetTextLayerProperty ptp_MarginBottom, toolpanel_TextAdvanced.tudMargin(3).Value
+                    .SetTextLayerProperty ptp_CharInflation, toolpanel_TextAdvanced.sltCharInflation.Value
+                    .SetTextLayerProperty ptp_CharJitterX, toolpanel_TextAdvanced.tudJitter(0).Value
+                    .SetTextLayerProperty ptp_CharJitterY, toolpanel_TextAdvanced.tudJitter(1).Value
                     .SetTextLayerProperty ptp_CharMirror, toolpanel_TextAdvanced.cboCharMirror.ListIndex
-                    .SetTextLayerProperty ptp_CharOrientation, toolpanel_TextAdvanced.sltCharOrientation.value
+                    .SetTextLayerProperty ptp_CharOrientation, toolpanel_TextAdvanced.sltCharOrientation.Value
                     .SetTextLayerProperty ptp_CharRemap, toolpanel_TextAdvanced.cboCharCase.ListIndex
-                    .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.value
+                    .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.Value
                     .SetTextLayerProperty ptp_AlignLastLine, toolpanel_TextAdvanced.btsHAlignJustify.ListIndex
-                    .SetTextLayerProperty ptp_OutlineAboveFill, toolpanel_TextAdvanced.chkFillFirst.value
+                    .SetTextLayerProperty ptp_OutlineAboveFill, toolpanel_TextAdvanced.chkFillFirst.Value
                 End With
                 
                 'Advanced text layers are rendered using a PhotoDemon-specific renderer.
@@ -1118,11 +1223,11 @@ Public Sub QuickToolAction_HardnessDown()
     
     Select Case g_CurrentTool
         Case PAINT_SOFTBRUSH
-            curValue = toolpanel_Paintbrush.sltBrushSetting(2).value
+            curValue = toolpanel_Paintbrush.sltBrushSetting(2).Value
         Case PAINT_ERASER
-            curValue = toolpanel_Eraser.sltBrushSetting(2).value
+            curValue = toolpanel_Eraser.sltBrushSetting(2).Value
         Case PAINT_CLONE
-            curValue = toolpanel_Clone.sltBrushSetting(2).value
+            curValue = toolpanel_Clone.sltBrushSetting(2).Value
         Case Else
             Exit Sub
     End Select
@@ -1136,11 +1241,11 @@ Public Sub QuickToolAction_HardnessDown()
     'Assign the new value
     Select Case g_CurrentTool
         Case PAINT_SOFTBRUSH
-            toolpanel_Paintbrush.sltBrushSetting(2).value = curValue
+            toolpanel_Paintbrush.sltBrushSetting(2).Value = curValue
         Case PAINT_ERASER
-            toolpanel_Eraser.sltBrushSetting(2).value = curValue
+            toolpanel_Eraser.sltBrushSetting(2).Value = curValue
         Case PAINT_CLONE
-            toolpanel_Clone.sltBrushSetting(2).value = curValue
+            toolpanel_Clone.sltBrushSetting(2).Value = curValue
     End Select
     
 End Sub
@@ -1152,11 +1257,11 @@ Public Sub QuickToolAction_HardnessUp()
     
     Select Case g_CurrentTool
         Case PAINT_SOFTBRUSH
-            curValue = toolpanel_Paintbrush.sltBrushSetting(2).value
+            curValue = toolpanel_Paintbrush.sltBrushSetting(2).Value
         Case PAINT_ERASER
-            curValue = toolpanel_Eraser.sltBrushSetting(2).value
+            curValue = toolpanel_Eraser.sltBrushSetting(2).Value
         Case PAINT_CLONE
-            curValue = toolpanel_Clone.sltBrushSetting(2).value
+            curValue = toolpanel_Clone.sltBrushSetting(2).Value
         Case Else
             Exit Sub
     End Select
@@ -1170,11 +1275,11 @@ Public Sub QuickToolAction_HardnessUp()
     'Assign the new value
     Select Case g_CurrentTool
         Case PAINT_SOFTBRUSH
-            toolpanel_Paintbrush.sltBrushSetting(2).value = curValue
+            toolpanel_Paintbrush.sltBrushSetting(2).Value = curValue
         Case PAINT_ERASER
-            toolpanel_Eraser.sltBrushSetting(2).value = curValue
+            toolpanel_Eraser.sltBrushSetting(2).Value = curValue
         Case PAINT_CLONE
-            toolpanel_Clone.sltBrushSetting(2).value = curValue
+            toolpanel_Clone.sltBrushSetting(2).Value = curValue
     End Select
     
 End Sub
@@ -1188,13 +1293,13 @@ Public Sub QuickToolAction_SizeDown()
     
     Select Case g_CurrentTool
         Case PAINT_PENCIL
-            curValue = toolpanel_Pencil.sltBrushSetting(0).value
+            curValue = toolpanel_Pencil.sltBrushSetting(0).Value
         Case PAINT_SOFTBRUSH
-            curValue = toolpanel_Paintbrush.sltBrushSetting(0).value
+            curValue = toolpanel_Paintbrush.sltBrushSetting(0).Value
         Case PAINT_ERASER
-            curValue = toolpanel_Eraser.sltBrushSetting(0).value
+            curValue = toolpanel_Eraser.sltBrushSetting(0).Value
         Case PAINT_CLONE
-            curValue = toolpanel_Clone.sltBrushSetting(0).value
+            curValue = toolpanel_Clone.sltBrushSetting(0).Value
         Case Else
             Exit Sub
     End Select
@@ -1218,13 +1323,13 @@ Public Sub QuickToolAction_SizeDown()
     'Assign the new value
     Select Case g_CurrentTool
         Case PAINT_PENCIL
-            toolpanel_Pencil.sltBrushSetting(0).value = curValue
+            toolpanel_Pencil.sltBrushSetting(0).Value = curValue
         Case PAINT_SOFTBRUSH
-            toolpanel_Paintbrush.sltBrushSetting(0).value = curValue
+            toolpanel_Paintbrush.sltBrushSetting(0).Value = curValue
         Case PAINT_ERASER
-            toolpanel_Eraser.sltBrushSetting(0).value = curValue
+            toolpanel_Eraser.sltBrushSetting(0).Value = curValue
         Case PAINT_CLONE
-            toolpanel_Clone.sltBrushSetting(0).value = curValue
+            toolpanel_Clone.sltBrushSetting(0).Value = curValue
     End Select
     
 End Sub
@@ -1236,13 +1341,13 @@ Public Sub QuickToolAction_SizeUp()
     
     Select Case g_CurrentTool
         Case PAINT_PENCIL
-            curValue = toolpanel_Pencil.sltBrushSetting(0).value
+            curValue = toolpanel_Pencil.sltBrushSetting(0).Value
         Case PAINT_SOFTBRUSH
-            curValue = toolpanel_Paintbrush.sltBrushSetting(0).value
+            curValue = toolpanel_Paintbrush.sltBrushSetting(0).Value
         Case PAINT_ERASER
-            curValue = toolpanel_Eraser.sltBrushSetting(0).value
+            curValue = toolpanel_Eraser.sltBrushSetting(0).Value
         Case PAINT_CLONE
-            curValue = toolpanel_Clone.sltBrushSetting(0).value
+            curValue = toolpanel_Clone.sltBrushSetting(0).Value
         Case Else
             Exit Sub
     End Select
@@ -1277,13 +1382,13 @@ Public Sub QuickToolAction_SizeUp()
     'Assign the new value
     Select Case g_CurrentTool
         Case PAINT_PENCIL
-            toolpanel_Pencil.sltBrushSetting(0).value = curValue
+            toolpanel_Pencil.sltBrushSetting(0).Value = curValue
         Case PAINT_SOFTBRUSH
-            toolpanel_Paintbrush.sltBrushSetting(0).value = curValue
+            toolpanel_Paintbrush.sltBrushSetting(0).Value = curValue
         Case PAINT_ERASER
-            toolpanel_Eraser.sltBrushSetting(0).value = curValue
+            toolpanel_Eraser.sltBrushSetting(0).Value = curValue
         Case PAINT_CLONE
-            toolpanel_Clone.sltBrushSetting(0).value = curValue
+            toolpanel_Clone.sltBrushSetting(0).Value = curValue
     End Select
     
 End Sub
