@@ -1353,6 +1353,9 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
             newState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
             FormMain.MnuView(7).Checked = newState
             FormMain.MainCanvas(0).SetStatusBarVisibility newState
+        
+        Case "snap_global"
+            Interface.ToggleSnapOptions pdst_Global
             
         Case "snap_canvasedge"
             Interface.ToggleSnapOptions pdst_CanvasEdge
@@ -2002,6 +2005,7 @@ Public Sub BuildActionDatabase()
     AddAction "zoom_1_16", vbNullString
     AddAction "view_rulers", vbNullString
     AddAction "view_statusbar", vbNullString
+    AddAction "snap_global", vbNullString
     AddAction "snap_canvasedge", vbNullString
     'AddAction "window_toolbox"
     AddAction "window_displaytoolbox", vbNullString

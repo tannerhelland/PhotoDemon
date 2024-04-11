@@ -310,6 +310,7 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKey3, vbShiftMask, "zoom_1_4"
     Hotkeys.AddHotkey vbKey4, vbShiftMask, "zoom_1_8"
     Hotkeys.AddHotkey vbKey5, vbShiftMask, "zoom_1_16"
+    Hotkeys.AddHotkey VK_OEM_1, vbCtrlMask Or vbShiftMask, "snap_global"
     
     'Window menu
     Hotkeys.AddHotkey vbKeyPageDown, , "window_next"

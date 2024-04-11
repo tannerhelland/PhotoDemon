@@ -257,7 +257,7 @@ Private Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As 
     dstPointF = srcPointF
     
     'Skip any further processing if the user hasn't enabled snapping
-    If (Not Tools_Move.GetSnapCanvasEdge()) Then Exit Sub
+    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
     
     'Start by constructing a list of potential snap targets, based on current user settings.
     Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
@@ -299,7 +299,7 @@ Private Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As 
     
     'Determine the minimum snap distance required for this zoom value.
     Dim snapThreshold As Double
-    snapThreshold = Tools_Move.GetSnapDistance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
+    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
     
     'If the minimum value falls beneath the minimum snap distance, snap away!
     If (minDistX < snapThreshold) Then dstPointF.x = xSnaps(idxSmallestX).cValue
@@ -316,7 +316,7 @@ Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     dstRectF = srcRectF
     
     'Skip any further processing if the user hasn't enabled snapping
-    If (Not Tools_Move.GetSnapCanvasEdge()) Then Exit Sub
+    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
     
     'Start by constructing a list of potential snap targets, based on current user settings.
     Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
@@ -376,7 +376,7 @@ Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     
     'Determine the minimum snap distance required for this zoom value.
     Dim snapThreshold As Double
-    snapThreshold = Tools_Move.GetSnapDistance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
+    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
     
     'If the minimum value falls beneath the minimum snap distance, snap away!
     If (minDistX < snapThreshold) Then
@@ -406,7 +406,7 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
     GetSnapTargets_X = 0
     
     'Canvas edges first
-    If Tools_Move.GetSnapCanvasEdge() Then
+    If Tools_Move.GetSnap_CanvasEdge() Then
         
         'Ensure at space is available in the target array
         If (UBound(dstSnaps) < GetSnapTargets_X + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
@@ -429,7 +429,7 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
     GetSnapTargets_Y = 0
     
     'Canvas edges first
-    If Tools_Move.GetSnapCanvasEdge() Then
+    If Tools_Move.GetSnap_CanvasEdge() Then
         
         'Ensure at space is available in the target array
         If (UBound(dstSnaps) < GetSnapTargets_Y + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
@@ -463,7 +463,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     ' the mouse pointer (e.g. the layer edges, which are not located at the mouse position), so we'll need to wait
     ' to snap until the transform has been applied to the underlying layer.
     Dim srcPtF As PointFloat, snappedPtF As PointFloat
-    If Tools_Move.GetSnapCanvasEdge() Then
+    If Tools_Move.GetSnap_Any() Then
         
         Select Case m_CurPOI
             Case poi_CornerNW, poi_CornerNE, poi_CornerSW, poi_CornerSE

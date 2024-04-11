@@ -1734,8 +1734,16 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Snap to canvas edges"
+         Caption         =   "Snap"
          Index           =   9
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   10
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Canvas edges"
+            Index           =   0
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -3741,6 +3749,13 @@ Private Sub MnuSharpen_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuSnap_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "snap_canvasedge"
+    End Select
+End Sub
+
 Private Sub MnuSpecificZoom_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3829,7 +3844,7 @@ Private Sub MnuView_Click(Index As Integer)
         Case 3
             Actions.LaunchAction_ByName "view_zoomout"
         Case 4
-            'zoom-to-value top-level menu
+            'zoom-to-value top-level
         Case 5
             '(separator)
         Case 6
@@ -3839,7 +3854,9 @@ Private Sub MnuView_Click(Index As Integer)
         Case 8
             '(separator)
         Case 9
-            Actions.LaunchAction_ByName "snap_canvasedge"
+            Actions.LaunchAction_ByName "snap_global"
+        Case 10
+            'snap-to top-level
     End Select
 End Sub
 

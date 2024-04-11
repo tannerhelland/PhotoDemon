@@ -591,7 +591,9 @@ Public Sub InitializeMenus()
     AddMenuItem "Show rulers", "view_rulers", 8, 6
     AddMenuItem "Show status bar", "view_statusbar", 8, 7
     AddMenuItem "-", "-", 8, 8
-    AddMenuItem "Snap to canvas edge", "snap_canvasedge", 8, 9
+    AddMenuItem "Snap", "snap_global", 8, 9
+    AddMenuItem "Snap to", "snap_top", 8, 10, allowInSearches:=False
+    AddMenuItem "Canvas edge", "snap_canvasedge", 8, 10, 0
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9
@@ -1657,8 +1659,11 @@ End Function
 'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
 ' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
 ' same-named menus are enabled and disabled as a group.
-Public Function SetMenuChecked(ByRef mnuName As String, Optional ByVal isChecked As Boolean = True) As Boolean
-
+Public Sub SetMenuChecked(ByRef mnuName As String, Optional ByVal isChecked As Boolean = True)
+    
+    'Avoid redundant calls
+    If (Menus.IsMenuChecked(mnuName) = isChecked) Then Exit Sub
+    
     'Resolve the menu name into an index into our menu collection
     Dim mnuIndex As Long
     If GetIndexFromName(mnuName, mnuIndex) Then
@@ -1691,10 +1696,13 @@ Public Function SetMenuChecked(ByRef mnuName As String, Optional ByVal isChecked
         
     End If
     
-End Function
+End Sub
 
 Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As Boolean = True)
-
+    
+    'Avoid redundant calls
+    If (Menus.IsMenuEnabled(mnuName) = isEnabled) Then Exit Sub
+    
     'Resolve the menu name into an index into our menu collection
     Dim mnuIndex As Long
     If GetIndexFromName(mnuName, mnuIndex) Then

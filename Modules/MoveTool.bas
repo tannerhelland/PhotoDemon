@@ -19,18 +19,19 @@ Attribute VB_Name = "Tools_Move"
 Option Explicit
 
 Public Enum PD_SnapTargets
-    pdst_CanvasEdge
+    pdst_Global = 0
+    pdst_CanvasEdge = 1
 End Enum
 
 #If False Then
-    Private Const pdst_CanvasEdge = 0
+    Private Const pdst_Global = 0, pdst_CanvasEdge = 1
 #End If
 
 'The move/size tool exposes a number of UI-only options (like drawing borders around active layers).
 ' To improve viewport performance, we cache those settings locally, and the viewport queries us instead
 ' of directly querying the associated UI elements.
 Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
-Private m_SnapToCanvasEdge As Boolean, m_SnapDistance As Long
+Private m_SnapGlobal As Boolean, m_SnapToCanvasEdge As Boolean, m_SnapDistance As Long
 
 'Same goes for various selection-related move settings (for moving selected pixels).  These are simple
 ' flags whose value is relayed from the Move/Size options panel.
@@ -325,17 +326,35 @@ Public Function GetDrawLayerRotateNodes() As Boolean
     GetDrawLayerRotateNodes = m_DrawRotateNodes
 End Function
 
-Public Function GetSnapCanvasEdge() As Boolean
-    GetSnapCanvasEdge = m_SnapToCanvasEdge
+'Returns TRUE if *any* snap-to-edge behaviors are enabled.  Useful for skipping all snap checks.
+Public Function GetSnap_Any() As Boolean
+    GetSnap_Any = m_SnapGlobal
+    If m_SnapGlobal Then
+        GetSnap_Any = m_SnapToCanvasEdge
+        'TODO: OR against other snap options when added
+    End If
 End Function
 
-Public Function GetSnapDistance() As Long
+Public Function GetSnap_CanvasEdge() As Boolean
+    GetSnap_CanvasEdge = m_SnapToCanvasEdge
+End Function
+
+Public Function GetSnap_Distance() As Long
     
-    GetSnapDistance = m_SnapDistance
+    GetSnap_Distance = m_SnapDistance
     
     'Failsafe only; should never trigger
-    If (GetSnapDistance < 1) Then GetSnapDistance = 8
+    If (GetSnap_Distance < 1) Then GetSnap_Distance = 8
     
+End Function
+
+'Returns TRUE if the top-level "View > Snap" menu is checked.  Note that the user can enable/disable
+' individual snap targets regardless of this setting, but if this setting is FALSE, we must ignore all
+' other snap options.  (This is how Photoshop behaves; the top-level Snap setting is mapped to a
+' keyboard accelerator so the user can quickly enable/disable snap behavior without losing current
+' per-target snap settings.)
+Public Function GetSnap_Global() As Boolean
+    GetSnap_Global = m_SnapGlobal
 End Function
 
 Public Sub SetDrawLayerBorders(ByVal newState As Boolean)
@@ -350,14 +369,18 @@ Public Sub SetDrawLayerRotateNodes(ByVal newState As Boolean)
     m_DrawRotateNodes = newState
 End Sub
 
-Public Sub SetSnapCanvasEdge(ByVal newState As Boolean)
+Public Sub SetSnap_CanvasEdge(ByVal newState As Boolean)
     m_SnapToCanvasEdge = newState
 End Sub
 
-Public Sub SetSnapDistance(ByVal newDistance As Long)
+Public Sub SetSnap_Distance(ByVal newDistance As Long)
     m_SnapDistance = newDistance
     If (m_SnapDistance < 1) Then m_SnapDistance = 1
     If (m_SnapDistance > 255) Then m_SnapDistance = 255     'GIMP uses a 255 max value; that seems reasonable
+End Sub
+
+Public Sub SetSnap_Global(ByVal newState As Boolean)
+    m_SnapGlobal = newState
 End Sub
 
 'Relay functions for move selected pixels behavior
