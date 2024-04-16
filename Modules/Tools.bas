@@ -307,6 +307,75 @@ Private Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As 
     
 End Sub
 
+'Given a list of points, compare each to all snap points and find the *best* match among them.  Based on that,
+' return the x/y offset required to move the best-match point onto the snap target.
+Private Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoints As Long, ByRef dstOffsetX As Long, ByRef dstOffsetY As Long)
+    
+    dstOffsetX = 0
+    dstOffsetY = 0
+    
+    'Failsafe only; caller (in PD) will never set this to <= 0
+    If (numOfPoints <= 0) Then Exit Sub
+    
+    'Skip any further processing if the user hasn't enabled snapping
+    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
+    
+    'Start by constructing a list of potential snap targets, based on current user settings.
+    Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
+    numXSnaps = GetSnapTargets_X(xSnaps)
+    numYSnaps = GetSnapTargets_Y(ySnaps)
+    
+    'Ensure some snap targets exist
+    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
+    
+    'We now have a list of snap comparison targets.  We don't care what these targets represent -
+    ' we just want to find the "best" one from each list.
+    Dim idxSmallestX As Long, idxSmallestPointX As Long, minDistX As Double
+    
+    'Set the minimum distance to an arbitrarily huge number, then find minimum x-distances
+    minDistX = DOUBLE_MAX
+    
+    Dim i As Long, j As Long
+    For j = 0 To numOfPoints - 1
+        For i = 0 To numXSnaps - 1
+            With xSnaps(i)
+                .cDistance1 = PDMath.DistanceOneDimension(srcPoints(j).x, .cValue)
+                If (.cDistance1 < minDistX) Then
+                    minDistX = .cDistance1
+                    idxSmallestX = i
+                    idxSmallestPointX = j
+                End If
+            End With
+        Next i
+    Next j
+    
+    'Repeat all the above steps for y-coordinates
+    Dim idxSmallestY As Long, idxSmallestPointY As Long, minDistY As Double
+    minDistY = DOUBLE_MAX
+    
+    For j = 0 To numOfPoints - 1
+        For i = 0 To numYSnaps - 1
+            With ySnaps(i)
+                .cDistance1 = PDMath.DistanceOneDimension(srcPoints(j).y, .cValue)
+                If (.cDistance1 < minDistY) Then
+                    minDistY = .cDistance1
+                    idxSmallestY = i
+                    idxSmallestPointY = j
+                End If
+            End With
+        Next i
+    Next j
+    
+    'Determine the minimum snap distance required for this zoom value.
+    Dim snapThreshold As Double
+    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
+    
+    'If the minimum value falls beneath the minimum snap distance, snap away!
+    If (minDistX < snapThreshold) Then dstOffsetX = (xSnaps(idxSmallestX).cValue - srcPoints(idxSmallestPointX).x)
+    If (minDistY < snapThreshold) Then dstOffsetY = (ySnaps(idxSmallestY).cValue - srcPoints(idxSmallestPointY).y)
+    
+End Sub
+
 'Snap the passed rect to any relevant snap targets (based on the user's current snap settings).
 ' Because this function snaps only by moving the target rect, it is guaranteed that only the
 ' top and left values will be changed by the function (width/height will *not*).
@@ -418,6 +487,8 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
         
     End If
     
+    'TODO: more snap targets in the future...
+    
 End Function
 
 'Get a list of current y-snap targets (determined by user settings).
@@ -440,6 +511,8 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
         GetSnapTargets_Y = GetSnapTargets_Y + 2
         
     End If
+    
+    'TODO: more snap targets in the future...
     
 End Function
 
@@ -663,13 +736,17 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 Dim srcRectF As RectF
                 .GetLayerBoundaryRect srcRectF
                 
-                'Hand the layer rect off to the snap calculator, then take whatever it returns and
-                ' forward just the left/top coordinates *back* to the target layer (because snapping
-                ' won't modify the rect's size - only its position).
-                Dim snappedRectF As RectF
-                SnapRectByMoving srcRectF, snappedRectF
-                .SetLayerOffsetX snappedRectF.Left
-                .SetLayerOffsetY snappedRectF.Top
+                Dim listOfCorners() As PointFloat
+                ReDim listOfCorners(0 To 3) As PointFloat
+                .GetLayerCornerCoordinates listOfCorners
+                
+                Dim snapOffsetX As Long, snapOffsetY As Long
+                SnapPointListByMoving listOfCorners, 4, snapOffsetX, snapOffsetY
+                
+                'Hand the layer corners off to the snap calculator, then take whatever it returns and
+                ' forward the original left/top position + snapped offsets to the source layer
+                .SetLayerOffsetX .GetLayerOffsetX + snapOffsetX
+                .SetLayerOffsetY .GetLayerOffsetY + snapOffsetY
             
         End Select
         
