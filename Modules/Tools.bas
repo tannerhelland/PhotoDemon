@@ -72,15 +72,6 @@ Private m_MiddleMouseState As Boolean
 ' original one.)
 Private m_MoveSelectedPixels As Boolean
 
-'When snapping coordinates, we need to compare all possible snap targets and choose the best independent
-' x and y snap coordinate (assuming they fall beneath the snap threshold for the current zoom level).
-' Two distances are provided: one each for left/right (or top/bottom).
-Private Type SnapComparison
-    cValue As Double
-    cDistance1 As Double
-    cDistance2 As Double
-End Type
-
 'Get/Set the "alternate" state for a paint tool (typically triggered by pressing ALT)
 Public Function GetToolAltState() As Boolean
     GetToolAltState = m_PaintToolAltState
@@ -249,273 +240,6 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
 End Sub
 
-'Snap the passed point to any relevant snap targets (based on the user's current snap settings).
-Private Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As PointFloat)
-    
-    'If no snap targets exist (because the user has disabled snapping), ensure the destination point
-    ' mirrors the source point
-    dstPointF = srcPointF
-    
-    'Skip any further processing if the user hasn't enabled snapping
-    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
-    
-    'Start by constructing a list of potential snap targets, based on current user settings.
-    Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
-    numXSnaps = GetSnapTargets_X(xSnaps)
-    numYSnaps = GetSnapTargets_Y(ySnaps)
-    
-    'Ensure some snap targets exist
-    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
-    
-    'We now have a list of snap comparison targets.  We don't care what these targets represent -
-    ' we just want to find the "best" one from each list.
-    Dim i As Long, idxSmallestX As Long, minDistX As Double
-    
-    'Set the minimum distance to an arbitrarily huge number, then find minimum x-distances
-    minDistX = DOUBLE_MAX
-    For i = 0 To numXSnaps - 1
-        With xSnaps(i)
-            .cDistance1 = PDMath.DistanceOneDimension(srcPointF.x, .cValue)
-            If (.cDistance1 < minDistX) Then
-                minDistX = .cDistance1
-                idxSmallestX = i
-            End If
-        End With
-    Next i
-    
-    'Repeat all the above steps for y-coordinates
-    Dim idxSmallestY As Long, minDistY As Double
-    minDistY = DOUBLE_MAX
-    
-    For i = 0 To numYSnaps - 1
-        With ySnaps(i)
-            .cDistance1 = PDMath.DistanceOneDimension(srcPointF.y, .cValue)
-            If (.cDistance1 < minDistY) Then
-                minDistY = .cDistance1
-                idxSmallestY = i
-            End If
-        End With
-    Next i
-    
-    'Determine the minimum snap distance required for this zoom value.
-    Dim snapThreshold As Double
-    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
-    
-    'If the minimum value falls beneath the minimum snap distance, snap away!
-    If (minDistX < snapThreshold) Then dstPointF.x = xSnaps(idxSmallestX).cValue
-    If (minDistY < snapThreshold) Then dstPointF.y = ySnaps(idxSmallestY).cValue
-    
-End Sub
-
-'Given a list of points, compare each to all snap points and find the *best* match among them.  Based on that,
-' return the x/y offset required to move the best-match point onto the snap target.
-Private Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoints As Long, ByRef dstOffsetX As Long, ByRef dstOffsetY As Long)
-    
-    dstOffsetX = 0
-    dstOffsetY = 0
-    
-    'Failsafe only; caller (in PD) will never set this to <= 0
-    If (numOfPoints <= 0) Then Exit Sub
-    
-    'Skip any further processing if the user hasn't enabled snapping
-    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
-    
-    'Start by constructing a list of potential snap targets, based on current user settings.
-    Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
-    numXSnaps = GetSnapTargets_X(xSnaps)
-    numYSnaps = GetSnapTargets_Y(ySnaps)
-    
-    'Ensure some snap targets exist
-    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
-    
-    'We now have a list of snap comparison targets.  We don't care what these targets represent -
-    ' we just want to find the "best" one from each list.
-    Dim idxSmallestX As Long, idxSmallestPointX As Long, minDistX As Double
-    
-    'Set the minimum distance to an arbitrarily huge number, then find minimum x-distances
-    minDistX = DOUBLE_MAX
-    
-    Dim i As Long, j As Long
-    For j = 0 To numOfPoints - 1
-        For i = 0 To numXSnaps - 1
-            With xSnaps(i)
-                .cDistance1 = PDMath.DistanceOneDimension(srcPoints(j).x, .cValue)
-                If (.cDistance1 < minDistX) Then
-                    minDistX = .cDistance1
-                    idxSmallestX = i
-                    idxSmallestPointX = j
-                End If
-            End With
-        Next i
-    Next j
-    
-    'Repeat all the above steps for y-coordinates
-    Dim idxSmallestY As Long, idxSmallestPointY As Long, minDistY As Double
-    minDistY = DOUBLE_MAX
-    
-    For j = 0 To numOfPoints - 1
-        For i = 0 To numYSnaps - 1
-            With ySnaps(i)
-                .cDistance1 = PDMath.DistanceOneDimension(srcPoints(j).y, .cValue)
-                If (.cDistance1 < minDistY) Then
-                    minDistY = .cDistance1
-                    idxSmallestY = i
-                    idxSmallestPointY = j
-                End If
-            End With
-        Next i
-    Next j
-    
-    'Determine the minimum snap distance required for this zoom value.
-    Dim snapThreshold As Double
-    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
-    
-    'If the minimum value falls beneath the minimum snap distance, snap away!
-    If (minDistX < snapThreshold) Then dstOffsetX = (xSnaps(idxSmallestX).cValue - srcPoints(idxSmallestPointX).x)
-    If (minDistY < snapThreshold) Then dstOffsetY = (ySnaps(idxSmallestY).cValue - srcPoints(idxSmallestPointY).y)
-    
-End Sub
-
-'Snap the passed rect to any relevant snap targets (based on the user's current snap settings).
-' Because this function snaps only by moving the target rect, it is guaranteed that only the
-' top and left values will be changed by the function (width/height will *not*).
-Private Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
-    
-    'By default, return the same rect.  (This is important if the user has disabled snapping.)
-    dstRectF = srcRectF
-    
-    'Skip any further processing if the user hasn't enabled snapping
-    If (Not Tools_Move.GetSnap_Any()) Then Exit Sub
-    
-    'Start by constructing a list of potential snap targets, based on current user settings.
-    Dim xSnaps() As SnapComparison, ySnaps() As SnapComparison, numXSnaps As Long, numYSnaps As Long
-    numXSnaps = GetSnapTargets_X(xSnaps)
-    numYSnaps = GetSnapTargets_Y(ySnaps)
-    
-    'Ensure some snap targets exist
-    If (numXSnaps = 0) Or (numYSnaps = 0) Then Exit Sub
-    
-    'We now have a list of snap comparison targets.  We don't care what these targets represent -
-    ' we just want to find the "best" one from each list.
-    
-    'Convert the source snap rectangle into a right/bottom rect (instead of a default width/height one)
-    Dim compareRectF As RectF_RB
-    compareRectF.Left = srcRectF.Left
-    compareRectF.Top = srcRectF.Top
-    compareRectF.Right = srcRectF.Left + srcRectF.Width - 1
-    compareRectF.Bottom = srcRectF.Top + srcRectF.Height - 1
-    
-    Dim i As Long, idxSmallestX As Long, minDistX As Double
-    
-    'Set the minimum distance to an arbitrarily huge number, then find the smallest x-distance
-    minDistX = DOUBLE_MAX
-    For i = 0 To numXSnaps - 1
-        With xSnaps(i)
-            .cDistance1 = PDMath.DistanceOneDimension(compareRectF.Left, .cValue)
-            If (.cDistance1 < minDistX) Then
-                minDistX = .cDistance1
-                idxSmallestX = i
-            End If
-            .cDistance2 = PDMath.DistanceOneDimension(compareRectF.Right, .cValue)
-            If (.cDistance2 < minDistX) Then
-                minDistX = .cDistance2
-                idxSmallestX = i
-            End If
-        End With
-    Next i
-    
-    'Repeat all the above steps for y-coordinates
-    Dim idxSmallestY As Long, minDistY As Double
-    minDistY = DOUBLE_MAX
-    
-    For i = 0 To numYSnaps - 1
-        With ySnaps(i)
-            .cDistance1 = PDMath.DistanceOneDimension(compareRectF.Top, .cValue)
-            If (.cDistance1 < minDistY) Then
-                minDistY = .cDistance1
-                idxSmallestY = i
-            End If
-            .cDistance2 = PDMath.DistanceOneDimension(compareRectF.Bottom, .cValue)
-            If (.cDistance2 < minDistY) Then
-                minDistY = .cDistance2
-                idxSmallestY = i
-            End If
-        End With
-    Next i
-    
-    'Determine the minimum snap distance required for this zoom value.
-    Dim snapThreshold As Double
-    snapThreshold = Tools_Move.GetSnap_Distance() * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.ImgViewport.GetZoomIndex))
-    
-    'If the minimum value falls beneath the minimum snap distance, snap away!
-    If (minDistX < snapThreshold) Then
-        If (xSnaps(idxSmallestX).cDistance1 < xSnaps(idxSmallestX).cDistance2) Then
-            dstRectF.Left = xSnaps(idxSmallestX).cValue
-        Else
-            dstRectF.Left = xSnaps(idxSmallestX).cValue - dstRectF.Width
-        End If
-    End If
-    
-    If (minDistY < snapThreshold) Then
-        If (ySnaps(idxSmallestY).cDistance1 < ySnaps(idxSmallestY).cDistance2) Then
-            dstRectF.Top = ySnaps(idxSmallestY).cValue
-        Else
-            dstRectF.Top = ySnaps(idxSmallestY).cValue - dstRectF.Height
-        End If
-    End If
-    
-End Sub
-
-'Get a list of current x-snap targets (determined by user settings).
-' RETURNS: number of entries in the list, or 0 if snapping is disabled by the user.
-Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
-    
-    'Start with some arbitrarily sized list (these will be enlarged as necessary)
-    ReDim dstSnaps(0 To 15) As SnapComparison
-    GetSnapTargets_X = 0
-    
-    'Canvas edges first
-    If Tools_Move.GetSnap_CanvasEdge() Then
-        
-        'Ensure at space is available in the target array
-        If (UBound(dstSnaps) < GetSnapTargets_X + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
-        
-        'Add canvas boundaries to the snap list
-        dstSnaps(GetSnapTargets_X).cValue = 0#
-        dstSnaps(GetSnapTargets_X + 1).cValue = PDImages.GetActiveImage.Width
-        GetSnapTargets_X = GetSnapTargets_X + 2
-        
-    End If
-    
-    'TODO: more snap targets in the future...
-    
-End Function
-
-'Get a list of current y-snap targets (determined by user settings).
-' RETURNS: number of entries in the list, or 0 if snapping is disabled by the user.
-Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
-    
-    'Start with some arbitrarily sized list (these will be enlarged as necessary)
-    ReDim dstSnaps(0 To 15) As SnapComparison
-    GetSnapTargets_Y = 0
-    
-    'Canvas edges first
-    If Tools_Move.GetSnap_CanvasEdge() Then
-        
-        'Ensure at space is available in the target array
-        If (UBound(dstSnaps) < GetSnapTargets_Y + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
-        
-        'Add canvas boundaries to the snap list
-        dstSnaps(GetSnapTargets_Y).cValue = 0#
-        dstSnaps(GetSnapTargets_Y + 1).cValue = PDImages.GetActiveImage.Height
-        GetSnapTargets_Y = GetSnapTargets_Y + 2
-        
-    End If
-    
-    'TODO: more snap targets in the future...
-    
-End Function
-
 'This function can be used to move and/or non-destructively resize an image layer.
 '
 'If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE. This instructs the function
@@ -536,13 +260,13 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     ' the mouse pointer (e.g. the layer edges, which are not located at the mouse position), so we'll need to wait
     ' to snap until the transform has been applied to the underlying layer.
     Dim srcPtF As PointFloat, snappedPtF As PointFloat
-    If Tools_Move.GetSnap_Any() Then
+    If Snap.GetSnap_Any() Then
         
         Select Case m_CurPOI
             Case poi_CornerNW, poi_CornerNE, poi_CornerSW, poi_CornerSE
                 srcPtF.x = curImageX
                 srcPtF.y = curImageY
-                SnapPointByMoving srcPtF, snappedPtF
+                Snap.SnapPointByMoving srcPtF, snappedPtF
                 curImageX = snappedPtF.x
                 curImageY = snappedPtF.y
                 
@@ -733,21 +457,23 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 .SetLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
                 .SetLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
                 
-                Dim srcRectF As RectF
-                .GetLayerBoundaryRect srcRectF
+                'Apply snapping (contingent on user settings).
+                If Snap.GetSnap_Any() Then
+                    
+                    Dim listOfCorners() As PointFloat
+                    ReDim listOfCorners(0 To 3) As PointFloat
+                    .GetLayerCornerCoordinates listOfCorners
+                    
+                    Dim snapOffsetX As Long, snapOffsetY As Long
+                    Snap.SnapPointListByMoving listOfCorners, 4, snapOffsetX, snapOffsetY
+                    
+                    'Hand the layer corners off to the snap calculator, then take whatever it returns and
+                    ' forward the original left/top position + snapped offsets to the source layer
+                    .SetLayerOffsetX .GetLayerOffsetX + snapOffsetX
+                    .SetLayerOffsetY .GetLayerOffsetY + snapOffsetY
+                    
+                End If
                 
-                Dim listOfCorners() As PointFloat
-                ReDim listOfCorners(0 To 3) As PointFloat
-                .GetLayerCornerCoordinates listOfCorners
-                
-                Dim snapOffsetX As Long, snapOffsetY As Long
-                SnapPointListByMoving listOfCorners, 4, snapOffsetX, snapOffsetY
-                
-                'Hand the layer corners off to the snap calculator, then take whatever it returns and
-                ' forward the original left/top position + snapped offsets to the source layer
-                .SetLayerOffsetX .GetLayerOffsetX + snapOffsetX
-                .SetLayerOffsetY .GetLayerOffsetY + snapOffsetY
-            
         End Select
         
         'If this layer is moved and/or resized while rotation is active, we need to adjust the layer's rotational center

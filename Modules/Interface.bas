@@ -732,8 +732,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'View (top-menu level)
         Case PDUI_View
             Menus.SetMenuEnabled "view_top", newState
-            Menus.SetMenuChecked "snap_global", Tools_Move.GetSnap_Global()
-            Menus.SetMenuChecked "snap_canvasedge", Tools_Move.GetSnap_CanvasEdge()
+            Menus.SetMenuChecked "snap_global", Snap.GetSnap_Global()
+            Menus.SetMenuChecked "snap_canvasedge", Snap.GetSnap_CanvasEdge()
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus.
         ' (This flag is very useful for items that require at least one open image to operate.)
@@ -1210,30 +1210,6 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     If (Not suppressPrefUpdate) Then UserPrefs.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
     FormMain.MainCanvas(0).NotifyImageStripVisibilityMode newSetting
 
-End Sub
-
-'Toggle one of the "snap to..." settings in the View menu.
-' To forcibly set to a specific state (instead of toggling), set the forceInsteadOfToggle param to TRUE.
-Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal forceInsteadOfToggle As Boolean = False, Optional ByVal newState As Boolean = True)
-    
-    'While calculating which on-screen menu to update, we also need to relay changes to two places:
-    ' 1) the tools_move module (which handles actual snap calculations)
-    ' 2) the user preferences file (to ensure everything is synchronized between sessions)
-    Select Case snapTarget
-        Case pdst_Global
-            If (Not forceInsteadOfToggle) Then newState = Not Tools_Move.GetSnap_Global()
-            Tools_Move.SetSnap_Global newState
-            UserPrefs.SetPref_Boolean "Interface", "snap-global", newState
-            Menus.SetMenuChecked "snap_global", newState
-            
-        Case pdst_CanvasEdge
-            If (Not forceInsteadOfToggle) Then newState = Not Tools_Move.GetSnap_CanvasEdge()
-            Tools_Move.SetSnap_CanvasEdge newState
-            UserPrefs.SetPref_Boolean "Interface", "snap-canvas-edge", newState
-            Menus.SetMenuChecked "snap_canvasedge", newState
-            
-    End Select
-    
 End Sub
 
 Public Function FixDPI(ByVal pxMeasurement As Long) As Long

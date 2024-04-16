@@ -1355,10 +1355,10 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
             FormMain.MainCanvas(0).SetStatusBarVisibility newState
         
         Case "snap_global"
-            Interface.ToggleSnapOptions pdst_Global
+            Snap.ToggleSnapOptions pdst_Global
             
         Case "snap_canvasedge"
-            Interface.ToggleSnapOptions pdst_CanvasEdge
+            Snap.ToggleSnapOptions pdst_CanvasEdge
             
         Case Else
             cmdFound = False

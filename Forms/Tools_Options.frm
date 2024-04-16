@@ -1206,7 +1206,7 @@ Private Sub cmdBarMini_OKClick()
     End If
     
     UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance.Value
-    Tools_Move.SetSnap_Distance spnSnapDistance.Value
+    Snap.SetSnap_Distance spnSnapDistance.Value
     
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)

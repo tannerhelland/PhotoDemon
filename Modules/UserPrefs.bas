@@ -609,9 +609,9 @@ Public Sub LoadUserSettings()
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         m_CanvasColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Interface", "CanvasColor", "#a0a0a0"))
         
-        Interface.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
-        Interface.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
-        Tools_Move.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
+        Snap.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
+        Snap.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
+        Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
         
         'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
         ' want to override PD's default font object.
