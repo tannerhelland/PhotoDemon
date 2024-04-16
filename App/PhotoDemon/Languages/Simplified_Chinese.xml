@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，9.2 build 311）</langname>
-<langversion>9.2 build 311.2</langversion>
+<langversion>9.2 build 311.3</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -5541,6 +5541,21 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Snap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>窗口</translation>
 </phrase>
@@ -5742,7 +5757,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 397 phrases. 216 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13367,6 +13382,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>snap distance (in pixels)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>当图像来自外部来源（如Windows资源管理器）时。</translation>
 </phrase>
@@ -14028,7 +14048,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14238,11 +14258,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2699</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5694 phrases. -->
+<!-- 2995 are duplicates, so only 2699 unique phrases have been written to file. -->
+<!-- These 2699 phrases contain approximately 11703 total words. -->
 
 <special-translations>
 
