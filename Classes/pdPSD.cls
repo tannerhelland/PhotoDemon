@@ -550,6 +550,8 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
     ' the start of the file, and embed a "3" instead of "4" for the number of channels in the image.
     If (Not alphaMatters) Then
         
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "dropping alpha channel to conserve space"
+        
         Dim curStreamPosition As Long
         curStreamPosition = cStream.GetPosition()
         
@@ -762,8 +764,8 @@ Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRe
     'Size of the version number is calculated as follows:
     ' 4 bytes - version number (always 1)
     ' 1 byte - real merged data included in file (e.g. "max compatibility" used at export time)
-    ' (variable bytes) - name of PSD writer as a "Unicode string" (4 byte len + 2 bytes * num chars)
-    ' (variable bytes) - name of PSD reader as a "Unicode string" (4 byte len + 2 bytes * num chars)
+    ' (variable bytes) - name of PSD writer as a "Unicode string" (4 byte len + 2 bytes * num chars + 2-byte trailing null)
+    ' (variable bytes) - name of PSD reader as a "Unicode string" (4 byte len + 2 bytes * num chars + 2-byte trailing null)
     ' 4 bytes - file version (always 1)
     blockSize = 4 + 1 + 4 'Fixed-size entries
     blockSize = blockSize + 4 + 4 'Size descriptors for two Unicode strings
@@ -771,15 +773,15 @@ Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRe
     Dim writerName As String, readerName As String
     writerName = "PhotoDemon"
     readerName = writerName & " " & Updates.GetPhotoDemonVersion()
-    blockSize = blockSize + LenB(writerName) + LenB(readerName) 'Add string sizes to calculation
+    blockSize = blockSize + LenB(writerName) + 2 + LenB(readerName) + 2  'Add string sizes to calculation, including trailing nulls
     
     WriteImageResourceHeader cStream, &H421, blockSize
     cStream.WriteLong_BE 1
     If useMaxCompatibility Then cStream.WriteByte 1 Else cStream.WriteByte 0
     cStream.WriteLong_BE Len(writerName)
-    cStream.WriteString_UnicodeBE writerName
+    cStream.WriteString_UnicodeBE writerName, True
     cStream.WriteLong_BE Len(readerName)
-    cStream.WriteString_UnicodeBE readerName
+    cStream.WriteString_UnicodeBE readerName, True
     cStream.WriteLong_BE 1
     
     'See above note about image resource block padding
