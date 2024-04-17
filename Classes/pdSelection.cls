@@ -1283,14 +1283,13 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
         
         Dim okToSnap As Boolean
         If m_TransformModeActive Then
-            okToSnap = okToSnap Or (m_SelectionShape = ss_Rectangle)
-            okToSnap = okToSnap Or (m_SelectionShape = ss_Circle)
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Rectangle) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Circle) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
             okToSnap = okToSnap Or ((m_SelectionShape = ss_Polygon) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
         Else
             okToSnap = okToSnap Or (m_SelectionShape = ss_Rectangle)
             okToSnap = okToSnap Or (m_SelectionShape = ss_Circle)
         End If
-        
         
         If okToSnap Then
             srcPtF.x = x
@@ -1375,6 +1374,14 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                             .Right = .Left + m_CornersLocked.Width
                             .Bottom = .Top + m_CornersLocked.Height
                         End With
+                        
+                        'We now need to apply "snap" settings, if any
+                        If Snap.GetSnap_Any() Then
+                            Dim srcRectF_Orig As RectF, dstRectF_Snapped As RectF
+                            PDMath.GetRectF_FromRectFRB m_CornersUnlocked, srcRectF_Orig
+                            Snap.SnapRectByMoving srcRectF_Orig, dstRectF_Snapped
+                            PDMath.GetRectFRB_FromRectF dstRectF_Snapped, m_CornersUnlocked
+                        End If
                         
                 End Select
                 

@@ -1451,6 +1451,30 @@ Public Sub GetNearestIntRectF(ByRef srcRectF As RectF)
     If (PDMath.Frac(srcRectF.Height + yOffset) >= 0.5) Then srcRectF.Height = Int(srcRectF.Height + 1#) Else srcRectF.Height = Int(srcRectF.Height)
 End Sub
 
+'Note that GDI rects (and possibly others) have strict requirements about the way right/bottom coords are defined,
+' so these convenience functions may need additional tweaking by the caller if forwarding the rect to an external library.
+Public Sub GetRectFRB_FromRectF(ByRef srcRectF As RectF, ByRef dstRectF_RB As RectF_RB)
+    
+    With dstRectF_RB
+        .Left = srcRectF.Left
+        .Top = srcRectF.Top
+        .Right = srcRectF.Left + srcRectF.Width
+        .Bottom = srcRectF.Top + srcRectF.Height
+    End With
+    
+End Sub
+
+Public Sub GetRectF_FromRectFRB(ByRef srcRectF_RB As RectF_RB, ByRef dstRectF As RectF)
+    
+    With dstRectF
+        .Left = srcRectF_RB.Left
+        .Top = srcRectF_RB.Top
+        .Width = srcRectF_RB.Right - srcRectF_RB.Left
+        .Height = srcRectF_RB.Bottom - srcRectF_RB.Top
+    End With
+    
+End Sub
+
 Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Long) As Long
     If (srcL < minL) Then
         ClampL = minL
