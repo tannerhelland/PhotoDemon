@@ -1271,6 +1271,37 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     x = Int(x + 0.5)
     y = Int(y + 0.5)
     
+    'For operations only involving a single point of transformation (e.g. resizing a selection by node-dragging),
+    ' we can apply snapping *now*, to the mouse coordinate itself.
+    '
+    'For operations that transform multiple points (like moving an entire selection), we need to snap points
+    ' *besides* the mouse pointer (e.g. the selection edges, or other polygon points which are not located at
+    ' the mouse position), so we must wait to snap until the transform has been applied to the underlying
+    ' selection object.
+    Dim srcPtF As PointFloat, snappedPtF As PointFloat
+    If Snap.GetSnap_Any() Then
+        
+        Dim okToSnap As Boolean
+        If m_TransformModeActive Then
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Rectangle)
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Circle)
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Polygon) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
+        Else
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Rectangle)
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Circle)
+        End If
+        
+        
+        If okToSnap Then
+            srcPtF.x = x
+            srcPtF.y = y
+            Snap.SnapPointByMoving srcPtF, snappedPtF
+            x = snappedPtF.x
+            y = snappedPtF.y
+        End If
+        
+    End If
+    
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
     If m_TransformModeActive Then
@@ -1426,7 +1457,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 m_IsTransformable = True
             
             'Wand selections are not technically transformable, but we allow the user to click-drag to
-            ' move the initiaion point
+            ' move the initiation point.
             Case ss_Wand
                 
                 If (m_CornersUnlocked.Left <> x) Or (m_CornersUnlocked.Top <> y) Then

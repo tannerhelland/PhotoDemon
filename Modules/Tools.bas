@@ -273,7 +273,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
         End Select
         
     End If
-        
+    
     'Convert the current x/y pair to the layer coordinate space.  This takes into account any active affine transforms
     ' on the image (e.g. rotation), which may place the point in a totally different position relative to the underlying layer.
     Dim curLayerX As Single, curLayerY As Single
