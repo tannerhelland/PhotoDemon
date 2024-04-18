@@ -1407,12 +1407,40 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                         'Failsafe check for rapid clicks
                         If (m_NumOfPolygonPoints - 1 <= UBound(m_PolygonPointsBackup)) Then
                             
-                            'Rebuild the main polygon array by copying all points from the backup array, and applying the current
-                            ' x/y transformation distance to them.
-                            For i = 0 To m_NumOfPolygonPoints - 1
-                                m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - m_MoveXDist)
-                                m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - m_MoveYDist)
-                            Next i
+                            'Apply snap, as relevant
+                            Dim xOffset As Long, yOffset As Long
+                            xOffset = (x - m_MoveXDist)
+                            yOffset = (y - m_MoveYDist)
+                            
+                            If Snap.GetSnap_Any() Then
+                                
+                                'Make a local copy of all points, as they would appear if moved to the new position
+                                Dim snapPoints() As PointFloat
+                                ReDim snapPoints(0 To UBound(m_PolygonPoints)) As PointFloat
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    snapPoints(i).x = m_PolygonPointsBackup(i).x + xOffset
+                                    snapPoints(i).y = m_PolygonPointsBackup(i).y + yOffset
+                                Next i
+                                
+                                'Snap this list of points to its best-fit location
+                                xOffset = 0
+                                yOffset = 0
+                                Snap.SnapPointListByMoving snapPoints, m_NumOfPolygonPoints, xOffset, yOffset
+                                
+                                'Relay the snapped points back to the main polygon point collection
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    m_PolygonPoints(i).x = snapPoints(i).x + xOffset
+                                    m_PolygonPoints(i).y = snapPoints(i).y + yOffset
+                                Next i
+                            
+                            'Rebuild the main polygon array by copying all points from the backup array,
+                            ' and applying the current x/y transformation distance to them.
+                            Else
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + xOffset
+                                    m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + yOffset
+                                Next i
+                            End If
                             
                         End If
                     
