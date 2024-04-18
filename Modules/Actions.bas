@@ -1360,6 +1360,12 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
         Case "snap_canvasedge"
             Snap.ToggleSnapOptions pdst_CanvasEdge
             
+        Case "snap_centerline"
+            Snap.ToggleSnapOptions pdst_Centerline
+            
+        Case "snap_layer"
+            Snap.ToggleSnapOptions pdst_Layer
+            
         Case Else
             cmdFound = False
         
@@ -1973,6 +1979,7 @@ Public Sub BuildActionDatabase()
     AddAction "effects_animation_speed", "Animation playback speed"
     AddAction "effects_customfilter", "Custom filter", True, True
     AddAction "effects_8bf", "Photoshop (8bf) plugin", True, True
+    
     'AddAction "tools_language"
     AddAction "tools_languageeditor", vbNullString
     AddAction "tools_theme", vbNullString
@@ -1990,6 +1997,7 @@ Public Sub BuildActionDatabase()
     'AddAction "tools_themepackage"
     'AddAction "tools_standalonepackage"
     'AddAction "effects_developertest"
+    
     AddAction "view_fit", vbNullString
     AddAction "view_zoomin", vbNullString
     AddAction "view_zoomout", vbNullString
@@ -2007,6 +2015,9 @@ Public Sub BuildActionDatabase()
     AddAction "view_statusbar", vbNullString
     AddAction "snap_global", vbNullString
     AddAction "snap_canvasedge", vbNullString
+    AddAction "snap_centerline", vbNullString
+    AddAction "snap_layer", vbNullString
+    
     'AddAction "window_toolbox"
     AddAction "window_displaytoolbox", vbNullString
     AddAction "window_displaytoolcategories", vbNullString

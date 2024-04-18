@@ -19,10 +19,12 @@ Option Explicit
 Public Enum PD_SnapTargets
     pdst_Global = 0
     pdst_CanvasEdge = 1
+    pdst_Centerline = 2
+    pdst_Layer = 3
 End Enum
 
 #If False Then
-    Private Const pdst_Global = 0, pdst_CanvasEdge = 1
+    Private Const pdst_Global = 0, pdst_CanvasEdge = 1, pdst_Centerline = 2, pdst_Layer = 3
 #End If
 
 'When snapping coordinates, we need to compare all possible snap targets and choose the best independent
@@ -36,19 +38,23 @@ End Type
 
 'To improve performance, snap-to settings are cached locally (instead of traveling out to
 ' the user preference engine on every call).
-Private m_SnapGlobal As Boolean, m_SnapToCanvasEdge As Boolean, m_SnapDistance As Long
+Private m_SnapGlobal As Boolean, m_SnapToCanvasEdge As Boolean, m_SnapToCenterline As Boolean, m_SnapToLayer As Boolean
+Private m_SnapDistance As Long
 
 'Returns TRUE if *any* snap-to-edge behaviors are enabled.  Useful for skipping all snap checks.
 Public Function GetSnap_Any() As Boolean
     GetSnap_Any = m_SnapGlobal
     If m_SnapGlobal Then
-        GetSnap_Any = m_SnapToCanvasEdge
-        'TODO: OR against other snap options when added
+        GetSnap_Any = m_SnapToCanvasEdge Or m_SnapToCenterline Or m_SnapToLayer
     End If
 End Function
 
 Public Function GetSnap_CanvasEdge() As Boolean
     GetSnap_CanvasEdge = m_SnapToCanvasEdge
+End Function
+
+Public Function GetSnap_Centerline() As Boolean
+    GetSnap_Centerline = m_SnapToCenterline
 End Function
 
 Public Function GetSnap_Distance() As Long
@@ -69,8 +75,16 @@ Public Function GetSnap_Global() As Boolean
     GetSnap_Global = m_SnapGlobal
 End Function
 
+Public Function GetSnap_Layer() As Boolean
+    GetSnap_Layer = m_SnapToLayer
+End Function
+
 Public Sub SetSnap_CanvasEdge(ByVal newState As Boolean)
     m_SnapToCanvasEdge = newState
+End Sub
+
+Public Sub SetSnap_Centerline(ByVal newState As Boolean)
+    m_SnapToCenterline = newState
 End Sub
 
 Public Sub SetSnap_Distance(ByVal newDistance As Long)
@@ -81,6 +95,10 @@ End Sub
 
 Public Sub SetSnap_Global(ByVal newState As Boolean)
     m_SnapGlobal = newState
+End Sub
+
+Public Sub SetSnap_Layer(ByVal newState As Boolean)
+    m_SnapToLayer = newState
 End Sub
 
 'Toggle one of the "snap to..." settings in the View menu.
@@ -102,6 +120,18 @@ Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal 
             Snap.SetSnap_CanvasEdge newState
             UserPrefs.SetPref_Boolean "Interface", "snap-canvas-edge", newState
             Menus.SetMenuChecked "snap_canvasedge", newState
+            
+        Case pdst_Centerline
+            If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Centerline()
+            Snap.SetSnap_Centerline newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-centerline", newState
+            Menus.SetMenuChecked "snap_centerline", newState
+        
+        Case pdst_Layer
+            If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Layer()
+            Snap.SetSnap_Layer newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-layer", newState
+            Menus.SetMenuChecked "snap_layer", newState
             
     End Select
     

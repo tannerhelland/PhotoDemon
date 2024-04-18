@@ -1744,6 +1744,14 @@ Begin VB.Form FormMain
             Caption         =   "Canvas edges"
             Index           =   0
          End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Centerlines"
+            Index           =   1
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Layers"
+            Index           =   2
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -3753,6 +3761,10 @@ Private Sub MnuSnap_Click(Index As Integer)
     Select Case Index
         Case 0
             Actions.LaunchAction_ByName "snap_canvasedge"
+        Case 1
+            Actions.LaunchAction_ByName "snap_centerline"
+        Case 2
+            Actions.LaunchAction_ByName "snap_layer"
     End Select
 End Sub
 

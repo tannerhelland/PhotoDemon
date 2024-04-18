@@ -593,7 +593,9 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 8, 8
     AddMenuItem "Snap", "snap_global", 8, 9
     AddMenuItem "Snap to", "snap_top", 8, 10, allowInSearches:=False
-    AddMenuItem "Canvas edge", "snap_canvasedge", 8, 10, 0
+    AddMenuItem "Canvas edges", "snap_canvasedge", 8, 10, 0
+    AddMenuItem "Centerlines", "snap_centerline", 8, 10, 1
+    AddMenuItem "Layers", "snap_layer", 8, 10, 2
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9
