@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.300</langversion>
+<langversion>7.0.301</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5519,6 +5519,16 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>圖層</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>視窗</translation>
 </phrase>
@@ -5556,11 +5566,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Tool options</original>
 <translation>工具選項</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>圖層</translation>
 </phrase>
 
 <phrase>
@@ -5721,7 +5726,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 397 phrases. 216 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14208,10 +14213,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2699</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5694 phrases. -->
-<!-- 2995 are duplicates, so only 2699 unique phrases have been written to file. -->
-<!-- These 2699 phrases contain approximately 11703 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>

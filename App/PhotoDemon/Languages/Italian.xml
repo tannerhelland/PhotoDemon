@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1635</langversion>
+<langversion>8.9.1636</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -5560,6 +5560,16 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Livelli</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Finestra</translation>
 </phrase>
@@ -5597,11 +5607,6 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 <phrase>
 <original>Tool options</original>
 <translation>Opzioni strumenti</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Livelli</translation>
 </phrase>
 
 <phrase>
@@ -5762,7 +5767,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 397 phrases. 216 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14263,10 +14268,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2699</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5694 phrases. -->
-<!-- 2995 are duplicates, so only 2699 unique phrases have been written to file. -->
-<!-- These 2699 phrases contain approximately 11703 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>

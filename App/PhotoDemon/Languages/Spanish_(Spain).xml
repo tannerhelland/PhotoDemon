@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.340</langversion>
+<langversion>6.7.341</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -5554,6 +5554,16 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Capas</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Ventanas</translation>
 </phrase>
@@ -5591,11 +5601,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Tool options</original>
 <translation>Opciones de herramientas</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Capas</translation>
 </phrase>
 
 <phrase>
@@ -5756,7 +5761,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 397 phrases. 216 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14257,10 +14262,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2699</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5694 phrases. -->
-<!-- 2995 are duplicates, so only 2699 unique phrases have been written to file. -->
-<!-- These 2699 phrases contain approximately 11703 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>

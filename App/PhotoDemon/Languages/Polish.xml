@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.25</langversion>
+<langversion>9.0.26</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -5558,6 +5558,16 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Warstwy</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Okno</translation>
 </phrase>
@@ -5595,11 +5605,6 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 <phrase>
 <original>Tool options</original>
 <translation>Opcje narzędzi</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Warstwy</translation>
 </phrase>
 
 <phrase>
@@ -5757,7 +5762,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 397 phrases. 216 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14262,10 +14267,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2699</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5694 phrases. -->
-<!-- 2995 are duplicates, so only 2699 unique phrases have been written to file. -->
-<!-- These 2699 phrases contain approximately 11703 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>
