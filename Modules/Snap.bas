@@ -3,8 +3,8 @@ Attribute VB_Name = "Snap"
 'Snap-to-target Handler
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/April/24
-'Last updated: 16/April/24
-'Last update: migrate all snap setting and behavior management to one central place
+'Last updated: 19/April/24
+'Last update: add support for snapping to centerlines
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -32,8 +32,12 @@ End Enum
 ' Two distances are provided: one each for left/right (or top/bottom).
 Private Type SnapComparison
     cValue As Double
-    cDistance1 As Double
-    cDistance2 As Double
+    cDistance1 As Double    'Left/Top distance
+    cDistance2 As Double    'Right/Bottom distance
+    cDistanceCX As Double    'X-Center distance (only if enabled)
+    cDistanceCY As Double    'Y-Center distance (only if enabled)
+    cCenterComparison As Boolean    'Set to TRUE if center distance is smallest distance; this is relevant for rects
+                                    ' and point lists, because we need to snap the *center*, not the boundaries
 End Type
 
 'To improve performance, snap-to settings are cached locally (instead of traveling out to
@@ -232,6 +236,7 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
                     minDistX = .cDistance1
                     idxSmallestX = i
                     idxSmallestPointX = j
+                    .cCenterComparison = False
                 End If
             End With
         Next i
@@ -249,18 +254,69 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
                     minDistY = .cDistance1
                     idxSmallestY = i
                     idxSmallestPointY = j
+                    .cCenterComparison = False
                 End If
             End With
         Next i
     Next j
+    
+    'If centerline snapping is enabled, repeat the above steps, but for the center point of the list only
+    Dim pathTest As pd2DPath, pathRect As RectF
+    Set pathTest = New pd2DPath
+    pathTest.AddLines numOfPoints, VarPtr(srcPoints(0))
+    pathRect = pathTest.GetPathBoundariesF()
+    
+    Dim cX As Double, cY As Double
+    cX = pathRect.Left + pathRect.Width * 0.5
+    cY = pathRect.Top + pathRect.Height * 0.5
+    
+    For i = 0 To numXSnaps - 1
+        With xSnaps(i)
+            .cDistanceCX = PDMath.DistanceOneDimension(cX, .cValue)
+            If (.cDistanceCX < minDistX) Then
+                minDistX = .cDistanceCX
+                idxSmallestX = i
+                .cCenterComparison = True
+            End If
+        End With
+    Next i
+    
+    For i = 0 To numYSnaps - 1
+        With ySnaps(i)
+            .cDistanceCY = PDMath.DistanceOneDimension(cY, .cValue)
+            If (.cDistanceCY < minDistY) Then
+                minDistY = .cDistanceCY
+                idxSmallestY = i
+                .cCenterComparison = True
+            End If
+        End With
+    Next i
     
     'Determine the minimum snap distance required for this zoom value.
     Dim snapThreshold As Double
     snapThreshold = GetSnapDistanceScaledForZoom()
     
     'If the minimum value falls beneath the minimum snap distance, snap away!
-    If (minDistX < snapThreshold) Then dstOffsetX = (xSnaps(idxSmallestX).cValue - srcPoints(idxSmallestPointX).x)
-    If (minDistY < snapThreshold) Then dstOffsetY = (ySnaps(idxSmallestY).cValue - srcPoints(idxSmallestPointY).y)
+    If (minDistX < snapThreshold) Then
+        
+        'Center comparisons require us to align the center point of the rect
+        If xSnaps(idxSmallestX).cCenterComparison Then
+            dstOffsetX = xSnaps(idxSmallestX).cValue - (pathRect.Left + pathRect.Width * 0.5)
+        Else
+            dstOffsetX = (xSnaps(idxSmallestX).cValue - srcPoints(idxSmallestPointX).x)
+        End If
+        
+    End If
+    
+    If (minDistY < snapThreshold) Then
+        
+        'Center comparisons require us to align the center point of the rect
+        If ySnaps(idxSmallestY).cCenterComparison Then
+            dstOffsetY = ySnaps(idxSmallestY).cValue - (pathRect.Top + pathRect.Height * 0.5)
+        Else
+            dstOffsetY = (ySnaps(idxSmallestY).cValue - srcPoints(idxSmallestPointY).y)
+        End If
+    End If
     
 End Sub
 
@@ -303,11 +359,13 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
             If (.cDistance1 < minDistX) Then
                 minDistX = .cDistance1
                 idxSmallestX = i
+                .cCenterComparison = False
             End If
             .cDistance2 = PDMath.DistanceOneDimension(compareRectF.Right, .cValue)
             If (.cDistance2 < minDistX) Then
                 minDistX = .cDistance2
                 idxSmallestX = i
+                .cCenterComparison = False
             End If
         End With
     Next i
@@ -322,11 +380,40 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
             If (.cDistance1 < minDistY) Then
                 minDistY = .cDistance1
                 idxSmallestY = i
+                .cCenterComparison = False
             End If
             .cDistance2 = PDMath.DistanceOneDimension(compareRectF.Bottom, .cValue)
             If (.cDistance2 < minDistY) Then
                 minDistY = .cDistance2
                 idxSmallestY = i
+                .cCenterComparison = False
+            End If
+        End With
+    Next i
+    
+    'If centerline snapping is enabled, repeat the above steps, but for the center point of the rect only
+    Dim cX As Double, cY As Double
+    cX = compareRectF.Left + (compareRectF.Right - compareRectF.Left) * 0.5
+    cY = compareRectF.Top + (compareRectF.Bottom - compareRectF.Top) * 0.5
+    
+    For i = 0 To numXSnaps - 1
+        With xSnaps(i)
+            .cDistanceCX = PDMath.DistanceOneDimension(cX, .cValue)
+            If (.cDistanceCX < minDistX) Then
+                minDistX = .cDistanceCX
+                idxSmallestX = i
+                .cCenterComparison = True
+            End If
+        End With
+    Next i
+    
+    For i = 0 To numYSnaps - 1
+        With ySnaps(i)
+            .cDistanceCY = PDMath.DistanceOneDimension(cY, .cValue)
+            If (.cDistanceCY < minDistY) Then
+                minDistY = .cDistanceCY
+                idxSmallestY = i
+                .cCenterComparison = True
             End If
         End With
     Next i
@@ -337,18 +424,31 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     
     'If the minimum value falls beneath the minimum snap distance, snap away!
     If (minDistX < snapThreshold) Then
-        If (xSnaps(idxSmallestX).cDistance1 < xSnaps(idxSmallestX).cDistance2) Then
-            dstRectF.Left = xSnaps(idxSmallestX).cValue
+        
+        'Center comparisons require us to align the center point of the rect
+        If xSnaps(idxSmallestX).cCenterComparison Then
+            dstRectF.Left = xSnaps(idxSmallestX).cValue - (compareRectF.Right - compareRectF.Left) * 0.5
+        
+        'Otherwise, align the left or right boundary of the rect, as relevant
         Else
-            dstRectF.Left = xSnaps(idxSmallestX).cValue - dstRectF.Width
+            If (xSnaps(idxSmallestX).cDistance1 < xSnaps(idxSmallestX).cDistance2) Then
+                dstRectF.Left = xSnaps(idxSmallestX).cValue
+            Else
+                dstRectF.Left = xSnaps(idxSmallestX).cValue - dstRectF.Width
+            End If
         End If
+        
     End If
     
     If (minDistY < snapThreshold) Then
-        If (ySnaps(idxSmallestY).cDistance1 < ySnaps(idxSmallestY).cDistance2) Then
-            dstRectF.Top = ySnaps(idxSmallestY).cValue
+        If ySnaps(idxSmallestY).cCenterComparison Then
+            dstRectF.Top = ySnaps(idxSmallestY).cValue - (compareRectF.Bottom - compareRectF.Top) * 0.5
         Else
-            dstRectF.Top = ySnaps(idxSmallestY).cValue - dstRectF.Height
+            If (ySnaps(idxSmallestY).cDistance1 < ySnaps(idxSmallestY).cDistance2) Then
+                dstRectF.Top = ySnaps(idxSmallestY).cValue
+            Else
+                dstRectF.Top = ySnaps(idxSmallestY).cValue - dstRectF.Height
+            End If
         End If
     End If
     
@@ -379,6 +479,13 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
         
     End If
     
+    'Centerline (of canvas only; layers is handled below)
+    If Snap.GetSnap_Centerline() Then
+        If (UBound(dstSnaps) < GetSnapTargets_X) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
+        dstSnaps(GetSnapTargets_X).cValue = Int(PDImages.GetActiveImage.Width / 2)
+        GetSnapTargets_X = GetSnapTargets_X + 1
+    End If
+    
     'TODO: more snap targets in the future...
     
 End Function
@@ -402,6 +509,13 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
         dstSnaps(GetSnapTargets_Y + 1).cValue = PDImages.GetActiveImage.Height
         GetSnapTargets_Y = GetSnapTargets_Y + 2
         
+    End If
+    
+    'Centerline (of canvas only; layers is handled below)
+    If Snap.GetSnap_Centerline() Then
+        If (UBound(dstSnaps) < GetSnapTargets_Y) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
+        dstSnaps(GetSnapTargets_Y).cValue = Int(PDImages.GetActiveImage.Height / 2)
+        GetSnapTargets_Y = GetSnapTargets_Y + 1
     End If
     
     'TODO: more snap targets in the future...

@@ -611,7 +611,7 @@ Public Sub LoadUserSettings()
         
         Snap.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
         Snap.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
-        Snap.ToggleSnapOptions pdst_Centerline, True, UserPrefs.GetPref_Boolean("Interface", "snap-centerline", True)
+        Snap.ToggleSnapOptions pdst_Centerline, True, UserPrefs.GetPref_Boolean("Interface", "snap-centerline", False)
         Snap.ToggleSnapOptions pdst_Layer, True, UserPrefs.GetPref_Boolean("Interface", "snap-layer", True)
         Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
         
