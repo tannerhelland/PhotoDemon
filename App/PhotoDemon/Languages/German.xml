@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.312</langversion>
+<langversion>9.2.314</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5546,6 +5546,31 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>Snap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Layer</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Fenster</translation>
 </phrase>
@@ -5583,11 +5608,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>Tool options</original>
 <translation>Tooloptionen</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Layer</translation>
 </phrase>
 
 <phrase>
@@ -5748,7 +5768,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13371,6 +13391,11 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 </phrase>
 
 <phrase>
+<original>snap distance (in pixels)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>Wenn Bilder aus einer externen Quelle (wie Windows-Explorer) ankommen</translation>
 </phrase>
@@ -14032,7 +14057,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 <translation>Dieser neue Ort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14242,10 +14267,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>

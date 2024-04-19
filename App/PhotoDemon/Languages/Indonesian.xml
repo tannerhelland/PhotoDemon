@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1717</langversion>
+<langversion>8.9.1719</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -5541,6 +5541,31 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Snap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Lapisan</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>jendela</translation>
 </phrase>
@@ -5578,11 +5603,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Tool options</original>
 <translation>Opsi Alat</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Lapisan</translation>
 </phrase>
 
 <phrase>
@@ -5743,7 +5763,7 @@ Pembaruan sedang diproses secara otomatis di latar belakang. Anda akan menerima 
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13367,6 +13387,11 @@ Untuk melanjutkan, unduh salinan PhotoDemon yang diperbarui dari photodemon.org.
 </phrase>
 
 <phrase>
+<original>snap distance (in pixels)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -14028,7 +14053,7 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, pastikan untuk mengunjung
 <translation>Lokasi folder sementara yang baru ini tidak akan berlaku sampai Anda memulai ulang program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14238,10 +14263,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, pastikan untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 </pdData>

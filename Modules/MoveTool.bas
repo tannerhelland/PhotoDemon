@@ -3,12 +3,13 @@ Attribute VB_Name = "Tools_Move"
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2024 by Tanner Helland
 'Created: 24/May/14
-'Last updated: 22/December/22
-'Last update: add some trivial key-handling bits for the Hand tool (which is a different tool, but it has
-'             so few features that it's easier to just condense things here)
+'Last updated: 05/April/24
+'Last update: start wiring up Snap capabilities
 '
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
+'
+'As of 2024, This module also handles move-related duties like snapping to various features.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

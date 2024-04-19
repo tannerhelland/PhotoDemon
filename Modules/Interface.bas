@@ -391,18 +391,18 @@ Public Sub SyncUI_CurrentLayerSettings()
     nonDestructiveResizeActive = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier <> 1#)
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-    Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
+    If (Menus.IsMenuEnabled("layer_resetsize") <> nonDestructiveResizeActive) Then Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
     
     If (g_CurrentTool = NAV_MOVE) Then
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     End If
     
     'Layer visibility
-    Menus.SetMenuChecked "layer_show", PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()
+    If (Menus.IsMenuChecked("layer_show") <> PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()) Then Menus.SetMenuChecked "layer_show", PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()
     
     'Layer rasterization depends on the current layer type
-    Menus.SetMenuEnabled "layer_rasterizecurrent", PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
-    Menus.SetMenuEnabled "layer_rasterizeall", (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
+    If (Menus.IsMenuEnabled("layer_rasterizecurrent") <> PDImages.GetActiveImage.GetActiveLayer.IsLayerVector) Then Menus.SetMenuEnabled "layer_rasterizecurrent", PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
+    If (Menus.IsMenuEnabled("layer_rasterizeall") <> (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)) Then Menus.SetMenuEnabled "layer_rasterizeall", (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -732,6 +732,10 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'View (top-menu level)
         Case PDUI_View
             Menus.SetMenuEnabled "view_top", newState
+            Menus.SetMenuChecked "snap_global", Snap.GetSnap_Global()
+            Menus.SetMenuChecked "snap_canvasedge", Snap.GetSnap_CanvasEdge()
+            Menus.SetMenuChecked "snap_centerline", Snap.GetSnap_Centerline()
+            Menus.SetMenuChecked "snap_layer", Snap.GetSnap_Layer()
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus.
         ' (This flag is very useful for items that require at least one open image to operate.)

@@ -912,7 +912,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
                     'Pass new points to the active selection
                     PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                     SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
-                                        
+                    
                 End If
                 
                 'Force a redraw of the viewport

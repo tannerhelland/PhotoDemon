@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>9.1.347</langversion>
+		<langversion>9.1.369</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -5497,6 +5497,31 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Snap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation></translation>
 </phrase>
@@ -5533,11 +5558,6 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Tool options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
 <translation></translation>
 </phrase>
 
@@ -5695,7 +5715,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-		<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+		<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13310,6 +13330,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>snap distance (in pixels)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -13965,7 +13990,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-		<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+		<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14175,10 +14200,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2695</phrasecount>
+		<phrasecount>2700</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-	<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-	<!-- These 2695 phrases contain approximately 11694 total words. -->
+	<!-- As of this build, PhotoDemon contains 5696 phrases. -->
+	<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
+	<!-- These 2700 phrases contain approximately 11704 total words. -->
 
 	</pdData>

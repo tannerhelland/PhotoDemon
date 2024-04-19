@@ -1729,6 +1729,30 @@ Begin VB.Form FormMain
          Caption         =   "Show status bar"
          Index           =   7
       End
+      Begin VB.Menu MnuView 
+         Caption         =   "-"
+         Index           =   8
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap"
+         Index           =   9
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   10
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Canvas edges"
+            Index           =   0
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Centerlines"
+            Index           =   1
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Layers"
+            Index           =   2
+         End
+      End
    End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "Window"
@@ -3733,6 +3757,17 @@ Private Sub MnuSharpen_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuSnap_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "snap_canvasedge"
+        Case 1
+            Actions.LaunchAction_ByName "snap_centerline"
+        Case 2
+            Actions.LaunchAction_ByName "snap_layer"
+    End Select
+End Sub
+
 Private Sub MnuSpecificZoom_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3821,13 +3856,19 @@ Private Sub MnuView_Click(Index As Integer)
         Case 3
             Actions.LaunchAction_ByName "view_zoomout"
         Case 4
-            'zoom-to-value top-level menu
+            'zoom-to-value top-level
         Case 5
             '(separator)
         Case 6
             Actions.LaunchAction_ByName "view_rulers"
         Case 7
             Actions.LaunchAction_ByName "view_statusbar"
+        Case 8
+            '(separator)
+        Case 9
+            Actions.LaunchAction_ByName "snap_global"
+        Case 10
+            'snap-to top-level
     End Select
 End Sub
 

@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2024 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 27/June/23
-'Last update: add additional failsafe checks for vector mask intersection with attached layer
-'             (vector masks can overlap layers in unpredictable ways, with clean intersections not always guaranteed)
+'Last updated: 17/April/24
+'Last update: improve compatibility by always writing RGBA layer data
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -3290,6 +3289,23 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         'Unpremultiply the temporary DIB before continuing, if alpha values are relevant
         If m_LayerHasAlpha Then tmpLayerDIB.SetAlphaPremultiplication False
         
+        'UPDATE April 2024
+        '
+        'PhotoDemon has traditionally written out 24-bit RGB data if a layer doesn't use meaningful alpha,
+        ' but this produces unexpected results on some versions of Photoshop.  Unfortunately, I haven't been
+        ' able to track down a consistent pattern in why this happens - all other software can open PD's PSDs
+        ' without trouble when this occurs, but PS shows some kind of file offset problem, with weird layer
+        ' settings and unreliable handling of layer metadata.
+        '
+        'GIMP avoids this problem by *always* writing an alpha channel, regardless of relevancy,
+        ' and indeed this solves the same problem when exporting PSD files from PD.
+        '
+        'Until I can figure out why only some layered images struggle with 24-bit data, I've switched to
+        ' *always* writing RGBA channels for each layer.  (Note that we deliberately set this forcible alpha
+        ' value here, *after* unpremultiplying alpha, because only opaque layers will mark m_LayerHasAlpha
+        ' as FALSE and their alpha channels consist of only 255, so unpremultiplying is irrelevant.)
+        m_LayerHasAlpha = True
+        
         'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order.
         ' (Note also that layer groups are always written as 0-size rects.)
         If isGroupMarker Then
@@ -3513,12 +3529,13 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
             'Write a 4-byte hard-coded ASCII identifier of the optional block
             cStream.WriteString_ASCII "luni"
             
-            'Write the length of the *entire* data section (4-byte string length + string itself)
-            cStream.WriteLong_BE LenB(lName) + 4
+            'Write the length of the *entire* data section, in bytes
+            ' (4-byte string length + string itself + 2-byte null terminator)
+            cStream.WriteLong_BE 4 + LenB(lName) + 2
             
-            'Write the string itself
+            'Write the string itself (which is prefixed by the length IN CODE POINTS, ignoring the terminating null)
             cStream.WriteLong_BE Len(lName)
-            cStream.WriteString_UnicodeBE lName, False
+            cStream.WriteString_UnicodeBE lName, True
             
             'Optional blocks are supposed to be even-padded, but we don't have to worry about this with
             ' Unicode strings (2 bytes per char, remember!)

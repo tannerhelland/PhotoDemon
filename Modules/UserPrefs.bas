@@ -5,7 +5,7 @@ Attribute VB_Name = "UserPrefs"
 'Created: 03/November/12
 'Last updated: 21/February/22
 'Last update: revert nightly builds to default to "nightly build" update track (I've gotten much better
-'             at disciplined nightly build development, and they are far more stable than the used to be).
+'             at disciplined nightly build development, and they are far more stable than they used to be).
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
 ' persistent user settings.
@@ -608,6 +608,12 @@ Public Sub LoadUserSettings()
         m_GenerateDebugLogs = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         m_CanvasColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Interface", "CanvasColor", "#a0a0a0"))
+        
+        Snap.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
+        Snap.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
+        Snap.ToggleSnapOptions pdst_Centerline, True, UserPrefs.GetPref_Boolean("Interface", "snap-centerline", False)
+        Snap.ToggleSnapOptions pdst_Layer, True, UserPrefs.GetPref_Boolean("Interface", "snap-layer", True)
+        Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
         
         'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
         ' want to override PD's default font object.
