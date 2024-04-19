@@ -4,7 +4,7 @@ Attribute VB_Name = "Snap"
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/April/24
 'Last updated: 19/April/24
-'Last update: add support for snapping to centerlines
+'Last update: add support for snapping to layer boundaries (and their centerlines, if enabled)
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -261,37 +261,41 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
     Next j
     
     'If centerline snapping is enabled, repeat the above steps, but for the center point of the list only
-    Dim pathTest As pd2DPath, pathRect As RectF
-    Set pathTest = New pd2DPath
-    pathTest.AddLines numOfPoints, VarPtr(srcPoints(0))
-    pathRect = pathTest.GetPathBoundariesF()
-    
-    Dim cX As Double, cY As Double
-    cX = pathRect.Left + pathRect.Width * 0.5
-    cY = pathRect.Top + pathRect.Height * 0.5
-    
-    For i = 0 To numXSnaps - 1
-        With xSnaps(i)
-            .cDistanceCX = PDMath.DistanceOneDimension(cX, .cValue)
-            If (.cDistanceCX < minDistX) Then
-                minDistX = .cDistanceCX
-                idxSmallestX = i
-                .cCenterComparison = True
-            End If
-        End With
-    Next i
-    
-    For i = 0 To numYSnaps - 1
-        With ySnaps(i)
-            .cDistanceCY = PDMath.DistanceOneDimension(cY, .cValue)
-            If (.cDistanceCY < minDistY) Then
-                minDistY = .cDistanceCY
-                idxSmallestY = i
-                .cCenterComparison = True
-            End If
-        End With
-    Next i
-    
+    If Snap.GetSnap_Centerline() Then
+        
+        Dim pathTest As pd2DPath, pathRect As RectF
+        Set pathTest = New pd2DPath
+        pathTest.AddLines numOfPoints, VarPtr(srcPoints(0))
+        pathRect = pathTest.GetPathBoundariesF()
+        
+        Dim cx As Double, cy As Double
+        cx = pathRect.Left + pathRect.Width * 0.5
+        cy = pathRect.Top + pathRect.Height * 0.5
+        
+        For i = 0 To numXSnaps - 1
+            With xSnaps(i)
+                .cDistanceCX = PDMath.DistanceOneDimension(cx, .cValue)
+                If (.cDistanceCX < minDistX) Then
+                    minDistX = .cDistanceCX
+                    idxSmallestX = i
+                    .cCenterComparison = True
+                End If
+            End With
+        Next i
+        
+        For i = 0 To numYSnaps - 1
+            With ySnaps(i)
+                .cDistanceCY = PDMath.DistanceOneDimension(cy, .cValue)
+                If (.cDistanceCY < minDistY) Then
+                    minDistY = .cDistanceCY
+                    idxSmallestY = i
+                    .cCenterComparison = True
+                End If
+            End With
+        Next i
+        
+    End If
+        
     'Determine the minimum snap distance required for this zoom value.
     Dim snapThreshold As Double
     snapThreshold = GetSnapDistanceScaledForZoom()
@@ -392,32 +396,36 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     Next i
     
     'If centerline snapping is enabled, repeat the above steps, but for the center point of the rect only
-    Dim cX As Double, cY As Double
-    cX = compareRectF.Left + (compareRectF.Right - compareRectF.Left) * 0.5
-    cY = compareRectF.Top + (compareRectF.Bottom - compareRectF.Top) * 0.5
-    
-    For i = 0 To numXSnaps - 1
-        With xSnaps(i)
-            .cDistanceCX = PDMath.DistanceOneDimension(cX, .cValue)
-            If (.cDistanceCX < minDistX) Then
-                minDistX = .cDistanceCX
-                idxSmallestX = i
-                .cCenterComparison = True
-            End If
-        End With
-    Next i
-    
-    For i = 0 To numYSnaps - 1
-        With ySnaps(i)
-            .cDistanceCY = PDMath.DistanceOneDimension(cY, .cValue)
-            If (.cDistanceCY < minDistY) Then
-                minDistY = .cDistanceCY
-                idxSmallestY = i
-                .cCenterComparison = True
-            End If
-        End With
-    Next i
-    
+    If Snap.GetSnap_Centerline() Then
+        
+        Dim cx As Double, cy As Double
+        cx = compareRectF.Left + (compareRectF.Right - compareRectF.Left) * 0.5
+        cy = compareRectF.Top + (compareRectF.Bottom - compareRectF.Top) * 0.5
+        
+        For i = 0 To numXSnaps - 1
+            With xSnaps(i)
+                .cDistanceCX = PDMath.DistanceOneDimension(cx, .cValue)
+                If (.cDistanceCX < minDistX) Then
+                    minDistX = .cDistanceCX
+                    idxSmallestX = i
+                    .cCenterComparison = True
+                End If
+            End With
+        Next i
+        
+        For i = 0 To numYSnaps - 1
+            With ySnaps(i)
+                .cDistanceCY = PDMath.DistanceOneDimension(cy, .cValue)
+                If (.cDistanceCY < minDistY) Then
+                    minDistY = .cDistanceCY
+                    idxSmallestY = i
+                    .cCenterComparison = True
+                End If
+            End With
+        Next i
+        
+    End If
+        
     'Determine the minimum snap distance required for this zoom value.
     Dim snapThreshold As Double
     snapThreshold = GetSnapDistanceScaledForZoom()
@@ -469,7 +477,7 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
     'Canvas edges first
     If Snap.GetSnap_CanvasEdge() Then
         
-        'Ensure at space is available in the target array
+        'Ensure space is available in the target array
         If (UBound(dstSnaps) < GetSnapTargets_X + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
         
         'Add canvas boundaries to the snap list
@@ -477,16 +485,53 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
         dstSnaps(GetSnapTargets_X + 1).cValue = PDImages.GetActiveImage.Width
         GetSnapTargets_X = GetSnapTargets_X + 2
         
+        'Centerline (of canvas only; layers is handled below)
+        If Snap.GetSnap_Centerline() Then
+            If (UBound(dstSnaps) < GetSnapTargets_X) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
+            dstSnaps(GetSnapTargets_X).cValue = Int(PDImages.GetActiveImage.Width / 2)
+            GetSnapTargets_X = GetSnapTargets_X + 1
+        End If
+            
     End If
     
-    'Centerline (of canvas only; layers is handled below)
-    If Snap.GetSnap_Centerline() Then
-        If (UBound(dstSnaps) < GetSnapTargets_X) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
-        dstSnaps(GetSnapTargets_X).cValue = Int(PDImages.GetActiveImage.Width / 2)
-        GetSnapTargets_X = GetSnapTargets_X + 1
+    'Layer boundaries next
+    If Snap.GetSnap_Layer() Then
+        
+        Dim layerRectF As RectF
+        
+        Dim i As Long
+        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+            
+            'Do *not* snap the active layer (or it will always snap to itself because that's what's closest, lol)
+            If (i <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
+                
+                'Ignore invisible layers
+                If PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility() Then
+                
+                    'Ensure space is available in the target array
+                    If (UBound(dstSnaps) < GetSnapTargets_X + 2) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
+                    
+                    'Add layer boundaries to the snap list
+                    PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBoundaryRect layerRectF
+                    dstSnaps(GetSnapTargets_X).cValue = layerRectF.Left
+                    dstSnaps(GetSnapTargets_X + 1).cValue = layerRectF.Left + layerRectF.Width
+                    GetSnapTargets_X = GetSnapTargets_X + 2
+                    
+                    'If centerlines are enabled, add the layer's centerline too
+                    If Snap.GetSnap_Centerline() Then
+                        dstSnaps(GetSnapTargets_X).cValue = layerRectF.Left + layerRectF.Width * 0.5
+                        GetSnapTargets_X = GetSnapTargets_X + 1
+                    End If
+                    
+                End If
+                
+            End If
+                
+        Next i
+        
     End If
     
-    'TODO: more snap targets in the future...
+    'TODO: more snap targets in the future...?
     
 End Function
 
@@ -509,15 +554,52 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
         dstSnaps(GetSnapTargets_Y + 1).cValue = PDImages.GetActiveImage.Height
         GetSnapTargets_Y = GetSnapTargets_Y + 2
         
+        'Centerline (of canvas only; layers is handled below)
+        If Snap.GetSnap_Centerline() Then
+            If (UBound(dstSnaps) < GetSnapTargets_Y) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
+            dstSnaps(GetSnapTargets_Y).cValue = Int(PDImages.GetActiveImage.Height / 2)
+            GetSnapTargets_Y = GetSnapTargets_Y + 1
+        End If
+        
     End If
     
-    'Centerline (of canvas only; layers is handled below)
-    If Snap.GetSnap_Centerline() Then
-        If (UBound(dstSnaps) < GetSnapTargets_Y) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
-        dstSnaps(GetSnapTargets_Y).cValue = Int(PDImages.GetActiveImage.Height / 2)
-        GetSnapTargets_Y = GetSnapTargets_Y + 1
+    'Layer boundaries next
+    If Snap.GetSnap_Layer() Then
+        
+        Dim layerRectF As RectF
+        
+        Dim i As Long
+        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+            
+            'Do *not* snap the active layer (or it will always snap to itself because that's what's closest, lol)
+            If (i <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
+                
+                'Ignore invisible layers
+                If PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility() Then
+                
+                    'Ensure space is available in the target array
+                    If (UBound(dstSnaps) < GetSnapTargets_Y + 2) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
+                    
+                    'Add layer boundaries to the snap list
+                    PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBoundaryRect layerRectF
+                    dstSnaps(GetSnapTargets_Y).cValue = layerRectF.Top
+                    dstSnaps(GetSnapTargets_Y + 1).cValue = layerRectF.Top + layerRectF.Height
+                    GetSnapTargets_Y = GetSnapTargets_Y + 2
+                    
+                    'If centerlines are enabled, add the layer's centerline too
+                    If Snap.GetSnap_Centerline() Then
+                        dstSnaps(GetSnapTargets_Y).cValue = layerRectF.Top + layerRectF.Height * 0.5
+                        GetSnapTargets_Y = GetSnapTargets_Y + 1
+                    End If
+                    
+                End If
+                
+            End If
+                
+        Next i
+        
     End If
     
-    'TODO: more snap targets in the future...
+    'TODO: more snap targets in the future...?
     
 End Function
