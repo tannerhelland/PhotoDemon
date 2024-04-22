@@ -1354,6 +1354,9 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
             FormMain.MnuView(7).Checked = newState
             FormMain.MainCanvas(0).SetStatusBarVisibility newState
         
+        Case "show_smartguides"
+            Drawing.ToggleShowOptions pdst_SmartGuides
+            
         Case "snap_global"
             Snap.ToggleSnapOptions pdst_Global
             

@@ -590,12 +590,14 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 8, 5
     AddMenuItem "Show rulers", "view_rulers", 8, 6
     AddMenuItem "Show status bar", "view_statusbar", 8, 7
-    AddMenuItem "-", "-", 8, 8
-    AddMenuItem "Snap", "snap_global", 8, 9
-    AddMenuItem "Snap to", "snap_top", 8, 10, allowInSearches:=False
-    AddMenuItem "Canvas edges", "snap_canvasedge", 8, 10, 0
-    AddMenuItem "Centerlines", "snap_centerline", 8, 10, 1
-    AddMenuItem "Layers", "snap_layer", 8, 10, 2
+    AddMenuItem "Show extras", "show_extrastop", 8, 8, allowInSearches:=False
+    AddMenuItem "Smart guides", "show_smartguides", 8, 8, 0
+    AddMenuItem "-", "-", 8, 9
+    AddMenuItem "Snap", "snap_global", 8, 10
+    AddMenuItem "Snap to", "snap_top", 8, 11, allowInSearches:=False
+    AddMenuItem "Canvas edges", "snap_canvasedge", 8, 11, 0
+    AddMenuItem "Centerlines", "snap_centerline", 8, 11, 1
+    AddMenuItem "Layers", "snap_layer", 8, 11, 2
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9

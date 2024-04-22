@@ -31,9 +31,24 @@ End Enum
     Private Const IDI_HAND = 32513, IDI_QUESTION = 32514, IDI_EXCLAMATION = 32515, IDI_ASTERISK = 32516, IDI_WINDOWS = 32517
 #End If
 
+Public Enum PD_ShowTargets
+    pdst_Grid
+    pdst_Guides
+    pdst_LayerEdges
+    pdst_Slices
+    pdst_SmartGuides
+End Enum
+
+#If False Then
+    Private Const pdst_Grid = 0, pdst_Guides = 0, pdst_LayerEdges = 0, pdst_Slices = 0, pdst_SmartGuides = 0
+#End If
+
 'At startup, PD caches a few different UI pens and brushes related to viewport rendering.
 Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
+
+'For performance reasons, some other recurring rendering bits are cached.
+Private m_ShowSmartGuides As Boolean
 
 'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
 Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Single, ByVal xRight As Single, ByVal colorLeft As Long, ByVal colorRight As Long)
@@ -724,6 +739,32 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
 End Sub
 
+Public Function Get_ShowSmartGuides() As Boolean
+    Get_ShowSmartGuides = m_ShowSmartGuides
+End Function
+
+Public Sub Set_ShowSmartGuides(ByVal newState As Boolean)
+    m_ShowSmartGuides = newState
+End Sub
+
+'Toggle one of the "Show extras..." settings in the View menu.
+' To forcibly set to a specific state (instead of toggling), set the forceInsteadOfToggle param to TRUE.
+Public Sub ToggleShowOptions(ByVal showTarget As PD_ShowTargets, Optional ByVal forceInsteadOfToggle As Boolean = False, Optional ByVal newState As Boolean = True)
+    
+    'While calculating which on-screen menu to update, we also need to relay changes to two places:
+    ' 1) the tools_move module (which handles actual snap calculations)
+    ' 2) the user preferences file (to ensure everything is synchronized between sessions)
+    Select Case showTarget
+        Case pdst_SmartGuides
+            If (Not forceInsteadOfToggle) Then newState = Not Drawing.Get_ShowSmartGuides()
+            Drawing.Set_ShowSmartGuides newState
+            UserPrefs.SetPref_Boolean "Interface", "show-smartguides", newState
+            Menus.SetMenuChecked "show_smartguides", newState
+            
+    End Select
+            
+End Sub
+            
 'During startup, we cache a few different UI pens and brushes; this accelerates the process of viewport rendering.
 ' When the UI theme changes, this cache should be regenerated against any new colors.
 '

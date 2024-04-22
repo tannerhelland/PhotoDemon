@@ -1730,16 +1730,24 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu MnuView 
-         Caption         =   "-"
+         Caption         =   "Show extras"
          Index           =   8
+         Begin VB.Menu MnuShow 
+            Caption         =   "Smart guides"
+            Index           =   0
+         End
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Snap"
+         Caption         =   "-"
          Index           =   9
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Snap to"
+         Caption         =   "Snap"
          Index           =   10
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   11
          Begin VB.Menu MnuSnap 
             Caption         =   "Canvas edges"
             Index           =   0
@@ -3757,6 +3765,13 @@ Private Sub MnuSharpen_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuShow_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "show_smartguides"
+    End Select
+End Sub
+
 Private Sub MnuSnap_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3864,10 +3879,12 @@ Private Sub MnuView_Click(Index As Integer)
         Case 7
             Actions.LaunchAction_ByName "view_statusbar"
         Case 8
-            '(separator)
+            'show extras top-level
         Case 9
-            Actions.LaunchAction_ByName "snap_global"
+            '(separator)
         Case 10
+            Actions.LaunchAction_ByName "snap_global"
+        Case 11
             'snap-to top-level
     End Select
 End Sub
