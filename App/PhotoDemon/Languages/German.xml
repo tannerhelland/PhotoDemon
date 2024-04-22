@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.314</langversion>
+<langversion>9.2.368</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5547,22 +5547,22 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Einrasten</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Einrasten auf</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Leinwandkanten</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Mittellinien</translation>
 </phrase>
 
 <phrase>
@@ -6235,7 +6235,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>original curve (diagonal line)</original>
-<translation>Original-Kurve (diagonale Gerade)</translation>
+<translation>Original-Kurve (diagonale Linie)</translation>
 </phrase>
 
 <phrase>
@@ -12464,7 +12464,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>center offset</original>
-<translation>Zentrum versetzen</translation>
+<translation>Zentrum-Offset</translation>
 </phrase>
 
 <phrase>
@@ -13392,7 +13392,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>Einrastdistanz (in Pixel)</translation>
 </phrase>
 
 <phrase>
