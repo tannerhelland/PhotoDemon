@@ -316,11 +316,12 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             '-1: the mouse is not over the layer.  Do nothing.
             Case poi_Undefined
                 Tools.SetToolBusyState False
+                Snap.NotifyNoSnapping
                 srcCanvas.SetRedrawSuspension False
                 Exit Sub
                 
-            '0: the mouse is dragging the top-left corner of the layer.  The comments here are uniform for all POIs,
-            ' so for brevity's sake, I'll keep the others short.
+            '0: the mouse is dragging the top-left corner of the layer.
+            ' (The comments here are uniform for all POIs, so for brevity's sake, I'll keep the others short.)
             Case poi_CornerNW
                 
                 'The opposite corner coordinate (bottom-left) stays in exactly the same place
@@ -329,9 +330,40 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'Set the new left/top position to match the mouse coordinates, while also accounting for the shift key
                 ' (which locks the current aspect ratio).
-                If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If ((newRight - curLayerX) > 1!) Then newLeft = curLayerX Else newLeft = newRight - 1!
                 If lockAspectRatio Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
-                If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
+                If ((newBottom - newTop) < 1!) Then newTop = newBottom - 1!
+                
+                'Locked aspect ratios and snapping have complex interactions.  While we originally snapped
+                ' mouse coordinates at the start of this function, if the user has locked aspect ratio,
+                ' correcting for aspect ratio likely pulled us away from our snap target.  We now need to
+                ' manually calculate snap against the aspect-ratio corrected coordinates, and then *post*-snap,
+                ' ensure aspect ratio is still OK.
+                If lockAspectRatio And Snap.GetSnap_Any() Then
+                    
+                    'Snap the aspect-ratio-corrected points into place
+                    srcPtF.x = newLeft
+                    srcPtF.y = newTop
+                    Snap.SnapPointByMoving srcPtF, snappedPtF
+                    
+                    'We have to pick an arbitrary direction to prioritize when snapping *and* preserving
+                    ' aspect ratio, because we can't do both.  I've arbitrarily selected the x-position,
+                    ' and if x is not snapped, we'll snap y (if we can).
+                    If Snap.IsSnapped_X() Then
+                        newLeft = snappedPtF.x
+                        newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_Y
+                    ElseIf Snap.IsSnapped_Y() Then
+                        newTop = snappedPtF.y
+                        newLeft = newRight - (newBottom - newTop) * m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_X
+                    End If
+                    
+                    'Still important to validate layer rect before assigning
+                    If (newLeft > newRight - 1!) Then newLeft = newRight - 1!
+                    If (newTop > newBottom - 1!) Then newTop = newBottom - 1!
+                    
+                End If
                 
                 'Immediately relay the new coordinates to the source layer
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
@@ -345,9 +377,30 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newBottom = m_InitLayerCoords_Pure(2).y
                 
-                If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If ((curLayerX - newLeft) > 1!) Then newRight = curLayerX Else newRight = newLeft + 1!
                 If lockAspectRatio Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
-                If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
+                If ((newBottom - newTop) < 1!) Then newTop = newBottom - 1!
+                
+                If lockAspectRatio And Snap.GetSnap_Any() Then
+                    
+                    srcPtF.x = newRight
+                    srcPtF.y = newTop
+                    Snap.SnapPointByMoving srcPtF, snappedPtF
+                    
+                    If Snap.IsSnapped_X() Then
+                        newRight = snappedPtF.x
+                        newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_Y
+                    ElseIf Snap.IsSnapped_Y() Then
+                        newTop = snappedPtF.y
+                        newRight = newLeft + (newBottom - newTop) * m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_X
+                    End If
+                    
+                    If (newRight < newLeft + 1!) Then newRight = newLeft + 1!
+                    If (newTop > newBottom - 1!) Then newTop = newBottom - 1!
+                    
+                End If
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
@@ -358,9 +411,30 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newRight = m_InitLayerCoords_Pure(1).x
                 newTop = m_InitLayerCoords_Pure(0).y
                 
-                If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If ((newRight - curLayerX) > 1!) Then newLeft = curLayerX Else newLeft = newRight - 1!
                 If lockAspectRatio Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
-                If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
+                If ((newBottom - newTop) < 1!) Then newBottom = newTop + 1!
+                
+                If lockAspectRatio And Snap.GetSnap_Any() Then
+                    
+                    srcPtF.x = newLeft
+                    srcPtF.y = newBottom
+                    Snap.SnapPointByMoving srcPtF, snappedPtF
+                    
+                    If Snap.IsSnapped_X() Then
+                        newLeft = snappedPtF.x
+                        newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_Y
+                    ElseIf Snap.IsSnapped_Y() Then
+                        newBottom = snappedPtF.y
+                        newLeft = newRight - (newBottom - newTop) * m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_X
+                    End If
+                    
+                    If (newLeft > newRight - 1!) Then newLeft = newRight - 1!
+                    If (newBottom < newTop + 1!) Then newBottom = newTop + 1!
+                    
+                End If
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
@@ -372,16 +446,40 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y
                 
                 'Finish calculating things like required minimum layer size and aspect ratio preservation
-                If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If ((curLayerX - newLeft) > 1!) Then newRight = curLayerX Else newRight = newLeft + 1!
                 If lockAspectRatio Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
-                If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
+                If ((newBottom - newTop) < 1!) Then newBottom = newTop + 1!
+                
+                If lockAspectRatio And Snap.GetSnap_Any() Then
+                    
+                    srcPtF.x = newRight
+                    srcPtF.y = newBottom
+                    Snap.SnapPointByMoving srcPtF, snappedPtF
+                    
+                    If Snap.IsSnapped_X() Then
+                        newRight = snappedPtF.x
+                        newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_Y
+                    ElseIf Snap.IsSnapped_Y() Then
+                        newBottom = snappedPtF.y
+                        newRight = newLeft + (newBottom - newTop) * m_LayerAspectRatio
+                        Snap.NotifyNoSnapping_X
+                    End If
+                    
+                    If (newRight < newLeft + 1!) Then newRight = newLeft + 1!
+                    If (newBottom < newTop + 1!) Then newBottom = newTop + 1!
+                    
+                End If
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
                 
             '4-7: rotation nodes
             Case poi_EdgeN, poi_EdgeE, poi_EdgeS, poi_EdgeW
-            
+                
+                'Disable smart guide rendering
+                Snap.NotifyNoSnapping
+                
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
                 Dim ptIntersect As PointFloat, pt1 As PointFloat, pt2 As PointFloat
