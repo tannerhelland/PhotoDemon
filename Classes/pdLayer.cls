@@ -2563,6 +2563,8 @@ End Function
 ' and if *those* change (but the layer is unchanged), we still need to regenerate the function.
 Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
     
+    On Error GoTo BadHash
+    
     'First, generate a hash of relevant internals.
     Dim tmpHash As Long
     
@@ -2579,13 +2581,16 @@ Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
     'Finally, hash any parameters we were passed.
     If (UBound(allParams) >= LBound(allParams)) Then
     
-        Dim i As Long
+        Dim i As Long, tmpLong As Long
         For i = LBound(allParams) To UBound(allParams)
-            tmpHash = tmpHash Xor allParams(i) * ((i + 1) * 127)
+            tmpLong = Int(allParams(i))
+            If (tmpLong >= 100000000#) Then tmpLong = tmpLong \ 4 'Safety against overflow on unpredictable inputs
+            tmpHash = tmpHash Xor tmpLong * ((i + 1) * 7)
         Next i
     
     End If
     
+BadHash:
     GetViewportHash_Theoretical = tmpHash
     
 End Function
