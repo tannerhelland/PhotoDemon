@@ -23,6 +23,9 @@ Option Explicit
 ' of directly querying the associated UI elements.
 Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
 
+'Set to TRUE when LMB mouse is actively down; FALSE when LMB is not
+Private m_LMBDown As Boolean
+
 'Same goes for various selection-related move settings (for moving selected pixels).  These are simple
 ' flags whose value is relayed from the Move/Size options panel.
 Private m_SelectionDefaultCut As Boolean, m_SelectionSampleMerged As Boolean
@@ -31,6 +34,7 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, 
     If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
     If (Tools_Move.GetDrawLayerCornerNodes() Or srcIsTextLayer) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (Tools_Move.GetDrawLayerRotateNodes() Or srcIsTextLayer) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+    If (m_LMBDown And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
 End Sub
 
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
@@ -142,6 +146,8 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     
     'Failsafe check only
     If (Not PDImages.IsImageActive) Then Exit Sub
+    
+    m_LMBDown = True
     
     'See if a selection is active.  If it is, we need to see if the user has clicked within the selected region.
     ' (If they have, we will allow them to move just the *selected* pixels.)
@@ -294,7 +300,9 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
 End Function
 
 Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfMouseMovements As Long)
-
+    
+    m_LMBDown = False
+    
     'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
     If (numOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
     

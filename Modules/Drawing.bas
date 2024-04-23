@@ -739,6 +739,51 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
 End Sub
 
+Public Sub DrawSmartGuides(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
+    
+    'Drawing smart guides is *optional*
+    If (Not m_ShowSmartGuides) Then Exit Sub
+    
+    Dim smartGuideLine() As PointFloat
+    ReDim smartGuideLine(0 To 1) As PointFloat
+    
+    'Look for an active x-guide
+    If Snap.IsSnapped_X() Then
+        
+        Snap.GetSnappedX_SmartGuide smartGuideLine(0), smartGuideLine(1)
+        
+        'Convert the smart guidelines coordinates into viewport space
+        Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, smartGuideLine, False
+        
+        'Use pd2D to perform the render
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
+        
+        PD2D.DrawLineF_FromPtF cSurface, m_PenUIBaseHighlight, smartGuideLine(0), smartGuideLine(1)
+        PD2D.DrawLineF_FromPtF cSurface, m_PenUITopHighlight, smartGuideLine(0), smartGuideLine(1)
+        
+        Set cSurface = Nothing
+        
+    End If
+    
+    'Same for y
+    If Snap.IsSnapped_Y() Then
+    
+        Snap.GetSnappedY_SmartGuide smartGuideLine(0), smartGuideLine(1)
+        Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, smartGuideLine, False
+        
+        'Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
+        
+        PD2D.DrawLineF_FromPtF cSurface, m_PenUIBaseHighlight, smartGuideLine(0), smartGuideLine(1)
+        PD2D.DrawLineF_FromPtF cSurface, m_PenUITopHighlight, smartGuideLine(0), smartGuideLine(1)
+        
+        Set cSurface = Nothing
+        
+    End If
+    
+End Sub
+
 Public Function Get_ShowSmartGuides() As Boolean
     Get_ShowSmartGuides = m_ShowSmartGuides
 End Function

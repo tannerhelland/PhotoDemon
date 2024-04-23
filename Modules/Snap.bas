@@ -3,8 +3,8 @@ Attribute VB_Name = "Snap"
 'Snap-to-target Handler
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/April/24
-'Last updated: 19/April/24
-'Last update: add support for snapping to layer boundaries (and their centerlines, if enabled)
+'Last updated: 22/April/24
+'Last update: add support for rendering smart guides when snapping
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -16,15 +16,18 @@ Attribute VB_Name = "Snap"
 
 Option Explicit
 
+'Prints snap info to the debug log; do NOT activate in production builds
+Private Const DEBUG_SNAP_REPORTING As Boolean = False
+
 Public Enum PD_SnapTargets
     pdst_Global = 0
     pdst_CanvasEdge = 1
     pdst_Centerline = 2
-    pdst_Layer = 3
+    pdst_Layer = 4
 End Enum
 
 #If False Then
-    Private Const pdst_Global = 0, pdst_CanvasEdge = 1, pdst_Centerline = 2, pdst_Layer = 3
+    Private Const pdst_Global = 0, pdst_CanvasEdge = 1, pdst_Centerline = 2, pdst_Layer = 4
 #End If
 
 'When snapping coordinates, we need to compare all possible snap targets and choose the best independent
@@ -34,16 +37,25 @@ Private Type SnapComparison
     cValue As Double
     cDistance1 As Double    'Left/Top distance
     cDistance2 As Double    'Right/Bottom distance
-    cDistanceCX As Double    'X-Center distance (only if enabled)
-    cDistanceCY As Double    'Y-Center distance (only if enabled)
+    cDistanceCX As Double   'X-Center distance (only if enabled)
+    cDistanceCY As Double   'Y-Center distance (only if enabled)
     cCenterComparison As Boolean    'Set to TRUE if center distance is smallest distance; this is relevant for rects
                                     ' and point lists, because we need to snap the *center*, not the boundaries
+    cSnapSource As Integer  'OR'd flags that define the source of this point (e.g. LAYER or CENTERLINE for a layer's center)
+    cSnapLinePt1 As PointFloat  'Relevant line defining what's being snapped (e.g. the left line of a layer or similar).
+    cSnapLinePt2 As PointFloat  ' This line is used to generate an on-screen smart guide if enabled by the user.
+    cSnapName As String         'Debug only; stores the name of the snap target (useful for figuring out wtf is being snapped)
 End Type
 
 'To improve performance, snap-to settings are cached locally (instead of traveling out to
 ' the user preference engine on every call).
 Private m_SnapGlobal As Boolean, m_SnapToCanvasEdge As Boolean, m_SnapToCenterline As Boolean, m_SnapToLayer As Boolean
 Private m_SnapDistance As Long
+
+'When a snap request was successful, these flags are set to TRUE and points defining the snapped line are
+' also generated (so the renderer can display a smart guide, if enabled).
+Private m_SnappedX As Boolean, m_SnappedXPt1 As PointFloat, m_SnappedXPt2 As PointFloat, m_SnappedXName As String
+Private m_SnappedY As Boolean, m_SnappedYPt1 As PointFloat, m_SnappedYPt2 As PointFloat, m_SnappedYName As String
 
 'Returns TRUE if *any* snap-to-edge behaviors are enabled.  Useful for skipping all snap checks.
 Public Function GetSnap_Any() As Boolean
@@ -82,6 +94,41 @@ End Function
 Public Function GetSnap_Layer() As Boolean
     GetSnap_Layer = m_SnapToLayer
 End Function
+
+Public Sub GetSnappedX_SmartGuide(ByRef dstPt1 As PointFloat, ByRef dstPt2 As PointFloat)
+    dstPt1 = m_SnappedXPt1
+    dstPt2 = m_SnappedXPt2
+End Sub
+
+Public Sub GetSnappedY_SmartGuide(ByRef dstPt1 As PointFloat, ByRef dstPt2 As PointFloat)
+    dstPt1 = m_SnappedYPt1
+    dstPt2 = m_SnappedYPt2
+End Sub
+
+Public Function IsSnapped_X() As Boolean
+    IsSnapped_X = m_SnappedX
+End Function
+
+Public Function IsSnapped_Y() As Boolean
+    IsSnapped_Y = m_SnappedY
+End Function
+
+'When interacting with a POI on the canvas that doesn't support snapping (like rotation),
+' call this function to prevent rendering of smart guides from past interactions.
+Public Sub NotifyNoSnapping()
+    m_SnappedX = False
+    m_SnappedY = False
+End Sub
+
+'When locking aspect ratio and resizing a layer, we can't snap in both directions.  The caller
+' chooses which direction to prioritize, and forcibly disables the other.
+Public Sub NotifyNoSnapping_X()
+    m_SnappedX = False
+End Sub
+
+Public Sub NotifyNoSnapping_Y()
+    m_SnappedY = False
+End Sub
 
 Public Sub SetSnap_CanvasEdge(ByVal newState As Boolean)
     m_SnapToCanvasEdge = newState
@@ -144,6 +191,9 @@ End Sub
 'Snap the passed point to any relevant snap targets (based on the user's current snap settings).
 Public Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As PointFloat)
     
+    m_SnappedX = False
+    m_SnappedY = False
+    
     'If no snap targets exist (because the user has disabled snapping), ensure the destination point
     ' mirrors the source point
     dstPointF = srcPointF
@@ -194,8 +244,27 @@ Public Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As P
     snapThreshold = GetSnapDistanceScaledForZoom()
     
     'If the minimum value falls beneath the minimum snap distance, snap away!
-    If (minDistX < snapThreshold) Then dstPointF.x = xSnaps(idxSmallestX).cValue
-    If (minDistY < snapThreshold) Then dstPointF.y = ySnaps(idxSmallestY).cValue
+    If (minDistX < snapThreshold) Then
+        m_SnappedX = True
+        m_SnappedXName = xSnaps(idxSmallestX).cSnapName
+        dstPointF.x = xSnaps(idxSmallestX).cValue
+    End If
+    
+    If (minDistY < snapThreshold) Then
+        m_SnappedY = True
+        m_SnappedYName = ySnaps(idxSmallestY).cSnapName
+        dstPointF.y = ySnaps(idxSmallestY).cValue
+    End If
+    
+    'With all snaps calculated, we now have enough to generate smart guide coordinates
+    If m_SnappedX Then BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, dstPointF.x, dstPointF.y
+    If m_SnappedY Then BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, dstPointF.x, dstPointF.y
+    
+    'Debug only
+    If DEBUG_SNAP_REPORTING Then
+        If m_SnappedX Then PDDebug.LogAction "Successfully snapped x to " & m_SnappedXName
+        If m_SnappedY Then PDDebug.LogAction "Successfully snapped y to " & m_SnappedYName
+    End If
     
 End Sub
 
@@ -205,6 +274,9 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
     
     dstOffsetX = 0
     dstOffsetY = 0
+    
+    m_SnappedX = False
+    m_SnappedY = False
     
     'Failsafe only; caller (in PD) will never set this to <= 0
     If (numOfPoints <= 0) Then Exit Sub
@@ -261,6 +333,7 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
     Next j
     
     'If centerline snapping is enabled, repeat the above steps, but for the center point of the list only
+    Dim cx As Double, cy As Double
     If Snap.GetSnap_Centerline() Then
         
         Dim pathTest As pd2DPath, pathRect As RectF
@@ -268,7 +341,6 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
         pathTest.AddLines numOfPoints, VarPtr(srcPoints(0))
         pathRect = pathTest.GetPathBoundariesF()
         
-        Dim cx As Double, cy As Double
         cx = pathRect.Left + pathRect.Width * 0.5
         cy = pathRect.Top + pathRect.Height * 0.5
         
@@ -303,6 +375,9 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
     'If the minimum value falls beneath the minimum snap distance, snap away!
     If (minDistX < snapThreshold) Then
         
+        m_SnappedX = True
+        m_SnappedXName = xSnaps(idxSmallestX).cSnapName
+        
         'Center comparisons require us to align the center point of the rect
         If xSnaps(idxSmallestX).cCenterComparison Then
             dstOffsetX = xSnaps(idxSmallestX).cValue - (pathRect.Left + pathRect.Width * 0.5)
@@ -314,12 +389,58 @@ Public Sub SnapPointListByMoving(ByRef srcPoints() As PointFloat, ByVal numOfPoi
     
     If (minDistY < snapThreshold) Then
         
+        m_SnappedY = True
+        m_SnappedYName = ySnaps(idxSmallestY).cSnapName
+        
         'Center comparisons require us to align the center point of the rect
         If ySnaps(idxSmallestY).cCenterComparison Then
             dstOffsetY = ySnaps(idxSmallestY).cValue - (pathRect.Top + pathRect.Height * 0.5)
         Else
             dstOffsetY = (ySnaps(idxSmallestY).cValue - srcPoints(idxSmallestPointY).y)
         End If
+        
+    End If
+    
+    'After both rects have been snapped, we can generate some smart guides for the viewport renderer
+    If m_SnappedX Then
+    
+        'Construct a final smart guideline for the viewport renderer
+        If xSnaps(idxSmallestX).cCenterComparison Then
+            BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, xSnaps(idxSmallestX).cValue, cy + dstOffsetY
+        Else
+        
+            BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, xSnaps(idxSmallestX).cValue, srcPoints(idxSmallestPointX).y + dstOffsetY
+        
+            'Append any other points in the source list to the line, if they also fall beneath the snap threshold
+            For i = 0 To numOfPoints - 1
+                If (PDMath.DistanceOneDimension(srcPoints(i).x, xSnaps(idxSmallestX).cValue) < snapThreshold) Then AppendPointToSmartGuideLine_X xSnaps(idxSmallestX).cValue, srcPoints(i).y + dstOffsetY
+            Next i
+            
+        End If
+        
+    End If
+    
+    If m_SnappedY Then
+    
+        'Construct a final smart guideline for the viewport renderer
+        If ySnaps(idxSmallestY).cCenterComparison Then
+            BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, cx + dstOffsetX, ySnaps(idxSmallestY).cValue
+        Else
+            BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, srcPoints(idxSmallestPointY).x + dstOffsetX, ySnaps(idxSmallestY).cValue
+            
+            'Append any other points in the source list to the line, if they also fall beneath the snap threshold
+            For i = 0 To numOfPoints - 1
+                If (PDMath.DistanceOneDimension(srcPoints(i).y, ySnaps(idxSmallestY).cValue) < snapThreshold) Then AppendPointToSmartGuideLine_Y srcPoints(i).x + dstOffsetX, ySnaps(idxSmallestY).cValue
+            Next i
+            
+        End If
+        
+    End If
+    
+    'Debug only
+    If DEBUG_SNAP_REPORTING Then
+        If m_SnappedX Then PDDebug.LogAction "Successfully snapped x to " & m_SnappedXName
+        If m_SnappedY Then PDDebug.LogAction "Successfully snapped y to " & m_SnappedYName
     End If
     
 End Sub
@@ -328,6 +449,9 @@ End Sub
 ' Because this function snaps only by moving the target rect, it is guaranteed that only the
 ' top and left values will be changed by the function (width/height will *not*).
 Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
+    
+    m_SnappedX = False
+    m_SnappedY = False
     
     'By default, return the same rect.  (This is important if the user has disabled snapping.)
     dstRectF = srcRectF
@@ -433,6 +557,9 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
     'If the minimum value falls beneath the minimum snap distance, snap away!
     If (minDistX < snapThreshold) Then
         
+        m_SnappedX = True
+        m_SnappedXName = xSnaps(idxSmallestX).cSnapName
+        
         'Center comparisons require us to align the center point of the rect
         If xSnaps(idxSmallestX).cCenterComparison Then
             dstRectF.Left = xSnaps(idxSmallestX).cValue - (compareRectF.Right - compareRectF.Left) * 0.5
@@ -446,9 +573,17 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
             End If
         End If
         
+        'Construct a final smart guideline for the viewport renderer (and append the bottom of the rect too)
+        BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, dstRectF.Left, dstRectF.Top
+        AppendPointToSmartGuideLine_X dstRectF.Left, dstRectF.Top + dstRectF.Height
+        
     End If
     
     If (minDistY < snapThreshold) Then
+        
+        m_SnappedY = True
+        m_SnappedYName = ySnaps(idxSmallestY).cSnapName
+        
         If ySnaps(idxSmallestY).cCenterComparison Then
             dstRectF.Top = ySnaps(idxSmallestY).cValue - (compareRectF.Bottom - compareRectF.Top) * 0.5
         Else
@@ -458,6 +593,119 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
                 dstRectF.Top = ySnaps(idxSmallestY).cValue - dstRectF.Height
             End If
         End If
+        
+        'Construct a final smart guideline for the viewport renderer (and append the bottom of the rect too)
+        BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, dstRectF.Left, dstRectF.Top
+        AppendPointToSmartGuideLine_Y dstRectF.Left + dstRectF.Width, dstRectF.Top
+        
+    End If
+    
+    'Debug only
+    If DEBUG_SNAP_REPORTING Then
+        If m_SnappedX Then PDDebug.LogAction "Successfully snapped x to " & m_SnappedXName
+        If m_SnappedY Then PDDebug.LogAction "Successfully snapped y to " & m_SnappedYName
+    End If
+    
+End Sub
+
+'From the snapped point, build a list of all snap targets that lie on the same line.
+Private Sub BuildSmartGuideLine_X(ByRef srcSnaps() As SnapComparison, ByVal numSnaps As Long, ByVal idxSnapped As Long, ByVal srcX As Single, ByVal srcY As Single)
+    
+    'Set the initial line endpoints, and ensure that the top-most line is point 1
+    If ((srcSnaps(idxSnapped).cSnapSource And pdst_Centerline) <> 0) Then
+        m_SnappedXPt1 = srcSnaps(idxSnapped).cSnapLinePt1
+        m_SnappedXPt2 = srcSnaps(idxSnapped).cSnapLinePt1
+    Else
+        If (srcSnaps(idxSnapped).cSnapLinePt1.y < srcSnaps(idxSnapped).cSnapLinePt2.y) Then
+            m_SnappedXPt1 = srcSnaps(idxSnapped).cSnapLinePt1
+            m_SnappedXPt2 = srcSnaps(idxSnapped).cSnapLinePt2
+        Else
+            m_SnappedXPt1 = srcSnaps(idxSnapped).cSnapLinePt2
+            m_SnappedXPt2 = srcSnaps(idxSnapped).cSnapLinePt1
+        End If
+    End If
+    
+    'Extend the line to include any other snap targets that also lie on this line
+    Dim i As Long
+    For i = 0 To numSnaps - 1
+        If (i <> idxSnapped) Then
+            If (srcSnaps(i).cValue = srcSnaps(idxSnapped).cValue) Then
+                AppendPointToSmartGuideLine_X srcSnaps(i).cSnapLinePt1.x, srcSnaps(i).cSnapLinePt1.y
+                AppendPointToSmartGuideLine_X srcSnaps(i).cSnapLinePt2.x, srcSnaps(i).cSnapLinePt2.y
+            End If
+        End If
+    Next i
+    
+    'Also append the passed point
+    AppendPointToSmartGuideLine_X srcX, srcY
+    
+    'The smart guide line is now inclusive of all snap targets lying on the same line.  (This way, if multiple layers
+    ' or objects share the same boundary line, we include *all* of them in the smart guide, instead of the one arbitrary
+    ' one that was chosen as the "closest" during point comparisons.)
+    
+End Sub
+
+'Append snapped points, if valid, to our constructed "smart guide line"
+Private Sub AppendPointToSmartGuideLine_X(ByVal srcX As Single, ByVal srcY As Single)
+    
+    'Ensure same x-values
+    If (srcX = m_SnappedXPt1.x) Then
+        
+        'See if this point lies beyond the existing line
+        If (srcY < m_SnappedXPt1.y) Then m_SnappedXPt1.y = srcY
+        If (srcY > m_SnappedXPt2.y) Then m_SnappedXPt2.y = srcY
+        
+    End If
+    
+End Sub
+
+'From the snapped point, build a list of all snap targets that lie on the same line.
+Private Sub BuildSmartGuideLine_Y(ByRef srcSnaps() As SnapComparison, ByVal numSnaps As Long, ByVal idxSnapped As Long, ByVal srcX As Single, ByVal srcY As Single)
+
+    'Set the initial line endpoints, and ensure that the top-most line is point 1
+    If ((srcSnaps(idxSnapped).cSnapSource And pdst_Centerline) <> 0) Then
+        m_SnappedYPt1 = srcSnaps(idxSnapped).cSnapLinePt1
+        m_SnappedYPt2 = srcSnaps(idxSnapped).cSnapLinePt1
+    Else
+        If (srcSnaps(idxSnapped).cSnapLinePt1.x < srcSnaps(idxSnapped).cSnapLinePt2.x) Then
+            m_SnappedYPt1 = srcSnaps(idxSnapped).cSnapLinePt1
+            m_SnappedYPt2 = srcSnaps(idxSnapped).cSnapLinePt2
+        Else
+            m_SnappedYPt1 = srcSnaps(idxSnapped).cSnapLinePt2
+            m_SnappedYPt2 = srcSnaps(idxSnapped).cSnapLinePt1
+        End If
+    End If
+        
+    'Extend the line to include any other snap targets that also lie on this line
+    Dim i As Long
+    For i = 0 To numSnaps - 1
+        If (i <> idxSnapped) Then
+            If (srcSnaps(i).cValue = srcSnaps(idxSnapped).cValue) Then
+                AppendPointToSmartGuideLine_Y srcSnaps(i).cSnapLinePt1.x, srcSnaps(i).cSnapLinePt1.y
+                AppendPointToSmartGuideLine_Y srcSnaps(i).cSnapLinePt2.x, srcSnaps(i).cSnapLinePt2.y
+            End If
+        End If
+    Next i
+    
+    'Also append the passed point
+    AppendPointToSmartGuideLine_Y srcX, srcY
+    
+    'The smart guide line is now inclusive of all snap targets lying on the same line.  (This way, if multiple layers
+    ' or objects share the same boundary line, we include *all* of them in the smart guide, instead of the one arbitrary
+    ' one that was chosen as the "closest" during point comparisons.)
+    
+End Sub
+
+'Append snapped points, if valid, to our constructed "smart guide line"
+Private Sub AppendPointToSmartGuideLine_Y(ByVal srcX As Single, ByVal srcY As Single)
+    
+    'Ensure same y-values
+    If (srcY = m_SnappedYPt1.y) Then
+        
+        'See if this point lies beyond the existing line
+        If (srcX < m_SnappedYPt1.x) Then m_SnappedYPt1.x = srcX
+        If (srcX > m_SnappedYPt2.x) Then m_SnappedYPt2.x = srcX
+        
     End If
     
 End Sub
@@ -481,15 +729,42 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
         If (UBound(dstSnaps) < GetSnapTargets_X + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
         
         'Add canvas boundaries to the snap list
-        dstSnaps(GetSnapTargets_X).cValue = 0#
-        dstSnaps(GetSnapTargets_X + 1).cValue = PDImages.GetActiveImage.Width
+        With dstSnaps(GetSnapTargets_X)
+            .cValue = 0#
+            .cSnapSource = pdst_CanvasEdge
+            .cSnapLinePt1.x = 0!
+            .cSnapLinePt1.y = 0!
+            .cSnapLinePt2.x = 0!
+            .cSnapLinePt2.y = PDImages.GetActiveImage.Height
+            .cSnapName = "canvas left"
+        End With
+        
+        With dstSnaps(GetSnapTargets_X + 1)
+            .cValue = PDImages.GetActiveImage.Width
+            .cSnapSource = pdst_CanvasEdge
+            .cSnapLinePt1.x = PDImages.GetActiveImage.Width
+            .cSnapLinePt1.y = 0!
+            .cSnapLinePt2.x = PDImages.GetActiveImage.Width
+            .cSnapLinePt2.y = PDImages.GetActiveImage.Height
+            .cSnapName = "canvas right"
+        End With
+        
         GetSnapTargets_X = GetSnapTargets_X + 2
         
-        'Centerline (of canvas only; layers is handled below)
+        'Centerline (of canvas only; layer centers are handled below)
         If Snap.GetSnap_Centerline() Then
+            
             If (UBound(dstSnaps) < GetSnapTargets_X) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_X * 2 - 1) As SnapComparison
-            dstSnaps(GetSnapTargets_X).cValue = Int(PDImages.GetActiveImage.Width / 2)
+            With dstSnaps(GetSnapTargets_X)
+                .cValue = Int(PDImages.GetActiveImage.Width / 2)
+                .cSnapSource = pdst_CanvasEdge Or pdst_Centerline
+                .cSnapLinePt1.x = .cValue
+                .cSnapLinePt1.y = Int(PDImages.GetActiveImage.Height / 2)
+                .cSnapName = "canvas center"
+            End With
+            
             GetSnapTargets_X = GetSnapTargets_X + 1
+            
         End If
             
     End If
@@ -513,13 +788,36 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
                     
                     'Add layer boundaries to the snap list
                     PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBoundaryRect layerRectF
-                    dstSnaps(GetSnapTargets_X).cValue = layerRectF.Left
-                    dstSnaps(GetSnapTargets_X + 1).cValue = layerRectF.Left + layerRectF.Width
+                    With dstSnaps(GetSnapTargets_X)
+                        .cValue = layerRectF.Left
+                        .cSnapSource = pdst_Layer
+                        .cSnapLinePt1.x = .cValue
+                        .cSnapLinePt1.y = layerRectF.Top
+                        .cSnapLinePt2.x = .cValue
+                        .cSnapLinePt2.y = layerRectF.Top + layerRectF.Height
+                        .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " left"
+                    End With
+                    
+                    With dstSnaps(GetSnapTargets_X + 1)
+                        .cValue = layerRectF.Left + layerRectF.Width
+                        .cSnapSource = pdst_Layer
+                        .cSnapLinePt1.x = .cValue
+                        .cSnapLinePt1.y = layerRectF.Top
+                        .cSnapLinePt2.x = .cValue
+                        .cSnapLinePt2.y = layerRectF.Top + layerRectF.Height
+                        .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " right"
+                    End With
                     GetSnapTargets_X = GetSnapTargets_X + 2
                     
-                    'If centerlines are enabled, add the layer's centerline too
+                    'If centerlines are enabled, add the layer's centerpoint too
                     If Snap.GetSnap_Centerline() Then
-                        dstSnaps(GetSnapTargets_X).cValue = layerRectF.Left + layerRectF.Width * 0.5
+                        With dstSnaps(GetSnapTargets_X)
+                            .cValue = Int(layerRectF.Left + layerRectF.Width * 0.5)
+                            .cSnapSource = pdst_Layer Or pdst_Centerline
+                            .cSnapLinePt1.x = .cValue
+                            .cSnapLinePt1.y = Int(layerRectF.Top + layerRectF.Height * 0.5)
+                            .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " center"
+                        End With
                         GetSnapTargets_X = GetSnapTargets_X + 1
                     End If
                     
@@ -550,15 +848,43 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
         If (UBound(dstSnaps) < GetSnapTargets_Y + 1) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
         
         'Add canvas boundaries to the snap list
-        dstSnaps(GetSnapTargets_Y).cValue = 0#
-        dstSnaps(GetSnapTargets_Y + 1).cValue = PDImages.GetActiveImage.Height
+        With dstSnaps(GetSnapTargets_Y)
+            .cValue = 0#
+            .cSnapSource = pdst_CanvasEdge
+            .cSnapLinePt1.x = 0!
+            .cSnapLinePt1.y = 0!
+            .cSnapLinePt2.x = PDImages.GetActiveImage.Width
+            .cSnapLinePt2.y = 0!
+            .cSnapName = "canvas top"
+        End With
+        
+        With dstSnaps(GetSnapTargets_Y + 1)
+            .cValue = PDImages.GetActiveImage.Height
+            .cSnapSource = pdst_CanvasEdge
+            .cSnapLinePt1.x = 0!
+            .cSnapLinePt1.y = PDImages.GetActiveImage.Height
+            .cSnapLinePt2.x = PDImages.GetActiveImage.Width
+            .cSnapLinePt2.y = PDImages.GetActiveImage.Height
+            .cSnapName = "canvas bottom"
+        End With
+        
         GetSnapTargets_Y = GetSnapTargets_Y + 2
         
         'Centerline (of canvas only; layers is handled below)
         If Snap.GetSnap_Centerline() Then
+            
             If (UBound(dstSnaps) < GetSnapTargets_Y) Then ReDim Preserve dstSnaps(0 To GetSnapTargets_Y * 2 - 1) As SnapComparison
-            dstSnaps(GetSnapTargets_Y).cValue = Int(PDImages.GetActiveImage.Height / 2)
+            
+            With dstSnaps(GetSnapTargets_Y)
+                .cValue = Int(PDImages.GetActiveImage.Height / 2)
+                .cSnapSource = pdst_CanvasEdge Or pdst_Centerline
+                .cSnapLinePt1.x = Int(PDImages.GetActiveImage.Width / 2)
+                .cSnapLinePt1.y = .cValue
+                .cSnapName = "canvas center"
+            End With
+            
             GetSnapTargets_Y = GetSnapTargets_Y + 1
+            
         End If
         
     End If
@@ -582,13 +908,38 @@ Private Function GetSnapTargets_Y(ByRef dstSnaps() As SnapComparison) As Long
                     
                     'Add layer boundaries to the snap list
                     PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBoundaryRect layerRectF
-                    dstSnaps(GetSnapTargets_Y).cValue = layerRectF.Top
-                    dstSnaps(GetSnapTargets_Y + 1).cValue = layerRectF.Top + layerRectF.Height
+                    
+                    With dstSnaps(GetSnapTargets_Y)
+                        .cValue = layerRectF.Top
+                        .cSnapSource = pdst_Layer
+                        .cSnapLinePt1.x = layerRectF.Left
+                        .cSnapLinePt1.y = .cValue
+                        .cSnapLinePt2.x = layerRectF.Left + layerRectF.Width
+                        .cSnapLinePt2.y = .cValue
+                        .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " top"
+                    End With
+                    
+                    With dstSnaps(GetSnapTargets_Y + 1)
+                        .cValue = layerRectF.Top + layerRectF.Height
+                        .cSnapSource = pdst_Layer
+                        .cSnapLinePt1.x = layerRectF.Left
+                        .cSnapLinePt1.y = .cValue
+                        .cSnapLinePt2.x = layerRectF.Left + layerRectF.Width
+                        .cSnapLinePt2.y = .cValue
+                        .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " bottom"
+                    End With
+                    
                     GetSnapTargets_Y = GetSnapTargets_Y + 2
                     
                     'If centerlines are enabled, add the layer's centerline too
                     If Snap.GetSnap_Centerline() Then
-                        dstSnaps(GetSnapTargets_Y).cValue = layerRectF.Top + layerRectF.Height * 0.5
+                        With dstSnaps(GetSnapTargets_Y)
+                            .cValue = Int(layerRectF.Top + layerRectF.Height * 0.5)
+                            .cSnapSource = pdst_Layer Or pdst_Centerline
+                            .cSnapLinePt1.x = Int(layerRectF.Left + layerRectF.Width * 0.5)
+                            .cSnapLinePt1.y = .cValue
+                            .cSnapName = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName & " center"
+                        End With
                         GetSnapTargets_Y = GetSnapTargets_Y + 1
                     End If
                     
