@@ -3,8 +3,8 @@ Attribute VB_Name = "Snap"
 'Snap-to-target Handler
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/April/24
-'Last updated: 22/April/24
-'Last update: add support for rendering smart guides when snapping
+'Last updated: 24/April/24
+'Last update: finalize support for rendering smart guides when snapping
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -573,9 +573,12 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
             End If
         End If
         
-        'Construct a final smart guideline for the viewport renderer (and append the bottom of the rect too)
-        BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, dstRectF.Left, dstRectF.Top
+        'Construct a final smart guideline for the viewport renderer (and append all four rect points,
+        ' in case they also lie on this line
+        BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, dstRectF.Left, dstRectF.Top
+        AppendPointToSmartGuideLine_X dstRectF.Left + dstRectF.Width, dstRectF.Top
         AppendPointToSmartGuideLine_X dstRectF.Left, dstRectF.Top + dstRectF.Height
+        AppendPointToSmartGuideLine_X dstRectF.Left + dstRectF.Width, dstRectF.Top + dstRectF.Height
         
     End If
     
@@ -597,6 +600,8 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
         'Construct a final smart guideline for the viewport renderer (and append the bottom of the rect too)
         BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, dstRectF.Left, dstRectF.Top
         AppendPointToSmartGuideLine_Y dstRectF.Left + dstRectF.Width, dstRectF.Top
+        AppendPointToSmartGuideLine_Y dstRectF.Left, dstRectF.Top + dstRectF.Height
+        AppendPointToSmartGuideLine_Y dstRectF.Left + dstRectF.Width, dstRectF.Top + dstRectF.Height
         
     End If
     
@@ -777,8 +782,11 @@ Private Function GetSnapTargets_X(ByRef dstSnaps() As SnapComparison) As Long
         Dim i As Long
         For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
             
-            'Do *not* snap the active layer (or it will always snap to itself because that's what's closest, lol)
-            If (i <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
+            'Do *not* snap the active layer (or it will always snap to itself because that's what's closest, lol).
+            ' (This is only relevant for layer-centric tools, like the move/size tool.)
+            Dim skipActiveLayer As Boolean
+            skipActiveLayer = (g_CurrentTool = NAV_MOVE) And (i = PDImages.GetActiveImage.GetActiveLayerIndex)
+            If (Not skipActiveLayer) Then
                 
                 'Ignore invisible layers
                 If PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility() Then

@@ -3095,6 +3095,9 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             If (selCorners(0).y = selCorners(2).y) Then Exit Sub
         End If
         
+        'Draw smart guides "beneath" the selection nodes
+        If (dstCanvas.IsMouseDown(pdLeftButton) And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
+        
         'Transform those corners into the destination viewport coordinate space
         Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, selCorners, False
         
