@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.368</langversion>
+<langversion>9.2.369</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5546,6 +5546,16 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Snap</original>
 <translation>Einrasten</translation>
 </phrase>
@@ -5768,7 +5778,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14267,10 +14277,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5696 phrases. -->
-<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 11704 total words. -->
+<!-- As of this build, PhotoDemon contains 5698 phrases. -->
+<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 11708 total words. -->
 
 </pdData>

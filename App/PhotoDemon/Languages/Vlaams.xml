@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1727</langversion>
+<langversion>8.9.1728</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -5546,6 +5546,16 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Snap</original>
 <translation></translation>
 </phrase>
@@ -5768,7 +5778,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14269,10 +14279,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5696 phrases. -->
-<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 11704 total words. -->
+<!-- As of this build, PhotoDemon contains 5698 phrases. -->
+<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 11708 total words. -->
 
 </pdData>

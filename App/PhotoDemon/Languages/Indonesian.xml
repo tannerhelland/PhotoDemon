@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1719</langversion>
+<langversion>8.9.1720</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -5541,6 +5541,16 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Snap</original>
 <translation></translation>
 </phrase>
@@ -5763,7 +5773,7 @@ Pembaruan sedang diproses secara otomatis di latar belakang. Anda akan menerima 
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 399 phrases. 217 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14263,10 +14273,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, pastikan untuk mengunjung
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5696 phrases. -->
-<!-- 2996 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 11704 total words. -->
+<!-- As of this build, PhotoDemon contains 5698 phrases. -->
+<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 11708 total words. -->
 
 </pdData>
