@@ -31,9 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Collapsible Title Label+Button control
 'Copyright 2014-2024 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 06/March/22
-'Last update: tweak layout behavior to improve caption layouts when font size must be severely shrunk
-'             (due to lengthy localized text)
+'Last updated: 26/April/24
+'Last update: raise custom drag/drop events (that the owner can respond to as they wish)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -70,6 +69,13 @@ Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTa
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+
+'In April 2024, I added DragDrop relays (to enable custom drag/drop behavior on individual buttons).
+' (Despite the name, these relays are for the underlying OLE-prefixed events, which are the only drag/drop
+' events PD uses.)
+Public Event CustomDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+Public Event CustomDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
+Private m_CustomDragDropEnabled As Boolean
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
@@ -149,6 +155,15 @@ Public Property Let Caption(ByRef newCaption As String)
         UserControl.AccessKeys = vbNullString
     End If
     
+End Property
+
+Public Property Get CustomDragDropEnabled() As Boolean
+    CustomDragDropEnabled = m_CustomDragDropEnabled
+End Property
+
+Public Property Let CustomDragDropEnabled(ByVal newValue As Boolean)
+    m_CustomDragDropEnabled = newValue
+    If newValue Then UserControl.OLEDropMode = 1 Else UserControl.OLEDropMode = 0
 End Property
 
 'Changing the Draggable property does not currently initiate a redraw event; it's assumed that this property
@@ -415,10 +430,19 @@ End Sub
 'Set default properties
 Private Sub UserControl_InitProperties()
     Caption = vbNullString
+    CustomDragDropEnabled = False
     Draggable = False
     FontBold = False
     FontSize = 10
     Value = True
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -429,6 +453,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
+        CustomDragDropEnabled = .ReadProperty("CustomDragDropEnabled", False)
         Draggable = .ReadProperty("Draggable", False)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
@@ -443,6 +468,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
+        .WriteProperty "CustomDragDropEnabled", Me.CustomDragDropEnabled, False
         .WriteProperty "Draggable", m_Draggable, False
         .WriteProperty "FontBold", ucSupport.GetCaptionFontBold, False
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10

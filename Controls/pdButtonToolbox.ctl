@@ -34,8 +34,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Toolbox Button control
 'Copyright 2014-2024 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 12/December/21
-'Last update: allow caller to specify resampling method when assigning button images
+'Last updated: 26/April/24
+'Last update: raise custom drag/drop events (that the owner can respond to as they wish)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -71,6 +71,13 @@ Public Event Click(ByVal Shift As ShiftConstants)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
+
+'In April 2024, I added DragDrop relays (to enable custom drag/drop behavior on individual buttons).
+' (Despite the name, these relays are for the underlying OLE-prefixed events, which are the only drag/drop
+' events PD uses.)
+Public Event CustomDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+Public Event CustomDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
+Private m_CustomDragDropEnabled As Boolean
 
 'Current button state; TRUE if down, FALSE if up.  Note that this may not correspond with mouse state, depending on
 ' button properties (buttons can toggle in various ways).
@@ -176,6 +183,15 @@ End Property
 Public Property Let BackColor(ByVal newBackColor As OLE_COLOR)
     m_BackColor = newBackColor
     RedrawBackBuffer
+End Property
+
+Public Property Get CustomDragDropEnabled() As Boolean
+    CustomDragDropEnabled = m_CustomDragDropEnabled
+End Property
+
+Public Property Let CustomDragDropEnabled(ByVal newValue As Boolean)
+    m_CustomDragDropEnabled = newValue
+    If newValue Then UserControl.OLEDropMode = 1 Else UserControl.OLEDropMode = 0
 End Property
 
 'In some circumstances, an image alone is sufficient for indicating "pressed" state.  This value tells the control to *not* render a custom
@@ -686,10 +702,19 @@ End Sub
 Private Sub UserControl_InitProperties()
     AutoToggle = False
     BackColor = vbWhite
+    CustomDragDropEnabled = False
     DontHighlightDownState = False
     StickyToggle = False
     UseCustomBackColor = False
     Value = False
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -701,6 +726,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         AutoToggle = .ReadProperty("AutoToggle", False)
         m_BackColor = .ReadProperty("BackColor", vbWhite)
+        CustomDragDropEnabled = .ReadProperty("CustomDragDropEnabled", False)
         m_DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
         StickyToggle = .ReadProperty("StickyToggle", False)
         m_UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
@@ -715,6 +741,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "AutoToggle", AutoToggle, False
         .WriteProperty "BackColor", BackColor, vbWhite
+        .WriteProperty "CustomDragDropEnabled", Me.CustomDragDropEnabled, False
         .WriteProperty "DontHighlightDownState", DontHighlightDownState, False
         .WriteProperty "StickyToggle", StickyToggle, False
         .WriteProperty "UseCustomBackColor", UseCustomBackColor, False

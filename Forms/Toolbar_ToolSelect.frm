@@ -26,6 +26,7 @@ Begin VB.Form toolbar_Toolbox
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   654
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   156
@@ -41,6 +42,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "file"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -51,6 +53,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -61,6 +64,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -71,6 +75,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -81,6 +86,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -91,6 +97,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -101,6 +108,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -111,6 +119,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -121,6 +130,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -132,6 +142,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -143,6 +154,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -154,6 +166,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -165,6 +178,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -176,6 +190,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -187,6 +202,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -198,6 +214,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -209,6 +226,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -219,6 +237,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -229,6 +248,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -239,6 +259,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -250,6 +271,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "undo"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -261,6 +283,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "layout"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -272,6 +295,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "select"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -283,6 +307,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "text"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -294,6 +319,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "paint"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -304,6 +330,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblRecording 
       Height          =   720
@@ -326,6 +353,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -336,6 +364,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -346,6 +375,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -356,6 +386,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -366,6 +397,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -376,6 +408,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
 End
 Attribute VB_Name = "toolbar_Toolbox"
@@ -538,6 +571,30 @@ Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     End Select
     
+End Sub
+
+Private Sub cmdFile_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub cmdFile_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
+Private Sub cmdTools_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub cmdTools_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -1530,4 +1587,12 @@ Public Sub FreeAllToolpanels()
         
     Next i
     
+End Sub
+
+Private Sub ttlCategories_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub ttlCategories_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
