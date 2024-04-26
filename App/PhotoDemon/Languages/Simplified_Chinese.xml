@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，9.2 build 311）</langname>
-<langversion>9.2 build 311.5</langversion>
+<langname>简体中文（夜间更新版，9.2 build 380）</langname>
+<langversion>9.2 build 380</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -2050,7 +2050,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>背后</translation>
 </phrase>
 
 <phrase>
@@ -5542,32 +5542,32 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>显示额外内容</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>智能参考线</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>对齐</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>对齐到</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>画布边界</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>中心线</translation>
 </phrase>
 
 <phrase>
@@ -5731,7 +5731,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>This copy of PhotoDemon is up to date.</original>
-<translation>PhotoDemon这个拷贝最新的。</translation>
+<translation>这个PhotoDemon版本是最新的。</translation>
 </phrase>
 
 <phrase>
@@ -13398,7 +13398,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>对齐捕获距离（像素）</translation>
 </phrase>
 
 <phrase>
