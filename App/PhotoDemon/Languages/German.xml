@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.1.380</langversion>
+<langversion>9.1.391</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1105,7 +1105,7 @@
 
 <phrase>
 <original>Add film grain</original>
-<translation>Filmkörnung hinzufügen</translation>
+<translation>Filmkorn hinzufügen</translation>
 </phrase>
 
 <phrase>
@@ -8090,7 +8090,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>film grain</original>
-<translation>Filmkörnung</translation>
+<translation>Filmkorn</translation>
 </phrase>
 
 <phrase>
@@ -9090,12 +9090,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating film grain texture</original>
-<translation>Generierung der Filmkörnungstextur</translation>
+<translation>Generierung der Filmkorntextur</translation>
 </phrase>
 
 <phrase>
 <original>Softening film grain</original>
-<translation>Filmkörnung wird gedämpft</translation>
+<translation>Filmkorn wird gedämpft</translation>
 </phrase>
 
 <!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
