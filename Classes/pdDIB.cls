@@ -71,7 +71,7 @@ Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitma
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Variables related to the DIB
 Private m_dibDC As Long                 'hDC for this DIB

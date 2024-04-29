@@ -2123,7 +2123,8 @@ Private Sub Class_Initialize()
     
     'While it's not exactly time-consuming to retrieve custom clipboard formats, we may as well cache a few common ones.
     ' (This is made cumbersome by a lack of an unsigned Int format; as such, we have to jiggle the values around to prevent
-    '  VB from throwing "out of range" errors inside the IDE.)
+    '  VB from throwing "out of range" errors inside the IDE - CF_FileContents is declared as a 16-bit integer, because it's
+    '  passed to the internal VB function DataObject.GetFormat().)
     CF_FileContents = m_Clipboard.AddClipboardFormat("FileContents") And &H7FFF& Or &H8000
     CF_FileGroupDescriptorW = m_Clipboard.AddClipboardFormat("FileGroupDescriptorW") And &H7FFF& Or &H8000
     

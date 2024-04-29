@@ -91,7 +91,7 @@ End Enum
 #End If
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Constants to improve color space conversion performance
 Private Const ONE_DIV_SIX As Double = 0.166666666666667

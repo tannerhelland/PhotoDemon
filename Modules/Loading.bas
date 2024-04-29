@@ -972,7 +972,7 @@ End Function
 'I don't know if it makes sense here, but because this module handles loading via drag+drop,
 ' I've also placed a helper function here for handling cursor update on a drag/over event.
 Public Function HelperForDragOver(ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer) As Boolean
-
+    
     'PD supports a lot of potential drop sources these days.
     ' These values are defined and addressed by the main clipboard handler, because Drag/Drop and clipboard actions
     ' share a lot of code.

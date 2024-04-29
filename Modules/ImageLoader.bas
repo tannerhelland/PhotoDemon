@@ -1709,7 +1709,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Dim updateUI As Boolean
     updateUI = (Not previewOnly) And (Macros.GetMacroStatus() <> MacroBATCH) And (Macros.GetMacroStatus() <> MacroPLAYBACK)
     
-    Dim numPagesTotal
+    Dim numPagesTotal As Long
     numPagesTotal = listOfPages.GetNumOfInts()
     
     If updateUI Then
