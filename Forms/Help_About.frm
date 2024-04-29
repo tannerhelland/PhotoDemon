@@ -291,15 +291,12 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
-    GeneratePatron "EFF.ORG", "https://www.eff.org/"
-    GeneratePatron "Jason Brown", "https://statslog.com/"
-    GeneratePatron "Jessica H"
     GeneratePatron "Johannes Nendel"
     
     m_superPatronEndIndex = m_numOfPatrons
     GeneratePatron vbNullString
     
-    'Regular patrons (TODO someday soon, I hope!)
+    'Regular patrons
     actualText = g_Language.TranslateMessage("PATRONS")
     If OS.IsWin7OrLater Then
         uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
@@ -308,8 +305,8 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
+    GeneratePatron "Tim Parsons"
     GeneratePatron "Frank Reibold"
-    GeneratePatron "James Proctor"
     GeneratePatron "Jim Schmidt"
     GeneratePatron vbNullString
     
@@ -343,7 +340,7 @@ Private Sub Form_Load()
     GenerateContributor "Charltsing", "https://www.cnblogs.com/Charltsing/"
     GenerateContributor "ChenLin"
     GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
-    GenerateContributor "Clément Mariage", "https:/www.medexprim.com"
+    GenerateContributor "Clement Mariage", "https:/www.medexprim.com"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
     GenerateContributor "DarkAlchy"
