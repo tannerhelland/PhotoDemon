@@ -587,7 +587,7 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
         If (tmpDPIModifier > 4#) Then tmpDPIModifier = 4#
         
         'Calculate a difference between the old and new DPIs, and apply that modifier to our saved values, as necessary
-        tmpDPIModifier = Interface.GetSystemDPI() / tmpDPIModifier
+        tmpDPIModifier = Interface.GetSystemDPIRatio() / tmpDPIModifier
         
         If (tmpDPIModifier <> 1) Then
             With tmpRect
@@ -687,7 +687,7 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
         .UpdateTag "WindowRight", tmpRect.x2, "WindowEntry", "id", windowName
         .UpdateTag "WindowBottom", tmpRect.y2, "WindowEntry", "id", windowName
         .UpdateTag "WindowState", frmReference.WindowState, "WindowEntry", "id", windowName
-        .UpdateTag "WindowDPI", Interface.GetSystemDPI, "WindowEntry", "id", windowName
+        .UpdateTag "WindowDPI", Interface.GetSystemDPIRatio, "WindowEntry", "id", windowName
     End With
     
     'Write the data out to file

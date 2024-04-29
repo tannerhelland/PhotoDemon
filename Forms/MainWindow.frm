@@ -2400,7 +2400,7 @@ Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
     If resizeToolboxesToo Then
         Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
         Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
-        Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_TopToolbox, toolbar_Options.hWnd, FormMain.hWnd
     End If
     
     'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.

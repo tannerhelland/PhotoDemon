@@ -1401,7 +1401,7 @@ Private Function Launch_ByName_MenuWindow(ByRef srcMenuName As String, Optional 
                 toolbar_Toolbox.UpdateButtonSize tbs_Large
                 
         Case "window_tooloptions"
-            Toolboxes.ToggleToolboxVisibility PDT_BottomToolbox
+            Toolboxes.ToggleToolboxVisibility PDT_TopToolbox
             
         Case "window_layers"
             Toolboxes.ToggleToolboxVisibility PDT_RightToolbox

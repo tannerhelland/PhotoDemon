@@ -445,7 +445,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     g_Displays.RefreshDisplays
     
     'While here, also cache various display-related settings; this is faster than constantly retrieving them via APIs
-    Interface.CacheSystemDPI g_Displays.GetWindowsDPI
+    Interface.CacheSystemDPIRatio g_Displays.GetWindowsDPI
     
     
     '*************************************************************************************************************************************
@@ -580,7 +580,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Retrieve tool window visibility and mark those menus as well
     FormMain.MnuWindowToolbox(0).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_LeftToolbox)
-    FormMain.MnuWindow(1).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_BottomToolbox)
+    FormMain.MnuWindow(1).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_TopToolbox)
     FormMain.MnuWindow(2).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_RightToolbox)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment

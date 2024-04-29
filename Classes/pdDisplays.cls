@@ -198,10 +198,12 @@ Friend Function GetTaskbarHeight() As Long
     GetTaskbarHeight = (primaryDisplayRect.Bottom - primaryDisplayRect.Top) - (primaryDisplayWorkingRect.Bottom - primaryDisplayWorkingRect.Top)
 End Function
 
-'Returns the current screen DPI, *as set in Windows display settings.*  This has no relationship to actual screen DPI, which would
-' need to be calculated on a per-monitor basis using the EDID data PD collects.
+'Returns the current screen DPI, *as set in Windows display settings.*  This has no relationship to actual screen DPI,
+' which would need to be calculated on a per-monitor basis using the EDID data PD collects.
 '
-'For convenience, this is returned as a float where 1.0 = 96 DPI (the default Windows setting).  2.0 = 200% DPI scaling, etc.
+'For convenience, this is returned as a float where...
+' 1.0 = 96 DPI (the default Windows setting)
+' 2.0 = 200% DPI scaling, etc.
 Friend Function GetWindowsDPI() As Double
     
     'Retrieve LogPixelsX via the API; this will be 96 at 100% DPI scaling

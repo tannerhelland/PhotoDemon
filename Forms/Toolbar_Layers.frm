@@ -213,9 +213,21 @@ Private Sub Form_Load()
     
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
+    
         If UserPrefs.IsReady Then
+            
             targetHeight = UserPrefs.GetPref_Long("Toolbox", "RightPanelSize" & CStr(i + 1), pnlDefaultHeight)
-            If (i = 0) Then targetHeight = pnlHeightSearch
+            If (i = 0) Then
+                targetHeight = pnlHeightSearch
+            Else
+                
+                'Scale by current DPI (which may have changed since last session - PD is portable!)
+                Dim lastDPI As Single
+                lastDPI = Interface.GetLastSessionDPI_Ratio()
+                targetHeight = targetHeight * (Interface.GetSystemDPIRatio() / lastDPI)
+                
+            End If
+            
         Else
             If (i = 0) Then
                 targetHeight = pnlHeightSearch
@@ -223,7 +235,9 @@ Private Sub Form_Load()
                 targetHeight = pnlDefaultHeight
             End If
         End If
+        
         ctlContainer(i).SetHeight targetHeight
+        
     Next i
     
     'Prep a mouse handler for the underlying form

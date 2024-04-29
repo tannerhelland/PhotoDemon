@@ -1166,11 +1166,11 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             
             'Hand and zoom tools do not provide additional options
             Case NAV_DRAG, NAV_ZOOM
-                Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
+                Toolboxes.SetToolboxVisibility PDT_TopToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                Toolboxes.SetToolboxVisibilityByPreference PDT_BottomToolbox
+                Toolboxes.SetToolboxVisibilityByPreference PDT_TopToolbox
                 
         End Select
         
