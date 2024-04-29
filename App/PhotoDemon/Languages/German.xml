@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.2.369</langversion>
+<langversion>9.1.380</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2035,12 +2035,12 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Grain extract</original>
-<translation>Körnung extrahieren</translation>
+<translation>Körnigkeit extrahieren</translation>
 </phrase>
 
 <phrase>
 <original>Grain merge</original>
-<translation>Körnung zusammenführen</translation>
+<translation>Körnigkeit zusammenführen</translation>
 </phrase>
 
 <phrase>
@@ -5547,12 +5547,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Extras zeigen</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Intelligente Guides</translation>
 </phrase>
 
 <phrase>
@@ -9282,7 +9282,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>grain</original>
-<translation>Körnung</translation>
+<translation>Körnigkeit</translation>
 </phrase>
 
 <phrase>
