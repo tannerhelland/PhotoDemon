@@ -568,7 +568,7 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
 
     'First, make sure our border size is DPI-aware
     Dim dpiAwareBorderSize As Long
-    dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
+    dpiAwareBorderSize = Interface.FixDPI(VARIANT_BOX_SIZE)
     
     'Constructing circular sub-regions actually involves less code than rectangular ones, because they're spaced perfectly evenly,
     ' so we can easily construct them in a loop.
