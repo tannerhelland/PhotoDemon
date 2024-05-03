@@ -63,15 +63,15 @@ Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.70"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
 Private Const EXPECTED_LIBAVIF_VERSION As String = "1.0.4"
-Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.19"
+Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.20"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.10.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
-Private Const EXPECTED_PDFIUM_VERSION As String = "123.0.6309"
+Private Const EXPECTED_PDFIUM_VERSION As String = "126.0.6447"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
-Private Const EXPECTED_RESVG_VERSION As String = "0.40.0"
-Private Const EXPECTED_WEBP_VERSION As String = "1.3.2"
-Private Const EXPECTED_ZSTD_VERSION As String = "10505"
+Private Const EXPECTED_RESVG_VERSION As String = "0.41.0"
+Private Const EXPECTED_WEBP_VERSION As String = "1.4.0"
+Private Const EXPECTED_ZSTD_VERSION As String = "10506"
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
@@ -195,7 +195,7 @@ End Sub
 Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
-            GetPluginFilename = "charls-2-x86.dll"
+            GetPluginFilename = "charls-2.dll"
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
         Case CCP_EZTwain
@@ -333,7 +333,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
     Select Case pluginEnumID
         
         Case CCP_CharLS
-            dstStringStack.AddString "charls-2-x86.LICENSE.md"
+            dstStringStack.AddString "charls-2.LICENSE.md"
         
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"

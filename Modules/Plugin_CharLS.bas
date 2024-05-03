@@ -185,42 +185,42 @@ End Type
 
 'Modern, non-deprecated APIs use decorated names.  (Aliasing them here makes it much easier to sync
 ' against upstream vs rebasing a modified .def on each new release.)
-Private Declare Function charls_get_error_message Lib "charls-2-x86" Alias "_charls_get_error_message@4" (ByVal charLSErrorNumber As CharLS_Return) As Long
-'Private Declare Function charls_get_jpegls_category Lib "charls-2-x86" Alias "_charls_get_jpegls_category@0" () As Long
-Private Declare Sub charls_get_version_number Lib "charls-2-x86" Alias "_charls_get_version_number@12" (ByRef vMajor As Long, ByRef vMinor As Long, ByRef vPatch As Long)
-'Private Declare Function charls_get_version_string Lib "charls-2-x86" Alias "_charls_get_version_string@0" () As Long
+Private Declare Function charls_get_error_message Lib "charls-2" Alias "_charls_get_error_message@4" (ByVal charLSErrorNumber As CharLS_Return) As Long
+'Private Declare Function charls_get_jpegls_category Lib "charls-2" Alias "_charls_get_jpegls_category@0" () As Long
+Private Declare Sub charls_get_version_number Lib "charls-2" Alias "_charls_get_version_number@12" (ByRef vMajor As Long, ByRef vMinor As Long, ByRef vPatch As Long)
+'Private Declare Function charls_get_version_string Lib "charls-2" Alias "_charls_get_version_string@0" () As Long
 
-Private Declare Function charls_jpegls_decoder_create Lib "charls-2-x86" Alias "_charls_jpegls_decoder_create@0" () As Long
-Private Declare Sub charls_jpegls_decoder_destroy Lib "charls-2-x86" Alias "_charls_jpegls_decoder_destroy@4" (ByVal srcDecoder As Long)
+Private Declare Function charls_jpegls_decoder_create Lib "charls-2" Alias "_charls_jpegls_decoder_create@0" () As Long
+Private Declare Sub charls_jpegls_decoder_destroy Lib "charls-2" Alias "_charls_jpegls_decoder_destroy@4" (ByVal srcDecoder As Long)
 
-Private Declare Function charls_jpegls_decoder_decode_to_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_decode_to_buffer@16" (ByVal srcDecoder As Long, ByVal ptrToDstBytes As Long, ByVal sizeOfDstArray As Long, ByVal dstStride As Long) As CharLS_Return
-'Private Declare Function charls_jpegls_decoder_get_color_transformation Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_color_transformation@8" (ByVal srcDecoder As Long, ByRef dstColorTransform As CharLS_ColorTransformation) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_destination_size Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_destination_size@12" (ByVal srcDecoder As Long, ByVal dstStride As Long, ByRef dstSizeBytes As Long) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_frame_info Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_frame_info@8" (ByVal srcDecoder As Long, ByRef dstFrameInfo As CharLSFrameInfo) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_get_interleave_mode Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_interleave_mode@8" (ByVal srcDecoder As Long, ByRef dstInterleaveMode As CharLS_InterleaveMode) As CharLS_Return
-'Private Declare Function charls_jpegls_decoder_get_near_lossless Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_near_lossless@12" (ByVal srcDecoder As Long, ByVal idxComponent As Long, ByRef dstNearLosslessValue As Long) As CharLS_Return
-'Private Declare Function charls_jpegls_decoder_get_preset_coding_parameters Lib "charls-2-x86" Alias "_charls_jpegls_decoder_get_preset_coding_parameters@12" (ByVal srcDecoder As Long, ByVal intReserved As Long, ByVal dstCodingParameters As CharLSCodingParameters) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_read_header Lib "charls-2-x86" Alias "_charls_jpegls_decoder_read_header@4" (ByVal srcDecoder As Long) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_read_spiff_header Lib "charls-2-x86" Alias "_charls_jpegls_decoder_read_spiff_header@12" (ByVal srcDecoder As Long, ByVal ptrDstSpiffHeader As Long, ByRef dstHeaderFound As Long) As CharLS_Return
-Private Declare Function charls_jpegls_decoder_set_source_buffer Lib "charls-2-x86" Alias "_charls_jpegls_decoder_set_source_buffer@12" (ByVal srcDecoder As Long, ByVal ptrToBytes As Long, ByVal srcNumBytes As Long) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_decode_to_buffer Lib "charls-2" Alias "_charls_jpegls_decoder_decode_to_buffer@16" (ByVal srcDecoder As Long, ByVal ptrToDstBytes As Long, ByVal sizeOfDstArray As Long, ByVal dstStride As Long) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_color_transformation Lib "charls-2" Alias "_charls_jpegls_decoder_get_color_transformation@8" (ByVal srcDecoder As Long, ByRef dstColorTransform As CharLS_ColorTransformation) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_get_destination_size Lib "charls-2" Alias "_charls_jpegls_decoder_get_destination_size@12" (ByVal srcDecoder As Long, ByVal dstStride As Long, ByRef dstSizeBytes As Long) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_get_frame_info Lib "charls-2" Alias "_charls_jpegls_decoder_get_frame_info@8" (ByVal srcDecoder As Long, ByRef dstFrameInfo As CharLSFrameInfo) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_get_interleave_mode Lib "charls-2" Alias "_charls_jpegls_decoder_get_interleave_mode@8" (ByVal srcDecoder As Long, ByRef dstInterleaveMode As CharLS_InterleaveMode) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_near_lossless Lib "charls-2" Alias "_charls_jpegls_decoder_get_near_lossless@12" (ByVal srcDecoder As Long, ByVal idxComponent As Long, ByRef dstNearLosslessValue As Long) As CharLS_Return
+'Private Declare Function charls_jpegls_decoder_get_preset_coding_parameters Lib "charls-2" Alias "_charls_jpegls_decoder_get_preset_coding_parameters@12" (ByVal srcDecoder As Long, ByVal intReserved As Long, ByVal dstCodingParameters As CharLSCodingParameters) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_read_header Lib "charls-2" Alias "_charls_jpegls_decoder_read_header@4" (ByVal srcDecoder As Long) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_read_spiff_header Lib "charls-2" Alias "_charls_jpegls_decoder_read_spiff_header@12" (ByVal srcDecoder As Long, ByVal ptrDstSpiffHeader As Long, ByRef dstHeaderFound As Long) As CharLS_Return
+Private Declare Function charls_jpegls_decoder_set_source_buffer Lib "charls-2" Alias "_charls_jpegls_decoder_set_source_buffer@12" (ByVal srcDecoder As Long, ByVal ptrToBytes As Long, ByVal srcNumBytes As Long) As CharLS_Return
 
 'I have *NOT* added params for these declares, because PD currently only supports .jls reading (by design).
 ' If you need support for .jls writing, please file an issue on GitHub and I will translate these accordingly.
-'Private Declare Function charls_jpegls_encoder_create Lib "charls-2-x86" Alias "_charls_jpegls_encoder_create@0" () As Long
-'Private Declare Function charls_jpegls_encoder_destroy Lib "charls-2-x86" Alias "_charls_jpegls_encoder_destroy@4" () As Long
-'Private Declare Function charls_jpegls_encoder_encode_from_buffer Lib "charls-2-x86" Alias "_charls_jpegls_encoder_encode_from_buffer@16" () As Long
-'Private Declare Function charls_jpegls_encoder_get_bytes_written Lib "charls-2-x86" Alias "_charls_jpegls_encoder_get_bytes_written@8" () As Long
-'Private Declare Function charls_jpegls_encoder_get_estimated_destination_size Lib "charls-2-x86" Alias "_charls_jpegls_encoder_get_estimated_destination_size@8" () As Long
-'Private Declare Function charls_jpegls_encoder_rewind Lib "charls-2-x86" Alias "_charls_jpegls_encoder_rewind@4" () As Long
-'Private Declare Function charls_jpegls_encoder_set_color_transformation Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_color_transformation@8" () As Long
-'Private Declare Function charls_jpegls_encoder_set_destination_buffer2 Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_destination_buffer@12" () As Long
-'Private Declare Function charls_jpegls_encoder_set_frame_info Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_frame_info@8" () As Long
-'Private Declare Function charls_jpegls_encoder_set_interleave_mode Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_interleave_mode@8" () As Long
-'Private Declare Function charls_jpegls_encoder_set_near_lossless Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_near_lossless@8" () As Long
-'Private Declare Function charls_jpegls_encoder_set_preset_coding_parameters Lib "charls-2-x86" Alias "_charls_jpegls_encoder_set_preset_coding_parameters@8" () As Long
-'Private Declare Function charls_jpegls_encoder_write_spiff_entry Lib "charls-2-x86" Alias "_charls_jpegls_encoder_write_spiff_entry@16" () As Long
-'Private Declare Function charls_jpegls_encoder_write_spiff_header Lib "charls-2-x86" Alias "_charls_jpegls_encoder_write_spiff_header@8" () As Long
-'Private Declare Function charls_jpegls_encoder_write_standard_spiff_header Lib "charls-2-x86" Alias "_charls_jpegls_encoder_write_standard_spiff_header@20" () As Long
+'Private Declare Function charls_jpegls_encoder_create Lib "charls-2" Alias "_charls_jpegls_encoder_create@0" () As Long
+'Private Declare Function charls_jpegls_encoder_destroy Lib "charls-2" Alias "_charls_jpegls_encoder_destroy@4" () As Long
+'Private Declare Function charls_jpegls_encoder_encode_from_buffer Lib "charls-2" Alias "_charls_jpegls_encoder_encode_from_buffer@16" () As Long
+'Private Declare Function charls_jpegls_encoder_get_bytes_written Lib "charls-2" Alias "_charls_jpegls_encoder_get_bytes_written@8" () As Long
+'Private Declare Function charls_jpegls_encoder_get_estimated_destination_size Lib "charls-2" Alias "_charls_jpegls_encoder_get_estimated_destination_size@8" () As Long
+'Private Declare Function charls_jpegls_encoder_rewind Lib "charls-2" Alias "_charls_jpegls_encoder_rewind@4" () As Long
+'Private Declare Function charls_jpegls_encoder_set_color_transformation Lib "charls-2" Alias "_charls_jpegls_encoder_set_color_transformation@8" () As Long
+'Private Declare Function charls_jpegls_encoder_set_destination_buffer2 Lib "charls-2" Alias "_charls_jpegls_encoder_set_destination_buffer@12" () As Long
+'Private Declare Function charls_jpegls_encoder_set_frame_info Lib "charls-2" Alias "_charls_jpegls_encoder_set_frame_info@8" () As Long
+'Private Declare Function charls_jpegls_encoder_set_interleave_mode Lib "charls-2" Alias "_charls_jpegls_encoder_set_interleave_mode@8" () As Long
+'Private Declare Function charls_jpegls_encoder_set_near_lossless Lib "charls-2" Alias "_charls_jpegls_encoder_set_near_lossless@8" () As Long
+'Private Declare Function charls_jpegls_encoder_set_preset_coding_parameters Lib "charls-2" Alias "_charls_jpegls_encoder_set_preset_coding_parameters@8" () As Long
+'Private Declare Function charls_jpegls_encoder_write_spiff_entry Lib "charls-2" Alias "_charls_jpegls_encoder_write_spiff_entry@16" () As Long
+'Private Declare Function charls_jpegls_encoder_write_spiff_header Lib "charls-2" Alias "_charls_jpegls_encoder_write_spiff_header@8" () As Long
+'Private Declare Function charls_jpegls_encoder_write_standard_spiff_header Lib "charls-2" Alias "_charls_jpegls_encoder_write_standard_spiff_header@20" () As Long
 
 'Library handle will be non-zero if CharLS is available; you can also forcibly override the
 ' "availability" state by setting m_LibAvailable to FALSE
@@ -244,7 +244,7 @@ End Function
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
 
     Dim strLibPath As String
-    strLibPath = pathToDLLFolder & "charls-2-x86.dll"
+    strLibPath = pathToDLLFolder & "charls-2.dll"
     m_LibHandle = VBHacks.LoadLib(strLibPath)
     m_LibAvailable = (m_LibHandle <> 0)
     InitializeEngine = m_LibAvailable
