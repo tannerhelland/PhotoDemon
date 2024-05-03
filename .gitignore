@@ -115,3 +115,6 @@ App/PhotoDemon/Plugins/libjxl-LICENSE.sjpeg
 App/PhotoDemon/Plugins/libjxl-LICENSE.skcms
 App/PhotoDemon/Plugins/libjxl-LICENSE.zlib
 App/PhotoDemon/Plugins/libjxl-LICENSE.txt
+
+# x86-64 support is experimental
+App/PhotoDemon/Plugins/x64
