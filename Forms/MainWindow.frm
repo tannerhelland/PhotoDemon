@@ -1733,8 +1733,12 @@ Begin VB.Form FormMain
          Caption         =   "Show extras"
          Index           =   8
          Begin VB.Menu MnuShow 
-            Caption         =   "Smart guides"
+            Caption         =   "Layer edges"
             Index           =   0
+         End
+         Begin VB.Menu MnuShow 
+            Caption         =   "Smart guides"
+            Index           =   1
          End
       End
       Begin VB.Menu MnuView 
@@ -3768,6 +3772,8 @@ End Sub
 Private Sub MnuShow_Click(Index As Integer)
     Select Case Index
         Case 0
+            Actions.LaunchAction_ByName "show_layeredges"
+        Case 1
             Actions.LaunchAction_ByName "show_smartguides"
     End Select
 End Sub

@@ -48,7 +48,7 @@ Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
 
 'For performance reasons, some other recurring rendering bits are cached.
-Private m_ShowSmartGuides As Boolean
+Private m_ShowLayerEdges As Boolean, m_ShowSmartGuides As Boolean
 
 'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
 Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Single, ByVal xRight As Single, ByVal colorLeft As Long, ByVal colorRight As Long)
@@ -784,6 +784,14 @@ Public Sub DrawSmartGuides(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImag
     
 End Sub
 
+Public Function Get_ShowLayerEdges() As Boolean
+    Get_ShowLayerEdges = m_ShowLayerEdges
+End Function
+
+Public Sub Set_ShowLayerEdges(ByVal newState As Boolean)
+    m_ShowLayerEdges = newState
+End Sub
+
 Public Function Get_ShowSmartGuides() As Boolean
     Get_ShowSmartGuides = m_ShowSmartGuides
 End Function
@@ -800,6 +808,12 @@ Public Sub ToggleShowOptions(ByVal showTarget As PD_ShowTargets, Optional ByVal 
     ' 1) the tools_move module (which handles actual snap calculations)
     ' 2) the user preferences file (to ensure everything is synchronized between sessions)
     Select Case showTarget
+        Case pdst_LayerEdges
+            If (Not forceInsteadOfToggle) Then newState = Not Drawing.Get_ShowLayerEdges()
+            Drawing.Set_ShowLayerEdges newState
+            UserPrefs.SetPref_Boolean "Interface", "show-layeredges", newState
+            Menus.SetMenuChecked "show_layeredges", newState
+            
         Case pdst_SmartGuides
             If (Not forceInsteadOfToggle) Then newState = Not Drawing.Get_ShowSmartGuides()
             Drawing.Set_ShowSmartGuides newState

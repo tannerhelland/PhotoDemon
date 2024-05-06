@@ -121,7 +121,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   582
          Caption         =   "ignore transparent pixels"
       End
-      Begin PhotoDemon.pdCheckBox chkLayerBorder 
+      Begin PhotoDemon.pdCheckBox chkDistances 
          Height          =   330
          Left            =   240
          TabIndex        =   2
@@ -129,7 +129,7 @@ Begin VB.Form toolpanel_MoveSize
          Width           =   3330
          _ExtentX        =   5874
          _ExtentY        =   582
-         Caption         =   "show layer borders"
+         Caption         =   "show distances"
       End
       Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
@@ -383,7 +383,7 @@ Private Sub btsCopyCut_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, n
     If shiftTabWasPressed Then
         newTargetHwnd = Me.btsSampleMerged.hWnd
     Else
-        newTargetHwnd = chkLayerBorder.hWnd
+        newTargetHwnd = chkDistances.hWnd
     End If
 End Sub
 
@@ -513,16 +513,16 @@ Private Sub chkIgnoreTransparent_SetCustomTabTarget(ByVal shiftTabWasPressed As 
 End Sub
 
 'Show/hide layer borders while using the move tool
-Private Sub chkLayerBorder_Click()
-    Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
+Private Sub chkDistances_Click()
+    Tools_Move.SetDrawDistances chkDistances.Value
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
-Private Sub chkLayerBorder_GotFocusAPI()
+Private Sub chkDistances_GotFocusAPI()
     UpdateFlyout 2, True
 End Sub
 
-Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+Private Sub chkDistances_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = Me.btsCopyCut.hWnd
     Else
@@ -542,7 +542,7 @@ End Sub
 
 Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = chkLayerBorder.hWnd
+        newTargetHwnd = chkDistances.hWnd
     Else
         newTargetHwnd = chkRotateNode.hWnd
     End If
@@ -626,7 +626,7 @@ Private Sub Form_Load()
     btsCopyCut.ListIndex = 1
     
     'Ensure our corresponding tool manager is synchronized with default layer rendering styles
-    Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
+    Tools_Move.SetDrawDistances chkDistances.Value
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
     Tools_Move.SetMoveSelectedPixels_SampleMerged (btsSampleMerged.ListIndex = 0)
@@ -670,7 +670,7 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
         .AddPresetData "move-size-ignore-transparent", chkIgnoreTransparent.Value
         .AddPresetData "move-size-selection-sample-merged", btsSampleMerged.ListIndex
         .AddPresetData "move-size-selection-default-cut", btsCopyCut.ListIndex
-        .AddPresetData "move-size-show-layer-borders", chkLayerBorder.Value
+        .AddPresetData "move-size-show-distances", chkDistances.Value
         .AddPresetData "move-size-show-resize-nodes", chkLayerNodes.Value
         .AddPresetData "move-size-show-rotate-nodes", chkRotateNode.Value
         .AddPresetData "move-size-lock-aspect-ratio", chkAspectRatio.Value
@@ -687,7 +687,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         btsSampleMerged.ListIndex = CLng(.RetrievePresetData("move-size-selection-sample-merged", "1"))
         btsCopyCut.ListIndex = CLng(.RetrievePresetData("move-size-selection-default-cut", "1"))
         
-        chkLayerBorder.Value = .RetrievePresetData("move-size-show-layer-borders", True)
+        chkDistances.Value = .RetrievePresetData("move-size-show-distances", True)
         chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
         chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
         

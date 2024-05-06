@@ -3,8 +3,9 @@ Attribute VB_Name = "Tools_Move"
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2024 by Tanner Helland
 'Created: 24/May/14
-'Last updated: 05/April/24
-'Last update: start wiring up Snap capabilities
+'Last updated: 06/May/24
+'Last update: move rendering layer boundaries to universal "View > Show" menu; start work on new
+'             "show distances" feature for the move tool, specifically.
 '
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
@@ -18,10 +19,10 @@ Attribute VB_Name = "Tools_Move"
 
 Option Explicit
 
-'The move/size tool exposes a number of UI-only options (like drawing borders around active layers).
+'The move/size tool exposes a number of UI-only options (like drawing distances between objects).
 ' To improve viewport performance, we cache those settings locally, and the viewport queries us instead
 ' of directly querying the associated UI elements.
-Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+Private m_DrawDistances As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
 
 'Set to TRUE when LMB mouse is actively down; FALSE when LMB is not
 Private m_LMBDown As Boolean
@@ -31,10 +32,16 @@ Private m_LMBDown As Boolean
 Private m_SelectionDefaultCut As Boolean, m_SelectionSampleMerged As Boolean
 
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal srcIsTextLayer As Boolean = False)
-    If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+    
+    'Layer boundary rendering now exists as a standalone option in the View > Show menu
+    ' (rather than being tied to the move tool, specifically).
+    'If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+    
+    'Tool-specific UI elements
     If (Tools_Move.GetDrawLayerCornerNodes() Or srcIsTextLayer) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (Tools_Move.GetDrawLayerRotateNodes() Or srcIsTextLayer) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (m_LMBDown And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
+    
 End Sub
 
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
@@ -312,8 +319,8 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
 End Sub
 
 'Relay functions for layer move/size node and border rendering
-Public Function GetDrawLayerBorders() As Boolean
-    GetDrawLayerBorders = m_DrawLayerBorders
+Public Function GetDrawDistances() As Boolean
+    GetDrawDistances = m_DrawDistances
 End Function
 
 Public Function GetDrawLayerCornerNodes() As Boolean
@@ -324,8 +331,8 @@ Public Function GetDrawLayerRotateNodes() As Boolean
     GetDrawLayerRotateNodes = m_DrawRotateNodes
 End Function
 
-Public Sub SetDrawLayerBorders(ByVal newState As Boolean)
-    m_DrawLayerBorders = newState
+Public Sub SetDrawDistances(ByVal newState As Boolean)
+    m_DrawDistances = newState
 End Sub
 
 Public Sub SetDrawLayerCornerNodes(ByVal newState As Boolean)

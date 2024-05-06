@@ -741,6 +741,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'View (top-menu level)
         Case PDUI_View
             Menus.SetMenuEnabled "view_top", newState
+            Menus.SetMenuChecked "show_layeredges", Drawing.Get_ShowLayerEdges()
             Menus.SetMenuChecked "show_smartguides", Drawing.Get_ShowSmartGuides()
             Menus.SetMenuChecked "snap_global", Snap.GetSnap_Global()
             Menus.SetMenuChecked "snap_canvasedge", Snap.GetSnap_CanvasEdge()

@@ -591,7 +591,8 @@ Public Sub InitializeMenus()
     AddMenuItem "Show rulers", "view_rulers", 8, 6
     AddMenuItem "Show status bar", "view_statusbar", 8, 7
     AddMenuItem "Show extras", "show_extrastop", 8, 8, allowInSearches:=False
-    AddMenuItem "Smart guides", "show_smartguides", 8, 8, 0
+    AddMenuItem "Layer edges", "show_layeredges", 8, 8, 0
+    AddMenuItem "Smart guides", "show_smartguides", 8, 8, 1
     AddMenuItem "-", "-", 8, 9
     AddMenuItem "Snap", "snap_global", 8, 10
     AddMenuItem "Snap to", "snap_top", 8, 11, allowInSearches:=False

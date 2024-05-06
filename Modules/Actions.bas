@@ -1354,6 +1354,10 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
             FormMain.MnuView(7).Checked = newState
             FormMain.MainCanvas(0).SetStatusBarVisibility newState
         
+        Case "show_layeredges"
+            Drawing.ToggleShowOptions pdst_LayerEdges
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
+            
         Case "show_smartguides"
             Drawing.ToggleShowOptions pdst_SmartGuides
             
@@ -2016,6 +2020,8 @@ Public Sub BuildActionDatabase()
     AddAction "zoom_1_16", vbNullString
     AddAction "view_rulers", vbNullString
     AddAction "view_statusbar", vbNullString
+    AddAction "show_layeredges", vbNullString
+    AddAction "show_smartguides", vbNullString
     AddAction "snap_global", vbNullString
     AddAction "snap_canvasedge", vbNullString
     AddAction "snap_centerline", vbNullString
