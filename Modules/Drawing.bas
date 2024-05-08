@@ -578,9 +578,9 @@ End Sub
 
 'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
 Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
-
-    'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
-    ' mean this is no longer guaranteed.
+    
+    'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0,
+    ' affine transforms mean this is no longer guaranteed.
     '
     'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
     Dim layerCorners() As PointFloat
@@ -622,6 +622,160 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
             PD2D.DrawRectangleF cSurface, m_PenUITop, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
         End If
     Next i
+    
+End Sub
+
+'As of May '24, PD can now render dynamic distances between the current layer and neighboring objects.
+' To do this, it needs to query the canvas for mouse position (to know whether the mouse is actively moving
+' the current layer, or just hovering other objects).
+Public Sub DrawLayerDistances(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
+    
+    'This render is handled in several passes.
+    
+    'First, render the interior dimensions of this layer.  (These are helpful when resizing a layer,
+    ' or for doing quick math to add layer distance plus size.)
+    DrawLayerDistances_Interior dstCanvas, srcImage, srcLayer, curPOI
+    
+    'How and where we draw distances depends on a few different things:
+    ' 1) the active layer's size, position, and rotation
+    ' 2) the current mouse state (button up/down)
+    ' 2a) the current mouse position (over the active layer, over another layer, over the canvas)
+    
+End Sub
+
+Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
+
+    'In the old days, we could get away with assuming layer boundaries form a rectangle,
+    ' but support for affine transforms mean this is no longer guaranteed.
+    '
+    'So instead of assuming a rect, we must retrieve the all layer corners as floating-point pairs.
+    Dim layerCorners() As PointFloat
+    ReDim layerCorners(0 To 3) As PointFloat
+    srcLayer.GetLayerCornerCoordinates layerCorners
+    
+    'Next, convert each corner from image coordinate space to the active viewport coordinate space
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
+    
+    'Now we'll basically run this function twice: once for layer width, then again for height.
+    ' (Note that these steps need to work for normal *and* rotated layers!)
+    
+    'Start with rendering layer width.
+    ' We want to draw a background box behind the text size, and a line behind *that* which runs from
+    ' edge-to-edge on the target layer, at perhaps 20% of the way down the layer.
+    Const FRACTION_OF_LAYER_FOR_LAYOUT As Single = 0.2!
+    
+    'Start by finding the endpoints for the horizontal line where we will define width.
+    Dim pt1 As PointFloat, pt2 As PointFloat, ptMid As PointFloat
+    pt1.x = (layerCorners(0).x + (layerCorners(2).x - layerCorners(0).x) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    pt1.y = (layerCorners(0).y + (layerCorners(2).y - layerCorners(0).y) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    
+    pt2.x = (layerCorners(1).x + (layerCorners(3).x - layerCorners(1).x) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    pt2.y = (layerCorners(1).y + (layerCorners(3).y - layerCorners(1).y) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    
+    'Text uses its own positioning along the line.
+    Const FRACTION_OF_LAYER_FOR_TEXT As Single = 0.5!
+    ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+    ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+    
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
+    cSurface.SetSurfacePixelOffset P2_PO_Half
+    
+    'Determine pen colors
+    Dim cPen As pd2DPen
+    Set cPen = New pd2DPen
+    cPen.SetPenColor RGB(255, 0, 0)
+    cPen.SetPenOpacity 100!
+    cPen.SetPenWidth 1!
+    cPen.SetPenStartCap P2_LC_ArrowAnchor
+    cPen.SetPenEndCap P2_LC_ArrowAnchor
+    
+    'Draw the line
+    PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+    
+    'Next, calculate all strings involved in the dimensions of the active layer.
+    Dim layerSizeX As String
+    layerSizeX = srcLayer.GetLayerWidth(True)
+    
+    'From those strings, determine font size (as rendered on-canvas)
+    Dim cText As pdFont
+    Set cText = Fonts.GetMatchingUIFont(8!, True)
+    
+    Dim sizeTextX As String, sizeTextY As String
+    sizeTextX = cText.GetWidthOfString(layerSizeX)
+    sizeTextY = cText.GetHeightOfString(layerSizeX)
+    
+    'Calculate a background rectangle behind where the text will appear
+    Const PADDING_AROUND_TEXT As Single = 3!
+    Dim textRectL As RectL_WH
+    textRectL.Width = sizeTextX + PADDING_AROUND_TEXT * 2
+    textRectL.Height = sizeTextY + PADDING_AROUND_TEXT * 2
+    textRectL.Left = Int(ptMid.x - textRectL.Width * 0.5 + 0.5)
+    textRectL.Top = Int(ptMid.y - textRectL.Height * 0.5 + 0.5)
+    
+    'Render the rectangle
+    Dim cBrush As pd2DBrush
+    Set cBrush = New pd2DBrush
+    cBrush.SetBrushColor RGB(255, 0, 0)
+    PD2D.FillRectangleI cSurface, cBrush, textRectL.Left, textRectL.Top, textRectL.Width, textRectL.Height
+    
+    Dim origFontColor As Long
+    origFontColor = cText.GetFontColor()
+    
+    'Position the text inside the rectangle
+    Dim textRect_GDI As RECT
+    With textRect_GDI
+        .Left = textRectL.Left
+        .Top = textRectL.Top
+        .Right = textRectL.Left + textRectL.Width
+        .Bottom = textRectL.Top + textRectL.Height
+    End With
+    
+    'Draw the text
+    cText.AttachToDC dstCanvas.hDC
+    cText.SetFontColor RGB(255, 255, 255)
+    cText.DrawCenteredTextToRect layerSizeX, textRect_GDI, True
+    
+    'Now repeat all the above steps, but for layer height!
+    
+    'Calculate line position
+    pt1.x = (layerCorners(0).x + (layerCorners(1).x - layerCorners(0).x) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    pt1.y = (layerCorners(0).y + (layerCorners(1).y - layerCorners(0).y) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    pt2.x = (layerCorners(2).x + (layerCorners(3).x - layerCorners(2).x) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    pt2.y = (layerCorners(2).y + (layerCorners(3).y - layerCorners(2).y) * FRACTION_OF_LAYER_FOR_LAYOUT)
+    ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+    ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+    
+    'Draw the line
+    PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+    
+    'Calculate height text and position accordingly
+    Dim layerSizeY As String
+    layerSizeY = srcLayer.GetLayerHeight(True)
+    sizeTextX = cText.GetWidthOfString(layerSizeY)
+    sizeTextY = cText.GetHeightOfString(layerSizeY)
+    
+    textRectL.Width = sizeTextX + PADDING_AROUND_TEXT * 2
+    textRectL.Height = sizeTextY + PADDING_AROUND_TEXT * 2
+    textRectL.Left = Int(ptMid.x - textRectL.Width * 0.5 + 0.5)
+    textRectL.Top = Int(ptMid.y - textRectL.Height * 0.5 + 0.5)
+    
+    'Draw the backing rect
+    PD2D.FillRectangleI cSurface, cBrush, textRectL.Left, textRectL.Top, textRectL.Width, textRectL.Height
+    
+    'Position and render the text
+    With textRect_GDI
+        .Left = textRectL.Left
+        .Top = textRectL.Top
+        .Right = textRectL.Left + textRectL.Width
+        .Bottom = textRectL.Top + textRectL.Height
+    End With
+    
+    cText.DrawCenteredTextToRect layerSizeY, textRect_GDI, True
+    
+    'Restore original font color, then free the font from the target DC
+    cText.SetFontColor origFontColor
+    cText.ReleaseFromDC
     
 End Sub
 

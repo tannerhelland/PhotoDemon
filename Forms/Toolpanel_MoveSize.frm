@@ -130,6 +130,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   5874
          _ExtentY        =   582
          Caption         =   "show distances"
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
@@ -687,7 +688,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         btsSampleMerged.ListIndex = CLng(.RetrievePresetData("move-size-selection-sample-merged", "1"))
         btsCopyCut.ListIndex = CLng(.RetrievePresetData("move-size-selection-default-cut", "1"))
         
-        chkDistances.Value = .RetrievePresetData("move-size-show-distances", True)
+        chkDistances.Value = .RetrievePresetData("move-size-show-distances", False)
         chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
         chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
         
@@ -698,7 +699,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         okToLoad = True
         
         If Tools.CanvasToolsAllowed(False) Then
-            okToLoad = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier = 1#) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier = 1#)
+            okToLoad = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier() = 1#) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier() = 1#)
         End If
         
         If okToLoad Then

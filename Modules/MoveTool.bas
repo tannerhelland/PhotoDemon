@@ -38,6 +38,7 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, 
     'If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
     
     'Tool-specific UI elements
+    If Tools_Move.GetDrawDistances Then Drawing.DrawLayerDistances dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (Tools_Move.GetDrawLayerCornerNodes() Or srcIsTextLayer) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (Tools_Move.GetDrawLayerRotateNodes() Or srcIsTextLayer) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (m_LMBDown And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
