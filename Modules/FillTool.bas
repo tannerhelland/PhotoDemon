@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Fill"
 'PhotoDemon Bucket Fill Manager
 'Copyright 2017-2024 by Tanner Helland
 'Created: 30/August/17
-'Last updated: 31/December/18
-'Last update: rework rendering code to make live previews feasible in the (near?) future
+'Last updated: 22/May/24
+'Last update: automatically redirect "sample from layer" to "sample from image" when the cursor is off-layer
 '
 'This module interfaces between the bucket fill UI and pdFloodFill backend.  Look in the relevant tool panel
 ' form for more details on how the UI relays relevant fill data here.
@@ -58,6 +58,10 @@ Private m_TempDIBInUse As Boolean
 ' On _MouseUp, we check it before committing fill results.
 Private m_FillCanceled As Boolean
 
+'If the user clicks off-layer but is using "sample from layer", we silently redirect to "sample from image".
+' We need to track this value across both "mouse up" and "mouse down".
+Private m_FillSourceOverrideActive As Boolean
+
 'Before attempting to set flood fill properties, call this sub to ensure the m_FloodFill object exists.
 ' (It returns TRUE if m_FloodFill exists.)
 Private Function EnsureFillerExists() As Boolean
@@ -68,6 +72,12 @@ End Function
 'Similar to other tools, the fill tool is notified of all mouse actions that occur while it is selected.  At present, however,
 ' it only triggers a fill when the mouse is actually clicked.  (No action is taken on move events.)
 Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single, ByVal imgY As Single, ByRef srcCanvas As pdCanvas)
+    
+    'm_FillSampleMerged tracks sampling image vs layer.  We may change this in this function (for example, if the user
+    ' clicks off the active layer, we can't sample from layer - so assume the user wants to sample merged instead)
+    ' so beyond this point, *only use the LOCAL sample merged* tracker
+    Dim useSampleMerged As Boolean
+    useSampleMerged = m_FillSampleMerged
     
     Dim oldMouseState As Boolean
     oldMouseState = m_MouseDown
@@ -89,7 +99,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     ' underlying DIBs to calculate their fill, so we may want to translate the incoming coordinates - which are always in
     ' the *image* coordinate space - to the current layer's coordinate space.)
     Dim fillStartX As Long, fillStartY As Long
-    If m_FillSampleMerged Then
+    If useSampleMerged Then
         fillStartX = Int(imgX)
         fillStartY = Int(imgY)
     Else
@@ -102,10 +112,16 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     'If the mouse button is down, generate a new fill area
     If mouseButtonDown Then
         
+        m_FillSourceOverrideActive = False
+        
         'Before proceeding, validate the click position.  Unlike paintbrush strokes, fill start points must lie on the
         ' underlying image/layer (depending on the current sampling mode).
-        If m_FillSampleMerged Then
+        
+        'Sample from image...
+        If useSampleMerged Then
             m_FillCanceled = Not PDMath.IsPointInRectF(fillStartX, fillStartY, PDImages.GetActiveImage.GetBoundaryRectF)
+        
+        'Sample from layer...
         Else
             
             Dim tmpRectF As RectF
@@ -117,6 +133,30 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             End With
             m_FillCanceled = Not PDMath.IsPointInRectF(fillStartX, fillStartY, tmpRectF)
             
+            'The user clicked outside the active layer.  If this occurs, silently redirect to the (likely) expected behavior,
+            ' which is "sample merged".
+            If m_FillCanceled Then
+                
+                PDDebug.LogAction "Fill layer won't work; attempting fill image instead"
+                
+                'Reset coordinates to *image* coordinate space (not *layer* coordinate space)
+                fillStartX = Int(imgX)
+                fillStartY = Int(imgY)
+                
+                'Attempt an image fill, and if it's valid, proceed as if this is a merged fill
+                m_FillCanceled = Not PDMath.IsPointInRectF(fillStartX, fillStartY, PDImages.GetActiveImage.GetBoundaryRectF)
+                useSampleMerged = (Not m_FillCanceled)
+                If useSampleMerged Then PDDebug.LogAction "Proceeding with merged fill instead..."
+                m_FillSourceOverrideActive = True
+                
+                'We also need to update our param string to reflect the new setting
+                Dim tmpParams As pdSerialize
+                Set tmpParams = New pdSerialize
+                tmpParams.SetParamString curFillParams
+                tmpParams.UpdateParam "fill-source", useSampleMerged
+                
+            End If
+            
         End If
         
         If m_FillCanceled Then Exit Sub
@@ -125,14 +165,14 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         ' being used (so it can be added to the dynamic color history list).
         If (m_FillSource = fts_ColorOpacity) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_FillColor, , True
         
-        'Start by grabbing (or producing) the source DIB required for the fill.  (If the user wants us to
-        ' sample all layers, we need to generate a composite image.)
+        'Start by grabbing (or producing) the source DIB required for the fill.
+        ' (If the user wants us to sample all layers, we need to generate a composite image.)
         
         'fillSrc is just a thin reference to some other DIB; it is never created as a new object
         Dim fillSrc As pdDIB
         
         'Merged sampling requires us to maintain a local copy of the fully composited image stack.
-        If m_FillSampleMerged Then
+        If useSampleMerged Then
             
             Dim fillImageRefreshRequired As Boolean
             fillImageRefreshRequired = (m_FillImage Is Nothing)
@@ -157,7 +197,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             PDImages.GetActiveImage.GetCompositedImage m_FillImage
             
             Set fillSrc = m_FillImage
-        
+            
         'If the user is only filling the current layer, we can skip the compositing step (yay!) but we also need to convert
         ' the incoming (x, y) coordinates into layer-space coordinates.
         Else
@@ -178,8 +218,8 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
         End If
         
-        'Failsafe check for an active m_FloodFill instance (which should always exist here, because create while setting
-        ' all relevant fill properties)
+        'Failsafe check for an active m_FloodFill instance (which should always exist here, because we created it
+        ' while setting relevant fill properties)
         If (m_FloodFill Is Nothing) Then Debug.Print "WARNING!  m_FloodFill doesn't exist!"
         
         'Set the initial flood point
@@ -205,7 +245,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         ' (e.g. the offsets required when "filling" a vector layer) to our path *before* calculating gradient boundaries.
         ' (Remember that vector layers are treated differently - to avoid the need to rasterize them, we instead
         ' apply the fill to a *new* layer that sits above the original one.)
-        If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector And (Not m_FillSampleMerged) Then
+        If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector And (Not useSampleMerged) Then
         
             'Transform the fill outline by the current layer transformation, if any
             Dim cTransform As pd2DTransform
@@ -246,7 +286,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
         End With
         
-        If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
+        If useSampleMerged Or (Not m_TempDIBInUse) Then
             
             'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
             PDImages.GetActiveImage.ResetScratchLayer True
@@ -308,7 +348,14 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             Exit Sub
         End If
         
-        If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
+        'Look for mode overrides
+        If m_FillSourceOverrideActive Then
+            useSampleMerged = True
+        Else
+            useSampleMerged = m_FillSampleMerged
+        End If
+        
+        If useSampleMerged Or (Not m_TempDIBInUse) Then
             Tools_Fill.CommitFillResults False, , curFillParams
         Else
             Tools_Fill.CommitFillResults True, m_FillImage, curFillParams
