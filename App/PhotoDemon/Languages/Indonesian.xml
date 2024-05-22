@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -20,7 +20,7 @@
 
 <phrase>
 <original>Open</original>
-<translation>Membuka</translation>
+<translation>Buka</translation>
 </phrase>
 
 <phrase>
@@ -40,17 +40,17 @@
 
 <phrase>
 <original>Internet import</original>
-<translation>Impor internet</translation>
+<translation>Impor dari internet</translation>
 </phrase>
 
 <phrase>
 <original>Screen capture</original>
-<translation>Tangkapan layar</translation>
+<translation>Tangkap layar</translation>
 </phrase>
 
 <phrase>
 <original>Close</original>
-<translation>Menutup</translation>
+<translation>Tutup</translation>
 </phrase>
 
 <phrase>
@@ -80,17 +80,17 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Ekspor gambar</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Ekspor lapisan</translation>
 </phrase>
 
 <phrase>
 <original>Export animation</original>
-<translation></translation>
+<translation>Ekspor animasi</translation>
 </phrase>
 
 <phrase>
@@ -110,12 +110,12 @@
 
 <phrase>
 <original>Batch wizard</original>
-<translation>Wisaya Jalankan Batch</translation>
+<translation>Wisaya Batch</translation>
 </phrase>
 
 <phrase>
 <original>Print</original>
-<translation>Mencetak</translation>
+<translation>Cetak</translation>
 </phrase>
 
 <phrase>
@@ -125,17 +125,17 @@
 
 <phrase>
 <original>Undo</original>
-<translation>Membuka</translation>
+<translation>Batalkan</translation>
 </phrase>
 
 <phrase>
 <original>Redo</original>
-<translation>Mengulangi</translation>
+<translation>Ulangi</translation>
 </phrase>
 
 <phrase>
 <original>Undo history</original>
-<translation>batalkan riwayat</translation>
+<translation>Batalkan riwayat</translation>
 </phrase>
 
 <phrase>
@@ -175,7 +175,7 @@
 
 <phrase>
 <original>Paste to cursor</original>
-<translation>Totong gabungan</translation>
+<translation>Potong gabungan</translation>
 </phrase>
 
 <phrase>
@@ -205,7 +205,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation>Pengisian sadar konten</translation>
+<translation>Pengisian content-aware</translation>
 </phrase>
 
 <phrase>
@@ -680,7 +680,7 @@
 
 <phrase>
 <original>Black and white</original>
-<translation>hitam dan putih</translation>
+<translation>Hitam dan putih</translation>
 </phrase>
 
 <phrase>
@@ -710,7 +710,7 @@
 
 <phrase>
 <original>Vibrance</original>
-<translation>faktor kilap</translation>
+<translation>Faktor kilap</translation>
 </phrase>
 
 <phrase>
@@ -775,7 +775,7 @@
 
 <phrase>
 <original>Photo filter</original>
-<translation>penyaring foto</translation>
+<translation>Filter foto</translation>
 </phrase>
 
 <phrase>
@@ -805,7 +805,7 @@
 
 <phrase>
 <original>Film negative</original>
-<translation>Negativo de película</translation>
+<translation>Negatif film</translation>
 </phrase>
 
 <phrase>
@@ -825,7 +825,7 @@
 
 <phrase>
 <original>Exposure</original>
-<translation>Exposición</translation>
+<translation>Eksprosur</translation>
 </phrase>
 
 <phrase>
@@ -880,7 +880,7 @@
 
 <phrase>
 <original>Glass tiles</original>
-<translation>mosaik kaca</translation>
+<translation>Kaca Mosaik</translation>
 </phrase>
 
 <phrase>
@@ -910,42 +910,42 @@
 
 <phrase>
 <original>Relief</original>
-<translation>Lega</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Stained glass</original>
-<translation>Jendela</translation>
+<translation>Kaca patri</translation>
 </phrase>
 
 <phrase>
 <original>Box blur</original>
-<translation>Bingkai kabur</translation>
+<translation>Bingkai blur</translation>
 </phrase>
 
 <phrase>
 <original>Gaussian blur</original>
-<translation>Kabur Gaussian</translation>
+<translation>Blur Gaussian</translation>
 </phrase>
 
 <phrase>
 <original>Surface blur</original>
-<translation>Permukaan kabur</translation>
+<translation>Permukaan blur</translation>
 </phrase>
 
 <phrase>
 <original>Motion blur</original>
-<translation>Gerakan kabur</translation>
+<translation>Gerakan blur</translation>
 </phrase>
 
 <phrase>
 <original>Radial blur</original>
-<translation>Kabur secara radial</translation>
+<translation>blur secara radial</translation>
 </phrase>
 
 <phrase>
 <original>Zoom blur</original>
-<translation>Zoomnya kabur</translation>
+<translation>Zoomnya blur</translation>
 </phrase>
 
 <phrase>
@@ -1045,7 +1045,7 @@
 
 <phrase>
 <original>Cross-screen</original>
-<translation>bintang bercahaya</translation>
+<translation>Lintas layar</translation>
 </phrase>
 
 <phrase>
@@ -1196,7 +1196,7 @@
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>topeng tidak tajam</translation>
+<translation>Mask tidak tajam</translation>
 </phrase>
 
 <phrase>
@@ -1241,7 +1241,7 @@
 
 <phrase>
 <original>Vignetting</original>
-<translation>sketsa</translation>
+<translation>Sketsa</translation>
 </phrase>
 
 <phrase>
@@ -1256,7 +1256,7 @@
 
 <phrase>
 <original>Polar conversion</original>
-<translation>konversi kutub</translation>
+<translation>Konversi kutub</translation>
 </phrase>
 
 <phrase>
@@ -1338,14 +1338,14 @@
 
 <phrase>
 <original>[untitled image]</original>
-<translation>[gambar tanpa judul]</translation>
+<translation>[Gambar tanpa judul]</translation>
 </phrase>
 
 <!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>%1 pembangunan kembali penyimpanan otomatis selesai</translation>
+<translation>Rekonstruksi penyimpanan otomatis selesai untuk %1</translation>
 </phrase>
 
 <phrase>
@@ -1362,7 +1362,7 @@
 
 <phrase>
 <original>Closing image</original>
-<translation>Gambar penutup</translation>
+<translation>Menutup gambar</translation>
 </phrase>
 
 <phrase>
@@ -1411,7 +1411,7 @@
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation>di masa depan, lakukan ini tanpa memintaku</translation>
+<translation>Untuk kedepan, lakukan ini tanpa memintaku</translation>
 </phrase>
 
 <phrase>
@@ -1748,12 +1748,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Saving</original>
-<translation>Penghematan</translation>
+<translation>Menyimpan</translation>
 </phrase>
 
 <phrase>
 <original>Save complete.</original>
-<translation>Operasi penyimpanan selesai.</translation>
+<translation>Operasi Menyimpan selesai.</translation>
 </phrase>
 
 <!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -4835,7 +4835,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation>Ubah zoom jendela</translation>
+<translation>Mengubah zoom viewport</translation>
 </phrase>
 
 <phrase>
@@ -5577,17 +5577,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Window</original>
-<translation>jendela</translation>
+<translation>Jendela</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox</original>
-<translation>kotak peralatan</translation>
+<translation>Peralatan</translation>
 </phrase>
 
 <phrase>
 <original>Display toolbox</original>
-<translation>Tampilkan kotak peralatan</translation>
+<translation>Tampilkan Peralatan</translation>
 </phrase>
 
 <phrase>
