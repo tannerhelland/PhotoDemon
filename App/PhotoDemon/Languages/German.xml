@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>9.1.392</langversion>
+<langversion>2024.4 (build 14)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5552,7 +5552,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Layer-Kanten</translation>
 </phrase>
 
 <phrase>
@@ -12573,7 +12573,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>Distanzen zeigen</translation>
 </phrase>
 
 <phrase>
