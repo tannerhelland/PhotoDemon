@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,11 +6,13 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1720</langversion>
+<langversion>8.9.1721</langversion>
 <langstatus>Terselesaikan</langstatus>
 
-<author>Ari Sohandri Putra</author>	
+<author>Ari Sohandri Putra</author>
+
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
+
 <phrase>
 <original>New image</original>
 <translation>Gambar baru</translation>
@@ -62,12 +64,12 @@
 </phrase>
 
 <phrase>
-<original>Simpan salinan</original>
+<original>Save copy</original>
 <translation>Simpan salinan</translation>
 </phrase>
 
 <phrase>
-<original>Simpan sebagai</original>
+<original>Save as</original>
 <translation>Simpan sebagai</translation>
 </phrase>
 
@@ -1331,14 +1333,14 @@
 <translation>Hapus Daftar Gambar Terbaru</translation>
 </phrase>
 
-		
+<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
 <translation>[Gambar tanpa judul]</translation>
 </phrase>
 
-		
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -1350,7 +1352,7 @@
 <translation>Autosave tidak dapat sepenuhnya direkonstruksi.Sebaliknya, rekonstruksi sebagian dicoba.</translation>
 </phrase>
 
-		
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -1367,7 +1369,7 @@
 <translation>Selesai.</translation>
 </phrase>
 
-		
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>ICC profile</original>
@@ -1384,7 +1386,7 @@
 <translation>Profil berhasil diekspor.</translation>
 </phrase>
 
-		
+<!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -1416,9 +1418,9 @@
 <translation>Jatuhkan sebagai gambar atau lapisan</translation>
 </phrase>
 
-		
+<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-		
+<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
@@ -1445,7 +1447,7 @@
 <translation>Gambar ini tidak mengandung metadata.</translation>
 </phrase>
 
-		
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Open an image</original>
@@ -1515,7 +1517,7 @@ Jika masalah tetap ada, silakan laporkan ke pengembang photodemon melalui photod
 <translation>Gambar terlalu besar</translation>
 </phrase>
 
-		
+<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -1557,7 +1559,7 @@ Jika masalah tetap ada, silakan laporkan ke pengembang photodemon melalui photod
 <translation>Warna dan pencahayaan yang meningkatkan otomatis</translation>
 </phrase>
 
-		
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -1574,14 +1576,14 @@ Jika masalah tetap ada, silakan laporkan ke pengembang photodemon melalui photod
 <translation>Menerapkan Blur Grid</translation>
 </phrase>
 
-		
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Carving image relief</original>
 <translation>Mengukir Bantuan Gambar</translation>
 </phrase>
 
-		
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
@@ -1602,7 +1604,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 </phrase>
 
-		
+<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>random</original>
@@ -1669,14 +1671,14 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 <translation>lingkaran</translation>
 </phrase>
 
-		
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Time taken</original>
 <translation>Waktu yang diambil</translation>
 </phrase>
 
-		
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing image</original>
@@ -1738,7 +1740,7 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 <translation>Gambar pemangkasan</translation>
 </phrase>
 
-		
+<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Loading page %1 of %2</original>
@@ -1755,14 +1757,14 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 <translation>Operasi Menyimpan selesai.</translation>
 </phrase>
 
-		
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Stretching histogram</original>
 <translation>Peregangan histogram</translation>
 </phrase>
 
-		
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Enter</original>
@@ -1794,7 +1796,7 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 <translation>Menggeser</translation>
 </phrase>
 
-		
+<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -1802,8 +1804,8 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 </phrase>
 
 <phrase>
-<original>%1 save failed. Please report this error using Help -&gt; Submit Bug Report.</original>
-<translation>%1 hemat gagal.Harap laporkan kesalahan ini menggunakan Bantuan -&gt; Kirim Laporan Bug.</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 hemat gagal.Harap laporkan kesalahan ini menggunakan Bantuan -> Kirim Laporan Bug.</translation>
 </phrase>
 
 <phrase>
@@ -1820,7 +1822,7 @@ Untuk mengaktifkan dukungan untuk format gambar ini, silakan salin file freeImag
 <translation>Simpan tidak dapat diselesaikan tanpa perpustakaan freeImage.</translation>
 </phrase>
 
-		
+<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1832,7 +1834,7 @@ Untuk mengaktifkan dukungan untuk format gambar ini, silakan salin file freeImag
 <translation>Semua data</translation>
 </phrase>
 
-		
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -1844,7 +1846,7 @@ Untuk mengaktifkan dukungan untuk format gambar ini, silakan salin file freeImag
 <translation>Halaman 1</translation>
 </phrase>
 
-		
+<!-- ImageLoader.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -2126,7 +2128,7 @@ Untuk mengaktifkan dukungan untuk format gambar ini, silakan salin file freeImag
 <translation>Pratinjau tidak tersedia</translation>
 </phrase>
 
-		
+<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2243,7 +2245,7 @@ Untuk mengaktifkan dukungan untuk format gambar ini, silakan salin file freeImag
 <translation>Bingkai %1</translation>
 </phrase>
 
-		
+<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -2352,7 +2354,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Duplikasi gambar lengkap.</translation>
 </phrase>
 
-		
+<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2437,7 +2439,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Bermain makro</translation>
 </phrase>
 
-		
+<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -2449,7 +2451,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Hapus Daftar Makro Terbaru</translation>
 </phrase>
 
-		
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2546,14 +2548,14 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Atkinson / Macintosh klasik</translation>
 </phrase>
 
-		
+<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
 <original>Applying plugin</original>
 <translation>Menerapkan plugin</translation>
 </phrase>
 
-		
+<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
@@ -2595,7 +2597,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Unduh dibatalkan</translation>
 </phrase>
 
-		
+<!-- Plugin_AVIF.bas contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2675,7 +2677,7 @@ Untuk mengaktifkan dukungan pemindai, silakan salin file EZTW32.dll (tersedia un
 <translation>Pemindai mengembalikan kode kesalahan yang tidak ditentukan dalam dokumentasi EZTW32.dll (kesalahan #%1).Silakan kunjungi http://www.eztwain.com untuk informasi lebih lanjut.</translation>
 </phrase>
 
-		
+<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
@@ -2687,7 +2689,7 @@ Untuk mengaktifkan dukungan pemindai, silakan salin file EZTW32.dll (tersedia un
 <translation>Menerapkan pemetaan nada</translation>
 </phrase>
 
-		
+<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
@@ -2709,7 +2711,7 @@ Untuk mengaktifkan dukungan pemindai, silakan salin file EZTW32.dll (tersedia un
 <translation>Photodemon tidak akan mengunduh libjxl saat ini.</translation>
 </phrase>
 
-		
+<!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>BSD license</original>
@@ -2741,7 +2743,7 @@ Untuk mengaktifkan dukungan pemindai, silakan salin file EZTW32.dll (tersedia un
 <translation>Lisensi Publik Mozilla 2.0</translation>
 </phrase>
 
-		
+<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2753,15 +2755,15 @@ Untuk mengaktifkan dukungan pemindai, silakan salin file EZTW32.dll (tersedia un
 <translation>Gambar berhasil dikirim ke Windows Photo Printer.</translation>
 </phrase>
 
-		
+<!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown processor request submitted: %1
 
-Please report this bug via the Help -&gt; Submit Bug Report menu.</original>
+Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Permintaan prosesor yang tidak diketahui diajukan: %1
 
-Harap laporkan bug ini melalui Bantuan -&gt; Kirim Menu Laporan Bug.</translation>
+Harap laporkan bug ini melalui Bantuan -> Kirim Menu Laporan Bug.</translation>
 </phrase>
 
 <phrase>
@@ -3091,7 +3093,7 @@ Setelah selesai, klik tombol Kirim Masalah Baru.Terima kasih!</translation>
 <translation>Instruksi Laporan Bug</translation>
 </phrase>
 
-		
+<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3138,24 +3140,24 @@ Setelah selesai, klik tombol Kirim Masalah Baru.Terima kasih!</translation>
 <translation>konvolusi kubik</translation>
 </phrase>
 
-		
+<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
 
-In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help &gt; Submit Bug Report menu.</original>
+In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
 <translation>Terjadi kesalahan saat mencoba menyimpan gambar ini.Plugin FreeImage melaporkan detail kesalahan berikut:
 
 %1
 
-Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi tahu pengembang fotodemon tentang hal ini melalui menu Bantuan&gt; Kirim Bug.</translation>
+Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi tahu pengembang fotodemon tentang hal ini melalui menu Bantuan > Kirim Bug.</translation>
 </phrase>
 
 <phrase>
-<original>Output format not recognized.  Save aborted.  Please use the Help -&gt; Submit Bug Report menu item to report this incident.</original>
-<translation>Format output tidak dikenali.Simpan dibatalkan.Harap gunakan Bantuan -&gt; Kirim Item Menu Laporan Bug untuk melaporkan kejadian ini.</translation>
+<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+<translation>Format output tidak dikenali.Simpan dibatalkan.Harap gunakan Bantuan -> Kirim Item Menu Laporan Bug untuk melaporkan kejadian ini.</translation>
 </phrase>
 
 <phrase>
@@ -3178,7 +3180,7 @@ Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi t
 <translation>Anda dapat melanjutkan, tetapi gambar akan disimpan sebagai gambar statis, bukan yang animasi.</translation>
 </phrase>
 
-		
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3200,7 +3202,7 @@ Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi t
 <translation>Opsi tangkapan layar</translation>
 </phrase>
 
-		
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
@@ -3252,7 +3254,7 @@ Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi t
 <translation>Terjadi kesalahan yang tidak diketahui.Seleksi tidak disimpan.Tolong coba lagi.</translation>
 </phrase>
 
-		
+<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3294,9 +3296,9 @@ Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi t
 <translation>Menemukan perbatasan seleksi</translation>
 </phrase>
 
-		
+<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-		
+<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
@@ -3323,9 +3325,9 @@ Sementara itu, coba simpan gambar ke format alternatif.Anda juga dapat memberi t
 <translation>Klik pada poin pertama untuk menyelesaikan pilihan poligon</translation>
 </phrase>
 
-		
+<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-		
+<!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>%1 is not a valid entry.
@@ -3346,7 +3348,7 @@ Please enter a numeric value.</original>
 Harap masukkan nilai numerik.</translation>
 </phrase>
 
-		
+<!-- TextSupport.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Resize layer (on-canvas)</original>
@@ -3368,7 +3370,7 @@ Harap masukkan nilai numerik.</translation>
 <translation>Pindahkan lapisan</translation>
 </phrase>
 
-		
+<!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
@@ -3380,23 +3382,23 @@ Harap masukkan nilai numerik.</translation>
 <translation>Stempel klon</translation>
 </phrase>
 
-		
+<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Fill tool</original>
 <translation>Isi alat</translation>
 </phrase>
 
-		
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Gradient tool</original>
 <translation>Alat gradien</translation>
 </phrase>
 
-		
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
-		
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
@@ -3423,21 +3425,21 @@ Harap masukkan nilai numerik.</translation>
 <translation>(tidak ada)</translation>
 </phrase>
 
-		
+<!-- MoveTool.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Paint stroke</original>
 <translation>Stroke cat</translation>
 </phrase>
 
-		
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Pencil stroke</original>
 <translation>Stroke pensil</translation>
 </phrase>
 
-		
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>(enter text here)</original>
@@ -3449,7 +3451,7 @@ Harap masukkan nilai numerik.</translation>
 <translation>Lapisan teks baru</translation>
 </phrase>
 
-		
+<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>px</original>
@@ -3516,7 +3518,7 @@ Harap masukkan nilai numerik.</translation>
 <translation>Pizza</translation>
 </phrase>
 
-		
+<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -3529,8 +3531,8 @@ Harap masukkan nilai numerik.</translation>
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -&gt; Options menu)</original>
-<translation>Inisialisasi Perangkat Lunak Pembaruan (fitur ini dapat dinonaktifkan dari menu Alat -&gt; Opsi)</translation>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Inisialisasi Perangkat Lunak Pembaruan (fitur ini dapat dinonaktifkan dari menu Alat -> Opsi)</translation>
 </phrase>
 
 <phrase>
@@ -3578,7 +3580,7 @@ Harap masukkan nilai numerik.</translation>
 <translation>Anda telah menempatkan fotodemon di folder sistem terbatas.Karena Photodemon tidak memiliki akses administrator, ia tidak dapat mengunduh file untuk Anda.Harap pindahkan photodemon ke folder yang tidak dibatasi dan coba lagi.</translation>
 </phrase>
 
-		
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -3630,7 +3632,7 @@ Harap masukkan nilai numerik.</translation>
 <translation>Menghasilkan benih bilangan acak baru.</translation>
 </phrase>
 
-		
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -3696,7 +3698,7 @@ You will need to manually download this file using your Internet browser.</origi
 Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</translation>
 </phrase>
 
-		
+<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3713,16 +3715,16 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Gambar yang sesuai</translation>
 </phrase>
 
-		
+<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Unnamed gradient</original>
 <translation>Gradien yang tidak disebutkan namanya</translation>
 </phrase>
 
-		
+<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-		
+<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
@@ -3759,7 +3761,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Gambar yang diimpor</translation>
 </phrase>
 
-		
+<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -3771,14 +3773,14 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Tampilan yang tidak diketahui</translation>
 </phrase>
 
-		
+<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Please select a folder</original>
 <translation>Pilih folder</translation>
 </phrase>
 
-		
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
@@ -3795,21 +3797,21 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Finalisasi gambar</translation>
 </phrase>
 
-		
+<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Repainting selected regions</original>
 <translation>Melatih kembali daerah yang dipilih</translation>
 </phrase>
 
-		
+<!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>New layer</original>
 <translation>Layer baru</translation>
 </phrase>
 
-		
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Building color lookup</original>
@@ -3826,16 +3828,16 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Pilih file lut</translation>
 </phrase>
 
-		
+<!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-		
+<!-- pdMakeTexture.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Layer %1</original>
 <translation>Lapisan %1</translation>
 </phrase>
 
-		
+<!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
@@ -4127,7 +4129,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Menanamkan metadata</translation>
 </phrase>
 
-		
+<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
@@ -4139,21 +4141,21 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Memuat dibatalkan.</translation>
 </phrase>
 
-		
+<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
 <translation>Palet diekspor oleh Photodemon %1</translation>
 </phrase>
 
-		
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
 <translation>Menganalisis bingkai animasi %1 dari %2</translation>
 </phrase>
 
-		
+<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>%1 (Channel %2)</original>
@@ -4165,16 +4167,16 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Latar belakang</translation>
 </phrase>
 
-		
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-		
+<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Composite image</original>
 <translation>Gambar gabungan</translation>
 </phrase>
 
-		
+<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -4186,7 +4188,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Gambar berhasil dipulihkan.</translation>
 </phrase>
 
-		
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>hexagon</original>
@@ -4213,9 +4215,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>kasar</translation>
 </phrase>
 
-		
+<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-		
+<!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -4277,14 +4279,14 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Pusat gambar di dalam viewport</translation>
 </phrase>
 
-		
+<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
 <translation>keterangan</translation>
 </phrase>
 
-		
+<!-- pdCheckBox.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>compositing color</original>
@@ -4371,7 +4373,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>tidak ada</translation>
 </phrase>
 
-		
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
@@ -4398,7 +4400,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Warna cat layar utama</translation>
 </phrase>
 
-		
+<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -4465,9 +4467,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Kurangi merah</translation>
 </phrase>
 
-		
+<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
-		
+<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>OK</original>
@@ -4509,9 +4511,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Kirim Laporan Bug atau Umpan Balik</translation>
 </phrase>
 
-		
+<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
-		
+<!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>before</original>
@@ -4533,9 +4535,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>bugar</translation>
 </phrase>
 
-		
+<!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
-		
+<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
@@ -4552,9 +4554,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Arahkan thumbnail gambar untuk melihat nama dan lokasi file saat ini.</translation>
 </phrase>
 
-		
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
-		
+<!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Show this layer</original>
@@ -4581,7 +4583,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Mengatur ulang lapisan</translation>
 </phrase>
 
-		
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -4618,7 +4620,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Pengaturan khusus JPEG</translation>
 </phrase>
 
-		
+<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Current frame: %1 of %2</original>
@@ -4630,7 +4632,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>%1 dari %2</translation>
 </phrase>
 
-		
+<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4642,7 +4644,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>asli</translation>
 </phrase>
 
-		
+<!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>RGBA(%1, %2, %3, %4)</original>
@@ -4654,9 +4656,9 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>indeks %1</translation>
 </phrase>
 
-		
+<!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-		
+<!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -4728,7 +4730,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>%1, adalah %2</translation>
 </phrase>
 
-		
+<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
@@ -4795,7 +4797,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 <translation>Gulir ke bawah</translation>
 </phrase>
 
-		
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>%1 = %2</original>
@@ -4814,7 +4816,7 @@ Nilai akhir harus antara %3 dan %4.</translation>
 <translation>Photodemon tidak mengerti ungkapannya: %1</translation>
 </phrase>
 
-		
+<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>size</original>
@@ -4846,7 +4848,7 @@ Nilai akhir harus antara %3 dan %4.</translation>
 <translation>Ubah unit ukuran gambar yang ditampilkan di sebelah kiri kotak ini</translation>
 </phrase>
 
-		
+<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -5549,6 +5551,11 @@ Nilai akhir harus antara %3 dan %4.</translation>
 </phrase>
 
 <phrase>
+<original>Layer edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Smart guides</original>
 <translation>Panduan Cerdas</translation>
 </phrase>
@@ -5776,7 +5783,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Bahasa berhasil berubah.</translation>
 </phrase>
 
-		
+<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5828,7 +5835,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Mengubah gambar menjadi dua warna</translation>
 </phrase>
 
-		
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>model</original>
@@ -5865,7 +5872,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>warisan</translation>
 </phrase>
 
-		
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>red</original>
@@ -5912,7 +5919,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Mencampur saluran warna</translation>
 </phrase>
 
-		
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>color space</original>
@@ -5959,7 +5966,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Mengisolasi saluran %1</translation>
 </phrase>
 
-		
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>new balance</original>
@@ -5971,7 +5978,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan keseimbangan warna</translation>
 </phrase>
 
-		
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>saturation</original>
@@ -5998,7 +6005,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>kebiasaan</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>number of gray shades</original>
@@ -6050,7 +6057,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>maksimum</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Adjust HSL</original>
@@ -6072,7 +6079,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan Nilai Hue, Saturasi, dan Luminance</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>available LUTs</original>
@@ -6109,7 +6116,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Klik untuk membuka folder ini di Windows Explorer</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -6131,7 +6138,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Mengganti warna</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>strength</original>
@@ -6143,7 +6150,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Melibatkan hipsters untuk melakukan konversi sepia</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Color temperature</original>
@@ -6200,7 +6207,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>canggih</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>tint</original>
@@ -6212,7 +6219,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Gambar warna ulang</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>vibrance</original>
@@ -6224,7 +6231,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan getaran warna</translation>
 </phrase>
 
-		
+<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>display</original>
@@ -6296,7 +6303,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>keluaran</translation>
 </phrase>
 
-		
+<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use logarithmic values</original>
@@ -6353,7 +6360,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Memperbarui histogram</translation>
 </phrase>
 
-		
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>radius</original>
@@ -6395,7 +6402,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>lokal</translation>
 </phrase>
 
-		
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>set levels automatically</original>
@@ -6427,7 +6434,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Memetakan Tingkat Gambar Baru</translation>
 </phrase>
 
-		
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>foreground</original>
@@ -6444,7 +6451,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menghapus kabut dari gambar</translation>
 </phrase>
 
-		
+<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>exposure compensation (stops)</original>
@@ -6466,7 +6473,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan paparan gambar</translation>
 </phrase>
 
-		
+<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>keep all colors in sync</original>
@@ -6483,7 +6490,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan nilai gamma</translation>
 </phrase>
 
-		
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>gradient type</original>
@@ -6500,7 +6507,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menerapkan peta gradien</translation>
 </phrase>
 
-		
+<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6518,11 +6525,11 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 </phrase>
 
 <phrase>
-<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -&gt; Sharpen -&gt; Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Seperti semua alat monokrom-ke-abu-abu, alat ini akan menghasilkan gambar buram.  Anda dapat menggunakan efek -&gt; Sharpen -&gt; Unsharp Masking Tool untuk memperbaikinya.  (Untuk hasil terbaik, gunakan jari -jari topeng unsharp setidaknya sebesar jari -jari ini.)</translation>
+<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
+<translation>Seperti semua alat monokrom-ke-abu-abu, alat ini akan menghasilkan gambar buram.  Anda dapat menggunakan efek -> Sharpen -> Unsharp Masking Tool untuk memperbaikinya.  (Untuk hasil terbaik, gunakan jari -jari topeng unsharp setidaknya sebesar jari -jari ini.)</translation>
 </phrase>
 
-		
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>quality</original>
@@ -6534,7 +6541,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menghasilkan peta HDR untuk gambar</translation>
 </phrase>
 
-		
+<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>filter</original>
@@ -6626,7 +6633,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menerapkan filter foto</translation>
 </phrase>
 
-		
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -6653,7 +6660,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Gambar split-toning</translation>
 </phrase>
 
-		
+<!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>shadows</original>
@@ -6680,9 +6687,9 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Menyesuaikan Bayangan, Midtone, dan Sorotan</translation>
 </phrase>
 
-		
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-		
+<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Autosave data detected</original>
@@ -6719,7 +6726,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>PERINGATAN: Data autosave akan dihapus</translation>
 </phrase>
 
-		
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Color panel settings</original>
@@ -6746,7 +6753,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>palet</translation>
 </phrase>
 
-		
+<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Change color</original>
@@ -6758,7 +6765,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>HTML / CSS</translation>
 </phrase>
 
-		
+<!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Saved presets</original>
@@ -6820,7 +6827,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Edit preset yang ada</translation>
 </phrase>
 
-		
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fill settings</original>
@@ -6877,7 +6884,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>persegi panjang</translation>
 </phrase>
 
-		
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6889,7 +6896,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>TIDAK</translation>
 </phrase>
 
-		
+<!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Please wait a moment</original>
@@ -6901,7 +6908,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Harap tunggu</translation>
 </phrase>
 
-		
+<!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Gradient editor</original>
@@ -7009,8 +7016,8 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 </phrase>
 
 <phrase>
-<original>edit this gradient &gt;&gt;</original>
-<translation>Edit gradien ini &gt;&gt;</translation>
+<original>edit this gradient >></original>
+<translation>Edit gradien ini >></translation>
 </phrase>
 
 <phrase>
@@ -7153,7 +7160,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Pilih sebuah node</translation>
 </phrase>
 
-		
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
@@ -7165,7 +7172,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Jangan menampilkan peringatan ini lagi</translation>
 </phrase>
 
-		
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>import settings</original>
@@ -7297,9 +7304,9 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>%1 "x %2"</translation>
 </phrase>
 
-		
+<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
-		
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -7361,9 +7368,9 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>memiringkan</translation>
 </phrase>
 
-		
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
-		
+<!-- Dialog_SVGImport.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7440,7 +7447,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>spektrum penuh</translation>
 </phrase>
 
-		
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -7527,7 +7534,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Kustomisasi antarmuka tambahan tersedia di menu jendela.</translation>
 </phrase>
 
-		
+<!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7562,10 +7569,10 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <phrase>
 <original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
-If you want to save it with a different file name, please select 'Cancel', then use the File -&gt; Save As menu item.</original>
+If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>Catatan: Jika Anda mengklik 'Simpan', Photodemon akan menyimpan gambar ini menggunakan nama file saat ini.
 
-Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal', maka gunakan file -&gt; simpan sebagai item menu.</translation>
+Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal', maka gunakan file -> simpan sebagai item menu.</translation>
 </phrase>
 
 <phrase>
@@ -7603,7 +7610,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Ulangi tindakan ini untuk kedua gambar yang belum disimpan</translation>
 </phrase>
 
-		
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -7660,7 +7667,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Terapkan pembaruan nanti</translation>
 </phrase>
 
-		
+<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>use merged image</original>
@@ -7682,7 +7689,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Bitmap</translation>
 </phrase>
 
-		
+<!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>above</original>
@@ -7749,7 +7756,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>luar dalam</translation>
 </phrase>
 
-		
+<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -7761,7 +7768,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Fade lengkap.</translation>
 </phrase>
 
-		
+<!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>brush</original>
@@ -7793,7 +7800,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gunakan ukuran gabungan (Union)</translation>
 </phrase>
 
-		
+<!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
@@ -7810,7 +7817,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Perluas agar sesuai dengan stroke (jika perlu)</translation>
 </phrase>
 
-		
+<!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>* current image state</original>
@@ -7832,7 +7839,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>bentuk seleksi ditampilkan</translation>
 </phrase>
 
-		
+<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>scan for new plugins</original>
@@ -7914,7 +7921,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Setelah mengunduh satu atau lebih file 8bf, gunakan tombol Pengaturan (di atas) untuk memberi tahu Photodemon di mana menemukannya.Photodemon kemudian akan menambahkannya ke koleksi efek Anda.</translation>
 </phrase>
 
-		
+<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -7956,14 +7963,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Lapisan latar depan</translation>
 </phrase>
 
-		
+<!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>speed modifier</original>
 <translation>pengubah kecepatan</translation>
 </phrase>
 
-		
+<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -7995,7 +8002,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Grafit</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -8037,7 +8044,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>tinggi</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>if pixels lie outside the image</original>
@@ -8064,7 +8071,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Memproyeksikan gambar melalui kaca yang disimulasikan</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -8096,7 +8103,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Meminta bantuan Sam Spade</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>curvature</original>
@@ -8108,7 +8115,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menghasilkan ubin kaca</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>number of mirrors</original>
@@ -8155,7 +8162,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>kecepatan</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_Kaleidoscope.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal strength</original>
@@ -8172,7 +8179,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan teknik seni modern</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>detail</original>
@@ -8184,7 +8191,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mengecat ulang gambar dengan minyak</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>smoothness</original>
@@ -8211,7 +8218,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar membungkus dalam plastik</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>adaptive coloring</original>
@@ -8238,9 +8245,9 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar posterisasi</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-		
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>
@@ -8302,7 +8309,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Chebyshev (papan catur)</translation>
 </phrase>
 
-		
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8324,7 +8331,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan kotak blur ke gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>iterations</original>
@@ -8366,14 +8373,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Difusi Anisotropik (Alvarez-Mazorra)</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_GaussianBlur.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying Kuwahara filter</original>
 <translation>Menerapkan filter Kuwahara</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>blur symmetrically</original>
@@ -8395,7 +8402,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gaussian</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Applying radial blur</original>
@@ -8407,28 +8414,28 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>ketepatan</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
 <translation>Menghasilkan pasangan piksel simetris</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying surface blur</original>
 <translation>Menerapkan permukaan blur</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying zoom blur</original>
 <translation>Menerapkan zoom blur</translation>
 </phrase>
 
-		
+<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>automatically normalize divisor and offset</original>
@@ -8445,14 +8452,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>matriks konvolusi</translation>
 </phrase>
 
-		
+<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Projecting image through simulated lens</original>
 <translation>Memproyeksikan gambar melalui lensa yang disimulasikan</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>correction type</original>
@@ -8499,7 +8506,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mengoreksi distorsi gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -8521,7 +8528,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar yang menggoreng</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -8543,7 +8550,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Memanggil M. C. Escher</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Miscellaneous distorts</original>
@@ -8595,7 +8602,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>lubang cacing</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8612,14 +8619,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar menjepit dan berputar</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Poking image</original>
 <translation>Gambar menyodok</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>height of ripples (amplitude)</original>
@@ -8641,21 +8648,21 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mensimulasikan riak di permukaan gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Squeezing image</original>
 <translation>Gambar peras</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Swirling image round and round</original>
 <translation>Berputar -putar gambar berputar -putar</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>horizontal wavelength</original>
@@ -8682,7 +8689,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar mencelupkan di kolam gelombang virtual</translation>
 </phrase>
 
-		
+<!-- Effects_Distort_Waves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>base color</original>
@@ -8694,7 +8701,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar embossing</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>edge detection technique</original>
@@ -8766,7 +8773,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Roberts Cross</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use black background</original>
@@ -8778,7 +8785,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menelusuri tepi gambar dengan kuas virtual</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>background color and opacity</original>
@@ -8830,7 +8837,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>statis</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8852,7 +8859,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mencari setiap rentang piksel untuk tepi</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>apply contour smoothing</original>
@@ -8864,14 +8871,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menelusuri kontur gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Illuminating image with imaginary blacklight</original>
 <translation>Gambar menerangi dengan lampu hitam imajiner</translation>
 </phrase>
 
-		
+<!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>ambient light</original>
@@ -8883,7 +8890,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menghasilkan peta benjolan</translation>
 </phrase>
 
-		
+<!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>spokes</original>
@@ -8900,7 +8907,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan filter lintas layar</translation>
 </phrase>
 
-		
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>saturation boost</original>
@@ -8912,7 +8919,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar taburan dengan pelangi berkilauan</translation>
 </phrase>
 
-		
+<!-- Effects_LightAndShadow_Rainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>randomize</original>
@@ -8939,21 +8946,21 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menghasilkan balok cahaya</translation>
 </phrase>
 
-		
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Creating artificial atmosphere</original>
 <translation>Menciptakan suasana buatan</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Generating artificial fog</original>
 <translation>Menghasilkan kabut buatan</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color intensity</original>
@@ -8970,21 +8977,21 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar pencahayaan terbakar</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Meledak gunung berapi imajiner</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Lava.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Pouring smoldering metal onto image</original>
 <translation>Menuangkan logam yang membara ke dalam gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>wind</original>
@@ -8996,7 +9003,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Biarkan salju, biarkan salju, biarkan salju turun</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color shift</original>
@@ -9008,7 +9015,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar terendam dalam air buatan</translation>
 </phrase>
 
-		
+<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>appearance</original>
@@ -9030,7 +9037,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>seragam</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>directionality</original>
@@ -9072,7 +9079,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>mulus</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>luminance only</original>
@@ -9084,7 +9091,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Memperbaiki debu dan goresan</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -9096,21 +9103,21 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Melembutkan biji -bijian film</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Menerapkan filter rata -rata harmonik</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying mean shift filter</original>
 <translation>Menerapkan filter shift rata -rata</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>percentile</original>
@@ -9132,7 +9139,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan filter median</translation>
 </phrase>
 
-		
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>cyan angle</original>
@@ -9154,14 +9161,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mencetak gambar ke permukaan setengah btone digital</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Crystallizing image</original>
 <translation>Gambar mengkristal</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_Crystallize.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>number of fragments</original>
@@ -9178,7 +9185,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>manual</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>type</original>
@@ -9225,7 +9232,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Bagus</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_Mezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize block size</original>
@@ -9247,14 +9254,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan mosaik</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Splattering canvas with paint</original>
 <translation>Splattering Canvas dengan cat</translation>
 </phrase>
 
-		
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -9271,7 +9278,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>sederhana</translation>
 </phrase>
 
-		
+<!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>length</original>
@@ -9288,7 +9295,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Rendering serat</translation>
 </phrase>
 
-		
+<!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Truchet tiles</original>
@@ -9300,9 +9307,9 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Rendering ubin truchet</translation>
 </phrase>
 
-		
+<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-		
+<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>amount</original>
@@ -9314,7 +9321,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan topeng unsharp (Langkah %1 dari %2)</translation>
 </phrase>
 
-		
+<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color fade</original>
@@ -9336,7 +9343,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mengirim gambar kembali ke masa lalu</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>wrap edge values</original>
@@ -9348,7 +9355,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Mensimulasikan ledakan gambar besar</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>edge type</original>
@@ -9360,7 +9367,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menghasilkan Garis Besar Gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>use Lab color space</original>
@@ -9447,7 +9454,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>PERINGATAN!File palet tidak valid.</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>glow radius</original>
@@ -9474,14 +9481,14 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>tak kentara</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Solarizing image</original>
 <translation>Gambar solarisasi</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Solarize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>orientation</original>
@@ -9493,7 +9500,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menghasilkan Kembar Gambar</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying vignetting</original>
@@ -9510,7 +9517,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>bundar</translation>
 </phrase>
 
-		
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal offset</original>
@@ -9532,7 +9539,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Menerapkan efek wajan dan zoom (Ken Burns)</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
@@ -9584,7 +9591,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>kiri bawah</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_Perspective.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -9616,7 +9623,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Inversi kutub</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Rotating area</original>
@@ -9624,11 +9631,11 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 </phrase>
 
 <phrase>
-<original>If you want to enlarge the canvas to fit the rotated image, please use the Image -&gt; Rotate menu instead.</original>
-<translation>Jika Anda ingin memperbesar kanvas agar sesuai dengan gambar yang diputar, silakan gunakan gambar -&gt; menu putar sebagai gantinya.</translation>
+<original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
+<translation>Jika Anda ingin memperbesar kanvas agar sesuai dengan gambar yang diputar, silakan gunakan gambar -> menu putar sebagai gantinya.</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal angle</original>
@@ -9645,7 +9652,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Gambar geser</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_Shear.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>area outside sphere</original>
@@ -9662,7 +9669,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>sinar cahaya</translation>
 </phrase>
 
-		
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Batch repair</original>
@@ -9758,7 +9765,7 @@ File yang diperbaiki telah disimpan ke folder tujuan.File yang tidak diperbaiki 
 <translation>Tidak ada file yang ditemukan</translation>
 </phrase>
 
-		
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>Previous</original>
@@ -10090,8 +10097,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -&gt; Macros -&gt; Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Catatan: "Makro" hanyalah daftar tindakan pengeditan foto.Ini dapat mencakup penyesuaian, filter, atau efek apa pun dalam program utama.Anda dapat membuat makro baru dengan menggunakan menu "Tools -&gt; Macro -&gt; Record New Macro" di jendela fotodemon utama.</translation>
+<original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
+<translation>Catatan: "Makro" hanyalah daftar tindakan pengeditan foto.Ini dapat mencakup penyesuaian, filter, atau efek apa pun dalam program utama.Anda dapat membuat makro baru dengan menggunakan menu "Tools -> Macro -> Record New Macro" di jendela fotodemon utama.</translation>
 </phrase>
 
 <phrase>
@@ -10299,7 +10306,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Memperkirakan waktu tersisa</translation>
 </phrase>
 
-		
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -10361,21 +10368,21 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>waktu bingkai untuk lapisan yang tidak ditentukan (dalam MS)</translation>
 </phrase>
 
-		
+<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>effort</original>
 <translation>upaya</translation>
 </phrase>
 
-		
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>tingkat kompresi</translation>
 </phrase>
 
-		
+<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -10392,7 +10399,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>terbaik</translation>
 </phrase>
 
-		
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>layers to export</original>
@@ -10434,7 +10441,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>nama layer</translation>
 </phrase>
 
-		
+<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>description</original>
@@ -10456,7 +10463,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>ekstrim</translation>
 </phrase>
 
-		
+<!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10518,7 +10525,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>File Adobe Swatch Exchange (ASE) dapat menyimpan beberapa palet di dalam satu file.Jika Anda memilih opsi "Tambahkan", Photodemon akan menambahkan palet ini ke file ASE Anda yang ada.Palet apa pun yang sudah ada di dalam file tidak akan dimodifikasi.</translation>
 </phrase>
 
-		
+<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Download image</original>
@@ -10560,7 +10567,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Menunggu masukan pengguna</translation>
 </phrase>
 
-		
+<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -10622,7 +10629,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Pilih yang lain.</translation>
 </phrase>
 
-		
+<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>black</original>
@@ -10639,7 +10646,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>warna khusus</translation>
 </phrase>
 
-		
+<!-- File_New.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>copies</original>
@@ -10686,7 +10693,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>lanskap</translation>
 </phrase>
 
-		
+<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -10713,7 +10720,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Format gambar ini sangat intensif secara komputasi.Pada PC yang lebih tua atau lebih lambat, Anda mungkin ingin menonaktifkan pratinjau langsung.</translation>
 </phrase>
 
-		
+<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -10790,7 +10797,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>1-bpp</translation>
 </phrase>
 
-		
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10812,7 +10819,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>dengan warna</translation>
 </phrase>
 
-		
+<!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>icon purpose</original>
@@ -10874,7 +10881,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Gunakan Pengaturan File Asli</translation>
 </phrase>
 
-		
+<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10911,7 +10918,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Rasio khusus (x: 1)</translation>
 </phrase>
 
-		
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10983,7 +10990,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Hitam dan Putih (8-BPP)</translation>
 </phrase>
 
-		
+<!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>compression effort</original>
@@ -11010,7 +11017,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Lossy</translation>
 </phrase>
 
-		
+<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11042,7 +11049,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Kompresi super, kualitas gambar yang sangat buruk (20)</translation>
 </phrase>
 
-		
+<!-- File_Save_JXR.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>change file extension to match color model</original>
@@ -11069,7 +11076,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-		
+<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -11131,21 +11138,21 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>File PNG mendukung berbagai strategi kompresi (disebut "filter").  Pilihan filter pintar menghasilkan kompresi yang lebih baik.  Gunakan pengaturan otomatis untuk memiliki banyak strategi uji fotodemon, dan secara otomatis memilih yang menghasilkan kompresi terbaik.</translation>
 </phrase>
 
-		
+<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
 <translation>memaksimalkan kompatibilitas</translation>
 </phrase>
 
-		
+<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>target version</original>
 <translation>versi target</translation>
 </phrase>
 
-		
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -11172,7 +11179,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Multipage (satu halaman per lapisan)</translation>
 </phrase>
 
-		
+<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -11209,7 +11216,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>ikon</translation>
 </phrase>
 
-		
+<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>About PhotoDemon</original>
@@ -11281,21 +11288,21 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>(Anda bisa menjadi pelindung juga! Klik di sini untuk mempelajari lebih lanjut.)</translation>
 </phrase>
 
-		
+<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>animation enabled for this image</original>
 <translation>Animasi diaktifkan untuk gambar ini</translation>
 </phrase>
 
-		
+<!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
 <translation>posisi jangkar</translation>
 </phrase>
 
-		
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Compare images</original>
@@ -11372,7 +11379,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Perbandingan gambar</translation>
 </phrase>
 
-		
+<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -11389,7 +11396,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Menerapkan Ubah Ukuran Konten-Sadar</translation>
 </phrase>
 
-		
+<!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
@@ -11397,8 +11404,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>add this to the "Adjustments &gt; Color &gt; Color lookup" tool</original>
-<translation>Tambahkan ini ke alat "Penyesuaian&gt; Warna&gt; Color Lookup"</translation>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+<translation>Tambahkan ini ke alat "Penyesuaian > Warna > Color Lookup"</translation>
 </phrase>
 
 <phrase>
@@ -11406,7 +11413,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>gambar dan lapisan yang dimodifikasi</translation>
 </phrase>
 
-		
+<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>tools</original>
@@ -11564,8 +11571,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>integers &gt;= 0</original>
-<translation>bilangan bulat&gt; = 0</translation>
+<original>integers >= 0</original>
+<translation>bilangan bulat >= 0</translation>
 </phrase>
 
 <phrase>
@@ -11574,8 +11581,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>numbers &gt;= 0</original>
-<translation>angka&gt; = 0</translation>
+<original>numbers >= 0</original>
+<translation>angka >= 0</translation>
 </phrase>
 
 <phrase>
@@ -11628,7 +11635,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Daftar %1, satu entri per baris</translation>
 </phrase>
 
-		
+<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
 <original>preview changes</original>
@@ -11690,7 +11697,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Mengubah Ulang Lapisan</translation>
 </phrase>
 
-		
+<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11727,7 +11734,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Lapisan putar</translation>
 </phrase>
 
-		
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -11744,7 +11751,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Luruskan lengkap.</translation>
 </phrase>
 
-		
+<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>make the new layer the active layer</original>
@@ -11771,7 +11778,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Tumpukan Lapisan Bawah</translation>
 </phrase>
 
-		
+<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>flatten behavior</original>
@@ -11788,7 +11795,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Hapus transparansi</translation>
 </phrase>
 
-		
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>after importing source images</original>
@@ -11855,7 +11862,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>tutup gambar tanpa dorongan</translation>
 </phrase>
 
-		
+<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Make color transparent</original>
@@ -11877,7 +11884,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Menambahkan Saluran Alpha Baru ke Gambar</translation>
 </phrase>
 
-		
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Generate mask from luminance</original>
@@ -11899,23 +11906,23 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>abu -abu transparan</translation>
 </phrase>
 
-		
+<!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Removing transparency</original>
 <translation>Menghapus transparansi</translation>
 </phrase>
 
-		
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Converting alpha channel</original>
 <translation>Konversi Saluran Alpha</translation>
 </phrase>
 
-		
+<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-		
+<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>blend</original>
@@ -11977,21 +11984,21 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Klik: Tambahkan duplikat lapisan ini</translation>
 </phrase>
 
-		
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
 <translation>Opsi Seleksi</translation>
 </phrase>
 
-		
+<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>version %1</original>
 <translation>versi 1</translation>
 </phrase>
 
-		
+<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>search</original>
@@ -12008,9 +12015,9 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>lapisan</translation>
 </phrase>
 
-		
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-		
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12073,8 +12080,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>This option will create a blank image.  Other ways to create new images can be found in the File -&gt; Import menu.</original>
-<translation>Opsi ini akan membuat gambar kosong.Cara lain untuk membuat gambar baru dapat ditemukan di menu file -&gt; impor.</translation>
+<original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
+<translation>Opsi ini akan membuat gambar kosong.Cara lain untuk membuat gambar baru dapat ditemukan di menu file -> impor.</translation>
 </phrase>
 
 <phrase>
@@ -12103,8 +12110,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>Because you have turned off save prompts (via Edit -&gt; Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Karena Anda telah mematikan Simpan Prompts (melalui Edit -&gt; Preferensi), Anda tidak akan menerima prompt untuk menyimpan gambar ini sebelum ditutup.</translation>
+<original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
+<translation>Karena Anda telah mematikan Simpan Prompts (melalui Edit -> Preferensi), Anda tidak akan menerima prompt untuk menyimpan gambar ini sebelum ditutup.</translation>
 </phrase>
 
 <phrase>
@@ -12317,7 +12324,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Paint Bucket Tool</translation>
 </phrase>
 
-		
+<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12374,7 +12381,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Ubin + Balik Keduanya</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -12401,9 +12408,9 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>n/a</translation>
 </phrase>
 
-		
+<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-		
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -12470,7 +12477,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Opsi ini mengontrol bagaimana piksel dianalisis saat menambahkannya ke isi.</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Fill.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>center offset</original>
@@ -12502,7 +12509,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>spiral</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -12544,7 +12551,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Gunakan pengukuran untuk</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>size (w, h)</original>
@@ -12567,8 +12574,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>Tampilkan Batas Lapisan</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12636,11 +12643,11 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Buat transformasi lapisan saat ini (ukuran, sudut, dan geser) permanen.  Tindakan ini tidak pernah diperlukan, tetapi jika rendering viewport lamban, itu dapat meningkatkan kinerja.</translation>
 </phrase>
 
-		
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
-		
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-		
+<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -12763,8 +12770,8 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -&gt; Feathering menu.</original>
-<translation>Slider bulu ini memungkinkan penyesuaian berbulu segera.Untuk alasan kinerja, terbatas pada jari -jari kecil.Untuk jari -jari bulu yang lebih besar, gunakan menu SELECT -&gt; Feathering.</translation>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
+<translation>Slider bulu ini memungkinkan penyesuaian berbulu segera.Untuk alasan kinerja, terbatas pada jari kecil.Untuk jari bulu yang lebih besar, gunakan menu SELECT -> Feathering.</translation>
 </phrase>
 
 <phrase>
@@ -12807,7 +12814,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Opsi ini mengontrol kriteria mana yang digunakan tongkat ajaib untuk membandingkan piksel dengan warna target.</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -12859,7 +12866,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Klik di sini untuk mengonversi lapisan ini ke teks dasar.</translation>
 </phrase>
 
-		
+<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12986,7 +12993,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Klik di sini untuk mengonversi lapisan ini ke teks canggih.</translation>
 </phrase>
 
-		
+<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13316,7 +13323,7 @@ Untuk melanjutkan, silakan unduh salinan Photodemon baru dari photodemon.org.</t
 <translation>(Autosaved pada %1)</translation>
 </phrase>
 
-		
+<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13353,7 +13360,7 @@ Untuk melanjutkan, silakan unduh salinan Photodemon baru dari photodemon.org.</t
 <translation>Makro akhir Anda akan berisi %1 tindakan.</translation>
 </phrase>
 
-		
+<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon Options</original>
@@ -14067,7 +14074,7 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 <translation>Lokasi folder sementara baru ini tidak akan berlaku sampai Anda memulai kembali program.</translation>
 </phrase>
 
-		
+<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14194,7 +14201,7 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 <translation>Jika Anda berinteraksi dengan %1, Photodemon akan menawarkan untuk mengunduh dan mengkonfigurasi perpustakaan ini untuk Anda.</translation>
 </phrase>
 
-		
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14221,7 +14228,7 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 <translation>Rekaman - %1: %2 @ %3 fps</translation>
 </phrase>
 
-		
+<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
@@ -14272,8 +14279,15 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 <original>cursor and clicks</original>
 <translation>Kursor dan klik</translation>
 </phrase>
-		
-		<phrasecount>2702</phrasecount>
 
+<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+
+<!-- Automatic text generation complete. -->
+
+<phrasecount>2703</phrasecount>
+
+<!-- As of this build, PhotoDemon contains 5699 phrases. -->
+<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 11709 total words. -->
 
 </pdData>

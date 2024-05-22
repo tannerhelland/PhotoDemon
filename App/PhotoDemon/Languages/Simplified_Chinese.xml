@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，9.2 build 380）</langname>
-<langversion>9.2 build 380</langversion>
+<langversion>9.2 build 380.1</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -5546,6 +5546,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Layer edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Smart guides</original>
 <translation>智能参考线</translation>
 </phrase>
@@ -5772,7 +5777,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12563,8 +12568,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>显示图层边框</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14273,11 +14278,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5698 phrases. -->
-<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 11708 total words. -->
+<!-- As of this build, PhotoDemon contains 5699 phrases. -->
+<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 11709 total words. -->
 
 <special-translations>
 

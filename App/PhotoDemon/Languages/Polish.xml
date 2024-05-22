@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.27</langversion>
+<langversion>9.0.28</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -5548,6 +5548,11 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
+<original>Layer edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Smart guides</original>
 <translation></translation>
 </phrase>
@@ -5772,7 +5777,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12569,8 +12574,8 @@ Dziękujemy!</translation>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>Pokaż krawędzie warstw</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14277,10 +14282,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5698 phrases. -->
-<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 11708 total words. -->
+<!-- As of this build, PhotoDemon contains 5699 phrases. -->
+<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 11709 total words. -->
 
 </pdData>

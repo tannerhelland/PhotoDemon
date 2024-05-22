@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.620</langversion>
+<langversion>6.7.621</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -5550,6 +5550,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Layer edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Smart guides</original>
 <translation></translation>
 </phrase>
@@ -5777,7 +5782,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 401 phrases. 217 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12574,8 +12579,8 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>montrer les bords du calque</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14293,10 +14298,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5698 phrases. -->
-<!-- 2996 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 11708 total words. -->
+<!-- As of this build, PhotoDemon contains 5699 phrases. -->
+<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 11709 total words. -->
 
 </pdData>
