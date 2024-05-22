@@ -403,6 +403,10 @@ Friend Sub SetFontBold(ByVal newBold As Boolean)
 End Sub
 
 'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
+Friend Function GetFontColor() As Long
+    GetFontColor = m_FontColor
+End Function
+
 Friend Sub SetFontColor(ByVal newFontColor As Long)
     m_FontColor = newFontColor
     If (m_hDC <> 0) Then SetTextColor m_hDC, m_FontColor

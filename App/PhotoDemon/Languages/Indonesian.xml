@@ -108,7 +108,7 @@
 
 <phrase>
 <original>Batch wizard</original>
-<translation>Batch Wizard</translation>
+<translation>Wisaya Batch</translation>
 </phrase>
 
 <phrase>
@@ -122,8 +122,8 @@
 </phrase>
 
 <phrase>
-<original>Batalkan</original>
-<translation>Membatalkan</translation>
+<original>Undo</original>
+<translation>Batalkan</translation>
 </phrase>
 
 <phrase>
@@ -173,7 +173,7 @@
 
 <phrase>
 <original>Paste to cursor</original>
-<translation>Tempel ke kursor</translation>
+<translation>Potong gabungan</translation>
 </phrase>
 
 <phrase>
@@ -203,7 +203,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation>Isi sadar-konten</translation>
+<translation>Pengisian content-aware</translation>
 </phrase>
 
 <phrase>
@@ -708,7 +708,7 @@
 
 <phrase>
 <original>Vibrance</original>
-<translation>Getaran</translation>
+<translation>Faktor kilap</translation>
 </phrase>
 
 <phrase>
@@ -803,7 +803,7 @@
 
 <phrase>
 <original>Film negative</original>
-<translation>Film negatif</translation>
+<translation>Negatif film</translation>
 </phrase>
 
 <phrase>
@@ -823,7 +823,7 @@
 
 <phrase>
 <original>Exposure</original>
-<translation>Paparan</translation>
+<translation>Eksprosur</translation>
 </phrase>
 
 <phrase>
@@ -878,7 +878,7 @@
 
 <phrase>
 <original>Glass tiles</original>
-<translation>Ubin kaca</translation>
+<translation>Kaca Mosaik</translation>
 </phrase>
 
 <phrase>
@@ -908,22 +908,22 @@
 
 <phrase>
 <original>Relief</original>
-<translation>Lega</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Stained glass</original>
-<translation>Kaca berwarna</translation>
+<translation>Kaca patri</translation>
 </phrase>
 
 <phrase>
 <original>Box blur</original>
-<translation>Kotak blur</translation>
+<translation>Bingkai blur</translation>
 </phrase>
 
 <phrase>
 <original>Gaussian blur</original>
-<translation>Gaussian Blur</translation>
+<translation>Blur Gaussian</translation>
 </phrase>
 
 <phrase>
@@ -933,17 +933,17 @@
 
 <phrase>
 <original>Motion blur</original>
-<translation>Gerakan Blur</translation>
+<translation>Gerakan blur</translation>
 </phrase>
 
 <phrase>
 <original>Radial blur</original>
-<translation>Radial Blur</translation>
+<translation>blur secara radial</translation>
 </phrase>
 
 <phrase>
 <original>Zoom blur</original>
-<translation>Zoom Blur</translation>
+<translation>Zoomnya blur</translation>
 </phrase>
 
 <phrase>
@@ -1043,7 +1043,7 @@
 
 <phrase>
 <original>Cross-screen</original>
-<translation>Silang layar</translation>
+<translation>Lintas layar</translation>
 </phrase>
 
 <phrase>
@@ -1193,7 +1193,7 @@
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>Topeng unsharp</translation>
+<translation>Mask tidak tajam</translation>
 </phrase>
 
 <phrase>
@@ -1238,7 +1238,7 @@
 
 <phrase>
 <original>Vignetting</original>
-<translation>Vignetting</translation>
+<translation>Sketsa</translation>
 </phrase>
 
 <phrase>
@@ -1342,7 +1342,7 @@
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>Rekonstruksi AutoSave selesai untuk %1</translation>
+<translation>Rekonstruksi penyimpanan otomatis selesai untuk %1</translation>
 </phrase>
 
 <phrase>
@@ -1359,7 +1359,7 @@
 
 <phrase>
 <original>Closing image</original>
-<translation>Gambar penutupan</translation>
+<translation>Menutup gambar</translation>
 </phrase>
 
 <phrase>
@@ -1408,7 +1408,7 @@
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation>Di masa depan, lakukan ini tanpa bertanya padaku</translation>
+<translation>Untuk kedepan, lakukan ini tanpa memintaku</translation>
 </phrase>
 
 <phrase>
@@ -1747,12 +1747,12 @@ Gambar ini berisi %2 warna unik + nilai opacity (RGBA).</translation>
 
 <phrase>
 <original>Saving</original>
-<translation>Penghematan</translation>
+<translation>Menyimpan</translation>
 </phrase>
 
 <phrase>
 <original>Save complete.</original>
-<translation>Simpan Lengkap.</translation>
+<translation>Operasi Menyimpan selesai.</translation>
 </phrase>
 
 		
@@ -4838,7 +4838,7 @@ Nilai akhir harus antara %3 dan %4.</translation>
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation>Ubah zoom viewport</translation>
+<translation>Mengubah zoom viewport</translation>
 </phrase>
 
 <phrase>
@@ -5585,12 +5585,12 @@ Nilai akhir harus antara %3 dan %4.</translation>
 
 <phrase>
 <original>Toolbox</original>
-<translation>Kotak alat</translation>
+<translation>Peralatan</translation>
 </phrase>
 
 <phrase>
 <original>Display toolbox</original>
-<translation>Tampilan Toolbox</translation>
+<translation>Tampilkan Peralatan</translation>
 </phrase>
 
 <phrase>
@@ -14276,4 +14276,4 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 		<phrasecount>2702</phrasecount>
 
 
-	</pdData>
+</pdData>

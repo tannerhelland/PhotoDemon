@@ -609,6 +609,7 @@ Public Sub LoadUserSettings()
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         m_CanvasColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Interface", "CanvasColor", "#a0a0a0"))
         
+        Drawing.ToggleShowOptions pdst_LayerEdges, True, UserPrefs.GetPref_Boolean("Interface", "show-layeredges", False)
         Drawing.ToggleShowOptions pdst_SmartGuides, True, UserPrefs.GetPref_Boolean("Interface", "show-smartguides", True)
         Snap.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
         Snap.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
