@@ -211,7 +211,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         'If a selection is active, the only valid transform is movement.  Otherwise, the transform may
         ' be moving or resizing or rotating or some combination of these.
         Dim curPOI As PD_PointOfInterest
-        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY, Tools_Move.GetDrawLayerRotateNodes())
         
         'Give preferential treatment to corner and edge nodes; if neither of these are selected,
         ' we then allow the selected area to "take over".

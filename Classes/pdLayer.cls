@@ -2278,7 +2278,7 @@ End Function
 'INPUTS: current mouse coords, already translated into the IMAGE coordinate space (not the canvas coordinate space!)
 '
 'OUTPUT: index of the POI, if any.  If the mouse is not over a POI, -1 is returned.
-Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) As PD_PointOfInterest
+Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long, Optional ByVal checkEdgeCenters As Boolean = True) As PD_PointOfInterest
     
     'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
     ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
@@ -2352,17 +2352,24 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
                     CheckForPointOfInterest = poi_CornerSE
                 ElseIf (closestPoint = 3) Then
                     CheckForPointOfInterest = poi_CornerSW
+                
+                'Detecting hover on rotation nodes can be disabled (the user can toggle this in the Move Tool settings);
+                ' if it's disabled, we want to ignore hits on that point.
                 ElseIf (closestPoint = 4) Then
-                    CheckForPointOfInterest = poi_EdgeE
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeE Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 5) Then
-                    CheckForPointOfInterest = poi_EdgeS
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeS Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 6) Then
-                    CheckForPointOfInterest = poi_EdgeW
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeW Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 7) Then
-                    CheckForPointOfInterest = poi_EdgeN
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeN Else CheckForPointOfInterest = poi_Undefined
                 End If
                 
-                Exit Function
+                If (CheckForPointOfInterest <> poi_Undefined) Then
+                    Exit Function
+                Else
+                    closestPoint = poi_Undefined
+                End If
                 
             End If
             
