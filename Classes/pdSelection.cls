@@ -162,6 +162,8 @@ Private Const ANT_DASH_SIZE As Single = 4!
 Private Const ANT_DASH_SPEED_SLOW As Long = 200     'Frame time for marching ants animation, in ms; 200 = 5 fps (which is plenty)
 Private Const ANT_DASH_SPEED_NORMAL As Long = 67    '15 fps (which is plenty)
 Private Const ANT_DASH_SPEED_FAST As Long = 33      '30 fps (which is overkill)
+Private Const ANT_DASH_SPEED_MIN As Long = 16       '60 fps (potentially nonsense)
+Private Const ANT_DASH_ADAPTIVE_SPEED As Boolean = True     'New experiment: auto-determine ant speed based on render performance
 Private m_AntDashes() As Single, m_AntDashOffset As Single
 
 'When in outline or marching ant rendering mode, the current on-screen outline (e.g. the selection outline *already transformed*
@@ -2574,7 +2576,7 @@ Private Sub CreateSelectionMask()
                         Else
                             m_WandImage.ResetDIB 0
                         End If
-                        
+                        m_WandImage.SetInitialAlphaPremultiplicationState True
                         m_parentPDImage.GetCompositedImage m_WandImage
                     
                     'In layer mode, however, we want to use the wand image *not* to store a copy of the
@@ -2588,6 +2590,7 @@ Private Sub CreateSelectionMask()
                         Else
                             m_WandImage.ResetDIB 0
                         End If
+                        m_WandImage.SetInitialAlphaPremultiplicationState True
                         
                     End If
                     
@@ -4953,6 +4956,11 @@ Private Sub m_AntTimer_Timer()
     'Disallow animations if an external object has forcibly suspended them
     If m_AnimationsAllowed Then
         
+        'If rendering the outline takes too long (entirely possible on old PCs + complex magic wand selections),
+        ' we want to reduce animation frame rate to compensate.
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
         'Advance the current offset
         m_AntDashOffset = m_AntDashOffset + 1!
         If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0!
@@ -4968,10 +4976,45 @@ Private Sub m_AntTimer_Timer()
         End If
         
         If okayToRender Then
+            
             Dim tmpViewportParams As PD_ViewportParams
             tmpViewportParams = Viewport.GetDefaultParamObject()
             tmpViewportParams.curPOI = poi_ReuseLast
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+            
+            'If the rendering took longer than the timer frequency, reduce timer frequency to compensate
+            Dim timeTakenMS As Double
+            timeTakenMS = (VBHacks.GetTimerDifferenceNow(startTime) * 1000#)
+            
+            If ANT_DASH_ADAPTIVE_SPEED Then
+                
+                'Compare the render time to the current timer interval.
+                Dim intervalChange As Long, curInterval As Double
+                curInterval = m_AntTimer.Interval
+                
+                'We are now going to modify the timer in 5% increments (but with a little extra math
+                ' to ensure that at least 1 ms of time is added/removed, as relevant).  Note that
+                ' built-in Windows power management features can prevent these changes from mattering,
+                ' but we'll potentially keep toying with the frame rate until a nice balance of
+                ' responsiveness and fluidity is reached.
+                
+                'If render time exceeds 75% of the timer interval, slow the animation to compensate.
+                If (timeTakenMS > curInterval * 0.75) Then
+                    intervalChange = Int(curInterval * 1.05 - curInterval + 0.5)
+                    If (intervalChange < 1) Then intervalChange = 1
+                
+                'If render time takes less than 25% of the timer interval, increase animation fluidity
+                ElseIf (timeTakenMS < curInterval * 0.25) Then
+                    intervalChange = Int(curInterval - curInterval * 0.95 + 0.5)
+                    If (intervalChange > -1) Then intervalChange = -1
+                    If (curInterval <= ANT_DASH_SPEED_MIN) Then intervalChange = 0
+                End If
+                
+                'If a change was made, assign the new timer interval
+                If (intervalChange <> 0) Then m_AntTimer.Interval = curInterval + intervalChange
+                
+            End If
+            
         Else
             m_AntTimer.StopTimer
         End If
