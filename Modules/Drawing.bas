@@ -3,9 +3,8 @@ Attribute VB_Name = "Drawing"
 'PhotoDemon Drawing Routines
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/3/01
-'Last updated: 05/December/21
-'Last update: new ConvertImageCoordsToScreenCoords() function, to simplify UI interactions between a canvas object
-'             and toolpanel windows (for auto-hiding flyout panels, for example)
+'Last updated: 28/May/24
+'Last update: new "show distances" options for Move tool will render pixel distances onto the primary canvas
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -639,8 +638,7 @@ Public Sub DrawLayerDistances(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdI
     'Next, distance between layer edges and canvas edges.  The complexity of this step varies based on
     ' whether the active layer has affine transforms active.
     If srcLayer.AffineTransformsActive(False) Then
-        
-        Debug.Print "Sorry, affine transforms are not implemented yet!"
+        DrawLayerDistances_EdgeAffine dstCanvas, srcImage, srcLayer, curPOI
         
     'Normal layers (with no active affine transforms except scaling) are much easier for distance rendering!
     Else
@@ -651,6 +649,194 @@ Public Sub DrawLayerDistances(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdI
     ' 1) the active layer's size, position, and rotation
     ' 2) the current mouse state (button up/down)
     ' 2a) the current mouse position (over the active layer, over another layer, over the canvas)
+    
+End Sub
+
+'Draw distances from each layer corner to each canvas edge, with proper handling for off-canvas corners
+' (use only on layers with active affine transforms; otherwise, we want to draw from layer *edge* instead
+'  of layer *corner, and there is a dedicated function for that).
+Private Sub DrawLayerDistances_EdgeAffine(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
+
+    'Retrieve the all layer corners as floating-point pairs.
+    Dim layerCorners() As PointFloat, layerCornersInImageCoords() As PointFloat
+    ReDim layerCorners(0 To 3) As PointFloat
+    ReDim layerCornersInImageCoords(0 To 3) As PointFloat
+    srcLayer.GetLayerCornerCoordinates layerCorners
+    
+    'From the list of layer corner coordinates, we now want to determine the left-most, top-most,
+    ' right-most, and bottom-most points.  We will place these in a new array and work exclusively
+    ' with it from here out.
+    Dim layerCornersInOrder() As PointFloat
+    ReDim layerCornersInOrder(0 To 3) As PointFloat
+    
+    Dim idxMost As Long
+    idxMost = 0
+    
+    Dim i As Long
+    For i = 1 To 3
+        If (layerCorners(i).x < layerCorners(idxMost).x) Then idxMost = i
+    Next i
+    layerCornersInOrder(0) = layerCorners(idxMost)
+    
+    idxMost = 0
+    For i = 1 To 3
+        If (layerCorners(i).y < layerCorners(idxMost).y) Then idxMost = i
+    Next i
+    layerCornersInOrder(1) = layerCorners(idxMost)
+    
+    idxMost = 0
+    For i = 1 To 3
+        If (layerCorners(i).x > layerCorners(idxMost).x) Then idxMost = i
+    Next i
+    layerCornersInOrder(2) = layerCorners(idxMost)
+    
+    idxMost = 0
+    For i = 1 To 3
+        If (layerCorners(i).y > layerCorners(idxMost).y) Then idxMost = i
+    Next i
+    layerCornersInOrder(3) = layerCorners(idxMost)
+    
+    For i = 0 To 3
+        layerCornersInImageCoords(i) = layerCornersInOrder(i)
+    Next i
+    
+    'Next, convert each corner from image coordinate space to the active viewport coordinate space
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCornersInOrder, False
+    
+    'We also need to get the position of the canvas edges in viewport space.
+    Dim canvasCorners() As PointFloat
+    ReDim canvasCorners(0 To 3) As PointFloat
+    With srcImage.GetBoundaryRectF
+        canvasCorners(0).x = .Left
+        canvasCorners(0).y = .Top
+        canvasCorners(1).x = .Left + .Width
+        canvasCorners(1).y = .Top
+        canvasCorners(2).x = .Left
+        canvasCorners(2).y = .Top + .Height
+        canvasCorners(3).x = .Left + .Width
+        canvasCorners(3).y = .Top + .Height
+    End With
+    
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, canvasCorners, False
+    
+    'All renderers will use the same drawing objects.
+    
+    'Surface...
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
+    cSurface.SetSurfacePixelOffset P2_PO_Half
+    
+    'Pen...
+    Dim cPen As pd2DPen
+    Set cPen = New pd2DPen
+    cPen.SetPenColor RGB(255, 0, 0)
+    cPen.SetPenOpacity 100!
+    cPen.SetPenWidth 1!
+    cPen.SetPenStartCap P2_LC_ArrowAnchor
+    cPen.SetPenEndCap P2_LC_ArrowAnchor
+    
+    'Brush...
+    Dim cBrush As pd2DBrush
+    Set cBrush = New pd2DBrush
+    cBrush.SetBrushColor RGB(255, 0, 0)
+    
+    'Text...
+    Dim cText As pdFont
+    Set cText = Fonts.GetMatchingUIFont(8!, True)
+    
+    Dim origFontColor As Long
+    origFontColor = cText.GetFontColor()
+    
+    cText.AttachToDC dstCanvas.hDC
+    cText.SetFontColor RGB(255, 255, 255)
+    
+    'Now we'll basically run this function four times: once per layer edge,
+    ' comparing it to the matching canvas edge (and skipping if it lies *beyond* that canvas edge).
+    
+    '(TODO: show distance to other layers instead of canvas *if* the mouse hovers them.)
+    
+    'Start with the left-most point.
+    
+    'We want to draw a background box behind the text size, and a line behind *that* which runs from
+    ' the left-most point to the nearest canvas edge.
+    
+    'Start by finding the endpoints for the background line on this side.
+    Dim pt1 As PointFloat, pt2 As PointFloat, ptMid As PointFloat
+    pt2.x = layerCornersInOrder(0).x
+    pt2.y = layerCornersInOrder(0).y
+    
+    pt1.x = canvasCorners(0).x
+    pt1.y = pt2.y
+    
+    'Only continue rendering if the canvas edge lies *outside* the layer edge
+    If (pt1.x < pt2.x) Then
+        
+        'Draw the line
+        PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+        
+        'Text is positioned on the midpoint of the line.
+        Const FRACTION_OF_LAYER_FOR_TEXT As Single = 0.5!
+        ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+        ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+        
+        'Next, calculate the relevant distance and convert it to a string
+        Dim curDistanceAsString As String
+        curDistanceAsString = Format$(layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left, "0.0")
+        
+        'Render the text
+        RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
+        
+    '/End "canvas edge lies beyond layer edge"
+    End If
+    
+    'Remaining directions follow.  Comments are trimmed to save space; if you have questions,
+    ' refer to the fully-commented "left line" code above.
+    
+    'Right-most point
+    pt1.x = layerCornersInOrder(2).x
+    pt1.y = layerCornersInOrder(2).y
+    pt2.x = canvasCorners(1).x
+    pt2.y = pt1.y
+    
+    If (pt1.x < pt2.x) Then
+        PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+        ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+        ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+        curDistanceAsString = Format$(srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(2).x, "0.0")
+        RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
+    End If
+    
+    'Top-most point
+    pt1.x = layerCornersInOrder(1).x
+    pt1.y = layerCornersInOrder(1).y
+    pt2.x = pt1.x
+    pt2.y = canvasCorners(0).y
+    
+    If (pt1.y > pt2.y) Then
+        PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+        ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+        ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+        curDistanceAsString = Format$(layerCornersInImageCoords(1).y - srcImage.GetBoundaryRectF.Top, "0.0")
+        RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
+    End If
+    
+    'Bottom-most point
+    pt1.x = layerCornersInOrder(3).x
+    pt1.y = layerCornersInOrder(3).y
+    pt2.x = pt1.x
+    pt2.y = canvasCorners(2).y
+    
+    If (pt1.y < pt2.y) Then
+        PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
+        ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
+        ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
+        curDistanceAsString = Format$(srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(3).y, "0.0")
+        RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
+    End If
+    
+    'Restore original DC font color (fonts are rendered using GDI), then free the font from the target DC
+    cText.SetFontColor origFontColor
+    cText.ReleaseFromDC
     
 End Sub
 
@@ -749,7 +935,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         
         'Next, calculate the relevant distance and convert it to a string
         Dim curDistanceAsString As String
-        curDistanceAsString = CStr(layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left)
+        curDistanceAsString = CStr(Int(layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left + 0.5))
         
         'Render the text
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
@@ -770,7 +956,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(1).x)
+        curDistanceAsString = CStr(Int(srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(1).x + 0.5))
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -784,7 +970,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(layerCornersInImageCoords(0).y - srcImage.GetBoundaryRectF.Top)
+        curDistanceAsString = CStr(Int(layerCornersInImageCoords(0).y - srcImage.GetBoundaryRectF.Top + 0.5))
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -798,7 +984,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(2).y)
+        curDistanceAsString = CStr(Int(srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(2).y + 0.5))
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -908,7 +1094,7 @@ Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcIm
     
     'Next, calculate all strings involved in the dimensions of the active layer.
     Dim layerSizeAsString As String
-    layerSizeAsString = CStr(srcLayer.GetLayerWidth(True))
+    layerSizeAsString = CStr(Int(srcLayer.GetLayerWidth(True) + 0.5))
     
     'Draw the text against a solid-color background box
     RenderTextWithBackgroundBox layerSizeAsString, cText, ptMid, cSurface, cBrush
@@ -927,7 +1113,7 @@ Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcIm
     PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
     
     'Calculate height text, then draw it
-    layerSizeAsString = CStr(srcLayer.GetLayerHeight(True))
+    layerSizeAsString = CStr(Int(srcLayer.GetLayerHeight(True) + 0.5))
     RenderTextWithBackgroundBox layerSizeAsString, cText, ptMid, cSurface, cBrush
     
     'Restore original font color, then free the font from the target DC
@@ -1054,6 +1240,7 @@ Public Sub DrawSmartGuides(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImag
     
     'Drawing smart guides is *optional*
     If (Not m_ShowSmartGuides) Then Exit Sub
+    If (Not Snap.GetSnap_Any()) Then Exit Sub
     
     Dim smartGuideLine() As PointFloat
     ReDim smartGuideLine(0 To 1) As PointFloat
