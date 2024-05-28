@@ -1113,7 +1113,7 @@ Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcIm
     PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
     
     'Calculate height text, then draw it
-    layerSizeAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcLayer.GetLayerHeight(True), PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
+    layerSizeAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcLayer.GetLayerHeight(True), PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
     RenderTextWithBackgroundBox layerSizeAsString, cText, ptMid, cSurface, cBrush
     
     'Restore original font color, then free the font from the target DC

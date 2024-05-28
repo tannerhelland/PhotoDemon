@@ -312,14 +312,7 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     'The position displayed changes based on the current measurement unit (px, in, cm)
     Else
         If PDImages.IsImageActive() Then
-            Select Case m_UnitOfMeasurement
-                Case mu_Pixels
-                    lblCoordinates(0).Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
-                Case mu_Inches, mu_Centimeters
-                    lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
-                Case mu_Millimeters, mu_Points, mu_Picas
-                    lblCoordinates(0).Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
-            End Select
+            lblCoordinates(0).Caption = "(" & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False) & "," & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False) & ")"
         End If
     End If
     
@@ -348,31 +341,22 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
         
+        Const TEXT_BETWEEN_DIMENSIONS As String = " x "
+        
         Dim unitWidth As Double, unitHeight As Double
         Dim sizeString As String
         
-        'Convert pixel measurements to the current unit
-        If (m_UnitOfMeasurement <> mu_Pixels) Then
+        'Convert pixel measurements to the current unit, then convert those to a string.
+        ' (Different measurements support different significant digits in the size readout.)
+        If (m_UnitOfMeasurement = mu_Pixels) Or (m_UnitOfMeasurement = mu_Percent) Then
+            unitWidth = CStr(srcImage.Width)
+            unitHeight = CStr(srcImage.Height)
+            sizeString = Units.GetValueFormattedForUnit_FromPixel(mu_Pixels, unitWidth) & TEXT_BETWEEN_DIMENSIONS & Units.GetValueFormattedForUnit_FromPixel(mu_Pixels, unitHeight)
+        Else
             unitWidth = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
             unitHeight = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
+            sizeString = Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, unitWidth, srcImage.GetDPI(), srcImage.Width) & TEXT_BETWEEN_DIMENSIONS & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, unitHeight, srcImage.GetDPI(), srcImage.Height)
         End If
-        
-        'Different measurements support different significant digits in the size readout
-        Select Case m_UnitOfMeasurement
-            
-            Case mu_Pixels
-                sizeString = srcImage.Width & " x " & srcImage.Height
-                
-            Case mu_Inches
-                sizeString = Format$(unitWidth, "0.0##") & " x " & Format$(unitHeight, "0.0##")
-            
-            Case mu_Centimeters, mu_Millimeters
-                sizeString = Format$(unitWidth, "0.0#") & " x " & Format$(unitHeight, "0.0#")
-                
-            Case mu_Points, mu_Picas
-                sizeString = Format$(unitWidth, "0.0") & " x " & Format$(unitHeight, "0.0")
-            
-        End Select
         
         lblImgSize.Caption = sizeString
         ReflowStatusBar True
@@ -407,12 +391,12 @@ Public Sub PopulateSizeUnits()
     cmbSizeUnit.Clear
     
     Dim i As Long
-    For i = 1 To Units.GetNumOfAvailableUnits()
-        cmbSizeUnit.AddItem Units.GetNameOfUnit(i, True), i - 1
+    For i = 0 To Units.GetNumOfAvailableUnits()
+        cmbSizeUnit.AddItem Units.GetNameOfUnit(i, True), i
     Next i
     
     
-    cmbSizeUnit.ListIndex = 0
+    cmbSizeUnit.ListIndex = 1
     cmbSizeUnit.SetAutomaticRedraws True, True
     
 End Sub
@@ -486,20 +470,9 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
                     Dim cString As pdString
                     Set cString = New pdString
                     
-                    Select Case m_UnitOfMeasurement
-                        Case mu_Pixels
-                            cString.Append Int(selectRect.Width + 0.5)
-                            cString.Append LOWERCASE_X
-                            cString.Append Int(selectRect.Height + 0.5)
-                        Case mu_Inches, mu_Centimeters
-                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI()), "0.0##")
-                            cString.Append LOWERCASE_X
-                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI()), "0.0##")
-                        Case mu_Millimeters, mu_Points, mu_Picas
-                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI()), "0.0#")
-                            cString.Append LOWERCASE_X
-                            cString.Append Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI()), "0.0#")
-                    End Select
+                    cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
+                    cString.Append LOWERCASE_X
+                    cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
                     
                     'Also append the selection's aspect ratio, in the form X : 1
                     If (selectRect.Height <> 0!) Then
@@ -536,10 +509,10 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
 End Sub
 
 Private Sub cmbSizeUnit_Click()
-    m_UnitOfMeasurement = cmbSizeUnit.ListIndex + 1
+    m_UnitOfMeasurement = cmbSizeUnit.ListIndex
     If PDImages.IsImageActive() Then
         Me.DisplayImageSize PDImages.GetActiveImage()
-        FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex + 1
+        FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex
         If (g_CurrentTool = ND_MEASURE) Then Tools_Measure.NotifyUnitChange
         If (g_CurrentTool = NAV_MOVE) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
     End If

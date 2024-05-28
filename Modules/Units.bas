@@ -200,29 +200,36 @@ Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_Measureme
     Select Case curUnit
     
         Case mu_Percent
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.00%")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
         
         Case mu_Pixels
             GetValueFormattedForUnit_FromPixel = CStr(Int(srcPixelValue + 0.5))
         
         Case mu_Inches
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.000")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0##")
         
         Case mu_Centimeters
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.00")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
             
         Case mu_Millimeters
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
             
         Case mu_Points
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.00")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
         
         Case mu_Picas
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.00")
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
         
     End Select
     
-    If appendUnitAsText Then GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & " " & Units.GetNameOfUnit(curUnit, True)
+    If appendUnitAsText Then
+        If (curUnit = mu_Percent) Then
+            Const PERCENT_SIGN As String = "%"
+            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & PERCENT_SIGN
+        Else
+            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & " " & Units.GetNameOfUnit(curUnit, True)
+        End If
+    End If
         
 End Function
 

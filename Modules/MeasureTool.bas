@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Measure"
 'Measure tool interface
 'Copyright 2018-2024 by Tanner Helland
 'Created: 11/July/17
-'Last updated: 13/July/17
-'Last update: wrap up initial build
+'Last updated: 28/May/14
+'Last update: add support for percent as a measurement unit
 '
 'PD's Measure tool is very straightforward.  Additional details can be found in the associated form
 ' (toolpanel_Measure).
@@ -405,8 +405,8 @@ Public Sub Rotate2ndPoint90Degrees()
     
 End Sub
 
-'NOTE: this code is a duplicate of the FormStraighten command string generator.  Any changes here need to
-' also be mirrored there.
+'NOTE: this code is a duplicate of the FormStraighten command string generator.
+' Any changes here also need to be mirrored there.
 Public Sub StraightenImageToMatch()
 
     Dim curAngle As Double
