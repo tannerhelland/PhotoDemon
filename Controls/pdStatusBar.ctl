@@ -541,6 +541,7 @@ Private Sub cmbSizeUnit_Click()
         Me.DisplayImageSize PDImages.GetActiveImage()
         FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex + 1
         If (g_CurrentTool = ND_MEASURE) Then Tools_Measure.NotifyUnitChange
+        If (g_CurrentTool = NAV_MOVE) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
     End If
 End Sub
 

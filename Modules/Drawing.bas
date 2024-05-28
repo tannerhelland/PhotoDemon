@@ -781,7 +781,7 @@ Private Sub DrawLayerDistances_EdgeAffine(ByRef dstCanvas As pdCanvas, ByRef src
         
         'Next, calculate the relevant distance and convert it to a string
         Dim curDistanceAsString As String
-        curDistanceAsString = Format$(layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left, "0.0")
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
         
         'Render the text
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
@@ -802,7 +802,7 @@ Private Sub DrawLayerDistances_EdgeAffine(ByRef dstCanvas As pdCanvas, ByRef src
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = Format$(srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(2).x, "0.0")
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(2).x, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -816,7 +816,7 @@ Private Sub DrawLayerDistances_EdgeAffine(ByRef dstCanvas As pdCanvas, ByRef src
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = Format$(layerCornersInImageCoords(1).y - srcImage.GetBoundaryRectF.Top, "0.0")
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), layerCornersInImageCoords(1).y - srcImage.GetBoundaryRectF.Top, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -830,7 +830,7 @@ Private Sub DrawLayerDistances_EdgeAffine(ByRef dstCanvas As pdCanvas, ByRef src
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = Format$(srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(3).y, "0.0")
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(3).y, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -935,7 +935,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         
         'Next, calculate the relevant distance and convert it to a string
         Dim curDistanceAsString As String
-        curDistanceAsString = CStr(Int(layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left + 0.5))
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), layerCornersInImageCoords(0).x - srcImage.GetBoundaryRectF.Left, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
         
         'Render the text
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
@@ -956,7 +956,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(Int(srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(1).x + 0.5))
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcImage.GetBoundaryRectF.Left + srcImage.GetBoundaryRectF.Width - layerCornersInImageCoords(1).x, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -970,7 +970,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(Int(layerCornersInImageCoords(0).y - srcImage.GetBoundaryRectF.Top + 0.5))
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), layerCornersInImageCoords(0).y - srcImage.GetBoundaryRectF.Top, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -984,7 +984,7 @@ Private Sub DrawLayerDistances_EdgeNoAffine(ByRef dstCanvas As pdCanvas, ByRef s
         PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
         ptMid.x = (pt1.x + pt2.x) * FRACTION_OF_LAYER_FOR_TEXT
         ptMid.y = (pt1.y + pt2.y) * FRACTION_OF_LAYER_FOR_TEXT
-        curDistanceAsString = CStr(Int(srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(2).y + 0.5))
+        curDistanceAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcImage.GetBoundaryRectF.Top + srcImage.GetBoundaryRectF.Height - layerCornersInImageCoords(2).y, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
         RenderTextWithBackgroundBox curDistanceAsString, cText, ptMid, cSurface, cBrush
     End If
     
@@ -1094,7 +1094,7 @@ Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcIm
     
     'Next, calculate all strings involved in the dimensions of the active layer.
     Dim layerSizeAsString As String
-    layerSizeAsString = CStr(Int(srcLayer.GetLayerWidth(True) + 0.5))
+    layerSizeAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcLayer.GetLayerWidth(True), PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
     
     'Draw the text against a solid-color background box
     RenderTextWithBackgroundBox layerSizeAsString, cText, ptMid, cSurface, cBrush
@@ -1113,7 +1113,7 @@ Private Sub DrawLayerDistances_Interior(ByRef dstCanvas As pdCanvas, ByRef srcIm
     PD2D.DrawLineF_FromPtF cSurface, cPen, pt1, pt2
     
     'Calculate height text, then draw it
-    layerSizeAsString = CStr(Int(srcLayer.GetLayerHeight(True) + 0.5))
+    layerSizeAsString = Units.GetValueFormattedForUnit_FromPixel(FormMain.MainCanvas(0).GetRulerUnit(), srcLayer.GetLayerHeight(True), PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
     RenderTextWithBackgroundBox layerSizeAsString, cText, ptMid, cSurface, cBrush
     
     'Restore original font color, then free the font from the target DC
