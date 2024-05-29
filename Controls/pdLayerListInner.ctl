@@ -1166,8 +1166,9 @@ Private Function UpdateControlLayout() As Boolean
             
 End Function
 
-'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
-' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
+'Use this function to completely redraw the back buffer from scratch.
+' Note that this is computationally expensive compared to just flipping the existing buffer to the screen,
+' so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     Dim enabledState As Boolean
@@ -1220,6 +1221,13 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
         
         'If we are not in "zero layers" mode, proceed with drawing the various list items
         If (Not zeroLayers) Then
+            
+            'Ensure we have the same number of thumbnails as the active image.
+            ' (This won't trigger unless image state has somehow changed without us being notified.)
+            If (m_NumOfThumbnails <> PDImages.GetActiveImage.GetNumOfLayers) Then
+                PDDebug.LogAction "A UI change was initiated before proper notification - double check recent changes!"
+                CacheLayerThumbnails
+            End If
             
             'Cache colors in advance, so we can simply reuse them in the inner loop
             Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
