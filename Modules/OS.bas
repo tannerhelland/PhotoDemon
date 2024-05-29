@@ -1124,7 +1124,7 @@ End Function
 'Generate a unique temp file name.  (I use arbitrary GUIDs to generate these, instead of the old GetTempFileName()
 ' kernel function - this is because that API has some annoying caveats, per https://msdn.microsoft.com/en-us/library/windows/desktop/aa364991(v=vs.85).aspx)
 '
-'Returns: valid filename (with prepended path and trailing ".tmp") if successful; null-string if unsuccessful
+'Returns: valid filename (with prepended temp path and trailing ".tmp") if successful; null-string if unsuccessful
 Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_", Optional ByRef customExtension As String = "tmp") As String
     
     Dim tmpFolder As String

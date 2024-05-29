@@ -51,6 +51,7 @@ Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
 Public Enum PD_ClipboardFormats
     pdcf_All = 0
     pdcf_InternalPD = CF_PD_DIB
+    pdcf_InternalLayer = CF_PD_LAYER
     pdcf_Bitmap = CF_BITMAP
     pdcf_Dib = CF_DIB
     pdcf_DibV5 = CF_DIBV5
@@ -58,7 +59,7 @@ Public Enum PD_ClipboardFormats
 End Enum
 
 #If False Then
-    Private Const pdcf_All = 0, pdcf_InternalPD = CF_PD_DIB, pdcf_Bitmap = CF_BITMAP, pdcf_Dib = CF_DIB, pdcf_DibV5 = CF_DIBV5, pdcf_PNG = -1
+    Private Const pdcf_All = 0, pdcf_InternalPD = CF_PD_DIB, pdcf_InternalLayer = CF_PD_LAYER, pdcf_Bitmap = CF_BITMAP, pdcf_Dib = CF_DIB, pdcf_DibV5 = CF_DIBV5, pdcf_PNG = -1
 #End If
 
 'Some format constants are not inherently defined by VB; we cache these at load-time
@@ -159,8 +160,12 @@ Private m_ClipboardInfo As PD_Clipboard_Info
 'Lots of clipboard actions require a temporary DIB
 Private m_ClipboardDIB As pdDIB
 
-'When stashing clipboard data, we use a temp file.
-Private m_StashFile As String
+'Stashing layer data will generate a layer header and vector stash as well
+Private m_StashedLayer As String, m_StashedVector As String
+
+'When stashing clipboard data, we use a temp file.  Note that certain internal types of copy+paste (e.g. copy+pasting
+' a vector layer) may store multiple types of stash data.
+Private m_StashFile As String, m_StashFileLayer As String, m_StashFileVector As String
 
 'Clipboard interaction object; importantly, if delayed rendering is active, this class *will* raise events that must be handled.
 Private WithEvents m_Clipboard As pdClipboard
@@ -327,7 +332,14 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
         'By default, we offer all supported formats
         If (cFormat = pdcf_All) Then
         
+            'Internal pixel data is always available
             m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
+            
+            'If the copy is of a whole layer (not a selection or merged image), we'll also save out a full
+            ' layer header and any relevant vector data so that we can re-create the whole layer as-is.
+            If (Not copyMerged) And (Not PDImages.GetActiveImage.IsSelectionActive) Then m_Clipboard.SetClipboardData_DelayedRendering CF_PD_LAYER
+            
+            'Bitmap formats are for other apps
             m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
             m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
             m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
@@ -363,6 +375,8 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
             m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
         ElseIf (cFormat = pdcf_InternalPD) Then
             m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
+        ElseIf (cFormat = pdcf_InternalLayer) Then
+            m_Clipboard.SetClipboardData_DelayedRendering CF_PD_LAYER
         ElseIf (cFormat = pdcf_PNG) Then
             m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
         Else
@@ -430,7 +444,7 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
         PDDebug.LogAction "Clipboard reports the following formats: " & m_Clipboard.GetListOfAvailableFormatNames()
         
         'If PD was used to Cut or Copy something onto the clipboard, our own private format(s) will be listed first.
-        If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) And PD_CB_ALLOW_INTERNAL_FORMAT_PASTE Then
+        If (m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) Or m_Clipboard.DoesClipboardHaveFormatID(CF_PD_LAYER)) And PD_CB_ALLOW_INTERNAL_FORMAT_PASTE Then
             pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
@@ -574,9 +588,10 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
     
 End Function
 
-'If the clipboard contains internal PD-format data (most commonly a bare DIB), you can call this function to initiate a "paste" command
-' using the internal data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
-' or as a new layer in an existing image.
+'If the clipboard contains internal PD-format data (most commonly a bare DIB, but also potentially a
+' layer header and/or layer vector contents), you can call this function to initiate a "paste" command
+' using the internal data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard
+' data is loaded as a new image, or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
 Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
@@ -600,8 +615,92 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                 ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFile, pasteToThisDIBInstead, False, False)
             Else
                 If srcIsMeantAsLayer Then
-                    m_LayerCounter = m_LayerCounter + 1
-                    ClipboardPaste_InternalData = Layers.LoadImageAsNewLayer(False, m_StashFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
+                    
+                    'If a layer header was saved out to file, try to use it as the paste source
+                    ' (instead of creating a generic new layer object - this will result in a copy+paste operation
+                    ' that preserves attributes like layer blend mode, position, rotation, text/vector contents, etc)
+                    Dim useStashedLayerHeader As Boolean
+                    useStashedLayerHeader = (LenB(m_StashFileLayer) <> 0)
+                    If useStashedLayerHeader Then useStashedLayerHeader = Files.FileExists(m_StashFileLayer)
+                    If useStashedLayerHeader Then useStashedLayerHeader = Files.FileLoadAsString(m_StashFileLayer, m_StashedLayer)
+                    
+                    'Only attempt to use a stashed layer header if all previous validation steps were successful.
+                    If useStashedLayerHeader Then
+                        
+                        PDDebug.LogAction "Pasting internal layer source..."
+                        
+                        'Ask the parent pdImage to create a blank, new layer object
+                        Dim newLayerID As Long
+                        newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+                        
+                        'See if we stashed raster or vector data.  (This affects how we initialize the layer's contents -
+                        ' from pixel buffer or manually, by reading text-based vector data and generating objects accordingly.)
+                        Dim useVectorData As Boolean
+                        useVectorData = False
+                        
+                        Dim cSerialize As pdSerialize
+                        Set cSerialize = New pdSerialize
+                        cSerialize.SetParamString m_StashedLayer
+                        
+                        Dim srcLayerType As PD_LayerType
+                        srcLayerType = Layers.GetLayerTypeIDFromString(cSerialize.GetString("type", Layers.GetLayerTypeStringFromID(PDL_Image), True))
+                        
+                        If (srcLayerType <> PDL_Image) Then
+                            useVectorData = Files.FileExists(m_StashFileVector)
+                            If useVectorData Then useVectorData = Files.FileLoadAsString(m_StashFileVector, m_StashedVector)
+                        End If
+                        
+                        'useVectorData will now be TRUE iff the copied layer was a text/vector layer,
+                        ' *and* we stashed vector data successfully.
+                        
+                        'Create the new layer using the appropriate layer type
+                        PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer srcLayerType
+                        
+                        'Initialize the layer using the cached layer header.  (This preserves all editable layer attributes.)
+                        PDImages.GetActiveImage.GetLayerByID(newLayerID).CreateNewLayerFromXML m_StashedLayer, newLayerID, True
+                        
+                        'If this is a vector layer, initialize it from text-based vector data
+                        If useVectorData Then useVectorData = PDImages.GetActiveImage.GetLayerByID(newLayerID).SetVectorDataFromXML(m_StashedVector)
+                        
+                        'If the vector creation was successful, no further work is required.
+                        ' (If vector creation was *not* successful - which is unexpected and shouldn't happen -
+                        '  fall back to the cached raster data instead.)
+                        If useVectorData Then
+                            PDDebug.LogAction "Pasting used vector data."
+                            ClipboardPaste_InternalData = True
+                        Else
+                            
+                            PDDebug.LogAction "Paste will use raster data..."
+                            
+                            'Load the stashed pixel data into a standalone DIB
+                            Dim tmpDIB As pdDIB
+                            Set tmpDIB = New pdDIB
+                            ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFile, tmpDIB, False, False)
+                            If ClipboardPaste_InternalData Then
+                                
+                                'Forcibly convert the new layer to 32bpp
+                                ' (failsafe only; it should already be in 32-bpp mode from the loader)
+                                If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
+                                
+                                'Replace the new layer's backing surface with the temporary DIB
+                                PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerDIB tmpDIB
+                                
+                            Else
+                                PDDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed to load the stash file.  Paste abandoned."
+                            End If
+                            
+                        End If
+                        
+                        'Notify the parent image of these changes, as it needs to generate a new composite image
+                        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+                        
+                    'If a layer header *wasn't* cached, we are probably copying from a non-layer source (like a selection).
+                    ' Simply load the cached raster data as a new, standalone layer.
+                    Else
+                        m_LayerCounter = m_LayerCounter + 1
+                        ClipboardPaste_InternalData = Layers.LoadImageAsNewLayer(False, m_StashFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False)
+                    End If
+                    
                 Else
                     ClipboardPaste_InternalData = Loading.LoadFileAsNewImage(m_StashFile, sTitle, False)
                 End If
@@ -1634,13 +1733,14 @@ DragDropTextFailed:
     
 End Function
 
-'When a Copy or Paste event is initiated, PD doesn't actually copy anything to the clipboard.  Instead, it "stashes" a copy of the
-' generic, core image data that would be translated to some clipboard format (e.g. a layer or standalone DIB or something).  When some
-' other program (or PD itself) requests that data via Paste, we then retrieve the "stashed" data and render it into the requested
-' format.  This provides as ton of benefits, including better Copy performance (as we only render data in a singular format if/when it's
-' actually needed), reduced memory (we don't flood the clipboard with a given format until it's actually required), and cleaner code.
+'When a Copy or Paste event is initiated, PD doesn't actually copy anything to the clipboard.
+' Instead, it "stashes" a copy of the generic, core image data that would be translated to some clipboard format
+' (e.g. a layer or standalone DIB or something).  When some other program (or PD itself) requests that data via Paste,
+' we then retrieve the "stashed" data and render it into the requested format.  This provides as ton of benefits,
+' including better Copy performance (as we only render data in a singular format if/when it's actually needed),
+' reduced memory (we don't flood the clipboard with a given format until it's actually required), and cleaner code.
 '
-'FYI: stashed data uses premultiplied alpha, by design.
+'FYI: stashed pixel data uses premultiplied alpha, by design.
 Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     
     'The specific data we stash varies according to a few different parameters.
@@ -1671,11 +1771,13 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         
     End If
     
-    'If we already have a stash file, remove it
+    'Remove any previously stashed file(s).  (This can happen if the user copies, but doesn't paste.)
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
+    If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
     
-    'Grab a new temporary path name (TODO: use system-generated temp file names)
-    If (LenB(m_StashFile) = 0) Then m_StashFile = UserPrefs.GetTempPath() & "cbStash.tmpdib"
+    'Grab a new temporary filename for pixel data
+    If (LenB(m_StashFile) = 0) Then m_StashFile = OS.UniqueTempFilename(customExtension:="tmpdib")
     
     PDDebug.LogAction "Writing clipboard stash now..."
     If (Not m_ClipboardDIB Is Nothing) Then
@@ -1686,6 +1788,28 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         'Erase the temporary DIB
         m_ClipboardDIB.EraseDIB
         
+        'Erase any stored layer and vector data
+        m_StashedLayer = vbNullString
+        m_StashedVector = vbNullString
+        
+        'If the cut/copy action is an entire source layer, also cache the layer header (and vector data if relevant).
+        If (Not PDImages.GetActiveImage.IsSelectionActive) And (Not copyMerged) Then
+            'Private m_StashedLayer As String, m_StashedVector As String
+            
+            If (LenB(m_StashFileLayer) = 0) Then m_StashFileLayer = OS.UniqueTempFilename(customExtension:="txt")
+            Files.FileSaveAsText PDImages.GetActiveImage.GetActiveLayer.GetLayerHeaderAsXML(), m_StashFileLayer
+            
+            If PDImages.GetActiveImage.GetActiveLayer.IsLayerVector() Then
+                If (LenB(m_StashFileVector) = 0) Then m_StashFileVector = OS.UniqueTempFilename(customExtension:="txt")
+                Files.FileSaveAsText PDImages.GetActiveImage.GetActiveLayer.GetVectorDataAsXML(), m_StashFileVector
+            End If
+        
+        'If we're *not* saving layer data, blank out those filenames so we know not to use them later
+        Else
+            m_StashFileLayer = vbNullString
+            m_StashFileVector = vbNullString
+        End If
+        
         PDDebug.LogAction "Clipboard stashed successfully."
         
     Else
@@ -1694,7 +1818,10 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     
 End Sub
 
-'Retrieve previously stashed data.  If this function returns TRUE, the stashed data has been successfully loaded into m_ClipboardDIB.
+'Retrieve previously stashed data.  If this function returns TRUE:
+' 1) stashed pixel data has been successfully loaded into m_ClipboardDIB (always guaranteed)
+' 2) optionally, stashed layer header (if any) has been successfully loaded into m_stashedLayer
+' 3) optionally, stashed vector data (if any) has been successfully loaded into m_stashedVector
 Private Function UnstashClipboardData() As Boolean
     
     UnstashClipboardData = False
@@ -1711,14 +1838,19 @@ Private Function UnstashClipboardData() As Boolean
             
         End If
         
+        If Files.FileExists(m_StashFileLayer) Then Files.FileLoadAsString m_StashFileLayer, m_StashedLayer
+        If Files.FileExists(m_StashFileVector) Then Files.FileLoadAsString m_StashFileVector, m_StashedVector
+        
     End If
     
 End Function
 
-'If you know it's safe to destroy PD's clipboard cache, you can do so via this function.  Note that this action is not reversible,
-' so make sure it's what you want/need to do.
+'If you know it's safe to destroy PD's clipboard cache, you can do so via this function.
+' Note that this action is *not* reversible, so make sure it's what you want/need to do.
 Private Sub DestroyStashedData()
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
+    If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
 End Sub
 
 Friend Function IsPDDataOnClipboard() As Boolean
@@ -1726,7 +1858,8 @@ Friend Function IsPDDataOnClipboard() As Boolean
 End Function
 
 'Want to render PD's current clipboard stash to the clipboard, WITHOUT delayed rendering?  Call this function.
-' (PD does this prior to shutdown, because WM_RENDERALLFORMATS does not play nicely with the order VB unloads objects / destroys windows.)
+' (PD does this prior to shutdown, because WM_RENDERALLFORMATS does not play nicely with the order
+'  VB unloads objects / destroys windows.)
 Friend Sub RenderAllClipboardFormatsManually()
     
     PDDebug.LogAction "pdClipboardMain received notification to render all clipboard formats.  Rendering now..."
@@ -2136,5 +2269,7 @@ Private Sub Class_Terminate()
     
     'Perform a failsafe check against un-destroyed stash data
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
+    If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
     
 End Sub

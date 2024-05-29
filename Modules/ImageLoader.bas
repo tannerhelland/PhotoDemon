@@ -863,9 +863,9 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     
 End Sub
 
-'Load a raw pdDIB file dump into the destination image and DIB.  (Note that pdDIB may have applied zLib compression during the save,
-' depending on the parameters it was passed, so it is possible for this function to fail if zLib goes missing.)
-Public Function LoadRawImageBuffer(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+'Load a raw pdDIB file dump into the destination image and DIB.  (Note that pdDIB is likely compressed,
+' so it is possible for this function to fail if the required compression library goes missing.)
+Public Function LoadRawImageBuffer(ByVal imagePath As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing) As Boolean
 
     On Error GoTo LoadRawImageBufferFail
     
