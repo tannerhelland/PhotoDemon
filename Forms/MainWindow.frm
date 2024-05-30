@@ -2138,8 +2138,8 @@ Private Sub Form_Load()
         PDDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
         PDDebug.LogAction vbNullString, PDM_Mem_Report
         
-        'Before setting focus to the main form, active a focus tracker; it catches some cases that VB's
-        ' built-in focus events do not.
+        'Before setting focus to the main form, activate a focus tracker.
+        ' (PD uses this class to catch some focus cases that VB's built-in focus events do not.)
         Set m_FocusDetector = New pdFocusDetector
         m_FocusDetector.StartFocusTracking FormMain.hWnd
         

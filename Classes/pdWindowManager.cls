@@ -711,12 +711,10 @@ Friend Sub RegisterMainForm(ByRef parentForm As Form)
     
     If PDMain.IsProgramRunning() Then
     
-        'Apply any unique styles to the parent window
+        'Apply any unique styles to the parent window.  (PD uses complex nested windows for toolbars,
+        ' and setting the WS_EX_COMPOSITED bit reduces flickering on older versions of Windows.)
         Dim newWinStyle As Long
         newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
-        
-        'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
-        If OS.IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
         SetWindowLong m_MainWindowHWnd, GWL_EXSTYLE, newWinStyle
         
         'Enforce minimum size handling.  (Note that this will subclass the main window, which allows us to handle

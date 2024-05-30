@@ -448,8 +448,7 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
         ' to Vista or later.
         
         'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
-        'And OS.IsVistaOrLater
-        If (Not listOfDisplays(displayIndex).HasEDID) Then
+        If (Not listOfDisplays(displayIndex).HasEDID) And OS.IsVistaOrLater() Then
         
             'Retrieve and cache the device ID
             Dim devID As String

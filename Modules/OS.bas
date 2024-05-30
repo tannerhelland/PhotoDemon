@@ -276,9 +276,11 @@ End Type
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-Private Declare Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
+Private Declare Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
+Private Declare Function GetModuleHandleW Lib "kernel32" (ByVal lpModuleName As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As OS_SystemInfo)
 Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (ByRef dstTime As Currency)
 Private Declare Function GetTempPathW Lib "kernel32" (ByVal nBufferLength As Long, ByVal lpStrBuffer As Long) As Long
@@ -346,6 +348,9 @@ End Enum
 #End If
 
 Private m_ThemingAvailable As PD_ThemingAvailable
+
+'Used to detect if we're running under Wine or not.  (Added in 2024-05 to try and solve Wine-specific problems.)
+Private m_InsideWine As Boolean, m_LookedForWineAlready As Boolean
 
 'Function for returning this application's current memory usage.  Note that this function will return warped
 ' values inside the IDE (because the reported total is for *all* of VB6, including the IDE itself).
@@ -635,7 +640,7 @@ End Function
 'PD will attempt to forcibly enable DEP on Win 7+ (when compiled, obviously).
 ' This may decrease issues with garbage 3rd-party virus and malware scanners.
 Public Function EnableProcessDEP() As Boolean
-    If (OS.IsWin7OrLater And OS.IsProgramCompiled) Then
+    If (OS.IsWin7OrLater And OS.IsProgramCompiled And (Not OS.IsWinActuallyWine)) Then
         Const PROCESS_DEP_ENABLE As Long = &H1&
         SetProcessDEPPolicy PROCESS_DEP_ENABLE
     End If
@@ -757,34 +762,86 @@ End Function
 'Check for a version >= the specified version.
 Public Function IsVistaOrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsVistaOrLater = (m_OSVI.dwMajorVersion >= 6)
+    If OS.IsWinActuallyWine Then
+        IsVistaOrLater = False
+    Else
+        IsVistaOrLater = (m_OSVI.dwMajorVersion >= 6)
+    End If
 End Function
 
 Public Function IsWin7OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin7OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 1))
+    If OS.IsWinActuallyWine Then
+        IsWin7OrLater = False
+    Else
+        IsWin7OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 1))
+    End If
 End Function
 
 Public Function IsWin8OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin8OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 2))
+    If OS.IsWinActuallyWine Then
+        IsWin8OrLater = False
+    Else
+        IsWin8OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 2))
+    End If
 End Function
 
 Public Function IsWin81OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin81OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 3))
+    If OS.IsWinActuallyWine Then
+        IsWin81OrLater = False
+    Else
+        IsWin81OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 3))
+    End If
 End Function
 
 ' (NOTE: the Win-10 check requires a manifest, so don't rely on it in the IDE.  Also, MS doesn't guarantee that this
 ' check will remain valid forever, though it does work as of Windows 10-1703.)
 Public Function IsWin10OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
+    If OS.IsWinActuallyWine Then
+        IsWin10OrLater = False
+    Else
+        IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
+    End If
 End Function
 
 Public Function GetWin10Build() As Long
     If (Not m_VersionInfoCached) Then CacheOSVersion
     GetWin10Build = m_OSVI.dwBuildNumber
+End Function
+
+'Are we running inside Wine?  Thanks to StackOverflow for the implementation idea:
+' https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
+'
+'PD doesn't officially support Wine, but I've found that lying to PD and claiming that Wine is actually XP
+' produces a reasonably usable version of the app.
+Public Function IsWinActuallyWine() As Boolean
+    
+    'Cache check once, on first call
+    If (Not m_LookedForWineAlready) Then
+        
+        m_LookedForWineAlready = True
+        
+        Dim modName As String
+        modName = "ntdll.dll"
+        
+        Dim hMod As Long
+        hMod = GetModuleHandleW(StrPtr(modName))
+        If (hMod <> 0) Then
+            Dim hProc As Long
+            hProc = GetProcAddress(hMod, "wine_get_version")
+            m_InsideWine = (hProc <> 0)
+        Else
+            PDDebug.LogAction "WARNING: couldn't find ntdll?"
+            m_InsideWine = False
+        End If
+        
+    End If
+    
+    IsWinActuallyWine = m_InsideWine
+    
 End Function
 
 'Return the number of logical cores on this system
