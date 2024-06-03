@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，9.2 build 380）</langname>
-<langversion>9.2 build 380.1</langversion>
+<langname>简体中文（夜间更新版，2024.4 build 41）</langname>
+<langversion>2024.4 build 41</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -5547,7 +5547,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>图层边缘</translation>
 </phrase>
 
 <phrase>
@@ -12569,7 +12569,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>显示距离</translation>
 </phrase>
 
 <phrase>
