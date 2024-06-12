@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，2024.4 build 41）</langname>
-<langversion>2024.4 build 41</langversion>
+<langname>简体中文（夜间更新版，2024.4 build 42）</langname>
+<langversion>2024.4 build 42</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -595,22 +595,22 @@
 
 <phrase>
 <original>Remove selection</original>
-<translation>删除选择</translation>
+<translation>删除选区</translation>
 </phrase>
 
 <phrase>
 <original>Invert selection</original>
-<translation>反向选择</translation>
+<translation>反选</translation>
 </phrase>
 
 <phrase>
 <original>Grow selection</original>
-<translation>增加选择</translation>
+<translation>增加选区</translation>
 </phrase>
 
 <phrase>
 <original>Shrink selection</original>
-<translation>缩小选择</translation>
+<translation>缩小选区</translation>
 </phrase>
 
 <phrase>
@@ -620,12 +620,12 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>羽化选项</translation>
+<translation>羽化选区</translation>
 </phrase>
 
 <phrase>
 <original>Sharpen selection</original>
-<translation>锐化选项</translation>
+<translation>锐化选区</translation>
 </phrase>
 
 <phrase>
