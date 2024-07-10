@@ -710,7 +710,7 @@
 
 <phrase>
 <original>Vibrance</original>
-<translation>自然な彩度</translation>
+<translation>彩度</translation>
 </phrase>
 
 <phrase>
@@ -720,12 +720,12 @@
 
 <phrase>
 <original>Channel mixer</original>
-<translation>チャンネ ルミキサー</translation>
+<translation>チャンネル ミキサー</translation>
 </phrase>
 
 <phrase>
 <original>Rechannel</original>
-<translation>リチャンネル</translation>
+<translation>再チャンネル</translation>
 </phrase>
 
 <phrase>
@@ -740,12 +740,12 @@
 
 <phrase>
 <original>Shift colors (left)</original>
-<translation>シフトカラー (左)</translation>
+<translation>色をシフト (左)</translation>
 </phrase>
 
 <phrase>
 <original>Shift colors (right)</original>
-<translation>シフトカラー (右)</translation>
+<translation>色をシフト (右)</translation>
 </phrase>
 
 <phrase>
@@ -760,7 +760,7 @@
 
 <phrase>
 <original>Tint</original>
-<translation>色合い</translation>
+<translation>色調</translation>
 </phrase>
 
 <phrase>
@@ -790,7 +790,7 @@
 
 <phrase>
 <original>Split toning</original>
-<translation>トーニングを分割</translation>
+<translation>分割トーン</translation>
 </phrase>
 
 <phrase>
@@ -800,27 +800,27 @@
 
 <phrase>
 <original>Stretch histogram</original>
-<translation>ヒストグラムを伸張</translation>
+<translation>ヒストグラムを伸ばす</translation>
 </phrase>
 
 <phrase>
 <original>Film negative</original>
-<translation>フィルムネガ</translation>
+<translation>フィルム ネガ</translation>
 </phrase>
 
 <phrase>
 <original>Invert hue</original>
-<translation>色相を反転させる</translation>
+<translation>色相を反転</translation>
 </phrase>
 
 <phrase>
 <original>Invert RGB</original>
-<translation>Rgb反転</translation>
+<translation>RGB を反転</translation>
 </phrase>
 
 <phrase>
 <original>Dehaze</original>
-<translation>デヘイズ</translation>
+<translation>かすみを除去</translation>
 </phrase>
 
 <phrase>
@@ -850,12 +850,12 @@
 
 <phrase>
 <original>Color to monochrome</original>
-<translation>カラーからモノクロへ</translation>
+<translation>カラーをモノクロに</translation>
 </phrase>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation>モノクロからグレーへ</translation>
+<translation>モノクロをグレーに</translation>
 </phrase>
 
 <phrase>
@@ -870,7 +870,7 @@
 
 <phrase>
 <original>Figured glass</original>
-<translation>フィギュアドグラス</translation>
+<translation>模様入りガラス</translation>
 </phrase>
 
 <phrase>
@@ -890,7 +890,7 @@
 
 <phrase>
 <original>Modern art</original>
-<translation>モダンアート</translation>
+<translation>現代アート</translation>
 </phrase>
 
 <phrase>
@@ -900,7 +900,7 @@
 
 <phrase>
 <original>Plastic wrap</original>
-<translation>ラップ</translation>
+<translation>プラスチック ラップ</translation>
 </phrase>
 
 <phrase>
@@ -910,7 +910,7 @@
 
 <phrase>
 <original>Relief</original>
-<translation>リレーフ</translation>
+<translation>レリーフ</translation>
 </phrase>
 
 <phrase>
@@ -960,12 +960,12 @@
 
 <phrase>
 <original>Droste</original>
-<translation>ドロステ</translation>
+<translation>ドロステ効果</translation>
 </phrase>
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>レンズ ディストーションを適用</translation>
+<translation>レンズ歪みの適用</translation>
 </phrase>
 
 <phrase>
@@ -975,7 +975,7 @@
 
 <phrase>
 <original>Poke</original>
-<translation>ポーク</translation>
+<translation>突く</translation>
 </phrase>
 
 <phrase>
@@ -990,7 +990,7 @@
 
 <phrase>
 <original>Swirl</original>
-<translation>渦巻き</translation>
+<translation>うず巻き</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>雑多な歪み</translation>
+<translation>その他の歪み</translation>
 </phrase>
 
 <phrase>
@@ -1030,7 +1030,7 @@
 
 <phrase>
 <original>Trace contour</original>
-<translation>輪郭検出</translation>
+<translation>輪郭を追跡</translation>
 </phrase>
 
 <phrase>
@@ -1055,17 +1055,17 @@
 
 <phrase>
 <original>Sunshine</original>
-<translation>日照</translation>
+<translation>太陽光</translation>
 </phrase>
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation>広げる (最高ランク)</translation>
+<translation>拡張 (最大ランク)</translation>
 </phrase>
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>浸食浸食 (最低ランク)</translation>
+<translation>浸食 (最小ランク)</translation>
 </phrase>
 
 <phrase>
@@ -1080,7 +1080,7 @@
 
 <phrase>
 <original>Ignite</original>
-<translation>発火</translation>
+<translation>燃焼</translation>
 </phrase>
 
 <phrase>
@@ -1090,7 +1090,7 @@
 
 <phrase>
 <original>Metal</original>
-<translation>メタル</translation>
+<translation>金属</translation>
 </phrase>
 
 <phrase>
@@ -1120,7 +1120,7 @@
 
 <phrase>
 <original>Dust and scratches</original>
-<translation>埃と傷</translation>
+<translation>ほこりと傷</translation>
 </phrase>
 
 <phrase>
@@ -1170,7 +1170,7 @@
 
 <phrase>
 <original>Pointillize</original>
-<translation>ポインティライズ</translation>
+<translation>点描化</translation>
 </phrase>
 
 <phrase>
@@ -1225,7 +1225,7 @@
 
 <phrase>
 <original>Portrait glow</original>
-<translation>肖像画の輝き</translation>
+<translation>ポートレート発光</translation>
 </phrase>
 
 <phrase>
@@ -1235,7 +1235,7 @@
 
 <phrase>
 <original>Twins</original>
-<translation>双子</translation>
+<translation>軸対称</translation>
 </phrase>
 
 <phrase>
@@ -1265,7 +1265,7 @@
 
 <phrase>
 <original>Shear</original>
-<translation>剪断変形</translation>
+<translation>シアー</translation>
 </phrase>
 
 <phrase>
@@ -1349,7 +1349,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>自動セーブを完全に再構築できませんでした。  かわりに部分的な再構築が試みられました。</translation>
+<translation>自動保存を完全に再構築できませんでした。  かわりに部分的な再構築が試みられました。</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1373,7 +1373,7 @@
 
 <phrase>
 <original>ICC profile</original>
-<translation>ICCプロファイル</translation>
+<translation>ICC プロファイル</translation>
 </phrase>
 
 <phrase>
@@ -1400,7 +1400,7 @@
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation>新規レイヤーとして現在の画像に追加します。</translation>
+<translation>現在の画像に新規レイヤーとして追加する。</translation>
 </phrase>
 
 <phrase>
@@ -1434,7 +1434,7 @@
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>タグ データベースは、PhotoDemon がサポートする 20,000 以上のメタデータ タグの技術的な詳細を処理します。  データベースの作成は 10 秒から 15 秒かかり、メタデータ エディタが初めて使用されるときに、一度だけ作成する必要があります。</translation>
+<translation>タグ データベースは、PhotoDemon でサポートされている 20,000 以上のメタデータ タグの技術的な詳細を処理します。  データベースの作成には 10 から 15 秒かかります。  作成する必要があるのは、メタデータ エディタを初めて使用するときに 1 回だけです。</translation>
 </phrase>
 
 <phrase>
@@ -1468,28 +1468,28 @@
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>ロスレス コピーを保存する前に、少なくとも一度はこの画像を保存する必要があります。
+<translation>ロスレス コピーを保存する前に、このイメージを少なくとも 1 回保存する必要があります。
 
-ロスレス コピーは、この最初の画像保存と同じフォルダに保存されます。</translation>
+ロスレス コピーは、この最初の画像保存と同じフォルダーに保存されます。</translation>
 </phrase>
 
 <phrase>
 <original>Initial save required</original>
-<translation>初期セーブが必要</translation>
+<translation>初期保存が必要です</translation>
 </phrase>
 
 <phrase>
 <original>Save canceled.</original>
-<translation>キャンセルされました。</translation>
+<translation>保存がキャンセルされました。</translation>
 </phrase>
 
 <phrase>
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
 
 If the problem persists, please report it to the PhotoDemon developers via PhotoDemon.org/contact</original>
-<translation>この画像を保存しようとすると、特定できないエラーが発生しました。  別の形式で画像を保存してみてください。
+<translation>この画像を保存しようとしたときに、原因不明のエラーが発生しました。画像を別の形式で保存してみてください。
 
-問題が解決しない場合、PhotoDemon.org/contact 経由で PhotoDemon 開発者に報告してください。</translation>
+問題が解決しない場合は、PhotoDemon.org/contact 経由で PhotoDemon 開発者に報告してください。</translation>
 </phrase>
 
 <phrase>
@@ -1526,7 +1526,7 @@ If the problem persists, please report it to the PhotoDemon developers via Photo
 
 <phrase>
 <original>Adjusting image white balance</original>
-<translation>画像のホワイトバランスを調整</translation>
+<translation>画像のホワイト バランスを調整</translation>
 </phrase>
 
 <phrase>
@@ -1546,12 +1546,12 @@ If the problem persists, please report it to the PhotoDemon developers via Photo
 
 <phrase>
 <original>Isolating maximum color channels</original>
-<translation>最大カラーチャンネルの分離</translation>
+<translation>最大のカラー チャネルの分離</translation>
 </phrase>
 
 <phrase>
 <original>Isolating minimum color channels</original>
-<translation>最小カラーチャンネルの分離</translation>
+<translation>最小のカラー チャネルの分離</translation>
 </phrase>
 
 <phrase>
@@ -1592,9 +1592,9 @@ If the problem persists, please report it to the PhotoDemon developers via Photo
 <original>This image contains %1 unique colors (RGB).
 
 This image contains %2 unique color + opacity values (RGBA).</original>
-<translation>この画像には、固有の %1 色 (RGB) が含まれています。
+<translation>この画像には %1 個の固有の色 (RGB) が含まれています。
 
-この画像には、固有の %2 色と不透明度の値 (RGBA) が含まれています。</translation>
+この画像には、%2 個の固有の色 + 不透明度値 (RGBA) が含まれています。</translation>
 </phrase>
 
 <!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1680,7 +1680,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>画像はすべて1色。  オート クロップは不要。</translation>
+<translation>画像は全1色です。  オートクロップは不要です。</translation>
 </phrase>
 
 <phrase>
@@ -1737,7 +1737,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation>ページ %1 / %2 をロードしています</translation>
+<translation>ページ %1 / %2 を読み込んでいます</translation>
 </phrase>
 
 <phrase>
@@ -1754,7 +1754,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Stretching histogram</original>
-<translation>ヒストグラムを伸張</translation>
+<translation>ヒストグラムを伸ばす</translation>
 </phrase>
 
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -1831,7 +1831,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>エラーが発生しました (#%1 - %2)。  PDI ロードを中断しました。</translation>
+<translation>エラーが発生しました (#%1 - %2)。  PDI の読み込みを中断しました。</translation>
 </phrase>
 
 <!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -2098,7 +2098,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Are you sure you want to cancel %1?</original>
-<translation>本当に%1をキャンセルしますか?</translation>
+<translation>%1 をキャンセルしてもよろしいですか?</translation>
 </phrase>
 
 <phrase>
@@ -2108,7 +2108,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>preview not available</original>
-<translation>プレビュー不可</translation>
+<translation>プレビューは利用できません</translation>
 </phrase>
 
 <!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
@@ -2120,7 +2120,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Group start</original>
-<translation>グループスタート</translation>
+<translation>グループ開始</translation>
 </phrase>
 
 <phrase>
@@ -2165,7 +2165,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Conversion complete.</original>
-<translation>コンバージョンを完了しました。</translation>
+<translation>変換を完了しました。</translation>
 </phrase>
 
 <phrase>
@@ -2175,12 +2175,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Merged layers</original>
-<translation>マージされたレイヤー</translation>
+<translation>結合されたレイヤー</translation>
 </phrase>
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>このアクションは、テキストとベクター レイヤーをイメージ (ラスター)レイヤーに変換します。つまり、テキスト、フォント、カラー、シェイプなどのレイヤー固有の設定を変更できなくなります。</translation>
+<translation>このアクションにより、テキスト レイヤーとベクター レイヤーが画像 (ラスター) レイヤーに変換されます。  つまり、テキスト、フォント、色、形状などのレイヤー固有の設定を変更できなくなります。</translation>
 </phrase>
 
 <phrase>
@@ -2215,7 +2215,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation>将来的には、プロンプトを出さずに自動的にラスタライズされます</translation>
+<translation>今後は、プロンプトを表示せずに自動的にラスタライズします</translation>
 </phrase>
 
 <phrase>
@@ -2237,7 +2237,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Loading image</original>
-<translation>画像を読み込む</translation>
+<translation>画像を読み込んでいます</translation>
 </phrase>
 
 <phrase>
@@ -2251,7 +2251,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>残念ながら、画像 '%1' が見つかりません。
 
-この画像が元々リムーバブル メディア (DVD、USBドライブなど)にあった場合は、メディアを再挿入または再装着して再試行してください。</translation>
+この画像が元々リムーバブル メディア (DVD、USBドライブなど) にあった場合は、メディアを再挿入または再セサ属して再試行してください。</translation>
 </phrase>
 
 <phrase>
@@ -2285,7 +2285,7 @@ Please close this file in any other running programs, then try again.</original>
 
 <phrase>
 <original>Failed to load %1</original>
-<translation>%1 をロードできませんでした</translation>
+<translation>%1 を読み込みできませんでした</translation>
 </phrase>
 
 <phrase>
@@ -2298,7 +2298,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 
-ロードする前に、他のプログラムを使用して、この画像を一般的なフォーマット (JPEG または PNG など) で保存してください。  ありがとう!</translation>
+読み込む前に、他のプログラムを使用して、この画像を一般的なフォーマット (JPEG や PNG など) で保存してください。  ありがとう!</translation>
 </phrase>
 
 <phrase>
@@ -2313,7 +2313,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation>%2 個中 %1 個の画像が正常にロードされました</translation>
+<translation>%2 個中 %1 個の画像が正常に読み込まれました</translation>
 </phrase>
 
 <phrase>
@@ -2321,7 +2321,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>残念ながら、PhotoDemon は以下の画像をロードできませんでした: 
+<translation>残念ながら、PhotoDemon は以下の画像を読み込めませんでした: 
 
 %1
 これらの画像が存在し、サポートされている画像フォーマット (JPEG または PNG など) を使用していることを確認してください。  ありがとう!</translation>
@@ -2852,12 +2852,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation>水平剪断</translation>
+<translation>水平シアー</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation>垂直せん断</translation>
+<translation>垂直シアー</translation>
 </phrase>
 
 <phrase>
@@ -3165,7 +3165,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Screenshot options</original>
-<translation>スクリーンショットオプション</translation>
+<translation>スクリーンショット オプション</translation>
 </phrase>
 
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -3192,7 +3192,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
-<translation>%1 をロードしようとしてエラーが発生しました。  ファイルが有効なPhotoDemon選択ファイルであることを確認してください。</translation>
+<translation>%1 を読み込もうとしてエラーが発生しました。  ファイルが有効なPhotoDemon選択ファイルであることを確認してください。</translation>
 </phrase>
 
 <phrase>
@@ -3622,19 +3622,19 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Download complete. Verifying file integrity</original>
-<translation>ダウンロード完了ファイルの整合性を確認</translation>
+<translation>ダウンロードが完了しました。 ファイルの整合性を確認しています</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled.  (Remote server denied access.)</original>
-<translation>ダウンロードがキャンセルされました。  (リモートサーバーがアクセスを拒否しました。)</translation>
+<translation>ダウンロードがキャンセルされました。  (リモートサーバーがアクセスを拒否しました)</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation>残念ながら、%1は PhotoDemon がこのファイルを直接ダウンロードすることを妨げました。(直接ダウンロードは、時々、誤った設定のサーバによりホット リンクと間違われます)
+<translation>残念ながら、%1 は PhotoDemon がこのファイルを直接ダウンロードすることを妨げました。(直接のダウンロードは、時々、誤った設定のサーバによりホット リンクと間違われます)
 
 インターネットブラウザを使用して、このファイルを手動でダウンロードする必要があります。</translation>
 </phrase>
@@ -3766,7 +3766,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Select a LUT file</original>
-<translation>LUTファイルを選択</translation>
+<translation>LUT ファイルを選択</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4074,12 +4074,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>残念ながら、選択された画像の数は、Windowsが1回のロード操作で許容する数を超えています。  より少ない画像セットで再試行してください。</translation>
+<translation>残念ながら、選択された画像の数は、Windows が 1 回の読み込み操作で許容する数を超えています。  より少ない画像セットで再試行してください。</translation>
 </phrase>
 
 <phrase>
 <original>Load canceled.</original>
-<translation>ロードはキャンセルされました。</translation>
+<translation>読み込みはキャンセルされました。</translation>
 </phrase>
 
 <!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4246,12 +4246,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>color format</original>
-<translation>カラーフォーマット</translation>
+<translation>カラー フォーマット</translation>
 </phrase>
 
 <phrase>
 <original>palette size</original>
-<translation>パレットサイズ</translation>
+<translation>パレット サイズ</translation>
 </phrase>
 
 <phrase>
@@ -4318,7 +4318,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
-<translation>Rgb(%1, %2, %3)</translation>
+<translation>RGBs(%1, %2, %3)</translation>
 </phrase>
 
 <phrase>
@@ -5268,7 +5268,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Figured glass (dents)</original>
-<translation>フィギュアド グラス (へこみ)</translation>
+<translation>模様入りガラス (へこみ)</translation>
 </phrase>
 
 <phrase>
@@ -5308,7 +5308,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Dilate</original>
-<translation>広げる</translation>
+<translation>拡張</translation>
 </phrase>
 
 <phrase>
@@ -5876,7 +5876,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>new balance</original>
-<translation>ニュー バランス</translation>
+<translation>新しいバランス</translation>
 </phrase>
 
 <phrase>
@@ -5935,7 +5935,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Highest Quality (ITU Standard)</original>
-<translation>最高品質 (Itu標準)</translation>
+<translation>最高品質 (ITU 標準)</translation>
 </phrase>
 
 <phrase>
@@ -5950,7 +5950,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Single color channel</original>
-<translation>単色チャンネル</translation>
+<translation>1 つのカラー チャネル</translation>
 </phrase>
 
 <phrase>
@@ -5989,12 +5989,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>available LUTs</original>
-<translation>使用可能なLUT</translation>
+<translation>使用可能な LUT</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation>LUTファイルのインポート</translation>
+<translation>LUT ファイルのインポート</translation>
 </phrase>
 
 <phrase>
@@ -6014,7 +6014,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>Lutコレクションは"%1 "フォルダに保存されます。</translation>
+<translation>LUT コレクションは "%1" フォルダに保存されます。</translation>
 </phrase>
 
 <phrase>
@@ -6075,12 +6075,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>warmer</original>
-<translation>ウォーマー</translation>
+<translation>暖色</translation>
 </phrase>
 
 <phrase>
 <original>cooler</original>
-<translation>クーラー</translation>
+<translation>寒色</translation>
 </phrase>
 
 <phrase>
@@ -6129,7 +6129,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vibrance</original>
-<translation>振動</translation>
+<translation>彩度</translation>
 </phrase>
 
 <phrase>
@@ -6233,7 +6233,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>(注: これらの値を計算するには、ヒストグラムの上にマウスを移動してください。)</translation>
+<translation>(注: これらの値を計算するには、ヒストグラムの上にマウスを移動してください)</translation>
 </phrase>
 
 <phrase>
@@ -6344,7 +6344,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>foreground</original>
-<translation>フォアグラウンド</translation>
+<translation>前景</translation>
 </phrase>
 
 <phrase>
@@ -6354,7 +6354,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Removing haze from image</original>
-<translation>画像から霞を取り除く</translation>
+<translation>画像からかすみを取り除く</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6405,7 +6405,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>midpoint</original>
-<translation>中点</translation>
+<translation>中間点</translation>
 </phrase>
 
 <phrase>
@@ -6432,7 +6432,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>他のモノクロからグレースケールへのツールと同様、このツールはぼやけた画像を生成します。  これを修正するには、 [エフェクト] -> [シャープ] -> [アンシャープ マスク] ツールを使用します。  (最良の結果を得るには、少なくともこの半径と同じ大きさのアンシャープマスク半径を使用してください)</translation>
+<translation>他のモノクロからグレースケールへのツールと同様、このツールは、ぼやけた画像を生成します。  これを修正するには、 [エフェクト] -> [シャープ] -> [アンシャープ マスク] ツールを使用します。  (最良の結果を得るには、少なくともこの半径と同じ大きさのアンシャープマスク半径を使用してください)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6461,7 +6461,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation>ウォーム フィルター (%1)</translation>
+<translation>温暖フィルター (%1)</translation>
 </phrase>
 
 <phrase>
@@ -6471,7 +6471,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Red</original>
-<translation>レッド</translation>
+<translation>赤</translation>
 </phrase>
 
 <phrase>
@@ -6481,7 +6481,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Yellow</original>
-<translation>イエロー</translation>
+<translation>黄</translation>
 </phrase>
 
 <phrase>
@@ -6548,22 +6548,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>highlight color</original>
-<translation>ハイライトカラー</translation>
+<translation>ハイライト色</translation>
 </phrase>
 
 <phrase>
 <original>shadow color</original>
-<translation>シャドーカラー</translation>
+<translation>シャドー色</translation>
 </phrase>
 
 <phrase>
 <original>toning strength</original>
-<translation>引き締め力</translation>
+<translation>調色強度</translation>
 </phrase>
 
 <phrase>
 <original>Split-toning image</original>
-<translation>スプリット トーン画像</translation>
+<translation>画像の分割トーン</translation>
 </phrase>
 
 <!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -6590,7 +6590,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Adjusting shadows, midtones, and highlights</original>
-<translation>シャドー、中間調、ハイライトの調整</translation>
+<translation>シャドー・中間調・ハイライトの調整</translation>
 </phrase>
 
 <!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -6599,7 +6599,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Autosave data detected</original>
-<translation>自動保存のデータが検出</translation>
+<translation>自動保存のデータが検出されました</translation>
 </phrase>
 
 <phrase>
@@ -7832,7 +7832,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>if pixels lie outside the image</original>
-<translation>ピクセルが画像の外側にある場合</translation>
+<translation>画素が画像の外側にある場合</translation>
 </phrase>
 
 <phrase>
@@ -7847,7 +7847,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random seed</original>
-<translation>ランダム シード</translation>
+<translation>乱数シード</translation>
 </phrase>
 
 <phrase>
@@ -7859,7 +7859,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>shadow cut-off</original>
-<translation>シャドーカット</translation>
+<translation>シャドー カット オフ</translation>
 </phrase>
 
 <phrase>
@@ -7874,7 +7874,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>contrast midpoint</original>
-<translation>コントラスト中点</translation>
+<translation>コントラスト中間点</translation>
 </phrase>
 
 <phrase>
@@ -7908,7 +7908,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>primary angle</original>
-<translation>プライマリーアングル</translation>
+<translation>プライマリー角度</translation>
 </phrase>
 
 <phrase>
@@ -7960,7 +7960,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying modern art techniques</original>
-<translation>現代美術のテクニックを応用</translation>
+<translation>現代アートのテクニックを適用</translation>
 </phrase>
 
 <!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7989,7 +7989,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>light angle</original>
-<translation>ライトアングル</translation>
+<translation>ライトの角度</translation>
 </phrase>
 
 <phrase>
@@ -8040,12 +8040,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>cell size</original>
-<translation>セルサイズ</translation>
+<translation>セル サイズ</translation>
 </phrase>
 
 <phrase>
 <original>shading quality</original>
-<translation>シェーディングのクオリティ</translation>
+<translation>シェーディングの品質</translation>
 </phrase>
 
 <phrase>
@@ -8060,7 +8060,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color sampling</original>
-<translation>カラーサンプリング</translation>
+<translation>カラー サンプリング</translation>
 </phrase>
 
 <phrase>
@@ -8070,7 +8070,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Carving image from stained glass</original>
-<translation>ステンドグラスから画像を彫る</translation>
+<translation>ステンド グラスから画像を彫る</translation>
 </phrase>
 
 <phrase>
@@ -8183,7 +8183,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying motion blur</original>
-<translation>モーションブラーの適用</translation>
+<translation>モーションぼかしの適用</translation>
 </phrase>
 
 <phrase>
@@ -8207,21 +8207,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
-<translation>対称ピクセルペアの生成</translation>
+<translation>対称ピクセル ペアの生成</translation>
 </phrase>
 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying surface blur</original>
-<translation>サーフェスブラーの適用</translation>
+<translation>波紋ぼかしの適用</translation>
 </phrase>
 
 <!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying zoom blur</original>
-<translation>ズームブラーの適用</translation>
+<translation>ズームぼかしの適用</translation>
 </phrase>
 
 <!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8257,7 +8257,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(a) edges</original>
-<translation>(エッジ</translation>
+<translation>(a) エッジ</translation>
 </phrase>
 
 <phrase>
@@ -8321,7 +8321,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>swap order</original>
-<translation>スワップオーダー</translation>
+<translation>スワップ オーダー</translation>
 </phrase>
 
 <phrase>
@@ -8336,7 +8336,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation>M.C.エッシャーを召喚</translation>
+<translation>M. C. エッシャーを召喚</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8383,7 +8383,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>twist edges</original>
-<translation>ツイストエッジ</translation>
+<translation>ツイスト エッジ</translation>
 </phrase>
 
 <phrase>
@@ -8395,7 +8395,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>whirl angle</original>
-<translation>渦巻き角度</translation>
+<translation>うず巻き角度</translation>
 </phrase>
 
 <phrase>
@@ -8482,7 +8482,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>base color</original>
-<translation>ベースカラー</translation>
+<translation>ベースの色</translation>
 </phrase>
 
 <phrase>
@@ -8681,7 +8681,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating bump map</original>
-<translation>バンプマップの生成</translation>
+<translation>バンプ マップの生成</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8698,7 +8698,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation>クロススクリーンフィルターの適用</translation>
+<translation>クロス スクリーン フィルターの適用</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8717,7 +8717,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomize</original>
-<translation>ランダマイズ</translation>
+<translation>ランダム性</translation>
 </phrase>
 
 <phrase>
@@ -8744,7 +8744,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Creating artificial atmosphere</original>
-<translation>人工的な雰囲気作り</translation>
+<translation>人工的な大気</translation>
 </phrase>
 
 <!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8865,7 +8865,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>sharpen</original>
-<translation明確化</translation>
+<translation>明確化</translation>
 </phrase>
 
 <phrase>
@@ -8889,12 +8889,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating film grain texture</original>
-<translation>フィルムグレインテクスチャの生成</translation>
+<translation>フィルム グレイン テクスチャの生成</translation>
 </phrase>
 
 <phrase>
 <original>Softening film grain</original>
-<translation>フィルムグレインを和らげる</translation>
+<translation>フィルム グレインを和らげる</translation>
 </phrase>
 
 <!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8908,7 +8908,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying mean shift filter</original>
-<translation>平均シフトフィルターの適用</translation>
+<translation>平均シフト フィルターの適用</translation>
 </phrase>
 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8920,17 +8920,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying erode (minimum rank) filter</original>
-<translation>erode (最小ランク)フィルターの適用</translation>
+<translation>浸食 (最小ランク) フィルターの適用</translation>
 </phrase>
 
 <phrase>
 <original>Applying dilate (maximum rank) filter</original>
-<translation>ディレート (最大ランク)フィルターの適用</translation>
+<translation>拡張 (最大ランク) フィルターの適用</translation>
 </phrase>
 
 <phrase>
 <original>Applying median filter</original>
-<translation>メディアンフィルターの適用</translation>
+<translation>中心値フィルターの適用</translation>
 </phrase>
 
 <!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8947,12 +8947,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>yellow angle</original>
-<translation>イエローアングル</translation>
+<translation>イエロー角</translation>
 </phrase>
 
 <phrase>
 <original>Printing image to digital halftone surface</original>
-<translation>デジタル網点画面への印刷</translation>
+<translation>デジタル ハーフトーン面で画像を印刷しています</translation>
 </phrase>
 
 <!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9210,12 +9210,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>median cut</original>
-<translation>メディアンカット</translation>
+<translation>メディアン カット</translation>
 </phrase>
 
 <phrase>
 <original>neural network</original>
-<translation>ニューラルネットワーク</translation>
+<translation>ニューラル ネットワーク</translation>
 </phrase>
 
 <phrase>
@@ -10254,7 +10254,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>full download path (must begin with "http://" or "ftp://")</original>
-<translation>完全なダウンロードパス ("http://" または "ftp://" で始まる必要があります。)</translation>
+<translation>完全なダウンロードパス ("http://" または "ftp://" で始まる必要があります)</translation>
 </phrase>
 
 <phrase>
@@ -10296,12 +10296,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>include window decorations</original>
-<translation>ウィンドウ装飾を含む</translation>
+<translation>ウィンドウの装飾を含む</translation>
 </phrase>
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>撮影前に PhotoDemon を最小化</translation>
+<translation>キャプチャ前に PhotoDemon を最小化</translation>
 </phrase>
 
 <phrase>
@@ -10331,29 +10331,29 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation>このプログラムは現在最小化されています。  最良の結果を得るためには、通常のサイズに戻してください。</translation>
+<translation>このプログラムは現在最小化されています。  最適な結果を得るためには、通常のサイズに戻してください。</translation>
 </phrase>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>一部のプログラム (Windowsストアアプリを含む)では、画面を直接キャプチャすることができません。  アプリケーションのプレビューが黒い四角で表示される場合は、デスクトップ全体のスクリーンショットを撮影し、必要なウィンドウ領域を手動でトリミングする必要があります。</translation>
+<translation>一部のプログラム (Windowsストアアプリを含む) では、画面を直接キャプチャすることができません。  アプリケーションのプレビューが黒い四角で表示される場合は、デスクトップ全体のスクリーンショットを撮影し、必要なウィンドウ領域を手動でトリミングする必要があります。</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, that program has exited.</original>
-<translation>残念ながら、そのプログラムは終了してしまった。</translation>
+<translation>残念ながら、そのプログラムは終了しました。</translation>
 </phrase>
 
 <phrase>
 <original>Please select another one.</original>
-<translation>他をお選びください。</translation>
+<translation>別のものを選択してください。</translation>
 </phrase>
 
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>transparent</original>
-<translation>透明</translation>
+<translation>透過</translation>
 </phrase>
 
 <phrase>
@@ -11347,7 +11347,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>アスペクト比を変更する場合は、次の方法で画像を新しいサイズに合わせる</translation>
+<translation>アスペクト比を変更する場合、次の方法で新しいサイズに合わせる</translation>
 </phrase>
 
 <phrase>
@@ -12209,7 +12209,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>spiral</original>
-<translation>渦巻き</translation>
+<translation>うず巻き</translation>
 </phrase>
 
 <!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -12521,7 +12521,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click to edit text</original>
-<translation>クリックしてテキストを編集</translation>
+<translation>クリックでテキストを編集</translation>
 </phrase>
 
 <phrase>
