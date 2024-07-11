@@ -453,7 +453,6 @@ Private Sub cmdMerge_Click()
         
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If (LenB(translatedText) = 0) Then
-            Debug.Print sPos
             If (InStr(1, origText, vbCrLf) > 0) Then
                 translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
@@ -469,6 +468,7 @@ Private Sub cmdMerge_Click()
             
             phrasesFound = phrasesFound + 1
         Else
+            Debug.Print "Couldn't find translation for: " & origText
             phrasesMissed = phrasesMissed + 1
         End If
     
@@ -512,11 +512,12 @@ Private Sub cmdMerge_Click()
     fPath = m_OldLanguagePath
     
     If cDialog.GetSaveFileName(fPath, , True, "XML - PhotoDemon Language File|*.xml", 1, , "Save the merged language file (XML)", "xml", Me.hWnd) Then
-    
-        If Files.FileExists(fPath) Then
-            MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
-            Exit Sub
-        End If
+        
+        'Worried about breaking something?  Enable strict overwrite checking:
+        'If Files.FileExists(fPath) Then
+        '    MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
+        '    Exit Sub
+        'End If
         
         'Use pdXML to write out a UTF-8 encoded XML file
         m_XML.LoadXMLFromString m_NewLanguageText
