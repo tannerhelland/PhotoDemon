@@ -10017,7 +10017,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Ascending numbers (1, 2, 3, etc.)</original>
-<translation>昇順の数字 (1、2、3 など)</translation>
+<translation>通し番号 (1、2、3 など)</translation>
 </phrase>
 
 <phrase>
@@ -11834,7 +11834,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>この機能を使うと、現在の画像のロスレス コピーをすばやく保存できます。  ロスレス コピーは PDI 形式で、画像の現在のフォルダーに、現在のファイル名 (必要に応じて自動で増加する番号も追加されます) を使って保存されます。</translation>
+<translation>この機能を使うと、現在の画像のロスレス コピーをすばやく保存できます。  ロスレス コピーは PDI 形式で、画像の現在のフォルダーに、現在のファイル名 (必要に応じて自動で通し番号も追加されます) を使って保存されます。</translation>
 </phrase>
 
 <phrase>
