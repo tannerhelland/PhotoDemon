@@ -373,6 +373,7 @@ Private Sub Form_Load()
     GenerateContributor "John Desrosiers", "https://johndesrosiers.com"
     GenerateContributor "Jose de TECNORAMA", "https://www.tecnorama.es/"
     GenerateContributor "Joseph Greco"
+    GenerateContributor "Kenji Hoshimoto (Hosiken)", "http://hosiken.jp/"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
