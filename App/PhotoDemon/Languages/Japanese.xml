@@ -79,17 +79,17 @@
 
 <phrase>
 <original>Export animated GIF</original>
-<translation>アニメーションGIFでエクスポート</translation>
+<translation>アニメーション GIF でエクスポート</translation>
 </phrase>
 
 <phrase>
 <original>Export animated PNG</original>
-<translation>アニメーションPNGでエクスポート</translation>
+<translation>アニメーション PNG でエクスポート</translation>
 </phrase>
 
 <phrase>
 <original>Export animated WebP</original>
-<translation>アニメーションWebPでエクスポート</translation>
+<translation>アニメーション WebP でエクスポート</translation>
 </phrase>
 
 <phrase>
@@ -4301,12 +4301,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation>バイナリ (カット オフ)</translation>
+<translation>バイナリー (カット オフ)</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation>バイナリ (色別)</translation>
+<translation>バイナリー (色別)</translation>
 </phrase>
 
 <phrase>
@@ -4828,17 +4828,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated GIF</original>
-<translation>アニメーションGIF</translation>
+<translation>アニメーション GIF</translation>
 </phrase>
 
 <phrase>
 <original>Animated PNG</original>
-<translation>アニメーションPNG</translation>
+<translation>アニメーション PNG</translation>
 </phrase>
 
 <phrase>
 <original>Animated WebP</original>
-<translation>アニメーションWebP</translation>
+<translation>アニメーション WebP</translation>
 </phrase>
 
 <phrase>
@@ -7832,7 +7832,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>if pixels lie outside the image</original>
-<translation>画素が画像の外側にある場合</translation>
+<translation>ピクセルが画像の外側にある場合</translation>
 </phrase>
 
 <phrase>
@@ -8080,7 +8080,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fast</original>
-<translation>速い</translation>
+<translation>高速</translation>
 </phrase>
 
 <phrase>
@@ -8277,7 +8277,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>if pixels lie outside the corrected area</original>
-<translation>画素が補正領域外にある場合</translation>
+<translation>ピクセルが補正領域外にある場合</translation>
 </phrase>
 
 <phrase>
@@ -9628,7 +9628,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation>このフォルダー内の画像をすべて除去</translation>
+<translation>フォルダー内の画像をすべて除去</translation>
 </phrase>
 
 <phrase>
@@ -9653,17 +9653,17 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>add a prefix to each filename</original>
-<translation>各ファイル名の頭に文字列を付与する</translation>
+<translation>各ファイル名の頭に文字列を付与</translation>
 </phrase>
 
 <phrase>
 <original>add a suffix to each filename</original>
-<translation>各ファイル名の後ろに文字列を付与する</translation>
+<translation>各ファイル名の後ろに文字列を付与</translation>
 </phrase>
 
 <phrase>
 <original>remove the following text (if found) from each filename</original>
-<translation>各ファイル名から以下のテキストを (含まれる場合) 除去</translation>
+<translation>各ファイル名から以下のテキストを (含まれるなら) 除去</translation>
 </phrase>
 
 <phrase>
@@ -9678,7 +9678,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>replace spaces in filenames with underscores</original>
-<translation>ファイル名のスペースをアンダースコアに置き換える</translation>
+<translation>ファイル名のスペースをアンダースコアに置き換え</translation>
 </phrase>
 
 <phrase>
@@ -9842,7 +9842,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>続行する前に、[この形式のエクスポート設定を設定する] ボタンをクリックして、使用するエクスポート設定を指定する必要があります。</translation>
+<translation>続行する前に、[このフォーマットのエクスポート設定を行う] ボタンをクリックして、使用するエクスポート設定を指定する必要があります。</translation>
 </phrase>
 
 <phrase>
@@ -10432,12 +10432,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>low quality, small file</original>
-<translation>低品質、小さいファイル</translation>
+<translation>低画質、サイズ小</translation>
 </phrase>
 
 <phrase>
 <original>high quality, large file</original>
-<translation>高画質、大きいファイル</translation>
+<translation>高画質、サイズ大</translation>
 </phrase>
 
 <phrase>
@@ -10682,7 +10682,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>optimized baseline</original>
-<translation>最適化されたベースライン</translation>
+<translation>最適化ベースライン</translation>
 </phrase>
 
 <phrase>
@@ -10724,7 +10724,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Moderate compression, medium image quality (60)</original>
-<translation>中程度の圧縮、中程度の画質 (60)</translation>
+<translation>中圧縮、中画質 (60)</translation>
 </phrase>
 
 <phrase>
@@ -10756,7 +10756,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>binary</original>
-<translation>バイナリ</translation>
+<translation>バイナリー</translation>
 </phrase>
 
 <phrase>
@@ -10783,7 +10783,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fast, larger file</original>
-<translation>高速、大きいファイル</translation>
+<translation>高速、サイズ大</translation>
 </phrase>
 
 <phrase>
@@ -10793,7 +10793,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation>低速、小さいファイル</translation>
+<translation>低速、サイズ小</translation>
 </phrase>
 
 <phrase>
@@ -10874,7 +10874,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>multipage (one page per layer)</original>
-<translation>マルチ ページ (レイヤーごとに 1 ページ)</translation>
+<translation>マルチ ページ (レイヤーごと)</translation>
 </phrase>
 
 <!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11290,7 +11290,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>binary data</original>
-<translation>バイナリデータ</translation>
+<translation>バイナリーデータ</translation>
 </phrase>
 
 <phrase>
@@ -12855,7 +12855,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>delete selected language file</original>
-<translation>選択した言語ファイルを削除する</translation>
+<translation>選択した言語ファイルを削除</translation>
 </phrase>
 
 <phrase>
@@ -13137,7 +13137,7 @@ To continue, please download a fresh copy of PhotoDemon from PhotoDemon.org.</or
 
 <phrase>
 <original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>バイナリ型のタグを Base64 として強制的に抽出 (遅い)</translation>
+<translation>バイナリー型のタグを Base64 として強制的に抽出 (遅い)</translation>
 </phrase>
 
 <phrase>
@@ -13501,7 +13501,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>デフォルトでは、大きなバイナリ タグ (画像のサムネイルなど) は処理されません。  代わりに、PhotoDemon は埋め込まれたデータのサイズを単純に報告します。このデータが必要な場合、PhotoDemon はさらに分析するためにデータを手動で Base64 に変換できます。</translation>
+<translation>デフォルトでは、大きなバイナリー タグ (画像のサムネイルなど) は処理されません。  代わりに、PhotoDemon は埋め込まれたデータのサイズを単純に報告します。このデータが必要な場合、PhotoDemon はさらに分析するためにデータを手動で Base64 に変換できます。</translation>
 </phrase>
 
 <phrase>
