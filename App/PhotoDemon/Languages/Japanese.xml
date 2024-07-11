@@ -2215,7 +2215,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation>今後は、プロンプトを表示せずに自動的にラスタライズします</translation>
+<translation>今後、プロンプトを表示せずに自動的にラスタライズする</translation>
 </phrase>
 
 <phrase>
@@ -2294,11 +2294,11 @@ Please close this file in any other running programs, then try again.</original>
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>残念ながら、PhotoDemon は以下の画像を読み込むことができませんでした: 
+<translation>残念ながら、PhotoDemon は以下の画像を読み込むことができませんでした:
 
 %1
 
-読み込む前に、他のプログラムを使用して、この画像を一般的なフォーマット (JPEG や PNG など) で保存してください。  ありがとう!</translation>
+読み込む前に、他のプログラムを使用して、この画像を一般的なフォーマット (JPEG または PNG など) で保存してください。 ありがとう!</translation>
 </phrase>
 
 <phrase>
@@ -2321,10 +2321,11 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>残念ながら、PhotoDemon は以下の画像を読み込めませんでした: 
+<translation>残念ながら、PhotoDemon は以下の画像を読み込むことができませんでした:
 
 %1
-これらの画像が存在し、サポートされている画像フォーマット (JPEG または PNG など) を使用していることを確認してください。  ありがとう!</translation>
+
+これらの画像が存在すること、およびサポートされている画像形式 (JPEG や PNG など) を使用していることを確認してください。  ありがとう!</translation>
 </phrase>
 
 <phrase>
@@ -2448,17 +2449,17 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Adobe Color Swatch</original>
-<translation>アドビ カラー スウォッチ</translation>
+<translation>Adobe カラー スウォッチ</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation>アドビ カラー テーブル</translation>
+<translation>Adobe カラー テーブル</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange</original>
-<translation>アドビ スウォッチ エクスチェンジ</translation>
+<translation>Adobe 交換用スウォッチ</translation>
 </phrase>
 
 <phrase>
@@ -2503,12 +2504,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Ordered (Bayer 4x4)</original>
-<translation>オーダー (バイエル4x4)</translation>
+<translation>オーダー (ベイヤー 4x4)</translation>
 </phrase>
 
 <phrase>
 <original>Ordered (Bayer 8x8)</original>
-<translation>オーダー (バイエル8x8)</translation>
+<translation>オーダー (ベイヤー 8x8)</translation>
 </phrase>
 
 <phrase>
@@ -2533,7 +2534,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Atkinson / Classic Macintosh</original>
-<translation>アトキンソン / クラシック・マッキントッシュ</translation>
+<translation>アトキンソン / クラシック マッキントッシュ</translation>
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
@@ -2547,17 +2548,17 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation>AVIF は、Alliance for Open Mediaによって開発された最新の画像フォーマットです。  PhotoDemon は、ネイティブで AVIF 画像をサポートしていませんが、AVIF サポートを永続的に有効にする無料のオープン ソース プラグインをダウンロードできます。</translation>
+<translation>AVIF は、Alliance for Open Media によって開発された最新の画像フォーマットです。  PhotoDemon は、ネイティブで AVIF 画像をサポートしていませんが、AVIF サポートを永続的に有効にする無料のオープン ソース プラグインをダウンロードできます。</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation>Alliance for Open Media は、フリーでオープンソースの64ビットAVIFエンコーダーとデコーダー ライブラリを提供しています。  これらのライブラリは、それぞれ約 ~%1 mb (合計 ~%2 mb) です。  ダウンロードすると、PhotoDemon が 64 ビットシステム上で AVIF ファイルをインポートおよびエクスポートできるようになります。</translation>
+<translation>Alliance for Open Media は、フリーでオープン ソースの 64 ビット AVIF エンコーダーとデコーダー ライブラリを提供しています。  これらのライブラリは、それぞれ約 ~%1 mb (合計 ~%2 mb) です。  ダウンロードすると、PhotoDemon が 64 ビットシステム上で AVIF ファイルをインポートおよびエクスポートできるようになります。</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation>PhotoDemon がこれらのライブラリを PhotoDemon プラグイン フォルダにダウンロードしますか?</translation>
+<translation>PhotoDemon でこれらのライブラリを PhotoDemon プラグイン フォルダにダウンロードしますか?</translation>
 </phrase>
 
 <phrase>
@@ -2587,28 +2588,28 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>制限されたシステムフォルダに PhotoDemon を配置しました。  PhotoDemon は管理者権限を持っていないため、ファイルをダウンロードすることができません。  PhotoDemon を制限のないフォルダに移動し、再度お試しください。</translation>
+<translation>制限されたシステムフォルダに PhotoDemon を配置しました。  PhotoDemon は管理者権限を持っていないため、ファイルをダウンロードすることができません。  PhotoDemon を制限のないフォルダに移動し、もう一度お試しください。</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
-<translation>スキャナは正常に有効化されました</translation>
+<translation>スキャナーは正常に有効化されました</translation>
 </phrase>
 
 <phrase>
 <original>The selected scanner or digital camera isn't responding.
 
 Please make sure the device is turned on and ready for use.</original>
-<translation>選択したスキャナまたはデジタルカメラが応答しません。
+<translation>選択したスキャナーまたはデジタルカメラが応答しません。
 
 デバイスの電源が入っており、使用できる状態であることを確認してください。</translation>
 </phrase>
 
 <phrase>
 <original>Scanner error</original>
-<translation>スキャナーエラー</translation>
+<translation>スキャナー エラー</translation>
 </phrase>
 
 <phrase>
@@ -2617,7 +2618,7 @@ Please make sure the device is turned on and ready for use.</original>
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>プログラムの初期化時に、スキャナー/デジタルカメラインターフェースプラグイン (EZTW32.Dll) が見つからないとマークされました。
 
-スキャナサポートを有効にするには、EZTW32.Dll ファイル (http://eztwain.com/ezt1_download.htm からダウンロード可能)をプラグインディレクトリにコピーし、プログラムを再読み込みしてください。</translation>
+スキャナーサポートを有効にするには、EZTW32.Dll ファイル (http://eztwain.com/ezt1_download.htm からダウンロード可能)をプラグインディレクトリにコピーし、プログラムを再読み込みしてください。</translation>
 </phrase>
 
 <phrase>
@@ -2637,7 +2638,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>不明なエラーが発生しました。  スキャナの電源が入っており、使用可能な状態であることを確認してください。</translation>
+<translation>不明なエラーが発生しました。  スキャナーの電源が入っており、使用可能な状態であることを確認してください。</translation>
 </phrase>
 
 <phrase>
@@ -2647,7 +2648,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB ロックを取得できません。  他のプログラムがスキャナにアクセスしていないことを確認してください。  問題が解決しない場合は、再起動して再度お試しください。</translation>
+<translation>DIB ロックを取得できません。  他のプログラムがスキャナーにアクセスしていないことを確認してください。  問題が解決しない場合は、再起動して再度お試しください。</translation>
 </phrase>
 
 <phrase>
@@ -2667,7 +2668,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>スキャナは、EZTW32.dll ドキュメントで指定されていないエラーコードを返しました (エラー #%1)。  詳しくは http://www.eztwain.com をご参照ください。</translation>
+<translation>スキャナーは、EZTW32.dll ドキュメントで指定されていないエラーコードを返しました (エラー #%1)。  詳しくは http://www.eztwain.com をご参照ください。</translation>
 </phrase>
 
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4002,7 +4003,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Adobe SWF)</original>
-<translation>XMP (アドビswf)</translation>
+<translation>XMP (Adobeswf)</translation>
 </phrase>
 
 <phrase>
