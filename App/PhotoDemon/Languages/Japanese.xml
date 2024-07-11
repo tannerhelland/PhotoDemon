@@ -9984,66 +9984,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>auto-detect animated images</original>
-<translation>アニメーション画像の自動検出</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for this format</original>
-<translation>このフォーマットのエクスポート設定を行う</translation>
-</phrase>
-
-<phrase>
-<original>keep images in their original format</original>
-<translation>画像を元のフォーマットのまま保存</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>すべての画像を新しいフォーマットに変換</translation>
-</phrase>
-
-<phrase>
-<original>set export settings for animated images</original>
-<translation>アニメーション画像のエクスポート設定</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation>写真編集アクションを適用</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>画像名や画像フォーマットの変更のみを行う場合は、このオプションを使用します。</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>画像サイズ変更</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>マクロを選択</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation>保存したマクロ ファイルから他のアクションを適用</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>画像のリサイズ</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>露出と照明の問題を解決</translation>
-</phrase>
-
-<phrase>
 <original>previews disabled</original>
 <translation>プレビューが無効です</translation>
 </phrase>
@@ -11155,18 +11095,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>高速、サイズ大</translation>
-</phrase>
-
-<phrase>
 <original>embed background color (bKGD chunk)</original>
 <translation>背景色を埋め込む (bKGD チャンク)</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>低速、サイズ小</translation>
 </phrase>
 
 <phrase>
