@@ -731,8 +731,9 @@ Private Sub cmdMergeAll_Click()
                 'Old PhotoDemon language files used manually inserted & characters for keyboard accelerators.
                 ' Accelerators are now handled automatically on a per-language basis.  To ensure work isn't lost
                 ' when upgrading these old files, strip any accelerators from the incoming text.
-                If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
-                If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                ' (As of 2024, this change is no longer necessary.)
+                'If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                'If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
                 If (LenB(translatedText) > 0) Then m_PhraseCollection.AddItem origText, translatedText
                 
