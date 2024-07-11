@@ -1796,8 +1796,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>%1 save failed. Please report this error using Help -&gt; Submit Bug Report.</original>
-<translation>%1 の保存に失敗しました。 [ヘルプ] -&gt; [バグ レポートまたはフィードバックの提出] を使用してこのエラーを報告してください。</translation>
+<original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
+<translation>%1 の保存に失敗しました。 [ヘルプ] -> [バグ レポートまたはフィードバックの提出] を使用してこのエラーを報告してください。</translation>
 </phrase>
 
 <phrase>
@@ -2551,8 +2551,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly &#126;%1 mb each (&#126;%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation>Alliance for Open Media は、フリーでオープン ソースの 64 ビット AVIF エンコーダーとデコーダー ライブラリを提供しています。  これらのライブラリは、それぞれ約 &#126;%1 mb (合計 &#126;%2 mb) です。  ダウンロードすると、PhotoDemon が 64 ビットシステム上で AVIF ファイルをインポートおよびエクスポートできるようになります。</translation>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~%1 mb each (~%2 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<translation>Alliance for Open Media は、フリーでオープン ソースの 64 ビット AVIF エンコーダーとデコーダー ライブラリを提供しています。  これらのライブラリは、それぞれ約 ~%1 mb (合計 ~%2 mb) です。  ダウンロードすると、PhotoDemon が 64 ビットシステム上で AVIF ファイルをインポートおよびエクスポートできるようになります。</translation>
 </phrase>
 
 <phrase>
@@ -2731,10 +2731,10 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>Unknown processor request submitted: %1
 
-Please report this bug via the Help -&gt; Submit Bug Report menu.</original>
+Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>不明なプロセッサ要求が送信されました: %1
 
-[ヘルプ] -&gt; [バグ レポートまたはフィードバックの提出] メニューからこのバグを報告してください。</translation>
+[ヘルプ] -> [バグ レポートまたはフィードバックの提出] メニューからこのバグを報告してください。</translation>
 </phrase>
 
 <phrase>
@@ -3108,17 +3108,17 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 %1
 
-In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help &gt; Submit Bug Report menu.</original>
+In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
 <translation>この画像を保存しようとしたときにエラーが発生しました。  FreeImage プラグインは、次のエラーの詳細を報告しました:
 
 %1
 
-それまでの間、画像を別の形式で保存してみてください。  [ヘルプ] &gt; [バグ レポートまたはフィードバックの提出] メニューから、PhotoDemon 開発者にこのことを知らせることもできます。</translation>
+それまでの間、画像を別の形式で保存してみてください。  [ヘルプ] > [バグ レポートまたはフィードバックの提出] メニューから、PhotoDemon 開発者にこのことを知らせることもできます。</translation>
 </phrase>
 
 <phrase>
-<original>Output format not recognized.  Save aborted.  Please use the Help -&gt; Submit Bug Report menu item to report this incident.</original>
-<translation>出力形式が認識されません。  保存が中断されました。  この事象を報告するには、[ヘルプ] -&gt; [バグ レポートまたはフィードバックの提出] メニュー項目を使用してください。</translation>
+<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+<translation>出力形式が認識されません。  保存が中断されました。  この事象を報告するには、[ヘルプ] -> [バグ レポートまたはフィードバックの提出] メニュー項目を使用してください。</translation>
 </phrase>
 
 <phrase>
@@ -3497,8 +3497,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -&gt; Options menu)</original>
-<translation>ソフトウェアのアップデータを初期化 (この機能は [ツール] -&gt; [オプション] メニューで無効にできます)</translation>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>ソフトウェアのアップデータを初期化 (この機能は [ツール] -> [オプション] メニューで無効にできます)</translation>
 </phrase>
 
 <phrase>
@@ -6431,8 +6431,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -&gt; Sharpen -&gt; Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>すべてのモノクロからグレースケールへのツールと同様に、このツールはぼやけた画像を生成します。  これを修正するには、[エフェクト] -&gt; [シャープ] -&gt; [アンシャープ マスク] ツールを使用します。 (最良の結果を得るには、少なくともこの半径と同じ大きさのアンシャープ マスク半径を使用してください。)</translation>
+<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
+<translation>すべてのモノクロからグレースケールへのツールと同様に、このツールはぼやけた画像を生成します。  これを修正するには、[エフェクト] -> [シャープ] -> [アンシャープ マスク] ツールを使用します。 (最良の結果を得るには、少なくともこの半径と同じ大きさのアンシャープ マスク半径を使用してください。)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6922,8 +6922,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>edit this gradient &gt;&gt;</original>
-<translation>このグラデーションを編集 &gt;&gt;</translation>
+<original>edit this gradient >></original>
+<translation>このグラデーションを編集 >></translation>
 </phrase>
 
 <phrase>
@@ -7353,10 +7353,10 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
-If you want to save it with a different file name, please select 'Cancel', then use the File -&gt; Save As menu item.</original>
+If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>注: [保存] をクリックすると、PhotoDemon は現在のファイル名を使用してこの画像を保存します。
 
-別のファイル名で保存したい場合は、「キャンセル」を選択し、メニュー項目 [ファイル] -&gt; [名前を付けて保存] を使用してください。</translation>
+別のファイル名で保存したい場合は、「キャンセル」を選択し、メニュー項目 [ファイル] -> [名前を付けて保存] を使用してください。</translation>
 </phrase>
 
 <phrase>
@@ -9420,8 +9420,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>If you want to enlarge the canvas to fit the rotated image, please use the Image -&gt; Rotate menu instead.</original>
-<translation>回転した画像に合わせてキャンバスを拡大したい場合は、代わりに [画像] -&gt; [回転] メニューを使用してください。</translation>
+<original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
+<translation>回転した画像に合わせてキャンバスを拡大したい場合は、代わりに [画像] -> [回転] メニューを使用してください。</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9876,8 +9876,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -&gt; Macros -&gt; Record new macro" menu in the main PhotoDemon window.</original>
-<translation>注: 「マクロ」とは、単に写真編集アクションのリストです。メイン プログラムには、任意の調整、フィルター、エフェクトを含めることができます。  PhotoDemon のメイン ウィンドウの [ツール] -&gt; [マクロを作成] -&gt; [記録を開始] メニューを使用して、新しいマクロを作成できます。</translation>
+<original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
+<translation>注: 「マクロ」とは、単に写真編集アクションのリストです。メイン プログラムには、任意の調整、フィルター、エフェクトを含めることができます。  PhotoDemon のメイン ウィンドウの [ツール] -> [マクロを作成] -> [記録を開始] メニューを使用して、新しいマクロを作成できます。</translation>
 </phrase>
 
 <phrase>
@@ -11102,8 +11102,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>add this to the "Adjustments &gt; Color &gt; Color lookup" tool</original>
-<translation>これを [調整] &gt; [カラー] &gt; [カラー ルックアップ] ツールに追加</translation>
+<original>add this to the "Adjustments > Color > Color lookup" tool</original>
+<translation>これを [調整] > [カラー] > [カラー ルックアップ] ツールに追加</translation>
 </phrase>
 
 <phrase>
@@ -11269,8 +11269,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>integers &gt;= 0</original>
-<translation>整数 &gt;= 0</translation>
+<original>integers >= 0</original>
+<translation>整数 >= 0</translation>
 </phrase>
 
 <phrase>
@@ -11279,8 +11279,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>numbers &gt;= 0</original>
-<translation>数値 &gt;= 0</translation>
+<original>numbers >= 0</original>
+<translation>数値 >= 0</translation>
 </phrase>
 
 <phrase>
@@ -11783,8 +11783,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>This option will create a blank image.  Other ways to create new images can be found in the File -&gt; Import menu.</original>
-<translation>このオプションは空白の画像を作成します。  新規画像を作成する他の方法は、[ファイル] -&gt; [インポート] メニューにあります。</translation>
+<original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
+<translation>このオプションは空白の画像を作成します。  新規画像を作成する他の方法は、[ファイル] -> [インポート] メニューにあります。</translation>
 </phrase>
 
 <phrase>
@@ -11794,7 +11794,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>画像を開くもう一つの方法は、デスクトップまたは Windows エクスプローラから PhotoDemon にドラッグ &amp; ドロップすることです。</translation>
+<translation>画像を開くもう一つの方法は、デスクトップまたは Windows エクスプローラから PhotoDemon にドラッグ & ドロップすることです。</translation>
 </phrase>
 
 <phrase>
@@ -11813,8 +11813,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Because you have turned off save prompts (via Edit -&gt; Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>保存プロンプトをオフにしている ([ツール] -&gt; [オプション] で設定) ため、この画像を閉じる前に保存の確認プロンプトは表示されません。</translation>
+<original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
+<translation>保存プロンプトをオフにしている ([ツール] -> [オプション] で設定) ため、この画像を閉じる前に保存の確認プロンプトは表示されません。</translation>
 </phrase>
 
 <phrase>
@@ -11854,7 +11854,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>ハンド (クリック &amp; ドラッグで画像スクロール)</translation>
+<translation>ハンド (クリック & ドラッグで画像スクロール)</translation>
 </phrase>
 
 <phrase>
@@ -12473,8 +12473,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -&gt; Feathering menu.</original>
-<translation>このぼかしスライダーは、ぼかしを即座に調整できます。  パフォーマンス上の理由から、小さな半径に制限されています。  ぼかしの半径を大きくするには、[選択] -&gt; [ぼかし] メニューを使用します。</translation>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
+<translation>このぼかしスライダーは、ぼかしを即座に調整できます。  パフォーマンス上の理由から、小さな半径に制限されています。  ぼかしの半径を大きくするには、[選択] -> [ぼかし] メニューを使用します。</translation>
 </phrase>
 
 <phrase>
@@ -13718,8 +13718,8 @@ If you still choose to disable updates, don't forget to visit PhotoDemon.org fro
 </phrase>
 
 <phrase>
-<original>In developer builds, debug data is automatically logged to the program's &#92;Data&#92;Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>開発者ビルドでは、デバッグ データはプログラムの &#92;Data&#92;Debug フォルダーに自動的に記録されます。  安定版リリースでバグが発生した場合は、この設定を手動で有効にしてください。  これは開発者が問題を解決するのに役立ちます。</translation>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>開発者ビルドでは、デバッグ データはプログラムの \Data\Debug フォルダーに自動的に記録されます。  安定版リリースでバグが発生した場合は、この設定を手動で有効にしてください。  これは開発者が問題を解決するのに役立ちます。</translation>
 </phrase>
 
 <phrase>
