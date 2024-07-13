@@ -3430,14 +3430,14 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Paint stroke</original>
-<translation>ストロークの描画</translation>
+<translation>ブラシで描画</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Pencil stroke</original>
-<translation>鉛筆のストローク</translation>
+<translation>鉛筆で描画</translation>
 </phrase>
 
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -12222,7 +12222,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>絵筆 (先が柔らかい筆)</translation>
+<translation>ブラシ (先が柔らかい筆)</translation>
 </phrase>
 
 <phrase>
@@ -12232,7 +12232,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation>絵筆 (先が柔らかい筆)</translation>
+<translation>バケツ (色で塗る)</translation>
 </phrase>
 
 <phrase>
