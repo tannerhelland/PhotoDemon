@@ -819,7 +819,7 @@ Public Function PromptForLibraryDownload_JXL(Optional ByVal targetIsImportLib As
         Set uiMsg = New pdString
         uiMsg.AppendLine g_Language.TranslateMessage("JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.")
         uiMsg.AppendLineBreak
-        uiMsg.AppendLine g_Language.TranslateMessage("The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).", 5)
+        uiMsg.AppendLine g_Language.TranslateMessage("The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).", 7)
         uiMsg.AppendLineBreak
         uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?")
         
@@ -862,9 +862,9 @@ Private Function DownloadLatestLibjxl() As Boolean
     ' - libjxl-LICENSE.txt (copyright and license info)
     Const EXPECTED_NUM_FILES As Long = 4
     
-    'Current libjxl build is 0.10.0, downloaded from https://github.com/libjxl/libjxl/releases/tag/v0.10.0
-    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 7624703
-    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libjxl-plugins-0.10.0/libjxl-0.10.0.pdz"
+    'Current libjxl build is 0.10.3, downloaded from https://github.com/libjxl/libjxl/releases/tag/v0.10.3
+    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 7634943
+    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libjxl-plugins-0.10.3/libjxl-0.10.3.pdz"
     DownloadLatestLibjxl = Updates.DownloadPluginUpdate(CCP_libjxl, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
     
 End Function
