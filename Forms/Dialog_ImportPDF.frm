@@ -246,8 +246,9 @@ Attribute VB_Exposed = False
 'PDF Import Dialog
 'Copyright 2024-2024 by Tanner Helland
 'Created: 29/February/24
-'Last updated: 08/March/24
-'Last update: use the SVG import dialog as the basis for a similar(ish) PDF import dialog
+'Last updated: 13/July/24
+'Last update: fix crash on setting focus to invalid entries in the "page range" edit box
+'             (needed if the user enteres an invalid page range then switches to a different panel)
 '
 'Like Photoshop and GIMP (and probably others), PhotoDemon allows users to set their own PDF resolution,
 ' image size, pages-to-import, and various other PDF-specific features at import-time.  This dialog
@@ -423,13 +424,25 @@ Private Sub cmdBar_ExtraValidations()
                 If (Not TextSupport.EntryValid(idxFirst, 1, m_PDF.GetPageCount(), False, False)) Then
                     PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", idxFirst, 1, m_PDF.GetPageCount()
                     cmdBar.ValidationFailed
+                    
+                    'Ensure the page range text box is visible
+                    If (Me.btsPanel.ListIndex <> 1) Then Me.btsPanel.ListIndex = 1
+                    If (Me.btsPages.ListIndex <> 2) Then Me.btsPages.ListIndex = 2
+                    
                     txtPageRange.SetFocus
                     Exit Sub
+                    
                 ElseIf (Not TextSupport.EntryValid(idxLast, 1, m_PDF.GetPageCount(), False, False)) Then
                     PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", idxLast, 1, m_PDF.GetPageCount()
                     cmdBar.ValidationFailed
+                    
+                    'Ensure the page range text box is visible
+                    If (Me.btsPanel.ListIndex <> 1) Then Me.btsPanel.ListIndex = 1
+                    If (Me.btsPages.ListIndex <> 2) Then Me.btsPages.ListIndex = 2
+                    
                     txtPageRange.SetFocus
                     Exit Sub
+                    
                 End If
                 
             End If
@@ -477,6 +490,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    
     cboPreview.ListIndex = 0
     rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
     rszUI.AspectRatioLock = True
@@ -484,6 +498,16 @@ Private Sub cmdBar_ResetClick()
     clsBackground.Color = RGB(255, 255, 255)
     btsAntialiasing.ListIndex = 0
     btsAnnotations.ListIndex = 1
+    
+    'Attempt to set default page listing for "custom pages" to "all pages"
+    If (Not m_PDF Is Nothing) Then
+        If (m_PDF.GetPageCount > 1) Then
+            txtPageRange.Text = "1-" & m_PDF.GetPageCount
+        Else
+            txtPageRange.Text = "1"
+        End If
+    End If
+    
 End Sub
 
 Private Sub Form_Activate()

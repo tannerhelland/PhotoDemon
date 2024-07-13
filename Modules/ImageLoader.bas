@@ -1674,6 +1674,13 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             listOfPages.AddInt 0
         End If
         
+        'Ensure at least one valid page was added to the import list
+        If (listOfPages.GetNumOfInts <= 0) Then
+            userCanceledImportDialog = vbCancel
+            LoadPDF = False
+            Exit Function
+        End If
+        
     End If
     
     'Before continuing, ensure the list of pages is sorted from most to least (because we pop pages off
