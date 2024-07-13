@@ -194,7 +194,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         
         'For Enter and Esc keypresses, we want to see if the target form contains a command bar.  If it does,
         ' we'll directly invoke the appropriate keypress.
-        If (navKeyCode = pdnk_Enter) Or (navKeyCode = pdnk_Escape) Then
+        If (navKeyCode = pdnk_Enter) Or (navKeyCode = pdnk_Escape) Or (navKeyCode = pdnk_Space) Then
             
             'See if this form 1) is a raised dialog, and 2) contains a command bar
             If Interface.IsModalDialogActive() Then

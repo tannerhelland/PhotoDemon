@@ -714,11 +714,12 @@ End Type
 Public Enum PD_NavigationKey
     pdnk_Enter = vbKeyReturn
     pdnk_Escape = vbKeyEscape
+    pdnk_Space = vbKeySpace
     pdnk_Tab = vbKeyTab
 End Enum
 
 #If False Then
-    Private Const pdnk_Enter = vbKeyReturn, pdnk_Escape = vbKeyEscape, pdnk_Tab = vbKeyTab
+    Private Const pdnk_Enter = vbKeyReturn, pdnk_Escape = vbKeyEscape, pdnk_Space = vbKeySpace, pdnk_Tab = vbKeyTab
 #End If
 
 'Prior to 7.0, only selections offered detailed control over smoothing.  However, new tools (like flood fills)
