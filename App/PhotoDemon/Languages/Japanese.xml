@@ -4678,7 +4678,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>The final width and height measurements must be between 1 and %1 pixels.</original>
-<translation>最終的な幅と高さの測定値は 1 ～ %1 ピクセルである必要があります。</translation>
+<translation>最終的な幅と高さの測定値は 1 から %1 ピクセルである必要があります。</translation>
 </phrase>
 
 <phrase>
@@ -12514,12 +12514,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>modify measurement</original>
-<translation>測定値を修正</translation>
+<translation>測定を修正</translation>
 </phrase>
 
 <phrase>
 <original>share measurements between images</original>
-<translation>画像間で測定値を共有</translation>
+<translation>画像間で測定を共有</translation>
 </phrase>
 
 <phrase>
@@ -12549,7 +12549,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use measurement to</original>
-<translation>計測を使用</translation>
+<translation>測定を使用</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
