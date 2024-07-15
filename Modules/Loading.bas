@@ -52,7 +52,7 @@ Option Explicit
 '    During a batch process, normal image import processes (like displaying optional prompts) may be suspended.  This param
 '    string can contain custom parameters that can be blindly forwarded to subsequent import operations.  (Basically, it's a
 '    catch-all for future improvements and modifications.)
-Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByVal suspendWarnings As Boolean = False, Optional ByVal handleUIDisabling As Boolean = True, Optional ByVal overrideParameters As String = vbNullString) As Boolean
+Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByVal suspendWarnings As Boolean = False, Optional ByVal handleUIDisabling As Boolean = True, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef numCanceledImports As Long = 0) As Boolean
     
     '*** AND NOW, AN IMPORTANT MESSAGE ABOUT DOEVENTS ***
     
@@ -199,12 +199,15 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'In recent years, I've tried to support more vector formats in PD.  These formats often require an import dialog
     ' (where the user can control rasterization settings).  If the user cancels these import dialogs, we don't want
     ' to pester them with error dialogs.  Formats that support a user dialog will set this value as necessary.
-    Dim userCanceledImportDialog As Boolean: userCanceledImportDialog = False
+    Dim userCanceledImportDialog As Boolean
+    userCanceledImportDialog = False
     
     If (internalFormatID = PDIF_UNKNOWN) Then
     
-        'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
-        ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
+        'Note that some formats may raise additional dialogs (e.g. tone-mapping HDR/RAW images, selecting pages
+        ' from a PDF), so the loader does not return binary pass/fail state.
+        '
+        'If the function fails due to user cancellation, we should suppress subsequent error message boxes.
         loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters, userCanceledImportDialog)
         
         '*************************************************************************************************************************************
@@ -545,6 +548,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", newImageJustLoaded:=True
         Message "Image loaded successfully."
     Else
+        If userCanceledImportDialog Then numCanceledImports = numCanceledImports + 1
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And (Not userCanceledImportDialog) Then
             Message "Failed to load %1", srcFile
             PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
@@ -886,13 +890,18 @@ End Function
 ' 2) You lose the ability to assign custom titles to incoming images.  Titles will be auto-assigned based on their filenames.
 ' 3) You won't receive detailed success/failure information on each file.  Instead, this function will return TRUE if it was able to load
 '    at least one image successfully.  If you want per-file success/fail results, call LoadFileAsNewImage manually from your own loop.
-Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional ByVal updateRecentFileList As Boolean = True) As Boolean
+Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional ByVal updateRecentFileList As Boolean = True, Optional ByRef numCanceledImports As Long) As Boolean
 
     If (Not srcList Is Nothing) Then
         
         'A lot can go wrong when loading image files.  This function will track failures and notify the user post-load.
         Dim numFailures As Long, numSuccesses As Long
         Dim brokenFiles As String
+        
+        'The user may receive import dialogs for some formats.  This value will track the number of canceled import dialogs.
+        ' If this value matches the number of failed imports, nothing actually went wrong during the import - the user just
+        ' canceled 1+ loads.
+        numCanceledImports = 0
         
         Processor.MarkProgramBusyState True, True
         
@@ -903,7 +912,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             ' exists before forwarding it to the loader.
             If Files.FileExists(tmpFilename) Then
                 
-                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, True, False) Then
+                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, True, False, vbNullString, numCanceledImports) Then
                     numSuccesses = numSuccesses + 1
                 Else
                     If (LenB(tmpFilename) <> 0) Then
@@ -936,7 +945,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages() > 1)
         
         'Even if returning TRUE, we still want to notify the user of any failed files
-        If (numFailures > 0) Then
+        If (numFailures > 0) And (numCanceledImports = 0) Then
             PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & "Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!", vbExclamation Or vbOKOnly, "Some images were not loaded", brokenFiles
         End If
         
