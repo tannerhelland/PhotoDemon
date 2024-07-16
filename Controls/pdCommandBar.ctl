@@ -919,8 +919,8 @@ Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, By
     
         'This is a relevant navigation key!
         
-        'Interpret Enter as OK...
-        If (wParam = pdnk_Enter) Then
+        'Interpret Enter or Space as OK...
+        If (wParam = pdnk_Enter) Or (wParam = pdnk_Space) Then
             HandleOKButton
             bHandled = True
             
@@ -941,8 +941,8 @@ End Sub
 'If the command bar itself has focus, manually handle Enter/Esc as OK/Cancel events
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
 
-    'Interpret Enter as OK...
-    If (whichSysKey = pdnk_Enter) Then
+    'Interpret Enter or Space as OK...
+    If (whichSysKey = pdnk_Enter) Or (whichSysKey = pdnk_Space) Then
         markEventHandled = True
         HandleOKButton
         

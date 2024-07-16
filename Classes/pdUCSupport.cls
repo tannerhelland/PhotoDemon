@@ -837,7 +837,7 @@ Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCod
     
     'Handle navigation keys separately (unless the keypress was already eaten by the attached control)
     If (Not markEventHandled) And m_ControlCanGetFocus Then
-        If (vkCode = pdnk_Enter) Or (vkCode = pdnk_Escape) Or (vkCode = pdnk_Tab) Then RaiseEvent KeyDownSystem(Shift, vkCode, markEventHandled)
+        If (vkCode = pdnk_Enter) Or (vkCode = pdnk_Escape) Or (vkCode = pdnk_Space) Or (vkCode = pdnk_Tab) Then RaiseEvent KeyDownSystem(Shift, vkCode, markEventHandled)
     End If
     
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.4.13</langversion>
+<langversion>2024.7.1</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation>結合をカット</translation>
+<translation>結合を切り取り</translation>
 </phrase>
 
 <phrase>
@@ -950,7 +950,7 @@
 
 <phrase>
 <original>Correct lens distortion</original>
-<translation>レンズ歪みの補正</translation>
+<translation>レンズゆがみの補正</translation>
 </phrase>
 
 <phrase>
@@ -965,7 +965,7 @@
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>レンズ歪みの適用</translation>
+<translation>レンズゆがみの適用</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>その他の歪み</translation>
+<translation>その他のゆがみ</translation>
 </phrase>
 
 <phrase>
@@ -1826,7 +1826,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>All Compatible Images</original>
-<translation>すべての対応画像</translation>
+<translation>すべての互換性がある画像形式</translation>
 </phrase>
 
 <phrase>
@@ -2585,7 +2585,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation>手動で AVIF サポートを有効にするには、無料の「%1」および「%2」プログラムの最新コピーをダウンロードし、PhotoDemon プラグイン フォルダーに配置します。</translation>
+<translation>手動で AVIF サポートを有効にするには、無料の "%1" および "%2" プログラムの最新コピーをダウンロードし、PhotoDemon プラグイン フォルダーに配置します。</translation>
 </phrase>
 
 <phrase>
@@ -2694,22 +2694,22 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL (JXL) は、JPEG 画像形式に代わる最新の形式です。  PhotoDemon は JPEG XL 画像をネイティブにサポートしていませんが、JPEG XL サポートを追加する無料のオープンソース プラグインをダウンロードできます。</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>libjxl ライブラリは、無料のオープンソース JPEG XL 互換性を提供します。  libjxl のポータブル コピーには、~%1 mb のディスク領域が必要です。  ダウンロードが完了すると、PhotoDemon は libjxl を使用して JPEG XL 画像 (アニメーションを含む) をロードおよび保存できます。</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>PhotoDemon で libjxl を PhotoDemon プラグイン フォルダーにダウンロードしますか?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon は現時点では libjxl をダウンロードしません。</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -3062,12 +3062,12 @@ Description: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>最後の行を両端揃えにする</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>上部のアウトライン</translation>
 </phrase>
 
 <phrase>
@@ -3408,7 +3408,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift キー: レイヤーの縦横比を保持</translation>
+<translation>Shift キー: レイヤーのアスペクト比を保持</translation>
 </phrase>
 
 <phrase>
@@ -3430,14 +3430,14 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Paint stroke</original>
-<translation>ストロークの描画</translation>
+<translation>ブラシで描画</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Pencil stroke</original>
-<translation>鉛筆のストローク</translation>
+<translation>鉛筆で描画</translation>
 </phrase>
 
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3553,27 +3553,27 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>このアクションはサードパーティのプラグイン (%1) に依存しています。  このプラグインの更新バージョンが利用可能です。</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>あなたのバージョン: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>新しいバージョン: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>PhotoDemon でこのプラグインを更新しますか?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>更新があります</translation>
 </phrase>
 
 <phrase>
@@ -4321,7 +4321,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>transparency cut-off</original>
-<translation>透明度カット オフ</translation>
+<translation>透明度のしきい値</translation>
 </phrase>
 
 <phrase>
@@ -4361,7 +4361,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation>バイナリー (カット オフ)</translation>
+<translation>バイナリー (しきい値)</translation>
 </phrase>
 
 <phrase>
@@ -4678,7 +4678,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>The final width and height measurements must be between 1 and %1 pixels.</original>
-<translation>最終的な幅と高さの測定値は 1 ～ %1 ピクセルである必要があります。</translation>
+<translation>最終的な幅と高さの測定値は 1 から %1 ピクセルである必要があります。</translation>
 </phrase>
 
 <phrase>
@@ -4688,7 +4688,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>縦横比を維持します (コンストレイン ポジションとも呼ばれます)。幅と高さを同期させながら画像のサイズを変更するには、このオプションを使用します。</translation>
+<translation>アスペクト比を維持します (コンストレイン ポジションとも呼ばれます)。幅と高さを同期させながら画像のサイズを変更するには、このオプションを使用します。</translation>
 </phrase>
 
 <phrase>
@@ -4718,7 +4718,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>exact aspect ratio will vary by image</original>
-<translation>正確な縦横比は画像によって異なります</translation>
+<translation>正確なアスペクト比は画像によって異なります</translation>
 </phrase>
 
 <phrase>
@@ -4728,7 +4728,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>%1, was %2</original>
-<translation>%1、 %2でした</translation>
+<translation>%2 → %1</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -5338,12 +5338,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Distort</original>
-<translation>歪み</translation>
+<translation>ゆがみ</translation>
 </phrase>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation>既存の歪みを補正</translation>
+<translation>既存のゆがみを補正</translation>
 </phrase>
 
 <phrase>
@@ -5548,37 +5548,37 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>追加の表示</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>レイヤーの境界</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>スマート ガイド</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>スナップ</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>スナップ先</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>キャンバスの境界</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>センター ライン</translation>
 </phrase>
 
 <phrase>
@@ -7177,12 +7177,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>インポート設定</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>ファイル情報</translation>
 </phrase>
 
 <phrase>
@@ -7192,22 +7192,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>注釈</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>ドキュメントのサイズ</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>ページを逆順にする</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>インポートするページ</translation>
 </phrase>
 
 <phrase>
@@ -7217,7 +7217,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>範囲 "%1" は無効です。</translation>
 </phrase>
 
 <phrase>
@@ -7227,37 +7227,37 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>ページ</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>レンダリング</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>すべてのページ</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(合計 %1)</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>最初のページのみ</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>範囲を指定</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>単色</translation>
 </phrase>
 
 <phrase>
@@ -7267,27 +7267,27 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>画面に最適化</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>印刷に最適化</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 ページ</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>ページ サイズ: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>ページ サイズは異なります (最初のページは %1)</translation>
 </phrase>
 
 <phrase>
@@ -7297,12 +7297,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x %2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -7573,7 +7573,7 @@ The update is automatically processing in the background.  You will receive a ne
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>注: [保存] をクリックすると、PhotoDemon は現在のファイル名を使用してこの画像を保存します。
 
-別のファイル名で保存したい場合は、「キャンセル」を選択し、メニュー項目 [ファイル] -> [名前を付けて保存] を使用してください。</translation>
+別のファイル名で保存したい場合は、 'キャンセル' を選択し、メニュー項目 [ファイル] -> [名前を付けて保存] を使用してください。</translation>
 </phrase>
 
 <phrase>
@@ -7909,7 +7909,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation>Photoshop (8bf) プラグインは、拡張子が「8bf」のファイルです。  これらのプラグインは、新しい画像効果を提供します。何千もの 8bf プラグインがオンラインで入手できます。</translation>
+<translation>Photoshop (8bf) プラグインは、拡張子が "8bf" のファイルです。  これらのプラグインは、新しい画像効果を提供します。何千もの 8bf プラグインがオンラインで入手できます。</translation>
 </phrase>
 
 <phrase>
@@ -8076,7 +8076,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>shadow cut-off</original>
-<translation>シャドー カット オフ</translation>
+<translation>シャドーのカット オフ</translation>
 </phrase>
 
 <phrase>
@@ -8086,7 +8086,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>highlight cut-off</original>
-<translation>ハイライト カット オフ</translation>
+<translation>ハイライトのカット オフ</translation>
 </phrase>
 
 <phrase>
@@ -8277,7 +8277,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge color and opacity</original>
-<translation>エッジの色と不透明度</translation>
+<translation>の色と不透明度</translation>
 </phrase>
 
 <phrase>
@@ -8504,7 +8504,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Correcting image distortion</original>
-<translation>画像の歪みを補正</translation>
+<translation>画像のゆがみを補正</translation>
 </phrase>
 
 <!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -8595,7 +8595,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>twist edges</original>
-<translation>エッジをねじる</translation>
+<translation>境界をねじる</translation>
 </phrase>
 
 <phrase>
@@ -8706,7 +8706,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge detection technique</original>
-<translation>エッジ検出技術</translation>
+<translation>エッジ検出の技術</translation>
 </phrase>
 
 <phrase>
@@ -8783,7 +8783,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Tracing image edges with virtual paintbrush</original>
-<translation>仮想ペイントブラシで画像のエッジをなぞる</translation>
+<translation>仮想ペイントブラシで画像の境界をなぞる</translation>
 </phrase>
 
 <!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8857,7 +8857,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Searching each pixel range for edges</original>
-<translation>各ピクセル範囲のエッジを検索</translation>
+<translation>各ピクセル範囲の境界を検索</translation>
 </phrase>
 
 <!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9336,7 +9336,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fade edges</original>
-<translation>エッジのフェード</translation>
+<translation>境界のフェード</translation>
 </phrase>
 
 <phrase>
@@ -9348,7 +9348,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>wrap edge values</original>
-<translation>エッジ値をラップ</translation>
+<translation>境界値をラップ</translation>
 </phrase>
 
 <phrase>
@@ -9360,7 +9360,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge type</original>
-<translation>エッジ タイプ</translation>
+<translation>境界のタイプ</translation>
 </phrase>
 
 <phrase>
@@ -9544,7 +9544,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>カスタム短縮法 (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9780,17 +9780,17 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>ステップ 1: 各画像に適用する写真編集アクションを選択</translation>
+<translation>ステップ 1: 各画像に適用する写真編集アクションを選択する</translation>
 </phrase>
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>ベクター画像からインポートするとき</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>(オプション) 高度なインポート設定</translation>
 </phrase>
 
 <phrase>
@@ -9800,7 +9800,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for this format</original>
-<translation>このフォーマットのエクスポート設定を行う</translation>
+<translation>このフォーマットのエクスポート設定</translation>
 </phrase>
 
 <phrase>
@@ -9820,7 +9820,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation>写真編集アクションを適用</translation>
+<translation>写真編集アクションを適用する</translation>
 </phrase>
 
 <phrase>
@@ -9870,7 +9870,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>erase entire list</original>
-<translation>リストを全消去</translation>
+<translation>リストをすべて消去</translation>
 </phrase>
 
 <phrase>
@@ -9880,7 +9880,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>add individual images</original>
-<translation>個々の画像を追加</translation>
+<translation>単一の画像を追加</translation>
 </phrase>
 
 <phrase>
@@ -9920,7 +9920,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation>入力フォルダー構造を保持</translation>
+<translation>入力フォルダー構造を維持</translation>
 </phrase>
 
 <phrase>
@@ -9950,7 +9950,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>拡張子を含む各ファイル名を次のように強制的に変換</translation>
+<translation>各ファイルの拡張子を含む名前を、次のように強制的に変換</translation>
 </phrase>
 
 <phrase>
@@ -10064,7 +10064,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>続行する前に、[このフォーマットのエクスポート設定を行う] ボタンをクリックして、使用するエクスポート設定を指定する必要があります。</translation>
+<translation>続行する前に、[このフォーマットのエクスポート設定] ボタンをクリックして、使用するエクスポート設定を指定する必要があります。</translation>
 </phrase>
 
 <phrase>
@@ -10089,7 +10089,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
-<translation>PhotoDemon のバッチ ウィザードへようこそ。  このツールを使用すると、いわゆる「バッチ処理」で複数の画像を一度に編集できます。</translation>
+<translation>PhotoDemon のバッチ ウィザードへようこそ。  このツールを使用すると、いわゆる "バッチ処理" で複数の画像を一度に編集できます。</translation>
 </phrase>
 
 <phrase>
@@ -10099,7 +10099,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>注: 「マクロ」とは、単に写真編集アクションのリストです。メイン プログラムには、任意の調整、フィルター、エフェクトを含めることができます。  PhotoDemon のメイン ウィンドウの [ツール] -> [マクロを作成] -> [記録を開始] メニューを使用して、新しいマクロを作成できます。</translation>
+<translation>注: "マクロ" とは、単に写真編集アクションのリストです。メイン プログラムには、任意の調整、フィルター、エフェクトを含めることができます。  PhotoDemon のメイン ウィンドウの [ツール] -> [マクロを作成] -> [記録を開始] メニューを使用して、新しいマクロを作成できます。</translation>
 </phrase>
 
 <phrase>
@@ -10114,7 +10114,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation>2 つの方法でファイルをバッチ リストに追加できます。</translation>
+<translation>2 つの方法でファイルをバッチ リストに追加できます</translation>
 </phrase>
 
 <phrase>
@@ -10134,7 +10134,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Step 3: choose a destination image format</original>
-<translation>ステップ 3: 保存先画像フォーマットの選択</translation>
+<translation>ステップ 3: 保存先画像フォーマットを選択する</translation>
 </phrase>
 
 <phrase>
@@ -10144,7 +10144,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>"画像を元のフォーマットのまま保存" が選択されている場合、PhotoDemon は各画像を元の形式で保存しようとします。元の形式がサポートされていない場合は、標準形式 (色深度に応じて JPEG または PNG) が使用されます。</translation>
+<translation>"画像を元のフォーマットのまま保存" が選択されている場合、PhotoDemon は各画像を元の形式で保存しようとします。  元の形式がサポートされていない場合は、標準形式 (色深度に応じて JPEG または PNG) が使用されます。</translation>
 </phrase>
 
 <phrase>
@@ -10164,22 +10164,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
-<translation>この最後のステップでは、PhotoDemon は処理された画像を保存する場所と新しいファイル名を知る必要があります。</translation>
+<translation>この最後のステップでは、PhotoDemon は処理した画像を保存する場所と、新しいファイルに付ける名前を認識する必要があります。</translation>
 </phrase>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>便宜上、標準的なリネーム オプションもいくつか用意されています。  「リネームの追加オプション」の項目は、すべて必須ではないことに注意してください。</translation>
+<translation>利便性のために、いくつかの名前変更のオプションも提供されています。  "リネームの追加オプション" の項目は、いずれも設定は任意であることに注意してください。</translation>
 </phrase>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>最後に、バッチ リスト内の 2 つ以上の画像が同じファイル名を持ち、“元のファイル名” オプションが選択されている場合、そのようなファイルには保存時に自動的に一意のファイル名が付けられます (“元のファイル名 (2)” など)。</translation>
+<translation>最後に、バッチ リスト内の 2 つ以上の画像が同じファイル名を持ち、 "元のファイル名" オプションが選択されている場合、そのようなファイルは保存時に自動的に一意のファイル名が付けられます (例: "元のファイル名 (2)")。</translation>
 </phrase>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation>ステップ 5: バッチ処理が完了するまで待ちます</translation>
+<translation>ステップ 5: バッチ処理が完了するまで待つ</translation>
 </phrase>
 
 <phrase>
@@ -10194,7 +10194,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>右下の “キャンセル” ボタンを押せば、いつでもバッチ処理をキャンセルできます。  キャンセルを選択した場合、処理された画像は出力フォルダーにまだ存在するため、手動で削除する必要がある場合があります。</translation>
+<translation>右下の “キャンセル” ボタンを押せば、いつでもバッチ処理をキャンセルできます。  キャンセルした場合、処理された画像は出力フォルダーにまだ存在するため、手動で削除する必要がある場合があります。</translation>
 </phrase>
 
 <phrase>
@@ -10219,7 +10219,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>stretching to fit</original>
-<translation>引き伸ばしてフィット</translation>
+<translation>引きのばしてフィット</translation>
 </phrase>
 
 <phrase>
@@ -10234,12 +10234,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>埋め込みサイズを使用</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>カスタム サイズを使用</translation>
 </phrase>
 
 <phrase>
@@ -10311,7 +10311,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>alpha cut-off</original>
-<translation>アルファ カット オフ</translation>
+<translation>アルファのしきい値</translation>
 </phrase>
 
 <phrase>
@@ -10373,7 +10373,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>強さ</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10404,42 +10404,42 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>エクスポートするレイヤー</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>保存先フォルダー</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>ファイル タイプ</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>レイヤー %1 / %2 をエクスポートしています。</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>すべてのレイヤー</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>レイヤーを表示</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>現在のレイヤー</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>レイヤー名</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10523,7 +10523,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Adobe 交換用スウォッチ (ASE) ファイルは、単一のファイル内に複数のパレットを保存できます。   「追加」オプションを選択すると、PhotoDemon はこのパレットを既存の ASE ファイルに追加します。  ファイル内にすでに存在するパレットは変更されません。</translation>
+<translation>Adobe 交換用スウォッチ (ASE) ファイルは、単一のファイル内に複数のパレットを保存できます。  "追加" オプションを選択すると、PhotoDemon はこのパレットを既存の ASE ファイルに追加します。  ファイル内にすでに存在するパレットは変更されません。</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10535,7 +10535,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>full download path (must begin with "http://" or "ftp://")</original>
-<translation>完全なダウンロードパス ("http://" または "ftp://" で始まる必要があります)</translation>
+<translation>完全なダウンロード パス ("http://" または "ftp://" で始まる必要があります)</translation>
 </phrase>
 
 <phrase>
@@ -10812,7 +10812,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>by cut-off</original>
-<translation>カットオフ</translation>
+<translation>しきい値</translation>
 </phrase>
 
 <phrase>
@@ -10839,12 +10839,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>アイコン ソース</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>各レイヤーを独自のアイコン フレームとして扱う</translation>
 </phrase>
 
 <phrase>
@@ -10995,7 +10995,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>圧縮の強さ</translation>
 </phrase>
 
 <phrase>
@@ -11010,12 +11010,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>ロスレス</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>不可逆</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11136,7 +11136,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>PNG ファイルは、さまざまな圧縮方式 (「フィルタ」と呼ばれる) をサポートしています。  スマートなフィルタ選択は、より良い圧縮を生成します。  自動設定を使用すると、PhotoDemon が複数の方式をテストし、自動的に最良の圧縮を生成するものを選択します。</translation>
+<translation>PNG ファイルは、さまざまな圧縮方式 ("フィルタ" と呼ばれる) をサポートしています。  スマートなフィルタ選択は、より良い圧縮を生成します。  自動設定を使用すると、PhotoDemon が複数の方式をテストし、自動的に最良の圧縮を生成するものを選択します。</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11528,7 +11528,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation>「システム」タグはオペレーティング システムによって提供されます。  従来のメタデータとして埋め込まれません。</translation>
+<translation>"システム" タグはオペレーティング システムによって提供されます。  従来のメタデータとして埋め込まれません。</translation>
 </phrase>
 
 <phrase>
@@ -11660,17 +11660,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>新しいサイズに引き伸ばす (既定)</translation>
+<translation>新しいサイズに引きのばす (既定)</translation>
 </phrase>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>必要に応じて透明な境界線を加え、サイズ内におさめる</translation>
+<translation>必要に応じて透明な余白を追加し、サイズ内におさめる</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>必要に応じてトリミングし、サイズいっぱいに合わせる</translation>
+<translation>必要に応じてトリミングし、余白を残さずサイズに合わせる</translation>
 </phrase>
 
 <phrase>
@@ -12222,7 +12222,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>絵筆 (先が柔らかい筆)</translation>
+<translation>ブラシ (先が柔らかい筆)</translation>
 </phrase>
 
 <phrase>
@@ -12232,7 +12232,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation>絵筆 (先が柔らかい筆)</translation>
+<translation>バケツ (色で塗る)</translation>
 </phrase>
 
 <phrase>
@@ -12514,12 +12514,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>modify measurement</original>
-<translation>測定値を修正</translation>
+<translation>測定を修正</translation>
 </phrase>
 
 <phrase>
 <original>share measurements between images</original>
-<translation>画像間で測定値を共有</translation>
+<translation>画像間で測定を共有</translation>
 </phrase>
 
 <phrase>
@@ -12549,7 +12549,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use measurement to</original>
-<translation>計測を使用</translation>
+<translation>測定を使用</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12576,7 +12576,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>距離を表示</translation>
 </phrase>
 
 <phrase>
@@ -12636,7 +12636,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>cut</original>
-<translation>カット</translation>
+<translation>切り取り</translation>
 </phrase>
 
 <phrase>
@@ -13410,7 +13410,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>スナップ距離 (ピクセル)</translation>
 </phrase>
 
 <phrase>
@@ -13475,12 +13475,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation>「名前を付けて保存」のときの既定のファイル フォーマット</translation>
+<translation>"名前を付けて保存" のときの既定のファイル フォーマット</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>「保存」するとき</translation>
+<translation>"保存" するとき</translation>
 </phrase>
 
 <phrase>
@@ -13510,17 +13510,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>「名前を付けて保存」での初期フォルダー</translation>
+<translation>"名前を付けて保存" での初期フォルダー</translation>
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>"名前を付けて保存" を使用したとき</translation>
 </phrase>
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>「元に戻す」と「やり直し」のデータを以下のレベルで圧縮</translation>
+<translation>元に戻す/やり直しのデータを以下のレベルで圧縮</translation>
 </phrase>
 
 <phrase>
@@ -13640,7 +13640,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation>アプリケーション設定フォルダー</translation>
+<translation>アプリケーション設定のフォルダー</translation>
 </phrase>
 
 <phrase>
@@ -13759,7 +13759,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>透明なピクセルを識別しやすくするために、特別なグリッドがその「背面」に表示されます。  この設定により、グリッドの外観が変更されます。</translation>
+<translation>透明なピクセルを識別しやすくするために、特別なグリッドがその "背面" に表示されます。  この設定により、グリッドの外観が変更されます。</translation>
 </phrase>
 
 <phrase>
@@ -13859,27 +13859,27 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>新しいコピーを保存します。例: “ファイル名 (2).jpg” (安全な動作)</translation>
+<translation>新しいコピーを保存する。 例: “ファイル名 (2).jpg” (安全な動作)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>ほとんどのフォト エディターでは、”保存” コマンドを使用すると画像が元のバージョンに上書き保存され、そのコピーは永久に消去されます。  PhotoDemon は「より安全な」オプションを提供しており、保存するたびにファイルの新しいコピーが作成されます。</translation>
+<translation>ほとんどのフォト エディターでは、”保存” コマンドを使用すると画像が元のバージョンに上書き保存され、そのコピーは永久に消去されます。  PhotoDemon は "より安全な" オプションを提供しており、保存するたびにファイルの新しいコピーが作成されます。</translation>
 </phrase>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>現在のファイル名を提案する (標準的な動作)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>新しいコピーを提案。 例: "ファイル名 (2).jpg" (安全な動作)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>ほとんどの写真編集ソフトでは、 "名前を付けて保存" コマンドは既定で現在のファイル名になります。PhotoDemon には "より安全な" オプションもあり、 "名前を付けて保存" のファイル名に自動的に通し番号を付与できます。</translation>
 </phrase>
 
 <phrase>
@@ -13894,7 +13894,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>balance performance and quality</original>
-<translation>性能と品質のバランス</translation>
+<translation>パフォーマンスと品質のバランス</translation>
 </phrase>
 
 <phrase>
@@ -13954,12 +13954,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>このボタンをクリックすると、「カラー プロファイルの参照」ダイアログが表示されます。</translation>
+<translation>このボタンをクリックすると、 "カラー プロファイルの参照" ダイアログが表示されます。</translation>
 </phrase>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>この設定が何を制御するのかわからない場合は、「知覚的」に設定してください。  知覚的レンダリング インテントは、ほとんどのユーザーにとって最良の選択です。</translation>
+<translation>この設定が何を制御するのかわからない場合は、 "知覚的" に設定してください。  知覚的レンダリング インテントは、ほとんどのユーザーにとって最良の選択です。</translation>
 </phrase>
 
 <phrase>
@@ -14079,7 +14079,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Reset all library options</original>
-<translation>すべてのライブラリ オプションをリセット</translation>
+<translation>すべてのライブラリ設定をリセット</translation>
 </phrase>
 
 <phrase>
@@ -14159,7 +14159,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>Windows XP と互換性なし</translation>
 </phrase>
 
 <phrase>
@@ -14189,7 +14189,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>JPEG XL 画像</translation>
 </phrase>
 
 <phrase>
