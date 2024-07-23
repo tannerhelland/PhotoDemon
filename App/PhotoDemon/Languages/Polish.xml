@@ -55,7 +55,7 @@
 
 <phrase>
 <original>Close all</original>
-<translation>Zamknij wszystko</translation>
+<translation>Zamknij wszystkie</translation>
 </phrase>
 
 <phrase>
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Eksportuj obraz</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Eksportuj warstwę</translation>
 </phrase>
 
 <phrase>
@@ -95,7 +95,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation>Eksportuj wyszukiwanie kolorów</translation>
+<translation>Eksportuj selekcję kolorów</translation>
 </phrase>
 
 <phrase>
@@ -205,7 +205,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation>Wypełnij z uwzględnieniem treści</translation>
+<translation>Wypełnij uwzględniając zawartość</translation>
 </phrase>
 
 <phrase>
@@ -330,7 +330,7 @@
 
 <phrase>
 <original>Count unique colors</original>
-<translation>Liczba unikalnych kolorów</translation>
+<translation>Policz unikalne kolory</translation>
 </phrase>
 
 <phrase>
@@ -360,12 +360,12 @@
 
 <phrase>
 <original>Layer via copy</original>
-<translation>Warstwa poprzez kopiowanie</translation>
+<translation>Warstwę poprzez kopiowanie</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation>Warstwa przez cięcie</translation>
+<translation>Warstwę przez cięcie</translation>
 </phrase>
 
 <phrase>
@@ -405,7 +405,7 @@
 
 <phrase>
 <original>Go to top layer</original>
-<translation>Przejdź do górnej warstwy</translation>
+<translation>Przejdź do najwyższej warstwy</translation>
 </phrase>
 
 <phrase>
@@ -420,7 +420,7 @@
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation>Przejdź do dolnej warstwy</translation>
+<translation>Przejdź do najniższej warstwy</translation>
 </phrase>
 
 <phrase>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Erase selected area</original>
-<translation>Skasuj zaznaczony obszar</translation>
+<translation>Wymaż zaznaczony obszar</translation>
 </phrase>
 
 <phrase>
@@ -750,7 +750,7 @@
 
 <phrase>
 <original>Hue and saturation</original>
-<translation>Barwa i nasycenie</translation>
+<translation>Odcień i nasycenie</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation>Look Up</translation>
+<translation>Korekcja kolorów</translation>
 </phrase>
 
 <phrase>
@@ -780,7 +780,7 @@
 
 <phrase>
 <original>Replace color</original>
-<translation>Zastąp kolor</translation>
+<translation>Zamiana koloru</translation>
 </phrase>
 
 <phrase>
@@ -795,12 +795,12 @@
 
 <phrase>
 <original>Equalize</original>
-<translation>Wyrównanie</translation>
+<translation>Ustaw</translation>
 </phrase>
 
 <phrase>
 <original>Stretch histogram</original>
-<translation>Rozciągnij histogram</translation>
+<translation>Rozciągnij</translation>
 </phrase>
 
 <phrase>
@@ -820,7 +820,7 @@
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Usuń mgłę</translation>
 </phrase>
 
 <phrase>
@@ -860,7 +860,7 @@
 
 <phrase>
 <original>Colored pencil</original>
-<translation>Kolorowy ołówek</translation>
+<translation>Kredka</translation>
 </phrase>
 
 <phrase>
@@ -925,7 +925,7 @@
 
 <phrase>
 <original>Gaussian blur</original>
-<translation>Rozmycie Gaussiana</translation>
+<translation>Rozmycie Gaussa</translation>
 </phrase>
 
 <phrase>
@@ -1185,12 +1185,12 @@
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Trucheta</translation>
 </phrase>
 
 <phrase>
 <original>Sharpen</original>
-<translation>Wyostrzanie</translation>
+<translation>Wyostrzenie</translation>
 </phrase>
 
 <phrase>
@@ -1290,7 +1290,7 @@
 
 <phrase>
 <original>Custom filter</original>
-<translation>Dostosuj filtr</translation>
+<translation>Dostosowanie filtru</translation>
 </phrase>
 
 <phrase>
@@ -2050,7 +2050,7 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Za</translation>
 </phrase>
 
 <phrase>
@@ -2132,7 +2132,7 @@ Aby włączyć obsługę tego formatu obrazu, skopiuj plik FreeImage.dll (do pob
 
 <phrase>
 <original>Blank layer</original>
-<translation>Pusta warstwa</translation>
+<translation>Pustą warstwę</translation>
 </phrase>
 
 <phrase>
@@ -2690,22 +2690,22 @@ Aby włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępny 
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>PEG XL (JXL) to nowoczesny zamiennik formatu obrazu JPEG. PhotoDemon nie obsługuje natywnie obrazów JPEG XL, ale może pobrać bezpłatną wtyczkę open source, która dodaje obsługę tego formatu</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>Biblioteka libjxl zapewnia bezpłatną zgodność z formatem JPEG XL o otwartym kodzie źródłowym. Przenośna kopia libjxl będzie wymagała ~%1 MB miejsca na dysku. Po jej pobraniu PhotoDemon może używać biblioteki libjxl do ładowania i zapisywania obrazów JPEG XL (w tym animacji)</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Chcesz, aby PhotoDemon pobrał bibliotekę libjxl do folderu wtyczek PhotoDemon?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon nie może teraz pobrać biblioteki libjxl.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -2737,7 +2737,7 @@ Aby włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępny 
 
 <phrase>
 <original>Mozilla Public License 2.0</original>
-<translation></translation>
+<translation>Publiczna licencja Mozilla 2.0</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3057,12 +3057,12 @@ Opis: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>Ostatnia linia rozciągnięta</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>Kontur na górze</translation>
 </phrase>
 
 <phrase>
@@ -3548,27 +3548,27 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Ta akcja opiera się na wtyczce innej firmy (%1). Dostępna jest jej zaktualizowana wersja.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>Twoja wersja: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Nowa wersja: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>Chcesz, aby PhotoDemon zaktualizował tę wtyczkę?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Dostępna aktualizacja</translation>
 </phrase>
 
 <phrase>
@@ -4859,7 +4859,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Open recent</original>
-<translation>Otwórz ostatni</translation>
+<translation>Ostatnio otwierane</translation>
 </phrase>
 
 <phrase>
@@ -4904,12 +4904,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>Obraz do pliku</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Warstwy do plików</translation>
 </phrase>
 
 <phrase>
@@ -5034,7 +5034,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Map photo location</original>
-<translation>Lokalizacja na mapie zdjęcia</translation>
+<translation>Zlokalizuj zdjęcie na mapie</translation>
 </phrase>
 
 <phrase>
@@ -5049,7 +5049,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation>Nowa warstwa</translation>
+<translation>Nową warstwę</translation>
 </phrase>
 
 <phrase>
@@ -5074,7 +5074,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Current layer</original>
-<translation>Warstwa bieżąca</translation>
+<translation>Bieżącą warstwę</translation>
 </phrase>
 
 <phrase>
@@ -5114,7 +5114,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Reverse</original>
-<translation>Odwróć kolejność</translation>
+<translation>Odwróć kolejność warstw</translation>
 </phrase>
 
 <phrase>
@@ -5214,7 +5214,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Invert</original>
-<translation>Odwracanie</translation>
+<translation>Odwracanie kolorów</translation>
 </phrase>
 
 <phrase>
@@ -5229,12 +5229,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Border</original>
-<translation>Ramka</translation>
+<translation>Obramuj</translation>
 </phrase>
 
 <phrase>
 <original>Feather</original>
-<translation>Pióro</translation>
+<translation>Zmiękcz</translation>
 </phrase>
 
 <phrase>
@@ -5284,7 +5284,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Stretch</original>
-<translation>Rozciąganie</translation>
+<translation>Rozciągnij</translation>
 </phrase>
 
 <phrase>
@@ -5419,7 +5419,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Playback speed</original>
-<translation>Szybkość odtwarzania</translation>
+<translation>Szybkość animacji</translation>
 </phrase>
 
 <phrase>
@@ -5489,7 +5489,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Developers</original>
-<translation>Deweloperzy</translation>
+<translation>Deweloperskie</translation>
 </phrase>
 
 <phrase>
@@ -5544,37 +5544,37 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Pokaż dodatki</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Krawędzie warstw</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Inteligentne przewodniki</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Przyciąganie magnetyczne</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Przyciągnij do</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Krawędzi płótna</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Linii środkowych</translation>
 </phrase>
 
 <phrase>
@@ -5599,7 +5599,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Display tool category titles</original>
-<translation>Wyświetlaj tytuły kategorii narzędzi</translation>
+<translation>Wyświetlaj nazwy kategorii</translation>
 </phrase>
 
 <phrase>
@@ -5619,12 +5619,12 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Tool options</original>
-<translation>Opcje narzędzi</translation>
+<translation>Opcje pomiarów</translation>
 </phrase>
 
 <phrase>
 <original>Image tabstrip</original>
-<translation>Pasek obrazu</translation>
+<translation>Pasek otwartych obrazów</translation>
 </phrase>
 
 <phrase>
@@ -5634,7 +5634,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Show when multiple images are loaded</original>
-<translation>Pokaż, gdy następuje ładowanie wielu obrazów</translation>
+<translation>Pokazuj przy ładowaniu wielu obrazów</translation>
 </phrase>
 
 <phrase>
@@ -6114,7 +6114,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>replace threshold</original>
-<translation>Zastąp próg</translation>
+<translation>Próg</translation>
 </phrase>
 
 <phrase>
@@ -7170,12 +7170,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>Importuj ustawienia</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>Informacje o pliku</translation>
 </phrase>
 
 <phrase>
@@ -7185,22 +7185,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>Adnotacje</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>Rozmiar dokumentu</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>Odwróć kolejność stron</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>Strony do importu</translation>
 </phrase>
 
 <phrase>
@@ -7210,7 +7210,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>Zakres "%1" jest nieprawidłowy.</translation>
 </phrase>
 
 <phrase>
@@ -7220,37 +7220,37 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>Strony</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>Renderowanie</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>Wszystkie strony</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(łącznie %1 )</translation>
 </phrase>
 
 <phrase>
 <original>first page only</original>
-<translation></translation>
+<translation>Tylko pierwsza strona</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>Zakres niestandardowy</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>Jednolity kolor</translation>
 </phrase>
 
 <phrase>
@@ -7260,32 +7260,32 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>Optymalizuj dla ekranów</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>Optymalizuj do drukowania</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 stron</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>Rozmiar strony: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>Różny rozmiar strony (pierwsza: %1)</translation>
 </phrase>
 
 <phrase>
 <original>%1 options</original>
-<translation>opcje %1</translation>
+<translation>Opcje %1</translation>
 </phrase>
 
 <phrase>
@@ -7771,7 +7771,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>layer size</original>
-<translation>wymiary warstwy</translation>
+<translation>Wymiary warstwy</translation>
 </phrase>
 
 <phrase>
@@ -7929,12 +7929,12 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>first frame for effect</original>
-<translation>Pierwsza klatka dla efektu</translation>
+<translation>Pierwsza klatka efektu</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation>Ostatnia klatka dla efektu</translation>
+<translation>Ostatnia klatka efektu</translation>
 </phrase>
 
 <phrase>
@@ -9537,7 +9537,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>inne skróty perspektywiczne (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9777,17 +9777,17 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>Podczas importu obrazów wektorowych</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>Zaawansowane ustawienia importu</translation>
 </phrase>
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation>automatycznie wykrywaj animowane obrazy</translation>
+<translation>Automatycznie wykrywaj animowane obrazy</translation>
 </phrase>
 
 <phrase>
@@ -10226,12 +10226,12 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>Użyj osadzonego rozmiaru</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>Użyj niestandardowego rozmiaru</translation>
 </phrase>
 
 <phrase>
@@ -10365,7 +10365,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>Stopień</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10396,42 +10396,42 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>Warstwy do eksportu</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>Folder docelowy</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>Typ pliku</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Eksportowanie warstwy %1 z %2</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>Wszystkie warstwy</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>Widoczne warstwy</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>Bieżąca warstwa</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>Nazwa warstwy</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10448,7 +10448,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 
 <phrase>
 <original>grid points</original>
-<translation></translation>
+<translation>Punkty siatki</translation>
 </phrase>
 
 <phrase>
@@ -10833,12 +10833,12 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>Źródło ikony</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>Traktuj każdą warstwę jako ramkę ikony</translation>
 </phrase>
 
 <phrase>
@@ -10989,7 +10989,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>Stopień kompresji</translation>
 </phrase>
 
 <phrase>
@@ -11004,12 +11004,12 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>Bezstratny</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>Stratny</translation>
 </phrase>
 
 <!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12186,7 +12186,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>Elliptical (Oval) Selection</original>
-<translation>Zaznaczenie elipsą (Owal)</translation>
+<translation>Zaznaczenie elipsą (owalem)</translation>
 </phrase>
 
 <phrase>
@@ -12196,12 +12196,12 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>Zaznaczenie lassem (Odręczne)</translation>
+<translation>Zaznaczenie lassem (odręczne)</translation>
 </phrase>
 
 <phrase>
 <original>Magic Wand Selection</original>
-<translation>Magiczna Różdżka</translation>
+<translation>Magiczna różdżka</translation>
 </phrase>
 
 <phrase>
@@ -12231,7 +12231,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation>Wiadro z farbą (wypełnienie kolorem)</translation>
+<translation>Wypełnienie kolorem (wiadro z farbą)</translation>
 </phrase>
 
 <phrase>
@@ -12513,7 +12513,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>modify measurement</original>
-<translation></translation>
+<translation>Modyfikuj pomiar</translation>
 </phrase>
 
 <phrase>
@@ -12575,7 +12575,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>Pokaż odległości</translation>
 </phrase>
 
 <phrase>
@@ -13407,7 +13407,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>Odległość przyciągania (w pikselach)</translation>
 </phrase>
 
 <phrase>
@@ -13477,7 +13477,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>Gdy użyta zostanie opcja "Zapisz"</translation>
+<translation>Gdy używana jest opcja "Zapisz"</translation>
 </phrase>
 
 <phrase>
@@ -13512,7 +13512,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>Gdy używana jest opcja "Zapisz jako"</translation>
 </phrase>
 
 <phrase>
@@ -13861,22 +13861,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>W większości foto edytorów, polecenie "Zapisz" zapisuje obraz na jego pierwotnej wersji, usuwając jego kopię na zawsze. PhotoDemon zapewnia "bezpieczniejszą" opcję, gdzie każdy wynik zapisywany jest w nowej kopii pliku.</translation>
+<translation>W większości edytorów graficznych, polecenie "Zapisz" zapisuje obraz na jego pierwotnej wersji, usuwając jego kopię na zawsze. PhotoDemon zapewnia "bezpieczniejszą" opcję, gdzie każdy wynik zapisywany jest w nowej kopii pliku.</translation>
 </phrase>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>Sugeruj aktualną nazwę pliku (standardowe zachowanie)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>Sugeruj nową kopię, np. „nazwa pliku (2).jpg” (bezpieczne zachowanie)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>W większości edytorów graficznych, polecenie „Zapisz jako” domyślnie przyjmuje bieżącą nazwę pliku. PhotoDemon zapewnia także „bezpieczniejszą” opcję, w której polecenie "Zapisz jako" automatycznie tworzy nowe nazwy plików.</translation>
 </phrase>
 
 <phrase>
@@ -14156,7 +14156,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>Niekompatybilne z Windows XP</translation>
 </phrase>
 
 <phrase>
@@ -14186,7 +14186,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>Obraz JPEG XL</translation>
 </phrase>
 
 <phrase>
