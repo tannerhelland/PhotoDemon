@@ -943,22 +943,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'HEIF/HEIC support (import only) was first added in v8.0, but loading required Win 10 and possible
+    ' extra downloads from the MS Store.  As of PD 2024.8, libheif itself is used.
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_libheif
+            dstImage.SetOriginalFileFormat PDIF_HEIF
+        End If
+    End If
+    
     'AVIF support was added in v9.0.
     If (Not CascadeLoadGenericImage) Then
         CascadeLoadGenericImage = LoadAVIF(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
         If CascadeLoadGenericImage Then
             decoderUsed = id_libavif
             dstImage.SetOriginalFileFormat PDIF_AVIF
-        End If
-    End If
-    
-    'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
-    ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
-    If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
-        CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
-        If CascadeLoadGenericImage Then
-            decoderUsed = id_WIC
-            dstImage.SetOriginalFileFormat PDIF_HEIF
         End If
     End If
     
@@ -1215,7 +1215,7 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
     ' /App/PhotoDemon/Plugins subfolder.  PhotoDemon will offer to automatically download and configure a
     ' portable copy if the user interacts with the AVIF format in some way (import/export).
     Dim potentialAVIF As Boolean
-    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "avci", "avcs", "avif", "avifs")
     If potentialAVIF Then
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
@@ -2015,15 +2015,18 @@ Private Function LoadQOI(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 End Function
 
 Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
-
-    'At present, file extensions must be validated
-    LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heif", True)
-    If (Not LoadHEIF) Then LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heic", True)
-    
-    'Extensions match; attempt a load
-    If LoadHEIF Then
         
-        LoadHEIF = WIC.LoadFileToDIB(dstDIB, srcFile)
+    LoadHEIF = False
+    
+    'Ensure support libraries exist
+    If (Not Plugin_Heif.IsLibheifEnabled()) Then Exit Function
+    
+    'Validate file
+    If Plugin_Heif.IsFileHeif(srcFile) Then
+            
+        'Attempt a load
+        LoadHEIF = False
+        Debug.Print "File is HEIF, but libheif integration is still under construction."
         
         'If the load was successful, populate some default properties
         If LoadHEIF And (Not dstImage Is Nothing) Then
