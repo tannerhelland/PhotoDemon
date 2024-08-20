@@ -1215,7 +1215,7 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
     ' /App/PhotoDemon/Plugins subfolder.  PhotoDemon will offer to automatically download and configure a
     ' portable copy if the user interacts with the AVIF format in some way (import/export).
     Dim potentialAVIF As Boolean
-    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "avci", "avcs", "avif", "avifs")
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "avci", "avcs", "avif", "avifs", "heic")
     If potentialAVIF Then
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
@@ -2024,9 +2024,8 @@ Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     'Validate file
     If Plugin_Heif.IsFileHeif(srcFile) Then
             
-        'Attempt a load
-        LoadHEIF = False
-        Debug.Print "File is HEIF, but libheif integration is still under construction."
+        'Attempt load via external library
+        LoadHEIF = Plugin_Heif.LoadHeifImage(srcFile, dstImage, dstDIB, True)
         
         'If the load was successful, populate some default properties
         If LoadHEIF And (Not dstImage Is Nothing) Then

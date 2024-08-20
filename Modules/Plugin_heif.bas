@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_Heif"
 'libheif Library Interface
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/July/24
-'Last updated: 16/July/24
-'Last update: initial build
+'Last updated: 20/August/24
+'Last update: finish proof-of-concept image importing
 '
 'Per its documentation (available at https://github.com/strukturag/libheif), libheif is...
 '
@@ -42,6 +42,17 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 Private Enum Libheif_ProcAddress
     heif_get_version_number
     heif_check_filetype
+    heif_context_alloc
+    heif_context_free
+    heif_image_handle_get_width
+    heif_image_handle_get_height
+    heif_image_handle_has_alpha_channel
+    heif_image_handle_is_premultiplied_alpha
+    heif_image_handle_release
+    heif_image_release
+    heif_image_get_plane_readonly
+    heif_get_file_mime_type
+    heif_read_main_brand
     [last_address]
 End Enum
 
@@ -201,6 +212,54 @@ Private Enum PD_HeifSuberrorCode
 
 End Enum
 
+Private Enum heif_chroma
+    heif_chroma_undefined = 99
+    heif_chroma_monochrome = 0
+    heif_chroma_420 = 1
+    heif_chroma_422 = 2
+    heif_chroma_444 = 3
+    heif_chroma_interleaved_RGB = 10
+    heif_chroma_interleaved_RGBA = 11
+    heif_chroma_interleaved_RRGGBB_BE = 12    '// HDR, big endian.
+    heif_chroma_interleaved_RRGGBBAA_BE = 13  '// HDR, big endian.
+    heif_chroma_interleaved_RRGGBB_LE = 14    '// HDR, little endian.
+    heif_chroma_interleaved_RRGGBBAA_LE = 15  '// HDR, little endian.
+End Enum
+
+Private Enum heif_colorspace
+    heif_colorspace_undefined = 99
+    
+    '// heif_colorspace_YCbCr should be used with one of these heif_chroma values:
+    '// * heif_chroma_444
+    '// * heif_chroma_422
+    '// * heif_chroma_420
+    heif_colorspace_YCbCr = 0
+    
+    '// heif_colorspace_RGB should be used with one of these heif_chroma values:
+    '// * heif_chroma_444 (for planar RGB)
+    '// * heif_chroma_interleaved_RGB
+    '// * heif_chroma_interleaved_RGBA
+    '// * heif_chroma_interleaved_RRGGBB_BE
+    '// * heif_chroma_interleaved_RRGGBBAA_BE
+    '// * heif_chroma_interleaved_RRGGBB_LE
+    '// * heif_chroma_interleaved_RRGGBBAA_LE
+    heif_colorspace_RGB = 1
+    
+    '// heif_colorspace_monochrome should only be used with heif_chroma = heif_chroma_monochrome
+    heif_colorspace_monochrome = 2
+End Enum
+
+Private Enum heif_channel
+    heif_channel_Y = 0
+    heif_channel_Cb = 1
+    heif_channel_Cr = 2
+    heif_channel_R = 3
+    heif_channel_G = 4
+    heif_channel_B = 5
+    heif_channel_Alpha = 6
+    heif_channel_interleaved = 10
+End Enum
+
 Private Type heif_error
     heif_error_code As PD_HeifErrorCode         '// main error category
     heif_suberror_code As PD_HeifSuberrorCode   '// more detailed error code
@@ -214,11 +273,19 @@ Private Enum heif_filetype_result
     heif_filetype_maybe             'not sure whether it is an heif, try detection with more input data
 End Enum
 
-'Some libheif functions return a custom 12-byte type.  This cannot be easily handled via DispCallFunc, so I've written
-' an interop DLL that handles marshalling the cdecl return for me.
+Private Type heif_image_handle
+    hImg As Long
+    hContext As Long
+End Type
+
+'Some libheif functions return a custom 12-byte type.  This cannot be easily handled via DispCallFunc,
+' so I've written an interop DLL that marshals the cdecl return for me.
 Private m_hHelper As Long
 Private Declare Function PD_heif_init Lib "PDHelper_win32" () As heif_error
 Private Declare Sub PD_heif_deinit Lib "PDHelper_win32" ()
+Private Declare Function PD_heif_context_read_from_file Lib "PDHelper_win32" (ByVal heif_context As Long, ByVal pCharFilename As Long, ByVal pHeifReadingOptions As Long) As heif_error
+Private Declare Function PD_heif_context_get_primary_image_handle Lib "PDHelper_win32" (ByVal ptr_heif_context As Long, ByRef ptr_heif_image_handle As Long) As heif_error
+Private Declare Function PD_heif_decode_image Lib "PDHelper_win32" (ByVal in_heif_image_handle As Long, ByRef pp_out_heif_image As Long, ByVal in_heif_colorspace As heif_colorspace, ByVal in_heif_chroma As heif_chroma, ByVal p_heif_decoding_options As Long) As heif_error
 
 'Forcibly disable plugin interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -278,6 +345,17 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         ReDim m_ProcAddresses(0 To [last_address] - 1) As Long
         m_ProcAddresses(heif_get_version_number) = GetProcAddress(m_hLibHeif, "heif_get_version_number")
         m_ProcAddresses(heif_check_filetype) = GetProcAddress(m_hLibHeif, "heif_check_filetype")
+        m_ProcAddresses(heif_context_alloc) = GetProcAddress(m_hLibHeif, "heif_context_alloc")
+        m_ProcAddresses(heif_context_free) = GetProcAddress(m_hLibHeif, "heif_context_free")
+        m_ProcAddresses(heif_image_handle_get_width) = GetProcAddress(m_hLibHeif, "heif_image_handle_get_width")
+        m_ProcAddresses(heif_image_handle_get_height) = GetProcAddress(m_hLibHeif, "heif_image_handle_get_height")
+        m_ProcAddresses(heif_image_handle_has_alpha_channel) = GetProcAddress(m_hLibHeif, "heif_image_handle_has_alpha_channel")
+        m_ProcAddresses(heif_image_handle_is_premultiplied_alpha) = GetProcAddress(m_hLibHeif, "heif_image_handle_is_premultiplied_alpha")
+        m_ProcAddresses(heif_image_handle_release) = GetProcAddress(m_hLibHeif, "heif_image_handle_release")
+        m_ProcAddresses(heif_image_release) = GetProcAddress(m_hLibHeif, "heif_image_release")
+        m_ProcAddresses(heif_image_get_plane_readonly) = GetProcAddress(m_hLibHeif, "heif_image_get_plane_readonly")
+        m_ProcAddresses(heif_get_file_mime_type) = GetProcAddress(m_hLibHeif, "heif_get_file_mime_type")
+        m_ProcAddresses(heif_read_main_brand) = GetProcAddress(m_hLibHeif, "heif_read_main_brand")
         
         'Initialize all module-level arrays
         ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
@@ -294,7 +372,6 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
             initError = PD_heif_init()
             
             'Convert the returned pointer to an error object
-            'Debug.Print initError.heif_error_code, initError.heif_suberror_code, initError.pCharMessage
             InitializeEngine = (initError.heif_error_code = heif_error_Ok)
             m_LibAvailable = InitializeEngine
             If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "libheif helper library returned: " & Strings.StringFromCharPtr(initError.pCharMessage, False) & " for heif_init"
@@ -341,6 +418,53 @@ Public Function IsFileHeif(ByRef srcFile As String) As Boolean
             
             If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif_check_filetype returned " & fType
             
+            'If the filetype is "maybe heif", the decoder needs more bytes before it can make a firm determination.
+            ' Feed it more (up to an arbitrary limit) and try again.
+            If (fType = heif_filetype_maybe) Then
+                
+                If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "Testing more bytes to see if file is valid..."
+                
+                Dim MAX_SIZE_TO_TEST As Long
+                MAX_SIZE_TO_TEST = 1024000
+                If (MAX_SIZE_TO_TEST > Files.FileLenW(srcFile)) Then MAX_SIZE_TO_TEST = Files.FileLenW(srcFile)
+                ptrPeek = cStream.Peek_PointerOnly(0, MAX_SIZE_TO_TEST)
+                
+                fType = CallCDeclW(heif_check_filetype, vbLong, ptrPeek, MAX_SIZE_TO_TEST)
+                If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "After checking " & CStr(MAX_SIZE_TO_TEST) & " bytes, new heif_check_filetype result is " & fType
+                
+                'If the file type is still a "maybe", attempt a full load.  (Note that I've gotten this even
+                ' when scanning all the way to the end of some valid HEIC files, so it's a perfectly acceptable
+                ' return value.)
+                If (fType = heif_filetype_maybe) Then
+                    fType = heif_filetype_yes_supported
+                    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "Will attempt to load anyway..."
+                End If
+                
+                IsFileHeif = (fType = heif_filetype_yes_supported)
+                
+            'If the file is heif but is marked as unsupported, that's okay - this seems to happen occasionally
+            ' with valid heif files that contain something like an image sequence (of which we don't necessarily
+            ' need to load all frames).  Treat the file as potentially supported, and allow the loader to have a
+            ' go at it.
+            ElseIf (fType = heif_filetype_yes_unsupported) Then
+                
+                PDDebug.LogAction "FYI mimetype is " & Strings.StringFromCharPtr(CallCDeclW(heif_get_file_mime_type, vbLong, ptrPeek, 128&), False)
+                
+                Dim fSubType As Long
+                fSubType = CallCDeclW(heif_read_main_brand, vbLong, ptrPeek, 128&)
+                
+                'Endianness needs to be reversed before decoding
+                Dim revBytes(0 To 3) As Byte
+                VBHacks.CopyMemoryStrict VarPtr(revBytes(0)), VarPtr(fSubType), 4
+                VBHacks.SwapEndianness32 revBytes
+                PDDebug.LogAction "File brand is listed as " & Strings.StringFromCharPtr(VarPtr(revBytes(0)), False, 4, True) & ". PD will attempt to load anyway..."
+                
+                'Allow the decoder to have a swing at the file
+                fType = heif_filetype_yes_supported
+                IsFileHeif = (fType = heif_filetype_yes_supported)
+                
+            End If
+            
         End If
         
         cStream.StopStream True
@@ -351,6 +475,150 @@ End Function
 
 Public Function IsLibheifEnabled() As Boolean
     IsLibheifEnabled = m_LibAvailable
+End Function
+
+Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByRef fileAlreadyValidated As Boolean = False) As Boolean
+    
+    Const FUNC_NAME As String = "LoadHeifImage"
+    LoadHeifImage = False
+    
+    'Validate as necessary
+    If (Not fileAlreadyValidated) Then
+        If (Not Plugin_Heif.IsFileHeif(srcFilename)) Then Exit Function
+    End If
+    
+    'Create a new heif context
+    Dim ctxHeif As Long
+    ctxHeif = CallCDeclW(heif_context_alloc, vbLong)
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif context created successfully (" & CStr(ctxHeif) & ")"
+    
+    'Attempt to load
+    Dim filenameAsUTF8() As Byte, numChars As Long
+    If (Not Strings.UTF8FromString(srcFilename, filenameAsUTF8, numChars)) Then GoTo LoadFailed
+    If (numChars <= 0) Then GoTo LoadFailed
+    
+    Dim hReturn As heif_error
+    hReturn = PD_heif_context_read_from_file(ctxHeif, VarPtr(filenameAsUTF8(0)), 0&)
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo LoadFailed
+    End If
+    
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: PD_heif_context_read_from_file returned successfully"
+    
+    'ctxHeif now contains a decoder for the target filename.  The context can be queried for various image properties,
+    ' but for this intial build, let's just jump ahead to loading the image as quickly as possible.
+    
+    'Get a handle to the primary image in the file (e.g. not a thumbnail, frame > 0, etc)
+    Dim hImg As Long, hImgBase As heif_image_handle
+    hImg = VarPtr(hImgBase)
+    hReturn = PD_heif_context_get_primary_image_handle(ctxHeif, hImg)
+    
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo LoadFailed
+    End If
+    
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif_context_get_primary_image_handle returned successfully"
+    
+    'Retrieve image dimensions from the base image object
+    Dim imgWidth As Long, imgHeight As Long, imgHasAlpha As Boolean, imgAlphaPremultiplied As Boolean
+    imgWidth = CallCDeclW(heif_image_handle_get_width, vbLong, hImg)
+    imgHeight = CallCDeclW(heif_image_handle_get_height, vbLong, hImg)
+    imgHasAlpha = (CallCDeclW(heif_image_handle_has_alpha_channel, vbLong, hImg) <> 0)
+    imgAlphaPremultiplied = (CallCDeclW(heif_image_handle_is_premultiplied_alpha, vbLong, hImg) <> 0)
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "heif stats are (w,h,a,pa): " & imgWidth & ", " & imgHeight & ", " & imgHasAlpha & ", " & imgAlphaPremultiplied
+    
+    Dim imgWidthBytes As Long
+    imgWidthBytes = imgWidth * 4
+    
+    '// decode the image and convert colorspace to RGB, saved as 24bit interleaved
+    'heif_image* img;
+    'heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
+    Dim hImgDecoded As Long, hImgDecodedBase As Long
+    hImgDecoded = VarPtr(hImgDecodedBase)
+    hReturn = PD_heif_decode_image(hImg, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo LoadFailed
+    End If
+    
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: PD_heif_decode_image returned successfully"
+    
+    'Retrieve a pointer to the decoded pixel data, as well as the stride (libheif doesn't necessarily guarantee
+    ' a specific line alignment).
+    Dim imgStride As Long, pData As Long
+    pData = CallCDeclW(heif_image_get_plane_readonly, vbLong, hImgDecoded, heif_channel_interleaved, VarPtr(imgStride))
+    If (pData = 0) Then
+        InternalError FUNC_NAME, "bad pixel pointer"
+        GoTo LoadFailed
+    End If
+    
+    'Prepare the destination DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank imgWidth, imgHeight, 32, initialAlpha:=255
+    dstDIB.SetInitialAlphaPremultiplicationState imgAlphaPremultiplied
+    
+    'Iterate lines and copy the data directly into the target DIB
+    Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim x As Long, y As Long
+    For y = 0 To imgHeight - 1
+        dstDIB.WrapArrayAroundScanline dstPixels, dstSA1D, y
+        VBHacks.WrapArrayAroundPtr_Byte srcPixels, srcSA1D, pData + (imgStride * y), imgStride
+    For x = 0 To imgWidthBytes - 1 Step 4
+        
+        'Manually un-interleave to fix pixel order
+        dstPixels(x) = srcPixels(x + 2)
+        dstPixels(x + 1) = srcPixels(x + 1)
+        dstPixels(x + 2) = srcPixels(x)
+        dstPixels(x + 3) = srcPixels(x + 3)
+        
+    Next x
+    Next y
+    
+    VBHacks.UnwrapArrayFromPtr_Byte srcPixels
+    dstDIB.UnwrapArrayFromDIB dstPixels
+    
+    'heif alpha channels can be premultiplied
+    dstDIB.SetInitialAlphaPremultiplicationState False
+    If (Not imgAlphaPremultiplied) Then dstDIB.SetAlphaPremultiplication True Else dstDIB.SetInitialAlphaPremultiplicationState True
+    
+    'TODO
+    'Set additional image properties
+    'dstImage.SetOriginalColorDepth numComponents * 4
+    'dstImage.SetOriginalGrayscale False
+    'dstImage.SetOriginalAlpha (numComponents = 4)
+    
+    'Before exiting, release everything allocated in reverse order
+    If (hImgDecoded <> 0) Then
+        CallCDeclW heif_image_release, vbEmpty, hImgDecoded
+        hImgDecoded = 0
+    End If
+    If (hImg <> 0) Then
+        CallCDeclW heif_image_handle_release, vbEmpty, hImg
+        hImg = 0
+    End If
+    If (ctxHeif <> 0) Then
+        CallCDeclW heif_context_free, vbEmpty, ctxHeif
+        ctxHeif = 0
+    End If
+    
+    LoadHeifImage = True
+    
+    Exit Function
+    
+LoadFailed:
+    
+    PDDebug.LogAction "Critical error during heif load; exiting now..."
+    
+    'Free any allocated resources before exiting
+    If (hImgDecoded <> 0) Then CallCDeclW heif_image_release, vbEmpty, hImgDecoded
+    If (hImg <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImg
+    If (ctxHeif <> 0) Then CallCDeclW heif_context_free, vbEmpty, ctxHeif
+    LoadHeifImage = False
+    
 End Function
 
 Public Sub ReleaseEngine()
@@ -405,3 +673,12 @@ Private Function CallCDeclW(ByVal lProc As Libheif_ProcAddress, ByVal fRetType A
     hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
     
 End Function
+
+Private Sub InternalErrorHeif(ByRef pdFuncName As String, ByRef heifErrorObj As heif_error)
+    PDDebug.LogAction "WARNING! libheif error in PD function: " & pdFuncName
+    PDDebug.LogAction "libheif error #" & heifErrorObj.heif_error_code & ": " & Strings.StringFromCharPtr(heifErrorObj.pCharMessage, False)
+End Sub
+
+Private Sub InternalError(ByRef pdFuncName As String, ByRef errText As String)
+    PDDebug.LogAction "WARNING! error in PD function """ & pdFuncName & """: " & errText
+End Sub
