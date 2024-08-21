@@ -266,6 +266,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' this step is unnecessary.
             Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_CBZ)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_HEIF)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_JXL)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
@@ -715,8 +716,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cXCF.IsFileXCF(imagePath) Then loadSuccessful = cXCF.LoadXCF_FromFile(imagePath, tmpPDImage, targetDIB)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
+        'HEIF support was added in v2024.8
+        Case "HEIF", "HEIFS", "HEIC", "HEICS", "HIF"
+            If Plugin_Heif.IsFileHeif(imagePath) Then loadSuccessful = Plugin_Heif.LoadHeifImage(imagePath, tmpPDImage, targetDIB, True, True)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+            
         'AVIF support was provisionally added in v9.0.
-        Case "HEIF", "HEIFS", "HEIC", "HEICS", "AVCI", "AVCS", "AVIF", "AVIFS"
+        Case "AVCI", "AVCS", "AVIF", "AVIFS"
             loadSuccessful = Plugin_AVIF.QuickLoadPotentialAVIFToDIB(imagePath, targetDIB, tmpPDImage)
             
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
@@ -880,6 +886,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "libjxl"
         Case id_pdfium
             GetDecoderName = "pdfium"
+        Case id_libheif
+            GetDecoderName = "libheif"
         Case Else
             GetDecoderName = "unknown?!"
     End Select

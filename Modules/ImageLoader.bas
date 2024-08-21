@@ -1753,7 +1753,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             thisPageWidthPx = Int(thisPageWidthPx * hRatio + 0.5)
             thisPageHeightPx = Int(thisPageHeightPx * vRatio + 0.5)
             
-            'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
+            'Initialize a backing surface at the target size
             Dim tmpDIB As pdDIB
             If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
             
@@ -1787,13 +1787,11 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             Set tmpLayer = dstImage.GetLayerByID(newLayerID)
             
             'We need a base layer name for each page.  For now, this is just "page".
-            ' (TODO: let the user supply this.)
             Dim baseLayerName As String
             baseLayerName = g_Language.TranslateMessage("Page %1", idxPage + 1)
             tmpLayer.InitializeNewLayer PDL_Image, baseLayerName, tmpDIB, True
             
             'Make the base layer visible, but no others.
-            ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
             tmpLayer.SetLayerVisibility (numPagesProcessed = 1)
             tmpLayer.SetLayerBlendMode BM_Normal
             
@@ -2014,7 +2012,7 @@ Private Function LoadQOI(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     
 End Function
 
-Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False) As Boolean
         
     LoadHEIF = False
     
@@ -2023,17 +2021,14 @@ Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     
     'Validate file
     If Plugin_Heif.IsFileHeif(srcFile) Then
-            
+        
         'Attempt load via external library
-        LoadHEIF = Plugin_Heif.LoadHeifImage(srcFile, dstImage, dstDIB, True)
+        LoadHEIF = Plugin_Heif.LoadHeifImage(srcFile, dstImage, dstDIB, True, previewOnly)
         
         'If the load was successful, populate some default properties
         If LoadHEIF And (Not dstImage Is Nothing) Then
             dstImage.SetOriginalFileFormat PDIF_HEIF
             dstImage.NotifyImageChanged UNDO_Everything
-            dstImage.SetOriginalColorDepth 32
-            dstImage.SetOriginalGrayscale False
-            dstImage.SetOriginalAlpha True
         End If
         
     End If
@@ -2203,7 +2198,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
         dstImage.SetOriginalGrayscale cReader.isGrayscale()
         dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
-
+        
         'Before exiting, ensure all color management data has been added to PD's central cache
         Dim profHash As String
         If (Not cReader.GetICCProfile() Is Nothing) Then
@@ -2222,7 +2217,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             profHash = ColorManagement.GetSRGBProfileHash()
             dstDIB.SetColorProfileHash profHash
             dstDIB.SetColorManagementState cms_ProfileConverted
-
+            
         End If
         
     End If
