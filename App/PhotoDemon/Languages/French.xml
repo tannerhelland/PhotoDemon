@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.621</langversion>
+<langversion>6.7.622</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2692,6 +2692,8 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
+<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation>JPEG XL (JXL) est un remplacement plus moderne pour le format d'image JPEG. PhotoDemon ne supporte pas nativement les images JPEG XL, mais il peut télécharger un plugin open source qui ajoute le support pour le JPEG XL.</translation>
@@ -2741,11 +2743,16 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 </phrase>
 
 <phrase>
+<original>LGPL license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mozilla Public License 2.0</original>
 <translation>Mozilla Licence Publique 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14298,10 +14305,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2703</phrasecount>
+<phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5699 phrases. -->
-<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
-<!-- These 2703 phrases contain approximately 11709 total words. -->
+<!-- As of this build, PhotoDemon contains 5703 phrases. -->
+<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- These 2704 phrases contain approximately 11711 total words. -->
 
 </pdData>
