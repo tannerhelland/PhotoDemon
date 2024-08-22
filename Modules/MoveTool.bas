@@ -312,7 +312,12 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     m_LMBDown = False
     
     'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-    If (numOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
+    ' (Note Aug 2024: this line previously only triggered after this check:
+    ' If (numOfMouseMovements > 0) Then
+    ' This check breaks "move selected pixels" behavior as reported here: https://github.com/tannerhelland/PhotoDemon/issues/584
+    ' I have now removed the check, but am leaving this comment pending additional testing to see if any
+    ' unexpected interactions occur.
+    Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
     
     'Reset the generic tool mouse tracking function
     Tools.TerminateGenericToolTracking
