@@ -943,22 +943,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'HEIF/HEIC support (import only) was first added in v8.0, but loading required Win 10 and possible
+    ' extra downloads from the MS Store.  As of PD 2024.8, libheif itself is used.
+    If (Not CascadeLoadGenericImage) Then
+        CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_libheif
+            dstImage.SetOriginalFileFormat PDIF_HEIF
+        End If
+    End If
+    
     'AVIF support was added in v9.0.
     If (Not CascadeLoadGenericImage) Then
         CascadeLoadGenericImage = LoadAVIF(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
         If CascadeLoadGenericImage Then
             decoderUsed = id_libavif
             dstImage.SetOriginalFileFormat PDIF_AVIF
-        End If
-    End If
-    
-    'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
-    ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
-    If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
-        CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
-        If CascadeLoadGenericImage Then
-            decoderUsed = id_WIC
-            dstImage.SetOriginalFileFormat PDIF_HEIF
         End If
     End If
     
@@ -1215,7 +1215,7 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
     ' /App/PhotoDemon/Plugins subfolder.  PhotoDemon will offer to automatically download and configure a
     ' portable copy if the user interacts with the AVIF format in some way (import/export).
     Dim potentialAVIF As Boolean
-    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "avci", "avcs", "avif", "avifs", "heic")
     If potentialAVIF Then
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
@@ -1753,7 +1753,7 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             thisPageWidthPx = Int(thisPageWidthPx * hRatio + 0.5)
             thisPageHeightPx = Int(thisPageHeightPx * vRatio + 0.5)
             
-            'Initialize a backing surface at the target size (TODO: let the user specify background color and opacity)
+            'Initialize a backing surface at the target size
             Dim tmpDIB As pdDIB
             If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
             
@@ -1787,13 +1787,11 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             Set tmpLayer = dstImage.GetLayerByID(newLayerID)
             
             'We need a base layer name for each page.  For now, this is just "page".
-            ' (TODO: let the user supply this.)
             Dim baseLayerName As String
             baseLayerName = g_Language.TranslateMessage("Page %1", idxPage + 1)
             tmpLayer.InitializeNewLayer PDL_Image, baseLayerName, tmpDIB, True
             
             'Make the base layer visible, but no others.
-            ' (TODO: may need to revisit this if page order is reversed?  Compare other software...)
             tmpLayer.SetLayerVisibility (numPagesProcessed = 1)
             tmpLayer.SetLayerBlendMode BM_Normal
             
@@ -2014,24 +2012,23 @@ Private Function LoadQOI(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     
 End Function
 
-Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
-
-    'At present, file extensions must be validated
-    LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heif", True)
-    If (Not LoadHEIF) Then LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heic", True)
-    
-    'Extensions match; attempt a load
-    If LoadHEIF Then
+Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False) As Boolean
         
-        LoadHEIF = WIC.LoadFileToDIB(dstDIB, srcFile)
+    LoadHEIF = False
+    
+    'Ensure support libraries exist
+    If (Not Plugin_Heif.IsLibheifEnabled()) Then Exit Function
+    
+    'Validate file
+    If Plugin_Heif.IsFileHeif(srcFile) Then
+        
+        'Attempt load via external library
+        LoadHEIF = Plugin_Heif.LoadHeifImage(srcFile, dstImage, dstDIB, True, previewOnly)
         
         'If the load was successful, populate some default properties
         If LoadHEIF And (Not dstImage Is Nothing) Then
             dstImage.SetOriginalFileFormat PDIF_HEIF
             dstImage.NotifyImageChanged UNDO_Everything
-            dstImage.SetOriginalColorDepth 32
-            dstImage.SetOriginalGrayscale False
-            dstImage.SetOriginalAlpha True
         End If
         
     End If
@@ -2201,7 +2198,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
         dstImage.SetOriginalGrayscale cReader.isGrayscale()
         dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
-
+        
         'Before exiting, ensure all color management data has been added to PD's central cache
         Dim profHash As String
         If (Not cReader.GetICCProfile() Is Nothing) Then
@@ -2220,7 +2217,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             profHash = ColorManagement.GetSRGBProfileHash()
             dstDIB.SetColorProfileHash profHash
             dstDIB.SetColorManagementState cms_ProfileConverted
-
+            
         End If
         
     End If

@@ -133,6 +133,8 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         Else
             InternalError funcName, "load failed; output follows:"
             PDDebug.LogAction outputString
+            PDDebug.LogAction "For reference, here's stderr: "
+            PDDebug.LogAction cShell.GetStdErrDataAsString()
         End If
         
     Else

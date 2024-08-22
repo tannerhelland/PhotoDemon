@@ -2148,7 +2148,7 @@ Private Sub Form_Load()
     
     Set m_XML = New pdXML
     Set m_enUSPhrases = New pdStringHash
-        
+    
     'Build a blacklist of phrases that are in the software, but do not need to be translated.
     ' (These are complex phrases that may include things like proper nouns or mathematical terms,
     ' but the automatic text generator has no way of knowing that the text is non-translatable.)
@@ -2238,13 +2238,6 @@ Private Sub Form_Load()
         
         'Forcibly merge all translation files with the latest English text
         Call cmdMergeAll_Click
-        
-        'Update the master langupdate.XML file, and generate new compressed language copies in their
-        ' dedicated upload folders
-        'NOTE: as of 23 October 2017 (just prior to 7.0's release), this feature has been disabled.
-        ' PD no longer attempts to patch language files separately, which greatly simplifies the core
-        ' program's update code and network access requirements.
-        'Call cmdLangVersions_Click
         
         'If the program is running in silent mode, unload it now
         Unload Me

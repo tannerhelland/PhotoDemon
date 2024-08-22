@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2024.8.10</langversion>
+		<langversion>2024.8.24</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -2664,6 +2664,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 		<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
+		<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation></translation>
@@ -2712,11 +2714,16 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
+<original>LGPL license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mozilla Public License 2.0</original>
 <translation></translation>
 </phrase>
 
-		<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14215,10 +14222,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2703</phrasecount>
+		<phrasecount>2704</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5699 phrases. -->
-	<!-- 2996 are duplicates, so only 2703 unique phrases have been written to file. -->
-	<!-- These 2703 phrases contain approximately 11709 total words. -->
+	<!-- As of this build, PhotoDemon contains 5703 phrases. -->
+	<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+	<!-- These 2704 phrases contain approximately 11711 total words. -->
 
 	</pdData>

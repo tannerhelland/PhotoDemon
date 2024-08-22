@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 18/March/24
-'Last update: wire up XBM import
+'Last updated: 05/August/24
+'Last update: wire up heif import
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -236,24 +236,9 @@ Public Sub GenerateInputFormats()
     
     If m_FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
     
-    'HEIF support requires Win 10 build 1809 or later (and potentially, depending on a variety
-    ' of complex per-locale licensing issues, additional MS Store downloads).  PD lists HEIF
-    ' import as available in IDE runs (to spare devs needing to manifest vb6.exe) and in
-    ' appropriate Win 10 builds.  In the future, I guess it's theoretically possible that MS
-    ' could make the necessary HEIF/HEVC libs backward-compatible with older Win 10 versions,
-    ' which would cause PD's HEIF detection scheme to fail... but honestly, that's an esoteric
-    ' case I'm not inclined to cover.  (I know MS discourages activating feature availability
-    ' by OS version, but I don't currently know any better way to determine WIC support for
-    ' HEVC containers (short of test-loading a file), so this poor-man's scheme will have to do.)
-    '
-    'Note that the arbitrary 17123 build no. comes from this MS article:
-    ' https://blogs.windows.com/windowsexperience/2018/03/16/announcing-windows-10-insider-preview-build-17123-for-fast/#UpPIwc3yVgJHc5Q8.97
-    '
-    'Note also that libavif can load *some* but not *all* HEIF files (HEIF is just a container
-    ' format - what matters are the codec(s) used inside) which is why PD lists HEIC/F as a
-    ' separate entry in its import list.
-    If (OS.IsWin10OrLater() And (OS.GetWin10Build >= 17123)) Or (Not OS.IsProgramCompiled) Then
-        AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heic;*.heif", PDIF_HEIF
+    'HEIF support requires libheif and several additional support libraries
+    If Plugin_Heif.IsLibheifEnabled() Then
+        AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.hif", PDIF_HEIF
     End If
     
     AddInputFormat "HGT - Shuttle Radar Topography Mission (SRTM)", "*.hgt", PDIF_HGT
@@ -664,7 +649,7 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
         Case "hdr"
             GetPDIFFromExtension = PDIF_HDR
         Case "heif"
-            GetPDIFFromExtension = PDIF_AVIF
+            GetPDIFFromExtension = PDIF_HEIF
         Case "hgt"
             GetPDIFFromExtension = PDIF_HGT
         Case "ico"

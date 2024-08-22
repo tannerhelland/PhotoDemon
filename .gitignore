@@ -118,3 +118,6 @@ App/PhotoDemon/Plugins/libjxl-LICENSE.txt
 
 # x86-64 support is experimental
 App/PhotoDemon/Plugins/x64
+
+# twinBASIC projects use a /Build folder
+Support/twinBASIC/PDHelper/Build

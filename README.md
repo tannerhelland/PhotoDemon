@@ -2,7 +2,7 @@
 
 | Stable (2024.7) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (18 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.7/PhotoDemon-2024.7.zip) | [Download ZIP (18 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (18 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.7/PhotoDemon-2024.7.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -59,9 +59,11 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-PhotoDemon 2024.7 just released, so there's not much new in nightly builds.
+[Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2022/09/08/photodemon-9-0.html).
 
-Check back in a few weeks!
+### File formats
+
+- HEIF/HEIC images can now be imported into PhotoDemon (via libheif).  Multi-frame HEIF images are also supported.
 
 ### Other
 
