@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.4 (build 14).1</langversion>
+<langversion>2024.8 (build 25)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2742,7 +2742,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>LGPL license</original>
-<translation></translation>
+<translation>LGPL License</translation>
 </phrase>
 
 <phrase>
