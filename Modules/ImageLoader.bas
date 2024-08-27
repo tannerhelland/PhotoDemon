@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 18/March/24
-'Last update: initial build of XBM import
+'Last updated: 26/August/24
+'Last update: wrap up work on HEIF import
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the

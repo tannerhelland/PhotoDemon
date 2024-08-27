@@ -672,7 +672,7 @@ PreviewFailed:
     
 End Function
 
-'Save an arbitrary DIB to a standalone JPEG XL file.
+'Save an arbitrary pdImage object to a standalone JPEG XL file.
 Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
 
     Const FUNC_NAME As String = "SaveJXL_ToFile"

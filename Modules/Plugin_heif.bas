@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_Heif"
 'libheif Library Interface
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/July/24
-'Last updated: 21/August/24
-'Last update: add support for multi-frame images
+'Last updated: 27/August/24
+'Last update: add heif export support (single frame only for now)
 '
 'Per its documentation (available at https://github.com/strukturag/libheif), libheif is...
 '
@@ -49,6 +49,9 @@ Private Enum Libheif_ProcAddress
     heif_context_get_number_of_top_level_images
     heif_context_get_primary_image_ID
     heif_context_is_top_level_image_ID
+    heif_encoder_release
+    heif_image_get_plane
+    heif_image_get_plane_readonly
     heif_image_handle_get_width
     heif_image_handle_get_height
     heif_image_handle_has_alpha_channel
@@ -57,7 +60,7 @@ Private Enum Libheif_ProcAddress
     heif_image_handle_get_raw_color_profile_size
     heif_image_handle_release
     heif_image_release
-    heif_image_get_plane_readonly
+    heif_image_set_premultiplied_alpha
     heif_get_file_mime_type
     heif_read_main_brand
     [last_address]
@@ -267,6 +270,61 @@ Private Enum heif_channel
     heif_channel_interleaved = 10
 End Enum
 
+'libheif known compression formats.
+Private Enum heif_compression_format
+    'Unspecified / undefined compression format.
+    ' This is used to mean "no match" or "any decoder" for some parts of the
+    ' API. It does not indicate a specific compression format.
+    heif_compression_undefined = 0
+    
+    'HEVC compression, used for HEIC images.
+    ' This is equivalent to H.265.
+    heif_compression_HEVC = 1
+    
+    'AVC compression. (Currently unused in libheif.)
+    ' The compression is defined in ISO/IEC 14496-10. This is equivalent to H.264.
+    ' The encapsulation is defined in ISO/IEC 23008-12:2022 Annex E.
+    heif_compression_AVC = 2
+    
+    'JPEG compression.
+    ' The compression format is defined in ISO/IEC 10918-1. The encapsulation
+    ' of JPEG is specified in ISO/IEC 23008-12:2022 Annex H.
+    heif_compression_JPEG = 3
+    
+    'AV1 compression, used for AVIF images.
+    ' The compression format is provided at https://aomediacodec.github.io/av1-spec/
+    ' The encapsulation is defined in https://aomediacodec.github.io/av1-avif/
+    heif_compression_AV1 = 4
+    
+    'VVC compression. (Currently unused in libheif.)
+    ' The compression format is defined in ISO/IEC 23090-3. This is equivalent to H.266.
+    ' The encapsulation is defined in ISO/IEC 23008-12:2022 Annex L.
+    heif_compression_VVC = 5
+    
+    'EVC compression. (Currently unused in libheif.)
+    ' The compression format is defined in ISO/IEC 23094-1. This is equivalent to H.266.
+    ' The encapsulation is defined in ISO/IEC 23008-12:2022 Annex M.
+    heif_compression_EVC = 6
+    
+    'JPEG 2000 compression.
+    ' The encapsulation of JPEG 2000 is specified in ISO/IEC 15444-16:2021.
+    ' The core encoding is defined in ISO/IEC 15444-1, or ITU-T T.800.
+    heif_compression_JPEG2000 = 7
+    
+    'Uncompressed encoding.
+    ' This is defined in ISO/IEC 23001-17:2023 (Final Draft International Standard).
+    heif_compression_uncompressed = 8
+    
+    'Mask image encoding.
+    ' See ISO/IEC 23008-12:2022 Section 6.10.2
+    heif_compression_mask = 9
+    
+    'High Throughput JPEG 2000 (HT-J2K) compression.
+    ' The encapsulation of HT-J2K is specified in ISO/IEC 15444-16:2021.
+    ' The core encoding is defined in ISO/IEC 15444-15, or ITU-T T.814.
+    heif_compression_HTJ2K = 10
+End Enum
+
 Private Type heif_error
     heif_error_code As PD_HeifErrorCode         '// main error category
     heif_suberror_code As PD_HeifSuberrorCode   '// more detailed error code
@@ -297,7 +355,15 @@ Private Declare Function PD_heif_context_get_primary_image_ID Lib "PDHelper_win3
 Private Declare Function PD_heif_decode_image Lib "PDHelper_win32" (ByVal in_heif_image_handle As Long, ByRef pp_out_heif_image As Long, ByVal in_heif_colorspace As heif_colorspace, ByVal in_heif_chroma As heif_chroma, ByVal p_heif_decoding_options As Long) As heif_error
 Private Declare Function PD_heif_image_handle_get_preferred_decoding_colorspace Lib "PDHelper_win32" (ByVal in_heif_image_handle As Long, ByRef out_heif_colorspace As Long, ByRef out_heif_chroma As Long) As heif_error
 Private Declare Function PD_heif_image_handle_get_raw_color_profile Lib "PDHelper_win32" (ByVal in_heif_image_handle As Long, ByVal ptr_out_data As Long) As heif_error
-
+Private Declare Function PD_heif_context_get_encoder_for_format Lib "PDHelper_win32" (ByVal p_heif_context As Long, ByVal heif_compression_format As heif_compression_format, ByVal pp_heif_encoder As Long) As heif_error
+Private Declare Function PD_heif_encoder_set_lossy_quality Lib "PDHelper_win32" (ByVal p_heif_encoder As Long, ByVal enc_quality As Long) As heif_error
+Private Declare Function PD_heif_encoder_set_lossless Lib "PDHelper_win32" (ByVal p_heif_encoder As Long, ByVal enc_enable As Long) As heif_error
+Private Declare Function PD_heif_image_create Lib "PDHelper_win32" (ByVal image_width As Long, ByVal image_height As Long, ByVal in_heif_colorspace As heif_colorspace, ByVal in_heif_chroma As heif_chroma, ByVal pp_out_heif_image As Long) As heif_error
+Private Declare Function PD_heif_image_add_plane Lib "PDHelper_win32" (ByVal p_heif_image As Long, ByVal in_heif_channel As heif_channel, ByVal in_width As Long, ByVal in_height As Long, ByVal in_bit_depth As Long) As heif_error
+Private Declare Function PD_heif_context_encode_image Lib "PDHelper_win32" (ByVal p_heif_context As Long, ByVal p_heif_image As Long, ByVal p_heif_encoder As Long, ByVal p_heif_encoding_options As Long, ByVal pp_out_heif_image_handle As Long) As heif_error
+Private Declare Function PD_heif_context_set_primary_image Lib "PDHelper_win32" (ByVal p_heif_context As Long, ByVal p_heif_image_handle As Long) As heif_error
+Private Declare Function PD_heif_context_write_to_file Lib "PDHelper_win32" (ByVal p_heif_context As Long, ByVal p_char_filename As Long) As heif_error
+    
 'Forcibly disable plugin interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
 ' on successful library loading.
@@ -363,6 +429,9 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(heif_context_get_number_of_top_level_images) = GetProcAddress(m_hLibHeif, "heif_context_get_number_of_top_level_images")
         m_ProcAddresses(heif_context_get_primary_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_get_primary_image_ID")
         m_ProcAddresses(heif_context_is_top_level_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_is_top_level_image_ID")
+        m_ProcAddresses(heif_encoder_release) = GetProcAddress(m_hLibHeif, "heif_encoder_release")
+        m_ProcAddresses(heif_image_get_plane) = GetProcAddress(m_hLibHeif, "heif_image_get_plane")
+        m_ProcAddresses(heif_image_get_plane_readonly) = GetProcAddress(m_hLibHeif, "heif_image_get_plane_readonly")
         m_ProcAddresses(heif_image_handle_get_width) = GetProcAddress(m_hLibHeif, "heif_image_handle_get_width")
         m_ProcAddresses(heif_image_handle_get_height) = GetProcAddress(m_hLibHeif, "heif_image_handle_get_height")
         m_ProcAddresses(heif_image_handle_has_alpha_channel) = GetProcAddress(m_hLibHeif, "heif_image_handle_has_alpha_channel")
@@ -371,7 +440,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(heif_image_handle_get_raw_color_profile_size) = GetProcAddress(m_hLibHeif, "heif_image_handle_get_raw_color_profile_size")
         m_ProcAddresses(heif_image_handle_release) = GetProcAddress(m_hLibHeif, "heif_image_handle_release")
         m_ProcAddresses(heif_image_release) = GetProcAddress(m_hLibHeif, "heif_image_release")
-        m_ProcAddresses(heif_image_get_plane_readonly) = GetProcAddress(m_hLibHeif, "heif_image_get_plane_readonly")
+        m_ProcAddresses(heif_image_set_premultiplied_alpha) = GetProcAddress(m_hLibHeif, "heif_image_set_premultiplied_alpha")
         m_ProcAddresses(heif_get_file_mime_type) = GetProcAddress(m_hLibHeif, "heif_get_file_mime_type")
         m_ProcAddresses(heif_read_main_brand) = GetProcAddress(m_hLibHeif, "heif_read_main_brand")
         
@@ -667,7 +736,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
         dstDIB.SetInitialAlphaPremultiplicationState imgAlphaPremultiplied
-            
+        
         'Iterate lines and copy the data directly into the target DIB
         Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
         Dim r As Long, g As Long, b As Long, a As Long
@@ -691,8 +760,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         dstDIB.UnwrapArrayFromDIB dstPixels
         
         'heif alpha channels can be premultiplied
-        dstDIB.SetInitialAlphaPremultiplicationState False
-        If (Not imgAlphaPremultiplied) Then dstDIB.SetAlphaPremultiplication True Else dstDIB.SetInitialAlphaPremultiplicationState True
+        If (Not imgAlphaPremultiplied) Then dstDIB.SetAlphaPremultiplication True
         
         'Next, let's see if color management is relevant to this image.
         Dim embeddedProfile As pdICCProfile
@@ -736,6 +804,8 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
                 'Ignore monochrome profiles (we can't apply them to pixels that have already been expanded to RGB)
                 If srcProfile.CreateFromPDICCObject(embeddedProfile) And (srcProfile.GetColorSpace <> cmsSigGray) Then
                     
+                    dstDIB.SetAlphaPremultiplication False
+                    
                     'For now, do a hard-convert into sRGB format
                     Set dstProfile = New pdLCMSProfile
                     dstProfile.CreateSRGBProfile
@@ -752,6 +822,8 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
                     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile applied."
                     Set tmpTransform = Nothing
                     Set srcProfile = Nothing
+                    
+                    dstDIB.SetAlphaPremultiplication True
                     
                 End If
                 
@@ -845,8 +917,6 @@ LoadFailed:
     PDDebug.LogAction "Critical error during heif load; exiting now..."
     
     'Free any allocated resources before exiting
-    ' (Note that the mismatch between *base and regular handles is intentional, due to the way
-    ' handles are referenced by libheif.)
     If (hImgDecoded <> 0) Then CallCDeclW heif_image_release, vbEmpty, hImgDecoded
     If (hImg <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImg
     If (ctxHeif <> 0) Then CallCDeclW heif_context_free, vbEmpty, ctxHeif
@@ -855,6 +925,164 @@ LoadFailed:
     If updateUI Then ProgressBars.ReleaseProgressBar
     
     LoadHeifImage = False
+    
+End Function
+
+'Save an arbitrary pdImage object to a standalone HEIF file.
+Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As String, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SaveHEIF_ToFile"
+    SaveHEIF_ToFile = False
+    
+    'Retrieve the composited pdImage object.
+    Dim finalDIB As pdDIB
+    srcImage.GetCompositedImage finalDIB, False
+    
+    'Retrieve and validate parameters from incoming string.
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString srcOptions
+    
+    Dim exportLossless As Boolean, exportQuality As Single
+    exportLossless = cParams.GetBool("heif-lossless", False, True)
+    exportQuality = cParams.GetSingle("heif-lossy-quality", 90!, True)
+    
+    If (exportQuality < 0!) Then exportQuality = 0!
+    If (exportQuality > 100!) Then exportQuality = 100!
+    
+    'Create a new heif context
+    Dim ctxHeif As Long
+    ctxHeif = CallCDeclW(heif_context_alloc, vbLong)
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif context created successfully (" & CStr(ctxHeif) & ")"
+    
+    'Get a HEIF encoder
+    Dim hReturn As heif_error
+    Dim pHeifEncoder As Long, heifEncoderBase As Long
+    pHeifEncoder = VarPtr(heifEncoderBase)
+    hReturn = PD_heif_context_get_encoder_for_format(ctxHeif, heif_compression_HEVC, VarPtr(pHeifEncoder))
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        pHeifEncoder = 0
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo SaveFailed
+    End If
+    
+    'Set encoder properties
+    If exportLossless Then
+        hReturn = PD_heif_encoder_set_lossless(pHeifEncoder, 1)
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+    Else
+        hReturn = PD_heif_encoder_set_lossless(pHeifEncoder, 0)
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+        hReturn = PD_heif_encoder_set_lossy_quality(pHeifEncoder, CLng(exportQuality))
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+    End If
+    
+    'Construct a heif image
+    Dim hImg As Long, hImgBase As heif_image_handle
+    hImg = VarPtr(hImgBase)
+    hReturn = PD_heif_image_create(finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, VarPtr(hImg))
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        hImg = 0
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo SaveFailed
+    End If
+    
+    'Allocate the heif image
+    hReturn = PD_heif_image_add_plane(hImg, heif_channel_interleaved, finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, 8)
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo SaveFailed
+    End If
+    
+    CallCDeclW heif_image_set_premultiplied_alpha, vbEmpty, hImg, IIf(finalDIB.GetAlphaPremultiplication, 1&, 0&)
+    
+    'Retrieve a pointer to the allocated image, as well as the stride (libheif doesn't necessarily guarantee
+    ' a specific line alignment).
+    Dim imgStride As Long, pData As Long
+    pData = CallCDeclW(heif_image_get_plane, vbLong, hImg, heif_channel_interleaved, VarPtr(imgStride))
+    If (pData = 0) Then
+        InternalError FUNC_NAME, "bad pixel pointer"
+        GoTo SaveFailed
+    End If
+    
+    'Fill the destination image line-by-line
+    Dim imgHeight As Long, imgWidthBytes As Long
+    imgHeight = finalDIB.GetDIBHeight
+    imgWidthBytes = finalDIB.GetDIBStride
+    
+    Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim x As Long, y As Long
+    For y = 0 To imgHeight - 1
+        finalDIB.WrapArrayAroundScanline srcPixels, srcSA1D, y
+        VBHacks.WrapArrayAroundPtr_Byte dstPixels, dstSA1D, pData + (imgStride * y), imgStride
+    For x = 0 To imgWidthBytes - 1 Step 4
+        
+        'Manually un-interleave to fix pixel order
+        dstPixels(x) = srcPixels(x + 2)
+        dstPixels(x + 1) = srcPixels(x + 1)
+        dstPixels(x + 2) = srcPixels(x)
+        dstPixels(x + 3) = srcPixels(x + 3)
+        
+    Next x
+    Next y
+    
+    VBHacks.UnwrapArrayFromPtr_Byte dstPixels
+    finalDIB.UnwrapArrayFromDIB srcPixels
+    
+    'Encode the image.  Note that the final parameter of this call can return a handle to the encoded object.
+    ' This would be useful for previews!  For now, however, we just want to leave the image in the context,
+    ' because it's about to be written out to file.
+    hReturn = PD_heif_context_encode_image(ctxHeif, hImg, pHeifEncoder, 0&, 0&)
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo SaveFailed
+    End If
+    
+    'Free the encoder
+    CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
+    pHeifEncoder = 0
+    
+    'Free the raw image?  The docs are ambiguous here...
+    CallCDeclW heif_image_release, vbEmpty, hImg
+    hImg = 0
+    
+    'Dump to file
+    Dim utfFilename() As Byte, utfLen As Long
+    Files.FileDeleteIfExists dstFile
+    Strings.UTF8FromString dstFile, utfFilename, utfLen
+    hReturn = PD_heif_context_write_to_file(ctxHeif, VarPtr(utfFilename(0)))
+    If (hReturn.heif_error_code <> heif_error_Ok) Then
+        InternalErrorHeif FUNC_NAME, hReturn
+        GoTo SaveFailed
+    End If
+    
+    'Free the encoder
+    CallCDeclW heif_context_free, vbEmpty, ctxHeif
+    ctxHeif = 0
+    
+    SaveHEIF_ToFile = True
+    
+    Exit Function
+    
+SaveFailed:
+    SaveHEIF_ToFile = False
+    InternalError FUNC_NAME, "VB error # " & Err.Number
+
+    'Free any allocated resources before exiting
+    If (hImg <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImg
+    If (pHeifEncoder <> 0) Then CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
+    If (ctxHeif <> 0) Then CallCDeclW heif_context_free, vbEmpty, ctxHeif
     
 End Function
 

@@ -91,6 +91,20 @@ Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptHEIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportHEIF
+    dialog_ExportHEIF.ShowDialog srcImage
+    
+    PromptHEIFSettings = dialog_ExportHEIF.GetDialogResult
+    dstFormatParams = dialog_ExportHEIF.GetFormatParams
+    dstMetadataParams = dialog_ExportHEIF.GetMetadataParams
+    
+    Unload dialog_ExportHEIF
+    Set dialog_ExportHEIF = Nothing
+    
+End Function
+
 Public Function PromptICOSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportICO

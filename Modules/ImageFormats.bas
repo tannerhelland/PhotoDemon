@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 05/August/24
-'Last update: wire up heif import
+'Last updated: 26/August/24
+'Last update: wire up heif export
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -415,6 +415,12 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
     If m_FreeImageEnabled Then AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
+    
+    'HEIF support requires libheif and several additional support libraries
+    If Plugin_Heif.IsLibheifEnabled() Then
+        AddOutputFormat "HEIC/HEIF - High Efficiency Image File Format", "heif", PDIF_HEIF
+    End If
+    
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
     If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
@@ -648,7 +654,7 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
             GetPDIFFromExtension = PDIF_GIF
         Case "hdr"
             GetPDIFFromExtension = PDIF_HDR
-        Case "heif"
+        Case "heif", "heic", "hif"
             GetPDIFFromExtension = PDIF_HEIF
         Case "hgt"
             GetPDIFFromExtension = PDIF_HGT
@@ -744,7 +750,7 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_HDR
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_HEIF
-            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_ICO
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_JP2
@@ -801,6 +807,8 @@ End Function
 'If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
 Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
     Select Case outputPDIF
+        Case PDIF_HEIF
+            IsExifAllowedForPDIF = True
         Case PDIF_JPEG
             IsExifAllowedForPDIF = True
         Case PDIF_JXL
@@ -828,6 +836,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         Case PDIF_BMP
             IsExportDialogSupported = True
         Case PDIF_GIF
+            IsExportDialogSupported = True
+        Case PDIF_HEIF
             IsExportDialogSupported = True
         Case PDIF_ICO
             IsExportDialogSupported = True
