@@ -29,7 +29,7 @@ Attribute VB_Name = "Plugin_Heif"
 Option Explicit
 
 'Log extra heif debug info; recommend DISABLING in production builds
-Private Const HEIF_DEBUG_VERBOSE As Boolean = True
+Private Const HEIF_DEBUG_VERBOSE As Boolean = False
 
 'libheif is built using vcpkg, which limits my control over calling convention.  (I don't want to
 ' manually build the libraries via CMake - they're complex!)  DispCallFunc is used to work around
@@ -664,8 +664,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         If updateUI Then ProgressBars.SetProgBarVal (idxImage * 2)
         
         'Get a handle to this image
-        Dim hImg As Long    ', hImgBase As heif_image_handle
-        'hImg = VarPtr(hImgBase)
+        Dim hImg As Long
         hReturn = PD_heif_context_get_image_handle(ctxHeif, listOfImageIDs(idxImage), hImg)
         If (hReturn.heif_error_code <> heif_error_Ok) Then
             hImg = 0
@@ -712,10 +711,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         imgWidthBytes = imgWidth * 4
         
         '// decode the image and convert colorspace to RGB, saved as 24bit interleaved
-        'heif_image* img;
-        'heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr);
-        Dim hImgDecoded As Long ', hImgDecodedBase As Long
-        'hImgDecoded = VarPtr(hImgDecodedBase)
+        Dim hImgDecoded As Long
         hReturn = PD_heif_decode_image(hImg, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
         If (hReturn.heif_error_code <> heif_error_Ok) Then
             hImgDecoded = 0
@@ -864,13 +860,13 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
             CallCDeclW heif_image_release, vbEmpty, hImgDecoded
             hImgDecoded = 0
         Else
-            Debug.Print "WARNING: hImgDecodedBase is 0"
+            PDDebug.LogAction "WARNING: hImgDecodedBase is 0"
         End If
         If (hImg <> 0) Then
             CallCDeclW heif_image_handle_release, vbEmpty, hImg
             hImg = 0
         Else
-            Debug.Print "WARNING: hImgBase is 0"
+            PDDebug.LogAction "WARNING: hImgBase is 0"
         End If
         
     Next idxImage
@@ -945,10 +941,10 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     
     Dim exportLossless As Boolean, exportQuality As Single
     exportLossless = cParams.GetBool("heif-lossless", False, True)
-    exportQuality = cParams.GetSingle("heif-lossy-quality", 90!, True)
+    exportQuality = cParams.GetLong("heif-lossy-quality", 90, True)
     
-    If (exportQuality < 0!) Then exportQuality = 0!
-    If (exportQuality > 100!) Then exportQuality = 100!
+    If (exportQuality < 0) Then exportQuality = 0
+    If (exportQuality > 100) Then exportQuality = 100
     
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
@@ -963,15 +959,17 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
         dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     End If
     
+    'All remaining code handles lossy compression only
+    
     'Create a new heif context
     Dim ctxHeif As Long
     ctxHeif = CallCDeclW(heif_context_alloc, vbLong)
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif context created successfully (" & CStr(ctxHeif) & ")"
     
-    'Get a HEIF encoder
     Dim hReturn As heif_error
-    Dim pHeifEncoder As Long, heifEncoderBase As Long
-    pHeifEncoder = VarPtr(heifEncoderBase)
+    
+    'Get a HEIF encoder
+    Dim pHeifEncoder As Long
     hReturn = PD_heif_context_get_encoder_for_format(ctxHeif, heif_compression_HEVC, VarPtr(pHeifEncoder))
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         pHeifEncoder = 0
@@ -985,7 +983,7 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
         InternalErrorHeif FUNC_NAME, hReturn
         GoTo PreviewFailed
     End If
-    hReturn = PD_heif_encoder_set_lossy_quality(pHeifEncoder, CLng(exportQuality))
+    hReturn = PD_heif_encoder_set_lossy_quality(pHeifEncoder, exportQuality)
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         InternalErrorHeif FUNC_NAME, hReturn
         GoTo PreviewFailed
@@ -993,9 +991,8 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif encoder ready"
     
-    'Construct a heif image
-    Dim hImg As Long, hImgBase As heif_image_handle
-    hImg = VarPtr(hImgBase)
+    'Create a base heif image object (note that this does NOT allocate pixel data yet)
+    Dim hImg As Long
     hReturn = PD_heif_image_create(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, VarPtr(hImg))
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         hImg = 0
@@ -1013,6 +1010,8 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     End If
     
     CallCDeclW heif_image_set_premultiplied_alpha, vbEmpty, hImg, IIf(srcDIB.GetAlphaPremultiplication, 1&, 0&)
+    
+    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif pixels allocated"
     
     'Retrieve a pointer to the allocated image, as well as the stride (libheif doesn't necessarily guarantee
     ' a specific line alignment).
@@ -1074,17 +1073,12 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
     pHeifEncoder = 0
     
-    'Free the raw image?  The docs are ambiguous on whether we can do it earlier...
-    CallCDeclW heif_image_release, vbEmpty, hImg
-    hImg = 0
-    
     'For now, dump to a temp file
     If (m_utfLen = 0) Then
         m_tmpFile = OS.UniqueTempFilename(customExtension:="heif")
         Strings.UTF8FromString m_tmpFile, m_utfFilename, m_utfLen
     End If
     
-    Debug.Print "first delete?"
     Files.FileDeleteIfExists m_tmpFile
     
     hReturn = PD_heif_context_write_to_file(ctxHeif, VarPtr(m_utfFilename(0)))
@@ -1093,9 +1087,12 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
         GoTo PreviewFailed
     End If
     
-    'Attempt to load back into a new context
+    'Free the raw image?  The docs are ambiguous on whether we can do it earlier...
+    CallCDeclW heif_image_release, vbEmpty, hImg
+    hImg = 0
+    
+    'Releast this context then create a new one
     CallCDeclW heif_context_free, vbEmpty, ctxHeif
-    ctxHeif = 0
     ctxHeif = CallCDeclW(heif_context_alloc, vbLong)
     
     hReturn = PD_heif_context_read_from_file(ctxHeif, VarPtr(m_utfFilename(0)), 0&)
@@ -1112,14 +1109,13 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
         GoTo PreviewFailed
     End If
     
-    'Decode the image.  Note that the final parameter of this call can return a handle to the encoded object.
-    ' This would be useful for previews!  For now, however, we just want to leave the image in the context,
-    ' because it's about to be written out to file.
+    'Decode the image.
+    ' (Refer to the above heif_context_encode_image to see a better way to handle this, pending fixes in libheif;
+    ' in anticipation of that bug-fix, I've left the required line of code below.)
     Dim hImgDecoded As Long
     PDDebug.LogAction "Starting decode now..."
     hReturn = PD_heif_decode_image(hImgAfter, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
     'hReturn = PD_heif_decode_image(hImgEncoded, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
-    Debug.Print hImgDecoded, hReturn.heif_error_code, hReturn.heif_suberror_code
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         hImgDecoded = 0
         InternalErrorHeif FUNC_NAME, hReturn
@@ -1129,14 +1125,13 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: encoded image decoded"
     
     'Free the pre-decoding image
-    CallCDeclW heif_image_release, vbEmpty, hImgAfter
+    CallCDeclW heif_image_handle_release, vbEmpty, hImgAfter
     hImgAfter = 0
     
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: PD_heif_decode_image returned successfully"
     
     'Retrieve a pointer to the decoded pixel data, as well as the stride (libheif doesn't necessarily guarantee
     ' a specific line alignment).
-    'Dim imgStride As Long, pData As Long
     pData = CallCDeclW(heif_image_get_plane_readonly, vbLong, hImgDecoded, heif_channel_interleaved, VarPtr(imgStride))
     If (pData = 0) Then
         InternalError FUNC_NAME, "bad pixel pointer"
@@ -1145,16 +1140,9 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: pointer to decoded image ready"
     
-    'Prepare a destination DIB
-    'If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    'dstDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
     dstDIB.SetInitialAlphaPremultiplicationState False
     
     'Iterate lines and copy the data directly into the target DIB
-    'Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
-    'Dim r As Long, g As Long, b As Long, a As Long
-    
-    'Dim x As Long, y As Long
     For y = 0 To imgHeight - 1
         dstDIB.WrapArrayAroundScanline dstPixels, dstSA1D, y
         VBHacks.WrapArrayAroundPtr_Byte srcPixels, srcSA1D, pData + (imgStride * y), imgStride
@@ -1175,7 +1163,7 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: decoded pixels copied to target DIB"
     
-    'Before exiting, release everything allocated in reverse order.
+    'Before exiting, release the decoded image object
     If (hImgDecoded <> 0) Then
         CallCDeclW heif_image_release, vbEmpty, hImgDecoded
         hImgDecoded = 0
@@ -1186,7 +1174,6 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     ctxHeif = 0
     
     'Kill the temp file
-    Debug.Print "second delete?"
     Files.FileDeleteIfExists m_tmpFile
     
     PreviewHEIF = True
@@ -1198,8 +1185,8 @@ PreviewFailed:
     InternalError FUNC_NAME, "VB error # " & Err.Number
 
     'Free any allocated resources before exiting
-    If (hImg <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImg
-    If (hImgDecoded <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImgDecoded
+    If (hImg <> 0) Then CallCDeclW heif_image_release, vbEmpty, hImg
+    If (hImgDecoded <> 0) Then CallCDeclW heif_image_release, vbEmpty, hImgDecoded
     If (hImgAfter <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImgAfter
     If (pHeifEncoder <> 0) Then CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
     If (ctxHeif <> 0) Then CallCDeclW heif_context_free, vbEmpty, ctxHeif
@@ -1225,20 +1212,20 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
     
     Dim exportLossless As Boolean, exportQuality As Single
     exportLossless = cParams.GetBool("heif-lossless", False, True)
-    exportQuality = cParams.GetSingle("heif-lossy-quality", 90!, True)
+    exportQuality = cParams.GetLong("heif-lossy-quality", 90, True)
     
-    If (exportQuality < 0!) Then exportQuality = 0!
-    If (exportQuality > 100!) Then exportQuality = 100!
+    If (exportQuality < 0) Then exportQuality = 0
+    If (exportQuality > 100) Then exportQuality = 100
     
     'Create a new heif context
     Dim ctxHeif As Long
     ctxHeif = CallCDeclW(heif_context_alloc, vbLong)
     If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif context created successfully (" & CStr(ctxHeif) & ")"
     
-    'Get a HEIF encoder
     Dim hReturn As heif_error
-    Dim pHeifEncoder As Long, heifEncoderBase As Long
-    pHeifEncoder = VarPtr(heifEncoderBase)
+    
+    'Get a HEIF encoder
+    Dim pHeifEncoder As Long
     hReturn = PD_heif_context_get_encoder_for_format(ctxHeif, heif_compression_HEVC, VarPtr(pHeifEncoder))
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         pHeifEncoder = 0
@@ -1259,7 +1246,7 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
             InternalErrorHeif FUNC_NAME, hReturn
             GoTo SaveFailed
         End If
-        hReturn = PD_heif_encoder_set_lossy_quality(pHeifEncoder, CLng(exportQuality))
+        hReturn = PD_heif_encoder_set_lossy_quality(pHeifEncoder, exportQuality)
         If (hReturn.heif_error_code <> heif_error_Ok) Then
             InternalErrorHeif FUNC_NAME, hReturn
             GoTo SaveFailed
@@ -1267,8 +1254,7 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
     End If
     
     'Construct a heif image
-    Dim hImg As Long    ', hImgBase As heif_image_handle
-    'hImg = VarPtr(hImgBase)
+    Dim hImg As Long
     hReturn = PD_heif_image_create(finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, VarPtr(hImg))
     If (hReturn.heif_error_code <> heif_error_Ok) Then
         hImg = 0
@@ -1360,9 +1346,9 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
 SaveFailed:
     SaveHEIF_ToFile = False
     InternalError FUNC_NAME, "VB error # " & Err.Number
-
+    
     'Free any allocated resources before exiting
-    If (hImg <> 0) Then CallCDeclW heif_image_handle_release, vbEmpty, hImg
+    If (hImg <> 0) Then CallCDeclW heif_image_release, vbEmpty, hImg
     If (pHeifEncoder <> 0) Then CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
     If (ctxHeif <> 0) Then CallCDeclW heif_context_free, vbEmpty, ctxHeif
     
