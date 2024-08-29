@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.4 build 42）</langname>
-<langversion>2024.4 build 42.1</langversion>
+<langversion>2024.4 build 42.2</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -10823,6 +10823,18 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>lossless</original>
+<translation>无损</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>有损</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>图标用途</translation>
 </phrase>
@@ -11008,17 +11020,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>慢速，文件较小</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>无损</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>有损</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -14287,8 +14289,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 <!-- These 2704 phrases contain approximately 11711 total words. -->
 
 <special-translations>

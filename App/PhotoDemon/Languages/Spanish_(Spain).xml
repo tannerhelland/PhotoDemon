@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.6</langversion>
+<langversion>9.0.7</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -10829,6 +10829,18 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>lossless</original>
+<translation>sin pérdidas</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>con pérdida</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>propósito del icono</translation>
 </phrase>
@@ -11014,17 +11026,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Lenta, menor tamaño de archivo</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>sin pérdidas</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>con pérdida</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -14293,8 +14295,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 <!-- These 2704 phrases contain approximately 11711 total words. -->
 
 </pdData>

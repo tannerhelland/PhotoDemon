@@ -3,14 +3,14 @@
 <pdData>
 
 <pdDataType>Translation</pdDataType>
-Inferred
+
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25)</langversion>
+<langversion>2028.8 Alfa (Build 25).1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
-<!-- !!! Fails ar tulkojuma labojumiem. -->
+
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
@@ -1579,6 +1579,13 @@ Ja problēma saglabājas, lūdzu, ziņojiet par to PhotoDemon izstrādātājiem,
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
+<original>Carving image relief</original>
+<translation></translation>
+</phrase>
+
+<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>Unikālo krāsu skaita skaitīšana šajā attēlā</translation>
 </phrase>
@@ -2698,7 +2705,7 @@ Lai iespējotu skenera atbalstu, lūdzu, nokopējiet EZTW32.dll failu (lejupiel�
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation>Vai vēlaties, lai PhotoDemon lejupielādē libjxl jūsu PhotoDemon spraudņu mapē? </translation>
+<translation>Vai vēlaties, lai PhotoDemon lejupielādē libjxl jūsu PhotoDemon spraudņu mapē?</translation>
 </phrase>
 
 <phrase>
@@ -3093,7 +3100,7 @@ Kad esat pabeidzis, noklikšķiniet uz pogas Iesniegt jaunu problēmu.  Paldies!
 <translation>Kļūdu ziņojuma instrukcijas</translation>
 </phrase>
 
-<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3180,7 +3187,7 @@ Pagaidām, lūdzu, mēģiniet saglabāt attēlu citā formātā.  Par to varat a
 <translation>Jūs varat turpināt, bet attēls tiks saglabāts kā statisks, nevis animēts attēls.</translation>
 </phrase>
 
-<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -4583,7 +4590,7 @@ Jums būs nepieciešams manuāli lejupielādēt šo failu, izmantojot interneta 
 <translation>Pārkārtot slāņus</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -4897,7 +4904,7 @@ Galīgajai vērtībai jābūt starp %3 un %4.</translation>
 
 <phrase>
 <original>Save copy (lossless)</original>
-<translation>Saglabāt (bezzudumu) kopiju </translation>
+<translation>Saglabāt (bezzudumu) kopiju</translation>
 </phrase>
 
 <phrase>
@@ -5783,7 +5790,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 <translation>Valoda veiksmīgi mainīta.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7305,6 +7312,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
@@ -8784,7 +8792,7 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <translation>Attēlu malu izzīmēšana ar virtuālo otas otu</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>background color and opacity</original>
@@ -9590,7 +9598,7 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <translation>apakšējā kreisajā pusē</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -10305,7 +10313,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Atlikušā laika aplēse</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -10715,8 +10723,8 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation>AVIF saspiešana ir ļoti darbietilpīga skaitļošanas ziņā.  Vecākos vai lēnākos datoros, iespējams, vēlēsieties atspējot tiešraides priekšskatījumus.</translation>
+<original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation>Saspiešana ir ļoti darbietilpīga skaitļošanas ziņā.  Vecākos vai lēnākos datoros, iespējams, vēlēsieties atspējot tiešraides priekšskatījumus.</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10819,6 +10827,18 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>lossless</original>
+<translation>bez zudumiem</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>ar zudumiem</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>icon purpose</original>
@@ -11006,17 +11026,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>lēns, mazāks fails</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>bez zudumiem</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>ar zudumiem</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11137,7 +11147,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>PNG faili atbalsta dažādas saspiešanas stratēģijas (sauktas par "filtriem").  Vieda filtru izvēle nodrošina labāku saspiešanu.  Izmantojiet automātisko iestatījumu, lai PhotoDemon pārbaudītu vairākas stratēģijas un automātiski izvēlētos to, kas nodrošina vislabāko saspiešanu.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -12573,8 +12583,8 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>parādīt slāņu robežas</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12992,7 +13002,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Noklikšķiniet šeit, lai pārvērstu šo slāni par uzlabotu tekstu.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13314,7 +13324,7 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 
 <phrase>
 <original>by %1</original>
-<translation> %1</translation>
+<translation>%1</translation>
 </phrase>
 
 <phrase>
@@ -14073,7 +14083,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <translation>Šī jaunā pagaidu mapes atrašanās vieta stāsies spēkā tikai pēc programmas restartēšanas.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 190 phrases. 55 were duplicates of existing phrases, so only 135 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14200,7 +14210,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <translation>Ja jūs mijiedarbosieties ar %1, PhotoDemon piedāvās lejupielādēt un konfigurēt šo bibliotēku jūsu vietā.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14285,8 +14295,8 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 <!-- These 2704 phrases contain approximately 11711 total words. -->
 
 </pdData>

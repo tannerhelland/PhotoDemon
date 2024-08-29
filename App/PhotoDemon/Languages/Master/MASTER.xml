@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2024.8.24</langversion>
+		<langversion>2024.8.40</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -10770,6 +10770,18 @@ Would you like to save your batch list before exiting?</original>
 		<!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>lossless</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation></translation>
+</phrase>
+
+		<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation></translation>
 </phrase>
@@ -10955,17 +10967,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation></translation>
-</phrase>
-
-		<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -14224,8 +14226,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<phrasecount>2704</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-	<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+	<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+	<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 	<!-- These 2704 phrases contain approximately 11711 total words. -->
 
 	</pdData>

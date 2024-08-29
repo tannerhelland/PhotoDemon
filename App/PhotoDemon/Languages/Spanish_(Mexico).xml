@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.33</langversion>
+<langversion>9.0.34</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -10829,6 +10829,18 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>lossless</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>propósito del icono</translation>
 </phrase>
@@ -11014,17 +11026,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>lento, un archivo más pequeño...</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -14293,8 +14295,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 <!-- These 2704 phrases contain approximately 11711 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.8 (build 25)</langversion>
+<langversion>2024.8 (build 25).1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10827,6 +10827,18 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>lossless</original>
+<translation>Verlustfrei</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>Verlustbehaftet</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>Icon-Verwendungszweck</translation>
 </phrase>
@@ -11012,17 +11024,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Langsam, kleinere Datei</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>Verlustfrei</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>Verlustbehaftet</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -14291,8 +14293,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5703 phrases. -->
-<!-- 2999 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5716 phrases. -->
+<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
 <!-- These 2704 phrases contain approximately 11711 total words. -->
 
 </pdData>
