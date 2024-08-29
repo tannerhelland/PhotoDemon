@@ -399,13 +399,13 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         'Because previews are intensive to generate, this dialog provides a toggle so the user
         ' can suspend real-time previews.
         If chkLivePreview.Value Then
-            
-            'Previews are TODO!
+            Plugin_Heif.PreviewHEIF m_PreviewImageBackup, workingDIB, GetParamString_HEIF()
+            FinalizeNonstandardPreview pdFxPreview, True
             
         'Live previews are disabled; just mirror the original image to the screen
         Else
             workingDIB.CreateFromExistingDIB m_PreviewImageBackup
-            FinalizeNonstandardPreview pdFxPreview, False
+            FinalizeNonstandardPreview pdFxPreview, True
         End If
     
     '/no else required, previews are disabled due to a valid reason (settings haven't changed, batch process, etc)
