@@ -238,7 +238,7 @@ Public Sub GenerateInputFormats()
     
     'HEIF support requires libheif and several additional support libraries
     If Plugin_Heif.IsLibheifEnabled() Then
-        AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.hif", PDIF_HEIF
+        AddInputFormat "HEIC/HEIF - High Efficiency Image Format", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.hif", PDIF_HEIF
     End If
     
     AddInputFormat "HGT - Shuttle Radar Topography Mission (SRTM)", "*.hgt", PDIF_HGT
@@ -418,7 +418,7 @@ Public Sub GenerateOutputFormats()
     
     'HEIF support requires libheif and several additional support libraries
     If Plugin_Heif.IsLibheifEnabled() Then
-        AddOutputFormat "HEIC/HEIF - High Efficiency Image File Format", "heif", PDIF_HEIF
+        AddOutputFormat "HEIC/HEIF - High Efficiency Image File Format", "heic", PDIF_HEIF
     End If
     
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
@@ -511,7 +511,7 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
         Case PDIF_HDR
             GetExtensionFromPDIF = "hdr"
         Case PDIF_HEIF
-            GetExtensionFromPDIF = "heif"
+            GetExtensionFromPDIF = "heic"
         Case PDIF_HGT
             GetExtensionFromPDIF = "hgt"
         Case PDIF_ICO
@@ -741,8 +741,6 @@ End Function
 'Given an output PDIF, return the ideal metadata format for that image format.
 Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
     Select Case outputPDIF
-        Case PDIF_HEIF
-            GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_BMP
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_GIF

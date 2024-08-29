@@ -126,6 +126,16 @@ Begin VB.Form dialog_ExportHEIF
          Caption         =   "preview quality changes"
          FontSize        =   11
       End
+      Begin PhotoDemon.pdButtonStrip btsMultipage 
+         Height          =   1095
+         Left            =   120
+         TabIndex        =   7
+         Top             =   2160
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "page format"
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
@@ -155,8 +165,8 @@ Attribute VB_Exposed = False
 'HEIF Export Dialog
 'Copyright 2024-2024 by Tanner Helland
 'Created: 26/August/24
-'Last updated: 26/August/24
-'Last update: initial build
+'Last updated: 29/August/24
+'Last update: add support for multi-page export (one layer per frame in the heif file)
 '
 'Dialog for presenting the user various options related to HEIF exporting.  All export options rely on
 ' libheif for their actual implementation.
@@ -251,6 +261,7 @@ Private Function GetParamString_HEIF() As String
     Set cParams = New pdSerialize
     cParams.AddParam "heif-lossless", (btsQuality.ListIndex = 0)
     cParams.AddParam "heif-lossy-quality", sldQuality.Value
+    cParams.AddParam "heif-multiframe", (btsMultipage.ListIndex = 1), True
     
     GetParamString_HEIF = cParams.GetParamString()
     
@@ -314,6 +325,13 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsQuality.ListIndex = 0
     UpdateQualityVisibility
     
+    'Single- or multi-frame export options (text reused from the TIFF export dialog)
+    btsMultipage.AddItem "single page (composited image)", 0
+    btsMultipage.AddItem "multipage (one page per layer)", 1
+    btsMultipage.ListIndex = 0
+    
+    If (Not srcImage Is Nothing) Then btsMultipage.Visible = (srcImage.GetNumOfLayers > 1) Else btsMultipage.Visible = True
+    
     'Next, prepare various controls on the metadata panel
     Set m_SrcImage = srcImage
     mtdManager.SetParentImage m_SrcImage, PDIF_HEIF
@@ -328,7 +346,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "HEIF")
+    Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "HEIC")
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     
     'Display the dialog
@@ -338,10 +356,6 @@ End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub sldEffort_Change()
     UpdatePreview
 End Sub
 

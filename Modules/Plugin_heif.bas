@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_Heif"
 'libheif Library Interface
 'Copyright 2024-2024 by Tanner Helland
 'Created: 16/July/24
-'Last updated: 27/August/24
-'Last update: add heif export support (single frame only for now)
+'Last updated: 29/August/24
+'Last update: add support for exporting multi-frame images
 '
 'Per its documentation (available at https://github.com/strukturag/libheif), libheif is...
 '
@@ -20,6 +20,20 @@ Attribute VB_Name = "Plugin_Heif"
 ' These features will not work if libheif cannot be located.  Per standard LGPL terms, you can
 ' supply your own libheif copies in place of PD's default ones, but libheif and all supporting
 ' libraries obviously need to be built as x86 libraries for this to work (not x64).
+'
+'Note also that there are quite a few encoding parameters supported by libheif.  Here are the
+' encoding parameters reported by heif-enc (as listed via "./heif-enc.exe -P")
+' Parameters for encoder `x265 HEVC encoder (3.5+39-931178347)`:
+'  quality, Default = 50, [0;100]
+'  lossless, Default = False
+'  preset, default=slow, { ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow,placebo }
+'  tune, default=ssim, { psnr,ssim,grain,fastdecode }
+'  tu-intra-depth, Default = 2, [1;4]
+'  complexity, [0;100]
+'  chroma, default=420, { 420,422,444 }
+'
+'PD could expose any of these to the user, but there are localization and usability
+' considerations for these that I haven't fully considered (yet).  Exposing these remains TBD.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -49,6 +63,7 @@ Private Enum Libheif_ProcAddress
     heif_context_get_number_of_top_level_images
     heif_context_get_primary_image_ID
     heif_context_is_top_level_image_ID
+    heif_encoder_list_parameters
     heif_encoder_release
     heif_image_get_plane
     heif_image_get_plane_readonly
@@ -433,6 +448,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(heif_context_get_number_of_top_level_images) = GetProcAddress(m_hLibHeif, "heif_context_get_number_of_top_level_images")
         m_ProcAddresses(heif_context_get_primary_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_get_primary_image_ID")
         m_ProcAddresses(heif_context_is_top_level_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_is_top_level_image_ID")
+        m_ProcAddresses(heif_encoder_list_parameters) = GetProcAddress(m_hLibHeif, "heif_encoder_list_parameters")
         m_ProcAddresses(heif_encoder_release) = GetProcAddress(m_hLibHeif, "heif_encoder_release")
         m_ProcAddresses(heif_image_get_plane) = GetProcAddress(m_hLibHeif, "heif_image_get_plane")
         m_ProcAddresses(heif_image_get_plane_readonly) = GetProcAddress(m_hLibHeif, "heif_image_get_plane_readonly")
@@ -1113,7 +1129,6 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     ' (Refer to the above heif_context_encode_image to see a better way to handle this, pending fixes in libheif;
     ' in anticipation of that bug-fix, I've left the required line of code below.)
     Dim hImgDecoded As Long
-    PDDebug.LogAction "Starting decode now..."
     hReturn = PD_heif_decode_image(hImgAfter, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
     'hReturn = PD_heif_decode_image(hImgEncoded, hImgDecoded, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, ByVal 0&)
     If (hReturn.heif_error_code <> heif_error_Ok) Then
@@ -1201,21 +1216,22 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
     Const FUNC_NAME As String = "SaveHEIF_ToFile"
     SaveHEIF_ToFile = False
     
-    'Retrieve the composited pdImage object.
-    Dim finalDIB As pdDIB
-    srcImage.GetCompositedImage finalDIB, False
-    
     'Retrieve and validate parameters from incoming string.
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.SetParamString srcOptions
     
-    Dim exportLossless As Boolean, exportQuality As Single
+    Dim exportLossless As Boolean, exportQuality As Single, exportMultipage As Boolean
     exportLossless = cParams.GetBool("heif-lossless", False, True)
     exportQuality = cParams.GetLong("heif-lossy-quality", 90, True)
+    exportMultipage = cParams.GetBool("heif-multiframe", False, True)
     
     If (exportQuality < 0) Then exportQuality = 0
     If (exportQuality > 100) Then exportQuality = 100
+    
+    'Retrieve the composited pdImage object (if exporting as a composite image)
+    Dim finalDIB As pdDIB
+    If (Not exportMultipage) Or (srcImage.GetNumOfLayers <= 1) Then srcImage.GetCompositedImage finalDIB, False
     
     'Create a new heif context
     Dim ctxHeif As Long
@@ -1253,73 +1269,130 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
         End If
     End If
     
-    'Construct a heif image
-    Dim hImg As Long
-    hReturn = PD_heif_image_create(finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, VarPtr(hImg))
-    If (hReturn.heif_error_code <> heif_error_Ok) Then
+    'When exporting a multi-frame image, the handle to the encoded image representing the active layer
+    ' (if any) will be stored here.  You do need to check the case of handle = 0, in case the active
+    ' layer is e.g. invisible.
+    Dim hActiveFrame As Long
+    
+    'This function can iterate layers and export each one as a unique frame in the target HEIF.
+    Dim idxStart As Long, idxEnd As Long
+    If exportMultipage Then
+        idxStart = 0
+        idxEnd = srcImage.GetNumOfLayers - 1
+    Else
+        idxStart = -1
+        idxEnd = -1
+    End If
+    
+    Dim i As Long
+    For i = idxStart To idxEnd
+        
+        'During multipage export, grab a copy of each target layer in turn
+        If (i >= 0) Then
+            
+            If (finalDIB Is Nothing) Then Set finalDIB = New pdDIB
+            
+            'Account for affine transforms in the current layer, as necessary
+            If srcImage.GetLayerByIndex(i).AffineTransformsActive(True) Then
+                srcImage.GetLayerByIndex(i).GetAffineTransformedDIB finalDIB, 0, 0
+            Else
+                finalDIB.CreateFromExistingDIB srcImage.GetLayerByIndex(i).GetLayerDIB
+            End If
+            
+        End If
+        
+        'Construct a heif image
+        Dim hImg As Long
+        hReturn = PD_heif_image_create(finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, VarPtr(hImg))
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            hImg = 0
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+        
+        'Allocate the heif image
+        hReturn = PD_heif_image_add_plane(hImg, heif_channel_interleaved, finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, 8)
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+        
+        CallCDeclW heif_image_set_premultiplied_alpha, vbEmpty, hImg, IIf(finalDIB.GetAlphaPremultiplication, 1&, 0&)
+        
+        'Retrieve a pointer to the allocated image, as well as the stride (libheif doesn't necessarily guarantee
+        ' a specific line alignment).
+        Dim imgStride As Long, pData As Long
+        pData = CallCDeclW(heif_image_get_plane, vbLong, hImg, heif_channel_interleaved, VarPtr(imgStride))
+        If (pData = 0) Then
+            InternalError FUNC_NAME, "bad pixel pointer"
+            GoTo SaveFailed
+        End If
+        
+        'Fill the destination image line-by-line
+        Dim imgHeight As Long, imgWidthBytes As Long
+        imgHeight = finalDIB.GetDIBHeight
+        imgWidthBytes = finalDIB.GetDIBStride
+        
+        Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
+        Dim r As Long, g As Long, b As Long, a As Long
+        
+        Dim x As Long, y As Long
+        For y = 0 To imgHeight - 1
+            finalDIB.WrapArrayAroundScanline srcPixels, srcSA1D, y
+            VBHacks.WrapArrayAroundPtr_Byte dstPixels, dstSA1D, pData + (imgStride * y), imgStride
+        For x = 0 To imgWidthBytes - 1 Step 4
+            
+            'Manually un-interleave to fix pixel order
+            dstPixels(x) = srcPixels(x + 2)
+            dstPixels(x + 1) = srcPixels(x + 1)
+            dstPixels(x + 2) = srcPixels(x)
+            dstPixels(x + 3) = srcPixels(x + 3)
+            
+        Next x
+        Next y
+        
+        VBHacks.UnwrapArrayFromPtr_Byte dstPixels
+        finalDIB.UnwrapArrayFromDIB srcPixels
+        
+        'Encode the image.  Note that the final parameter of this call can return a handle to the encoded object.
+        Dim hImgEncoded As Long
+        hReturn = PD_heif_context_encode_image(ctxHeif, hImg, pHeifEncoder, 0&, hImgEncoded)
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalErrorHeif FUNC_NAME, hReturn
+            GoTo SaveFailed
+        End If
+        
+        'Now that the image is encoded, we can free the raw image.
+        CallCDeclW heif_image_release, vbEmpty, hImg
         hImg = 0
-        InternalErrorHeif FUNC_NAME, hReturn
-        GoTo SaveFailed
-    End If
-    
-    'Allocate the heif image
-    hReturn = PD_heif_image_add_plane(hImg, heif_channel_interleaved, finalDIB.GetDIBWidth, finalDIB.GetDIBHeight, 8)
-    If (hReturn.heif_error_code <> heif_error_Ok) Then
-        InternalErrorHeif FUNC_NAME, hReturn
-        GoTo SaveFailed
-    End If
-    
-    CallCDeclW heif_image_set_premultiplied_alpha, vbEmpty, hImg, IIf(finalDIB.GetAlphaPremultiplication, 1&, 0&)
-    
-    'Retrieve a pointer to the allocated image, as well as the stride (libheif doesn't necessarily guarantee
-    ' a specific line alignment).
-    Dim imgStride As Long, pData As Long
-    pData = CallCDeclW(heif_image_get_plane, vbLong, hImg, heif_channel_interleaved, VarPtr(imgStride))
-    If (pData = 0) Then
-        InternalError FUNC_NAME, "bad pixel pointer"
-        GoTo SaveFailed
-    End If
-    
-    'Fill the destination image line-by-line
-    Dim imgHeight As Long, imgWidthBytes As Long
-    imgHeight = finalDIB.GetDIBHeight
-    imgWidthBytes = finalDIB.GetDIBStride
-    
-    Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
-    Dim r As Long, g As Long, b As Long, a As Long
-    
-    Dim x As Long, y As Long
-    For y = 0 To imgHeight - 1
-        finalDIB.WrapArrayAroundScanline srcPixels, srcSA1D, y
-        VBHacks.WrapArrayAroundPtr_Byte dstPixels, dstSA1D, pData + (imgStride * y), imgStride
-    For x = 0 To imgWidthBytes - 1 Step 4
         
-        'Manually un-interleave to fix pixel order
-        dstPixels(x) = srcPixels(x + 2)
-        dstPixels(x + 1) = srcPixels(x + 1)
-        dstPixels(x + 2) = srcPixels(x)
-        dstPixels(x + 3) = srcPixels(x + 3)
+        'In multi-frame images, we need to manually set the active frame (if any)
+        If (i >= 0) Then
+            
+            'If the active frame is visible, it can cause problems, so ensure a failsafe handle is grabbed
+            If (hActiveFrame = 0) Then hActiveFrame = hImgEncoded
+            
+            'With the backup case covered, use the currently active layer (if any) as the active frame
+            If (i = srcImage.GetActiveLayerIndex) Then hActiveFrame = hImgEncoded
+            
+        End If
         
-    Next x
-    Next y
-    
-    VBHacks.UnwrapArrayFromPtr_Byte dstPixels
-    finalDIB.UnwrapArrayFromDIB srcPixels
-    
-    'Encode the image.  Note that the final parameter of this call can return a handle to the encoded object.
-    ' This would be useful for previews!  For now, however, we just want to leave the image in the context,
-    ' because it's about to be written out to file.
-    hReturn = PD_heif_context_encode_image(ctxHeif, hImg, pHeifEncoder, 0&, ByVal 0&)
-    If (hReturn.heif_error_code <> heif_error_Ok) Then
-        InternalErrorHeif FUNC_NAME, hReturn
-        GoTo SaveFailed
-    End If
-    
-    If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "HEIF encoding complete"
+        If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "HEIF encoding complete"
+        
+NextLayer:
+    Next i
     
     'Free the encoder
     CallCDeclW heif_encoder_release, vbEmpty, pHeifEncoder
     pHeifEncoder = 0
+    
+    'If encoding multi-frame images, set the active frame now
+    If (hActiveFrame <> 0) Then
+        hReturn = PD_heif_context_set_primary_image(ctxHeif, hActiveFrame)
+        If (hReturn.heif_error_code <> heif_error_Ok) Then
+            InternalError FUNC_NAME, "heif_context_set_primary_image failed; base layer will be used instead"
+        End If
+    End If
     
     'Dump to file
     Dim utfFilename() As Byte, utfLen As Long
@@ -1330,10 +1403,6 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
         InternalErrorHeif FUNC_NAME, hReturn
         GoTo SaveFailed
     End If
-    
-    'Free the raw image?  The docs are ambiguous on whether we can do it earlier...
-    CallCDeclW heif_image_release, vbEmpty, hImg
-    hImg = 0
     
     'Free the context
     CallCDeclW heif_context_free, vbEmpty, ctxHeif
