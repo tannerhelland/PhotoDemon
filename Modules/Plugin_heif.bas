@@ -1425,11 +1425,9 @@ End Function
 
 Public Sub ReleaseEngine()
     
-    'Start by calling the internal ref-counted deinitialize function
-    PD_heif_deinit
-    
     'For extra safety, free in reverse order from loading
     If (m_hHelper <> 0) Then
+        PD_heif_deinit  'Start by calling the internal ref-counted deinitialize function
         VBHacks.FreeLib m_hHelper
         m_hHelper = 0
     End If
@@ -1445,7 +1443,7 @@ Public Sub ReleaseEngine()
         VBHacks.FreeLib m_hLibx265
         m_hLibx265 = 0
     End If
-    
+        
     m_LibAvailable = False
     
 End Sub
