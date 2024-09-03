@@ -138,6 +138,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             If m_FillCanceled Then
                 
                 PDDebug.LogAction "Fill layer won't work; attempting fill image instead"
+                PDDebug.LogAction fillStartX & ", " & fillStartY & ", " & tmpRectF.Width & ", " & tmpRectF.Height & ", " & imgX & ", " & imgY
                 
                 'Reset coordinates to *image* coordinate space (not *layer* coordinate space)
                 fillStartX = Int(imgX)

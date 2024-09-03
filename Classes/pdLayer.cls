@@ -1925,6 +1925,57 @@ Friend Function CropNullPaddedLayer() As Boolean
     
 End Function
 
+'Assuming the current layer DIB is null-padded (a term I use to describe a layer that has been forced to the size of the
+' image by surrounding it with transparent pixels), crop the DIB to some arbitrary rect.  Layer offsets and size will be
+' automatically calculated.
+'
+'IMPORTANT NOTE: if you call this function without first null-padding the layer DIB, weird shit may happen.  That is not
+'                 an intended use-case, so don't attempt it!
+'
+'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False should only occur if an invalid rect
+' is passed, or the layer wasn't null-padded first.)
+Friend Function CropNullPaddedLayerToRect(ByRef srcRectF As RectF) As Boolean
+    
+    'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
+    ' edge error conditions).
+    If (m_LayerDIB.GetDIBDC = 0) Or (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Or (m_LayerDIB.GetDIBColorDepth <> 32) Then
+        PDDebug.LogAction "Request for layer null padding trim denied - layer DIB does not currently exist!"
+        CropNullPaddedLayerToRect = False
+        Exit Function
+    End If
+    
+    'Validate the incoming rect
+    If (srcRectF.Width <= 0!) Or (srcRectF.Height <= 0!) Then
+        PDDebug.LogAction "Invalid rect passed to CropNullPaddedLayerToRect"
+        CropNullPaddedLayerToRect = False
+        Exit Function
+    End If
+    
+    'The target rect appears valid.  Use its values to crop the image to the relevant size.
+    Dim newWidth As Long, newHeight As Long
+    newWidth = Int(srcRectF.Width + 0.5!)
+    newHeight = Int(srcRectF.Height + 0.5!)
+    
+    Dim tmpCropDIB As pdDIB
+    Set tmpCropDIB = New pdDIB
+    tmpCropDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+    GDI.BitBltWrapper tmpCropDIB.GetDIBDC, 0, 0, newWidth, newHeight, m_LayerDIB.GetDIBDC, Int(srcRectF.Left + 0.5!), Int(srcRectF.Top + 0.5!), vbSrcCopy
+    tmpCropDIB.SetInitialAlphaPremultiplicationState m_LayerDIB.GetAlphaPremultiplication
+    
+    'Replace the current layer DIB with our temporary DIB
+    Set m_LayerDIB = tmpCropDIB
+    
+    'Modify our layer offsets to reflect our new size
+    myLayerData.l_OffsetX = Int(srcRectF.Left + 0.5!)
+    myLayerData.l_OffsetY = Int(srcRectF.Top + 0.5!)
+    
+    'TODO: synchronize layer mask here, if one exists
+    
+    'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
+    CropNullPaddedLayerToRect = True
+    
+End Function
+
 'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
 ' must be explicitly passed, because layers do not maintain a link to their parent.
 Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
