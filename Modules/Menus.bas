@@ -556,19 +556,20 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 7, 8
     AddMenuItem "Animated screen capture...", "tools_screenrecord", 7, 9, , "file_importscreen"
     AddMenuItem "-", "-", 7, 10
-    AddMenuItem "Options...", "tools_options", 7, 11, , "pref_advanced"
-    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 12, , "tools_plugin"
+    AddMenuItem "Keyboard shortcuts...", "tools_hotkeys", 7, 11
+    AddMenuItem "Options...", "tools_options", 7, 12, , "pref_advanced"
+    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 13, , "tools_plugin"
     
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     If debugMenuVisibility Then
-        AddMenuItem "-", "-", 7, 13
-        AddMenuItem "Developers", "tools_developers", 7, 14
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 14, 0, , False
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 14, 1, , False
-            AddMenuItem "-", "-", 7, 14, 2
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 14, 3, , False
-        AddMenuItem "Test", "effects_developertest", 7, 15
+        AddMenuItem "-", "-", 7, 14
+        AddMenuItem "Developers", "tools_developers", 7, 15
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 15, 0, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 1, , False
+            AddMenuItem "-", "-", 7, 15, 2
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 3, , False
+        AddMenuItem "Test", "effects_developertest", 7, 16
     End If
     
     'View Menu
