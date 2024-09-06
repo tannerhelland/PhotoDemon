@@ -6,8 +6,8 @@ Attribute VB_Name = "Menus"
 'Last updated: 28/September/23
 'Last update: menus now pass menu-specific object IDs to the translation engine, enabling per-menu translations
 '
-'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.  This module
-' handles the worst parts of run-time maintenance.
+'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.
+' This module handles the worst parts of run-time maintenance.
 '
 'Because PD's menus provide an organized collection of program features, this module also handles
 ' some module-adjacent tasks, like the ProcessDefaultAction-prefixed functions.  You can pass these

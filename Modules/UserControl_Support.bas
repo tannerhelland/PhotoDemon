@@ -72,6 +72,8 @@ Public Enum PD_ControlType
     pdct_Strip = 51
     pdct_TextBox = 52
     pdct_Title = 53
+    pdct_TreeviewOD = 54
+    pdct_TreeviewViewOD = 55
 End Enum
 
 #If False Then
@@ -80,7 +82,7 @@ End Enum
     Private Const pdct_GradientSelector = 20, pdct_History = 21, pdct_Hyperlink = 22, pdct_ImageStrip = 23, pdct_Label = 24, pdct_LayerList = 25, pdct_LayerListInner = 26, pdct_ListBox = 27, pdct_ListBoxOD = 28, pdct_ListBoxView = 29
     Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_PaletteUI = 35, pdct_PenSelector = 36, pdct_PictureBox = 37, pdct_PictureBoxInteractive = 38, pdct_Preview = 39
     Private Const pdct_ProgressBar = 40, pdct_RadioButton = 41, pdct_RandomizeUI = 42, pdct_Resize = 43, pdct_Ruler = 44, pdct_ScrollBar = 45, pdct_SearchBar = 46, pdct_Slider = 47, pdct_SliderStandalone = 48, pdct_Spinner = 49
-    Private Const pdct_StatusBar = 50, pdct_Strip = 51, pdct_TextBox = 52, pdct_Title = 53
+    Private Const pdct_StatusBar = 50, pdct_Strip = 51, pdct_TextBox = 52, pdct_Title = 53, pdct_TreeviewOD = 54, pdct_TreeviewViewOD = 55
 #End If
 
 'User control text *THAT IS DISPLAYED TO THE USER* needs to be translated.  This module provides a helper
@@ -102,12 +104,22 @@ Public Enum PD_UserControlText
     pduct_Randomize
 End Enum
 
-Public Type PD_LISTITEM
+Public Type PD_ListItem
     textEn As String
     textTranslated As String
     itemTop As Long
     itemHeight As Long
     isSeparator As Boolean
+End Type
+
+Public Type PD_TreeItem
+    textEn As String
+    textTranslated As String
+    itemTop As Long
+    itemHeight As Long
+    itemID As String
+    parentID As String
+    isCollapsed As Boolean
 End Type
 
 'At times, PD may need to post custom messages to all application windows (e.g. theme changes may eventually be implemented
@@ -852,7 +864,11 @@ Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
             GetNameOfControlType = "pdTextBox"
         Case pdct_Title
             GetNameOfControlType = "pdTitle"
-        
+        Case pdct_TreeviewOD
+            GetNameOfControlType = "pdTreeviewOD"
+        Case pdct_TreeviewViewOD
+            GetNameOfControlType = "pdTreeviewViewOD"
+            
     End Select
     
 End Function
