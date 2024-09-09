@@ -184,7 +184,15 @@ Public Sub ReportPluginLoadSuccess()
         If m_PluginInitialized(i) Then
             successfulPluginCount = successfulPluginCount + 1
         Else
-            PDDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+            
+            'Optional plugins are still considered "successfully loaded" if they simply haven't been
+            ' enabled for this PD instance
+            If IsPluginAvailableOnDemand(i) Then
+                successfulPluginCount = successfulPluginCount + 1
+            Else
+                PDDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+            End If
+            
         End If
     Next i
     
@@ -884,8 +892,12 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boo
     
     'The plugin file is missing.  Let's see if we can find it.
     Else
-    
-        PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        
+        If (Not IsPluginAvailableOnDemand(pluginEnumID)) Then
+            PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        Else
+            PDDebug.LogAction "Optional plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is not installed."
+        End If
     
         Dim extraFiles As pdStringStack
         Set extraFiles = New pdStringStack
@@ -929,7 +941,9 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boo
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
-            PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            If (Not IsPluginAvailableOnDemand(pluginEnumID)) Then
+                PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            End If
             DoesPluginFileExist = False
         End If
     
