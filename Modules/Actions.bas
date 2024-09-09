@@ -1248,7 +1248,10 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
         
         Case "tools_screenrecord"
             ShowPDDialog vbModal, FormScreenVideoPrefs
-            
+        
+        Case "tools_hotkeys"
+            ShowPDDialog vbModal, FormHotkeys
+        
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions
             
