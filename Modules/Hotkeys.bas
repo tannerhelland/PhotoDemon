@@ -25,7 +25,7 @@ Option Explicit
 'Each hotkey must store a key code, shift state (can be 0), and action ID string.  The action ID string
 ' will be blindly forwarded to the Actions.LaunchAction_ByName() function, so make sure the spelling
 ' (and case! always lowercase!) match the action as it is declared there.
-Private Type PD_Hotkey
+Public Type PD_Hotkey
     hkKeyCode As Long
     hkShiftState As ShiftConstants
     hkAction As String
@@ -51,6 +51,7 @@ End Enum
     Private Const cmt_Ctrl = 0, cmt_Alt = 1, cmt_Shift = 2, cmt_NumEntries = 3
 #End If
 
+Private Const HOTKEY_FILENAME As String = "hotkeys.xml"
 Private m_CommonMenuText() As String
 
 'Add a new hotkey to the collection.  While the final parameter is marked as OPTIONAL, that's purely to
@@ -316,16 +317,34 @@ Public Sub InitializeDefaultHotkeys()
     Hotkeys.AddHotkey vbKeyPageDown, , "window_next"
     Hotkeys.AddHotkey vbKeyPageUp, , "window_previous"
     
-    'All default hotkeys have now been added to the collection.
+End Sub
+
+'Initialize all hotkeys.  If the user has previously customized hotkeys, this will pull their customized list
+' in from file; otherwise, a default set of hotkeys will be initialized.
+Public Sub InitializeHotkeys()
     
-    'Activate hotkey detection on the main form.  (FormMain has a specialized user control that
-    ' actually detects hotkey presses, then forwards the key combinations to us for translation
-    ' and execution.)
+    Dim listExistsOnDisk As Boolean
+    listExistsOnDisk = Files.FileExists(UserPrefs.GetPresetPath() & HOTKEY_FILENAME)
+    
+    If listExistsOnDisk Then
+        'TODO: load from disk
+    
+    'If the user hasn't customized hotkeys before, that's fine!  Initialize PD's default hotkey list.
+    Else
+        InitializeDefaultHotkeys
+    End If
+    
+    'All hotkeys - either PD's default ones, or user-customized ones from a saved file - have now been
+    ' added to a central hotkey collection.
+    
+    'Activate hotkey detection on the main form.
+    ' (FormMain has a specialized user control that actually detects hotkey presses,
+    ' then forwards relevant key combinations to us for translation and execution.)
     FormMain.HotkeyManager.Enabled = True
     FormMain.HotkeyManager.ActivateHook
     
-    'Before exiting, relay all hotkey assignments to the menu manager; it will generate matching hotkey text
-    ' and display it alongside appropriate menu items.
+    'Relay all hotkey assignments to the menu manager.  (It needs to generate matching hotkey text
+    ' and display it alongside tagged menus.)
     CacheCommonTranslations
     
     Dim i As Long
@@ -334,6 +353,24 @@ Public Sub InitializeDefaultHotkeys()
     Next i
     
 End Sub
+
+'Returns a list of all *currently* active hotkeys.  These may originate from an internal default list,
+' or the user may have customized them.
+'
+'Returns: number of hotkeys stored to the destination array.  The array's dimensions are *not* guaranteed
+' to exactly match the number of hotkeys returned.
+Public Function GetCopyOfAllHotkeys(ByRef dstHotkeys() As PD_Hotkey) As Long
+    
+    ReDim dstHotkeys(0 To m_NumOfHotkeys - 1) As PD_Hotkey
+    
+    Dim i As Long
+    For i = 0 To m_NumOfHotkeys - 1
+        dstHotkeys(i) = m_Hotkeys(i)
+    Next i
+    
+    GetCopyOfAllHotkeys = m_NumOfHotkeys
+    
+End Function
 
 'If a menu has a hotkey associated with it, you can use this function to update the language-specific text representation of the hotkey.
 ' (This text is appended to the menu caption automatically.)

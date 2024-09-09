@@ -21,7 +21,7 @@ Attribute VB_Name = "Menus"
 
 Option Explicit
 
-Private Type PD_MenuEntry
+Public Type PD_MenuEntry
     me_TopMenu As Long                    'Top-level index of this menu
     me_SubMenu As Long                    'Sub-menu index of this menu (if any)
     me_SubSubMenu As Long                 'Sub-sub-menu index of this menu (if any)
@@ -1455,6 +1455,27 @@ Private Function GetIndexFromName(ByRef mnuName As String, ByRef dstIndex As Lon
     
     'Debugging missing menu names can be helpful when adding new tools:
     'If (Not GetIndexFromName) Then InternalMenuWarning "GetIndexFromName", "no match found for name: " & mnuName
+    
+End Function
+
+'Return a list of all menus and menu attributes.  This is used by the customize hotkeys dialog to both display
+' menu names and attributes, and to correlate menu text against a list of canonical menu IDs (which is how the
+' hotkey engine associates hotkeys <-> actions <-> menus).
+'
+'Returns the number of menus in the list, with a guarantee that the target list is resized to [0, numMenus-1]
+Public Function GetCopyOfAllMenus(ByRef dstMenuList() As PD_MenuEntry) As Long
+    
+    'Still TODO: does our list of menus need to be curated before sending it externally?
+    ' IDK - but there may be menus that we don't want associated with hotkeys, and this could be
+    ' where we strip them out of the menu list.
+    ReDim dstMenuList(0 To m_NumOfMenus - 1) As PD_MenuEntry
+    
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+        dstMenuList(i) = m_Menus(i)
+    Next i
+    
+    GetCopyOfAllMenus = m_NumOfMenus
     
 End Function
 

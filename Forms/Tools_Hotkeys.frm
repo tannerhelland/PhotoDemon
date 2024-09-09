@@ -58,6 +58,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private m_Menus() As PD_MenuEntry, m_NumOfMenus As Long
+
 Private Sub cmdBar_OKClick()
     
     'TODO
@@ -69,6 +71,10 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Load()
+    
+    'Retrieve a copy of all menus (including hierarchies and attributes) from the menu manager
+    m_NumOfMenus = Menus.GetCopyOfAllMenus(m_Menus)
+    
     
     'TODO
     
