@@ -247,7 +247,7 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 2, 15
     AddMenuItem "Merge visible layers", "image_mergevisible", 2, 16, , "generic_visible"
     AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
-    AddMenuItem "-", "0", 2, 18
+    AddMenuItem "-", "-", 2, 18
     AddMenuItem "Animation...", "image_animation", 2, 19, , "animation"
     AddMenuItem "Compare", "image_compare", 2, 20
         AddMenuItem "Create color lookup...", "image_createlut", 2, 20, 0

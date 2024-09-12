@@ -51,7 +51,7 @@ End Enum
     Private Const cmt_Ctrl = 0, cmt_Alt = 1, cmt_Shift = 2, cmt_NumEntries = 3
 #End If
 
-Private Const HOTKEY_FILENAME As String = "hotkeys.xml"
+Private Const HOTKEY_FILENAME As String = "HotkeysUser.xml"
 Private m_CommonMenuText() As String
 
 'Add a new hotkey to the collection.  While the final parameter is marked as OPTIONAL, that's purely to

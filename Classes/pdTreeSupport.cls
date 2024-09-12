@@ -610,9 +610,7 @@ End Sub
 'Obviously, these values may not be correct if the class has not been notified of the list box size and/or not all of
 ' its contents have been loaded yet.
 Friend Property Get ScrollMax() As Long
-    If m_RenderDataCorrect Then
-        ScrollMax = m_ScrollMax
-    Else
+    If (Not m_RenderDataCorrect) Then
         If m_RedrawAutomatically Then
             CalculateRenderMetrics
         Else
@@ -620,6 +618,7 @@ Friend Property Get ScrollMax() As Long
             If (m_ScrollMax < 0) Then m_ScrollMax = 0
         End If
     End If
+    ScrollMax = m_ScrollMax
 End Property
 
 Friend Property Get ScrollValue() As Long
