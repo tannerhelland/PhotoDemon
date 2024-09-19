@@ -58,8 +58,15 @@ Private m_DefaultHeight As Long
 
 'Total height of the entire treeview, as it would appear without scrolling.
 ' This is used to calculate scrollbar values.
-' (It must also be recalculated on collapse/expand events.)
 Private m_TotalHeight As Long
+
+'Total height *when considering collapse state of items*.
+' (This must be recalculated on collapse/expand events.)
+Private m_TotalHeightIncCollapsed As Long
+
+'How many horizontal pixels to offset an item by per level of tree.
+' Auto-calculated based on m_DefaultHeight.
+Private m_OffsetPerLevel As Long
 
 'This class tracks .ListIndex .  It needs to know .ListIndex to auto-suggest things like
 ' scroll bar position after a keypress.
@@ -95,19 +102,26 @@ Private m_RenderDataCorrect As Boolean
 ' we'll re-translate everything to match.
 Private m_LanguageAtLastCheck As String
 
+'Treeviews require a lot of mapping back-and-forth between parents and children.  (When a node is closed,
+' we have to find all children of a particular parent.  Before rendering, we also need to count the number
+' of parent nodes in order to know how far left/right to render a particular item.)  A hash table speeds
+' up that mapping by allowing us to quickly correlate IDs and indices.
+Private m_ItemHash As pdVariantHash
+
 Private Sub Class_Initialize()
     
     m_DefaultHeight = 0
     m_RedrawAutomatically = True
     m_MouseInsideList = False
     m_ListIndexHover = -1
+    Set m_ItemHash = New pdVariantHash
     
     Me.Clear
     
 End Sub
 
 'Add an item to the tree.  Unlike listviews, most params are mandatory (to enable hierarchical ordering).
-Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False, Optional ByVal itemShouldBeTranslated As Boolean = True)
+Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False)
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
@@ -120,40 +134,44 @@ Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optio
     
     'Insert the given item
     With m_Items(itemIndex)
-        .textEn = srcItemText
         
-        'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
-        If (Not g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then
-                If itemShouldBeTranslated Then
-                    .textTranslated = g_Language.TranslateMessage(srcItemText)
-                Else
-                    .textTranslated = srcItemText
-                End If
-            Else
-                .textTranslated = srcItemText
-            End If
-        Else
-            .textTranslated = srcItemText
+        .itemID = srcItemID
+        .parentID = parentID
+        
+        'We only care about collapsed state for parent nodes; child collapsed state is not tracked this way,
+        ' but we'll perform a second pass through the data to clean this data up.
+        .isCollapsed = initialCollapsedState
+        
+        'If this node has a parent, find that parent in our lookup table and note it as having children
+        If (LenB(parentID) <> 0) Then
+            Dim idxParent As Variant
+            If m_ItemHash.GetItemByKey(parentID, idxParent) Then m_Items(idxParent).hasChildren = True
         End If
         
-        'For now, item height is fixed
-        .itemHeight = m_DefaultHeight
+        'Reset all "this-render" collapsed states to FALSE; we'll re-calculate this on first-render
+        ' (since hierarchical rendering decisions need to be made for grandchildren, great-grandchildren, etc)
+        .isCollapsedThisRender = False
+        
+        'For an owner-drawn control like this, translations must be handled manually by the caller
+        .textEn = srcItemText
         
         'Increase the net height of the entire list
-        m_TotalHeight = m_TotalHeight + .itemHeight
+        m_TotalHeight = m_TotalHeight + m_DefaultHeight
         
         'Positioning values for a treeview work differently than a listview - I precalculate all item positions
         ' as if all list items were expanded.  This simplifies rendering because we can simply calculate a running
         ' negative offset representing collapsed items, and subtracting that from an item's .itemTop value gives
         ' us a precise rendering position.
         If (itemIndex > 0) Then
-            .itemTop = m_Items(itemIndex - 1).itemTop + m_Items(itemIndex - 1).itemHeight
+            .itemTop = m_Items(itemIndex - 1).itemTop + m_DefaultHeight
         Else
             .itemTop = 0
         End If
         
     End With
+    
+    'Add this item to our running hash table
+    m_ItemHash.AddItem srcItemID, itemIndex
     
     'If this is the first item, note the current translation language.
     ' (If this changes, we need to re-translate the list.)
@@ -228,6 +246,9 @@ Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
         ' for *all* tree items.  This is stupid, and I'd prefer not to support it - so instead, just set
         ' the damn font size correctly *before* you add items!
         
+        'Calculate offset-per-level (in horizontal pixels) as a ratio of each list item's height
+        m_OffsetPerLevel = m_DefaultHeight
+        
     End If
 End Property
 
@@ -236,14 +257,10 @@ Friend Function IsMouseInsideTreeView() As Boolean
 End Function
 
 'Retrieve a specified tree item - TODO pending how I actually use this class
-Friend Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
+Friend Function List(ByVal itemIndex As Long) As String
     
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
-        If returnTranslatedText Then
-            List = m_Items(itemIndex).textTranslated
-        Else
-            List = m_Items(itemIndex).textEn
-        End If
+        List = m_Items(itemIndex).textEn
     Else
         List = vbNullString
     End If
@@ -486,7 +503,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
         
         Dim liTop As Single, liBottom As Single
         liTop = m_Items(m_ListIndex).itemTop
-        liBottom = liTop + m_Items(m_ListIndex).itemHeight
+        liBottom = liTop + m_DefaultHeight
         
         Dim liContainerTop As Single, liContainerBottom As Single
         liContainerTop = m_ScrollValue
@@ -503,7 +520,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
                 
             'If the item lies *below* the viewport rect, scroll up to compensate.
             Else
-                m_ScrollValue = (liTop - (m_ListRectF.Height - m_Items(m_ListIndex).itemHeight)) - 1
+                m_ScrollValue = (liTop - (m_ListRectF.Height - m_DefaultHeight)) - 1
             End If
             
             If (m_ScrollValue > m_ScrollMax) Then m_ScrollValue = m_ScrollMax
@@ -556,7 +573,7 @@ Friend Sub RemoveItem(ByVal itemIndex As Long)
         
         'Remove this item's size from the net height tracker
         Dim missingItemHeight As Long
-        missingItemHeight = m_Items(itemIndex).itemHeight
+        missingItemHeight = m_DefaultHeight
         m_TotalHeight = m_TotalHeight - missingItemHeight
         
         'If this item is not being removed from the *end* of the list, shift everything past it downward.
@@ -593,16 +610,17 @@ End Sub
 
 'Need to render a specific item?  Call this to retrieve a full copy of a given item's data,
 ' plus rendering-specific information like the item's literal position in the current view.
-Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_TreeItem, ByRef dstItemTop As Long, ByRef dstItemHeight As Long, ByRef dstItemHeightWithoutSeparator As Long)
-    
-    dstListItem = m_Items(srcListIndex)
-    
-    'TODO: handle collapse/expand state
-    dstItemTop = (srcListIndex * m_DefaultHeight) - m_ScrollValue
-    dstItemHeight = m_DefaultHeight
-    dstItemHeightWithoutSeparator = m_DefaultHeight
-    
-End Sub
+'
+'RETURNS: TRUE if the requested item is *not* collapsed, FALSE if it is (so you shouldn't render anything
+' if this function returns false!)
+Friend Function GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_TreeItem, ByRef dstScrollOffsetX As Long, ByRef dstScrollOffsetY As Long) As Boolean
+    GetRenderingItem = Not m_Items(srcListIndex).isCollapsedThisRender
+    If GetRenderingItem Then
+        dstListItem = m_Items(srcListIndex)
+        dstScrollOffsetX = 0
+        dstScrollOffsetY = m_ScrollValue
+    End If
+End Function
 
 'While this class doesn't do any actual rendering, it does calculate all relevant scroll bar and positioning values.
 ' This makes life easier on the caller.
@@ -673,30 +691,206 @@ End Sub
 ' instead, it raises a series of RenderListItem() events, which the caller can then handle on their own terms.
 Friend Sub CalculateRenderMetrics()
     
-    'Prior to requesting a redraw, determine the indices of the first and last items our owner needs to draw.
-    ' We'll cache these, so we don't have to calculate them again (until something changes, at least).
-    Dim i As Long
-    
+    'Failsafes (usually only triggered in the IDE)
     If (m_ListRectF.Height <= 0) Or (m_DefaultHeight <= 0) Then Exit Sub
     
-    'TODO: handle expand/contract state
+    'Current y-offset.  Automatically incremented as we process node items.
+    ' Does *not* account for collapse state.
+    Dim curOffsetY As Long
+    curOffsetY = 0
     
-    'Calculate the first overlapping item that overlaps the viewable area (and cache it)
-    i = m_ScrollValue \ m_DefaultHeight
-    m_FirstRenderIndex = i
+    'Current y-offset accounting for collapse state.
+    Dim curOffsetYincCollapse As Long
+    curOffsetYincCollapse = 0
     
-    'Search for the first item that doesn't overlap the existing container area
-    Do
-        
-        'Move to the next entry in the list
-        i = i + 1
-        
-        'If we're past the number of items in the list, exit immediately
-        If (i >= m_NumOfItems) Then Exit Do
-        
-    Loop While (i * m_DefaultHeight) < (m_ScrollValue + m_ListRectF.Height)
+    'Prior to requesting a redraw, determine the indices of the first and last items our owner needs to draw.
+    ' We'll cache these, so we don't have to calculate them again (until something changes, at least).
+    'Dim i As Long
     
-    m_LastRenderIndex = i - 1
+    'List of parents for the current node.  PD doesn't need this to go especially deep (only two levels at present).
+    Const INIT_MAX_PARENTS As Long = 8
+    Dim activeParents() As String, idxParent As Long
+    ReDim activeParents(0 To INIT_MAX_PARENTS - 1) As String
+    idxParent = 0
+    
+    'Before calculating what to render, we need to determine open/close state.  Because PD doesn't provide
+    ' more than a few hundred items in a treeview, we iterate the whole list every time and calculate
+    ' collapse state accordingly.  (In the future, we'd really only need to do this from the top-most collapse
+    ' item through the next item at the same tree level - anything outside those bounds wouldn't change.)
+    Dim inCollapseNow As Boolean: inCollapseNow = False
+    Dim idxToCheck As Variant
+                    
+    Dim i As Long
+    For i = 0 To m_NumOfItems - 1
+        
+        'First, we need to assess the depth of the current node.
+        ' (Because this node may not belong to the same parent as the previous node.)
+        If (idxParent > 0) Then
+            
+            'If this item has the same parent as the previous item, we remain at the same tree level
+            ' (and can just copy the current collapse state).
+            '
+            'But if this item has a *different* parent from the last item, it could appear at any
+            ' level in the tree.  (Think the last item of the File menu, followed by the Edit menu.)
+            If (m_Items(i).parentID <> activeParents(idxParent - 1)) Then
+                
+                'This node has a parent ID that is different from the currently active parent.
+                ' We must retreat through the parent table until we arrive at the correct tree level.
+                Dim j As Long
+                For j = idxParent - 1 To 0 Step -1
+                    
+                    'If we reach the top level of the tree, abandon further searching
+                    ' (because this is a top-level menu).
+                    If (j = 0) Then
+                        inCollapseNow = False
+                        idxParent = 0
+                        Exit For
+                    
+                    'We are not at the top level of the tree yet...
+                    Else
+                        
+                        If (m_Items(i).parentID = activeParents(j - 1)) Then
+                            
+                            'Reset the current tree level tracker to match.
+                            idxParent = j
+                            
+                            'Mirror the collapse state of our parent.
+                            If m_ItemHash.GetItemByKey(activeParents(j - 1), idxToCheck) Then
+                                If m_Items(idxToCheck).isCollapsedThisRender Then
+                                    inCollapseNow = True
+                                Else
+                                    inCollapseNow = m_Items(i).isCollapsed
+                                End If
+                                
+                            End If
+                            
+                            Exit For
+                            
+                        '/Ignore mismatched parent IDs - we'll keep retreating as necessary
+                        End If
+                    
+                    End If
+                    
+                Next j
+                
+                'This node was already fully processed in the previous for loop
+                
+            End If
+            
+        'If the previous node was at the top-level, it will have moved us to a deeper level,
+        ' or we're still at top-level and can't be collapsed!
+        Else
+            inCollapseNow = False
+        End If
+        
+        'We now know whether this node is collapsed; assign its value accordingly.
+        m_Items(i).isCollapsedThisRender = inCollapseNow
+        
+        'We now need to deal with whether or not this item has children.  If it does, we need to set up
+        ' collapse info for the next node.
+        If m_Items(i).hasChildren Then
+            
+            'Note the current tree level (if any), then advance the parent tracker
+            m_Items(i).numParents = idxParent
+            activeParents(idxParent) = m_Items(i).itemID
+            
+            idxParent = idxParent + 1
+            If (idxParent > UBound(activeParents)) Then ReDim Preserve activeParents(0 To idxParent * 2 - 1) As String
+        
+        'If this item *doesn't* have children, we need to compare its parent to the previous node's
+        ' and potentially retreat the depth tracker.
+        Else
+            
+            'Nodes without children do not independently track collapse state
+            m_Items(i).isCollapsed = False
+            m_Items(i).numParents = idxParent
+            
+        '/end If/Else this node has children
+        End If
+        
+        'We now know enough about the current node to figure out its on-screen rect.  Note that we
+        ' calculate a rect *even for collapsed nodes*, because when it comes time to actually render
+        ' the tree, we can simply skip collapsed nodes while subtracting their offset as-we-go.
+        With m_Items(i)
+            
+            'Each item has three rects:
+            ' 1) itemRect (full width of the list box)
+            ' 2) collapseRect (control area for expand/contract only, shifts right by tree level)
+            ' 3) captionRect (text area, shifts right by tree level)
+            
+            'We calculate all three rects for all nodes, and all rects use coordinates as if every node
+            ' in the list were expanded.
+            .ItemRect.Left = m_ListRectF.Left
+            .ItemRect.Width = m_ListRectF.Width
+            .ItemRect.Top = curOffsetY
+            .ItemRect.Height = m_DefaultHeight - 1
+            
+            .controlRect.Left = m_ListRectF.Left + m_OffsetPerLevel * .numParents
+            .controlRect.Width = m_OffsetPerLevel
+            .controlRect.Top = curOffsetY + 1
+            .controlRect.Height = m_DefaultHeight - 3
+            
+            'Always add an extra offset in case we need to render a caret to the left
+            .captionRect.Left = m_ListRectF.Left + m_OffsetPerLevel * (.numParents + 1)
+            .captionRect.Width = m_ListRectF.Width - .ItemRect.Left
+            .captionRect.Top = curOffsetY
+            .captionRect.Height = m_DefaultHeight - 1
+            
+            'This standalone item top value *does* include collapse state
+            .itemTop = curOffsetYincCollapse
+            curOffsetY = curOffsetY + m_DefaultHeight
+            If (Not .isCollapsedThisRender) Then curOffsetYincCollapse = curOffsetYincCollapse + m_DefaultHeight
+            
+        End With
+        
+    Next i
+    
+    'We now have rendering data available for all items in the tree, both idealized *and* adjusted for collapse state.
+    
+    'We now want to iterate the tree and figure out which items should appear on the list.
+    m_FirstRenderIndex = -1
+    
+    Dim idxLastUncollapsed As Long: idxLastUncollapsed = -1
+    
+    For i = 0 To m_NumOfItems - 1
+    
+        'Have we reached a visible item, or are we still on the hunt for the *first* visible one?
+        If (m_FirstRenderIndex >= 0) Then
+            
+            'Ignore collapsed items
+            If (Not m_Items(i).isCollapsedThisRender) Then
+                
+                'If this item is outside the displayable area, set
+                If (m_Items(i).itemTop >= m_ScrollValue + m_ListRectF.Height) Then
+                    m_LastRenderIndex = idxLastUncollapsed
+                    Exit For
+                
+                'If this item *is* inside the displayable area, mark it as the last-checked index.
+                Else
+                    idxLastUncollapsed = i
+                End If
+                
+            End If
+            
+        'We haven't found the first displayable item yet
+        Else
+            
+            'If this item is *not* collapsed and *would* appear on-screen, mark it as the first
+            ' item to render.
+            If (Not m_Items(i).isCollapsedThisRender) Then
+                If (m_Items(i).itemTop + m_Items(i).ItemRect.Height >= m_ScrollValue) Then
+                    m_FirstRenderIndex = i
+                    idxLastUncollapsed = i
+                End If
+            End If
+            
+        End If
+        
+    Next i
+    
+    'Failsafe for scrolling past the end of the list
+    If (idxLastUncollapsed < 0) Then idxLastUncollapsed = m_NumOfItems - 1
+    If (m_FirstRenderIndex < 0) Then m_FirstRenderIndex = 0
     
     'Note that our rendering data is up-to-date.  As long as this stays TRUE, we don't have to recalculate rendering data.
     m_RenderDataCorrect = True
@@ -713,23 +907,9 @@ Friend Sub UpdateAgainstCurrentTheme()
     If (Not g_Language Is Nothing) Then
         
         If (m_NumOfItems > 0) And (m_LanguageAtLastCheck <> g_Language.GetCurrentLanguage()) Then
-            
             m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
-            
-            Dim i As Long
-            If g_Language.TranslationActive Then
-                For i = 0 To m_NumOfItems - 1
-                    m_Items(i).textTranslated = g_Language.TranslateMessage(m_Items(i).textEn)
-                Next i
-            Else
-                For i = 0 To m_NumOfItems - 1
-                    m_Items(i).textTranslated = m_Items(i).textEn
-                Next i
-            End If
-        
             m_RenderDataCorrect = False
             Me.CalculateRenderMetrics
-            
         End If
         
     End If

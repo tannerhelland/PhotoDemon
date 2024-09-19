@@ -74,7 +74,7 @@ Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Intege
 Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
-Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
 
 'If you want to handle something like custom tooltips, a MouseOver event helps.  (These are ultimately raised
 ' by the underlying pdListBoxViewOD control.)
@@ -245,16 +245,16 @@ End Sub
 
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
 ' raise redraw requests as relevant.
-Public Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False, Optional ByVal itemShouldBeTranslated As Boolean = True)
-    lbView.AddItem srcItemID, srcItemText, parentID, initialCollapsedState, itemShouldBeTranslated
+Public Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False)
+    lbView.AddItem srcItemID, srcItemText, parentID, initialCollapsedState
 End Sub
 
 Public Sub Clear()
     lbView.Clear
 End Sub
 
-Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
-    List = lbView.List(itemIndex, returnTranslatedText)
+Public Function List(ByVal itemIndex As Long) As String
+    List = lbView.List(itemIndex)
 End Function
 
 Public Function ListCount() As Long
@@ -301,8 +301,8 @@ Private Sub lbView_CustomDragOver(Data As DataObject, Effect As Long, Button As 
     RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
-Private Sub lbView_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
-    RaiseEvent DrawListEntry(bufferDC, itemIndex, itemTextEn, itemIsSelected, itemIsHovered, ptrToRectF)
+Private Sub lbView_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
+    RaiseEvent DrawListEntry(bufferDC, itemIndex, itemID, itemIsSelected, itemIsHovered, ptrToItemRectF, ptrToCaptionRectF, ptrToControlRectF)
 End Sub
 
 Private Sub lbView_MouseLeave()

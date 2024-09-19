@@ -114,12 +114,16 @@ End Type
 
 Public Type PD_TreeItem
     textEn As String
-    textTranslated As String
-    itemTop As Long
-    itemHeight As Long
+    itemTop As Long         'Rendering rect top, in pixels, assuming no collapses.  Must be y-offset at render time.
+    ItemRect As RectF       'Rendering rect of the full list item, in pixels.
+    controlRect As RectF    'If a node has children, its expand/collapse control is triggerable from this rect
+    captionRect As RectF    'Rendering rect of the caption only, in pixels.
     itemID As String
     parentID As String
-    isCollapsed As Boolean
+    numParents As Long      'Calculated automatically; required to determine rendering position.
+    isCollapsed As Boolean              'Persistently tracks collapse state *for parent nodes only*
+    isCollapsedThisRender As Boolean    'Tracks collapse state for *all nodes* to accelerate rendering
+    hasChildren As Boolean  'Not supplied by caller; inferred by treeview automatically
 End Type
 
 'At times, PD may need to post custom messages to all application windows (e.g. theme changes may eventually be implemented

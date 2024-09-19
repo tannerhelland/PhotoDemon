@@ -57,7 +57,7 @@ Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Intege
 Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
-Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
 
 'If you want to handle something like custom tooltips, a MouseOver event helps
 Public Event MouseLeave()
@@ -311,8 +311,8 @@ End Sub
 
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
 ' raise redraw requests as relevant.
-Public Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False, Optional ByVal itemShouldBeTranslated As Boolean = True)
-    listSupport.AddItem srcItemID, srcItemText, parentID, initialCollapsedState, itemShouldBeTranslated
+Public Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False)
+    listSupport.AddItem srcItemID, srcItemText, parentID, initialCollapsedState
 End Sub
 
 Public Sub Clear()
@@ -323,8 +323,8 @@ Public Function GetDefaultItemHeight() As Long
     GetDefaultItemHeight = listSupport.DefaultItemHeight
 End Function
 
-Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
-    List = listSupport.List(itemIndex, returnTranslatedText)
+Public Function List(ByVal itemIndex As Long) As String
+    List = listSupport.List(itemIndex)
 End Function
 
 Public Function ListCount() As Long
@@ -537,66 +537,70 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             curListIndex = listSupport.ListIndex
             
             Dim itemIsSelected As Boolean, itemIsHovered As Boolean, itemHasSeparator As Boolean
-            Dim tmpTop As Long, tmpHeight As Long, tmpHeightWithoutSeparator As Long
             Dim lineY As Single
             Dim tmpListItem As PD_TreeItem, tmpRect As RectF
+            Dim scrollOffsetX As Long, scrollOffsetY As Long
+            Dim srcCaptionRect As RectF, srcControlRect As RectF, srcItemRect As RectF
+            
+            'This control needs some space along the margins to render selection and focus changes.
+            ' Those size adjustments (which need to be applied to anything that touches the margins)
+            ' are stored here.
+            Dim marginAdjustments As RectF
             
             Dim i As Long
             For i = firstItemIndex To lastItemIndex
             
-                'Left and Width start out the same for all list entries
-                If listHasFocus Then
-                    tmpRect.Left = m_ListRect.Left + 2!
-                    tmpRect.Width = m_ListRect.Width - 3!
-                Else
-                    tmpRect.Left = m_ListRect.Left + 1!
-                    tmpRect.Width = m_ListRect.Width - 2!
-                End If
-                
                 'For each list item, we follow a pretty standard formula: retrieve the item's data...
-                listSupport.GetRenderingItem i, tmpListItem, tmpTop, tmpHeight, tmpHeightWithoutSeparator
-                'itemHasSeparator = tmpListItem.isSeparator
-                tmpRect.Top = tmpTop
+                If listSupport.GetRenderingItem(i, tmpListItem, scrollOffsetX, scrollOffsetY) Then
+                    
+                    'Make a local copy of the source item's rectangles
+                    srcItemRect = tmpListItem.ItemRect
+                    srcCaptionRect = tmpListItem.captionRect
+                    srcControlRect = tmpListItem.controlRect
+                    
+                    'Offset all rectangles by the retrieved scroll values
+                    srcItemRect.Top = srcItemRect.Top - scrollOffsetY
+                    srcCaptionRect.Top = srcCaptionRect.Top - scrollOffsetY
+                    srcControlRect.Top = srcControlRect.Top - scrollOffsetY
+                    'Debug.Print "pdTreeViewOD", tmpListItem.itemID, srcCaptionRect.Left, srcCaptionRect.Top, srcCaptionRect.Width, srcCaptionRect.Height
+                    'Add necessary offsets for the chunky line we draw around the entire control if
+                    ' the list has focus.
+                    srcItemRect.Left = srcItemRect.Left + 1!
+                    srcItemRect.Width = srcItemRect.Width - 2!
+                    srcCaptionRect.Width = srcCaptionRect.Width - 2!
+                    
+                    itemIsSelected = (i = curListIndex)
+                    itemIsHovered = (i = listSupport.ListIndexHovered)
+                    
+                    '...then render its fill...
+                    If itemIsSelected Then
+                        If itemIsHovered Then curColor = itemColorSelectedFillHover Else curColor = itemColorSelectedFill
+                    Else
+                        If itemIsHovered Then curColor = itemColorUnselectedFillHover Else curColor = itemColorUnselectedFill
+                    End If
+                    
+                    cBrush.SetBrushColor curColor
+                    PD2D.FillRectangleF_FromRectF cSurface, cBrush, srcItemRect
+                    
+                    '...then interject an event, so our parent can draw the remainder of this object
+                    RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(srcItemRect), VarPtr(srcCaptionRect), VarPtr(srcControlRect))
+                    
+                    '...then paint its hover-specific border over the top...
+                    If itemIsSelected Then
+                        If itemIsHovered Then curColor = itemColorSelectedBorderHover Else curColor = itemColorSelectedBorder
+                    Else
+                        If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
+                    End If
+                    
+                    ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
+                    '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.
+                    '  Note also that the caller can manually request borderless rendering via the matching property.)
+                    If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then
+                        cPen.SetPenColor curColor
+                        PD2D.DrawRectangleF_FromRectF cSurface, cPen, srcItemRect
+                    End If
                 
-                If itemHasSeparator Then
-                    tmpRect.Height = tmpHeightWithoutSeparator - 1
-                Else
-                    tmpRect.Height = tmpHeight - 1
-                End If
-                
-                itemIsSelected = (i = curListIndex)
-                itemIsHovered = (i = listSupport.ListIndexHovered)
-                
-                '...then render its fill...
-                If itemIsSelected Then
-                    If itemIsHovered Then curColor = itemColorSelectedFillHover Else curColor = itemColorSelectedFill
-                Else
-                    If itemIsHovered Then curColor = itemColorUnselectedFillHover Else curColor = itemColorUnselectedFill
-                End If
-                
-                cBrush.SetBrushColor curColor
-                PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRect
-                
-                '...then interject an event, so our parent can draw the remainder of this object
-                If listHasFocus Then
-                    tmpRect.Left = tmpRect.Left - 1
-                    tmpRect.Width = tmpRect.Width + 1
-                End If
-                RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(tmpRect))
-                
-                '...then paint its hover-specific border over the top...
-                If itemIsSelected Then
-                    If itemIsHovered Then curColor = itemColorSelectedBorderHover Else curColor = itemColorSelectedBorder
-                Else
-                    If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
-                End If
-                
-                ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
-                '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.
-                '  Note also that the caller can manually request borderless rendering via the matching property.)
-                If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then
-                    cPen.SetPenColor curColor
-                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRect
+                '/End "item is collapsed"
                 End If
                 
                 '...and finally, render a separator line, if any
@@ -611,7 +615,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         End If
         
         'Last of all, we render the listbox border.  Note that we actually draw *two* borders.  The actual border,
-        ' which is slightly inset from the list box boundaries, then a second border - pure white, erasing any item
+        ' which is slightly inset from the list box boundaries, then a second border - pure background, erasing any item
         ' rendering that may have fallen outside the clipping area.
         If (Not m_BorderlessMode) Then
         

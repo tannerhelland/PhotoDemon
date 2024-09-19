@@ -183,7 +183,7 @@ Private Sub Form_Load()
                 'Debug.Print .hk_ActionID, .hk_ParentID, .hk_HasChildren
                 
                 'Add this menu item to the treeview
-                tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, False, False
+                tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, False
                 
                 'Advance to the next mappable menu index
                 m_numItems = m_numItems + 1
@@ -255,18 +255,18 @@ Private Function GetMenuParentPositionID(ByVal idxMenu As Long) As String
 End Function
 
 'Render an item into the treeview
-Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
     
     If (bufferDC = 0) Then Exit Sub
     If (Not m_RenderingOK) Then Exit Sub
     
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
-    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToCaptionRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
-    offsetX = tmpRectF.Left + Interface.FixDPI(6)
-    offsetY = tmpRectF.Top + Interface.FixDPI(2)
+    offsetX = tmpRectF.Left
+    offsetY = tmpRectF.Top + Interface.FixDPI(1)
     
     'If this item has been selected, draw the background with the system's current selection color
     Dim curFont As pdFont
@@ -282,19 +282,14 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     Dim drawString As String
     drawString = m_Items(itemIndex).hk_TextLocalized
     
-    'Figure out how much to shift the text right (based on its tree hierarchy, basically)
-    Dim shiftForTreeLevel As Long
-    shiftForTreeLevel = Interface.FixDPI(16) * m_Items(itemIndex).hk_NumParents
-    
     'Render the text
     If (LenB(drawString) <> 0) Then
         curFont.AttachToDC bufferDC
-        curFont.FastRenderText shiftForTreeLevel + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4), drawString
+        curFont.FastRenderText offsetX, offsetY + Interface.FixDPI(4), drawString
         curFont.ReleaseFromDC
     End If
     
     'Still TODO:
-    ' - track tree expand/contract state and render controls for that
     ' - figure out where to position hotkey text/input area
     
 End Sub
