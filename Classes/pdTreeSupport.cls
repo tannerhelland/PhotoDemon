@@ -155,9 +155,7 @@ Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optio
         'For an owner-drawn control like this, translations must be handled manually by the caller
         .textEn = srcItemText
         
-        'Increase the net height of the entire list
-        m_TotalHeight = m_TotalHeight + m_DefaultHeight
-        
+        'TODO: is this step even necessary?  We manually calculate this in CalculateRenderMetrics, don't we...?
         'Positioning values for a treeview work differently than a listview - I precalculate all item positions
         ' as if all list items were expanded.  This simplifies rendering because we can simply calculate a running
         ' negative offset representing collapsed items, and subtracting that from an item's .itemTop value gives
@@ -345,12 +343,20 @@ Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     'Convert the y-position to an absolute value
     srcY = (srcY - m_ListRectF.Top) + m_ScrollValue
     
-    'TODO: handle collapsed items, obviously
-    
-    'On a fixed-size list, this calculation can be automated.
-    ListIndexByPosition = srcY \ m_DefaultHeight
-    If (ListIndexByPosition >= m_NumOfItems) Then ListIndexByPosition = -1
+    'Iterate the list until we reach the item where the click occurred
+    Dim i As Long
+    For i = m_FirstRenderIndex To m_LastRenderIndex
         
+        If (i >= 0) And (i < m_NumOfItems) Then
+            If (Not m_Items(i).isCollapsedThisRender) Then
+                If PDMath.IsPointInRectF(srcX, srcY, m_Items(i).ItemRect) Then
+                    ListIndexByPosition = i
+                    Exit For
+                End If
+            End If
+        End If
+        
+    Next i
     
 End Function
 
@@ -434,11 +440,39 @@ End Sub
 '
 'TODO: does caller or this class handle expand/contract button hit detection?
 Friend Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     If (Button And pdLeftButton) <> 0 Then
+        
         Dim tmpListIndex As Long
         tmpListIndex = Me.ListIndexByPosition(x, y)
-        If tmpListIndex >= 0 Then Me.ListIndex = tmpListIndex
+        If (tmpListIndex >= 0) Then
+            
+            'If this item has children, we need to see *where* the click happened (because clicks in the control
+            ' area mean we need to expand/collapse this group instead).
+            If m_Items(tmpListIndex).hasChildren Then
+                If PDMath.IsPointInRectF(x, (y - m_ListRectF.Top) + m_ScrollValue, m_Items(tmpListIndex).controlRect) Then
+                    
+                    'Change collapse state for this node, then redraw the list accordingly.
+                    m_Items(tmpListIndex).isCollapsed = Not m_Items(tmpListIndex).isCollapsed
+                    
+                    'TODO: a simpler render metrics assessment, changing only collapse state?
+                    CalculateRenderMetrics
+                    
+                Else
+                    Me.ListIndex = tmpListIndex
+                End If
+            
+            'If this item *doesn't* have children, simply select it.
+            Else
+                Me.ListIndex = tmpListIndex
+            End If
+        
+        '/end click is over a list item
+        End If
+    
+    '/end left mouse click
     End If
+    
 End Sub
 
 Friend Sub NotifyMouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -565,42 +599,6 @@ Private Sub UpdateHoveredIndex(ByVal x As Long, ByVal y As Long, Optional ByVal 
     
 End Sub
 
-'Remove an item.  (TODO: re-implement this?  Do I even need it?)
-Friend Sub RemoveItem(ByVal itemIndex As Long)
-    
-    'First, make sure the requested index is valid
-    If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
-        
-        'Remove this item's size from the net height tracker
-        Dim missingItemHeight As Long
-        missingItemHeight = m_DefaultHeight
-        m_TotalHeight = m_TotalHeight - missingItemHeight
-        
-        'If this item is not being removed from the *end* of the list, shift everything past it downward.
-        Dim i As Long
-        If itemIndex < (m_NumOfItems - 1) Then
-            For i = itemIndex To m_NumOfItems - 2
-                m_Items(i) = m_Items(i + 1)
-                m_Items(i).itemTop = m_Items(i).itemTop - missingItemHeight
-            Next i
-        End If
-        
-        'Reduce the total list size
-        m_NumOfItems = m_NumOfItems - 1
-        
-        'If the removal affected the current ListIndex, update it to match
-        If (itemIndex <= m_ListIndex) Then
-            m_ListIndex = m_ListIndex - 1
-            If (m_ListIndex < 0) Then m_ListIndex = 0
-            RaiseEvent Click
-        End If
-        
-        If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
-        
-    End If
-    
-End Sub
-
 'Need to render the tree?  Call this first to get rendering limits.
 Friend Sub GetRenderingLimits(ByRef firstRenderIndex As Long, ByRef lastRenderIndex As Long, ByRef listIsEmpty As Boolean)
     firstRenderIndex = m_FirstRenderIndex
@@ -658,19 +656,6 @@ Friend Property Let ScrollValue(ByRef newValue As Long)
     
 End Property
 
-Private Sub CalculateNewScrollMax()
-    
-    Dim newScrollMax As Long
-    newScrollMax = m_TotalHeight - m_ListRectF.Height
-    If (newScrollMax < 0) Then newScrollMax = 0
-    
-    If (newScrollMax <> m_ScrollMax) Then
-        m_ScrollMax = newScrollMax
-        RaiseEvent ScrollMaxChanged
-    End If
-    
-End Sub
-
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.
 ' Just make sure to enable redraws once you're ready, or you'll never get rendering requests!
 Friend Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
@@ -694,12 +679,7 @@ Friend Sub CalculateRenderMetrics()
     'Failsafes (usually only triggered in the IDE)
     If (m_ListRectF.Height <= 0) Or (m_DefaultHeight <= 0) Then Exit Sub
     
-    'Current y-offset.  Automatically incremented as we process node items.
-    ' Does *not* account for collapse state.
-    Dim curOffsetY As Long
-    curOffsetY = 0
-    
-    'Current y-offset accounting for collapse state.
+    'Current y-offset (accounting for collapse state).
     Dim curOffsetYincCollapse As Long
     curOffsetYincCollapse = 0
     
@@ -759,7 +739,7 @@ Friend Sub CalculateRenderMetrics()
                                 If m_Items(idxToCheck).isCollapsedThisRender Then
                                     inCollapseNow = True
                                 Else
-                                    inCollapseNow = m_Items(i).isCollapsed
+                                    inCollapseNow = m_Items(idxToCheck).isCollapsed
                                 End If
                                 
                             End If
@@ -775,6 +755,8 @@ Friend Sub CalculateRenderMetrics()
                 
                 'This node was already fully processed in the previous for loop
                 
+            Else
+                'If inCollapseNow Then Debug.Print m_Items(i).itemID & " is collapsed due to " & activeParents(idxParent - 1)
             End If
             
         'If the previous node was at the top-level, it will have moved us to a deeper level,
@@ -796,13 +778,16 @@ Friend Sub CalculateRenderMetrics()
             
             idxParent = idxParent + 1
             If (idxParent > UBound(activeParents)) Then ReDim Preserve activeParents(0 To idxParent * 2 - 1) As String
-        
+            
+            If (Not inCollapseNow) Then inCollapseNow = m_Items(i).isCollapsed
+            
         'If this item *doesn't* have children, we need to compare its parent to the previous node's
         ' and potentially retreat the depth tracker.
         Else
             
             'Nodes without children do not independently track collapse state
             m_Items(i).isCollapsed = False
+            m_Items(i).isCollapsedThisRender = inCollapseNow
             m_Items(i).numParents = idxParent
             
         '/end If/Else this node has children
@@ -822,23 +807,23 @@ Friend Sub CalculateRenderMetrics()
             ' in the list were expanded.
             .ItemRect.Left = m_ListRectF.Left
             .ItemRect.Width = m_ListRectF.Width
-            .ItemRect.Top = curOffsetY
+            .ItemRect.Top = curOffsetYincCollapse
             .ItemRect.Height = m_DefaultHeight - 1
             
             .controlRect.Left = m_ListRectF.Left + m_OffsetPerLevel * .numParents
             .controlRect.Width = m_OffsetPerLevel
-            .controlRect.Top = curOffsetY + 1
+            .controlRect.Top = curOffsetYincCollapse + 1
             .controlRect.Height = m_DefaultHeight - 3
             
             'Always add an extra offset in case we need to render a caret to the left
             .captionRect.Left = m_ListRectF.Left + m_OffsetPerLevel * (.numParents + 1)
             .captionRect.Width = m_ListRectF.Width - .ItemRect.Left
-            .captionRect.Top = curOffsetY
+            .captionRect.Top = curOffsetYincCollapse
             .captionRect.Height = m_DefaultHeight - 1
             
             'This standalone item top value *does* include collapse state
             .itemTop = curOffsetYincCollapse
-            curOffsetY = curOffsetY + m_DefaultHeight
+            'curOffsetY = curOffsetY + m_DefaultHeight
             If (Not .isCollapsedThisRender) Then curOffsetYincCollapse = curOffsetYincCollapse + m_DefaultHeight
             
         End With
@@ -849,7 +834,7 @@ Friend Sub CalculateRenderMetrics()
     
     'We now want to iterate the tree and figure out which items should appear on the list.
     m_FirstRenderIndex = -1
-    
+    m_LastRenderIndex = -1
     Dim idxLastUncollapsed As Long: idxLastUncollapsed = -1
     
     For i = 0 To m_NumOfItems - 1
@@ -889,15 +874,29 @@ Friend Sub CalculateRenderMetrics()
     Next i
     
     'Failsafe for scrolling past the end of the list
-    If (idxLastUncollapsed < 0) Then idxLastUncollapsed = m_NumOfItems - 1
+    If (m_LastRenderIndex < m_FirstRenderIndex) Then m_LastRenderIndex = m_NumOfItems - 1
+    If (idxLastUncollapsed < 0) Then
+        idxLastUncollapsed = m_NumOfItems - 1
+        m_LastRenderIndex = m_NumOfItems - 1
+    End If
     If (m_FirstRenderIndex < 0) Then m_FirstRenderIndex = 0
     
     'Note that our rendering data is up-to-date.  As long as this stays TRUE, we don't have to recalculate rendering data.
     m_RenderDataCorrect = True
     
     'Whenever list contents or container sizes change, we can cache a new scroll bar maximum value.
-    CalculateNewScrollMax
+    Dim newScrollMax As Long
+    m_TotalHeight = curOffsetYincCollapse
     
+    newScrollMax = m_TotalHeight - m_ListRectF.Height
+    If (newScrollMax < 0) Then newScrollMax = 0
+    
+    If (newScrollMax <> m_ScrollMax) Then
+        m_ScrollMax = newScrollMax
+        RaiseEvent ScrollMaxChanged
+    End If
+    
+    'If automatic redraws are allowed, render everything now
     If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
     
 End Sub

@@ -347,10 +347,6 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     ListIndexByPosition = listSupport.ListIndexByPosition(srcX, srcY, checkXAsWell)
 End Function
 
-Public Sub RemoveItem(ByVal itemIndex As Long)
-    listSupport.RemoveItem itemIndex
-End Sub
-
 'In response to things like MouseOver events, the caller can request different cursors.
 ' (By default, list items are always treated as clickable - so they get a hand cursor.)
 Public Sub RequestCursor(Optional ByVal sysCursorID As SystemCursorConstant = IDC_HAND)
@@ -496,7 +492,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
         Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
         Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
-        Dim separatorColor As Long
+        Dim arrowColor As Long
         
         itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
         itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
@@ -506,8 +502,6 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
         itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
         itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
-        
-        separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
         
         'Start by retrieving basic rendering metrics from the support object
         Dim firstItemIndex As Long, lastItemIndex As Long, listIsEmpty As Boolean
@@ -529,9 +523,6 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         Dim cBrush As pd2DBrush: Set cBrush = New pd2DBrush
         
         If (Not listIsEmpty) Then
-            
-            cPen.SetPenWidth 1
-            cPen.SetPenLineJoin P2_LJ_Miter
             
             Dim curListIndex As Long, curColor As Long
             curListIndex = listSupport.ListIndex
@@ -562,7 +553,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     srcItemRect.Top = srcItemRect.Top - scrollOffsetY
                     srcCaptionRect.Top = srcCaptionRect.Top - scrollOffsetY
                     srcControlRect.Top = srcControlRect.Top - scrollOffsetY
-                    'Debug.Print "pdTreeViewOD", tmpListItem.itemID, srcCaptionRect.Left, srcCaptionRect.Top, srcCaptionRect.Width, srcCaptionRect.Height
+                    
                     'Add necessary offsets for the chunky line we draw around the entire control if
                     ' the list has focus.
                     srcItemRect.Left = srcItemRect.Left + 1!
@@ -572,7 +563,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     itemIsSelected = (i = curListIndex)
                     itemIsHovered = (i = listSupport.ListIndexHovered)
                     
-                    '...then render its fill...
+                    '...then render its background fill...
                     If itemIsSelected Then
                         If itemIsHovered Then curColor = itemColorSelectedFillHover Else curColor = itemColorSelectedFill
                     Else
@@ -582,6 +573,54 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     cBrush.SetBrushColor curColor
                     PD2D.FillRectangleF_FromRectF cSurface, cBrush, srcItemRect
                     
+                    'Next, let's draw the expand/contract caret
+                    If tmpListItem.hasChildren Then
+                    
+                        If itemIsSelected Then
+                            arrowColor = g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+                        Else
+                            arrowColor = g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+                        End If
+                        
+                        Dim arrowPt1 As PointFloat, arrowPt2 As PointFloat, arrowPt3 As PointFloat
+                        Dim arrowHeight As Single: arrowHeight = tmpListItem.ItemRect.Height / 4
+                        
+                        'Corresponding group is closed, so arrow points right
+                        If tmpListItem.isCollapsed Then
+                        
+                            arrowPt1.x = srcControlRect.Left + (srcControlRect.Height / 2) + 3 - (arrowHeight / 2)
+                            arrowPt1.y = srcControlRect.Top + arrowHeight * 1.3 - 1.5
+                            
+                            arrowPt3.x = arrowPt1.x
+                            arrowPt3.y = (srcControlRect.Top + srcControlRect.Height) - arrowHeight * 1.3 + 1.5
+                        
+                            arrowPt2.x = arrowPt1.x + (arrowHeight / 2) + 0.5
+                            arrowPt2.y = arrowPt1.y + (arrowPt3.y - arrowPt1.y) / 2
+                        
+                        'Corresponding group is open, so arrow points down
+                        Else
+                        
+                            arrowPt1.x = srcControlRect.Left + arrowHeight * 1.3 - 0.5
+                            arrowPt1.y = srcControlRect.Top + (srcControlRect.Height / 2) + 3 - (arrowHeight / 2)
+                            
+                            arrowPt3.x = (srcControlRect.Left + srcControlRect.Width) - arrowHeight * 1.3 - 0.5
+                            arrowPt3.y = arrowPt1.y
+                            
+                            arrowPt2.x = arrowPt1.x + (arrowPt3.x - arrowPt1.x) / 2
+                            arrowPt2.y = arrowPt1.y + (arrowHeight / 2) + 0.5
+                            
+                        End If
+                        
+                        'Draw the drop-down caret
+                        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+                        Drawing2D.QuickCreateSolidPen cPen, 2!, arrowColor, 100!, P2_LJ_Round, P2_LC_Round
+                        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
+                        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
+                        cSurface.SetSurfaceAntialiasing P2_AA_None
+                        
+                    '/end item has children
+                    End If
+        
                     '...then interject an event, so our parent can draw the remainder of this object
                     RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(srcItemRect), VarPtr(srcCaptionRect), VarPtr(srcControlRect))
                     
@@ -596,6 +635,8 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.
                     '  Note also that the caller can manually request borderless rendering via the matching property.)
                     If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then
+                        cPen.SetPenWidth 1
+                        cPen.SetPenLineJoin P2_LJ_Miter
                         cPen.SetPenColor curColor
                         PD2D.DrawRectangleF_FromRectF cSurface, cPen, srcItemRect
                     End If
