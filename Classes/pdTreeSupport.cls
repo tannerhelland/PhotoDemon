@@ -386,49 +386,258 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     Dim newListIndex As Long
     newListIndex = m_ListIndex
     
+    'By default, this function will validate the new list index after any keypresses.  If a keypress
+    ' doesn't modify the listindex, it should set this to FALSE.
+    Dim validateListIndex As Boolean
+    validateListIndex = True
+    
     Select Case vkCode
         
         Case VK_DOWN
-            newListIndex = newListIndex + 1
+            
+            'Ctrl+Shift means scroll down *without* changing listindex
+            If (Shift And vbCtrlMask) = vbCtrlMask Then
+                Me.ScrollValue = Me.ScrollValue + m_DefaultHeight
+                validateListIndex = False
+            Else
+                If (newListIndex < 0) Then
+                    newListIndex = 0
+                Else
+                    newListIndex = AdvanceListIndex(True, False)
+                End If
+            End If
             markEventHandled = True
             
         Case VK_UP
-            newListIndex = newListIndex - 1
+            If (Shift And vbCtrlMask) = vbCtrlMask Then
+                Me.ScrollValue = Me.ScrollValue - m_DefaultHeight
+                validateListIndex = False
+            Else
+                If (newListIndex < 0) Then
+                    newListIndex = 0
+                Else
+                    newListIndex = AdvanceListIndex(False, False)
+                End If
+            End If
             markEventHandled = True
             
         Case VK_PAGEDOWN
-            'TODO: the math for this obviously changes depending on expand/contract state of neighboring items.
-            ' We can still calculate how *many* items we need to "jump", but then we'll need to manually iterate
-            ' that many *expanded* items.
-            newListIndex = newListIndex + (m_LastRenderIndex - m_FirstRenderIndex)
+            newListIndex = AdvanceListIndex(True, True)
             markEventHandled = True
             
         Case VK_PAGEUP
-            newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex)
+            newListIndex = AdvanceListIndex(False, True)
             markEventHandled = True
             
         Case VK_HOME
-            newListIndex = 0
+            newListIndex = ValidateIndexIsVisible(0, False)
             markEventHandled = True
             
         Case VK_END
-            newListIndex = m_NumOfItems - 1
+            newListIndex = ValidateIndexIsVisible(m_NumOfItems - 1, True)
             markEventHandled = True
         
-        'TODO: hotkeys for expand/contract - check how default treeviews work?
+        Case VK_RIGHT
+            If (m_ListIndex >= 0) Then
+                If m_Items(m_ListIndex).hasChildren Then
+                    If m_Items(m_ListIndex).isCollapsed Then
+                        ToggleCollapseStateByIndex m_ListIndex, True, False
+                        newListIndex = ValidateIndexIsVisible(m_ListIndex, True)
+                    
+                    'If this list is already expanded, move to the next child in line.
+                    ' (This mirrors behavior in Windows Explorer.)
+                    Else
+                        newListIndex = AdvanceListIndex(True, False)
+                    End If
+                
+                'Technically, Microsoft does *nothing* if pressing the right-arrow on a node with no children.
+                ' However, I think it's more intuitive to move *down* the list rather than do nothing.
+                ' (This allows the user to continue moving through the list, expanding nodes as they go.)
+                Else
+                    newListIndex = AdvanceListIndex(True, False)
+                End If
+            
+            '/m_ListIndex < 0
+            Else
+                newListIndex = 0
+            End If
+            
+            newListIndex = ValidateIndexIsVisible(newListIndex, True)
+            markEventHandled = True
+        
+        Case VK_LEFT
+            If (m_ListIndex >= 0) Then
+                
+                'If this node has children, close it...
+                If m_Items(m_ListIndex).hasChildren Then
+                    
+                    '...unless the node is already closed, in which case jump to the previous parent in the chain
+                    If m_Items(m_ListIndex).isCollapsed Then
+                        newListIndex = JumpToNearestParent(m_ListIndex)
+                    Else
+                        ToggleCollapseStateByIndex m_ListIndex, True, True
+                        newListIndex = m_ListIndex
+                    End If
+                Else
+                    newListIndex = JumpToNearestParent(m_ListIndex)
+                End If
+            End If
+            
+            newListIndex = ValidateIndexIsVisible(newListIndex, True)
+            markEventHandled = True
+        
+        '+/- expand/contract a treeview on Windows
+        Case VK_ADD, VK_OEM_PLUS
+            If (m_ListIndex >= 0) Then
+                If (m_Items(m_ListIndex).hasChildren And m_Items(m_ListIndex).isCollapsed) Then
+                    ToggleCollapseStateByIndex m_ListIndex
+                End If
+            End If
+            markEventHandled = True
+            
+        Case VK_SUBTRACT, VK_OEM_MINUS
+            If (m_ListIndex >= 0) Then
+                If (m_Items(m_ListIndex).hasChildren And Not m_Items(m_ListIndex).isCollapsed) Then
+                    ToggleCollapseStateByIndex m_ListIndex
+                End If
+            End If
+            markEventHandled = True
+            
+        'The asterisk key (numpad) expands all expandable nodes beneath the current one
+        Case VK_MULTIPLY
+            'TODO!
         
     End Select
     
-    If (m_NumOfItems = 0) Then
-        newListIndex = -1
+    If validateListIndex Then
+        
+        If (m_NumOfItems = 0) Then
+            newListIndex = -1
+        Else
+            If (newListIndex < 0) Then newListIndex = ValidateIndexIsVisible(0, False)
+            If (newListIndex > m_NumOfItems - 1) Then newListIndex = ValidateIndexIsVisible(m_NumOfItems - 1, True)
+        End If
+        
+        Me.ListIndex = newListIndex
+        
+    End If
+        
+End Sub
+
+'Move the list index around in response to keyboard events.  Returns the new .ListIndex, if any.
+Private Function AdvanceListIndex(ByVal directionDown As Boolean, ByVal jumpWholePage As Boolean) As Long
+    
+    'Start with the current listindex, if any
+    AdvanceListIndex = Me.ListIndex
+    
+    Dim i As Long, numItemsInPage As Long, numItemsPassed As Long
+    
+    'Figure out how many items are visible at once in the listbox.  (PgUp/Down jumps a whole "page" of entries.)
+    numItemsInPage = (m_ListRectF.Height \ m_DefaultHeight)
+    
+    If directionDown Then
+        
+        'PgDown
+        If jumpWholePage Then
+            
+            numItemsPassed = 0
+            For i = AdvanceListIndex + 1 To m_NumOfItems - 1
+                If (Not m_Items(i).isCollapsedThisRender) Then numItemsPassed = numItemsPassed + 1
+                If (numItemsPassed >= numItemsInPage) Then Exit For
+            Next i
+            
+            AdvanceListIndex = PDMath.Min2Int(m_NumOfItems - 1, i)
+            
+        'Down
+        Else
+            
+            For i = AdvanceListIndex + 1 To m_NumOfItems - 1
+                If (Not m_Items(i).isCollapsedThisRender) Then Exit For
+            Next i
+            
+            AdvanceListIndex = PDMath.Min2Int(m_NumOfItems - 1, i)
+            
+        End If
+        
+    'directionUp
     Else
-        If (newListIndex < 0) Then newListIndex = 0
-        If (newListIndex > m_NumOfItems - 1) Then newListIndex = m_NumOfItems - 1
+    
+        'PgUp
+        If jumpWholePage Then
+        
+            numItemsPassed = 0
+            For i = AdvanceListIndex - 1 To 0 Step -1
+                If (Not m_Items(i).isCollapsedThisRender) Then numItemsPassed = numItemsPassed + 1
+                If (numItemsPassed >= numItemsInPage) Then Exit For
+            Next i
+            
+            AdvanceListIndex = PDMath.Max2Int(0, i)
+            
+        'Up
+        Else
+        
+            For i = AdvanceListIndex - 1 To 0 Step -1
+                If (Not m_Items(i).isCollapsedThisRender) Then Exit For
+            Next i
+            
+            AdvanceListIndex = PDMath.Max2Int(0, i)
+            
+        End If
+    
     End If
     
-    Me.ListIndex = newListIndex
+    AdvanceListIndex = ValidateIndexIsVisible(AdvanceListIndex, directionDown)
     
-End Sub
+End Function
+
+'Validate that a given listindex is visible in the current tree.  If it isn't visible, supply a direction
+' and this function will find the next-closest visible listindex possibility.
+Private Function ValidateIndexIsVisible(ByVal idxTarget As Long, ByVal directionDown As Boolean) As Long
+    
+    Dim i As Long
+    
+    'Before exiting, make sure our selected item is *not* collapsed.
+    ' (This can happen if e.g. the user is on the last-visible item, and it's a collapsed parent item.)
+    If directionDown Then
+        
+        If m_Items(idxTarget).isCollapsedThisRender Then
+            
+            'Retreat backwards until we find a non-collapsed item.
+            For i = idxTarget To 0 Step -1
+                If (Not m_Items(i).isCollapsedThisRender) Then Exit For
+            Next i
+            
+            If (i < 0) Then
+                idxTarget = -1
+            Else
+                idxTarget = i
+            End If
+            
+        End If
+    
+    '/directionUp
+    Else
+        
+        If m_Items(idxTarget).isCollapsedThisRender Then
+            
+            'Move forward until we find a non-collapsed item.
+            For i = idxTarget To m_NumOfItems - 1
+                If (Not m_Items(i).isCollapsedThisRender) Then Exit For
+            Next i
+            
+            If (i < m_NumOfItems - 1) Then
+                idxTarget = i
+            Else
+                idxTarget = -1
+            End If
+            
+        End If
+        
+    End If
+    
+    ValidateIndexIsVisible = idxTarget
+    
+End Function
 
 'Not used at present?
 Friend Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -451,15 +660,40 @@ Friend Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift 
             ' area mean we need to expand/collapse this group instead).
             If m_Items(tmpListIndex).hasChildren Then
                 If PDMath.IsPointInRectF(x, (y - m_ListRectF.Top) + m_ScrollValue, m_Items(tmpListIndex).controlRect) Then
-                    
-                    'Change collapse state for this node, then redraw the list accordingly.
-                    m_Items(tmpListIndex).isCollapsed = Not m_Items(tmpListIndex).isCollapsed
-                    
-                    'TODO: a simpler render metrics assessment, changing only collapse state?
-                    CalculateRenderMetrics
-                    
+                    ToggleCollapseStateByIndex tmpListIndex
+                    Me.ListIndex = ValidateIndexIsVisible(Me.ListIndex, True)
                 Else
                     Me.ListIndex = tmpListIndex
+                End If
+            
+            'If this item *doesn't* have children, simply select it.
+            Else
+                Me.ListIndex = tmpListIndex
+            End If
+        
+        '/end click is over a list item
+        End If
+    
+    '/end left mouse click
+    End If
+    
+End Sub
+
+'Double-clicks toggle expand/contract state, but *only* if the click is *not* over the toggle UI!
+Friend Sub NotifyMouseDoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    If (Button And pdLeftButton) <> 0 Then
+        
+        Dim tmpListIndex As Long
+        tmpListIndex = Me.ListIndexByPosition(x, y)
+        If (tmpListIndex >= 0) Then
+            
+            'If this item has children, we need to see *where* the click happened (because clicks in the control
+            ' area mean we need to expand/collapse this group instead).
+            If m_Items(tmpListIndex).hasChildren Then
+                If (Not PDMath.IsPointInRectF(x, (y - m_ListRectF.Top) + m_ScrollValue, m_Items(tmpListIndex).controlRect)) Then
+                    ToggleCollapseStateByIndex tmpListIndex
+                    Me.ListIndex = ValidateIndexIsVisible(Me.ListIndex, True)
                 End If
             
             'If this item *doesn't* have children, simply select it.
@@ -522,6 +756,59 @@ Friend Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
         Me.ScrollValue = newScrollValue
         
     End If
+    
+End Sub
+
+'When the user presses left on a node that *isn't* a parent, we need to jump up to the last parent in the tree.
+'
+'This function does nothing if the current node is already a parent.  This function also doesn't validate the
+' incoming index; the caller is responsible for that.
+'
+'Returns: index of the correct parent index to jump to.
+Private Function JumpToNearestParent(ByVal idxCurrent As Long) As Long
+    
+    If (m_NumOfItems < 0) Then Exit Function
+    If (idxCurrent < 0) Then
+        JumpToNearestParent = 0
+        Exit Function
+    End If
+
+    Dim i As Long
+    For i = idxCurrent - 1 To 0 Step -1
+        If m_Items(i).hasChildren Then
+            JumpToNearestParent = i
+            Exit Function
+        End If
+    Next i
+    
+    'If we reach this point, no valid parent was found (will only open on a list consisting only
+    ' of top-level items with no children).  Default to the first item in the list.
+    JumpToNearestParent = 0
+    
+End Function
+
+'Toggle a given node's collapse state.  Alternatively, you can use optional parameters to override collapse state
+' to a specific value.
+'
+'Does nothing if the target node is not a parent node.  Does not validate incoming index (for range *or* visibility).
+Private Sub ToggleCollapseStateByIndex(ByVal idxTarget As Long, Optional ByVal overrideToggle As Boolean = False, Optional ByVal overrideCollapseValue As Boolean = True)
+    
+    'Ignore nodes that do not have children
+    If (Not m_Items(idxTarget).hasChildren) Then Exit Sub
+    
+    Dim initState As Boolean
+    initState = m_Items(idxTarget).isCollapsed
+    
+    'Change collapse state for this node, then redraw the list accordingly.
+    If overrideToggle Then
+        m_Items(idxTarget).isCollapsed = overrideCollapseValue
+    Else
+        m_Items(idxTarget).isCollapsed = Not m_Items(idxTarget).isCollapsed
+    End If
+    
+    'TODO: a simpler render metrics assessment, advancing only from the collapsed index (because higher
+    ' nodes would not be affected by the change?)
+    If (m_Items(idxTarget).isCollapsed <> initState) Then CalculateRenderMetrics
     
 End Sub
 
@@ -755,8 +1042,6 @@ Friend Sub CalculateRenderMetrics()
                 
                 'This node was already fully processed in the previous for loop
                 
-            Else
-                'If inCollapseNow Then Debug.Print m_Items(i).itemID & " is collapsed due to " & activeParents(idxParent - 1)
             End If
             
         'If the previous node was at the top-level, it will have moved us to a deeper level,

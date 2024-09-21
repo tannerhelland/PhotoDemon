@@ -236,6 +236,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     UpdateMousePosition
 End Sub
 
+Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseDoubleClick Button, Shift, x, y
+End Sub
+
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
@@ -388,7 +392,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     
     'TODO: more keys for expand/contract node
-    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE
+    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_RIGHT, VK_LEFT, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE, VK_OEM_PLUS, VK_OEM_MINUS, VK_ADD, VK_SUBTRACT, VK_MULTIPLY
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

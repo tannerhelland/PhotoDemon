@@ -82,8 +82,11 @@ Public Const VK_PAGEUP As Long = &H21
 Public Const VK_PAGEDOWN As Long = &H22
 Public Const VK_END As Long = &H23
 Public Const VK_HOME As Long = &H24
+Public Const VK_MULTIPLY As Long = &H6A     'Multiply key (numpad)
+Public Const VK_ADD As Long = &H6B          'Add key (numpad)
+Public Const VK_SUBTRACT As Long = &H6D     'Subtract key (numpad)
 
-Public Const VK_OEM_COMMA As Long = 188    'For any country/region, the ',' key
+Public Const VK_OEM_COMMA As Long = 188     'For any country/region, the ',' key
 Public Const VK_OEM_PERIOD As Long = &HBE   'For any country/region, the '.' key
 Public Const VK_OEM_PLUS As Long = 187      'Locale-inspecific + key
 Public Const VK_OEM_MINUS As Long = 189     'Locale-inspecific - key
