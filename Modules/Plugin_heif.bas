@@ -353,11 +353,6 @@ Private Enum heif_filetype_result
     heif_filetype_maybe             'not sure whether it is an heif, try detection with more input data
 End Enum
 
-Private Type heif_image_handle
-    hImg As Long
-    hContext As Long
-End Type
-
 'Some libheif functions return a custom 12-byte type.  This cannot be easily handled via DispCallFunc,
 ' so I've written an interop DLL that marshals the cdecl return for me.
 Private m_hHelper As Long
@@ -755,7 +750,6 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         
         'Iterate lines and copy the data directly into the target DIB
         Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
-        Dim r As Long, g As Long, b As Long, a As Long
         
         Dim x As Long, y As Long
         For y = 0 To imgHeight - 1
@@ -1046,7 +1040,6 @@ Public Function PreviewHEIF(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef 
     imgWidthBytes = srcDIB.GetDIBStride
     
     Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
-    Dim r As Long, g As Long, b As Long, a As Long
     
     Dim x As Long, y As Long
     For y = 0 To imgHeight - 1
@@ -1334,7 +1327,6 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
         imgWidthBytes = finalDIB.GetDIBStride
         
         Dim dstPixels() As Byte, dstSA1D As SafeArray1D, srcPixels() As Byte, srcSA1D As SafeArray1D
-        Dim r As Long, g As Long, b As Long, a As Long
         
         Dim x As Long, y As Long
         For y = 0 To imgHeight - 1
