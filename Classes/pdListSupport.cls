@@ -347,21 +347,17 @@ Friend Function GetInternalSizeMode() As PD_ListboxHeight
     GetInternalSizeMode = m_SizeMode
 End Function
 
-Friend Function GetPointerToInternalListStruct() As Long
-    GetPointerToInternalListStruct = VarPtr(m_Items(0))
-End Function
-
 Friend Function GetSizeOfInternalListStruct() As Long
     GetSizeOfInternalListStruct = UBound(m_Items)
 End Function
 
 'Font size controls the default height of each list item.  When the font size changes, we need to recalculate a number of
 ' internal size metrics, so it's advisable to set this UP FRONT before doing anything else.
-Friend Property Get DefaultItemHeight() As Single
+Friend Property Get DefaultItemHeight() As Long
     DefaultItemHeight = m_DefaultHeight
 End Property
 
-Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
+Friend Property Let DefaultItemHeight(ByVal newHeight As Long)
     If (m_DefaultHeight <> newHeight) Then
         m_DefaultHeight = newHeight
         

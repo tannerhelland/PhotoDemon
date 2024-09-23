@@ -15,15 +15,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Treeview support class
 'Copyright 2024-2024 by Tanner Helland
 'Created: 03/September/24
-'Last updated: 03/September/24
-'Last update: start initial build (split off from the list box support class)
+'Last updated: 23/September/24
+'Last update: finish adding all relevant keyboard shortcut features
 '
-'This class was originally created to enable a tree-view like control in PD's custom hotkey dialog.
+'This class was originally created to enable a tree-view like control in PD's custom hotkey dialog.  It manages
+' all tree-related function, but it doesn't do any rendering (for that, refer to the pdTreeView usercontrol).
 '
-'For a good understanding of how this class works, I recommend looking through the pdTreeView usercontrol.
-' That UC uses this class to implement a generic, text-only treeview, and it does so with very little custom code
-' (basically just enough to bubble up certain input events to this class, then rendering item text when this
-' class raises a RedrawNeeded() event.)
+'I've tried to mimic standard Windows treeview behavior as closely as possible.  Please let me know if you
+' find features or behaviors that I've missed.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -52,7 +51,7 @@ Private m_Items() As PD_TreeItem
 Private Const INITIAL_LIST_SIZE As Long = 16&
 Private m_NumOfItems As Long
 
-'Default height (in pixels) of a tree item.
+'Default height (in pixels) of a single tree item.
 ' This is controlled by the owner, and we cannot do anything useful until its value is set.
 Private m_DefaultHeight As Long
 
@@ -60,21 +59,18 @@ Private m_DefaultHeight As Long
 ' This is used to calculate scrollbar values.
 Private m_TotalHeight As Long
 
-'Total height *when considering collapse state of items*.
-' (This must be recalculated on collapse/expand events.)
-Private m_TotalHeightIncCollapsed As Long
-
 'How many horizontal pixels to offset an item by per level of tree.
 ' Auto-calculated based on m_DefaultHeight.
 Private m_OffsetPerLevel As Long
 
-'This class tracks .ListIndex .  It needs to know .ListIndex to auto-suggest things like
-' scroll bar position after a keypress.
+'Despite being a treeview (where items can be collapsed/hidden), this class still tracks a .ListIndex value.
+' This is currently more intuitive for me to track and respond to in PD due to the way tree items are
+' managed in the background.
 Private m_ListIndex As Long
 
 'Scroll bar values.  This class doesn't do any actual rendering, but it tracks things like
-' scroll value to make life easier on the owner (and because we have the data required for
-' all those calculations anyway).
+' scroll value and max to make life easier on the owner (and because we have the data required
+' for all those calculations).
 Private m_ScrollMax As Long, m_ScrollValue As Long
 Private m_ListIndexHover As Long, m_MouseInsideList As Boolean
 Private m_ListRectF As RectF
@@ -84,22 +80,26 @@ Private m_LMBDown As Boolean
 'Typically, adding an item to the treeview requires us to redraw.  This is a waste of time if
 ' the caller needs to add a bunch of items.  Instead of raising redraws automatically,
 ' the caller can choose to suspend redraws prior to adding items, then enable redraws after
-' all items have been added.  (Please do this - it makes a big difference.)
+' all items have been added.  (Please use this capability - it makes a big difference.)
 Private m_RedrawAutomatically As Boolean
 
 'Whenever a property changes that affects the on-screen appearance of the tree (e.g. adding an item,
 ' scrolling the list, expanding/collapsing something), we'll immediately cache the first and last
 ' elements that need to be drawn on-screen.  Then, when it comes time to render the list, we don't
 ' have to regenerate that info from scratch.
+'
+'Because of the way treeviews work, however, note that indices may be included in this range that
+' are *not* rendered on-screen (because they are collapsed).  The caller still needs to check
+' collapse state of each item prior to rendering!
 Private m_FirstRenderIndex As Long, m_LastRenderIndex As Long
 
 'If the list is *not* in automatic redraw mode (e.g. redraw notifications are raised on every list change),
-' we won't calculate rendering metrics as we go.  Instead, we'll just mark rendering metrics as dirty,
+' we don't calculate rendering metrics as we go.  Instead, we'll just mark rendering metrics as dirty,
 ' and recalculate them when the owner finally requests rendering data.
 Private m_RenderDataCorrect As Boolean
 
 'When the tree is initialized, note the current language.  If the language changes on subsequent theme updates,
-' we'll re-translate everything to match.
+' we'll raise redraw notifications so that the caller has a chance to re-translate anything localized.
 Private m_LanguageAtLastCheck As String
 
 'Treeviews require a lot of mapping back-and-forth between parents and children.  (When a node is closed,
@@ -128,7 +128,7 @@ Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optio
     'Make sure there's room in the array for this item.
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_TreeItem
         
-    'Unlike listviews, items must currently be added sequentially (for now; this may change in the future)
+    'Unlike listviews, items must currently be added sequentially.
     Dim itemIndex As Long
     itemIndex = m_NumOfItems
     
@@ -138,11 +138,12 @@ Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optio
         .itemID = srcItemID
         .parentID = parentID
         
-        'We only care about collapsed state for parent nodes; child collapsed state is not tracked this way,
-        ' but we'll perform a second pass through the data to clean this data up.
+        'We only care about collapsed state for parent nodes; child collapsed state is *not* tracked on this
+        ' property, but note that we'll perform a second pass through the data to clean this field up (in case
+        ' the user passes it wrongly).
         .isCollapsed = initialCollapsedState
         
-        'If this node has a parent, find that parent in our lookup table and note it as having children
+        'If this node has a parent, find that parent in our lookup table and note it as having children.
         If (LenB(parentID) <> 0) Then
             Dim idxParent As Variant
             If m_ItemHash.GetItemByKey(parentID, idxParent) Then m_Items(idxParent).hasChildren = True
@@ -152,35 +153,23 @@ Friend Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optio
         ' (since hierarchical rendering decisions need to be made for grandchildren, great-grandchildren, etc)
         .isCollapsedThisRender = False
         
-        'For an owner-drawn control like this, translations must be handled manually by the caller
+        'For an owner-drawn control like this, translations must be handled manually by the caller,
+        ' but we do track en-US text so we can return it when useful.
         .textEn = srcItemText
-        
-        'TODO: is this step even necessary?  We manually calculate this in CalculateRenderMetrics, don't we...?
-        'Positioning values for a treeview work differently than a listview - I precalculate all item positions
-        ' as if all list items were expanded.  This simplifies rendering because we can simply calculate a running
-        ' negative offset representing collapsed items, and subtracting that from an item's .itemTop value gives
-        ' us a precise rendering position.
-        If (itemIndex > 0) Then
-            .itemTop = m_Items(itemIndex - 1).itemTop + m_DefaultHeight
-        Else
-            .itemTop = 0
-        End If
         
     End With
     
-    'Add this item to our running hash table
+    'Add this item to our running hash table (it enables fast index/ID matching)
     m_ItemHash.AddItem srcItemID, itemIndex
     
     'If this is the first item, note the current translation language.
-    ' (If this changes, we need to re-translate the list.)
+    ' (If this changes, we need to notify the caller so they can re-translate the list as necessary.)
     If (m_NumOfItems = 0) Then
         If (Not g_Language Is Nothing) Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
     End If
     
-    'Increment the number of list entries
+    'Increment the number of list entries, then redraw as necessary
     m_NumOfItems = m_NumOfItems + 1
-    
-    'Redraw as necessary
     If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
     
 End Sub
@@ -201,6 +190,7 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     m_ListIndex = -1
     m_NumOfItems = 0
     m_TotalHeight = 0
+    Set m_ItemHash = New pdVariantHash
     
     If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
     
@@ -212,31 +202,13 @@ FailsafeReset:
     
 End Sub
 
-'Need to render a specific tree item?  Call this to retrieve a full copy of a given item's data,
-' plus rendering-specific information like the item's literal position (in pixels) in the treeview.
-Friend Function GetDirectTreeItem(ByVal srcListIndex As Long) As PD_TreeItem
-    GetDirectTreeItem = m_Items(srcListIndex)
-End Function
-
-Friend Function GetHeightOfAllTreeItems() As Long
-    GetHeightOfAllTreeItems = m_TotalHeight
-End Function
-
-Friend Function GetPointerToInternalListStruct() As Long
-    GetPointerToInternalListStruct = VarPtr(m_Items(0))
-End Function
-
-Friend Function GetSizeOfInternalListStruct() As Long
-    GetSizeOfInternalListStruct = UBound(m_Items)
-End Function
-
 'Font size controls the default height of each list item.  When the font size changes, we need to
 ' recalculate internal size metrics, so it's advisable to set this UP FRONT before doing anything else.
-Friend Property Get DefaultItemHeight() As Single
+Friend Property Get DefaultItemHeight() As Long
     DefaultItemHeight = m_DefaultHeight
 End Property
 
-Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
+Friend Property Let DefaultItemHeight(ByVal newHeight As Long)
     If (m_DefaultHeight <> newHeight) Then
         m_DefaultHeight = newHeight
         
@@ -244,7 +216,8 @@ Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
         ' for *all* tree items.  This is stupid, and I'd prefer not to support it - so instead, just set
         ' the damn font size correctly *before* you add items!
         
-        'Calculate offset-per-level (in horizontal pixels) as a ratio of each list item's height
+        'While here, we also calculate offset-per-level (in horizontal pixels) as a ratio of each
+        ' item's height.
         m_OffsetPerLevel = m_DefaultHeight
         
     End If
@@ -254,15 +227,13 @@ Friend Function IsMouseInsideTreeView() As Boolean
     IsMouseInsideTreeView = m_MouseInsideList
 End Function
 
-'Retrieve a specified tree item - TODO pending how I actually use this class
+'Retrieve a specified tree item (this is currently unused in PD)
 Friend Function List(ByVal itemIndex As Long) As String
-    
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         List = m_Items(itemIndex).textEn
     Else
         List = vbNullString
     End If
-    
 End Function
 
 Friend Function ListCount() As Long
@@ -273,7 +244,8 @@ Friend Property Get ListIndex() As Long
     ListIndex = m_ListIndex
 End Property
 
-'TODO: see if this remains relevant
+'This function does not currently attempt to validate that the target index is actually visible.
+' If I someday decide to use this function in PD, that needs to be addressed!
 Friend Property Let ListIndex(ByVal newIndex As Long)
     
     If (newIndex < m_NumOfItems) And PDMain.IsProgramRunning() Then
@@ -284,7 +256,9 @@ Friend Property Let ListIndex(ByVal newIndex As Long)
             RaiseEvent Click
         
             'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
-            If MakeSureListIndexFitsOnscreen Then
+            m_ListIndex = ValidateIndexIsVisible(newIndex, True)
+            
+            If MakeSureListIndexFitsOnscreen() Then
                 RaiseEvent ScrollValueChanged
                 If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
             Else
@@ -299,7 +273,6 @@ Friend Property Let ListIndex(ByVal newIndex As Long)
     
 End Property
 
-'TODO: remove as necessary
 'As a convenience, this function lets the caller retrieve a given ListIndex by associated string contents.
 ' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one matching the input string.
 Friend Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
@@ -325,9 +298,10 @@ Friend Function ListIndexByString(ByRef srcString As String, Optional ByVal comp
     
 End Function
 
-'TODO: remove as necessary
 'As a convenience, this function lets the caller retrieve a given ListIndex by mouse position within the container.
-' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one from position (x, y).
+' (Various internal functions use this for mouse-hit behavior.)
+'
+'IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one from position (x, y).
 Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
     
     ListIndexByPosition = -1
@@ -340,10 +314,11 @@ Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
         End If
     End If
     
-    'Convert the y-position to an absolute value
+    'Convert the y-position to an absolute value (accounting for scroll)
     srcY = (srcY - m_ListRectF.Top) + m_ScrollValue
     
-    'Iterate the list until we reach the item where the click occurred
+    'Iterate the list until we reach the item where the click occurred.  Note that collapsed items
+    ' *must* be skipped!
     Dim i As Long
     For i = m_FirstRenderIndex To m_LastRenderIndex
         
@@ -376,7 +351,7 @@ Friend Sub NotifyParentRectF(ByRef srcListRectF As RectF)
 End Sub
 
 'Key events primarily affect the current .ListIndex property.  Unlike listviews, keys can also expand/contract
-' items which changes all rendering data, so a lot of this code triggers full-list redraws.
+' items which changes all rendering data, so a lot of this code triggers full-tree redraws.
 Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
     markEventHandled = False
@@ -386,8 +361,8 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     Dim newListIndex As Long
     newListIndex = m_ListIndex
     
-    'By default, this function will validate the new list index after any keypresses.  If a keypress
-    ' doesn't modify the listindex, it should set this to FALSE.
+    'By default, this function will validate the newly set list index after any keypresses.
+    ' (If a keypress doesn't modify the listindex, it should set this to FALSE.)
     Dim validateListIndex As Boolean
     validateListIndex = True
     
@@ -396,9 +371,11 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         Case VK_DOWN
             
             'Ctrl+Shift means scroll down *without* changing listindex
-            If (Shift And vbCtrlMask) = vbCtrlMask Then
+            If ((Shift And vbCtrlMask) = vbCtrlMask) Then
                 Me.ScrollValue = Me.ScrollValue + m_DefaultHeight
                 validateListIndex = False
+            
+            'No modifiers just means move to the next visible item
             Else
                 If (newListIndex < 0) Then
                     newListIndex = 0
@@ -407,9 +384,10 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
                 End If
             End If
             markEventHandled = True
-            
+        
+        'See comments for VK_DOWN; this is the same, just in the opposite direction
         Case VK_UP
-            If (Shift And vbCtrlMask) = vbCtrlMask Then
+            If ((Shift And vbCtrlMask) = vbCtrlMask) Then
                 Me.ScrollValue = Me.ScrollValue - m_DefaultHeight
                 validateListIndex = False
             Else
@@ -420,7 +398,8 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
                 End If
             End If
             markEventHandled = True
-            
+        
+        'Advance a page of list items
         Case VK_PAGEDOWN
             newListIndex = AdvanceListIndex(True, True)
             markEventHandled = True
@@ -428,7 +407,8 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         Case VK_PAGEUP
             newListIndex = AdvanceListIndex(False, True)
             markEventHandled = True
-            
+        
+        'Top, bottom of list
         Case VK_HOME
             newListIndex = ValidateIndexIsVisible(0, False)
             markEventHandled = True
@@ -437,6 +417,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             newListIndex = ValidateIndexIsVisible(m_NumOfItems - 1, True)
             markEventHandled = True
         
+        'Expand this node (if you can)
         Case VK_RIGHT
             If (m_ListIndex >= 0) Then
                 If m_Items(m_ListIndex).hasChildren Then
@@ -464,7 +445,8 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
             newListIndex = ValidateIndexIsVisible(newListIndex, True)
             markEventHandled = True
-        
+    
+        'Collapse the list (if you can)
         Case VK_LEFT
             If (m_ListIndex >= 0) Then
                 
@@ -481,12 +463,13 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
                 Else
                     newListIndex = JumpToNearestParent(m_ListIndex)
                 End If
+                
             End If
             
             newListIndex = ValidateIndexIsVisible(newListIndex, True)
             markEventHandled = True
         
-        '+/- expand/contract a treeview on Windows
+        '+/- expand/contract the current node
         Case VK_ADD, VK_OEM_PLUS
             If (m_ListIndex >= 0) Then
                 If (m_Items(m_ListIndex).hasChildren And m_Items(m_ListIndex).isCollapsed) Then
@@ -505,10 +488,14 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'The asterisk key (numpad) expands all expandable nodes beneath the current one
         Case VK_MULTIPLY
-            'TODO!
-        
+            
+            'For this operation, we want to iterate sequential nodes, and any node that lists this node
+            ' as an ancestor gets expanded.
+            ExpandAllChildrenOfNode m_ListIndex
+            
     End Select
     
+    'Any function that modifies the list index requires us to ensure the new listindex is visible on-screen.
     If validateListIndex Then
         
         If (m_NumOfItems = 0) Then
@@ -522,6 +509,67 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         
     End If
         
+End Sub
+
+'On numpad asterisk (multiply) keypresses, we need to expand all child nodes of the currently selected node.
+Private Sub ExpandAllChildrenOfNode(ByVal idxTarget As Long)
+    
+    'We will use a hash table for fast parent lookups
+    Dim cParents As pdVariantHash
+    Set cParents = New pdVariantHash
+    
+    'Add the target node to the hash table, then open it
+    cParents.AddItem m_Items(idxTarget).itemID, idxTarget
+    m_Items(idxTarget).isCollapsed = False
+    
+    'Now, iterate child nodes until we reach one that isn't part of this node's descendants tree.
+    Dim i As Long
+    For i = idxTarget + 1 To m_NumOfItems - 1
+        
+        'Start with direct children
+        If (m_Items(i).parentID = m_Items(idxTarget).itemID) Then
+            
+            'If this node has children, add this node to the "valid parent" hash table.
+            If m_Items(i).hasChildren Then
+                cParents.AddItem m_Items(i).itemID, i
+                m_Items(i).isCollapsed = False
+            
+            '/no Else required (if this node doesn't have children, it'll be expanded automatically).
+            End If
+        
+        'If this node *isn't* a child of the target node, it must be a grandchild (or great-grandchild, etc)
+        ' to be expanded; otherwise, we can stop iterating nodes.
+        Else
+            
+            Dim idxSearch As Long, idxNew As Variant
+            idxSearch = i
+            
+            Dim isGrandchild As Boolean: isGrandchild = False
+            Do While cParents.GetItemByKey(m_Items(idxSearch).parentID, idxNew)
+                
+                idxSearch = idxNew
+                If m_Items(idxSearch).parentID = m_Items(idxTarget).itemID Then
+                
+                    'This node is a descendant of the target node.  If it has children, add it to the
+                    ' "valid parents" collection and expand it.
+                    If m_Items(idxSearch).hasChildren Then
+                        cParents.AddItem m_Items(idxSearch).itemID, idxSearch
+                        m_Items(idxSearch).isCollapsed = False
+                    End If
+                    
+                    Exit Do
+                    
+                End If
+                
+            Loop
+            
+        End If
+        
+    Next i
+    
+    'After all that, redraw the tree
+    CalculateRenderMetrics
+    
 End Sub
 
 'Move the list index around in response to keyboard events.  Returns the new .ListIndex, if any.
@@ -594,13 +642,19 @@ End Function
 ' and this function will find the next-closest visible listindex possibility.
 Private Function ValidateIndexIsVisible(ByVal idxTarget As Long, ByVal directionDown As Boolean) As Long
     
-    Dim i As Long
+    'Do nothing for out-of-bound indices
+    If (idxTarget < 0) Or (idxTarget >= m_NumOfItems) Then
+        ValidateIndexIsVisible = idxTarget
+        Exit Function
+    End If
     
     'Before exiting, make sure our selected item is *not* collapsed.
     ' (This can happen if e.g. the user is on the last-visible item, and it's a collapsed parent item.)
-    If directionDown Then
+    If m_Items(idxTarget).isCollapsedThisRender Then
         
-        If m_Items(idxTarget).isCollapsedThisRender Then
+        Dim i As Long
+        
+        If directionDown Then
             
             'Retreat backwards until we find a non-collapsed item.
             For i = idxTarget To 0 Step -1
@@ -613,13 +667,9 @@ Private Function ValidateIndexIsVisible(ByVal idxTarget As Long, ByVal direction
                 idxTarget = i
             End If
             
-        End If
-    
-    '/directionUp
-    Else
+        '/directionUp
+        Else
         
-        If m_Items(idxTarget).isCollapsedThisRender Then
-            
             'Move forward until we find a non-collapsed item.
             For i = idxTarget To m_NumOfItems - 1
                 If (Not m_Items(i).isCollapsedThisRender) Then Exit For
@@ -632,22 +682,20 @@ Private Function ValidateIndexIsVisible(ByVal idxTarget As Long, ByVal direction
             End If
             
         End If
-        
+    
+    'end "item is collapsed"
     End If
     
     ValidateIndexIsVisible = idxTarget
     
 End Function
 
-'Not used at present?
 Friend Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
+    'Not used at present
 End Sub
 
 'Mouse events control a whole bunch of possible things: hover state, .ListIndex, scroll.  As such, their handling is
 ' fairly involved, despite this class not doing any actual UI rendering.
-'
-'TODO: does caller or this class handle expand/contract button hit detection?
 Friend Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If (Button And pdLeftButton) <> 0 Then
@@ -660,8 +708,11 @@ Friend Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift 
             ' area mean we need to expand/collapse this group instead).
             If m_Items(tmpListIndex).hasChildren Then
                 If PDMath.IsPointInRectF(x, (y - m_ListRectF.Top) + m_ScrollValue, m_Items(tmpListIndex).controlRect) Then
+                    
+                    'Expand this node, but importantly, do *not* attempt to bring the currently selected
+                    ' node on-screen (as the user may have scrolled elsewhere in the list, then expanded something).
                     ToggleCollapseStateByIndex tmpListIndex
-                    Me.ListIndex = ValidateIndexIsVisible(Me.ListIndex, True)
+                    
                 Else
                     Me.ListIndex = tmpListIndex
                 End If
@@ -812,7 +863,6 @@ Private Sub ToggleCollapseStateByIndex(ByVal idxTarget As Long, Optional ByVal o
     
 End Sub
 
-'TODO: make this function collapse/expand-state friendly
 'When a new ListIndex value is set, PD makes sure that item appears on-screen.
 ' This function will return TRUE if the current scroll value was changed to bring the item on-screen.
 Private Function MakeSureListIndexFitsOnscreen() As Boolean
@@ -970,10 +1020,6 @@ Friend Sub CalculateRenderMetrics()
     Dim curOffsetYincCollapse As Long
     curOffsetYincCollapse = 0
     
-    'Prior to requesting a redraw, determine the indices of the first and last items our owner needs to draw.
-    ' We'll cache these, so we don't have to calculate them again (until something changes, at least).
-    'Dim i As Long
-    
     'List of parents for the current node.  PD doesn't need this to go especially deep (only two levels at present).
     Const INIT_MAX_PARENTS As Long = 8
     Dim activeParents() As String, idxParent As Long
@@ -1108,7 +1154,6 @@ Friend Sub CalculateRenderMetrics()
             
             'This standalone item top value *does* include collapse state
             .itemTop = curOffsetYincCollapse
-            'curOffsetY = curOffsetY + m_DefaultHeight
             If (Not .isCollapsedThisRender) Then curOffsetYincCollapse = curOffsetYincCollapse + m_DefaultHeight
             
         End With

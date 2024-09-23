@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Owner-Drawn Treeview View control (e.g. the list part of a treeview, *not* including the scroll bar)
 'Copyright 2024-2024 by Tanner Helland
 'Created: 05/September/24
-'Last updated: 05/September/24
-'Last update: initial build, split off from PD's listview object(s)
+'Last updated: 23/September/24
+'Last update: wrap up keyboard support
 '
 'The list portion of a pdTreeviewOD (owner-drawn) object, with all drawing functionality provided as events
 ' that the parent control *must* respond to.  The list view manages all list data, and if no scroll bar is
@@ -391,7 +391,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
     
-    'TODO: more keys for expand/contract node
+    'Request any keys related to tree navigation
     ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_RIGHT, VK_LEFT, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE, VK_OEM_PLUS, VK_OEM_MINUS, VK_ADD, VK_SUBTRACT, VK_MULTIPLY
     
     'Prep the color manager and load default colors
@@ -531,16 +531,10 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             Dim curListIndex As Long, curColor As Long
             curListIndex = listSupport.ListIndex
             
-            Dim itemIsSelected As Boolean, itemIsHovered As Boolean, itemHasSeparator As Boolean
-            Dim lineY As Single
-            Dim tmpListItem As PD_TreeItem, tmpRect As RectF
+            Dim itemIsSelected As Boolean, itemIsHovered As Boolean
+            Dim tmpListItem As PD_TreeItem
             Dim scrollOffsetX As Long, scrollOffsetY As Long
             Dim srcCaptionRect As RectF, srcControlRect As RectF, srcItemRect As RectF
-            
-            'This control needs some space along the margins to render selection and focus changes.
-            ' Those size adjustments (which need to be applied to anything that touches the margins)
-            ' are stored here.
-            Dim marginAdjustments As RectF
             
             Dim i As Long
             For i = firstItemIndex To lastItemIndex
