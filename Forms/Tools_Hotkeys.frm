@@ -86,6 +86,7 @@ Private Type PD_HotkeyUI
     hk_NumParents As Long
     hk_KeyCode As Long
     hk_ShiftState As ShiftConstants
+    hk_HotkeyText As String
 End Type
 
 'Menu and hotkey information gets merged into this local array, which is much easier to manage
@@ -169,6 +170,7 @@ Private Sub Form_Load()
                 If cHotkeys.GetItemByKey(.hk_ActionID, idxHotkey) Then
                     .hk_KeyCode = m_Hotkeys(idxHotkey).hkKeyCode
                     .hk_ShiftState = m_Hotkeys(idxHotkey).hkShiftState
+                    .hk_HotkeyText = m_Menus(i).me_HotKeyTextTranslated
                 End If
                 
                 'Finally, if this is not a top-level menu, retrieve the ID of this menu's *parent* menu

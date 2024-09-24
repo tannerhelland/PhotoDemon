@@ -254,6 +254,10 @@ Private m_JustGotFocus As Boolean
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 Private m_HookID As Long
 
+'Our parent can query last key-code and scan-code values (from either key up or down)
+Private m_lastScanCodeDown As Long, m_lastKeyCodeDown As Long
+Private m_lastScanCodeUp As Long, m_lastKeyCodeUp As Long
+
 Friend Property Get BackColor() As Long
     BackColor = m_BackColor
 End Property
@@ -569,6 +573,18 @@ Friend Sub Move(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As L
     End If
 End Sub
 
+'INSIDE A KEY EVENT (the only place this is valid), you can call this function to retrieve
+' the unprocessed key code and scan code from the keyboardproc.
+Friend Sub GetLastKeyAndScanCode(ByRef dstKeyCode As Long, ByRef dstScanCode As Long, Optional ByVal useKeyDownValues As Boolean = True)
+    If useKeyDownValues Then
+        dstKeyCode = m_lastKeyCodeDown
+        dstScanCode = m_lastScanCodeDown
+    Else
+        dstKeyCode = m_lastKeyCodeUp
+        dstScanCode = m_lastScanCodeUp
+    End If
+End Sub
+
 'This function actually does two things: makes the edit box the foreground window, then assigns it keyboard focus.
 ' By design, all non-multiline edit boxes in PD select all their own text upon an initial click.
 Friend Sub SetFocusToEditBox(Optional ByVal selectTextToo As Boolean = False)
@@ -677,6 +693,17 @@ Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, By
     Dim tmpMsg As TagMSG
     If (PeekMessage(tmpMsg, hWnd, WM_CHAR, WM_CHAR, PM_NOREMOVE) <> 0) Then m_CharCache = tmpMsg.wParam
     HandleKeyDownUpMsgs = 0
+    
+    'Cache key and scan code(s)
+    If keyIsDown Then
+        m_lastKeyCodeDown = wParam
+        m_lastScanCodeDown = (lParam \ 65536) And &HFF&
+    Else
+        m_lastKeyCodeUp = wParam
+        m_lastScanCodeUp = (lParam \ 65536) And &HFF&
+    End If
+    'Private m_lastScanCodeDown As Long, m_lastKeyCodeDown As Long
+    'Private m_lastScanCodeUp As Long, m_lastKeyCodeUp As Long
     
     'Raise a corresponding keydown/up event; note that PD rarely uses these - instead, it preferentially uses
     ' KeyPress events.

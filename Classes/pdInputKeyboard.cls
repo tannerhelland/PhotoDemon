@@ -111,6 +111,10 @@ Private m_InHookNow As Boolean
 Private WithEvents m_HookReleaseTimer As pdTimer
 Attribute m_HookReleaseTimer.VB_VarHelpID = -1
 
+'Parents can query last-received keycode and scancode.  These are required to map between keys and chars,
+' as in the Tools > Keyboard shortcuts menu.
+Private m_lastScanCode As Long, m_lastKeyCode As Long
+
 Private Sub Class_Initialize()
     
     'Reset all input tracking variables
@@ -224,6 +228,13 @@ Friend Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
     End If
     
 End Function
+
+'INSIDE A KEY EVENT (the only place this is valid), you can call this function to retrieve
+' the unprocessed key code and scan code from the keyboardproc.
+Friend Sub GetLastKeyAndScanCode(ByRef dstKeyCode As Long, ByRef dstScanCode As Long)
+    dstKeyCode = m_lastKeyCode
+    dstScanCode = m_lastScanCode
+End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
 Friend Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
@@ -339,7 +350,15 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
     ' focus change notification for this, so we need to check it here)
     If (m_NumOfTrackedKeys > 0) Then
     If (Not Menus.IsMainMenuActive()) Then
-    
+        
+        'Cache last key-code and scan-code (parents can query us for this data)
+        m_lastKeyCode = wParam
+        
+        'From https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms644984(v=vs.85)
+        ' (re lParam bitfields):
+        ' 16-23: The scan code. The value depends on the OEM.
+        m_lastScanCode = (lParam \ 65536) And &HFF&
+        
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
         If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask

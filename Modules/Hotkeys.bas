@@ -26,9 +26,10 @@ Option Explicit
 ' will be blindly forwarded to the Actions.LaunchAction_ByName() function, so make sure the spelling
 ' (and case! always lowercase!) match the action as it is declared there.
 Public Type PD_Hotkey
-    hkKeyCode As Long
-    hkShiftState As ShiftConstants
-    hkAction As String
+    hkKeyCode As Long               'virtual key-code
+    hkScanCode As Long              'keyboard scan-code (only used for user-created hotkeys)
+    hkShiftState As ShiftConstants  'shift-key states
+    hkAction As String              'action triggered by this hotkey
 End Type
 
 'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using
@@ -54,12 +55,16 @@ End Enum
 Private Const HOTKEY_FILENAME As String = "HotkeysUser.xml"
 Private m_CommonMenuText() As String
 
+Private Declare Function GetKeyNameTextW Lib "user32" (ByVal lParam As Long, ByVal lpString As Long, ByVal cchSize As Long) As Long
+Private Declare Function MapVirtualKeyW Lib "user32" (ByVal uCode As Long, ByVal uMapType As Long) As Long
+Private Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Long, ByVal wScanCode As Long, ByVal ptrToKeyStateBuffer As Long, ByVal ptrToOutBufferW As Long, ByVal sizeOfOutBufferInWChars As Long, ByVal wFlags As Long) As Long
+
 'Add a new hotkey to the collection.  While the final parameter is marked as OPTIONAL, that's purely to
 ' allow the preceding constant (shift modifiers, which are often null) to be optional.  I plan to reorder
 ' parameters in the future to make it abundantly clear that the hotkey action is 100% MANDATORY lol.
 '
 'RETURNS: the ID (index) of the added hotkey
-Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString) As Long
+Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString, Optional ByVal kbScanCode As Long = 0) As Long
     
     'If this hotkey already exists in the collection, we will overwrite it with the new hotkey target.
     ' (This works well for overwriting PD's default hotkeys with new ones specified by the user.)
@@ -89,6 +94,7 @@ Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shi
     'Add the new entry (or overwrite the previous one, doesn't matter)
     With m_Hotkeys(idxHotkey)
         .hkKeyCode = vKeyCode
+        .hkScanCode = kbScanCode
         .hkShiftState = Shift
         .hkAction = hotKeyAction
     End With
@@ -115,6 +121,12 @@ End Function
 Public Function GetKeyCode(ByVal idxHotkey As Long) As KeyCodeConstants
     If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
         GetKeyCode = m_Hotkeys(idxHotkey).hkKeyCode
+    End If
+End Function
+
+Public Function GetScanCode(ByVal idxHotkey As Long) As Long
+    If (idxHotkey >= 0) And (idxHotkey < m_NumOfHotkeys) Then
+        GetScanCode = m_Hotkeys(idxHotkey).hkScanCode
     End If
 End Function
 
@@ -372,8 +384,8 @@ Public Function GetCopyOfAllHotkeys(ByRef dstHotkeys() As PD_Hotkey) As Long
     
 End Function
 
-'If a menu has a hotkey associated with it, you can use this function to update the language-specific text representation of the hotkey.
-' (This text is appended to the menu caption automatically.)
+'If a menu has a hotkey associated with it, you can use this function to update the language-specific
+' text representation of the hotkey. (This text is appended to the menu caption automatically.)
 Public Function GetHotkeyText(ByVal hkID As Long) As String
     
     'Validate ID (which is really just an index into the menu array)
@@ -390,54 +402,66 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
             ' string equivalent.  (Also, translations need to be considered.)
             Dim sChar As String
             
-            Select Case .hkKeyCode
+            Const USE_API_FOR_CHAR_TRANSLATION As Boolean = True
+            If USE_API_FOR_CHAR_TRANSLATION Then
+                If (.hkScanCode <> 0) Then
+                    'sChar = GetCharFromKeyCode(.hkKeyCode)
+                    'TODO!
+                Else
+                    sChar = GetCharFromKeyCode(.hkKeyCode)
+                End If
+            Else
+                
+                Select Case .hkKeyCode
+                
+                    Case vbKeyAdd, VK_OEM_PLUS
+                        sChar = "+"
+                    
+                    Case vbKeySubtract, VK_OEM_MINUS
+                        sChar = "-"
+                    
+                    Case vbKeyReturn
+                        sChar = g_Language.TranslateMessage("Enter")
+                    
+                    Case vbKeyPageUp
+                        sChar = g_Language.TranslateMessage("Page Up")
+                    
+                    Case vbKeyPageDown
+                        sChar = g_Language.TranslateMessage("Page Down")
+                        
+                    Case vbKeyF1 To vbKeyF16
+                        sChar = "F" & (.hkKeyCode - 111)
+                    
+                    'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
+                    ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+                    ' At the moment, however, they're implemented as magic numbers.
+                    Case VK_OEM_COMMA
+                        sChar = ","
+                        
+                    Case VK_OEM_PERIOD
+                        sChar = "."
+                    
+                    Case VK_OEM_1
+                        sChar = ";"
+                        
+                    Case VK_OEM_4
+                        sChar = "["
+                        
+                    Case VK_OEM_6
+                        sChar = "]"
+                        
+                    Case VK_OEM_7
+                        sChar = "'"
+                    
+                    'This is a stupid hack; APIs need to be used instead, although their results may be "unpredictable".
+                    ' See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
+                    Case Else
+                        sChar = UCase$(ChrW$(.hkKeyCode))
+                    
+                End Select
+                
+            End If
             
-                Case vbKeyAdd, VK_OEM_PLUS
-                    sChar = "+"
-                
-                Case vbKeySubtract, VK_OEM_MINUS
-                    sChar = "-"
-                
-                Case vbKeyReturn
-                    sChar = g_Language.TranslateMessage("Enter")
-                
-                Case vbKeyPageUp
-                    sChar = g_Language.TranslateMessage("Page Up")
-                
-                Case vbKeyPageDown
-                    sChar = g_Language.TranslateMessage("Page Down")
-                    
-                Case vbKeyF1 To vbKeyF16
-                    sChar = "F" & (.hkKeyCode - 111)
-                
-                'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
-                ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-                ' At the moment, however, they're implemented as magic numbers.
-                Case VK_OEM_COMMA
-                    sChar = ","
-                    
-                Case VK_OEM_PERIOD
-                    sChar = "."
-                
-                Case VK_OEM_1
-                    sChar = ";"
-                    
-                Case VK_OEM_4
-                    sChar = "["
-                    
-                Case VK_OEM_6
-                    sChar = "]"
-                    
-                Case VK_OEM_7
-                    sChar = "'"
-                
-                'This is a stupid hack; APIs need to be used instead, although their results may be "unpredictable".
-                ' See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
-                Case Else
-                    sChar = UCase$(ChrW$(.hkKeyCode))
-                
-            End Select
-        
         End With
         
         GetHotkeyText = GetHotkeyText & sChar
@@ -445,6 +469,53 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
     '/invalid hotkey ID
     Else
         GetHotkeyText = vbNullString
+    End If
+    
+End Function
+
+'Convert a key code (and optionally, scan code) to a UTF-8 string.
+'
+'TODO: similar function that uses scancode directly, from the keyboard, instead of reverse-engineering it from keycode
+Public Function GetCharFromKeyCode(ByVal srcKeyCode As Long) As String
+    
+    'Convert the keycode to a scancode
+    Dim retCode As Long, retCode2 As Long
+    Const MAPVK_VK_TO_VSC As Long = 0
+    retCode = MapVirtualKeyW(srcKeyCode, MAPVK_VK_TO_VSC)
+    
+    Dim finalScanCode As Long
+    finalScanCode = (retCode And &HFFFF&) * 65536
+    
+    'Use the scan code to pull an actual key name.  Note that we're gonna do this twice:
+    ' 1) as a non-extended key
+    ' 2) as an extended key
+    '
+    'If the two results differ, we will use the extended key name as it's generally more intuitive
+    ' (e.g. on my laptop, this returns "page down" instead of "num 3").  Note that an extended key
+    ' version is *not* guaranteed to exist for all keys, however - on my keyboard, function keys
+    ' return nothing for their "extended" version despite those being totally valid media keys.
+    '
+    'Testing this working theory across other locales remains TBD!
+    Dim keyName As String, keyNameExtended As String
+    keyName = String$(32, 0)
+    retCode = GetKeyNameTextW(finalScanCode, StrPtr(keyName), 33)
+    If (retCode > 0) Then keyName = Left$(keyName, retCode)
+    
+    'Final failsafe trim
+    keyName = Trim$(Strings.TrimNull(keyName))
+    
+    keyNameExtended = String$(32, 0)
+    retCode2 = GetKeyNameTextW(finalScanCode Or (2 ^ 24), StrPtr(keyNameExtended), 33)
+    If (retCode2 > 0) Then keyNameExtended = Left$(keyNameExtended, retCode2)
+    
+    'Final failsafe trim
+    keyNameExtended = Trim$(Strings.TrimNull(keyNameExtended))
+    
+    'Preferentially use the extended keycode version, *if it exists*
+    If (retCode2 > 0) And (LenB(keyNameExtended) > 0) Then
+        GetCharFromKeyCode = keyNameExtended
+    Else
+        GetCharFromKeyCode = keyName
     End If
     
 End Function
