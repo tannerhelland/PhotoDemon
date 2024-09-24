@@ -98,7 +98,7 @@ Private Const BLOCKHEIGHT As Long = 32
 
 'Two font objects; one for menus that are allowed to have hotkeys, and one for menus that are not
 ' (e.g. top-level menus or parent-only menus).
-Private m_FontAllowed As pdFont, m_FontDisallowed As pdFont
+Private m_FontAllowed As pdFont, m_FontDisallowed As pdFont, m_FontHotkey As pdFont
 
 'All rendering is suspended until the form is loaded
 Private m_RenderingOK As Boolean
@@ -210,6 +210,12 @@ Private Sub Form_Load()
     m_FontDisallowed.CreateFontObject
     m_FontDisallowed.SetTextAlignment vbLeftJustify
     
+    Set m_FontHotkey = New pdFont
+    m_FontHotkey.SetFontBold False
+    m_FontHotkey.SetFontSize 12
+    m_FontHotkey.CreateFontObject
+    m_FontHotkey.SetTextAlignment vbLeftJustify
+    
     'Apply custom themes
     Interface.ApplyThemeAndTranslations Me
     
@@ -270,14 +276,21 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     offsetX = tmpRectF.Left
     offsetY = tmpRectF.Top + Interface.FixDPI(1)
     
+    'Hotkeys get a fixed (at 96-dpi) 192 pixels to display their key combo.  If menu text overflows this boundary,
+    ' it will be truncated with ellipses.
+    Dim leftOffsetHotkey As Long
+    leftOffsetHotkey = tmpRectF.Left + tmpRectF.Width - (Interface.FixDPI(192))
+    
     'If this item has been selected, draw the background with the system's current selection color
     Dim curFont As pdFont
     If m_Items(itemIndex).hk_HasChildren Then Set curFont = m_FontDisallowed Else Set curFont = m_FontAllowed
     
     If itemIsSelected Then
         curFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+        m_FontHotkey.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
     Else
         curFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        m_FontHotkey.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
     End If
     
     'Prepare the rendering text
@@ -287,8 +300,18 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     'Render the text
     If (LenB(drawString) <> 0) Then
         curFont.AttachToDC bufferDC
-        curFont.FastRenderText offsetX, offsetY + Interface.FixDPI(4), drawString
+        curFont.FastRenderTextWithClipping offsetX, offsetY + Interface.FixDPI(4), leftOffsetHotkey - tmpRectF.Left, tmpRectF.Height, drawString, True, False, False
         curFont.ReleaseFromDC
+    End If
+    
+    'Next, solve for the on-screen size of the hotkey text
+    If (m_Items(itemIndex).hk_KeyCode <> 0) Then
+        
+        'Right-align the hotkey text in the drop-down area, with a little padding
+        m_FontHotkey.AttachToDC bufferDC
+        m_FontHotkey.FastRenderText leftOffsetHotkey, offsetY + Interface.FixDPI(4), m_Items(itemIndex).hk_HotkeyText
+        m_FontHotkey.ReleaseFromDC
+        
     End If
     
     'Still TODO:

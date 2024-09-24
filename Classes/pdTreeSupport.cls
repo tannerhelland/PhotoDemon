@@ -1148,7 +1148,7 @@ Friend Sub CalculateRenderMetrics()
             
             'Always add an extra offset in case we need to render a caret to the left
             .captionRect.Left = m_ListRectF.Left + m_OffsetPerLevel * (.numParents + 1)
-            .captionRect.Width = m_ListRectF.Width - .ItemRect.Left
+            .captionRect.Width = m_ListRectF.Width - .captionRect.Left
             .captionRect.Top = curOffsetYincCollapse
             .captionRect.Height = m_DefaultHeight - 1
             
