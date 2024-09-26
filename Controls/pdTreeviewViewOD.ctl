@@ -327,6 +327,11 @@ Public Function GetDefaultItemHeight() As Long
     GetDefaultItemHeight = listSupport.DefaultItemHeight
 End Function
 
+'If you need detailed access to underlying tree data, you can access the tree support object here
+Public Function AccessUnderlyingTreeSupport() As pdTreeSupport
+    Set AccessUnderlyingTreeSupport = listSupport
+End Function
+
 Public Function List(ByVal itemIndex As Long) As String
     List = listSupport.List(itemIndex)
 End Function

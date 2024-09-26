@@ -86,6 +86,9 @@ Public Event MouseOver(ByVal itemIndex As Long, ByRef itemTextEn As String)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'The hotkey editor needs to know when a scroll event occurs, because it must hide the hotkey edit box
+Public Event ScrollOccurred()
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since wrapped these into a single central support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -110,6 +113,9 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+'Temporary RectF used to pass the underlying list box's coordinates to callers
+Private m_tmpRectF As RectF
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_TreeviewOD
@@ -201,6 +207,21 @@ Public Sub SetScrollValue(ByVal newValue As Long)
         vScroll.Value = newValue
     End If
 End Sub
+
+'If you need detailed access to underlying tree data, you can access the tree support object here
+Public Function AccessUnderlyingTreeSupport() As pdTreeSupport
+    Set AccessUnderlyingTreeSupport = lbView.AccessUnderlyingTreeSupport()
+End Function
+
+Public Function GetListBoxRectFPtr() As Long
+    With m_tmpRectF
+        .Left = lbView.GetLeft
+        .Top = lbView.GetTop
+        .Width = lbView.GetWidth
+        .Height = lbView.GetHeight
+    End With
+    GetListBoxRectFPtr = VarPtr(m_tmpRectF)
+End Function
 
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long
@@ -348,6 +369,7 @@ End Sub
 
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     If (lbView.ScrollValue <> vScroll.Value) Then lbView.ScrollValue = vScroll.Value
+    RaiseEvent ScrollOccurred
 End Sub
 
 Private Sub UserControl_Initialize()

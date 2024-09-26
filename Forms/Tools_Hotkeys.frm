@@ -4,7 +4,7 @@ Begin VB.Form FormHotkeys
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Keyboard shortcuts"
-   ClientHeight    =   6045
+   ClientHeight    =   7470
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   11760
@@ -22,28 +22,39 @@ Begin VB.Form FormHotkeys
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   403
+   ScaleHeight     =   498
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   784
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdTreeviewOD tvMenus 
-      Height          =   5055
-      Left            =   120
-      TabIndex        =   1
-      Top             =   120
-      Width           =   10095
-      _ExtentX        =   17806
-      _ExtentY        =   8916
+   Begin PhotoDemon.pdTextBox txtHotkey 
+      Height          =   735
+      Left            =   9120
+      TabIndex        =   2
+      Top             =   2160
+      Visible         =   0   'False
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1296
+      FontSize        =   12
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   5310
+      Top             =   6735
       Width           =   11760
       _ExtentX        =   20743
       _ExtentY        =   1296
+   End
+   Begin PhotoDemon.pdTreeviewOD tvMenus 
+      Height          =   6495
+      Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   10095
+      _ExtentX        =   17806
+      _ExtentY        =   8916
    End
 End
 Attribute VB_Name = "FormHotkeys"
@@ -262,6 +273,47 @@ Private Function GetMenuParentPositionID(ByVal idxMenu As Long) As String
     
 End Function
 
+Private Sub tvMenus_Click()
+    
+    'Failsafe only
+    If (tvMenus.ListIndex < 0) Then
+        HideEditBox
+        Exit Sub
+    End If
+    
+    'Do not allow hotkeys on menu items with children
+    If (Not m_Items(tvMenus.ListIndex).hk_HasChildren) Then
+        
+        'To figure out where to position the text box, we need to query the underlying tree support object for details
+        Dim tmpTreeSupport As pdTreeSupport
+        Set tmpTreeSupport = tvMenus.AccessUnderlyingTreeSupport()
+        
+        '...including where its child treeview_view is positioned
+        Dim lbViewRectF As RectF
+        CopyMemoryStrict VarPtr(lbViewRectF), tvMenus.GetListBoxRectFPtr, LenB(lbViewRectF)
+        
+        '...and the selected treeview item itself
+        Dim tmpTreeItem As PD_TreeItem, tmpScrollX As Long, tmpScrollY As Long
+        tmpTreeSupport.GetRenderingItem tvMenus.ListIndex, tmpTreeItem, tmpScrollX, tmpScrollY
+        
+        'Use data from these to figure out where the edit box should go
+        Dim ebRectF As RectF
+        ebRectF.Left = (tvMenus.GetLeft + ebRectF.Left + tmpTreeItem.captionRect.Left + tmpTreeItem.captionRect.Width) - Interface.FixDPI(200)
+        ebRectF.Top = tvMenus.GetTop + ebRectF.Top + tmpTreeItem.captionRect.Top + Interface.FixDPI(3) - tmpScrollY
+        ebRectF.Width = Interface.FixDPI(192)
+        ebRectF.Height = tmpTreeItem.captionRect.Height - Interface.FixDPI(4)
+        
+        'Position it and fill it with the hotkey for the current tree item
+        Me.txtHotkey.Text = m_Items(tvMenus.ListIndex).hk_HotkeyText
+        Me.txtHotkey.SetPositionAndSize ebRectF.Left, ebRectF.Top, ebRectF.Width, ebRectF.Height
+        Me.txtHotkey.Visible = True
+        Me.txtHotkey.ZOrder 0
+        Me.txtHotkey.SetFocusToEditBox True
+        
+    End If
+    
+End Sub
+
 'Render an item into the treeview
 Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
     
@@ -316,5 +368,28 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
     'Still TODO:
     ' - figure out where to position hotkey text/input area
+    
+End Sub
+
+Private Sub tvMenus_ScrollOccurred()
+    HideEditBox
+End Sub
+
+Private Sub txtHotkey_LostFocusAPI()
+    If txtHotkey.Visible Then txtHotkey.Visible = False
+    'm_LayerNameEditMode = False
+End Sub
+
+'Hide the hotkey edit box (if visible) and optionally, commit any pending hotkey changes the user has entered
+Private Sub HideEditBox(Optional ByVal commitChangesFirst As Boolean = False)
+    
+    'Ignore if the edit box is already invisible (note also that this *skips* committing changes)
+    If (Not txtHotkey.Visible) Then Exit Sub
+    
+    If commitChangesFirst Then
+        'TODO
+    End If
+    
+    txtHotkey.Visible = False
     
 End Sub

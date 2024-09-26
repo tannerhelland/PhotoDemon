@@ -1226,6 +1226,11 @@ Friend Sub CalculateRenderMetrics()
         RaiseEvent ScrollMaxChanged
     End If
     
+    'If the selected item is now invisible, unselect it
+    If (Me.ListIndex >= 0) Then
+        If m_Items(Me.ListIndex).isCollapsedThisRender Then Me.ListIndex = -1
+    End If
+    
     'If automatic redraws are allowed, render everything now
     If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
     
