@@ -404,12 +404,12 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
             
             Const USE_API_FOR_CHAR_TRANSLATION As Boolean = True
             If USE_API_FOR_CHAR_TRANSLATION Then
-                If (.hkScanCode <> 0) Then
-                    'sChar = GetCharFromKeyCode(.hkKeyCode)
-                    'TODO!
-                Else
-                    sChar = GetCharFromKeyCode(.hkKeyCode)
-                End If
+                
+                'TODO: when loading from file, perhaps save key name *alongside* key code?  This would allow us to
+                ' use whatever name the user assigned in the hotkey dialog (which may not match the key name
+                ' pulled automatically by this function, due to extended key codes on most keyboards)
+                sChar = GetCharFromKeyCode(.hkKeyCode)
+                
             Else
                 
                 Select Case .hkKeyCode
@@ -474,52 +474,83 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
 End Function
 
 'Convert a key code (and optionally, scan code) to a UTF-8 string.
+' Automatically returns the extended key name, if one exists.  The caller can pass optional byref strings and bools
+' to retrieve detailed pass/fail success for either key name.
 '
-'TODO: similar function that uses scancode directly, from the keyboard, instead of reverse-engineering it from keycode
-Public Function GetCharFromKeyCode(ByVal srcKeyCode As Long) As String
+'TODO: similar function that uses scancode directly, from the keyboard, instead of reverse-engineering it from keycode?
+Public Function GetCharFromKeyCode(ByVal srcKeyCode As Long, Optional ByRef outKeyName As String, Optional ByRef outKeyNameExists As Boolean, Optional ByRef outKeyNameExtended As String, Optional ByRef outKeyNameExtendedExists As Boolean) As String
     
-    'Convert the keycode to a scancode
-    Dim retCode As Long, retCode2 As Long
-    Const MAPVK_VK_TO_VSC As Long = 0
-    retCode = MapVirtualKeyW(srcKeyCode, MAPVK_VK_TO_VSC)
+    Select Case srcKeyCode
+        
+        'Some unreadable chars have to be manually entered
+        Case 8
+            outKeyNameExists = True
+            outKeyName = g_Language.TranslateMessage("Backspace")
+        Case 9
+            outKeyNameExists = True
+            outKeyName = g_Language.TranslateMessage("Tab")
+        Case &H1B
+            outKeyNameExists = True
+            outKeyName = g_Language.TranslateMessage("Escape")
+        
+        'Other ones can be pulled from the keyboard driver
+        Case Else
+            
+            'Convert the keycode to a scancode
+            Dim retCode As Long, retCode2 As Long
+            Const MAPVK_VK_TO_VSC As Long = 0
+            retCode = MapVirtualKeyW(srcKeyCode, MAPVK_VK_TO_VSC)
+            
+            Dim finalScanCode As Long
+            finalScanCode = (retCode And &HFFFF&) * 65536
+            
+            'Use the scan code to pull an actual key name.  Note that we're gonna do this twice:
+            ' 1) as a non-extended key
+            ' 2) as an extended key
+            '
+            'If the two results differ, we will use the extended key name as it's generally more intuitive
+            ' (e.g. on my laptop, this returns "page down" instead of "num 3").  Note that an extended key
+            ' version is *not* guaranteed to exist for all keys, however - on my keyboard, function keys
+            ' return nothing for their "extended" version despite those being presented as media keys.
+            '
+            'Testing this working theory across other locales remains TBD!
+            outKeyNameExists = GetKeyName_Normal(finalScanCode, outKeyName)
+            outKeyNameExtendedExists = GetKeyName_Extended(finalScanCode, outKeyNameExtended)
+            
+    End Select
     
-    Dim finalScanCode As Long
-    finalScanCode = (retCode And &HFFFF&) * 65536
-    
-    'Use the scan code to pull an actual key name.  Note that we're gonna do this twice:
-    ' 1) as a non-extended key
-    ' 2) as an extended key
-    '
-    'If the two results differ, we will use the extended key name as it's generally more intuitive
-    ' (e.g. on my laptop, this returns "page down" instead of "num 3").  Note that an extended key
-    ' version is *not* guaranteed to exist for all keys, however - on my keyboard, function keys
-    ' return nothing for their "extended" version despite those being totally valid media keys.
-    '
-    'Testing this working theory across other locales remains TBD!
-    Dim keyName As String, keyNameExtended As String
-    keyName = String$(32, 0)
-    retCode = GetKeyNameTextW(finalScanCode, StrPtr(keyName), 33)
-    If (retCode > 0) Then keyName = Left$(keyName, retCode)
-    
-    'Final failsafe trim
-    keyName = Trim$(Strings.TrimNull(keyName))
-    
-    keyNameExtended = String$(32, 0)
-    retCode2 = GetKeyNameTextW(finalScanCode Or (2 ^ 24), StrPtr(keyNameExtended), 33)
-    If (retCode2 > 0) Then keyNameExtended = Left$(keyNameExtended, retCode2)
-    
-    'Final failsafe trim
-    keyNameExtended = Trim$(Strings.TrimNull(keyNameExtended))
-    
-    'Preferentially use the extended keycode version, *if it exists*
-    If (retCode2 > 0) And (LenB(keyNameExtended) > 0) Then
-        GetCharFromKeyCode = keyNameExtended
+    If outKeyNameExtendedExists Then
+        GetCharFromKeyCode = outKeyNameExtended
     Else
-        GetCharFromKeyCode = keyName
+        GetCharFromKeyCode = outKeyName
     End If
     
 End Function
 
+'Thin wrappers to GetKeyNameTextW
+Private Function GetKeyName_Normal(ByVal srcScanCode As Long, ByRef outKeyName As String) As Boolean
+    
+    Const NAME_BUFF_SIZE_IN_CHARS As Long = 32
+    outKeyName = String$(NAME_BUFF_SIZE_IN_CHARS, 0)
+    
+    Dim retCode As Long
+    retCode = GetKeyNameTextW(srcScanCode, StrPtr(outKeyName), NAME_BUFF_SIZE_IN_CHARS)   'Buffer length *includes* terminating null
+    GetKeyName_Normal = (retCode > 0)
+    If GetKeyName_Normal Then outKeyName = Trim$(Strings.TrimNull(Left$(outKeyName, retCode))) Else outKeyName = vbNullString
+    
+End Function
+
+Private Function GetKeyName_Extended(ByVal srcScanCode As Long, ByRef outKeyName As String) As Boolean
+    
+    Const NAME_BUFF_SIZE_IN_CHARS As Long = 32
+    outKeyName = String$(NAME_BUFF_SIZE_IN_CHARS, 0)
+    
+    Dim retCode As Long
+    retCode = GetKeyNameTextW(srcScanCode Or (2 ^ 24), StrPtr(outKeyName), NAME_BUFF_SIZE_IN_CHARS)  'Buffer length *includes* terminating null
+    GetKeyName_Extended = (retCode > 0)
+    If GetKeyName_Extended Then outKeyName = Trim$(Strings.TrimNull(Left$(outKeyName, retCode))) Else outKeyName = vbNullString
+
+End Function
 'Some hotkey-related text is accessed very frequently (e.g. "Ctrl"), so when a translation is active,
 ' we cache common translations locally instead of regenerating them over and over.
 Private Sub CacheCommonTranslations()

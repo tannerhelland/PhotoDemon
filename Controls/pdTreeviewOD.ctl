@@ -294,6 +294,10 @@ Public Function ListIndexByString(ByRef srcString As String, Optional ByVal comp
     ListIndexByString = lbView.ListIndexByString(srcString, compareMode)
 End Function
 
+Public Sub RequestListRedraw()
+    lbView.RequestListRedraw
+End Sub
+
 'In response to things like MouseOver events, the caller can request different cursors.
 ' (By default, list items are always treated as clickable - so they get a hand cursor.)
 Public Sub RequestCursor(Optional ByVal sysCursorID As SystemCursorConstant = IDC_HAND)

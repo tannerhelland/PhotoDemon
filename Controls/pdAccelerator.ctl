@@ -413,6 +413,10 @@ End Function
 
 Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Boolean
     
+    'Returning TRUE means we handled the keypress and do *not* want to forward it down the chain
+    HandleActualKeypress = False
+    If (Not Me.Enabled) Then Exit Function
+    
     'Translate modifier states (shift, control, alt/menu) to their masked VB equivalent
     Dim retShiftConstants As ShiftConstants
     If m_CtrlDown Then retShiftConstants = retShiftConstants Or vbCtrlMask
