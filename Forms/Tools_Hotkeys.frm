@@ -4,7 +4,7 @@ Begin VB.Form FormHotkeys
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Keyboard shortcuts"
-   ClientHeight    =   7470
+   ClientHeight    =   7695
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   11760
@@ -22,39 +22,63 @@ Begin VB.Form FormHotkeys
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   498
+   ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   784
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdCheckBox chkAutoCapture 
-      Height          =   375
-      Left            =   120
-      TabIndex        =   7
-      Top             =   5160
-      Width           =   11535
-      _ExtentX        =   20346
-      _ExtentY        =   661
-      Caption         =   "allow auto hotkey capture"
+   Begin PhotoDemon.pdButton cmdAll 
+      Height          =   615
+      Index           =   0
+      Left            =   6240
+      TabIndex        =   9
+      Top             =   4740
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1085
+      Caption         =   "reset all hotkeys"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
-      Left            =   120
-      Top             =   5640
-      Width           =   5775
-      _ExtentX        =   10186
+      Index           =   1
+      Left            =   6120
+      Top             =   4320
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   661
-      Caption         =   "key modifiers"
+      Caption         =   "all hotkeys"
       FontSize        =   12
+   End
+   Begin PhotoDemon.pdButton cmdThisHotkey 
+      Height          =   615
+      Index           =   0
+      Left            =   240
+      TabIndex        =   8
+      Top             =   6240
+      Width           =   2775
+      _ExtentX        =   4260
+      _ExtentY        =   1085
+      Caption         =   "reset to default"
+   End
+   Begin PhotoDemon.pdCheckBox chkAutoCapture 
+      Height          =   375
+      Left            =   240
+      TabIndex        =   7
+      Top             =   5760
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+      Caption         =   "try to capture automatically"
+      FontSize        =   11
    End
    Begin PhotoDemon.pdDropDown ddKey 
       Height          =   855
-      Left            =   6000
+      Left            =   120
       TabIndex        =   6
-      Top             =   5640
-      Width           =   5655
-      _ExtentX        =   9975
+      Top             =   4320
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   1508
-      Caption         =   "key"
+      Caption         =   "this hotkey"
       FontSize        =   11
    End
    Begin PhotoDemon.pdCheckBox chkModifier 
@@ -62,7 +86,7 @@ Begin VB.Form FormHotkeys
       Index           =   0
       Left            =   240
       TabIndex        =   3
-      Top             =   6120
+      Top             =   5280
       Width           =   1815
       _ExtentX        =   3201
       _ExtentY        =   661
@@ -86,27 +110,27 @@ Begin VB.Form FormHotkeys
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   6735
+      Top             =   6960
       Width           =   11760
       _ExtentX        =   20743
       _ExtentY        =   1296
       HideRandomizeButton=   -1  'True
    End
    Begin PhotoDemon.pdTreeviewOD tvMenus 
-      Height          =   4935
+      Height          =   3975
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   11535
       _ExtentX        =   20346
-      _ExtentY        =   9340
+      _ExtentY        =   7011
    End
    Begin PhotoDemon.pdCheckBox chkModifier 
       Height          =   375
       Index           =   1
       Left            =   2160
       TabIndex        =   4
-      Top             =   6120
+      Top             =   5280
       Width           =   1815
       _ExtentX        =   3201
       _ExtentY        =   661
@@ -119,13 +143,46 @@ Begin VB.Form FormHotkeys
       Index           =   2
       Left            =   4080
       TabIndex        =   5
-      Top             =   6120
+      Top             =   5280
       Width           =   1815
       _ExtentX        =   3201
       _ExtentY        =   661
       Caption         =   "Shift"
       FontSize        =   11
       Value           =   0   'False
+   End
+   Begin PhotoDemon.pdButton cmdThisHotkey 
+      Height          =   615
+      Index           =   1
+      Left            =   3120
+      TabIndex        =   10
+      Top             =   6240
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   1085
+      Caption         =   "delete"
+   End
+   Begin PhotoDemon.pdButton cmdAll 
+      Height          =   615
+      Index           =   1
+      Left            =   6240
+      TabIndex        =   11
+      Top             =   5490
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1085
+      Caption         =   "export hotkeys to file..."
+   End
+   Begin PhotoDemon.pdButton cmdAll 
+      Height          =   615
+      Index           =   2
+      Left            =   6240
+      TabIndex        =   12
+      Top             =   6240
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1085
+      Caption         =   "import hotkeys from file..."
    End
 End
 Attribute VB_Name = "FormHotkeys"
@@ -137,8 +194,8 @@ Attribute VB_Exposed = False
 'Customizable hotkeys dialog
 'Copyright 2024-2024 by Tanner Helland
 'Created: 09/September/24
-'Last updated: 09/September/24
-'Last update: initial build
+'Last updated: 10/October/24
+'Last update: import/export to file now working!
 '
 'This dialog allows the user to customize hotkeys.
 '
@@ -204,7 +261,7 @@ Private Type PD_PossibleHotkey
     ph_KeyComments As String    'Comments from MSDN; used for debugging only!
 End Type
 
-Private m_numPossibleHotkeys As Long, m_idxOtherHotkey As Long
+Private m_numPossibleHotkeys As Long, m_idxOtherHotkey As Long, m_idxNoneHotkey As Long, m_idxFinalHotkey As Long
 Private m_possibleHotkeys() As PD_PossibleHotkey
 
 'Last-edited hotkey
@@ -217,8 +274,6 @@ End Sub
 Private Sub UpdateHotkeyManually()
     
     If (Not m_inAutoUpdate) And (tvMenus.ListIndex >= 0) And (ddKey.ListIndex >= 0) Then
-        
-        Debug.Print "UpdateHotkeyManually", tvMenus.ListIndex
         
         m_inAutoUpdate = True
         
@@ -245,6 +300,239 @@ Private Sub UpdateHotkeyManually()
 
 End Sub
 
+Private Sub cmdAll_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'Reset all hotkeys
+        Case 0
+                
+            'TODO: prompt the user before erasing everything they've done!
+            
+            Dim i As Long
+            For i = 0 To m_numItems - 1
+                With m_Items(i)
+                    .hk_KeyCode = .hk_BackupKeyCode
+                    .hk_HotkeyText = .hk_BackupHotkeyText
+                    .hk_ShiftState = .hk_BackupShiftState
+                End With
+            Next i
+            
+            tvMenus.RequestListRedraw
+        
+        'Export hotkeys
+        Case 1
+            
+            'Disable user input until the dialog closes
+            Interface.DisableUserInput
+            
+            'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+            Dim initialSaveFolder As String
+            initialSaveFolder = Files.PathAddBackslash(UserPrefs.GetHotkeyPath())
+            
+            'Build a common dialog filter list
+            Dim cdFilter As String, cdFilterExtensions As String
+            cdFilter = g_Language.TranslateMessage("Hotkeys") & " (.xml)|*.xml"
+            cdFilterExtensions = "xml"
+            
+            Dim cdIndex As Long
+            cdIndex = 1
+            
+            'Suggest a file name.
+            Dim dstFilename As String
+            dstFilename = g_Language.TranslateMessage("Hotkeys")
+            dstFilename = initialSaveFolder & dstFilename
+            
+            Dim cdTitle As String
+            cdTitle = g_Language.TranslateMessage("Export hotkeys")
+            
+            'Display a common save dialog
+            Dim saveDialog As pdOpenSaveDialog
+            Set saveDialog = New pdOpenSaveDialog
+            If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter, cdIndex, initialSaveFolder, cdTitle, cdFilterExtensions, Me.hWnd) Then
+                
+                'Update preferences, then export to the user's requested file.
+                UserPrefs.SetHotkeyPath Files.FileGetPath(dstFilename)
+                ExportHotkeysToFile dstFilename
+                
+            End If
+            
+            'Re-enable UI
+            Interface.EnableUserInput
+            
+        'Import hotkeys
+        Case 2
+            
+            'Disable user input until the dialog closes
+            Interface.DisableUserInput
+            
+            'Determine an initial folder.
+            Dim initialFolder As String
+            initialFolder = UserPrefs.GetHotkeyPath()
+            
+            'Build a common dialog filter (only one format is supported for hotkey import/export right now)
+            cdFilter = g_Language.TranslateMessage("Hotkeys") & " (.xml)|*.xml"
+            cdIndex = 1
+            cdTitle = g_Language.TranslateMessage("Import hotkeys")
+            
+            'Prep a common dialog interface
+            Dim openDialog As pdOpenSaveDialog
+            Set openDialog = New pdOpenSaveDialog
+            
+            Dim srcFilename As String
+            If openDialog.GetOpenFileName(srcFilename, , True, False, cdFilter, cdIndex, initialFolder, cdTitle, "xml", Me.hWnd) Then
+                        
+                'Update preferences
+                UserPrefs.SetHotkeyPath Files.FileGetPath(srcFilename)
+                
+                'Import hotkeys.  Note that this will overwrite all existing hotkey choices (by design).
+                ImportHotkeysFromFile srcFilename
+            
+            End If
+            
+            'Re-enable UI, then redraw the treeview (as hotkeys will have changes)
+            Interface.EnableUserInput
+            tvMenus.RequestListRedraw
+            
+    End Select
+        
+End Sub
+
+'Load all hotkeys from an XML file.  This will erase all existing hotkey choices, by design.
+Private Sub ImportHotkeysFromFile(ByRef srcFile As String)
+    
+    Dim cXML As pdXML
+    Set cXML = New pdXML
+    If cXML.LoadXMLFile(srcFile) Then
+        If cXML.IsPDDataType("hotkeys") Then
+            
+            'Wipe all existing hotkey data
+            Dim i As Long
+            For i = 0 To m_numItems - 1
+                m_Items(i).hk_KeyCode = 0
+                m_Items(i).hk_ShiftState = 0
+                m_Items(i).hk_HotkeyText = vbNullString
+            Next i
+            
+            'Get a list of all "hotkey" entries from the XML file
+            Dim hotkeyTags() As Long
+            If cXML.FindAllTagLocations(hotkeyTags, "hotkey") Then
+            
+                On Error GoTo BadHotkey
+                
+                For i = LBound(hotkeyTags) To UBound(hotkeyTags)
+                    
+                    Dim hkActionID As String
+                    Const HOTKEY_CODE_ACTION As String = "action"
+                    hkActionID = cXML.GetUniqueTag_String(HOTKEY_CODE_ACTION, vbNullString, hotkeyTags(i))
+                    If (LenB(hkActionID) <> 0) Then
+                    
+                        'Find the matching action ID for this command
+                        Dim j As Long, matchFound As Boolean
+                        matchFound = False
+                        
+                        For j = 0 To m_numItems - 1
+                            If Strings.StringsEqual(m_Items(j).hk_ActionID, hkActionID, True) Then
+                                matchFound = True
+                                Exit For
+                            End If
+                        Next j
+                        
+                        If matchFound Then
+                            
+                            Dim idxTarget As Long
+                            idxTarget = j
+                            
+                            'Pull the shift state and keycode from this entry and store them in this hotkey
+                            Dim newShiftState As ShiftConstants
+                            newShiftState = 0
+                            
+                            Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
+                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_CTRL, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbCtrlMask
+                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_ALT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbAltMask
+                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_SHIFT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbShiftMask
+                            m_Items(idxTarget).hk_ShiftState = newShiftState
+                            
+                            Const HOTKEY_CODE_TAG As String = "key-id"
+                            m_Items(idxTarget).hk_KeyCode = cXML.GetUniqueTag_Long(HOTKEY_CODE_TAG, 0, hotkeyTags(i))
+                            
+                            'Finally, populate text for this key combo
+                            m_Items(idxTarget).hk_HotkeyText = GetHotkeyNameFromKeys(newShiftState, m_Items(idxTarget).hk_KeyCode)
+                            
+                        'Not sure what to do here... maybe an "other, non-menu" category someday?
+                        End If
+                        
+                    End If
+                    
+BadHotkey:
+                Next i
+                
+                On Error GoTo 0
+                
+            '/at least one hotkey found
+            End If
+            
+            'If the user previously selected an item in the treeview, update it now
+            If (tvMenus.ListIndex >= 0) Then
+                
+                m_backupHotkeyVKCode = m_Items(tvMenus.ListIndex).hk_KeyCode
+                m_backupHotkeyText = m_Items(tvMenus.ListIndex).hk_HotkeyText
+                m_backupHotkeyShift = m_Items(tvMenus.ListIndex).hk_ShiftState
+                
+                'Similarly, ensure the left-side manual edit controls are updated correctly.
+                m_inAutoUpdate = True
+                AutoTextKeyChange m_Items(tvMenus.ListIndex).hk_ShiftState, m_Items(tvMenus.ListIndex).hk_KeyCode
+                If Me.txtHotkey.Visible Then Me.txtHotkey.Text = m_Items(tvMenus.ListIndex).hk_HotkeyText
+                m_inAutoUpdate = False
+                
+            End If
+            
+        End If
+    End If
+    
+End Sub
+
+'Export the current hotkey collection to file
+Private Sub ExportHotkeysToFile(ByRef dstFile As String)
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    Dim cXML As pdXML
+    Set cXML = New pdXML
+    cXML.PrepareNewXML "hotkeys"
+    cXML.WriteBlankLine
+    
+    'Iterate all hotkeys, and write any with non-zero keycodes out to file
+    Dim i As Long
+    For i = 0 To m_numItems - 1
+        If (m_Items(i).hk_KeyCode <> 0) Then
+            
+            Const HOTKEY_TAG As String = "hotkey"
+            cXML.WriteTag HOTKEY_TAG, vbNullString, doNotCloseTag:=True
+            
+            Const HOTKEY_CODE_TAG As String = "key-id"
+            cXML.WriteTag HOTKEY_CODE_TAG, Trim$(Str$(m_Items(i).hk_KeyCode))
+            
+            Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
+            Const STR_ZERO As String = "0", STR_ONE As String = "1"
+            cXML.WriteTag HOTKEY_CODE_CTRL, IIf((m_Items(i).hk_ShiftState And vbCtrlMask) <> 0, STR_ONE, STR_ZERO)
+            cXML.WriteTag HOTKEY_CODE_ALT, IIf((m_Items(i).hk_ShiftState And vbAltMask) <> 0, STR_ONE, STR_ZERO)
+            cXML.WriteTag HOTKEY_CODE_SHIFT, IIf((m_Items(i).hk_ShiftState And vbShiftMask) <> 0, STR_ONE, STR_ZERO)
+            
+            Const HOTKEY_CODE_ACTION As String = "action"
+            cXML.WriteTag HOTKEY_CODE_ACTION, m_Items(i).hk_ActionID
+            
+            cXML.CloseTag HOTKEY_TAG
+            
+        End If
+    Next i
+    
+    'With all tags added, we can write the collection out to file
+    cXML.WriteBlankLine
+    cXML.WriteXMLToFile dstFile
+    
+End Sub
+
 Private Sub cmdBar_AddCustomPresetData()
     'TODO: save entire hotkey list - this would let the user swap between e.g. "GIMP" and "Photoshop" presets?
 End Sub
@@ -257,6 +545,41 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     'TODO
+End Sub
+
+Private Sub cmdThisHotkey_Click(Index As Integer)
+    
+    If (tvMenus.ListIndex >= 0) Then
+        
+        Select Case Index
+            
+            'Reset this hotkey
+            Case 0
+                With m_Items(tvMenus.ListIndex)
+                    .hk_KeyCode = .hk_BackupKeyCode
+                    m_backupHotkeyVKCode = .hk_KeyCode
+                    .hk_HotkeyText = .hk_BackupHotkeyText
+                    m_backupHotkeyText = .hk_HotkeyText
+                    .hk_ShiftState = .hk_BackupShiftState
+                    m_backupHotkeyShift = .hk_ShiftState
+                End With
+                
+            'Delete this hotkey
+            Case 1
+                With m_Items(tvMenus.ListIndex)
+                    .hk_KeyCode = 0
+                    .hk_HotkeyText = vbNullString
+                    .hk_ShiftState = 0
+                End With
+                m_backupHotkeyVKCode = 0
+                m_backupHotkeyText = vbNullString
+                m_backupHotkeyShift = 0
+        End Select
+        
+        tvMenus.RequestListRedraw
+    'Private m_backupHotkeyText As String, m_backupHotkeyShift As Long, m_backupHotkeyVKCode As Long
+    End If
+    
 End Sub
 
 Private Sub ddKey_Click()
@@ -298,7 +621,8 @@ Private Sub Form_Load()
     For i = 0 To m_NumOfMenus - 1
         
         'Ignore separators
-        If (m_Menus(i).me_Name <> "-") Then
+        Const ID_DASH As String = "-"
+        If (m_Menus(i).me_Name <> ID_DASH) Then
             
             With m_Items(m_numItems)
                 
@@ -439,7 +763,7 @@ Private Sub tvMenus_Click()
         chkModifier(0).Value = False
         chkModifier(1).Value = False
         chkModifier(2).Value = False
-        ddKey.ListIndex = m_idxOtherHotkey
+        ddKey.ListIndex = m_idxNoneHotkey
     End If
     
     chkModifier(0).Enabled = hotkeyEditingAllowed
@@ -459,7 +783,7 @@ Private Sub tvMenus_Click()
         chkModifier(2).Value = (curShiftState And vbShiftMask) = vbShiftMask
         
         Dim i As Long, keyFound As Boolean
-        For i = 0 To m_idxOtherHotkey - 1
+        For i = 0 To m_idxFinalHotkey - 1
             If (m_possibleHotkeys(i).ph_VKCode = curKeyCode) Then
                 keyFound = True
                 ddKey.ListIndex = i
@@ -467,7 +791,13 @@ Private Sub tvMenus_Click()
             End If
         Next i
         
-        If (Not keyFound) Then ddKey.ListIndex = m_idxOtherHotkey
+        If (Not keyFound) Then
+            If (curKeyCode <= 0) Then
+                ddKey.ListIndex = m_idxNoneHotkey
+            Else
+                ddKey.ListIndex = m_idxOtherHotkey
+            End If
+        End If
         
         'Automatic hotkey capture can be toggled by the user
         If Me.chkAutoCapture.Value Then
@@ -486,13 +816,13 @@ Private Sub tvMenus_Click()
             
             'Use data from these to figure out where the edit box should go
             Dim ebRectF As RectF
-            ebRectF.Left = (tvMenus.GetLeft + ebRectF.Left + tmpTreeItem.captionRect.Left + tmpTreeItem.captionRect.Width) - Interface.FixDPI(200)
-            ebRectF.Top = tvMenus.GetTop + ebRectF.Top + tmpTreeItem.captionRect.Top + Interface.FixDPI(3) - tmpScrollY
+            ebRectF.Left = (tvMenus.GetLeft + lbViewRectF.Left + tmpTreeItem.captionRect.Left + tmpTreeItem.captionRect.Width) - Interface.FixDPI(200)
+            ebRectF.Top = tvMenus.GetTop + lbViewRectF.Top + tmpTreeItem.captionRect.Top + Interface.FixDPI(3) - tmpScrollY
             ebRectF.Width = Interface.FixDPI(192)
             ebRectF.Height = tmpTreeItem.captionRect.Height - Interface.FixDPI(4)
             
             'Position it and fill it with the hotkey for the current tree item.
-            ' (Note that the backup hotkey text *must* be set first - see the edit box _Change event for details)
+            ' (Note that the backup hotkey text *must* be set first - see the edit box _Change event for details.)
             m_backupHotkeyText = m_Items(tvMenus.ListIndex).hk_HotkeyText
             Me.txtHotkey.Text = m_backupHotkeyText
             Me.txtHotkey.SetPositionAndSize ebRectF.Left, ebRectF.Top, ebRectF.Width, ebRectF.Height
@@ -574,6 +904,13 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
 End Sub
 
+Private Sub tvMenus_LostFocusAPI()
+    If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then
+        StoreUpdatedHotkey tvMenus.ListIndex
+        tvMenus.RequestListRedraw
+    End If
+End Sub
+
 Private Sub tvMenus_ScrollOccurred()
     HideEditBox
 End Sub
@@ -585,9 +922,6 @@ End Sub
 Private Sub txtHotkey_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     m_inAutoUpdate = True
-    
-    Dim newText As String
-    newText = vbNullString
     
     'Build a string for Ctrl/Alt/Shift, and ensure the checkboxes at the bottom reflect the current state
     m_backupHotkeyText = AutoTextKeyChange(Shift, vKey)
@@ -614,8 +948,15 @@ Private Sub txtHotkey_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, p
     
 End Sub
 
+Private Sub txtHotkey_LostFocusAPI()
+    If txtHotkey.Visible Then
+        If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then StoreUpdatedHotkey tvMenus.ListIndex
+        txtHotkey.Visible = False
+        tvMenus.RequestListRedraw
+    End If
+End Sub
+
 Private Sub StoreUpdatedHotkey(ByVal idxTarget As Long)
-    Debug.Print "storing updated hotkey for: " & m_Items(idxTarget).hk_ActionID
     With m_Items(idxTarget)
         .hk_KeyCode = m_backupHotkeyVKCode
         .hk_HotkeyText = m_backupHotkeyText
@@ -663,17 +1004,21 @@ Private Function AutoTextKeyChange(ByVal Shift As ShiftConstants, ByVal vKey As 
             End If
         Next i
         
-        If keyFound Then Me.ddKey.ListIndex = i Else Me.ddKey.ListIndex = m_idxOtherHotkey
+        If keyFound Then
+            Me.ddKey.ListIndex = i
+        Else
+            If (vKey > 0) Then
+                Me.ddKey.ListIndex = m_idxOtherHotkey
+            Else
+                Me.ddKey.ListIndex = m_idxNoneHotkey
+            End If
+        End If
         
     End If
     
     AutoTextKeyChange = newText
     
 End Function
-
-Private Sub txtHotkey_LostFocusAPI()
-    If txtHotkey.Visible Then txtHotkey.Visible = False
-End Sub
 
 'Hide the hotkey edit box (if visible) and optionally, commit any pending hotkey changes the user has entered
 Private Sub HideEditBox(Optional ByVal commitChangesFirst As Boolean = False)
@@ -887,15 +1232,20 @@ Private Sub GeneratePossibleHotkeys()
     AddPossibleHotkey &HFF, "(other)", "(other)"
     m_idxOtherHotkey = m_numPossibleHotkeys - 1
     
-    ReDim Preserve m_possibleHotkeys(0 To m_numPossibleHotkeys - 1) As PD_PossibleHotkey
+    '...and a "none" hotkey
+    AddPossibleHotkey 0, "(none)", "(none)"
+    m_idxNoneHotkey = m_numPossibleHotkeys - 1
+    
+    m_idxFinalHotkey = m_numPossibleHotkeys - 1
+    ReDim Preserve m_possibleHotkeys(0 To m_idxFinalHotkey) As PD_PossibleHotkey
     
     'Add all items to the on-screen dropdown
     For i = 0 To m_numPossibleHotkeys - 1
         ddKey.AddItem m_possibleHotkeys(i).ph_KeyName
     Next i
     
-    'Select the (other) entry
-    ddKey.ListIndex = m_idxOtherHotkey
+    'Select the (none) entry
+    ddKey.ListIndex = m_idxNoneHotkey
     
 End Sub
 
@@ -981,3 +1331,14 @@ Private Sub AddPossibleHotkey(ByVal vkCode As Long, Optional ByRef keyComments A
     End If
     
 End Sub
+
+Private Function GetHotkeyNameFromKeys(ByVal Shift As ShiftConstants, ByVal vKey As Long) As String
+    
+    Dim newText As String
+    If ((Shift And vbCtrlMask) <> 0) Then newText = newText & Hotkeys.GetGenericMenuText(cmt_Ctrl) & "+"
+    If ((Shift And vbAltMask) <> 0) Then newText = newText & Hotkeys.GetGenericMenuText(cmt_Alt) & "+"
+    If ((Shift And vbShiftMask) <> 0) Then newText = newText & Hotkeys.GetGenericMenuText(cmt_Shift) & "+"
+    
+    GetHotkeyNameFromKeys = newText & Hotkeys.GetCharFromKeyCode(vKey)
+    
+End Function

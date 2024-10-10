@@ -117,6 +117,11 @@ Private m_Colors As pdThemeColors
 'Temporary RectF used to pass the underlying list box's coordinates to callers
 Private m_tmpRectF As RectF
 
+'Tracks whether the control (any component) has focus.  This control contains child controls,
+' and we want to raise focus events only if *none of our children* have focus (or alternatively,
+' if *one of our children* gains focus).
+Private m_LastFocusState As Boolean
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_TreeviewOD
 End Function
@@ -260,6 +265,10 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus() Or lbView.HasFocus() Or vScroll.HasFocus()
+End Property
+
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     lbView.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
@@ -326,6 +335,14 @@ Private Sub lbView_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
     RaiseEvent DrawListEntry(bufferDC, itemIndex, itemID, itemIsSelected, itemIsHovered, ptrToItemRectF, ptrToCaptionRectF, ptrToControlRectF)
 End Sub
 
+Private Sub lbView_GotFocusAPI()
+    EvaluateFocusCount
+End Sub
+
+Private Sub lbView_LostFocusAPI()
+    EvaluateFocusCount
+End Sub
+
 Private Sub lbView_MouseLeave()
     RaiseEvent MouseLeave
 End Sub
@@ -369,6 +386,14 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
+End Sub
+
+Private Sub vScroll_GotFocusAPI()
+    EvaluateFocusCount
+End Sub
+
+Private Sub vScroll_LostFocusAPI()
+    EvaluateFocusCount
 End Sub
 
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
@@ -423,6 +448,20 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12
         .WriteProperty "ListItemHeight", lbView.ListItemHeight, 36
     End With
+End Sub
+
+'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
+' Got/LostFocusAPI events, which are important as an API text box is part of this control.
+Private Sub EvaluateFocusCount()
+
+    If (Not m_LastFocusState) And Me.HasFocus() Then
+        m_LastFocusState = True
+        RaiseEvent GotFocusAPI
+    ElseIf m_LastFocusState And (Not Me.HasFocus()) Then
+        m_LastFocusState = False
+        RaiseEvent LostFocusAPI
+    End If
+
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),

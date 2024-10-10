@@ -1275,10 +1275,6 @@ Private Sub ImportGradientFile()
     'Disable user input until the dialog closes
     Interface.DisableUserInput
     
-    'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
-    Dim initialFolder As String
-    initialFolder = UserPrefs.GetGradientPath()
-    
     'Build a common dialog filter list
     Dim cdFilter As pdString
     Set cdFilter = New pdString
@@ -1375,7 +1371,7 @@ Private Sub ExportGradientFile()
     'Display a common save dialog
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
-    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath(), cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, initialSaveFolder, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
     
         'Update preferences
         UserPrefs.SetGradientPath Files.FileGetPath(dstFilename)

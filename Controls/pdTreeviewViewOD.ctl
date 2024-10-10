@@ -313,6 +313,10 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     If newVisibility Then listSupport.SetAutomaticRedraws True, True
 End Sub
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus()
+End Property
+
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
 ' raise redraw requests as relevant.
 Public Sub AddItem(ByRef srcItemID As String, ByRef srcItemText As String, Optional ByRef parentID As String = vbNullString, Optional ByVal initialCollapsedState As Boolean = False)
@@ -386,7 +390,7 @@ Public Property Let ScrollValue(ByRef newValue As Long)
 End Property
 
 Public Sub RequestListRedraw()
-    RedrawBackBuffer
+    RedrawBackBuffer True
 End Sub
 
 Private Sub UserControl_Initialize()
