@@ -557,6 +557,8 @@ Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As PD_PluginCore) As 
             IsPluginUnavailableOnXP = True
         Case CCP_libjxl
             IsPluginUnavailableOnXP = True
+        Case CCP_pdfium
+            IsPluginUnavailableOnXP = True
         Case CCP_resvg
             IsPluginUnavailableOnXP = True
     End Select
