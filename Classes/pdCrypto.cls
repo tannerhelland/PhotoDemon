@@ -130,12 +130,13 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal dstStr
                 'Translate the first (strLength) bytes into a human-readable string, then return it.
                 ' (Thank you to vbForums user "dilettante" for this translation technique.)
                 QuickHashString = String$(dstStrLength, "0")
-                
                 For i = 0 To (dstStrLength \ 2) - 1
-                    If (hashBytes(i) < &H10) Then
-                        Mid$(QuickHashString, i * 2 + 2, 1) = Hex$(hashBytes(i))
+                    Dim idxCheck As Long
+                    If (i < hashLength) Then idxCheck = i Else idxCheck = i Mod hashLength
+                    If (hashBytes(idxCheck) < &H10) Then
+                        Mid$(QuickHashString, i * 2 + 2, 1) = Hex$(hashBytes(idxCheck))
                     Else
-                        Mid$(QuickHashString, i * 2 + 1, 2) = Hex$(hashBytes(i))
+                        Mid$(QuickHashString, i * 2 + 1, 2) = Hex$(hashBytes(idxCheck))
                     End If
                 Next i
                 
@@ -168,10 +169,12 @@ Friend Function QuickHash_AsString(ByVal ptrData As Long, ByVal dataLen As Long,
             
             Dim i As Long
             For i = 0 To (strLength \ 2) - 1
-                If (hashBytes(i) < &H10) Then
-                    Mid$(QuickHash_AsString, i * 2 + 2, 1) = Hex$(hashBytes(i))
+                Dim idxCheck As Long
+                If (i < hashLength) Then idxCheck = i Else idxCheck = i Mod hashLength
+                If (hashBytes(idxCheck) < &H10) Then
+                    Mid$(QuickHash_AsString, i * 2 + 2, 1) = Hex$(hashBytes(idxCheck))
                 Else
-                    Mid$(QuickHash_AsString, i * 2 + 1, 2) = Hex$(hashBytes(i))
+                    Mid$(QuickHash_AsString, i * 2 + 1, 2) = Hex$(hashBytes(idxCheck))
                 End If
             Next i
             
