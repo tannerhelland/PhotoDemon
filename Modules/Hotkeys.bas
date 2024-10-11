@@ -156,6 +156,12 @@ Public Function GetHotkeyIndex(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
 
 End Function
 
+'Return the current name of the file where custom hotkeys - if they exist - reside.
+Public Function GetNameOfHotkeyFile() As String
+    Const PERSISTENT_HOTKEY_FILENAME As String = "Current"
+    GetNameOfHotkeyFile = UserPrefs.GetHotkeyPath() & PERSISTENT_HOTKEY_FILENAME & ".xml"
+End Function
+
 'Initialize a default set of program hotkeys.  For the most part, these attempt to mimic hotkey
 ' "conventions" in popular photo editors (with a strong emphasis on Photoshop).  Order does not
 ' matter when adding hotkeys.  Duplicate hotkeys are also okay; the second instance will simply
@@ -373,16 +379,30 @@ End Sub
 ' to exactly match the number of hotkeys returned.
 Public Function GetCopyOfAllHotkeys(ByRef dstHotkeys() As PD_Hotkey) As Long
     
-    ReDim dstHotkeys(0 To m_NumOfHotkeys - 1) As PD_Hotkey
-    
-    Dim i As Long
-    For i = 0 To m_NumOfHotkeys - 1
-        dstHotkeys(i) = m_Hotkeys(i)
-    Next i
+    If (m_NumOfHotkeys > 0) Then
+        
+        ReDim dstHotkeys(0 To m_NumOfHotkeys - 1) As PD_Hotkey
+        
+        Dim i As Long
+        For i = 0 To m_NumOfHotkeys - 1
+            dstHotkeys(i) = m_Hotkeys(i)
+        Next i
+        
+    End If
     
     GetCopyOfAllHotkeys = m_NumOfHotkeys
     
 End Function
+
+'Erase all current hotkeys.  (Please update the hotkey collection with new hotkeys afterward!)
+Public Sub EraseHotkeyCollection()
+    m_NumOfHotkeys = 0
+    ReDim m_Hotkeys(0 To INITIAL_HOTKEY_LIST_SIZE - 1) As PD_Hotkey
+End Sub
+
+Public Sub StartBulkHotkeyUpdate()
+
+End Sub
 
 'If a menu has a hotkey associated with it, you can use this function to update the language-specific
 ' text representation of the hotkey. (This text is appended to the menu caption automatically.)
@@ -404,10 +424,6 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
             
             Const USE_API_FOR_CHAR_TRANSLATION As Boolean = True
             If USE_API_FOR_CHAR_TRANSLATION Then
-                
-                'TODO: when loading from file, perhaps save key name *alongside* key code?  This would allow us to
-                ' use whatever name the user assigned in the hotkey dialog (which may not match the key name
-                ' pulled automatically by this function, due to extended key codes on most keyboards)
                 sChar = GetCharFromKeyCode(.hkKeyCode)
                 
             Else
@@ -551,6 +567,7 @@ Private Function GetKeyName_Extended(ByVal srcScanCode As Long, ByRef outKeyName
     If GetKeyName_Extended Then outKeyName = Trim$(Strings.TrimNull(Left$(outKeyName, retCode))) Else outKeyName = vbNullString
 
 End Function
+
 'Some hotkey-related text is accessed very frequently (e.g. "Ctrl"), so when a translation is active,
 ' we cache common translations locally instead of regenerating them over and over.
 Private Sub CacheCommonTranslations()

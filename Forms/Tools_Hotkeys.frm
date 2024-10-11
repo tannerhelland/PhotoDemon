@@ -539,7 +539,31 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     
-    'TODO
+    'TODO: validate that something has changed?
+    
+    'Start by writing the current collection out to file.
+    Dim dstFile As String
+    dstFile = Hotkeys.GetNameOfHotkeyFile()
+    ExportHotkeysToFile dstFile
+    
+    'We now need to notify some outside entities that hotkeys have changed.
+    
+    'Notify both the hotkey manager and the menu manager that hotkeys are changing
+    Hotkeys.EraseHotkeyCollection
+    Menus.NotifyHotkeysChanged
+    
+    'Now, iterate hotkeys and add them to both places simultaneously
+    Dim i As Long, numHotkeysFound As Long
+    For i = 0 To m_numItems - 1
+        If (m_Items(i).hk_KeyCode <> 0) Then
+            Hotkeys.AddHotkey m_Items(i).hk_KeyCode, m_Items(i).hk_ShiftState, m_Items(i).hk_ActionID
+            Menus.NotifyMenuHotkey m_Items(i).hk_ActionID, numHotkeysFound
+            numHotkeysFound = numHotkeysFound + 1
+        End If
+    Next i
+    
+    'Menus now need to be redrawn with new text
+    Menus.UpdateAgainstCurrentTheme True
     
 End Sub
 

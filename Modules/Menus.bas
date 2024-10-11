@@ -1561,6 +1561,16 @@ Public Sub NotifyMenuHotkey(ByRef actionID As String, Optional ByVal hkID As Lon
 
 End Sub
 
+'After the user edits hotkeys, this class needs to be notified so it can erase existing hotkey data.
+' (After calling this function, you obviously need to manually update hotkey data to match!)
+Public Sub NotifyHotkeysChanged()
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+        m_Menus(i).me_HotKeyID = -1
+        m_Menus(i).me_HotKeyTextTranslated = vbNullString
+    Next i
+End Sub
+
 'This function is part of an incredibly unpleasant workaround for ensuring that menu navigation
 ' still works.  When a hotkey like Alt+F is used to send focus to PD's main menu, the active window
 ' does not actually receive a WM_KILLFOCUS or WM_ACTIVATE (with relevant flags) message, so it will
