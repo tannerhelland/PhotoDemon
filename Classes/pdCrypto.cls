@@ -108,15 +108,20 @@ Private m_CryptoProviderHandle As Long, m_CryptoProviderID As PD_CRYPT_PROVIDERS
 Private m_HashHandle As Long
 
 'PD's default string hash function.  PD uses hashed strings for a lot of random things - session IDs, temp files, etc.
-' By default, the first 16 characters of an SHA-256 hash is used for these purposes.
-Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLength As Long = 16) As String
+' By default, the first 16 characters of the hash is used for these purposes.
+'
+'(NOTE: this function is not guaranteed to return identical results between sessions, so do not use it for
+' anything persistent.)
+'
+'(NOTE: using default settings, do not ask for a length > 16 as MD5 is used.)
+Friend Function QuickHashString(ByRef srcString As String, Optional ByVal dstStrLength As Long = 16) As String
     
     If (LenB(srcString) <> 0) Then
     
         Dim i As Long
         
         'Perform a quick hash of the input string
-        If QuickHash(PDCA_SHA_256, StrPtr(srcString), LenB(srcString)) Then
+        If QuickHash(PDCA_MD5, StrPtr(srcString), LenB(srcString)) Then
         
             'Retrieve the hashed data
             Dim hashBytes() As Byte, hashLength As Long
@@ -124,9 +129,9 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLen
             
                 'Translate the first (strLength) bytes into a human-readable string, then return it.
                 ' (Thank you to vbForums user "dilettante" for this translation technique.)
-                QuickHashString = String$(strLength, "0")
+                QuickHashString = String$(dstStrLength, "0")
                 
-                For i = 0 To (strLength \ 2) - 1
+                For i = 0 To (dstStrLength \ 2) - 1
                     If (hashBytes(i) < &H10) Then
                         Mid$(QuickHashString, i * 2 + 2, 1) = Hex$(hashBytes(i))
                     Else
@@ -147,8 +152,8 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLen
 End Function
 
 'Same as QuickHashString(), above, but operates on arbitrary binary data.  The first (n) chars of the result are
-' returned as a hex string.
-Friend Function QuickHash_AsString(ByVal ptrData As Long, ByVal dataLen As Long, Optional ByVal strLength As Long = 16, Optional ByVal cryptoMethod As PD_CRYPT_ALGOS = PDCA_SHA_256) As String
+' returned as a hex string.  (Using default settings, do not ask for a length > 16.)
+Friend Function QuickHash_AsString(ByVal ptrData As Long, ByVal dataLen As Long, Optional ByVal strLength As Long = 16, Optional ByVal cryptoMethod As PD_CRYPT_ALGOS = PDCA_MD5) As String
     
     'Perform a quick hash of the input string
     If QuickHash(cryptoMethod, ptrData, dataLen) Then

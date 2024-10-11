@@ -295,7 +295,7 @@ Friend Function GetUniqueID() As String
         Dim tmpString As String
         tmpString = OS.GetArbitraryGUID()
         m_uniqueHash = cCrypto.QuickHashString(tmpString, Len(tmpString))
-        If (Len(m_uniqueHash) > 12) Then m_uniqueHash = Left$(m_uniqueHash, 12)
+        If (Len(m_uniqueHash) > 16) Then m_uniqueHash = Left$(m_uniqueHash, 16)
     End If
     
     GetUniqueID = m_uniqueHash

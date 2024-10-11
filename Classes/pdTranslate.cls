@@ -504,7 +504,7 @@ Private Function GetLangFileChecksum(ByRef srcFile As String) As String
     strHashSource = srcFile & "|" & CStr(Files.FileLenW(srcFile)) & "|" & CStr(Files.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
     
     'A dedicated crypto class handles the actual hashing
-    GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource, 64)
+    GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource)
     
 End Function
 

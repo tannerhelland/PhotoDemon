@@ -1171,7 +1171,7 @@ Public Function UniqueSessionID() As String
         Dim tmpString As String
         tmpString = GetArbitraryGUID()
         m_SessionID = cCrypto.QuickHashString(tmpString, Len(tmpString))
-        If (Len(m_SessionID) > 12) Then m_SessionID = Left$(m_SessionID, 12)
+        If (Len(m_SessionID) > 16) Then m_SessionID = Left$(m_SessionID, 16)
     End If
     
     UniqueSessionID = m_SessionID
