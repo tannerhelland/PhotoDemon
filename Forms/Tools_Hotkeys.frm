@@ -553,12 +553,11 @@ Private Sub cmdBar_OKClick()
     Menus.NotifyHotkeysChanged
     
     'Now, iterate hotkeys and add them to both places simultaneously
-    Dim i As Long, numHotkeysFound As Long
+    Dim i As Long, idxAdded As Long
     For i = 0 To m_numItems - 1
         If (m_Items(i).hk_KeyCode <> 0) Then
-            Hotkeys.AddHotkey m_Items(i).hk_KeyCode, m_Items(i).hk_ShiftState, m_Items(i).hk_ActionID
-            Menus.NotifyMenuHotkey m_Items(i).hk_ActionID, numHotkeysFound
-            numHotkeysFound = numHotkeysFound + 1
+            idxAdded = Hotkeys.AddHotkey(m_Items(i).hk_KeyCode, m_Items(i).hk_ShiftState, m_Items(i).hk_ActionID)
+            Menus.NotifyMenuHotkey m_Items(i).hk_ActionID, idxAdded
         End If
     Next i
     
