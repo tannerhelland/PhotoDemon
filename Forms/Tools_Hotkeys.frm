@@ -32,10 +32,10 @@ Begin VB.Form FormHotkeys
       Left            =   6240
       TabIndex        =   9
       Top             =   4740
-      Width           =   5415
+      Width           =   2655
       _ExtentX        =   9551
       _ExtentY        =   1085
-      Caption         =   "reset all hotkeys"
+      Caption         =   "undo all changes"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
@@ -54,10 +54,10 @@ Begin VB.Form FormHotkeys
       Left            =   240
       TabIndex        =   8
       Top             =   6240
-      Width           =   2775
-      _ExtentX        =   4260
+      Width           =   1815
+      _ExtentX        =   3413
       _ExtentY        =   1085
-      Caption         =   "reset to default"
+      Caption         =   "undo changes"
    End
    Begin PhotoDemon.pdCheckBox chkAutoCapture 
       Height          =   375
@@ -154,35 +154,68 @@ Begin VB.Form FormHotkeys
    Begin PhotoDemon.pdButton cmdThisHotkey 
       Height          =   615
       Index           =   1
-      Left            =   3120
+      Left            =   2160
       TabIndex        =   10
       Top             =   6240
-      Width           =   2775
+      Width           =   1815
       _ExtentX        =   4895
       _ExtentY        =   1085
-      Caption         =   "delete"
+      Caption         =   "restore default"
    End
    Begin PhotoDemon.pdButton cmdAll 
       Height          =   615
-      Index           =   1
-      Left            =   6240
+      Index           =   3
+      Left            =   9000
       TabIndex        =   11
       Top             =   5490
-      Width           =   5415
-      _ExtentX        =   9551
+      Width           =   2655
+      _ExtentX        =   4683
       _ExtentY        =   1085
-      Caption         =   "export hotkeys to file..."
+      Caption         =   "export to file..."
    End
    Begin PhotoDemon.pdButton cmdAll 
       Height          =   615
       Index           =   2
       Left            =   6240
       TabIndex        =   12
+      Top             =   5490
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   1085
+      Caption         =   "import from file..."
+   End
+   Begin PhotoDemon.pdButton cmdThisHotkey 
+      Height          =   615
+      Index           =   2
+      Left            =   4080
+      TabIndex        =   13
+      Top             =   6240
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   1085
+      Caption         =   "delete"
+   End
+   Begin PhotoDemon.pdButton cmdAll 
+      Height          =   615
+      Index           =   1
+      Left            =   9000
+      TabIndex        =   14
+      Top             =   4740
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   1085
+      Caption         =   "restore all defaults"
+   End
+   Begin PhotoDemon.pdButton cmdAll 
+      Height          =   615
+      Index           =   4
+      Left            =   6240
+      TabIndex        =   15
       Top             =   6240
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1085
-      Caption         =   "import hotkeys from file..."
+      Caption         =   "generate summary..."
    End
 End
 Attribute VB_Name = "FormHotkeys"
@@ -210,7 +243,7 @@ Option Explicit
 Private m_Menus() As PD_MenuEntry, m_NumOfMenus As Long
 Private m_Hotkeys() As PD_Hotkey, m_NumOfHotkeys As Long
 
-'To simplify lookup of menus (required for pairing children IDs against parent IDs),
+'To simplify lookup of menus by caption (required for pairing children IDs against parent IDs),
 ' we use a hash table.
 Private m_MenuHash As pdVariantHash
 
@@ -232,6 +265,12 @@ Private Type PD_HotkeyUI
     hk_BackupKeyCode As Long
     hk_BackupShiftState As Long
     hk_BackupHotkeyText As String
+    
+    'Similarly, these contain PD's *default* hotkeys for this item.  This may or may not correlate to the "backup" hotkey
+    ' (which stores the hotkey when the dialog was loaded, which is the *user's* hotkey).
+    hk_DefaultKeyCode As Long
+    hk_DefaultShiftState As Long
+    hk_DefaultHotkeyText As String
     
 End Type
 
@@ -266,6 +305,9 @@ Private m_possibleHotkeys() As PD_PossibleHotkey
 
 'Last-edited hotkey
 Private m_idxLastHotkey As Long
+
+'Fast correlation from action ID to item index
+Private m_ActionHash As pdVariantHash
 
 Private Sub chkModifier_Click(Index As Integer)
     UpdateHotkeyManually
@@ -302,14 +344,14 @@ End Sub
 
 Private Sub cmdAll_Click(Index As Integer)
     
+    Dim i As Long
+    
     Select Case Index
         
-        'Reset all hotkeys
+        'Undo all hotkey changes (this session)
         Case 0
                 
             'TODO: prompt the user before erasing everything they've done!
-            
-            Dim i As Long
             For i = 0 To m_numItems - 1
                 With m_Items(i)
                     .hk_KeyCode = .hk_BackupKeyCode
@@ -320,46 +362,20 @@ Private Sub cmdAll_Click(Index As Integer)
             
             tvMenus.RequestListRedraw
         
-        'Export hotkeys
+        'Restore all hotkey defaults
         Case 1
             
-            'Disable user input until the dialog closes
-            Interface.DisableUserInput
+            'TODO: prompt the user before erasing everything they've done!
+            For i = 0 To m_numItems - 1
+                With m_Items(i)
+                    .hk_KeyCode = .hk_DefaultKeyCode
+                    .hk_HotkeyText = .hk_DefaultHotkeyText
+                    .hk_ShiftState = .hk_DefaultShiftState
+                End With
+            Next i
             
-            'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
-            Dim initialSaveFolder As String
-            initialSaveFolder = Files.PathAddBackslash(UserPrefs.GetHotkeyPath())
-            
-            'Build a common dialog filter list
-            Dim cdFilter As String, cdFilterExtensions As String
-            cdFilter = g_Language.TranslateMessage("Hotkeys") & " (.xml)|*.xml"
-            cdFilterExtensions = "xml"
-            
-            Dim cdIndex As Long
-            cdIndex = 1
-            
-            'Suggest a file name.
-            Dim dstFilename As String
-            dstFilename = g_Language.TranslateMessage("Hotkeys")
-            dstFilename = initialSaveFolder & dstFilename
-            
-            Dim cdTitle As String
-            cdTitle = g_Language.TranslateMessage("Export hotkeys")
-            
-            'Display a common save dialog
-            Dim saveDialog As pdOpenSaveDialog
-            Set saveDialog = New pdOpenSaveDialog
-            If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter, cdIndex, initialSaveFolder, cdTitle, cdFilterExtensions, Me.hWnd) Then
-                
-                'Update preferences, then export to the user's requested file.
-                UserPrefs.SetHotkeyPath Files.FileGetPath(dstFilename)
-                ExportHotkeysToFile dstFilename
-                
-            End If
-            
-            'Re-enable UI
-            Interface.EnableUserInput
-            
+            tvMenus.RequestListRedraw
+        
         'Import hotkeys
         Case 2
             
@@ -371,6 +387,7 @@ Private Sub cmdAll_Click(Index As Integer)
             initialFolder = UserPrefs.GetHotkeyPath()
             
             'Build a common dialog filter (only one format is supported for hotkey import/export right now)
+            Dim cdFilter As String, cdIndex As Long, cdTitle As String
             cdFilter = g_Language.TranslateMessage("Hotkeys") & " (.xml)|*.xml"
             cdIndex = 1
             cdTitle = g_Language.TranslateMessage("Import hotkeys")
@@ -393,6 +410,73 @@ Private Sub cmdAll_Click(Index As Integer)
             'Re-enable UI, then redraw the treeview (as hotkeys will have changes)
             Interface.EnableUserInput
             tvMenus.RequestListRedraw
+            
+        'Export hotkeys
+        Case 3
+            
+            'Disable user input until the dialog closes
+            Interface.DisableUserInput
+            
+            'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+            Dim initialSaveFolder As String
+            initialSaveFolder = Files.PathAddBackslash(UserPrefs.GetHotkeyPath())
+            
+            'Build a common dialog filter list
+            Dim cdFilterExtensions As String
+            cdFilter = g_Language.TranslateMessage("Hotkeys") & " (.xml)|*.xml"
+            cdFilterExtensions = "xml"
+            cdIndex = 1
+            cdTitle = g_Language.TranslateMessage("Export hotkeys")
+            
+            'Suggest a file name.
+            Dim dstFilename As String
+            dstFilename = g_Language.TranslateMessage("Hotkeys")
+            dstFilename = initialSaveFolder & dstFilename
+            
+            'Display a common save dialog
+            Dim saveDialog As pdOpenSaveDialog
+            Set saveDialog = New pdOpenSaveDialog
+            If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter, cdIndex, initialSaveFolder, cdTitle, cdFilterExtensions, Me.hWnd) Then
+                
+                'Update preferences, then export to the user's requested file.
+                UserPrefs.SetHotkeyPath Files.FileGetPath(dstFilename)
+                ExportHotkeysToFile dstFilename
+                
+            End If
+            
+            'Re-enable UI
+            Interface.EnableUserInput
+            
+        'Generate summary file (html)
+        Case 4
+            
+            'Disable user input until the dialog closes
+            Interface.DisableUserInput
+            
+            'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+            initialSaveFolder = Files.PathAddBackslash(OS.SpecialFolder(CSIDL_COMMON_DOCUMENTS))
+            
+            'Build a common dialog filter list
+            cdFilter = "HTML (.html)|*.html"
+            cdFilterExtensions = "html"
+            
+            cdIndex = 1
+            
+            'Suggest a file name.
+            dstFilename = g_Language.TranslateMessage("PhotoDemon hotkeys")
+            dstFilename = initialSaveFolder & dstFilename
+            
+            cdTitle = g_Language.TranslateMessage("Export hotkeys")
+            
+            'Display a common save dialog, then export on a success
+            Set saveDialog = New pdOpenSaveDialog
+            If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter, cdIndex, initialSaveFolder, cdTitle, cdFilterExtensions, Me.hWnd) Then
+                GenerateSummaryFile dstFilename
+                Web.OpenURL dstFilename
+            End If
+            
+            'Re-enable UI
+            Interface.EnableUserInput
             
     End Select
         
@@ -428,21 +512,9 @@ Private Sub ImportHotkeysFromFile(ByRef srcFile As String)
                     If (LenB(hkActionID) <> 0) Then
                     
                         'Find the matching action ID for this command
-                        Dim j As Long, matchFound As Boolean
-                        matchFound = False
+                        Dim idxTarget As Long
+                        If m_ActionHash.GetItemByKey(hkActionID, idxTarget) Then
                         
-                        For j = 0 To m_numItems - 1
-                            If Strings.StringsEqual(m_Items(j).hk_ActionID, hkActionID, True) Then
-                                matchFound = True
-                                Exit For
-                            End If
-                        Next j
-                        
-                        If matchFound Then
-                            
-                            Dim idxTarget As Long
-                            idxTarget = j
-                            
                             'Pull the shift state and keycode from this entry and store them in this hotkey
                             Dim newShiftState As ShiftConstants
                             newShiftState = 0
@@ -576,7 +648,7 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
         
         Select Case Index
             
-            'Reset this hotkey
+            'Undo any changes to this hotkey
             Case 0
                 With m_Items(tvMenus.ListIndex)
                     .hk_KeyCode = .hk_BackupKeyCode
@@ -587,8 +659,19 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
                     m_backupHotkeyShift = .hk_ShiftState
                 End With
                 
-            'Delete this hotkey
+            'Reset this hotkey to PD's default hotkey
             Case 1
+                With m_Items(tvMenus.ListIndex)
+                    .hk_KeyCode = .hk_DefaultKeyCode
+                    m_backupHotkeyVKCode = .hk_KeyCode
+                    .hk_HotkeyText = .hk_DefaultHotkeyText
+                    m_backupHotkeyText = .hk_HotkeyText
+                    .hk_ShiftState = .hk_DefaultShiftState
+                    m_backupHotkeyShift = .hk_ShiftState
+                End With
+                
+            'Delete this hotkey
+            Case 2
                 With m_Items(tvMenus.ListIndex)
                     .hk_KeyCode = 0
                     .hk_HotkeyText = vbNullString
@@ -617,10 +700,13 @@ Private Sub Form_Load()
     'Retrieve a copy of all menus (including hierarchies and attributes) from the menu manager
     m_NumOfMenus = Menus.GetCopyOfAllMenus(m_Menus)
     
-    'Add all menus (by their ID) to a hash table so we can quickly move between IDs and array indices.
+    'We will add all menus (by a hierarchical ID) to a hash table so we can quickly move between IDs and array indices.
     Set m_MenuHash = New pdVariantHash
     
-    'Similarly, retrieve a copy of all hotkeys from the hotkey manager
+    'Similarly, we will add all action IDs to a hash table so we can lookup specific actions quickly
+    Set m_ActionHash = New pdVariantHash
+    
+    'Retrieve a copy of all hotkeys from the hotkey manager
     m_NumOfHotkeys = Hotkeys.GetCopyOfAllHotkeys(m_Hotkeys)
     
     'There will (typically? always?) be fewer hotkeys than there are menu/action targets.  To simplify
@@ -629,9 +715,11 @@ Private Sub Form_Load()
     Set cHotkeys = New pdVariantHash
     
     Dim i As Long
-    For i = 0 To m_NumOfHotkeys - 1
-        cHotkeys.AddItem m_Hotkeys(i).hkAction, i
-    Next i
+    If (m_NumOfHotkeys > 0) Then
+        For i = 0 To m_NumOfHotkeys - 1
+            cHotkeys.AddItem m_Hotkeys(i).hkAction, i
+        Next i
+    End If
     
     'Turn off automatic redraws in the treeview object
     tvMenus.SetAutomaticRedraws False
@@ -660,6 +748,9 @@ Private Sub Form_Load()
                 .hk_HasChildren = m_Menus(i).me_HasChildren
                 .hk_TextEn = m_Menus(i).me_TextEn
                 .hk_TextLocalized = m_Menus(i).me_TextTranslated
+                
+                'Save this action and index in a fast lookup table
+                m_ActionHash.AddItem .hk_ActionID, m_numItems
                 
                 'If a hotkey exists for this menu's action, retrieve it and add it
                 ' (and make backups of these *original* hotkeys, so we can revert them if the user doesn't like later changes)
@@ -697,6 +788,21 @@ Private Sub Form_Load()
         
     Next i
     
+    'Now we can pull all of PD's default hotkeys and correlate those with the current hotkey collection.
+    Dim defaultHotkeys() As PD_Hotkey, numDefaultHotkeys As Long
+    numDefaultHotkeys = Hotkeys.GetCopyOfAllHotkeys(defaultHotkeys, True)
+    If (numDefaultHotkeys > 0) And (m_numItems > 0) Then
+        For i = 0 To numDefaultHotkeys - 1
+            If m_ActionHash.GetItemByKey(defaultHotkeys(i).hkAction, idxHotkey) Then
+                With m_Items(idxHotkey)
+                    .hk_DefaultKeyCode = defaultHotkeys(i).hkKeyCode
+                    .hk_DefaultShiftState = defaultHotkeys(i).hkShiftState
+                    .hk_DefaultHotkeyText = GetHotkeyNameFromKeys(.hk_BackupShiftState, .hk_DefaultKeyCode)
+                End With
+            End If
+        Next i
+    End If
+    
     'Initialize font renderers for the custom treeview
     Set m_FontAllowed = New pdFont
     m_FontAllowed.SetFontBold True
@@ -718,6 +824,17 @@ Private Sub Form_Load()
     
     'Add all possible hotkeys to the dropdown
     GeneratePossibleHotkeys
+    
+    'Load some icons to various toolbars
+    Dim buttonImgSize As Long
+    buttonImgSize = Interface.FixDPI(24)
+    cmdThisHotkey(0).AssignImage "edit_undo", , buttonImgSize, buttonImgSize, g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    cmdThisHotkey(1).AssignImage "generic_reset", , buttonImgSize, buttonImgSize, g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    cmdThisHotkey(2).AssignImage "file_close", , buttonImgSize, buttonImgSize, g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    cmdAll(0).AssignImage "edit_undo", , buttonImgSize, buttonImgSize, g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    cmdAll(1).AssignImage "generic_reset", , buttonImgSize, buttonImgSize, g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    cmdAll(2).AssignImage "file_open", , buttonImgSize, buttonImgSize
+    cmdAll(3).AssignImage "file_saveas", , buttonImgSize, buttonImgSize
     
     'Apply custom themes
     Interface.ApplyThemeAndTranslations Me
@@ -956,19 +1073,8 @@ Private Sub txtHotkey_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long,
 End Sub
 
 Private Sub txtHotkey_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
-    
-    'TODO: DO WE EVEN NEED KEYUP???
-    
-    'If no modifier keys are down, save this as the current hotkey
-    If (Shift And vbCtrlMask = 0) And (Shift And vbAltMask = 0) And (Shift And vbShiftMask = 0) Then
-        If (m_backupHotkeyText <> m_Items(tvMenus.ListIndex).hk_HotkeyText) Then
-            'm_hotkeys(i).hkScanCode =
-        End If
-    End If
-    
     preventFurtherHandling = True
     m_inAutoUpdate = False
-    
 End Sub
 
 Private Sub txtHotkey_LostFocusAPI()
@@ -1365,3 +1471,74 @@ Private Function GetHotkeyNameFromKeys(ByVal Shift As ShiftConstants, ByVal vKey
     GetHotkeyNameFromKeys = newText & Hotkeys.GetCharFromKeyCode(vKey)
     
 End Function
+
+Private Sub GenerateSummaryFile(ByRef dstFile As String)
+        
+    Files.FileDeleteIfExists dstFile
+    
+    'This string will be large, so use a string builder object
+    Dim cExport As pdString
+    Set cExport = New pdString
+    
+    'Start by populating the string builder with some boilerplate HTML
+    Const HTML_BP_BASE64 As String = "PCFET0NUWVBFIGh0bWw+DQo8aHRtbCBsYW5nPSIlMSI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0Zi04Ij4NCjx0aXRsZT4lMjwvdGl0bGU+DQoJPHN0eWxlPg"
+    Const HTML_BP_BASE64_2 As String = "dGFibGUgew0KICAgICAgICAgICAgd2lkdGg6IDEwMCU7DQogICAgICAgICAgICBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlOw0KICAgICAgICAgICAgbWFyZ2luOiAyNXB4IGF1dG8gMDsNCiAgICAgICAgICAgIGZvbnQtc2l6ZTogMWVtOw0KICAgICAgICAgICAgZm9udC1mYW1pbHk6IHNhbnMtc2VyaWY7DQogICAgICAgICAgICBtYXgtd2lkdGg6IDEyMDBweDsNCgkJCW1pbi13aWR0aDogNDAwcHg7DQogICAgICAgICAgICBib3gtc2hhZG93OiAwIDAgMjBweCByZ2JhKDAsIDAsIDAsIDAuMTUpOw0KICAgICAgICB9DQogICAgICAgIHRoLCB0ZCB7DQogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTVweDsNCiAgICAgICAgICAgIGJvcmRlcjogMXB4IHNvbGlkICNkZGQ7DQogICAgICAgICAgICB0ZXh0LWFsaWduOiBsZWZ0Ow0KICAgICAgICB9DQogICAgICAgIHRoZWFkIHsNCiAgICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICMlMTsNCiAgICAgICAgICAgIGNvbG9yOiAjZmZmZmZmOw0KICAgICAgICB9DQogICAgICAgIHRib2R5IHRyOm50aC1jaGlsZChldmVuKSB7DQogICAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZjRmNGY0Ow0KICAgICAgICB9DQogICAgICAgIHRib2R5IHRyOmxhc3Qtb2YtdHlwZSB7DQogICAgICAgICAgICBib3JkZXItYm90dG9tOiA0cHggc29saWQgIyUxOw0KICAgICAgICB9"
+    Const HTML_BP_BASE64_3 As String = "DQogICAgPC9zdHlsZT4NCjwvaGVhZD4NCiAgPGJvZHk+"
+    
+    Dim utf8Bytes() As Byte
+    Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64
+    
+    Dim initHTML As String
+    initHTML = Strings.StringFromUTF8(utf8Bytes)
+    
+    'Replace some placeholders with current user settings
+    initHTML = Replace$(initHTML, "%1", g_Language.GetCurrentLanguage(False))
+    initHTML = Replace$(initHTML, "%2", g_Language.TranslateMessage("PhotoDemon hotkeys"))
+    
+    'Append remaining style bits
+    Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64_2
+    initHTML = initHTML & Replace$(Strings.StringFromUTF8(utf8Bytes), "%1", Colors.GetHexStringFromRGB(g_Themer.GetGenericUIColor(UI_Accent)))
+    Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64_3
+    initHTML = initHTML & Strings.StringFromUTF8(utf8Bytes)
+    
+    cExport.Append initHTML
+    Erase utf8Bytes
+    initHTML = vbNullString
+    
+    'Append a minimalist header
+    cExport.AppendLine "<table>"
+    cExport.AppendLine "<thead><tr><th>" & g_Language.TranslateMessage("Command") & "</th><th>" & g_Language.TranslateMessage("Hotkey") & "</th></thead><tbody>"
+    
+    'Now, append all menus and hotkeys
+    Dim i As Long
+    For i = 0 To m_numItems - 1
+        Const HTML_TABLE_ROW As String = "<tr>"
+        cExport.AppendLine HTML_TABLE_ROW
+        With m_Items(i)
+            Const HTML_TABLE_CELL As String = "<td>"
+            Const HTML_TABLE_CELL_END As String = "</td>"
+            cExport.Append HTML_TABLE_CELL
+            If (.hk_NumParents > 0) Then
+                Dim j As Long
+                For j = 0 To .hk_NumParents
+                    Const HTML_SPACER As String = "&nbsp;&nbsp;&nbsp;&nbsp;"
+                    cExport.Append HTML_SPACER
+                Next j
+            End If
+            cExport.Append .hk_TextLocalized
+            cExport.AppendLine HTML_TABLE_CELL_END
+            cExport.Append HTML_TABLE_CELL
+            If (.hk_KeyCode <> 0) Then cExport.Append .hk_HotkeyText
+            cExport.AppendLine HTML_TABLE_CELL_END
+        End With
+        Const HTML_TABLE_ROW_END As String = "</tr>"
+        cExport.AppendLine HTML_TABLE_ROW_END
+    Next i
+    
+    'Close any open tags
+    cExport.AppendLine "</tbody></table></body></html>"
+    
+    'Write the text out to file
+    Files.FileSaveAsText cExport.ToString(), dstFile, True, False
+    
+End Sub
