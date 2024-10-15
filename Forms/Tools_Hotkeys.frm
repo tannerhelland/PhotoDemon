@@ -272,6 +272,9 @@ Private Type PD_HotkeyUI
     hk_DefaultShiftState As Long
     hk_DefaultHotkeyText As String
     
+    'If this item has a hotkey that is used elsewhere, the duplication will get flagged here.
+    hk_DuplicateFound As Boolean
+    
 End Type
 
 'Menu and hotkey information gets merged into this local array, which is much easier to manage
@@ -309,6 +312,9 @@ Private m_idxLastHotkey As Long
 'Fast correlation from action ID to item index
 Private m_ActionHash As pdVariantHash
 
+'Warning icon, rendered to the treeview when a hotkey is used in more than one place
+Private m_WarningIcon As pdDIB
+
 Private Sub chkModifier_Click(Index As Integer)
     UpdateHotkeyManually
 End Sub
@@ -332,6 +338,9 @@ Private Sub UpdateHotkeyManually()
             m_backupHotkeyText = AutoTextKeyChange(newShiftState, .hk_KeyCode)
             .hk_HotkeyText = m_backupHotkeyText
         End With
+        
+        'Ensure duplicate hotkeys are flagged and marked
+        FlagAllDuplicates
         
         'Redraw the listview to reflect the new hotkey
         tvMenus.RequestListRedraw
@@ -360,6 +369,9 @@ Private Sub cmdAll_Click(Index As Integer)
                 End With
             Next i
             
+            'Ensure duplicate hotkeys are flagged and marked
+            FlagAllDuplicates
+            
             tvMenus.RequestListRedraw
         
         'Restore all hotkey defaults
@@ -373,6 +385,9 @@ Private Sub cmdAll_Click(Index As Integer)
                     .hk_ShiftState = .hk_DefaultShiftState
                 End With
             Next i
+            
+            'Ensure duplicate hotkeys are flagged and marked
+            FlagAllDuplicates
             
             tvMenus.RequestListRedraw
         
@@ -404,7 +419,10 @@ Private Sub cmdAll_Click(Index As Integer)
                 
                 'Import hotkeys.  Note that this will overwrite all existing hotkey choices (by design).
                 ImportHotkeysFromFile srcFilename
-            
+                
+                'Ensure duplicate hotkeys are flagged and marked
+                FlagAllDuplicates
+                
             End If
             
             'Re-enable UI, then redraw the treeview (as hotkeys will have changes)
@@ -463,7 +481,7 @@ Private Sub cmdAll_Click(Index As Integer)
             cdIndex = 1
             
             'Suggest a file name.
-            dstFilename = g_Language.TranslateMessage("PhotoDemon hotkeys")
+            dstFilename = g_Language.TranslateMessage("PhotoDemon Hotkeys")
             dstFilename = initialSaveFolder & dstFilename
             
             cdTitle = g_Language.TranslateMessage("Export hotkeys")
@@ -659,6 +677,9 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
                     m_backupHotkeyShift = .hk_ShiftState
                 End With
                 
+                'Ensure duplicate hotkeys are flagged and marked
+                FlagAllDuplicates
+                
             'Reset this hotkey to PD's default hotkey
             Case 1
                 With m_Items(tvMenus.ListIndex)
@@ -670,6 +691,9 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
                     m_backupHotkeyShift = .hk_ShiftState
                 End With
                 
+                'Ensure duplicate hotkeys are flagged and marked
+                FlagAllDuplicates
+        
             'Delete this hotkey
             Case 2
                 With m_Items(tvMenus.ListIndex)
@@ -680,10 +704,16 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
                 m_backupHotkeyVKCode = 0
                 m_backupHotkeyText = vbNullString
                 m_backupHotkeyShift = 0
+                
+                'Ensure duplicate hotkeys are flagged and marked.
+                ' (In this case, we're mostly interested in *clearing* duplicate flags, as they may have been resolved
+                ' by erasing this hotkey!)
+                FlagAllDuplicates
+                
         End Select
         
         tvMenus.RequestListRedraw
-    'Private m_backupHotkeyText As String, m_backupHotkeyShift As Long, m_backupHotkeyVKCode As Long
+        
     End If
     
 End Sub
@@ -803,6 +833,9 @@ Private Sub Form_Load()
         Next i
     End If
     
+    'Ensure any duplicate hotkeys are flagged and marked
+    FlagAllDuplicates
+    
     'Initialize font renderers for the custom treeview
     Set m_FontAllowed = New pdFont
     m_FontAllowed.SetFontBold True
@@ -891,7 +924,11 @@ Private Sub tvMenus_Click()
     End If
     
     'Update the previously edited hotkey, if any
-    If (m_idxLastHotkey >= 0) And (m_idxLastHotkey <> tvMenus.ListIndex) Then StoreUpdatedHotkey m_idxLastHotkey
+    If (m_idxLastHotkey >= 0) And (m_idxLastHotkey <> tvMenus.ListIndex) Then
+        StoreUpdatedHotkey m_idxLastHotkey
+        FlagAllDuplicates
+    End If
+    
     m_inAutoUpdate = True
     
     'Do not allow hotkeys on menu items with children
@@ -1037,16 +1074,31 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
         m_FontHotkey.FastRenderText leftOffsetHotkey, offsetY + Interface.FixDPI(4), keyComboText
         m_FontHotkey.ReleaseFromDC
         
+        'If this hotkey has been flagged as a duplicate, render a warning icon
+        If m_Items(itemIndex).hk_DuplicateFound Then
+            
+            Dim icoSize As Long
+            icoSize = Interface.FixDPI(20)
+            
+            If (m_WarningIcon Is Nothing) Then
+                Set m_WarningIcon = New pdDIB
+                If (Not IconsAndCursors.LoadResourceToDIB("generic_warning", m_WarningIcon, icoSize, icoSize, 0)) Then Set m_WarningIcon = Nothing
+            End If
+            
+            If (Not m_WarningIcon Is Nothing) Then
+                m_WarningIcon.AlphaBlendToDC bufferDC, 255, leftOffsetHotkey - icoSize - Interface.FixDPI(12), tmpRectF.Top + (tmpRectF.Height - icoSize) \ 2
+            End If
+            
+        End If
+            
     End If
-    
-    'Still TODO:
-    ' - figure out where to position hotkey text/input area
     
 End Sub
 
 Private Sub tvMenus_LostFocusAPI()
     If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then
         StoreUpdatedHotkey tvMenus.ListIndex
+        FlagAllDuplicates
         tvMenus.RequestListRedraw
     End If
 End Sub
@@ -1078,11 +1130,19 @@ Private Sub txtHotkey_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, p
 End Sub
 
 Private Sub txtHotkey_LostFocusAPI()
+    
     If txtHotkey.Visible Then
-        If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then StoreUpdatedHotkey tvMenus.ListIndex
+        
+        If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then
+            StoreUpdatedHotkey tvMenus.ListIndex
+            FlagAllDuplicates
+        End If
+        
         txtHotkey.Visible = False
         tvMenus.RequestListRedraw
+        
     End If
+    
 End Sub
 
 Private Sub StoreUpdatedHotkey(ByVal idxTarget As Long)
@@ -1483,7 +1543,8 @@ Private Sub GenerateSummaryFile(ByRef dstFile As String)
     'Start by populating the string builder with some boilerplate HTML
     Const HTML_BP_BASE64 As String = "PCFET0NUWVBFIGh0bWw+DQo8aHRtbCBsYW5nPSIlMSI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0Zi04Ij4NCjx0aXRsZT4lMjwvdGl0bGU+DQoJPHN0eWxlPg"
     Const HTML_BP_BASE64_2 As String = "dGFibGUgew0KICAgICAgICAgICAgd2lkdGg6IDEwMCU7DQogICAgICAgICAgICBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlOw0KICAgICAgICAgICAgbWFyZ2luOiAyNXB4IGF1dG8gMDsNCiAgICAgICAgICAgIGZvbnQtc2l6ZTogMWVtOw0KICAgICAgICAgICAgZm9udC1mYW1pbHk6IHNhbnMtc2VyaWY7DQogICAgICAgICAgICBtYXgtd2lkdGg6IDEyMDBweDsNCgkJCW1pbi13aWR0aDogNDAwcHg7DQogICAgICAgICAgICBib3gtc2hhZG93OiAwIDAgMjBweCByZ2JhKDAsIDAsIDAsIDAuMTUpOw0KICAgICAgICB9DQogICAgICAgIHRoLCB0ZCB7DQogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTVweDsNCiAgICAgICAgICAgIGJvcmRlcjogMXB4IHNvbGlkICNkZGQ7DQogICAgICAgICAgICB0ZXh0LWFsaWduOiBsZWZ0Ow0KICAgICAgICB9DQogICAgICAgIHRoZWFkIHsNCiAgICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICMlMTsNCiAgICAgICAgICAgIGNvbG9yOiAjZmZmZmZmOw0KICAgICAgICB9DQogICAgICAgIHRib2R5IHRyOm50aC1jaGlsZChldmVuKSB7DQogICAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZjRmNGY0Ow0KICAgICAgICB9DQogICAgICAgIHRib2R5IHRyOmxhc3Qtb2YtdHlwZSB7DQogICAgICAgICAgICBib3JkZXItYm90dG9tOiA0cHggc29saWQgIyUxOw0KICAgICAgICB9"
-    Const HTML_BP_BASE64_3 As String = "DQogICAgPC9zdHlsZT4NCjwvaGVhZD4NCiAgPGJvZHk+"
+    Const HTML_BP_BASE64_3 As String = "aDIgew0KCQkJbWFyZ2luOiAxNXB4IGF1dG8gMjVweDsNCiAgICAgICAgICAgIGZvbnQtc2l6ZTogMi41ZW07DQogICAgICAgICAgICBmb250LWZhbWlseTogc2Fucy1zZXJpZjsNCgkJCXRleHQtYWxpZ246IGNlbnRlcjsNCgkJfQ"
+    Const HTML_BP_BASE64_4 As String = "DQogICAgPC9zdHlsZT4NCjwvaGVhZD4NCiAgPGJvZHk+"
     
     Dim utf8Bytes() As Byte
     Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64
@@ -1493,17 +1554,22 @@ Private Sub GenerateSummaryFile(ByRef dstFile As String)
     
     'Replace some placeholders with current user settings
     initHTML = Replace$(initHTML, "%1", g_Language.GetCurrentLanguage(False))
-    initHTML = Replace$(initHTML, "%2", g_Language.TranslateMessage("PhotoDemon hotkeys"))
+    initHTML = Replace$(initHTML, "%2", g_Language.TranslateMessage("PhotoDemon Hotkeys"))
     
     'Append remaining style bits
     Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64_2
-    initHTML = initHTML & Replace$(Strings.StringFromUTF8(utf8Bytes), "%1", Colors.GetHexStringFromRGB(g_Themer.GetGenericUIColor(UI_Accent)))
+    initHTML = initHTML & vbCrLf & Replace$(Strings.StringFromUTF8(utf8Bytes), "%1", Colors.GetHexStringFromRGB(g_Themer.GetGenericUIColor(UI_Accent)))
     Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64_3
+    initHTML = initHTML & Strings.StringFromUTF8(utf8Bytes)
+    Strings.BytesFromBase64 utf8Bytes, HTML_BP_BASE64_4
     initHTML = initHTML & Strings.StringFromUTF8(utf8Bytes)
     
     cExport.Append initHTML
     Erase utf8Bytes
     initHTML = vbNullString
+    
+    'Title
+    cExport.AppendLine "<h2>" & g_Language.TranslateMessage("PhotoDemon Hotkeys") & "</h2>"
     
     'Append a minimalist header
     cExport.AppendLine "<table>"
@@ -1540,5 +1606,72 @@ Private Sub GenerateSummaryFile(ByRef dstFile As String)
     
     'Write the text out to file
     Files.FileSaveAsText cExport.ToString(), dstFile, True, False
+    
+End Sub
+
+'Search the current hotkey list for duplicates.  *IMPORTANTLY*, this function only marks a duplicate if it...
+' 1) has the same hotkey as idxSource, and...
+' 2) the matched item(s) map to DIFFERENT ACTIONS.
+'
+'If two menus map to the same underlying action (e.g. the Adjustents > Curves, and Adjustments > Color > Curves menus),
+' it is not just fine, but *expected* for them to have the same hotkey.  (And in fact, the menu editor handles
+' these mappings automagically.)  So these cases are *not* returned as duplicates.
+'
+'RETURNS: TRUE if invalid duplicates were found; FALSE if no invalid duplicates were found.
+'
+'The passed stack will hold indices of any matches.  Its value is indeterminate on a FALSE return.
+Private Function FindDuplicates(ByVal idxSource As Long, ByRef dstIdxList As pdStack) As Boolean
+    
+    FindDuplicates = False
+    
+    If (dstIdxList Is Nothing) Then
+        Set dstIdxList = New pdStack
+    Else
+        dstIdxList.ResetStack 2
+    End If
+    
+    Dim targetHotkey As String
+    targetHotkey = m_Items(idxSource).hk_HotkeyText
+    
+    Dim i As Long
+    For i = 0 To m_numItems - 1
+        If (i <> idxSource) Then
+            If Strings.StringsEqual(targetHotkey, m_Items(i).hk_HotkeyText, True) Then
+                
+                'Compare action IDs; we only care if these are *mismatched*
+                If Strings.StringsNotEqual(m_Items(idxSource).hk_ActionID, m_Items(i).hk_ActionID, True) Then
+                    FindDuplicates = True
+                    dstIdxList.AddInt i
+                End If
+                
+            End If
+        End If
+    Next i
+    
+End Function
+
+'Correctly set all "this hotkey is used elsewhere" flags in m_Items().
+Private Sub FlagAllDuplicates()
+    
+    Dim i As Long, j As Long
+    For i = 0 To m_numItems - 1
+        m_Items(i).hk_DuplicateFound = False
+    Next i
+    
+    For i = 0 To m_numItems - 1
+        For j = i + 1 To m_numItems - 1
+            If (i <> j) Then
+                If Strings.StringsEqual(m_Items(j).hk_HotkeyText, m_Items(i).hk_HotkeyText, True) Then
+                    
+                    'Compare action IDs; we only care if these are *mismatched*
+                    If Strings.StringsNotEqual(m_Items(j).hk_ActionID, m_Items(i).hk_ActionID, True) Then
+                        m_Items(i).hk_DuplicateFound = True
+                        m_Items(j).hk_DuplicateFound = True
+                    End If
+                    
+                End If
+            End If
+        Next j
+    Next i
     
 End Sub
