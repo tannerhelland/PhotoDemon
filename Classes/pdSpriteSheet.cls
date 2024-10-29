@@ -445,12 +445,18 @@ End Sub
 
 'Suspend all spritesheets to compressed memory streams; they will auto-recreate as necessary
 Friend Sub MinimizeMemory(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True)
-    Dim i As Long, j As Long
-    For i = 0 To m_NumOfCacheObjects - 1
-        For j = 0 To m_ImageCache(i).numSheets - 1
-            m_ImageCache(i).imgSpriteSheets(j).SuspendDIB cmpFormat, autoKeepIfLarge
-        Next j
-    Next i
+    
+    If (m_NumOfCacheObjects > 0) Then
+        
+        Dim i As Long, j As Long
+        For i = 0 To m_NumOfCacheObjects - 1
+            For j = 0 To m_ImageCache(i).numSheets - 1
+                m_ImageCache(i).imgSpriteSheets(j).SuspendDIB cmpFormat, autoKeepIfLarge
+            Next j
+        Next i
+        
+    End If
+    
 End Sub
 
 'Fully reset the cache.  NOTE: this will invalidate all previously returned handles, so you *must*

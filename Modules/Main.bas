@@ -667,10 +667,12 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     'Initialize hotkeys.  (User-customized hotkeys will be loaded from file; if they don't exist,
     ' this function will generate a default hotkey list.)
     perfCheck.MarkEvent "Initialize hotkey manager"
+    LogStartupEvent "Initializing hotkeys..."
     Hotkeys.InitializeHotkeys
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"
+    LogStartupEvent "Initializing recent file lists..."
     Set g_RecentFiles = New pdRecentFiles
     g_RecentFiles.LoadListFromFile
     
@@ -680,6 +682,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Load and draw all menu icons
     perfCheck.MarkEvent "Load all menu icons"
+    LogStartupEvent "Loading UI icons..."
     IconsAndCursors.LoadMenuIcons False
     
     'Finally, apply all of our various UI features
@@ -688,9 +691,11 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     perfCheck.MarkEvent "Final interface sync"
+    LogStartupEvent "Final interface sync before main screen appears..."
     Interface.SyncInterfaceToCurrentImage
     
     'Minimize UI memory usage
+    LogStartupEvent "Minimizing sprite cache..."
     UIImages.MinimizeCacheMemory
     
     'If we made it all the way here, startup can be considered successful!

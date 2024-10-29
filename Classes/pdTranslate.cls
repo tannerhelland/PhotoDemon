@@ -205,6 +205,7 @@ Friend Sub DetermineLanguage()
     
         Dim curLangID As String
         curLangID = GetDefaultUserLanguage()        'Want to default to PD's stock translation?  Set this to "en-US"
+        PDDebug.LogAction "Auto-detected preferred locale as " & curLangID
         
         'Compare the full language ID (language and region) against language files available in the Languages folder.
         ' If an exact match is found, present that as the default program language.
@@ -212,16 +213,19 @@ Friend Sub DetermineLanguage()
         
         'If an exact match is not found, try comparing just the language part of the code.  If a match is found,
         ' present that as the default language - and note that we also need to show the language selection dialog.
-        If (m_currentLanguage = -1) Then
+        If (m_currentLanguage < 0) Then
             m_currentLanguage = IsApproximateLanguageMatch(curLangID)
             m_needToShowLanguageDialog = True
         End If
         
         'If we still can't find a match, present the language selection screen in English.
-        If (m_currentLanguage = -1) Then
+        If (m_currentLanguage < 0) Then
             m_currentLanguage = m_defaultLanguage
             m_needToShowLanguageDialog = True
         End If
+        
+        PDDebug.LogAction "First-run language decision is " & m_AvailableLanguages(m_currentLanguage).langID
+        If m_needToShowLanguageDialog Then PDDebug.LogAction "Language dialog will be displayed at end-of-load."
         
     'If this is not the first run, retrieve the user's language preference from the preferences file
     Else
@@ -1152,3 +1156,4 @@ Friend Sub PrintAdditionalDebugInfo()
     If (Not m_FoundTranslations Is Nothing) Then m_FoundTranslations.PrintClassDebugInfo
     
 End Sub
+
